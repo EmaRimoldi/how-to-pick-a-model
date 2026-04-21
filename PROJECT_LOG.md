@@ -262,3 +262,11 @@
 - Pilot outcomes: selected modes `layout`, `caching`, `summaries`; best visible loss `0.28242576429393895`; best counterfactual loss `0.2784324758473186`; mean routing regret `0.009569049696577977`.
 - Pilot failures: two candidates rejected for banned `list.remove`, one `topk` branch semantically incorrect; verifier infrastructure failures were zero.
 - Generated `artifacts/hard_haiku_batch_pilot_*` artifacts and `artifacts/plots/run_hard_haiku_batch_pilot_3step/`.
+
+### Hard Pilot Bugfixes
+
+- Added a narrow deterministic structured-candidate repair for the over-broad `.remove(...)` safety rejection. If the only source-validation error is `banned attribute call: remove`, simple statement-level `container.remove(value)` calls are rewritten to list-comprehension assignments and the repaired source is validated again.
+- The repair is logged through `source_repair_status` and `source_repairs` in proposal JSON. The two failed pilot payloads now reparse and validate with `list_remove_rewritten_to_comprehension`.
+- Hardened structured-edit prompts for `top_k`: prompts now require exact ordering by value descending and then key ascending, with sorting/heap semantics equivalent to `(-value, key)`.
+- No semantic auto-repair was added for wrong `top_k` algorithms; those remain verifier-detected candidate failures because local semantic rewrites would change the model's proposed edit.
+- Generated `artifacts/hard_pilot_bugfix_report.json` and `artifacts/hard_pilot_bugfix_report.md`.

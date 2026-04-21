@@ -57,6 +57,7 @@
 - [x] Replace active benchmark profiles with a single difficult `hard_optimization` profile.
 - [x] Add hard-profile local/Haiku experiment configs and validate one-step/ two-step calibration runs.
 - [x] Run and validate the first 3-step Haiku batch pilot on `hard_optimization`.
+- [x] Add deterministic repair for `.remove(...)` safety rejections and harden `top_k` prompt constraints.
 
 ## Remaining
 

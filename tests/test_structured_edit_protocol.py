@@ -43,6 +43,32 @@ def test_replace_function_structured_edit_validates_candidate() -> None:
     assert "solution_py" not in json.loads(raw)
 
 
+def test_structured_parser_repairs_banned_list_remove() -> None:
+    parent = Path("benchmarks/stateful_query_engine/solution_template.py").read_text(encoding="utf-8")
+    new_delete = """    def delete(self, key: int) -> None:
+        key = int(key)
+        for item in list(self._items):
+            if item[0] == key:
+                self._items.remove(item)
+                return None
+        return None
+"""
+    raw = json.dumps(
+        {
+            "primary_mode": "layout",
+            "declared_mode": "layout",
+            "edit_format": "structured_edits",
+            "rationale": "Exercise deterministic list.remove repair.",
+            "edits": [{"op": "replace_function", "function": "delete", "source": new_delete}],
+        }
+    )
+    parsed = parse_structured_edit_payload(raw, "layout", parent_source=parent)
+    assert parsed["source_repair_status"] == "applied"
+    assert parsed["source_repairs"] == ["list_remove_rewritten_to_comprehension"]
+    assert ".remove(" not in parsed["solution_py"]
+    assert "__vao_keep_item_0" in parsed["solution_py"]
+
+
 def test_structured_edit_rejects_ambiguous_exact_match() -> None:
     with pytest.raises(StructuredEditError, match="ambiguous"):
         apply_structured_edits("x = 1\nx = 1\n", [{"op": "replace_exact", "old": "x = 1", "new": "x = 2"}])
@@ -76,6 +102,8 @@ def test_structured_prompt_forbids_solution_py() -> None:
     assert "Do not return solution_py" in rendered
     assert "complete replacement file" in rendered
     assert "Do not call banned attributes" in rendered
+    assert "(-value, key)" in rendered
+    assert "Never use `keys.remove(key)`" in rendered
 
 
 def test_batch_structured_prompt_requests_one_candidate_per_mode() -> None:
@@ -89,5 +117,7 @@ def test_batch_structured_prompt_requests_one_candidate_per_mode() -> None:
     assert "Exactly one compact structured edit candidate for each mode" in rendered
     assert "Do not return solution_py" in rendered
     assert "Do not call banned attributes" in rendered
+    assert "(-value, key)" in rendered
+    assert "Never use `keys.remove(key)`" in rendered
     for mode in ["layout", "indexing", "topk", "caching", "summaries", "micro"]:
         assert mode in rendered

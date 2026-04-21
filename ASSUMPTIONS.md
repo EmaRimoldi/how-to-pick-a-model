@@ -40,3 +40,5 @@
 - On `hard_optimization`, local calibration suggests a baseline verifier cost of about 65 seconds and a post-baseline six-branch step cost of about 78 seconds for deterministic local candidates.
 - The validated Haiku batch hard smoke took 346.4 seconds total for one step including baseline, cost `$0.171`, and had zero proposal/source/verifier failures. A 3-step Haiku pilot is estimated at about 15 minutes serial wall-clock and roughly `$0.51`, subject to candidate runtime variance.
 - The first validated 3-step Haiku batch pilot took 807.0 seconds total and cost `$0.600`. The prompt still needs hardening against banned `list.remove` calls, which caused two candidate rejections.
+- Deterministic source repair is allowed only for narrow, auditable safety-screen overreach. The current repair rewrites simple `.remove(...)` calls when that is the only validation error and logs the repair; it does not repair semantic algorithm errors.
+- `top_k` semantic errors are not locally rewritten. They remain verifier-evaluated candidate failures, while prompts specify the required `(-value, key)` ordering more explicitly.

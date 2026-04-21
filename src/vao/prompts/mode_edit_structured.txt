@@ -29,6 +29,9 @@ Required API after edits:
 - Implement top_k(lo:int, hi:int, k:int)->list[tuple[int,int]].
 - top_k must sort by value descending, then key ascending.
 - Range bounds are inclusive: lo <= key <= hi. Empty ranges return 0 or [] as appropriate.
+- top_k tie-breaking is strict: if two rows have the same value, the smaller key must appear first.
+- If using sorting, use exactly the semantic key `lambda item: (-item[1], item[0])`.
+- If using heapq, push/compare tuples equivalent to `(-value, key)` so ties prefer smaller keys.
 
 Structured edit format:
 
@@ -54,6 +57,7 @@ Safety constraints:
 - No file IO, network, subprocess, eval, exec, dynamic imports, or hidden global state outside each instance.
 - Do not call banned attributes: connect, mkdir, open, popen, read_bytes, read_text, remove, rename, replace, rmdir, socket, system, unlink, write_bytes, write_text.
 - For list deletion, use comprehensions, slices, pop(index), or rebuilt lists; do not use list.remove.
+- For sorted-key deletion, prefer `idx = bisect.bisect_left(keys, key)` followed by an equality check and `keys.pop(idx)`. Never use `keys.remove(key)`.
 - Do not import the benchmark, reference implementation, or previous candidates.
 - Do not include chain-of-thought.
 - Keep the edit scoped to the requested primary mode.

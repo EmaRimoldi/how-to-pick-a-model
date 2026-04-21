@@ -537,6 +537,12 @@ Pilot details:
 
 The two proposal failures were rejected safely because generated code used banned `list.remove` calls. The incorrect branch was a `topk` candidate with a semantic tie-breaking/correctness mismatch. Both are logged as counterfactual evidence and do not break the C(a) trajectory.
 
+Follow-up bugfixes:
+
+- `.remove(...)` rejection: added deterministic parser repair for simple statement-level `container.remove(value)` calls when this is the only source-validation error. The repair rewrites to a list-comprehension assignment, revalidates the full source, and logs `source_repair_status` plus `source_repairs`.
+- `top_k` semantic error: hardened prompts to explicitly require value-descending, key-ascending ordering with semantics equivalent to `(-value, key)`.
+- No local semantic repair is applied to wrong `top_k` algorithms; the verifier remains the correctness authority for these branches.
+
 Artifacts:
 
 - `artifacts/hard_profile_experiment_readiness.json`
@@ -545,6 +551,7 @@ Artifacts:
 - `artifacts/hard_haiku_batch_smoke_summary.json`
 - `artifacts/hard_haiku_batch_pilot_readout.md`
 - `artifacts/hard_haiku_batch_pilot_summary.json`
+- `artifacts/hard_pilot_bugfix_report.md`
 - `artifacts/plots/run_hard_local_dev_2step_calibration/`
 - `artifacts/plots/run_hard_haiku_batch_smoke_1step/`
 - `artifacts/plots/run_hard_haiku_batch_pilot_3step/`
