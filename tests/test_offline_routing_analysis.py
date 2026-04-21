@@ -5,6 +5,7 @@ from pathlib import Path
 
 from vao.analysis.dataset_audit import audit_dataset
 from vao.analysis.replay_routing import AlwaysModeRouter, OriginalTeacherRouter, evaluate_policy
+from vao.analysis.routing_choice_visuals import summarize_dataset
 from vao.logging_utils import write_json
 from vao.schemas import BranchEvaluation, StepRecord
 from vao.taxonomy import MODES
@@ -32,6 +33,16 @@ def test_replay_evaluator_scores_policies(tmp_path: Path) -> None:
     assert original["record_count"] == 6
     assert always_indexing["mean_top1_regret"] >= 0.0
     assert "mean_visible_best_loss_logged_replay" in always_indexing
+
+
+def test_routing_choice_summary_counts_verified_best(tmp_path: Path) -> None:
+    dataset = _toy_dataset(tmp_path)
+    summary = summarize_dataset("toy", dataset)
+    assert summary["record_count"] == 6
+    assert summary["correct_by_verified_best"] == 2
+    assert summary["incorrect_by_verified_best"] == 4
+    assert summary["selected_mode_counts"]["indexing"] == 6
+    assert summary["verified_best_mode_counts"]["indexing"] == 2
 
 
 def test_offline_leaderboard_generation(tmp_path: Path) -> None:

@@ -40,6 +40,7 @@ vao-replay-routing = "vao.analysis.replay_routing:main"
 vao-offline-routing-experiments = "vao.training.offline_routing_experiments:main"
 vao-lora-smoke = "vao.training.lora_smoke:main"
 vao-train-local-lora-router = "vao.training.train_local_lora_router:main"
+vao-routing-choice-visuals = "vao.analysis.routing_choice_visuals:main"
 
 [build-system]
 requires = ["setuptools>=69", "wheel"]

@@ -189,3 +189,10 @@
 - Added `src/vao/training/train_local_lora_router.py` and `configs/offline_lora_router.yaml`; trained a cached `distilbert-base-uncased` LoRA router locally on existing teacher data only.
 - Local LoRA router training loss decreased from `1.7637574672698975` to `0.5818454623222351`, but eval still predicted only `layout` and did not beat classical/replay baselines.
 - Generated `artifacts/routing_failure_analysis.md`, `artifacts/routing_confusion_analysis.json`, `artifacts/replay_online_like_summary.*`, and `artifacts/future_teacher_scaling_plan.md`.
+
+### Routing Choice Visualization
+
+- Added `src/vao/analysis/routing_choice_visuals.py` to summarize how often a router's top-probability mode matches the verified-best branch at each checkpoint.
+- Generated `artifacts/routing_choice_summary.json` and `artifacts/routing_choice_visuals.md`.
+- Generated visualizations under `artifacts/plots/` for dataset-level accuracy, Phase 4 Opus correct/incorrect counts, selected-vs-best mode counts, confusion matrix, and per-step routing regret.
+- Phase 4 Opus teacher result by verified-best branch: 4 correct choices and 8 incorrect choices across 12 validated teacher steps.

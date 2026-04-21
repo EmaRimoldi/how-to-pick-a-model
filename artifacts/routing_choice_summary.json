@@ -1,0 +1,1652 @@
+{
+  "datasets": [
+    {
+      "accuracy_by_productive_label": 0.6,
+      "accuracy_by_verified_best": 0.6,
+      "by_profile": {
+        "development": {
+          "accuracy": 0.6,
+          "correct": 9,
+          "incorrect": 6,
+          "total": 15
+        },
+        "memory_development": {
+          "accuracy": 0.6,
+          "correct": 9,
+          "incorrect": 6,
+          "total": 15
+        },
+        "paper_development": {
+          "accuracy": 0.6,
+          "correct": 9,
+          "incorrect": 6,
+          "total": 15
+        }
+      },
+      "confusion_selected_vs_verified_best": {
+        "caching": {
+          "caching": 0,
+          "indexing": 18,
+          "layout": 0,
+          "micro": 0,
+          "summaries": 0,
+          "topk": 0
+        },
+        "indexing": {
+          "caching": 0,
+          "indexing": 27,
+          "layout": 0,
+          "micro": 0,
+          "summaries": 0,
+          "topk": 0
+        },
+        "layout": {
+          "caching": 0,
+          "indexing": 0,
+          "layout": 0,
+          "micro": 0,
+          "summaries": 0,
+          "topk": 0
+        },
+        "micro": {
+          "caching": 0,
+          "indexing": 0,
+          "layout": 0,
+          "micro": 0,
+          "summaries": 0,
+          "topk": 0
+        },
+        "summaries": {
+          "caching": 0,
+          "indexing": 0,
+          "layout": 0,
+          "micro": 0,
+          "summaries": 0,
+          "topk": 0
+        },
+        "topk": {
+          "caching": 0,
+          "indexing": 0,
+          "layout": 0,
+          "micro": 0,
+          "summaries": 0,
+          "topk": 0
+        }
+      },
+      "correct_by_productive_label": 27,
+      "correct_by_verified_best": 27,
+      "incorrect_by_productive_label": 18,
+      "incorrect_by_verified_best": 18,
+      "mean_routing_regret": 0.48363515115352895,
+      "name": "phase2_local",
+      "path": "artifacts/phase2_routing_dataset.jsonl",
+      "positive_regret_count": 18,
+      "record_count": 45,
+      "rows": [
+        {
+          "best_gain": 0.43656774597175896,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_development_rep0",
+          "selected_gain": 0.43656774597175896,
+          "selected_mode": "indexing",
+          "step": 0,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": -0.04207564575672973,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "development",
+          "routing_regret": 1.185792806491522,
+          "run_id": "phase2_development_rep0",
+          "selected_gain": -1.2278684522482517,
+          "selected_mode": "caching",
+          "step": 1,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 1.210080639611896,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_development_rep0",
+          "selected_gain": 1.210080639611896,
+          "selected_mode": "indexing",
+          "step": 2,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": -0.009150855286872983,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "development",
+          "routing_regret": 1.188447978977834,
+          "run_id": "phase2_development_rep0",
+          "selected_gain": -1.1975988342647068,
+          "selected_mode": "caching",
+          "step": 3,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 1.171305197174831,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_development_rep0",
+          "selected_gain": 1.171305197174831,
+          "selected_mode": "indexing",
+          "step": 4,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.414596068899119,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_development_rep1",
+          "selected_gain": 0.414596068899119,
+          "selected_mode": "indexing",
+          "step": 0,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": -0.0475833024986872,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "development",
+          "routing_regret": 1.0575082979157557,
+          "run_id": "phase2_development_rep1",
+          "selected_gain": -1.1050916004144429,
+          "selected_mode": "caching",
+          "step": 1,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 1.0383789623970776,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_development_rep1",
+          "selected_gain": 1.0383789623970776,
+          "selected_mode": "indexing",
+          "step": 2,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.01863949496929196,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "indexing",
+          "profile_id": "development",
+          "routing_regret": 1.0397708223723847,
+          "run_id": "phase2_development_rep1",
+          "selected_gain": -1.0211313274030926,
+          "selected_mode": "caching",
+          "step": 3,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 1.0536368653075998,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_development_rep1",
+          "selected_gain": 1.0536368653075998,
+          "selected_mode": "indexing",
+          "step": 4,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.3705549757468203,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_development_rep2",
+          "selected_gain": 0.3705549757468203,
+          "selected_mode": "indexing",
+          "step": 0,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": -0.018649474242802055,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "development",
+          "routing_regret": 0.9936838087557216,
+          "run_id": "phase2_development_rep2",
+          "selected_gain": -1.0123332829985237,
+          "selected_mode": "caching",
+          "step": 1,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 1.060507433859231,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_development_rep2",
+          "selected_gain": 1.060507433859231,
+          "selected_mode": "indexing",
+          "step": 2,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": -0.028057630391748023,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "development",
+          "routing_regret": 1.0940061843993676,
+          "run_id": "phase2_development_rep2",
+          "selected_gain": -1.1220638147911155,
+          "selected_mode": "caching",
+          "step": 3,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 1.1016964144825467,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_development_rep2",
+          "selected_gain": 1.1016964144825467,
+          "selected_mode": "indexing",
+          "step": 4,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.25384402031312536,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "memory_development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_memory_development_rep0",
+          "selected_gain": 0.25384402031312536,
+          "selected_mode": "indexing",
+          "step": 0,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.016972523033803755,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "indexing",
+          "profile_id": "memory_development",
+          "routing_regret": 1.1356416998244954,
+          "run_id": "phase2_memory_development_rep0",
+          "selected_gain": -1.1186691767906916,
+          "selected_mode": "caching",
+          "step": 1,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 1.103859330509258,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "memory_development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_memory_development_rep0",
+          "selected_gain": 1.103859330509258,
+          "selected_mode": "indexing",
+          "step": 2,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.04796351893129497,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "indexing",
+          "profile_id": "memory_development",
+          "routing_regret": 1.153567175561288,
+          "run_id": "phase2_memory_development_rep0",
+          "selected_gain": -1.105603656629993,
+          "selected_mode": "caching",
+          "step": 3,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 1.1142921618259263,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "memory_development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_memory_development_rep0",
+          "selected_gain": 1.1142921618259263,
+          "selected_mode": "indexing",
+          "step": 4,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.4774505719610197,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "memory_development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_memory_development_rep1",
+          "selected_gain": 0.4774505719610197,
+          "selected_mode": "indexing",
+          "step": 0,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.0040029589059766835,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "indexing",
+          "profile_id": "memory_development",
+          "routing_regret": 1.5550800071884905,
+          "run_id": "phase2_memory_development_rep1",
+          "selected_gain": -1.5510770482825138,
+          "selected_mode": "caching",
+          "step": 1,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 1.532429967583492,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "memory_development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_memory_development_rep1",
+          "selected_gain": 1.532429967583492,
+          "selected_mode": "indexing",
+          "step": 2,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": -0.03579464894707973,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "memory_development",
+          "routing_regret": 1.3962815661503902,
+          "run_id": "phase2_memory_development_rep1",
+          "selected_gain": -1.43207621509747,
+          "selected_mode": "caching",
+          "step": 3,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 1.4453214740906004,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "memory_development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_memory_development_rep1",
+          "selected_gain": 1.4453214740906004,
+          "selected_mode": "indexing",
+          "step": 4,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.3323229094786112,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "memory_development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_memory_development_rep2",
+          "selected_gain": 0.3323229094786112,
+          "selected_mode": "indexing",
+          "step": 0,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.032866142067971005,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "indexing",
+          "profile_id": "memory_development",
+          "routing_regret": 1.3972438375857696,
+          "run_id": "phase2_memory_development_rep2",
+          "selected_gain": -1.3643776955177986,
+          "selected_mode": "caching",
+          "step": 1,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 1.3706936056120367,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "memory_development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_memory_development_rep2",
+          "selected_gain": 1.3706936056120367,
+          "selected_mode": "indexing",
+          "step": 2,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": -0.04733221733094373,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "memory_development",
+          "routing_regret": 1.3362581234486086,
+          "run_id": "phase2_memory_development_rep2",
+          "selected_gain": -1.3835903407795525,
+          "selected_mode": "caching",
+          "step": 3,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 1.410680829702784,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "memory_development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_memory_development_rep2",
+          "selected_gain": 1.410680829702784,
+          "selected_mode": "indexing",
+          "step": 4,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.4524566864292706,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "paper_development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_paper_development_rep0",
+          "selected_gain": 0.4524566864292706,
+          "selected_mode": "indexing",
+          "step": 0,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.0313924449519849,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "indexing",
+          "profile_id": "paper_development",
+          "routing_regret": 1.236808923752657,
+          "run_id": "phase2_paper_development_rep0",
+          "selected_gain": -1.205416478800672,
+          "selected_mode": "caching",
+          "step": 1,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 1.2565467602915128,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "paper_development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_paper_development_rep0",
+          "selected_gain": 1.2565467602915128,
+          "selected_mode": "indexing",
+          "step": 2,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": -0.034253115884410934,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "paper_development",
+          "routing_regret": 1.2222964126301306,
+          "run_id": "phase2_paper_development_rep0",
+          "selected_gain": -1.2565495285145416,
+          "selected_mode": "caching",
+          "step": 3,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 1.2206163606106848,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "paper_development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_paper_development_rep0",
+          "selected_gain": 1.2206163606106848,
+          "selected_mode": "indexing",
+          "step": 4,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.36213833232714787,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "paper_development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_paper_development_rep1",
+          "selected_gain": 0.36213833232714787,
+          "selected_mode": "indexing",
+          "step": 0,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.015538181195362766,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "indexing",
+          "profile_id": "paper_development",
+          "routing_regret": 1.141208741149115,
+          "run_id": "phase2_paper_development_rep1",
+          "selected_gain": -1.1256705599537522,
+          "selected_mode": "caching",
+          "step": 1,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 1.1858746534014286,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "paper_development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_paper_development_rep1",
+          "selected_gain": 1.1858746534014286,
+          "selected_mode": "indexing",
+          "step": 2,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": -0.03309397893542909,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "paper_development",
+          "routing_regret": 1.12732325787775,
+          "run_id": "phase2_paper_development_rep1",
+          "selected_gain": -1.1604172368131789,
+          "selected_mode": "caching",
+          "step": 3,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 1.1366772801047755,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "paper_development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_paper_development_rep1",
+          "selected_gain": 1.1366772801047755,
+          "selected_mode": "indexing",
+          "step": 4,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.3976847339758065,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "paper_development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_paper_development_rep2",
+          "selected_gain": 0.3976847339758065,
+          "selected_mode": "indexing",
+          "step": 0,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.06046328416190161,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "indexing",
+          "profile_id": "paper_development",
+          "routing_regret": 1.2502512105610237,
+          "run_id": "phase2_paper_development_rep2",
+          "selected_gain": -1.1897879263991222,
+          "selected_mode": "caching",
+          "step": 1,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 1.226322665388517,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "paper_development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_paper_development_rep2",
+          "selected_gain": 1.226322665388517,
+          "selected_mode": "indexing",
+          "step": 2,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.0056691414247918015,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "indexing",
+          "profile_id": "paper_development",
+          "routing_regret": 1.2524109472664982,
+          "run_id": "phase2_paper_development_rep2",
+          "selected_gain": -1.2467418058417064,
+          "selected_mode": "caching",
+          "step": 3,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 1.2580992896341274,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "paper_development",
+          "routing_regret": 0.0,
+          "run_id": "phase2_paper_development_rep2",
+          "selected_gain": 1.2580992896341274,
+          "selected_mode": "indexing",
+          "step": 4,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        }
+      ],
+      "selected_mode_counts": {
+        "caching": 18,
+        "indexing": 27,
+        "layout": 0,
+        "micro": 0,
+        "summaries": 0,
+        "topk": 0
+      },
+      "verified_best_mode_counts": {
+        "caching": 0,
+        "indexing": 45,
+        "layout": 0,
+        "micro": 0,
+        "summaries": 0,
+        "topk": 0
+      },
+      "zero_regret_count": 27
+    },
+    {
+      "accuracy_by_productive_label": 0.36363636363636365,
+      "accuracy_by_verified_best": 0.36363636363636365,
+      "by_profile": {
+        "development": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "incorrect": 3,
+          "total": 3
+        },
+        "memory_development": {
+          "accuracy": 0.3333333333333333,
+          "correct": 1,
+          "incorrect": 2,
+          "total": 3
+        },
+        "paper_development": {
+          "accuracy": 0.6,
+          "correct": 3,
+          "incorrect": 2,
+          "total": 5
+        }
+      },
+      "confusion_selected_vs_verified_best": {
+        "caching": {
+          "caching": 0,
+          "indexing": 0,
+          "layout": 0,
+          "micro": 0,
+          "summaries": 0,
+          "topk": 0
+        },
+        "indexing": {
+          "caching": 0,
+          "indexing": 3,
+          "layout": 1,
+          "micro": 0,
+          "summaries": 0,
+          "topk": 0
+        },
+        "layout": {
+          "caching": 0,
+          "indexing": 0,
+          "layout": 0,
+          "micro": 0,
+          "summaries": 0,
+          "topk": 0
+        },
+        "micro": {
+          "caching": 0,
+          "indexing": 0,
+          "layout": 0,
+          "micro": 0,
+          "summaries": 0,
+          "topk": 0
+        },
+        "summaries": {
+          "caching": 0,
+          "indexing": 0,
+          "layout": 0,
+          "micro": 1,
+          "summaries": 0,
+          "topk": 1
+        },
+        "topk": {
+          "caching": 1,
+          "indexing": 1,
+          "layout": 2,
+          "micro": 0,
+          "summaries": 0,
+          "topk": 1
+        }
+      },
+      "correct_by_productive_label": 4,
+      "correct_by_verified_best": 4,
+      "incorrect_by_productive_label": 7,
+      "incorrect_by_verified_best": 7,
+      "mean_routing_regret": 1.179063963942385,
+      "name": "phase3_haiku_replacement",
+      "path": "artifacts/phase3_haiku_routing_dataset.jsonl",
+      "positive_regret_count": 7,
+      "record_count": 11,
+      "rows": [
+        {
+          "best_gain": 0.3469819850813046,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "development",
+          "routing_regret": 0.14930507409751925,
+          "run_id": "haiku_dev_development",
+          "selected_gain": 0.19767691098378537,
+          "selected_mode": "indexing",
+          "step": 0,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.10541694524762513,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "development",
+          "routing_regret": 0.6454754482555376,
+          "run_id": "haiku_dev_development",
+          "selected_gain": -0.5400585030079125,
+          "selected_mode": "topk",
+          "step": 1,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.7100399763068374,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "topk",
+          "profile_id": "development",
+          "routing_regret": 1.8756627799150722,
+          "run_id": "haiku_dev_development",
+          "selected_gain": -1.165622803608235,
+          "selected_mode": "summaries",
+          "step": 2,
+          "verified_best_mode": "topk",
+          "verified_best_modes": [
+            "topk"
+          ]
+        },
+        {
+          "best_gain": 0.3329544046083236,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "memory_development",
+          "routing_regret": 0.0,
+          "run_id": "haiku_dev_memory_development",
+          "selected_gain": 0.3329544046083236,
+          "selected_mode": "indexing",
+          "step": 0,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.019559090192327933,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "micro",
+          "profile_id": "memory_development",
+          "routing_regret": 4.54778683314594,
+          "run_id": "haiku_dev_memory_development",
+          "selected_gain": -4.528227742953612,
+          "selected_mode": "summaries",
+          "step": 1,
+          "verified_best_mode": "micro",
+          "verified_best_modes": [
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 4.548724558798914,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "indexing",
+          "profile_id": "memory_development",
+          "routing_regret": 4.576755786414749,
+          "run_id": "haiku_dev_memory_development",
+          "selected_gain": -0.028031227615834986,
+          "selected_mode": "topk",
+          "step": 2,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.4731696305001875,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "paper_development",
+          "routing_regret": 0.0,
+          "run_id": "haiku_dev_paper_development",
+          "selected_gain": 0.4731696305001875,
+          "selected_mode": "indexing",
+          "step": 0,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": -0.07838313912749245,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "paper_development",
+          "routing_regret": 0.5268399423128536,
+          "run_id": "haiku_dev_paper_development",
+          "selected_gain": -0.6052230814403461,
+          "selected_mode": "topk",
+          "step": 1,
+          "verified_best_mode": "caching",
+          "verified_best_modes": [
+            "caching"
+          ]
+        },
+        {
+          "best_gain": 0.5333020662697254,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "topk",
+          "profile_id": "paper_development",
+          "routing_regret": 0.0,
+          "run_id": "haiku_dev_paper_development",
+          "selected_gain": 0.5333020662697254,
+          "selected_mode": "topk",
+          "step": 2,
+          "verified_best_mode": "topk",
+          "verified_best_modes": [
+            "topk"
+          ]
+        },
+        {
+          "best_gain": 0.4450344872549348,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "paper_development",
+          "routing_regret": 0.0,
+          "run_id": "haiku_smoke",
+          "selected_gain": 0.4450344872549348,
+          "selected_mode": "indexing",
+          "step": 0,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": -0.021237814388896936,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "paper_development",
+          "routing_regret": 0.6478777392245638,
+          "run_id": "haiku_smoke",
+          "selected_gain": -0.6691155536134608,
+          "selected_mode": "topk",
+          "step": 1,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        }
+      ],
+      "selected_mode_counts": {
+        "caching": 0,
+        "indexing": 4,
+        "layout": 0,
+        "micro": 0,
+        "summaries": 2,
+        "topk": 5
+      },
+      "verified_best_mode_counts": {
+        "caching": 1,
+        "indexing": 4,
+        "layout": 3,
+        "micro": 1,
+        "summaries": 0,
+        "topk": 2
+      },
+      "zero_regret_count": 4
+    },
+    {
+      "accuracy_by_productive_label": 0.3333333333333333,
+      "accuracy_by_verified_best": 0.3333333333333333,
+      "by_profile": {
+        "development": {
+          "accuracy": 0.3333333333333333,
+          "correct": 1,
+          "incorrect": 2,
+          "total": 3
+        },
+        "memory_development": {
+          "accuracy": 0.6666666666666666,
+          "correct": 2,
+          "incorrect": 1,
+          "total": 3
+        },
+        "paper_development": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "incorrect": 3,
+          "total": 3
+        }
+      },
+      "confusion_selected_vs_verified_best": {
+        "caching": {
+          "caching": 0,
+          "indexing": 0,
+          "layout": 0,
+          "micro": 0,
+          "summaries": 0,
+          "topk": 0
+        },
+        "indexing": {
+          "caching": 0,
+          "indexing": 2,
+          "layout": 1,
+          "micro": 0,
+          "summaries": 0,
+          "topk": 0
+        },
+        "layout": {
+          "caching": 0,
+          "indexing": 0,
+          "layout": 0,
+          "micro": 0,
+          "summaries": 0,
+          "topk": 0
+        },
+        "micro": {
+          "caching": 0,
+          "indexing": 0,
+          "layout": 0,
+          "micro": 0,
+          "summaries": 0,
+          "topk": 0
+        },
+        "summaries": {
+          "caching": 0,
+          "indexing": 0,
+          "layout": 1,
+          "micro": 0,
+          "summaries": 0,
+          "topk": 1
+        },
+        "topk": {
+          "caching": 0,
+          "indexing": 0,
+          "layout": 2,
+          "micro": 0,
+          "summaries": 1,
+          "topk": 1
+        }
+      },
+      "correct_by_productive_label": 3,
+      "correct_by_verified_best": 3,
+      "incorrect_by_productive_label": 6,
+      "incorrect_by_verified_best": 6,
+      "mean_routing_regret": 1.5526810046891615,
+      "name": "phase35_haiku_patch",
+      "path": "artifacts/phase35_patch_routing_dataset.jsonl",
+      "positive_regret_count": 6,
+      "record_count": 9,
+      "rows": [
+        {
+          "best_gain": 0.4434217222106548,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "development",
+          "routing_regret": 0.0,
+          "run_id": "haiku_patch_dev_claude_haiku_development",
+          "selected_gain": 0.4434217222106548,
+          "selected_mode": "indexing",
+          "step": 0,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.0014737366812447306,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "development",
+          "routing_regret": 0.5874747659105197,
+          "run_id": "haiku_patch_dev_claude_haiku_development",
+          "selected_gain": -0.586001029229275,
+          "selected_mode": "topk",
+          "step": 1,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.11892342847579307,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "topk",
+          "profile_id": "development",
+          "routing_regret": 9.341404845124245,
+          "run_id": "haiku_patch_dev_claude_haiku_development",
+          "selected_gain": -9.222481416648453,
+          "selected_mode": "summaries",
+          "step": 2,
+          "verified_best_mode": "topk",
+          "verified_best_modes": [
+            "topk"
+          ]
+        },
+        {
+          "best_gain": 0.3408663073717699,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "memory_development",
+          "routing_regret": 0.0,
+          "run_id": "haiku_patch_dev_claude_haiku_memory_development",
+          "selected_gain": 0.3408663073717699,
+          "selected_mode": "indexing",
+          "step": 0,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.02261309671927425,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "summaries",
+          "profile_id": "memory_development",
+          "routing_regret": 0.6046595383243308,
+          "run_id": "haiku_patch_dev_claude_haiku_memory_development",
+          "selected_gain": -0.5820464416050566,
+          "selected_mode": "topk",
+          "step": 1,
+          "verified_best_mode": "summaries",
+          "verified_best_modes": [
+            "summaries"
+          ]
+        },
+        {
+          "best_gain": 0.5376742705643326,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "topk",
+          "profile_id": "memory_development",
+          "routing_regret": 0.0,
+          "run_id": "haiku_patch_dev_claude_haiku_memory_development",
+          "selected_gain": 0.5376742705643326,
+          "selected_mode": "topk",
+          "step": 2,
+          "verified_best_mode": "topk",
+          "verified_best_modes": [
+            "topk"
+          ]
+        },
+        {
+          "best_gain": 0.4405898928433568,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "paper_development",
+          "routing_regret": 1.4405898928433567,
+          "run_id": "haiku_patch_dev_claude_haiku_paper_development",
+          "selected_gain": -1.0,
+          "selected_mode": "indexing",
+          "step": 0,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.0,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "paper_development",
+          "routing_regret": 1.0,
+          "run_id": "haiku_patch_dev_claude_haiku_paper_development",
+          "selected_gain": -1.0,
+          "selected_mode": "summaries",
+          "step": 1,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.0,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "paper_development",
+          "routing_regret": 1.0,
+          "run_id": "haiku_patch_dev_claude_haiku_paper_development",
+          "selected_gain": -1.0,
+          "selected_mode": "topk",
+          "step": 2,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout",
+            "indexing"
+          ]
+        }
+      ],
+      "selected_mode_counts": {
+        "caching": 0,
+        "indexing": 3,
+        "layout": 0,
+        "micro": 0,
+        "summaries": 2,
+        "topk": 4
+      },
+      "verified_best_mode_counts": {
+        "caching": 0,
+        "indexing": 2,
+        "layout": 4,
+        "micro": 0,
+        "summaries": 1,
+        "topk": 2
+      },
+      "zero_regret_count": 3
+    },
+    {
+      "accuracy_by_productive_label": 0.3333333333333333,
+      "accuracy_by_verified_best": 0.3333333333333333,
+      "by_profile": {
+        "development": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "incorrect": 3,
+          "total": 3
+        },
+        "memory_development": {
+          "accuracy": 0.6666666666666666,
+          "correct": 2,
+          "incorrect": 1,
+          "total": 3
+        },
+        "paper_development": {
+          "accuracy": 0.3333333333333333,
+          "correct": 2,
+          "incorrect": 4,
+          "total": 6
+        }
+      },
+      "confusion_selected_vs_verified_best": {
+        "caching": {
+          "caching": 0,
+          "indexing": 0,
+          "layout": 0,
+          "micro": 0,
+          "summaries": 0,
+          "topk": 0
+        },
+        "indexing": {
+          "caching": 1,
+          "indexing": 1,
+          "layout": 0,
+          "micro": 0,
+          "summaries": 0,
+          "topk": 0
+        },
+        "layout": {
+          "caching": 1,
+          "indexing": 1,
+          "layout": 3,
+          "micro": 0,
+          "summaries": 0,
+          "topk": 0
+        },
+        "micro": {
+          "caching": 0,
+          "indexing": 0,
+          "layout": 0,
+          "micro": 0,
+          "summaries": 0,
+          "topk": 0
+        },
+        "summaries": {
+          "caching": 0,
+          "indexing": 0,
+          "layout": 1,
+          "micro": 1,
+          "summaries": 0,
+          "topk": 0
+        },
+        "topk": {
+          "caching": 0,
+          "indexing": 1,
+          "layout": 1,
+          "micro": 1,
+          "summaries": 0,
+          "topk": 0
+        }
+      },
+      "correct_by_productive_label": 4,
+      "correct_by_verified_best": 4,
+      "incorrect_by_productive_label": 8,
+      "incorrect_by_verified_best": 8,
+      "mean_routing_regret": 0.9385370051379591,
+      "name": "phase4_opus_teacher",
+      "path": "artifacts/phase4_teacher_routing_dataset.jsonl",
+      "positive_regret_count": 8,
+      "record_count": 12,
+      "rows": [
+        {
+          "best_gain": 0.18608443551370046,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "paper_development",
+          "routing_regret": 0.0,
+          "run_id": "opus_teacher_pilot_claude_opus_teacher_paper_development",
+          "selected_gain": 0.18608443551370046,
+          "selected_mode": "layout",
+          "step": 0,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": -0.06784784760213503,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "paper_development",
+          "routing_regret": 0.04926446165976328,
+          "run_id": "opus_teacher_pilot_claude_opus_teacher_paper_development",
+          "selected_gain": -0.1171123092618983,
+          "selected_mode": "indexing",
+          "step": 1,
+          "verified_best_mode": "caching",
+          "verified_best_modes": [
+            "caching"
+          ]
+        },
+        {
+          "best_gain": 0.15268354315022192,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "indexing",
+          "profile_id": "paper_development",
+          "routing_regret": 0.3551235986893463,
+          "run_id": "opus_teacher_pilot_claude_opus_teacher_paper_development",
+          "selected_gain": -0.20244005553912436,
+          "selected_mode": "topk",
+          "step": 2,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.29431722275500694,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "caching",
+          "profile_id": "development",
+          "routing_regret": 0.3511457094221968,
+          "run_id": "opus_teacher_pilot_retry2_claude_opus_teacher_development",
+          "selected_gain": -0.05682848666718987,
+          "selected_mode": "layout",
+          "step": 0,
+          "verified_best_mode": "caching",
+          "verified_best_modes": [
+            "caching"
+          ]
+        },
+        {
+          "best_gain": 0.040839091744010125,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "micro",
+          "profile_id": "development",
+          "routing_regret": 4.217488474179428,
+          "run_id": "opus_teacher_pilot_retry2_claude_opus_teacher_development",
+          "selected_gain": -4.176649382435418,
+          "selected_mode": "summaries",
+          "step": 1,
+          "verified_best_mode": "micro",
+          "verified_best_modes": [
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 1.7613832069137714,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "micro",
+          "profile_id": "development",
+          "routing_regret": 1.766929415789876,
+          "run_id": "opus_teacher_pilot_retry2_claude_opus_teacher_development",
+          "selected_gain": -0.005546208876104686,
+          "selected_mode": "topk",
+          "step": 2,
+          "verified_best_mode": "micro",
+          "verified_best_modes": [
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.27736156334486395,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "memory_development",
+          "routing_regret": 0.0,
+          "run_id": "opus_teacher_pilot_retry2_claude_opus_teacher_memory_development",
+          "selected_gain": 0.27736156334486395,
+          "selected_mode": "layout",
+          "step": 0,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.028440110816334574,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "memory_development",
+          "routing_regret": 3.413074223754801,
+          "run_id": "opus_teacher_pilot_retry2_claude_opus_teacher_memory_development",
+          "selected_gain": -3.3846341129384663,
+          "selected_mode": "summaries",
+          "step": 1,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 2.9571001775099166,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "memory_development",
+          "routing_regret": 0.0,
+          "run_id": "opus_teacher_pilot_retry2_claude_opus_teacher_memory_development",
+          "selected_gain": 2.9571001775099166,
+          "selected_mode": "layout",
+          "step": 2,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.3562254851055433,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "indexing",
+          "profile_id": "paper_development",
+          "routing_regret": 0.4987979847608234,
+          "run_id": "opus_teacher_dev_r0",
+          "selected_gain": -0.14257249965528007,
+          "selected_mode": "layout",
+          "step": 0,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.2628756865475682,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "paper_development",
+          "routing_regret": 0.0,
+          "run_id": "opus_teacher_dev_r0",
+          "selected_gain": 0.2628756865475682,
+          "selected_mode": "indexing",
+          "step": 1,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.08121041974060983,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "paper_development",
+          "routing_regret": 0.6106201933992755,
+          "run_id": "opus_teacher_dev_r0",
+          "selected_gain": -0.5294097736586657,
+          "selected_mode": "topk",
+          "step": 2,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        }
+      ],
+      "selected_mode_counts": {
+        "caching": 0,
+        "indexing": 2,
+        "layout": 5,
+        "micro": 0,
+        "summaries": 2,
+        "topk": 3
+      },
+      "verified_best_mode_counts": {
+        "caching": 2,
+        "indexing": 3,
+        "layout": 5,
+        "micro": 2,
+        "summaries": 0,
+        "topk": 0
+      },
+      "zero_regret_count": 4
+    }
+  ],
+  "plots": {
+    "accuracy_by_dataset": "artifacts/plots/routing_accuracy_by_dataset.png",
+    "teacher_confusion": "artifacts/plots/phase4_teacher_confusion_selected_vs_best.png",
+    "teacher_correct_vs_wrong": "artifacts/plots/phase4_teacher_correct_vs_wrong.png",
+    "teacher_regret_by_step": "artifacts/plots/phase4_teacher_regret_by_step.png",
+    "teacher_selected_vs_best_counts": "artifacts/plots/phase4_teacher_selected_vs_best_counts.png"
+  }
+}
