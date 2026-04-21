@@ -5,225 +5,225 @@
       "family": "uniform_read_heavy",
       "repetitions": [
         {
-          "elapsed_seconds": 0.07427420798921958,
-          "throughput_ops_per_sec": 9424.536712684981,
-          "p95_latency_ns": 404844.39999999997,
-          "mean_latency_ns": 102715.35714285714,
-          "peak_memory_bytes": 220120
+          "elapsed_seconds": 0.07421345802140422,
+          "throughput_ops_per_sec": 9432.251489994038,
+          "p95_latency_ns": 404004.8,
+          "mean_latency_ns": 102657.28857142857,
+          "peak_memory_bytes": 220124
         },
         {
-          "elapsed_seconds": 0.07483741699252278,
-          "throughput_ops_per_sec": 9353.609840247947,
-          "p95_latency_ns": 405177.39999999997,
-          "mean_latency_ns": 103237.21428571429,
+          "elapsed_seconds": 0.07476766701438464,
+          "throughput_ops_per_sec": 9362.335725485806,
+          "p95_latency_ns": 405252.10000000003,
+          "mean_latency_ns": 103142.39285714286,
           "peak_memory_bytes": 238904
         }
       ],
-      "median_elapsed_seconds": 0.07455581249087118,
-      "median_throughput_ops_per_sec": 9389.073276466464,
-      "median_p95_latency_ns": 405010.89999999997,
-      "median_peak_memory_bytes": 229512.0,
-      "latency_iqr_ns": 166.5
+      "median_elapsed_seconds": 0.07449056251789443,
+      "median_throughput_ops_per_sec": 9397.29360773992,
+      "median_p95_latency_ns": 404628.45,
+      "median_peak_memory_bytes": 229514.0,
+      "latency_iqr_ns": 623.6500000000233
     },
     {
       "trace_id": "paper_development_zipf_hot_key_31000",
       "family": "zipf_hot_key",
       "repetitions": [
         {
-          "elapsed_seconds": 0.07631308300187811,
-          "throughput_ops_per_sec": 9172.73909616222,
-          "p95_latency_ns": 406718.44999999995,
-          "mean_latency_ns": 105632.01142857142,
+          "elapsed_seconds": 0.07593745799385943,
+          "throughput_ops_per_sec": 9218.112095042798,
+          "p95_latency_ns": 404545.2,
+          "mean_latency_ns": 105110.00428571428,
           "peak_memory_bytes": 219880
         },
         {
-          "elapsed_seconds": 0.07649529099580832,
-          "throughput_ops_per_sec": 9150.8900860101,
-          "p95_latency_ns": 408961.05000000005,
-          "mean_latency_ns": 105872.58428571429,
-          "peak_memory_bytes": 219812
+          "elapsed_seconds": 0.07647399997222237,
+          "throughput_ops_per_sec": 9153.437773024307,
+          "p95_latency_ns": 405393.75,
+          "mean_latency_ns": 105812.74857142857,
+          "peak_memory_bytes": 219808
         }
       ],
-      "median_elapsed_seconds": 0.07640418699884322,
-      "median_throughput_ops_per_sec": 9161.81459108616,
-      "median_p95_latency_ns": 407839.75,
-      "median_peak_memory_bytes": 219846.0,
-      "latency_iqr_ns": 1121.3000000000466
+      "median_elapsed_seconds": 0.0762057289830409,
+      "median_throughput_ops_per_sec": 9185.774934033552,
+      "median_p95_latency_ns": 404969.475,
+      "median_peak_memory_bytes": 219844.0,
+      "latency_iqr_ns": 424.2749999999651
     },
     {
       "trace_id": "paper_development_bursty_mixed_41000",
       "family": "bursty_mixed",
       "repetitions": [
         {
-          "elapsed_seconds": 0.1391369999910239,
-          "throughput_ops_per_sec": 5031.012599417544,
-          "p95_latency_ns": 460605.89999999997,
-          "mean_latency_ns": 195870.92571428572,
+          "elapsed_seconds": 0.13968620798550546,
+          "throughput_ops_per_sec": 5011.232032819128,
+          "p95_latency_ns": 461580.5999999999,
+          "mean_latency_ns": 196577.19714285716,
           "peak_memory_bytes": 196684
         },
         {
-          "elapsed_seconds": 0.1395548750006128,
-          "throughput_ops_per_sec": 5015.948027590768,
-          "p95_latency_ns": 458631.25,
-          "mean_latency_ns": 196472.10714285713,
+          "elapsed_seconds": 0.13937316599185579,
+          "throughput_ops_per_sec": 5022.487614587906,
+          "p95_latency_ns": 459264.6,
+          "mean_latency_ns": 196052.91714285716,
           "peak_memory_bytes": 196676
         }
       ],
-      "median_elapsed_seconds": 0.13934593749581836,
-      "median_throughput_ops_per_sec": 5023.480313504157,
-      "median_p95_latency_ns": 459618.57499999995,
+      "median_elapsed_seconds": 0.13952968698868062,
+      "median_throughput_ops_per_sec": 5016.859823703517,
+      "median_p95_latency_ns": 460422.6,
       "median_peak_memory_bytes": 196680.0,
-      "latency_iqr_ns": 987.3250000000116
+      "latency_iqr_ns": 1158.0000000000582
     },
     {
       "trace_id": "paper_development_range_local_scans_51000",
       "family": "range_local_scans",
       "repetitions": [
         {
-          "elapsed_seconds": 0.07587704100296833,
-          "throughput_ops_per_sec": 9225.45200428435,
-          "p95_latency_ns": 396016.69999999995,
-          "mean_latency_ns": 104478.20428571428,
+          "elapsed_seconds": 0.07583075002185069,
+          "throughput_ops_per_sec": 9231.08369359784,
+          "p95_latency_ns": 396292.0,
+          "mean_latency_ns": 104381.45571428571,
           "peak_memory_bytes": 275496
         },
         {
-          "elapsed_seconds": 0.07657866697991267,
-          "throughput_ops_per_sec": 9140.926939660843,
-          "p95_latency_ns": 395837.2,
-          "mean_latency_ns": 105353.14,
+          "elapsed_seconds": 0.07556258299155161,
+          "throughput_ops_per_sec": 9263.844250510396,
+          "p95_latency_ns": 393406.24999999994,
+          "mean_latency_ns": 104000.83714285714,
           "peak_memory_bytes": 275432
         }
       ],
-      "median_elapsed_seconds": 0.0762278539914405,
-      "median_throughput_ops_per_sec": 9183.189471972597,
-      "median_p95_latency_ns": 395926.94999999995,
+      "median_elapsed_seconds": 0.07569666650670115,
+      "median_throughput_ops_per_sec": 9247.463972054118,
+      "median_p95_latency_ns": 394849.125,
       "median_peak_memory_bytes": 275464.0,
-      "latency_iqr_ns": 89.74999999994179
+      "latency_iqr_ns": 1442.8750000000582
     },
     {
       "trace_id": "paper_development_distribution_shift_61000",
       "family": "distribution_shift",
       "repetitions": [
         {
-          "elapsed_seconds": 0.10798995799268596,
-          "throughput_ops_per_sec": 6482.08419571207,
-          "p95_latency_ns": 421306.55,
-          "mean_latency_ns": 149640.11571428573,
+          "elapsed_seconds": 0.1073684580042027,
+          "throughput_ops_per_sec": 6519.605599370721,
+          "p95_latency_ns": 419590.25,
+          "mean_latency_ns": 148860.76714285713,
           "peak_memory_bytes": 334700
         },
         {
-          "elapsed_seconds": 0.10765041600097902,
-          "throughput_ops_per_sec": 6502.5294467383565,
-          "p95_latency_ns": 418091.94999999995,
-          "mean_latency_ns": 148877.19285714286,
+          "elapsed_seconds": 0.10759495801175945,
+          "throughput_ops_per_sec": 6505.881064831072,
+          "p95_latency_ns": 420489.25,
+          "mean_latency_ns": 148822.6957142857,
           "peak_memory_bytes": 334636
         }
       ],
-      "median_elapsed_seconds": 0.10782018699683249,
-      "median_throughput_ops_per_sec": 6492.306821225213,
-      "median_p95_latency_ns": 419699.25,
+      "median_elapsed_seconds": 0.10748170800798107,
+      "median_throughput_ops_per_sec": 6512.743332100897,
+      "median_p95_latency_ns": 420039.75,
       "median_peak_memory_bytes": 334668.0,
-      "latency_iqr_ns": 1607.2999999999884
+      "latency_iqr_ns": 449.5
     },
     {
       "trace_id": "paper_development_wide_range_churn_71000",
       "family": "wide_range_churn",
       "repetitions": [
         {
-          "elapsed_seconds": 0.18950999999651685,
-          "throughput_ops_per_sec": 3693.736478353996,
-          "p95_latency_ns": 455461.05,
-          "mean_latency_ns": 267150.65142857144,
-          "peak_memory_bytes": 268616
+          "elapsed_seconds": 0.18945445900317281,
+          "throughput_ops_per_sec": 3694.819344359042,
+          "p95_latency_ns": 455221.5,
+          "mean_latency_ns": 267069.8728571429,
+          "peak_memory_bytes": 268612
         },
         {
-          "elapsed_seconds": 0.18988799999351613,
-          "throughput_ops_per_sec": 3686.383552535716,
-          "p95_latency_ns": 457794.1,
-          "mean_latency_ns": 267704.9285714286,
+          "elapsed_seconds": 0.18912500000442378,
+          "throughput_ops_per_sec": 3701.255783125586,
+          "p95_latency_ns": 454649.99999999994,
+          "mean_latency_ns": 266647.94,
           "peak_memory_bytes": 268604
         }
       ],
-      "median_elapsed_seconds": 0.1896989999950165,
-      "median_throughput_ops_per_sec": 3690.0600154448557,
-      "median_p95_latency_ns": 456627.57499999995,
-      "median_peak_memory_bytes": 268610.0,
-      "latency_iqr_ns": 1166.524999999965
+      "median_elapsed_seconds": 0.1892897295037983,
+      "median_throughput_ops_per_sec": 3698.037563742314,
+      "median_p95_latency_ns": 454935.75,
+      "median_peak_memory_bytes": 268608.0,
+      "latency_iqr_ns": 285.7500000000582
     },
     {
       "trace_id": "paper_development_temporal_repeat_windows_81000",
       "family": "temporal_repeat_windows",
       "repetitions": [
         {
-          "elapsed_seconds": 0.05216287498478778,
-          "throughput_ops_per_sec": 13419.505734761371,
-          "p95_latency_ns": 72059.74999999997,
-          "mean_latency_ns": 70491.18428571429,
+          "elapsed_seconds": 0.052108332980424166,
+          "throughput_ops_per_sec": 13433.5519860705,
+          "p95_latency_ns": 70675.34999999999,
+          "mean_latency_ns": 70443.57,
           "peak_memory_bytes": 265148
         },
         {
-          "elapsed_seconds": 0.05225991699262522,
-          "throughput_ops_per_sec": 13394.58690871595,
-          "p95_latency_ns": 71381.25,
-          "mean_latency_ns": 70622.44142857143,
+          "elapsed_seconds": 0.051956625015009195,
+          "throughput_ops_per_sec": 13472.776566949537,
+          "p95_latency_ns": 70758.34999999999,
+          "mean_latency_ns": 70224.53,
           "peak_memory_bytes": 265092
         }
       ],
-      "median_elapsed_seconds": 0.0522113959887065,
-      "median_throughput_ops_per_sec": 13407.04632173866,
-      "median_p95_latency_ns": 71720.49999999999,
+      "median_elapsed_seconds": 0.05203247899771668,
+      "median_throughput_ops_per_sec": 13453.164276510019,
+      "median_p95_latency_ns": 70716.84999999999,
       "median_peak_memory_bytes": 265120.0,
-      "latency_iqr_ns": 339.2499999999709
+      "latency_iqr_ns": 41.5
     },
     {
       "trace_id": "paper_development_topk_stress_91000",
       "family": "topk_stress",
       "repetitions": [
         {
-          "elapsed_seconds": 0.13352454101550393,
-          "throughput_ops_per_sec": 5242.481978790108,
-          "p95_latency_ns": 417154.14999999997,
-          "mean_latency_ns": 180850.38714285713,
+          "elapsed_seconds": 0.13231774998712353,
+          "throughput_ops_per_sec": 5290.295520201335,
+          "p95_latency_ns": 412298.25,
+          "mean_latency_ns": 179149.60714285713,
           "peak_memory_bytes": 779808
         },
         {
-          "elapsed_seconds": 0.1326158749870956,
-          "throughput_ops_per_sec": 5278.402755839862,
-          "p95_latency_ns": 415724.69999999995,
-          "mean_latency_ns": 179693.25285714286,
+          "elapsed_seconds": 0.1325859579956159,
+          "throughput_ops_per_sec": 5279.593786418515,
+          "p95_latency_ns": 412925.0,
+          "mean_latency_ns": 179661.2557142857,
           "peak_memory_bytes": 779752
         }
       ],
-      "median_elapsed_seconds": 0.13307020800129976,
-      "median_throughput_ops_per_sec": 5260.442367314985,
-      "median_p95_latency_ns": 416439.42499999993,
+      "median_elapsed_seconds": 0.13245185399136972,
+      "median_throughput_ops_per_sec": 5284.944653309925,
+      "median_p95_latency_ns": 412611.625,
       "median_peak_memory_bytes": 779780.0,
-      "latency_iqr_ns": 714.7250000000349
+      "latency_iqr_ns": 313.375
     },
     {
       "trace_id": "paper_development_negative_lookup_churn_101000",
       "family": "negative_lookup_churn",
       "repetitions": [
         {
-          "elapsed_seconds": 0.07841891600401141,
-          "throughput_ops_per_sec": 8926.417702129324,
-          "p95_latency_ns": 404881.25,
-          "mean_latency_ns": 109267.92857142857,
+          "elapsed_seconds": 0.07763237500330433,
+          "throughput_ops_per_sec": 9016.856691170473,
+          "p95_latency_ns": 403133.35,
+          "mean_latency_ns": 108188.38,
           "peak_memory_bytes": 166424
         },
         {
-          "elapsed_seconds": 0.07798916700994596,
-          "throughput_ops_per_sec": 8975.605546738678,
-          "p95_latency_ns": 405031.24999999994,
-          "mean_latency_ns": 108662.42,
+          "elapsed_seconds": 0.07811137501266785,
+          "throughput_ops_per_sec": 8961.562895115805,
+          "p95_latency_ns": 402683.64999999997,
+          "mean_latency_ns": 108872.85571428572,
           "peak_memory_bytes": 166424
         }
       ],
-      "median_elapsed_seconds": 0.07820404150697868,
-      "median_throughput_ops_per_sec": 8951.011624434,
-      "median_p95_latency_ns": 404956.25,
+      "median_elapsed_seconds": 0.07787187500798609,
+      "median_throughput_ops_per_sec": 8989.209793143138,
+      "median_p95_latency_ns": 402908.5,
       "median_peak_memory_bytes": 166424.0,
-      "latency_iqr_ns": 74.99999999994179
+      "latency_iqr_ns": 224.84999999997672
     }
   ],
   "family_metrics": {
@@ -234,31 +234,31 @@
           "family": "uniform_read_heavy",
           "repetitions": [
             {
-              "elapsed_seconds": 0.07427420798921958,
-              "throughput_ops_per_sec": 9424.536712684981,
-              "p95_latency_ns": 404844.39999999997,
-              "mean_latency_ns": 102715.35714285714,
-              "peak_memory_bytes": 220120
+              "elapsed_seconds": 0.07421345802140422,
+              "throughput_ops_per_sec": 9432.251489994038,
+              "p95_latency_ns": 404004.8,
+              "mean_latency_ns": 102657.28857142857,
+              "peak_memory_bytes": 220124
             },
             {
-              "elapsed_seconds": 0.07483741699252278,
-              "throughput_ops_per_sec": 9353.609840247947,
-              "p95_latency_ns": 405177.39999999997,
-              "mean_latency_ns": 103237.21428571429,
+              "elapsed_seconds": 0.07476766701438464,
+              "throughput_ops_per_sec": 9362.335725485806,
+              "p95_latency_ns": 405252.10000000003,
+              "mean_latency_ns": 103142.39285714286,
               "peak_memory_bytes": 238904
             }
           ],
-          "median_elapsed_seconds": 0.07455581249087118,
-          "median_throughput_ops_per_sec": 9389.073276466464,
-          "median_p95_latency_ns": 405010.89999999997,
-          "median_peak_memory_bytes": 229512.0,
-          "latency_iqr_ns": 166.5
+          "median_elapsed_seconds": 0.07449056251789443,
+          "median_throughput_ops_per_sec": 9397.29360773992,
+          "median_p95_latency_ns": 404628.45,
+          "median_peak_memory_bytes": 229514.0,
+          "latency_iqr_ns": 623.6500000000233
         }
       ],
-      "median_p95_latency_ns": 405010.89999999997,
-      "median_throughput_ops_per_sec": 9389.073276466464,
-      "median_peak_memory_bytes": 229512.0,
-      "latency_iqr_ns": 166.5,
+      "median_p95_latency_ns": 404628.45,
+      "median_throughput_ops_per_sec": 9397.29360773992,
+      "median_peak_memory_bytes": 229514.0,
+      "latency_iqr_ns": 623.6500000000233,
       "trace_count": 1
     },
     "zipf_hot_key": {
@@ -268,31 +268,31 @@
           "family": "zipf_hot_key",
           "repetitions": [
             {
-              "elapsed_seconds": 0.07631308300187811,
-              "throughput_ops_per_sec": 9172.73909616222,
-              "p95_latency_ns": 406718.44999999995,
-              "mean_latency_ns": 105632.01142857142,
+              "elapsed_seconds": 0.07593745799385943,
+              "throughput_ops_per_sec": 9218.112095042798,
+              "p95_latency_ns": 404545.2,
+              "mean_latency_ns": 105110.00428571428,
               "peak_memory_bytes": 219880
             },
             {
-              "elapsed_seconds": 0.07649529099580832,
-              "throughput_ops_per_sec": 9150.8900860101,
-              "p95_latency_ns": 408961.05000000005,
-              "mean_latency_ns": 105872.58428571429,
-              "peak_memory_bytes": 219812
+              "elapsed_seconds": 0.07647399997222237,
+              "throughput_ops_per_sec": 9153.437773024307,
+              "p95_latency_ns": 405393.75,
+              "mean_latency_ns": 105812.74857142857,
+              "peak_memory_bytes": 219808
             }
           ],
-          "median_elapsed_seconds": 0.07640418699884322,
-          "median_throughput_ops_per_sec": 9161.81459108616,
-          "median_p95_latency_ns": 407839.75,
-          "median_peak_memory_bytes": 219846.0,
-          "latency_iqr_ns": 1121.3000000000466
+          "median_elapsed_seconds": 0.0762057289830409,
+          "median_throughput_ops_per_sec": 9185.774934033552,
+          "median_p95_latency_ns": 404969.475,
+          "median_peak_memory_bytes": 219844.0,
+          "latency_iqr_ns": 424.2749999999651
         }
       ],
-      "median_p95_latency_ns": 407839.75,
-      "median_throughput_ops_per_sec": 9161.81459108616,
-      "median_peak_memory_bytes": 219846.0,
-      "latency_iqr_ns": 1121.3000000000466,
+      "median_p95_latency_ns": 404969.475,
+      "median_throughput_ops_per_sec": 9185.774934033552,
+      "median_peak_memory_bytes": 219844.0,
+      "latency_iqr_ns": 424.2749999999651,
       "trace_count": 1
     },
     "bursty_mixed": {
@@ -302,31 +302,31 @@
           "family": "bursty_mixed",
           "repetitions": [
             {
-              "elapsed_seconds": 0.1391369999910239,
-              "throughput_ops_per_sec": 5031.012599417544,
-              "p95_latency_ns": 460605.89999999997,
-              "mean_latency_ns": 195870.92571428572,
+              "elapsed_seconds": 0.13968620798550546,
+              "throughput_ops_per_sec": 5011.232032819128,
+              "p95_latency_ns": 461580.5999999999,
+              "mean_latency_ns": 196577.19714285716,
               "peak_memory_bytes": 196684
             },
             {
-              "elapsed_seconds": 0.1395548750006128,
-              "throughput_ops_per_sec": 5015.948027590768,
-              "p95_latency_ns": 458631.25,
-              "mean_latency_ns": 196472.10714285713,
+              "elapsed_seconds": 0.13937316599185579,
+              "throughput_ops_per_sec": 5022.487614587906,
+              "p95_latency_ns": 459264.6,
+              "mean_latency_ns": 196052.91714285716,
               "peak_memory_bytes": 196676
             }
           ],
-          "median_elapsed_seconds": 0.13934593749581836,
-          "median_throughput_ops_per_sec": 5023.480313504157,
-          "median_p95_latency_ns": 459618.57499999995,
+          "median_elapsed_seconds": 0.13952968698868062,
+          "median_throughput_ops_per_sec": 5016.859823703517,
+          "median_p95_latency_ns": 460422.6,
           "median_peak_memory_bytes": 196680.0,
-          "latency_iqr_ns": 987.3250000000116
+          "latency_iqr_ns": 1158.0000000000582
         }
       ],
-      "median_p95_latency_ns": 459618.57499999995,
-      "median_throughput_ops_per_sec": 5023.480313504157,
+      "median_p95_latency_ns": 460422.6,
+      "median_throughput_ops_per_sec": 5016.859823703517,
       "median_peak_memory_bytes": 196680.0,
-      "latency_iqr_ns": 987.3250000000116,
+      "latency_iqr_ns": 1158.0000000000582,
       "trace_count": 1
     },
     "range_local_scans": {
@@ -336,31 +336,31 @@
           "family": "range_local_scans",
           "repetitions": [
             {
-              "elapsed_seconds": 0.07587704100296833,
-              "throughput_ops_per_sec": 9225.45200428435,
-              "p95_latency_ns": 396016.69999999995,
-              "mean_latency_ns": 104478.20428571428,
+              "elapsed_seconds": 0.07583075002185069,
+              "throughput_ops_per_sec": 9231.08369359784,
+              "p95_latency_ns": 396292.0,
+              "mean_latency_ns": 104381.45571428571,
               "peak_memory_bytes": 275496
             },
             {
-              "elapsed_seconds": 0.07657866697991267,
-              "throughput_ops_per_sec": 9140.926939660843,
-              "p95_latency_ns": 395837.2,
-              "mean_latency_ns": 105353.14,
+              "elapsed_seconds": 0.07556258299155161,
+              "throughput_ops_per_sec": 9263.844250510396,
+              "p95_latency_ns": 393406.24999999994,
+              "mean_latency_ns": 104000.83714285714,
               "peak_memory_bytes": 275432
             }
           ],
-          "median_elapsed_seconds": 0.0762278539914405,
-          "median_throughput_ops_per_sec": 9183.189471972597,
-          "median_p95_latency_ns": 395926.94999999995,
+          "median_elapsed_seconds": 0.07569666650670115,
+          "median_throughput_ops_per_sec": 9247.463972054118,
+          "median_p95_latency_ns": 394849.125,
           "median_peak_memory_bytes": 275464.0,
-          "latency_iqr_ns": 89.74999999994179
+          "latency_iqr_ns": 1442.8750000000582
         }
       ],
-      "median_p95_latency_ns": 395926.94999999995,
-      "median_throughput_ops_per_sec": 9183.189471972597,
+      "median_p95_latency_ns": 394849.125,
+      "median_throughput_ops_per_sec": 9247.463972054118,
       "median_peak_memory_bytes": 275464.0,
-      "latency_iqr_ns": 89.74999999994179,
+      "latency_iqr_ns": 1442.8750000000582,
       "trace_count": 1
     },
     "distribution_shift": {
@@ -370,31 +370,31 @@
           "family": "distribution_shift",
           "repetitions": [
             {
-              "elapsed_seconds": 0.10798995799268596,
-              "throughput_ops_per_sec": 6482.08419571207,
-              "p95_latency_ns": 421306.55,
-              "mean_latency_ns": 149640.11571428573,
+              "elapsed_seconds": 0.1073684580042027,
+              "throughput_ops_per_sec": 6519.605599370721,
+              "p95_latency_ns": 419590.25,
+              "mean_latency_ns": 148860.76714285713,
               "peak_memory_bytes": 334700
             },
             {
-              "elapsed_seconds": 0.10765041600097902,
-              "throughput_ops_per_sec": 6502.5294467383565,
-              "p95_latency_ns": 418091.94999999995,
-              "mean_latency_ns": 148877.19285714286,
+              "elapsed_seconds": 0.10759495801175945,
+              "throughput_ops_per_sec": 6505.881064831072,
+              "p95_latency_ns": 420489.25,
+              "mean_latency_ns": 148822.6957142857,
               "peak_memory_bytes": 334636
             }
           ],
-          "median_elapsed_seconds": 0.10782018699683249,
-          "median_throughput_ops_per_sec": 6492.306821225213,
-          "median_p95_latency_ns": 419699.25,
+          "median_elapsed_seconds": 0.10748170800798107,
+          "median_throughput_ops_per_sec": 6512.743332100897,
+          "median_p95_latency_ns": 420039.75,
           "median_peak_memory_bytes": 334668.0,
-          "latency_iqr_ns": 1607.2999999999884
+          "latency_iqr_ns": 449.5
         }
       ],
-      "median_p95_latency_ns": 419699.25,
-      "median_throughput_ops_per_sec": 6492.306821225213,
+      "median_p95_latency_ns": 420039.75,
+      "median_throughput_ops_per_sec": 6512.743332100897,
       "median_peak_memory_bytes": 334668.0,
-      "latency_iqr_ns": 1607.2999999999884,
+      "latency_iqr_ns": 449.5,
       "trace_count": 1
     },
     "wide_range_churn": {
@@ -404,31 +404,31 @@
           "family": "wide_range_churn",
           "repetitions": [
             {
-              "elapsed_seconds": 0.18950999999651685,
-              "throughput_ops_per_sec": 3693.736478353996,
-              "p95_latency_ns": 455461.05,
-              "mean_latency_ns": 267150.65142857144,
-              "peak_memory_bytes": 268616
+              "elapsed_seconds": 0.18945445900317281,
+              "throughput_ops_per_sec": 3694.819344359042,
+              "p95_latency_ns": 455221.5,
+              "mean_latency_ns": 267069.8728571429,
+              "peak_memory_bytes": 268612
             },
             {
-              "elapsed_seconds": 0.18988799999351613,
-              "throughput_ops_per_sec": 3686.383552535716,
-              "p95_latency_ns": 457794.1,
-              "mean_latency_ns": 267704.9285714286,
+              "elapsed_seconds": 0.18912500000442378,
+              "throughput_ops_per_sec": 3701.255783125586,
+              "p95_latency_ns": 454649.99999999994,
+              "mean_latency_ns": 266647.94,
               "peak_memory_bytes": 268604
             }
           ],
-          "median_elapsed_seconds": 0.1896989999950165,
-          "median_throughput_ops_per_sec": 3690.0600154448557,
-          "median_p95_latency_ns": 456627.57499999995,
-          "median_peak_memory_bytes": 268610.0,
-          "latency_iqr_ns": 1166.524999999965
+          "median_elapsed_seconds": 0.1892897295037983,
+          "median_throughput_ops_per_sec": 3698.037563742314,
+          "median_p95_latency_ns": 454935.75,
+          "median_peak_memory_bytes": 268608.0,
+          "latency_iqr_ns": 285.7500000000582
         }
       ],
-      "median_p95_latency_ns": 456627.57499999995,
-      "median_throughput_ops_per_sec": 3690.0600154448557,
-      "median_peak_memory_bytes": 268610.0,
-      "latency_iqr_ns": 1166.524999999965,
+      "median_p95_latency_ns": 454935.75,
+      "median_throughput_ops_per_sec": 3698.037563742314,
+      "median_peak_memory_bytes": 268608.0,
+      "latency_iqr_ns": 285.7500000000582,
       "trace_count": 1
     },
     "temporal_repeat_windows": {
@@ -438,31 +438,31 @@
           "family": "temporal_repeat_windows",
           "repetitions": [
             {
-              "elapsed_seconds": 0.05216287498478778,
-              "throughput_ops_per_sec": 13419.505734761371,
-              "p95_latency_ns": 72059.74999999997,
-              "mean_latency_ns": 70491.18428571429,
+              "elapsed_seconds": 0.052108332980424166,
+              "throughput_ops_per_sec": 13433.5519860705,
+              "p95_latency_ns": 70675.34999999999,
+              "mean_latency_ns": 70443.57,
               "peak_memory_bytes": 265148
             },
             {
-              "elapsed_seconds": 0.05225991699262522,
-              "throughput_ops_per_sec": 13394.58690871595,
-              "p95_latency_ns": 71381.25,
-              "mean_latency_ns": 70622.44142857143,
+              "elapsed_seconds": 0.051956625015009195,
+              "throughput_ops_per_sec": 13472.776566949537,
+              "p95_latency_ns": 70758.34999999999,
+              "mean_latency_ns": 70224.53,
               "peak_memory_bytes": 265092
             }
           ],
-          "median_elapsed_seconds": 0.0522113959887065,
-          "median_throughput_ops_per_sec": 13407.04632173866,
-          "median_p95_latency_ns": 71720.49999999999,
+          "median_elapsed_seconds": 0.05203247899771668,
+          "median_throughput_ops_per_sec": 13453.164276510019,
+          "median_p95_latency_ns": 70716.84999999999,
           "median_peak_memory_bytes": 265120.0,
-          "latency_iqr_ns": 339.2499999999709
+          "latency_iqr_ns": 41.5
         }
       ],
-      "median_p95_latency_ns": 71720.49999999999,
-      "median_throughput_ops_per_sec": 13407.04632173866,
+      "median_p95_latency_ns": 70716.84999999999,
+      "median_throughput_ops_per_sec": 13453.164276510019,
       "median_peak_memory_bytes": 265120.0,
-      "latency_iqr_ns": 339.2499999999709,
+      "latency_iqr_ns": 41.5,
       "trace_count": 1
     },
     "topk_stress": {
@@ -472,31 +472,31 @@
           "family": "topk_stress",
           "repetitions": [
             {
-              "elapsed_seconds": 0.13352454101550393,
-              "throughput_ops_per_sec": 5242.481978790108,
-              "p95_latency_ns": 417154.14999999997,
-              "mean_latency_ns": 180850.38714285713,
+              "elapsed_seconds": 0.13231774998712353,
+              "throughput_ops_per_sec": 5290.295520201335,
+              "p95_latency_ns": 412298.25,
+              "mean_latency_ns": 179149.60714285713,
               "peak_memory_bytes": 779808
             },
             {
-              "elapsed_seconds": 0.1326158749870956,
-              "throughput_ops_per_sec": 5278.402755839862,
-              "p95_latency_ns": 415724.69999999995,
-              "mean_latency_ns": 179693.25285714286,
+              "elapsed_seconds": 0.1325859579956159,
+              "throughput_ops_per_sec": 5279.593786418515,
+              "p95_latency_ns": 412925.0,
+              "mean_latency_ns": 179661.2557142857,
               "peak_memory_bytes": 779752
             }
           ],
-          "median_elapsed_seconds": 0.13307020800129976,
-          "median_throughput_ops_per_sec": 5260.442367314985,
-          "median_p95_latency_ns": 416439.42499999993,
+          "median_elapsed_seconds": 0.13245185399136972,
+          "median_throughput_ops_per_sec": 5284.944653309925,
+          "median_p95_latency_ns": 412611.625,
           "median_peak_memory_bytes": 779780.0,
-          "latency_iqr_ns": 714.7250000000349
+          "latency_iqr_ns": 313.375
         }
       ],
-      "median_p95_latency_ns": 416439.42499999993,
-      "median_throughput_ops_per_sec": 5260.442367314985,
+      "median_p95_latency_ns": 412611.625,
+      "median_throughput_ops_per_sec": 5284.944653309925,
       "median_peak_memory_bytes": 779780.0,
-      "latency_iqr_ns": 714.7250000000349,
+      "latency_iqr_ns": 313.375,
       "trace_count": 1
     },
     "negative_lookup_churn": {
@@ -506,37 +506,37 @@
           "family": "negative_lookup_churn",
           "repetitions": [
             {
-              "elapsed_seconds": 0.07841891600401141,
-              "throughput_ops_per_sec": 8926.417702129324,
-              "p95_latency_ns": 404881.25,
-              "mean_latency_ns": 109267.92857142857,
+              "elapsed_seconds": 0.07763237500330433,
+              "throughput_ops_per_sec": 9016.856691170473,
+              "p95_latency_ns": 403133.35,
+              "mean_latency_ns": 108188.38,
               "peak_memory_bytes": 166424
             },
             {
-              "elapsed_seconds": 0.07798916700994596,
-              "throughput_ops_per_sec": 8975.605546738678,
-              "p95_latency_ns": 405031.24999999994,
-              "mean_latency_ns": 108662.42,
+              "elapsed_seconds": 0.07811137501266785,
+              "throughput_ops_per_sec": 8961.562895115805,
+              "p95_latency_ns": 402683.64999999997,
+              "mean_latency_ns": 108872.85571428572,
               "peak_memory_bytes": 166424
             }
           ],
-          "median_elapsed_seconds": 0.07820404150697868,
-          "median_throughput_ops_per_sec": 8951.011624434,
-          "median_p95_latency_ns": 404956.25,
+          "median_elapsed_seconds": 0.07787187500798609,
+          "median_throughput_ops_per_sec": 8989.209793143138,
+          "median_p95_latency_ns": 402908.5,
           "median_peak_memory_bytes": 166424.0,
-          "latency_iqr_ns": 74.99999999994179
+          "latency_iqr_ns": 224.84999999997672
         }
       ],
-      "median_p95_latency_ns": 404956.25,
-      "median_throughput_ops_per_sec": 8951.011624434,
+      "median_p95_latency_ns": 402908.5,
+      "median_throughput_ops_per_sec": 8989.209793143138,
       "median_peak_memory_bytes": 166424.0,
-      "latency_iqr_ns": 74.99999999994179,
+      "latency_iqr_ns": 224.84999999997672,
       "trace_count": 1
     }
   },
   "aggregate": {
-    "median_p95_latency_ns": 407839.75,
-    "median_throughput_ops_per_sec": 8951.011624434,
+    "median_p95_latency_ns": 404969.475,
+    "median_throughput_ops_per_sec": 8989.209793143138,
     "median_peak_memory_bytes": 265120.0,
     "trace_count": 9
   }

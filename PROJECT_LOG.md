@@ -172,3 +172,20 @@
 - Ran online local controlled evaluation with 6 validated runs: 3 local-stub baseline runs and 3 routing-student runs.
 - Online result was negative: routing student mean routing regret `0.9519646135760867` vs local-stub `0.41225891166210665`; student best loss was worse by `0.3680211883269071`.
 - Final validation passed: `pytest -q` passed with 34 tests; verifier smoke passed; `vao.validate_run` passed on all Phase 4 and Phase 5 run directories used for artifacts.
+
+### Offline Progress During Claude Quota Pause
+
+- Claude quota became unavailable, so all subsequent work avoided Claude CLI, Anthropic API, Opus, Haiku, Qwen, and any new teacher generation.
+- Added `src/vao/analysis/dataset_audit.py` and generated `artifacts/offline_routing_dataset_audit.json` plus `.md`.
+- The existing teacher routing dataset contains 12 examples: `paper_development` 6, `development` 3, and `memory_development` 3.
+- Productive-mode labels are highly imbalanced: `layout` 6, `indexing` 3, `micro` 2, `caching` 1, with no `topk` or `summaries` positives.
+- Original teacher routing regret is positive on 8 of 12 examples, with mean `0.9385370051379591` and max `4.217488474179428`.
+- Added `src/vao/analysis/replay_routing.py` for one-step logged-counterfactual replay and generated `artifacts/replay_router_comparison.json` plus `.md`.
+- Replay comparison shows `saved_routing_student` has the lowest top-1 regret among nontrivial logged policies (`0.19060538911168567`), while `always_layout` has the lowest expected regret (`0.3347770188314449`) because of label imbalance.
+- Added stronger offline classical routing experiments in `src/vao/training/offline_routing_experiments.py`, profile/history/source features in `src/vao/training/routing_features.py`, and config `configs/offline_routing_student.yaml`.
+- Selected offline classical model: `tfidf_word_multinomial_nb` by leave-one-out expected regret. Generated `artifacts/offline_routing_train_summary.json`, `artifacts/offline_routing_eval_summary.json`, `artifacts/offline_routing_model_comparison.json`, and `artifacts/offline_router_leaderboard.*`.
+- Installed and validated local training dependencies with `python -m pip install peft trl`; recorded versions in `artifacts/local_training_stack_audit.json`.
+- Added `src/vao/training/lora_smoke.py`; the toy PEFT LoRA smoke test passed without model downloads.
+- Added `src/vao/training/train_local_lora_router.py` and `configs/offline_lora_router.yaml`; trained a cached `distilbert-base-uncased` LoRA router locally on existing teacher data only.
+- Local LoRA router training loss decreased from `1.7637574672698975` to `0.5818454623222351`, but eval still predicted only `layout` and did not beat classical/replay baselines.
+- Generated `artifacts/routing_failure_analysis.md`, `artifacts/routing_confusion_analysis.json`, `artifacts/replay_online_like_summary.*`, and `artifacts/future_teacher_scaling_plan.md`.

@@ -40,6 +40,14 @@
 - [x] Implement routing-only student training and offline evaluation.
 - [x] Run online routing-student comparison with deterministic local candidate edits.
 - [x] Add training implementation for `train_routing_lora.py`.
+- [x] Audit the existing teacher routing dataset without new Claude calls.
+- [x] Add one-step logged-counterfactual replay evaluation for routing policies.
+- [x] Compare original teacher routing, saved routing student, mode heuristics, frequency, and random replay baselines.
+- [x] Improve offline routing features and run leave-one-out classical routing-student comparisons.
+- [x] Install/validate the local routing training stack with `peft` and `trl`.
+- [x] Run a toy local LoRA smoke test without any external model calls.
+- [x] Train a cached `distilbert-base-uncased` LoRA routing classifier on existing teacher data only.
+- [x] Write replay, dataset-audit, failure-analysis, and future teacher-scaling artifacts.
 
 ## Remaining
 
@@ -49,6 +57,7 @@
 - [ ] Improve prompts for `indexing` and `micro` declared-mode adherence.
 - [ ] Add controlled shared-checkpoint phi experiment implementation.
 - [ ] Add full C(b) pre/post feedback distribution diagnostic.
-- [ ] Replace the Phase 5 TF-IDF routing student with a LoRA-capable instruct model when `peft`/`trl` are available.
-- [ ] Re-run routing-only student after collecting substantially more teacher data.
+- [ ] Re-run routing-only student after collecting substantially more and less imbalanced teacher data.
+- [ ] Try a larger cached/open local instruct model for routing only if it is available without gating or new quota.
+- [ ] Add stricter split reporting for tiny-data comparisons so supplemental split models cannot be mistaken for leave-one-out results.
 - [ ] Run larger multi-profile and holdout experiments after protocol validation is reviewed.

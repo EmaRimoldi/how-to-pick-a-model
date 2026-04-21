@@ -1,0 +1,187 @@
+{
+  "class_counts": {
+    "caching": 1,
+    "indexing": 3,
+    "layout": 6,
+    "micro": 2,
+    "summaries": 0,
+    "topk": 0
+  },
+  "confusion_matrix": {
+    "caching": {
+      "caching": 0,
+      "indexing": 0,
+      "layout": 1,
+      "micro": 0,
+      "summaries": 0,
+      "topk": 0
+    },
+    "indexing": {
+      "caching": 0,
+      "indexing": 0,
+      "layout": 3,
+      "micro": 0,
+      "summaries": 0,
+      "topk": 0
+    },
+    "layout": {
+      "caching": 0,
+      "indexing": 0,
+      "layout": 6,
+      "micro": 0,
+      "summaries": 0,
+      "topk": 0
+    },
+    "micro": {
+      "caching": 0,
+      "indexing": 0,
+      "layout": 2,
+      "micro": 0,
+      "summaries": 0,
+      "topk": 0
+    },
+    "summaries": {
+      "caching": 0,
+      "indexing": 0,
+      "layout": 0,
+      "micro": 0,
+      "summaries": 0,
+      "topk": 0
+    },
+    "topk": {
+      "caching": 0,
+      "indexing": 0,
+      "layout": 0,
+      "micro": 0,
+      "summaries": 0,
+      "topk": 0
+    }
+  },
+  "failures": [
+    {
+      "predicted_mode_probs": {
+        "caching": 0.012947782384076319,
+        "indexing": 0.04198753085811166,
+        "layout": 0.869387499185984,
+        "micro": 0.07567718757182797,
+        "summaries": 0.0,
+        "topk": 0.0
+      },
+      "predicted_top1": "layout",
+      "profile_id": "paper_development",
+      "run_id": "opus_teacher_pilot_claude_opus_teacher_paper_development",
+      "step": 2,
+      "target_top1": "indexing",
+      "top1_regret": 0.09349923434603236
+    },
+    {
+      "predicted_mode_probs": {
+        "caching": 0.0,
+        "indexing": 0.1298664721219646,
+        "layout": 0.8433166563974976,
+        "micro": 0.026816871480537758,
+        "summaries": 0.0,
+        "topk": 0.0
+      },
+      "predicted_top1": "layout",
+      "profile_id": "development",
+      "run_id": "opus_teacher_pilot_retry2_claude_opus_teacher_development",
+      "step": 0,
+      "target_top1": "caching",
+      "top1_regret": 0.3511457094221968
+    },
+    {
+      "predicted_mode_probs": {
+        "caching": 0.011948442747644594,
+        "indexing": 0.13521389443902718,
+        "layout": 0.8383149302758246,
+        "micro": 0.014522732537503674,
+        "summaries": 0.0,
+        "topk": 0.0
+      },
+      "predicted_top1": "layout",
+      "profile_id": "development",
+      "run_id": "opus_teacher_pilot_retry2_claude_opus_teacher_development",
+      "step": 1,
+      "target_top1": "micro",
+      "top1_regret": 0.028814376823970256
+    },
+    {
+      "predicted_mode_probs": {
+        "caching": 0.016915849892456206,
+        "indexing": 0.14041044343139905,
+        "layout": 0.8160112829737005,
+        "micro": 0.02666242370244416,
+        "summaries": 0.0,
+        "topk": 0.0
+      },
+      "predicted_top1": "layout",
+      "profile_id": "development",
+      "run_id": "opus_teacher_pilot_retry2_claude_opus_teacher_development",
+      "step": 2,
+      "target_top1": "micro",
+      "top1_regret": 2.684882662095776
+    },
+    {
+      "predicted_mode_probs": {
+        "caching": 0.02295669738450914,
+        "indexing": 0.02985787780280558,
+        "layout": 0.9189577994043302,
+        "micro": 0.028227625408355005,
+        "summaries": 0.0,
+        "topk": 0.0
+      },
+      "predicted_top1": "layout",
+      "profile_id": "paper_development",
+      "run_id": "opus_teacher_dev_r0",
+      "step": 0,
+      "target_top1": "indexing",
+      "top1_regret": 0.4987979847608234
+    },
+    {
+      "predicted_mode_probs": {
+        "caching": 0.01901852246721503,
+        "indexing": 0.06100669879576674,
+        "layout": 0.8604018020556083,
+        "micro": 0.05957297668140988,
+        "summaries": 0.0,
+        "topk": 0.0
+      },
+      "predicted_top1": "layout",
+      "profile_id": "paper_development",
+      "run_id": "opus_teacher_dev_r0",
+      "step": 1,
+      "target_top1": "indexing",
+      "top1_regret": 0.18638945718459476
+    }
+  ],
+  "label_ambiguity": {
+    "examples_with_multiple_modes_within_0_05_gain": 2,
+    "examples_with_multiple_positive_gain_modes": 7,
+    "mean_pstar_entropy": 0.7286313124823991
+  },
+  "profile_summary": {
+    "development": {
+      "accuracy": 0.0,
+      "count": 3,
+      "mean_regret": 1.0216142494473144
+    },
+    "memory_development": {
+      "accuracy": 1.0,
+      "count": 3,
+      "mean_regret": 0.0
+    },
+    "paper_development": {
+      "accuracy": 0.5,
+      "count": 6,
+      "mean_regret": 0.15874691293923254
+    }
+  },
+  "selected_model": "tfidf_word_multinomial_nb",
+  "teacher_suboptimality": {
+    "examples": 12,
+    "max_original_top1_regret": 4.217488474179428,
+    "mean_original_top1_regret": 0.9385370051379591,
+    "positive_regret_count": 8
+  }
+}

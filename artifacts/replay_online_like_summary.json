@@ -1,0 +1,109 @@
+{
+  "always_layout": {
+    "macro_f1": 0.1111111111111111,
+    "mean_expected_regret": 0.3347770188314449,
+    "mean_jsd_to_productive": 0.4720082795512164,
+    "mean_kl_to_productive": 21.3962686940318,
+    "mean_top1_regret": 0.3347770188314449,
+    "mean_visible_best_loss_logged_replay": 0.7882688036773859,
+    "median_top1_regret": 0.061156805585001306,
+    "policy": "always_layout",
+    "predicted_mode_counts": {
+      "layout": 12
+    },
+    "record_count": 12,
+    "target_mode_counts": {
+      "caching": 1,
+      "indexing": 3,
+      "layout": 6,
+      "micro": 2
+    },
+    "top1_accuracy": 0.5,
+    "visible_best_loss_by_run_logged_replay": {
+      "opus_teacher_dev_r0": 0.7014455770193396,
+      "opus_teacher_pilot_claude_opus_teacher_paper_development": 0.855458450330752,
+      "opus_teacher_pilot_retry2_claude_opus_teacher_development": 0.9714549812518678,
+      "opus_teacher_pilot_retry2_claude_opus_teacher_memory_development": 0.6247162061075843
+    },
+    "weighted_f1": 0.3333333333333333
+  },
+  "best_policy_by_expected_regret": {
+    "ece_5bin": null,
+    "macro_f1": 0.1111111111111111,
+    "mean_expected_regret": 0.3347770188314449,
+    "mean_jsd": 0.4720082795512164,
+    "mean_kl": 21.3962686940318,
+    "mean_top1_regret": 0.3347770188314449,
+    "model": "always_layout",
+    "record_count": 12,
+    "source": "replay_baseline",
+    "top1_accuracy": 0.5,
+    "weighted_f1": 0.3333333333333333
+  },
+  "caveat": "Each decision is evaluated against branches logged at that checkpoint. If a router would choose a different branch, later logged checkpoints are not guaranteed to be reachable.",
+  "interpretation": "Replay uses logged per-mode counterfactuals at each checkpoint. It cannot simulate new future states after alternate routing choices.",
+  "original_teacher": {
+    "macro_f1": 0.15757575757575756,
+    "mean_expected_regret": 0.9438246618709512,
+    "mean_jsd_to_productive": 0.5227806567552183,
+    "mean_kl_to_productive": 2.2595468188257866,
+    "mean_top1_regret": 0.9385370051379591,
+    "mean_visible_best_loss_logged_replay": 0.818687615046632,
+    "median_top1_regret": 0.35313465405577155,
+    "policy": "original_teacher",
+    "predicted_mode_counts": {
+      "indexing": 2,
+      "layout": 5,
+      "summaries": 2,
+      "topk": 3
+    },
+    "record_count": 12,
+    "target_mode_counts": {
+      "caching": 1,
+      "indexing": 3,
+      "layout": 6,
+      "micro": 2
+    },
+    "top1_accuracy": 0.3333333333333333,
+    "visible_best_loss_by_run_logged_replay": {
+      "opus_teacher_dev_r0": 0.7826559967599495,
+      "opus_teacher_pilot_claude_opus_teacher_paper_development": 0.855458450330752,
+      "opus_teacher_pilot_retry2_claude_opus_teacher_development": 0.9834796961719077,
+      "opus_teacher_pilot_retry2_claude_opus_teacher_memory_development": 0.6531563169239188
+    },
+    "weighted_f1": 0.37272727272727274
+  },
+  "record_count": 12,
+  "saved_phase5_student": {
+    "macro_f1": 0.3428571428571428,
+    "mean_expected_regret": 0.4924397490840365,
+    "mean_jsd_to_productive": 0.37714538172443124,
+    "mean_kl_to_productive": 2.742769145637235,
+    "mean_top1_regret": 0.19060538911168567,
+    "mean_visible_best_loss_logged_replay": 0.8264304456933047,
+    "median_top1_regret": 0.02463223082988164,
+    "policy": "saved_routing_student",
+    "predicted_mode_counts": {
+      "caching": 4,
+      "indexing": 4,
+      "layout": 1,
+      "micro": 3
+    },
+    "record_count": 12,
+    "target_mode_counts": {
+      "caching": 1,
+      "indexing": 3,
+      "layout": 6,
+      "micro": 2
+    },
+    "top1_accuracy": 0.5,
+    "visible_best_loss_by_run_logged_replay": {
+      "opus_teacher_dev_r0": 0.7826559967599495,
+      "opus_teacher_pilot_claude_opus_teacher_paper_development": 0.8198872164424283,
+      "opus_teacher_pilot_retry2_claude_opus_teacher_development": 0.6323339867497109,
+      "opus_teacher_pilot_retry2_claude_opus_teacher_memory_development": 1.07084458282113
+    },
+    "weighted_f1": 0.4523809523809524
+  },
+  "type": "one_step_logged_replay_not_live_online"
+}

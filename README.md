@@ -41,6 +41,11 @@ For real Claude/Anthropic runs, candidate generation is protocol-configurable. P
 - `python -m vao.training.build_routing_dataset --runs runs/phase4_teacher_opus_pilot runs/phase4_teacher_opus --out artifacts/phase4_teacher_routing_dataset.jsonl`
 - `python -m vao.training.train_routing_lora --config configs/phase5_routing_student.yaml`
 - `python -m vao.orchestrator --config configs/phase5_routing_student_online.yaml --models local_stub,routing_student --steps 3`
+- `python -m vao.analysis.dataset_audit --dataset artifacts/phase4_teacher_routing_dataset.jsonl --json_out artifacts/offline_routing_dataset_audit.json --md_out artifacts/offline_routing_dataset_audit.md`
+- `python -m vao.analysis.replay_routing --dataset artifacts/phase4_teacher_routing_dataset.jsonl --student_model training/phase5_routing_student/model.pkl --json_out artifacts/replay_router_comparison.json --md_out artifacts/replay_router_comparison.md`
+- `python -m vao.training.offline_routing_experiments --config configs/offline_routing_student.yaml`
+- `python -m vao.training.lora_smoke --out artifacts/local_lora_smoke.json --env_out artifacts/local_training_stack_audit.json`
+- `python -m vao.training.train_local_lora_router --config configs/offline_lora_router.yaml`
 
 The closed-source and open-weight model adapters are scaffolded behind the same interface as the deterministic `local_stub` backend. `claude_haiku` is the first real backend. It can use `ANTHROPIC_API_KEY` through the Messages API or the authenticated Claude CLI transport when available. Normal tests use fixtures and do not require live model calls.
 
@@ -49,5 +54,8 @@ The closed-source and open-weight model adapters are scaffolded behind the same 
 - Production teacher-data protocol is frozen as C(a) replacement-file candidate generation.
 - Opus teacher pilot produced 3 validated runs, 9 steps, and 54 branch evaluations.
 - Production Opus collection was attempted under `runs/phase4_teacher_opus/`; the first run produced 3 validated steps before `claude_cli_failed:1` stopped further collection.
-- The first routing-only student is a local TF-IDF/logistic router because `peft`/`trl` are not installed in the current environment. It writes `training/phase5_routing_student/model.pkl` and emits six-mode `mode_probs`.
+- Claude quota is currently unavailable, so current work is offline only: no Claude, Opus, Haiku, or new teacher generation.
+- The existing teacher routing dataset has 12 examples. It is useful for tooling and failure analysis, but it is too small and imbalanced for a strong learned-routing claim.
+- The strongest current classical offline student is `tfidf_word_multinomial_nb` selected by leave-one-out expected regret. `always_layout` is still the best replay baseline by expected regret because `layout` dominates productive labels.
+- The local training stack now includes `peft` and `trl`; a toy LoRA smoke test passed, and a cached `distilbert-base-uncased` LoRA router was trained locally. It overfits toward `layout` and does not beat the classical/replay baselines on the tiny split.
 - Offline student eval on the tiny split improved regret/JSD versus the original teacher route on that split, but the online local controlled experiment was worse than the local-stub router. Treat Phase 5 as infrastructure plus a negative first result, not as evidence of a useful student yet.

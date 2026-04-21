@@ -6,6 +6,7 @@ import json
 from typing import Any
 
 from vao.agents.base import AgentState
+from vao.taxonomy import MODES
 
 
 DEFAULT_MAX_SOURCE_CHARS = 12000
@@ -53,3 +54,30 @@ def _render_payload(payload: dict[str, Any], *, max_source_chars: int) -> str:
 
 def _compact_json(value: Any) -> str:
     return json.dumps(value, sort_keys=True, separators=(",", ":"), default=str)
+
+
+def structured_features_from_record(record: dict[str, Any]) -> dict[str, float | str]:
+    payload = record.get("input") or {}
+    profile = payload.get("profile_summary") or {}
+    source = str(payload.get("current_solution_source", ""))
+    visible_history = payload.get("visible_history") or []
+    features: dict[str, float | str] = {
+        "profile_id": str(record.get("profile_id", profile.get("profile_id", ""))),
+        "step": float(record.get("step", 0) or 0),
+        "source_chars": float(len(source)),
+        "source_lines": float(source.count("\n") + 1 if source else 0),
+        "visible_history_len": float(len(visible_history)),
+        "has_bisect": float("bisect" in source),
+        "has_heapq": float("heapq" in source),
+        "has_cache": float("cache" in source.lower()),
+        "has_fenwick": float("fenwick" in source.lower() or "_bit" in source.lower()),
+        "has_slots": float("__slots__" in source),
+        "has_sorted_keys": float("_keys" in source or "sorted" in source),
+        "range_sum_count": float(source.count("range_sum")),
+        "top_k_count": float(source.count("top_k")),
+    }
+    for mode in MODES:
+        features[f"history_selected_{mode}"] = float(
+            sum(1 for item in visible_history if isinstance(item, dict) and item.get("selected_mode") == mode)
+        )
+    return features

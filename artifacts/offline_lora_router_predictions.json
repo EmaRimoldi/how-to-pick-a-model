@@ -1,0 +1,328 @@
+{
+  "eval": {
+    "ece_5bin": 0.24571108818054205,
+    "macro_f1": 0.08333333333333333,
+    "mean_brier": 0.12190460044594369,
+    "mean_expected_regret": 1.0319806536763083,
+    "mean_jsd": 0.5408993463227024,
+    "mean_kl": 2.221170467557137,
+    "mean_top1_regret": 1.061226882285533,
+    "model": "local_lora_router",
+    "predicted_mode_counts": {
+      "caching": 0,
+      "indexing": 0,
+      "layout": 3,
+      "micro": 0,
+      "summaries": 0,
+      "topk": 0
+    },
+    "record_count": 3,
+    "rows": [
+      {
+        "brier_to_productive_distribution": 0.20873944001596625,
+        "confidence": 0.5771446228027344,
+        "expected_regret": 2.4733860377980434,
+        "jsd": 0.8128631706834843,
+        "kl": 3.8298318778057707,
+        "predicted_mode_probs": {
+          "caching": 0.09462058544158936,
+          "indexing": 0.21223028004169464,
+          "layout": 0.5771446228027344,
+          "micro": 0.0703243538737297,
+          "summaries": 0.021132836118340492,
+          "topk": 0.024547377601265907
+        },
+        "predicted_top1": "layout",
+        "profile_id": "development",
+        "run_id": "opus_teacher_pilot_retry2_claude_opus_teacher_development",
+        "step": 2,
+        "target_top1": "micro",
+        "top1_correct": false,
+        "top1_regret": 2.684882662095776
+      },
+      {
+        "brier_to_productive_distribution": 0.03993626666309943,
+        "confidence": 0.5767356753349304,
+        "expected_regret": 0.18208019928287977,
+        "jsd": 0.25311980270134793,
+        "kl": 0.7940179169536438,
+        "predicted_mode_probs": {
+          "caching": 0.09417164325714111,
+          "indexing": 0.2137402445077896,
+          "layout": 0.5767356753349304,
+          "micro": 0.06975213438272476,
+          "summaries": 0.020974794402718544,
+          "topk": 0.024625569581985474
+        },
+        "predicted_top1": "layout",
+        "profile_id": "memory_development",
+        "run_id": "opus_teacher_pilot_retry2_claude_opus_teacher_memory_development",
+        "step": 1,
+        "target_top1": "layout",
+        "top1_correct": true,
+        "top1_regret": 0.0
+      },
+      {
+        "brier_to_productive_distribution": 0.11703809465876537,
+        "confidence": 0.5832529664039612,
+        "expected_regret": 0.4404757239480016,
+        "jsd": 0.5567150655832749,
+        "kl": 2.0396616079119965,
+        "predicted_mode_probs": {
+          "caching": 0.12416309118270874,
+          "indexing": 0.175779789686203,
+          "layout": 0.5832529664039612,
+          "micro": 0.06744760274887085,
+          "summaries": 0.022549163550138474,
+          "topk": 0.026807421818375587
+        },
+        "predicted_top1": "layout",
+        "profile_id": "paper_development",
+        "run_id": "opus_teacher_dev_r0",
+        "step": 0,
+        "target_top1": "indexing",
+        "top1_correct": false,
+        "top1_regret": 0.4987979847608234
+      }
+    ],
+    "target_mode_counts": {
+      "caching": 0,
+      "indexing": 1,
+      "layout": 1,
+      "micro": 1,
+      "summaries": 0,
+      "topk": 0
+    },
+    "top1_accuracy": 0.3333333333333333,
+    "weighted_f1": 0.16666666666666666
+  },
+  "train": {
+    "ece_5bin": 0.02262650595770943,
+    "macro_f1": 0.11904761904761905,
+    "mean_brier": 0.061455415680494764,
+    "mean_expected_regret": 0.3165765147962623,
+    "mean_jsd": 0.2958842740557868,
+    "mean_kl": 1.1873102493536216,
+    "mean_top1_regret": 0.09262706434674878,
+    "model": "local_lora_router",
+    "predicted_mode_counts": {
+      "caching": 0,
+      "indexing": 0,
+      "layout": 9,
+      "micro": 0,
+      "summaries": 0,
+      "topk": 0
+    },
+    "record_count": 9,
+    "rows": [
+      {
+        "brier_to_productive_distribution": 0.03776339709609965,
+        "confidence": 0.5827025175094604,
+        "expected_regret": 0.17436839231437778,
+        "jsd": 0.2488050214503328,
+        "kl": 0.7791685859200606,
+        "predicted_mode_probs": {
+          "caching": 0.12308506667613983,
+          "indexing": 0.17743736505508423,
+          "layout": 0.5827025175094604,
+          "micro": 0.06784894317388535,
+          "summaries": 0.022356024011969566,
+          "topk": 0.02657010778784752
+        },
+        "predicted_top1": "layout",
+        "profile_id": "paper_development",
+        "run_id": "opus_teacher_pilot_claude_opus_teacher_paper_development",
+        "step": 0,
+        "target_top1": "layout",
+        "top1_correct": true,
+        "top1_regret": 0.0
+      },
+      {
+        "brier_to_productive_distribution": 0.03712481072727964,
+        "confidence": 0.5723040103912354,
+        "expected_regret": 0.25186794372640386,
+        "jsd": 0.19759811304184513,
+        "kl": 0.936604816339701,
+        "predicted_mode_probs": {
+          "caching": 0.09374851733446121,
+          "indexing": 0.21668577194213867,
+          "layout": 0.5723040103912354,
+          "micro": 0.07126589864492416,
+          "summaries": 0.021339690312743187,
+          "topk": 0.024656083434820175
+        },
+        "predicted_top1": "layout",
+        "profile_id": "paper_development",
+        "run_id": "opus_teacher_pilot_claude_opus_teacher_paper_development",
+        "step": 1,
+        "target_top1": "layout",
+        "top1_correct": true,
+        "top1_regret": 0.17379480134394476
+      },
+      {
+        "brier_to_productive_distribution": 0.044504791260000925,
+        "confidence": 0.577914297580719,
+        "expected_regret": 0.09230804408239941,
+        "jsd": 0.2017160677665446,
+        "kl": 0.7770392426915322,
+        "predicted_mode_probs": {
+          "caching": 0.09284162521362305,
+          "indexing": 0.2131802886724472,
+          "layout": 0.577914297580719,
+          "micro": 0.07073486596345901,
+          "summaries": 0.020987944677472115,
+          "topk": 0.024340998381376266
+        },
+        "predicted_top1": "layout",
+        "profile_id": "paper_development",
+        "run_id": "opus_teacher_pilot_claude_opus_teacher_paper_development",
+        "step": 2,
+        "target_top1": "indexing",
+        "top1_correct": false,
+        "top1_regret": 0.09349923434603236
+      },
+      {
+        "brier_to_productive_distribution": 0.19060174323341517,
+        "confidence": 0.5821667313575745,
+        "expected_regret": 0.4090812045308325,
+        "jsd": 0.7186620264696645,
+        "kl": 3.012739224512846,
+        "predicted_mode_probs": {
+          "caching": 0.12390109151601791,
+          "indexing": 0.17699477076530457,
+          "layout": 0.5821667313575745,
+          "micro": 0.06783401966094971,
+          "summaries": 0.02244415134191513,
+          "topk": 0.026659253984689713
+        },
+        "predicted_top1": "layout",
+        "profile_id": "development",
+        "run_id": "opus_teacher_pilot_retry2_claude_opus_teacher_development",
+        "step": 0,
+        "target_top1": "caching",
+        "top1_correct": false,
+        "top1_regret": 0.3511457094221968
+      },
+      {
+        "brier_to_productive_distribution": 0.11059122769024933,
+        "confidence": 0.5696108937263489,
+        "expected_regret": 0.14636170486212513,
+        "jsd": 0.4779454043882193,
+        "kl": 2.337340036690344,
+        "predicted_mode_probs": {
+          "caching": 0.09599079936742783,
+          "indexing": 0.21434947848320007,
+          "layout": 0.5696108937263489,
+          "micro": 0.07240256667137146,
+          "summaries": 0.022233806550502777,
+          "topk": 0.02541244402527809
+        },
+        "predicted_top1": "layout",
+        "profile_id": "development",
+        "run_id": "opus_teacher_pilot_retry2_claude_opus_teacher_development",
+        "step": 1,
+        "target_top1": "micro",
+        "top1_correct": false,
+        "top1_regret": 0.028814376823970256
+      },
+      {
+        "brier_to_productive_distribution": 0.018462509865229026,
+        "confidence": 0.5846363306045532,
+        "expected_regret": 0.2556896732509883,
+        "jsd": 0.21234799915987015,
+        "kl": 0.6839484503976566,
+        "predicted_mode_probs": {
+          "caching": 0.12248824536800385,
+          "indexing": 0.1773638129234314,
+          "layout": 0.5846363306045532,
+          "micro": 0.06709840148687363,
+          "summaries": 0.02207869663834572,
+          "topk": 0.026334431022405624
+        },
+        "predicted_top1": "layout",
+        "profile_id": "memory_development",
+        "run_id": "opus_teacher_pilot_retry2_claude_opus_teacher_memory_development",
+        "step": 0,
+        "target_top1": "layout",
+        "top1_correct": true,
+        "top1_regret": 0.0
+      },
+      {
+        "brier_to_productive_distribution": 0.016929031058922978,
+        "confidence": 0.5799396634101868,
+        "expected_regret": 1.1518747338172919,
+        "jsd": 0.12330742293532719,
+        "kl": 0.3916972621804509,
+        "predicted_mode_probs": {
+          "caching": 0.0929328203201294,
+          "indexing": 0.21271073818206787,
+          "layout": 0.5799396634101868,
+          "micro": 0.06951703876256943,
+          "summaries": 0.02056218311190605,
+          "topk": 0.024337513372302055
+        },
+        "predicted_top1": "layout",
+        "profile_id": "memory_development",
+        "run_id": "opus_teacher_pilot_retry2_claude_opus_teacher_memory_development",
+        "step": 2,
+        "target_top1": "layout",
+        "top1_correct": true,
+        "top1_regret": 0.0
+      },
+      {
+        "brier_to_productive_distribution": 0.07511582646976514,
+        "confidence": 0.5759058594703674,
+        "expected_regret": 0.22773520701150404,
+        "jsd": 0.28281680502946,
+        "kl": 1.12679009705447,
+        "predicted_mode_probs": {
+          "caching": 0.09437045454978943,
+          "indexing": 0.21510514616966248,
+          "layout": 0.5759058594703674,
+          "micro": 0.06965647637844086,
+          "summaries": 0.02080562710762024,
+          "topk": 0.02415650337934494
+        },
+        "predicted_top1": "layout",
+        "profile_id": "paper_development",
+        "run_id": "opus_teacher_dev_r0",
+        "step": 1,
+        "target_top1": "indexing",
+        "top1_correct": false,
+        "top1_regret": 0.18638945718459476
+      },
+      {
+        "brier_to_productive_distribution": 0.022005403723491065,
+        "confidence": 0.5784582495689392,
+        "expected_regret": 0.13990172957043823,
+        "jsd": 0.19975960626081785,
+        "kl": 0.640464528395534,
+        "predicted_mode_probs": {
+          "caching": 0.09429823607206345,
+          "indexing": 0.2127048522233963,
+          "layout": 0.5784582495689392,
+          "micro": 0.0697125643491745,
+          "summaries": 0.020708225667476654,
+          "topk": 0.024117929860949516
+        },
+        "predicted_top1": "layout",
+        "profile_id": "paper_development",
+        "run_id": "opus_teacher_dev_r0",
+        "step": 2,
+        "target_top1": "layout",
+        "top1_correct": true,
+        "top1_regret": 0.0
+      }
+    ],
+    "target_mode_counts": {
+      "caching": 1,
+      "indexing": 2,
+      "layout": 5,
+      "micro": 1,
+      "summaries": 0,
+      "topk": 0
+    },
+    "top1_accuracy": 0.5555555555555556,
+    "weighted_f1": 0.39682539682539686
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "created_at": "2026-04-21T12:21:06.089877+00:00",
+  "dataset": "artifacts/phase4_teacher_routing_dataset.jsonl",
+  "model_path": "training/offline_routing_student/model.pkl",
+  "record_count": 12,
+  "selected_model": "tfidf_word_multinomial_nb",
+  "selection_metric": "lowest_leave_one_out_mean_expected_regret",
+  "status": "completed",
+  "train_info": {
+    "classes": [
+      "caching",
+      "indexing",
+      "layout",
+      "micro"
+    ],
+    "feature_type": "text",
+    "trained_records": 12
+  }
+}

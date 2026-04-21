@@ -321,3 +321,111 @@ Conclusion:
 - The teacher pipeline works, but Opus collection is currently budget/availability limited.
 - The routing student improved offline regret/JSD on a very small held-out split but did not improve online behavior.
 - Before within-mode or feedback-use post-training, collect more validated teacher data, replace the TF-IDF router with a LoRA-capable local model when dependencies are available, and rerun the routing-only evaluation.
+
+## Offline Dataset Audit Without New Teacher Runs
+
+Claude quota is unavailable, so the current milestone used only the existing validated teacher dataset in `artifacts/phase4_teacher_routing_dataset.jsonl`. No Claude, Opus, Haiku, Anthropic API, Claude CLI, Qwen, or new teacher generation was used.
+
+Dataset audit:
+
+- Examples: `12`
+- Profiles: `paper_development` 6, `development` 3, `memory_development` 3
+- Productive modes: `layout` 6, `indexing` 3, `micro` 2, `caching` 1, `topk` 0, `summaries` 0
+- Selected teacher modes: `layout` 5, `topk` 3, `summaries` 2, `indexing` 2, `caching` 0, `micro` 0
+- Class imbalance max/min nonzero ratio: `6.0`
+- Original teacher top-1 routing regret: mean `0.9385370051379591`, median `0.35313465405577155`, max `4.217488474179428`, positive on 8 of 12 examples
+- Declared/inferred branch-mode agreement: `0.4722222222222222` across 72 branch records
+- Near-duplicate state pairs: `6`, mostly initial checkpoints
+
+Artifacts:
+
+- `artifacts/offline_routing_dataset_audit.json`
+- `artifacts/offline_routing_dataset_audit.md`
+
+The audit confirms that the dataset is usable for replay tooling and bottleneck analysis, but not for a strong learned-router claim. `topk` and `summaries` have no productive-mode labels, and `layout` is overrepresented.
+
+## Replay-Based Routing Evaluation
+
+Added one-step logged-counterfactual replay in `src/vao/analysis/replay_routing.py`. Replay evaluates alternate routing policies at checkpoints where all six branch outcomes are already logged. It does not simulate future checkpoints after an alternate branch promotion, so results are online-like diagnostics rather than true live online experiments.
+
+Replay headline metrics:
+
+| policy | accuracy | top-1 regret | expected regret |
+| --- | ---: | ---: | ---: |
+| `original_teacher` | `0.3333333333333333` | `0.9385370051379591` | `0.9438246618709512` |
+| `saved_routing_student` | `0.5` | `0.19060538911168567` | `0.4924397490840365` |
+| `always_layout` | `0.5` | `0.3347770188314449` | `0.3347770188314449` |
+| `frequency_baseline` | `0.5` | `0.3347770188314449` | `0.4588127976786531` |
+| `random_seeded` | `0.16666666666666666` | `0.8173871052726692` | `0.8173871052726692` |
+
+The prior saved routing student has the lowest top-1 regret among nontrivial policies, but `always_layout` has the lowest expected regret because the dataset is strongly layout-heavy. This is a data-quality warning, not a routing breakthrough.
+
+Artifacts:
+
+- `artifacts/replay_router_comparison.json`
+- `artifacts/replay_router_comparison.md`
+- `artifacts/replay_online_like_summary.json`
+- `artifacts/replay_online_like_summary.md`
+
+## Offline Progress During Claude Quota Pause
+
+Classical/local student work:
+
+- Added stronger routing features including profile, step, source-code indicators, and visible-history selected-mode counts.
+- Ran leave-one-out comparisons for TF-IDF word logistic regression, TF-IDF char logistic regression, TF-IDF multinomial Naive Bayes, and structured-feature logistic regression.
+- Selected model by leave-one-out expected regret: `tfidf_word_multinomial_nb`.
+- Best classical model metrics: accuracy `0.5`, macro F1 `0.1111111111111111`, weighted F1 `0.3333333333333333`, expected regret `0.45382518397291854`, top-1 regret `0.3347770188314449`.
+
+Local fine-tuning stack:
+
+- Installed `peft==0.19.1` and `trl==1.2.0`; existing local versions include `torch==2.10.0`, `transformers==5.3.0`, `datasets==4.7.0`, and `accelerate==1.13.0`.
+- Skipped `bitsandbytes` on macOS arm64 because it is CUDA-oriented.
+- Ran a toy PEFT LoRA smoke test with no external model calls; loss decreased and train accuracy reached `1.0`.
+- Trained a cached `distilbert-base-uncased` LoRA sequence classifier locally with `local_files_only=True`.
+- Local LoRA training loss decreased from `1.7637574672698975` to `0.5818454623222351`.
+- Local LoRA eval on the tiny 3-example split predicted only `layout`: accuracy `0.3333333333333333`, expected regret `1.0319806536763083`, top-1 regret `1.061226882285533`.
+
+Artifacts:
+
+- `training/offline_routing_student/model.pkl`
+- `training/offline_routing_student_lora/`
+- `artifacts/offline_routing_train_summary.json`
+- `artifacts/offline_routing_eval_summary.json`
+- `artifacts/offline_routing_model_comparison.json`
+- `artifacts/offline_router_leaderboard.json`
+- `artifacts/offline_router_leaderboard.md`
+- `artifacts/local_lora_smoke.json`
+- `artifacts/local_training_stack_audit.json`
+- `artifacts/offline_lora_router_summary.json`
+- `artifacts/offline_lora_router_predictions.json`
+
+## What Prevents Routing Improvement Right Now
+
+Main bottlenecks:
+
+- The routing dataset has only 12 examples.
+- Two canonical modes, `topk` and `summaries`, have zero productive labels.
+- `layout` dominates both positive labels and expected-regret baselines.
+- Several initial checkpoints are near duplicates, reducing effective diversity.
+- Teacher top-1 routing is often suboptimal on the logged counterfactuals, with positive regret on 8 of 12 examples.
+- Labels are partly ambiguous: 7 examples have multiple positive-gain modes and 2 examples have multiple modes within 0.05 verified gain of the best mode.
+- Declared/inferred mode agreement is low for `indexing`, `micro`, and `summaries`, which adds target noise for mode-conditioned analysis.
+
+Hardest profile under the selected offline model is `development`, with accuracy `0.0` and mean regret `1.0216142494473144`. `memory_development` is easiest on this tiny sample, with accuracy `1.0` and mean regret `0.0`.
+
+The correct next scientific step is not more offline model tuning on these 12 records. It is more validated, balanced teacher data once quota returns.
+
+## Next Step Once Teacher Budget Returns
+
+Resume the frozen replacement-file C(a) teacher pipeline, not patch mode. The immediate target remains the moderate Phase 4 matrix:
+
+- Dev: 3 profiles x 3 repeats x 5 steps = 45 teacher steps
+- Optional holdout: 2 profiles x 2 repeats x 5 steps = 20 teacher steps
+- Total target if budget permits: 65 teacher steps
+
+Based on current Opus logs, projected serial cost/time is approximately:
+
+- Dev-only: about `$80.09` and `8.04` serial hours
+- Dev plus holdout: about `$115.69` and `11.61` serial hours
+
+Detailed resume checklist and run-manifest plan are in `artifacts/future_teacher_scaling_plan.md`. After collecting more data, rerun the dataset audit, replay leaderboard, classical routing comparisons, and local LoRA routing experiment before attempting within-mode or feedback-use training.

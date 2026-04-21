@@ -1,0 +1,297 @@
+{
+  "caveat": "Each decision is evaluated against branches logged at that checkpoint. If a router would choose a different branch, later logged checkpoints are not guaranteed to be reachable.",
+  "policies": {
+    "always_caching": {
+      "macro_f1": 0.025641025641025644,
+      "mean_expected_regret": 0.5829068935314939,
+      "mean_jsd_to_productive": 0.8879047954855813,
+      "mean_kl_to_productive": 35.25892304876414,
+      "mean_top1_regret": 0.5829068935314939,
+      "mean_visible_best_loss_logged_replay": 0.7892854332109345,
+      "median_top1_regret": 0.23563555790487678,
+      "policy": "always_caching",
+      "predicted_mode_counts": {
+        "caching": 12
+      },
+      "record_count": 12,
+      "target_mode_counts": {
+        "caching": 1,
+        "indexing": 3,
+        "layout": 6,
+        "micro": 2
+      },
+      "top1_accuracy": 0.08333333333333333,
+      "visible_best_loss_by_run_logged_replay": {
+        "opus_teacher_dev_r0": 0.8542872064427999,
+        "opus_teacher_pilot_claude_opus_teacher_paper_development": 0.923306297932887,
+        "opus_teacher_pilot_retry2_claude_opus_teacher_development": 0.6323339867497109,
+        "opus_teacher_pilot_retry2_claude_opus_teacher_memory_development": 0.74721424171834
+      },
+      "weighted_f1": 0.012820512820512822
+    },
+    "always_indexing": {
+      "macro_f1": 0.06666666666666667,
+      "mean_expected_regret": 0.6262608081673773,
+      "mean_jsd_to_productive": 0.7426804162072392,
+      "mean_kl_to_productive": 31.331889567032576,
+      "mean_top1_regret": 0.6262608081673773,
+      "mean_visible_best_loss_logged_replay": 0.7972464802700918,
+      "median_top1_regret": 0.28056738229195693,
+      "policy": "always_indexing",
+      "predicted_mode_counts": {
+        "indexing": 12
+      },
+      "record_count": 12,
+      "target_mode_counts": {
+        "caching": 1,
+        "indexing": 3,
+        "layout": 6,
+        "micro": 2
+      },
+      "top1_accuracy": 0.25,
+      "visible_best_loss_by_run_logged_replay": {
+        "opus_teacher_dev_r0": 0.5467336985466943,
+        "opus_teacher_pilot_claude_opus_teacher_paper_development": 0.8198872164424283,
+        "opus_teacher_pilot_retry2_claude_opus_teacher_development": 0.9836165127794385,
+        "opus_teacher_pilot_retry2_claude_opus_teacher_memory_development": 0.8387484933118062
+      },
+      "weighted_f1": 0.10000000000000002
+    },
+    "always_layout": {
+      "macro_f1": 0.1111111111111111,
+      "mean_expected_regret": 0.3347770188314449,
+      "mean_jsd_to_productive": 0.4720082795512164,
+      "mean_kl_to_productive": 21.3962686940318,
+      "mean_top1_regret": 0.3347770188314449,
+      "mean_visible_best_loss_logged_replay": 0.7882688036773859,
+      "median_top1_regret": 0.061156805585001306,
+      "policy": "always_layout",
+      "predicted_mode_counts": {
+        "layout": 12
+      },
+      "record_count": 12,
+      "target_mode_counts": {
+        "caching": 1,
+        "indexing": 3,
+        "layout": 6,
+        "micro": 2
+      },
+      "top1_accuracy": 0.5,
+      "visible_best_loss_by_run_logged_replay": {
+        "opus_teacher_dev_r0": 0.7014455770193396,
+        "opus_teacher_pilot_claude_opus_teacher_paper_development": 0.855458450330752,
+        "opus_teacher_pilot_retry2_claude_opus_teacher_development": 0.9714549812518678,
+        "opus_teacher_pilot_retry2_claude_opus_teacher_memory_development": 0.6247162061075843
+      },
+      "weighted_f1": 0.3333333333333333
+    },
+    "always_micro": {
+      "macro_f1": 0.047619047619047616,
+      "mean_expected_regret": 0.5177010705607706,
+      "mean_jsd_to_productive": 0.6998899309564272,
+      "mean_kl_to_productive": 30.369026762758633,
+      "mean_top1_regret": 0.5177010705607706,
+      "mean_visible_best_loss_logged_replay": 0.8749054755982519,
+      "median_top1_regret": 0.21359855257758875,
+      "policy": "always_micro",
+      "predicted_mode_counts": {
+        "micro": 12
+      },
+      "record_count": 12,
+      "target_mode_counts": {
+        "caching": 1,
+        "indexing": 3,
+        "layout": 6,
+        "micro": 2
+      },
+      "top1_accuracy": 0.16666666666666666,
+      "visible_best_loss_by_run_logged_replay": {
+        "opus_teacher_dev_r0": 0.7685108398906874,
+        "opus_teacher_pilot_claude_opus_teacher_paper_development": 0.9298941773393196,
+        "opus_teacher_pilot_retry2_claude_opus_teacher_development": 0.9426406044278975,
+        "opus_teacher_pilot_retry2_claude_opus_teacher_memory_development": 0.8585762807351033
+      },
+      "weighted_f1": 0.047619047619047616
+    },
+    "always_summaries": {
+      "macro_f1": 0.0,
+      "mean_expected_regret": 2.663309868757102,
+      "mean_jsd_to_productive": 0.9334720596297706,
+      "mean_kl_to_productive": 38.00693860196586,
+      "mean_top1_regret": 2.663309868757102,
+      "mean_visible_best_loss_logged_replay": 2.6835491022134192,
+      "median_top1_regret": 2.8749417205589065,
+      "policy": "always_summaries",
+      "predicted_mode_counts": {
+        "summaries": 12
+      },
+      "record_count": 12,
+      "target_mode_counts": {
+        "caching": 1,
+        "indexing": 3,
+        "layout": 6,
+        "micro": 2
+      },
+      "top1_accuracy": 0.0,
+      "visible_best_loss_by_run_logged_replay": {
+        "opus_teacher_dev_r0": 0.7743972377910185,
+        "opus_teacher_pilot_claude_opus_teacher_paper_development": 0.9507754325342249,
+        "opus_teacher_pilot_retry2_claude_opus_teacher_development": 4.997234597067528,
+        "opus_teacher_pilot_retry2_claude_opus_teacher_memory_development": 4.0117891414609055
+      },
+      "weighted_f1": 0.0
+    },
+    "always_topk": {
+      "macro_f1": 0.0,
+      "mean_expected_regret": 0.8374646294065843,
+      "mean_jsd_to_productive": 0.9712381288189147,
+      "mean_kl_to_productive": 38.58085114364818,
+      "mean_top1_regret": 0.8374646294065843,
+      "mean_visible_best_loss_logged_replay": 1.1503106771740692,
+      "median_top1_regret": 0.5648568429741933,
+      "policy": "always_topk",
+      "predicted_mode_counts": {
+        "topk": 12
+      },
+      "record_count": 12,
+      "target_mode_counts": {
+        "caching": 1,
+        "indexing": 3,
+        "layout": 6,
+        "micro": 2
+      },
+      "top1_accuracy": 0.0,
+      "visible_best_loss_by_run_logged_replay": {
+        "opus_teacher_dev_r0": 0.9988674318728844,
+        "opus_teacher_pilot_claude_opus_teacher_paper_development": 1.1218083059055017,
+        "opus_teacher_pilot_retry2_claude_opus_teacher_development": 1.2940154208279222,
+        "opus_teacher_pilot_retry2_claude_opus_teacher_memory_development": 1.1865515500899686
+      },
+      "weighted_f1": 0.0
+    },
+    "frequency_baseline": {
+      "macro_f1": 0.1111111111111111,
+      "mean_expected_regret": 0.4588127976786531,
+      "mean_jsd_to_productive": 0.34318961235640116,
+      "mean_kl_to_productive": 2.7059830331360906,
+      "mean_top1_regret": 0.3347770188314449,
+      "mean_visible_best_loss_logged_replay": 0.7882688036773859,
+      "median_top1_regret": 0.061156805585001306,
+      "policy": "frequency_baseline",
+      "predicted_mode_counts": {
+        "layout": 12
+      },
+      "record_count": 12,
+      "target_mode_counts": {
+        "caching": 1,
+        "indexing": 3,
+        "layout": 6,
+        "micro": 2
+      },
+      "top1_accuracy": 0.5,
+      "visible_best_loss_by_run_logged_replay": {
+        "opus_teacher_dev_r0": 0.7014455770193396,
+        "opus_teacher_pilot_claude_opus_teacher_paper_development": 0.855458450330752,
+        "opus_teacher_pilot_retry2_claude_opus_teacher_development": 0.9714549812518678,
+        "opus_teacher_pilot_retry2_claude_opus_teacher_memory_development": 0.6247162061075843
+      },
+      "weighted_f1": 0.3333333333333333
+    },
+    "original_teacher": {
+      "macro_f1": 0.15757575757575756,
+      "mean_expected_regret": 0.9438246618709512,
+      "mean_jsd_to_productive": 0.5227806567552183,
+      "mean_kl_to_productive": 2.2595468188257866,
+      "mean_top1_regret": 0.9385370051379591,
+      "mean_visible_best_loss_logged_replay": 0.818687615046632,
+      "median_top1_regret": 0.35313465405577155,
+      "policy": "original_teacher",
+      "predicted_mode_counts": {
+        "indexing": 2,
+        "layout": 5,
+        "summaries": 2,
+        "topk": 3
+      },
+      "record_count": 12,
+      "target_mode_counts": {
+        "caching": 1,
+        "indexing": 3,
+        "layout": 6,
+        "micro": 2
+      },
+      "top1_accuracy": 0.3333333333333333,
+      "visible_best_loss_by_run_logged_replay": {
+        "opus_teacher_dev_r0": 0.7826559967599495,
+        "opus_teacher_pilot_claude_opus_teacher_paper_development": 0.855458450330752,
+        "opus_teacher_pilot_retry2_claude_opus_teacher_development": 0.9834796961719077,
+        "opus_teacher_pilot_retry2_claude_opus_teacher_memory_development": 0.6531563169239188
+      },
+      "weighted_f1": 0.37272727272727274
+    },
+    "random_seeded": {
+      "macro_f1": 0.06666666666666667,
+      "mean_expected_regret": 0.8173871052726692,
+      "mean_jsd_to_productive": 0.739066819376295,
+      "mean_kl_to_productive": 31.51966110612895,
+      "mean_top1_regret": 0.8173871052726692,
+      "mean_visible_best_loss_logged_replay": 0.8322256783265312,
+      "median_top1_regret": 0.2989294078687602,
+      "policy": "random_seeded",
+      "predicted_mode_counts": {
+        "caching": 1,
+        "layout": 4,
+        "micro": 1,
+        "summaries": 3,
+        "topk": 3
+      },
+      "record_count": 12,
+      "target_mode_counts": {
+        "caching": 1,
+        "indexing": 3,
+        "layout": 6,
+        "micro": 2
+      },
+      "top1_accuracy": 0.16666666666666666,
+      "visible_best_loss_by_run_logged_replay": {
+        "opus_teacher_dev_r0": 0.7743972377910185,
+        "opus_teacher_pilot_claude_opus_teacher_paper_development": 0.9298941773393196,
+        "opus_teacher_pilot_retry2_claude_opus_teacher_development": 0.9714549812518678,
+        "opus_teacher_pilot_retry2_claude_opus_teacher_memory_development": 0.6531563169239188
+      },
+      "weighted_f1": 0.20000000000000004
+    },
+    "saved_routing_student": {
+      "macro_f1": 0.3428571428571428,
+      "mean_expected_regret": 0.4924397490840365,
+      "mean_jsd_to_productive": 0.37714538172443124,
+      "mean_kl_to_productive": 2.742769145637235,
+      "mean_top1_regret": 0.19060538911168567,
+      "mean_visible_best_loss_logged_replay": 0.8264304456933047,
+      "median_top1_regret": 0.02463223082988164,
+      "policy": "saved_routing_student",
+      "predicted_mode_counts": {
+        "caching": 4,
+        "indexing": 4,
+        "layout": 1,
+        "micro": 3
+      },
+      "record_count": 12,
+      "target_mode_counts": {
+        "caching": 1,
+        "indexing": 3,
+        "layout": 6,
+        "micro": 2
+      },
+      "top1_accuracy": 0.5,
+      "visible_best_loss_by_run_logged_replay": {
+        "opus_teacher_dev_r0": 0.7826559967599495,
+        "opus_teacher_pilot_claude_opus_teacher_paper_development": 0.8198872164424283,
+        "opus_teacher_pilot_retry2_claude_opus_teacher_development": 0.6323339867497109,
+        "opus_teacher_pilot_retry2_claude_opus_teacher_memory_development": 1.07084458282113
+      },
+      "weighted_f1": 0.4523809523809524
+    }
+  },
+  "record_count": 12,
+  "replay_type": "one_step_logged_counterfactual_replay"
+}
