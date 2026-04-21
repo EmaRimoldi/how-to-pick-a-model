@@ -39,3 +39,4 @@
 - `hard_optimization` is intentionally mixed rather than mode-specific: all nine workload families are included so that routing has to manage tradeoffs among indexing, summaries, top-k, caching, layout, and micro edits.
 - On `hard_optimization`, local calibration suggests a baseline verifier cost of about 65 seconds and a post-baseline six-branch step cost of about 78 seconds for deterministic local candidates.
 - The validated Haiku batch hard smoke took 346.4 seconds total for one step including baseline, cost `$0.171`, and had zero proposal/source/verifier failures. A 3-step Haiku pilot is estimated at about 15 minutes serial wall-clock and roughly `$0.51`, subject to candidate runtime variance.
+- The first validated 3-step Haiku batch pilot took 807.0 seconds total and cost `$0.600`. The prompt still needs hardening against banned `list.remove` calls, which caused two candidate rejections.

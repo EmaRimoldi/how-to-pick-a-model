@@ -257,3 +257,8 @@
 - Ran Haiku batch hard smoke: `runs/hard_profile/haiku_batch_smoke/hard_haiku_batch_smoke_1step`, 1 step, 6 branches, `vao.validate_run` passed.
 - Haiku batch hard smoke: total `346.40069103240967s` including baseline, post-baseline `282.3915177824092s`, cost `$0.17126860000000002`, input tokens `64838`, output tokens `22950`, and zero proposal/verifier failures.
 - Generated `artifacts/hard_profile_experiment_readiness.json`, `artifacts/hard_profile_experiment_readiness.md`, local/Haiku estimator CSVs, routing datasets, summaries, failure-mode files, and run diagnostic plots.
+- Ran first Haiku batch hard pilot: `runs/hard_profile/haiku_batch_pilot/hard_haiku_batch_pilot_3step`, 3 steps, 18 branches, `vao.validate_run` passed.
+- Pilot timing/cost: total `807.0311040878296s`, post-baseline `247.68078547361074s` per step, total cost `$0.60019855`, input tokens `355882`, output tokens `83089`.
+- Pilot outcomes: selected modes `layout`, `caching`, `summaries`; best visible loss `0.28242576429393895`; best counterfactual loss `0.2784324758473186`; mean routing regret `0.009569049696577977`.
+- Pilot failures: two candidates rejected for banned `list.remove`, one `topk` branch semantically incorrect; verifier infrastructure failures were zero.
+- Generated `artifacts/hard_haiku_batch_pilot_*` artifacts and `artifacts/plots/run_hard_haiku_batch_pilot_3step/`.

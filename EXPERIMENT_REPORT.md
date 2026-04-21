@@ -519,14 +519,35 @@ Validated runs:
 
 All three runs passed `vao.validate_run`. The Haiku batch hard smoke had zero proposal failures, zero source-validation failures, and zero verifier failures. The current practical pilot size is therefore 3 steps: roughly 15 minutes serial wall-clock and about `$0.51` in Haiku CLI cost, plus variance from generated candidate speed.
 
+The first 3-step Haiku batch pilot has now been run and validated:
+
+| run | steps | branches | total sec/step incl. baseline | post-baseline sec/step | total cost |
+|---|---:|---:|---:|---:|---:|
+| Haiku batch hard pilot | `3` | `18` | `269.0` | `247.7` | `$0.600` |
+
+Pilot details:
+
+- selected modes: `layout`, `caching`, `summaries`;
+- best visible loss: `0.28242576429393895`;
+- best counterfactual loss: `0.2784324758473186`;
+- mean routing regret: `0.009569049696577977`;
+- proposal/source-validation failure rate: `0.111`;
+- incorrect branch rate: `0.056`;
+- verifier infrastructure failure rate: `0.000`.
+
+The two proposal failures were rejected safely because generated code used banned `list.remove` calls. The incorrect branch was a `topk` candidate with a semantic tie-breaking/correctness mismatch. Both are logged as counterfactual evidence and do not break the C(a) trajectory.
+
 Artifacts:
 
 - `artifacts/hard_profile_experiment_readiness.json`
 - `artifacts/hard_profile_experiment_readiness.md`
 - `artifacts/hard_local_dev_2step_summary.json`
 - `artifacts/hard_haiku_batch_smoke_summary.json`
+- `artifacts/hard_haiku_batch_pilot_readout.md`
+- `artifacts/hard_haiku_batch_pilot_summary.json`
 - `artifacts/plots/run_hard_local_dev_2step_calibration/`
 - `artifacts/plots/run_hard_haiku_batch_smoke_1step/`
+- `artifacts/plots/run_hard_haiku_batch_pilot_3step/`
 
 ## C(b) Feedback-Use Diagnostic Infrastructure
 
