@@ -1,0 +1,90 @@
+{
+  "haiku_batch_1step": {
+    "agent_cost_usd_per_step": [
+      0.17126860000000002
+    ],
+    "baseline_elapsed_s": 64.00917325000046,
+    "best_counterfactual_loss": 0.11013164681034375,
+    "best_visible_loss": 0.11013164681034375,
+    "branches": 6,
+    "elapsed_total_s": 346.40069103240967,
+    "input_tokens_per_step": [
+      64838
+    ],
+    "max_branch_eval_s": 39.59282137500122,
+    "mean_branch_eval_s": 24.44102749999729,
+    "output_tokens_per_step": [
+      22950
+    ],
+    "post_baseline_s_per_step": 282.3915177824092,
+    "proposal_failure_rate": 0.0,
+    "run_dir": "runs/hard_profile/haiku_batch_smoke/hard_haiku_batch_smoke_1step",
+    "selected_modes": [
+      "indexing"
+    ],
+    "steps": 1,
+    "total_s_per_step_including_baseline": 346.40069103240967,
+    "validation_failure_rate": 0.0,
+    "verifier_failure_rate": 0.0
+  },
+  "local_1step": {
+    "agent_cost_usd_per_step": [
+      null
+    ],
+    "baseline_elapsed_s": 64.55871025001397,
+    "best_counterfactual_loss": 0.11675559161871364,
+    "best_visible_loss": 0.11675559161871364,
+    "branches": 6,
+    "elapsed_total_s": 143.13784313201904,
+    "input_tokens_per_step": [
+      null
+    ],
+    "max_branch_eval_s": 33.60132387498743,
+    "mean_branch_eval_s": 12.999665368003965,
+    "output_tokens_per_step": [
+      null
+    ],
+    "post_baseline_s_per_step": 78.57913288200507,
+    "proposal_failure_rate": 0.0,
+    "run_dir": "runs/phase1_dev/hard_profile_local_smoke",
+    "selected_modes": [
+      "indexing"
+    ],
+    "steps": 1,
+    "total_s_per_step_including_baseline": 143.13784313201904,
+    "validation_failure_rate": 0.0,
+    "verifier_failure_rate": 0.0
+  },
+  "local_2step": {
+    "agent_cost_usd_per_step": [
+      null,
+      null
+    ],
+    "baseline_elapsed_s": 65.5941877499863,
+    "best_counterfactual_loss": 0.1047408737177043,
+    "best_visible_loss": 0.1047408737177043,
+    "branches": 12,
+    "elapsed_total_s": 221.90319895744324,
+    "input_tokens_per_step": [
+      null,
+      null
+    ],
+    "max_branch_eval_s": 33.43701204197714,
+    "mean_branch_eval_s": 12.939990048578087,
+    "output_tokens_per_step": [
+      null,
+      null
+    ],
+    "post_baseline_s_per_step": 78.15450560372847,
+    "proposal_failure_rate": 0.0,
+    "run_dir": "runs/hard_profile/local_dev/hard_local_dev_2step_calibration",
+    "selected_modes": [
+      "indexing",
+      "caching"
+    ],
+    "steps": 2,
+    "total_s_per_step_including_baseline": 110.95159947872162,
+    "validation_failure_rate": 0.0,
+    "verifier_failure_rate": 0.0
+  }
+}

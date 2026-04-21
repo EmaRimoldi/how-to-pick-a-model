@@ -55,9 +55,11 @@
 - [x] Implement and validate Haiku batched structured-edit generation for `mode_probs + 6 candidates` in one model call.
 - [x] Run a one-step live Haiku batch speed check and generate `artifacts/haiku_batch_speed_debug_report.*`.
 - [x] Replace active benchmark profiles with a single difficult `hard_optimization` profile.
+- [x] Add hard-profile local/Haiku experiment configs and validate one-step/ two-step calibration runs.
 
 ## Remaining
 
+- [ ] Run `configs/hard_haiku_batch_pilot.yaml` for 3 steps when ready to spend about 15 minutes and roughly `$0.51` Haiku CLI cost.
 - [ ] Resume/extend teacher production collection when Claude CLI budget/availability allows a repeated-run matrix on `hard_optimization`.
 - [ ] Before scaling real-model teacher data, run a slightly larger batched `structured_edits` smoke and confirm candidate rejection rates are acceptable.
 - [ ] Tighten batched structured-edit prompt/repair for source-safety rejections such as banned list attribute calls.

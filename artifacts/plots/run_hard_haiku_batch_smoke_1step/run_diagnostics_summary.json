@@ -1,0 +1,58 @@
+{
+  "model_id": "haiku",
+  "plots": {
+    "cost_per_step": "artifacts/plots/run_hard_haiku_batch_smoke_1step/cost_per_step.png",
+    "gain_heatmap": "artifacts/plots/run_hard_haiku_batch_smoke_1step/gain_heatmap_by_step_mode.png",
+    "loss_by_mode": "artifacts/plots/run_hard_haiku_batch_smoke_1step/loss_by_step_by_mode.png",
+    "mode_probs": "artifacts/plots/run_hard_haiku_batch_smoke_1step/mode_probs_by_step.png",
+    "single_mode": "artifacts/plots/run_hard_haiku_batch_smoke_1step/single_mode_indexing_trajectory.png"
+  },
+  "profile_id": "hard_optimization",
+  "run_dir": "runs/hard_profile/haiku_batch_smoke/hard_haiku_batch_smoke_1step",
+  "run_id": "hard_haiku_batch_smoke_1step",
+  "steps": [
+    {
+      "agent_cost_usd": 0.17126860000000002,
+      "best_counterfactual_loss": 0.11013164681034375,
+      "branch_wall_seconds": 146.64616499998374,
+      "feedback_jsd_improvement": null,
+      "feedback_regret_improvement": null,
+      "gain_by_mode": {
+        "caching": 0.024673509662902715,
+        "indexing": 0.923961465147801,
+        "layout": 0.7280370484794012,
+        "micro": 0.002287632013812102,
+        "summaries": -0.08410473812664776,
+        "topk": 0.0032538936814403563
+      },
+      "input_tokens": 64838,
+      "loss_by_mode": {
+        "caching": 1.009419602295242,
+        "indexing": 0.11013164681034375,
+        "layout": 0.3060560634787434,
+        "micro": 1.0318054799443326,
+        "summaries": 1.1181978500847924,
+        "topk": 1.0308392182767043
+      },
+      "mode_probs": {
+        "caching": 0.08,
+        "indexing": 0.28,
+        "layout": 0.26,
+        "micro": 0.03,
+        "summaries": 0.2,
+        "topk": 0.15
+      },
+      "output_tokens": 22950,
+      "post_feedback_mode_probs": null,
+      "routing_regret": 0.0,
+      "selected_loss": 0.11013164681034375,
+      "selected_mode": "indexing",
+      "selected_mode_top1": "indexing",
+      "selected_policy_regret": 0.0,
+      "selection_policy": "top1",
+      "step": 0,
+      "total_tokens": 87788,
+      "verified_best_mode": "indexing"
+    }
+  ]
+}

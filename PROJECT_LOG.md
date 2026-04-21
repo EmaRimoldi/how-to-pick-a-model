@@ -246,3 +246,14 @@
 - Updated orchestrator/verifier defaults and experiment configs to use `hard_optimization`.
 - Added a regression test asserting that the benchmark metadata contains exactly the `hard_optimization` profile.
 - Calibrated verifier smoke on `hard_optimization`: baseline solution passed with latent loss `1.0011415088998392` in `62.90119183299248` seconds.
+
+### Hard Profile Experiment Readiness
+
+- Added `configs/hard_local_smoke.yaml`, `configs/hard_local_dev.yaml`, `configs/hard_haiku_batch_smoke.yaml`, and `configs/hard_haiku_batch_pilot.yaml`.
+- Added `scripts/run_hard_profile_smoke.sh` for reproducible local smoke runs, with optional `RUN_HAIKU=1` for the one-step Haiku batch smoke.
+- Ran local hard smoke: `runs/phase1_dev/hard_profile_local_smoke`, 1 step, 6 branches, `vao.validate_run` passed.
+- Ran local hard dev calibration: `runs/hard_profile/local_dev/hard_local_dev_2step_calibration`, 2 steps, 12 branches, `vao.validate_run` passed.
+- Local calibration: baseline about `65s`; post-baseline six-branch step about `78s`; no proposal, validation, or verifier failures.
+- Ran Haiku batch hard smoke: `runs/hard_profile/haiku_batch_smoke/hard_haiku_batch_smoke_1step`, 1 step, 6 branches, `vao.validate_run` passed.
+- Haiku batch hard smoke: total `346.40069103240967s` including baseline, post-baseline `282.3915177824092s`, cost `$0.17126860000000002`, input tokens `64838`, output tokens `22950`, and zero proposal/verifier failures.
+- Generated `artifacts/hard_profile_experiment_readiness.json`, `artifacts/hard_profile_experiment_readiness.md`, local/Haiku estimator CSVs, routing datasets, summaries, failure-mode files, and run diagnostic plots.

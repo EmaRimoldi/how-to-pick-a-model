@@ -1,0 +1,21 @@
+experiment:
+  name: hard_local_dev
+  visibility_regime: top1_only
+  modes: [layout, indexing, topk, caching, summaries, micro]
+  steps: 3
+  wall_budget_seconds: 3600
+  branch_timeout_seconds: 240
+  incorrect_penalty: -1.0
+  productive_proxy_fallback: uniform
+  history_policy: full_visible_history
+  seed: 1102
+
+benchmark:
+  template_path: benchmarks/stateful_query_engine/solution_template.py
+  profiles: [hard_optimization]
+
+models:
+  include: [local_stub]
+
+output:
+  root: runs/hard_profile/local_dev

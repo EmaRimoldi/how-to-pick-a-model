@@ -498,6 +498,36 @@ The point is to avoid an easy single-mode workload. The profile simultaneously p
 
 Historical artifacts still contain older profile names because they describe past runs. New configs and defaults now point to `hard_optimization`.
 
+## Hard Profile Experiment Readiness
+
+The hard-profile experiment path is now validated locally and with one live Haiku batch run.
+
+Validated configs:
+
+- `configs/hard_local_smoke.yaml`
+- `configs/hard_local_dev.yaml`
+- `configs/hard_haiku_batch_smoke.yaml`
+- `configs/hard_haiku_batch_pilot.yaml`
+
+Validated runs:
+
+| run | steps | branches | total sec/step incl. baseline | post-baseline sec/step | cost |
+|---|---:|---:|---:|---:|---:|
+| local hard smoke | `1` | `6` | `143.1` | `78.6` | n/a |
+| local hard 2-step calibration | `2` | `12` | `111.0` | `78.2` | n/a |
+| Haiku batch hard smoke | `1` | `6` | `346.4` | `282.4` | `$0.171` |
+
+All three runs passed `vao.validate_run`. The Haiku batch hard smoke had zero proposal failures, zero source-validation failures, and zero verifier failures. The current practical pilot size is therefore 3 steps: roughly 15 minutes serial wall-clock and about `$0.51` in Haiku CLI cost, plus variance from generated candidate speed.
+
+Artifacts:
+
+- `artifacts/hard_profile_experiment_readiness.json`
+- `artifacts/hard_profile_experiment_readiness.md`
+- `artifacts/hard_local_dev_2step_summary.json`
+- `artifacts/hard_haiku_batch_smoke_summary.json`
+- `artifacts/plots/run_hard_local_dev_2step_calibration/`
+- `artifacts/plots/run_hard_haiku_batch_smoke_1step/`
+
 ## C(b) Feedback-Use Diagnostic Infrastructure
 
 C(b) is now implemented as an optional protocol condition, without running any new Claude calls.

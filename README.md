@@ -20,10 +20,23 @@ The active benchmark now uses a single canonical profile: `hard_optimization`. I
 Run the local deterministic smoke protocol:
 
 ```bash
-PYTHONPATH=src:. python -m vao.orchestrator --config configs/phase1_dev.yaml --models local_stub --profiles hard_optimization --steps 2
-PYTHONPATH=src:. python -m vao.analysis.compute_estimators --runs runs/phase1_dev --out artifacts/phase1_dev_estimators.csv
-PYTHONPATH=src:. python -m vao.training.build_routing_dataset --runs runs/phase1_dev --train_out artifacts/routing_train.jsonl --dev_out artifacts/routing_dev.jsonl
+PYTHONPATH=src:. python -m vao.orchestrator --config configs/hard_local_smoke.yaml --run-id hard_local_smoke
+PYTHONPATH=src:. python -m vao.validate_run --run_dir runs/hard_profile/local_smoke/hard_local_smoke
+PYTHONPATH=src:. python -m vao.analysis.compute_estimators --runs runs/hard_profile/local_smoke/hard_local_smoke --out artifacts/hard_local_smoke_estimators.csv
+PYTHONPATH=src:. python -m vao.training.build_routing_dataset --runs runs/hard_profile/local_smoke/hard_local_smoke --out artifacts/hard_local_smoke_routing_dataset.jsonl
 pytest -q
+```
+
+Or run the same local smoke through the helper script:
+
+```bash
+scripts/run_hard_profile_smoke.sh
+```
+
+To additionally run the one-step Haiku batch smoke, use:
+
+```bash
+RUN_HAIKU=1 scripts/run_hard_profile_smoke.sh
 ```
 
 Every run writes a self-contained directory containing `run_manifest.json`, `baseline_verification.json`, `evaluations.jsonl`, `run_summary.json`, resolved config, step branch workspaces, verifier outputs, and candidate source snapshots.
@@ -48,6 +61,8 @@ This profile creates real tradeoffs between layout, indexing, summaries, caching
 ## Main Entry Points
 
 - `python -m vao.orchestrator --config configs/phase1_dev.yaml`
+- `python -m vao.orchestrator --config configs/hard_local_smoke.yaml --run-id hard_local_smoke`
+- `python -m vao.orchestrator --config configs/hard_haiku_batch_smoke.yaml --run-id hard_haiku_batch_smoke`
 - `python -m vao.verifier --smoke_test`
 - `python -m vao.analysis.compute_estimators --runs runs/phase1_dev --out artifacts/phase1_dev_estimators.csv`
 - `python -m vao.training.build_routing_dataset --runs runs/phase1_dev --train_out artifacts/routing_train.jsonl --dev_out artifacts/routing_dev.jsonl`
@@ -66,6 +81,7 @@ This profile creates real tradeoffs between layout, indexing, summaries, caching
 - `python -m vao.training.train_local_lora_router --config configs/offline_lora_router.yaml`
 - `python -m vao.orchestrator --config configs/feedback_use_cb.yaml --run-id cb_local_fixed_micro`
 - `python -m vao.analysis.run_diagnostics_visuals --run_dir runs/feedback_use_cb/cb_local_fixed_micro --single_mode micro`
+- `python -m vao.analysis.run_diagnostics_visuals --run_dir runs/hard_profile/haiku_batch_smoke/hard_haiku_batch_smoke_1step --single_mode indexing`
 
 The closed-source and open-weight model adapters are scaffolded behind the same interface as the deterministic `local_stub` backend. `claude_haiku` is the first real backend. It can use `ANTHROPIC_API_KEY` through the Messages API or the authenticated Claude CLI transport when available. Normal tests use fixtures and do not require live model calls.
 
@@ -82,4 +98,5 @@ The closed-source and open-weight model adapters are scaffolded behind the same 
 - Per-run diagnostics plots are available for mode probabilities, single-mode trajectories, loss by mode, gain heatmaps, and cost per step under `artifacts/plots/run_<run_id>/`.
 - Edit-protocol diagnostics are in `artifacts/edit_protocol_debug_report.md`. Observed replacement outputs were around 3.7k raw chars/candidate; a structured one-line edit example is 219 chars and a structured function edit example is 533 chars.
 - Batched Haiku speed diagnostics are in `artifacts/haiku_batch_speed_debug_report.md`: 132.7 seconds/step and `$0.179`/step on the one-step batch smoke, versus 480.4 seconds/step for six separate structured-edit calls and 326.4 seconds/step for the historical replacement smoke.
+- Hard-profile readiness diagnostics are in `artifacts/hard_profile_experiment_readiness.md`. The validated Haiku batch full-profile smoke took 346.4 seconds total for one step including baseline, cost `$0.171`, and had zero proposal/verifier failures.
 - Offline student eval on the tiny split improved regret/JSD versus the original teacher route on that split, but the online local controlled experiment was worse than the local-stub router. Treat Phase 5 as infrastructure plus a negative first result, not as evidence of a useful student yet.
