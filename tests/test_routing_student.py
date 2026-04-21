@@ -17,11 +17,11 @@ def test_routing_student_training_outputs_metrics(tmp_path):
         rows.append(
             {
                 "run_id": "toy",
-                "profile_id": "paper_development",
+                "profile_id": "hard_optimization",
                 "model_id": "teacher",
                 "step": index,
                 "input": {
-                    "profile_summary": {"profile_id": "paper_development"},
+                    "profile_summary": {"profile_id": "hard_optimization"},
                     "current_solution_hash": f"h{index}",
                     "current_solution_source": f"class CandidateQueryEngine: pass  # {mode}",
                     "visible_history": [],

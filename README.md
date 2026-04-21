@@ -13,12 +13,14 @@ The canonical task is iterative editing of a Python `solution.py` implementing `
 
 All six branches are evaluated offline by the verifier. In the default `top1_only` visibility regime, only the branch selected by the model's own top-probability mode is promoted to the next online state, while all counterfactual branch results are logged for analysis.
 
+The active benchmark now uses a single canonical profile: `hard_optimization`. It combines all workload families into one difficult mixed profile so new experiments no longer spread across separate development/holdout/profile variants.
+
 ## Quick Start
 
 Run the local deterministic smoke protocol:
 
 ```bash
-PYTHONPATH=src:. python -m vao.orchestrator --config configs/phase1_dev.yaml --models local_stub --profiles paper_development --steps 2
+PYTHONPATH=src:. python -m vao.orchestrator --config configs/phase1_dev.yaml --models local_stub --profiles hard_optimization --steps 2
 PYTHONPATH=src:. python -m vao.analysis.compute_estimators --runs runs/phase1_dev --out artifacts/phase1_dev_estimators.csv
 PYTHONPATH=src:. python -m vao.training.build_routing_dataset --runs runs/phase1_dev --train_out artifacts/routing_train.jsonl --dev_out artifacts/routing_dev.jsonl
 pytest -q
@@ -30,6 +32,19 @@ For real Claude/Anthropic runs, candidate generation is protocol-configurable. P
 
 The fastest current Haiku path is the batched structured-edit variant: one model call returns `mode_probs`, `mode_ranking`, and six mode-constrained structured edits. Use `candidate_generation: batched` or `configs/phase3_haiku_structured_batch_smoke.yaml` for that path. The one-step speed smoke passed validation, but one candidate was rejected and logged as a no-op, so this needs a larger quality smoke before teacher-data scaling.
 
+## Active Benchmark Profile
+
+`hard_optimization` is intentionally hard to optimize with a single obvious edit. It uses:
+
+- 2,600 initial items
+- 120,000-key space
+- 1,200 operations per trace
+- 1 trace per workload family
+- all nine workload families: point reads, hot keys, bursty updates, local ranges, distribution shifts, wide ranges, repeated windows, top-k stress, and negative lookup churn
+- 2 measurement repetitions with 120 warmup operations
+
+This profile creates real tradeoffs between layout, indexing, summaries, caching, top-k specialization, and micro-optimization. Historical artifacts may still contain older profile names, but new configs point to `hard_optimization`.
+
 ## Main Entry Points
 
 - `python -m vao.orchestrator --config configs/phase1_dev.yaml`
@@ -37,8 +52,8 @@ The fastest current Haiku path is the batched structured-edit variant: one model
 - `python -m vao.analysis.compute_estimators --runs runs/phase1_dev --out artifacts/phase1_dev_estimators.csv`
 - `python -m vao.training.build_routing_dataset --runs runs/phase1_dev --train_out artifacts/routing_train.jsonl --dev_out artifacts/routing_dev.jsonl`
 - `python -m vao.validate_run --run_dir runs/phase2_dev/<run_id>`
-- `python -m vao.orchestrator --config configs/phase3_haiku_smoke.yaml --models claude_haiku --profiles paper_development --steps 2`
-- `python -m vao.orchestrator --config configs/phase3_haiku_structured_batch_smoke.yaml --models claude_haiku_batch --profiles paper_development --steps 1`
+- `python -m vao.orchestrator --config configs/phase3_haiku_smoke.yaml --models claude_haiku --profiles hard_optimization --steps 2`
+- `python -m vao.orchestrator --config configs/phase3_haiku_structured_batch_smoke.yaml --models claude_haiku_batch --profiles hard_optimization --steps 1`
 - `python -m vao.analysis.phase3_summary --runs runs/phase35_patch/haiku_dev --summary_out artifacts/phase35_patch_summary.json --failure_modes_out artifacts/phase35_patch_failure_modes.json`
 - `python -m vao.orchestrator --config configs/phase4_teacher_opus_pilot.yaml --models claude_opus_teacher --steps 3`
 - `python -m vao.training.build_routing_dataset --runs runs/phase4_teacher_opus_pilot runs/phase4_teacher_opus --out artifacts/phase4_teacher_routing_dataset.jsonl`

@@ -12,7 +12,7 @@ experiment:
 
 benchmark:
   template_path: benchmarks/stateful_query_engine/solution_template.py
-  profiles: [paper_holdout, memory_holdout]
+  profiles: [hard_optimization]
 
 models:
   include: [local_stub]

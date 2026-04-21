@@ -13,7 +13,7 @@ experiment:
 
 benchmark:
   template_path: benchmarks/stateful_query_engine/solution_template.py
-  profiles: [paper_development]
+  profiles: [hard_optimization]
   instance_overrides:
     initial_size: 120
     key_space: 3000

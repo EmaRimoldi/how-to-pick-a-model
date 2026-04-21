@@ -237,3 +237,12 @@
 - `vao.orchestrator` marks exactly one branch visible/promoted in C(a): the branch selected by `selected_mode`, which defaults to `argmax(mode_probs)`.
 - `vao.validate_run` checks that next-step visible history contains only the promoted branch when a `visible_history_snapshot` is logged.
 - Tightened `summarize_history_for_prompt` so it no longer includes `best_counterfactual_mode`; this prevents future prompt summaries from accidentally leaking offline verifier winners.
+
+### Single Hard Profile
+
+- Replaced the active benchmark profile set in `benchmarks/stateful_query_engine/metadata/instance_config.json` with one canonical profile: `hard_optimization`.
+- Removed active config references to `paper_development`, `memory_development`, `development`, `paper_holdout`, `memory_holdout`, and `search_hard_90min`.
+- `hard_optimization` uses all nine workload families with `initial_size=2600`, `key_space=120000`, `trace_length=1200`, `traces_per_family=1`, `repetitions=2`, and `warmup_prefix=120`.
+- Updated orchestrator/verifier defaults and experiment configs to use `hard_optimization`.
+- Added a regression test asserting that the benchmark metadata contains exactly the `hard_optimization` profile.
+- Calibrated verifier smoke on `hard_optimization`: baseline solution passed with latent loss `1.0011415088998392` in `62.90119183299248` seconds.

@@ -110,7 +110,7 @@ def test_patch_protocol_materializes_isolated_branch_edits(tmp_path: Path, monke
         },
         "benchmark": {
             "template_path": "benchmarks/stateful_query_engine/solution_template.py",
-            "profiles": ["paper_development"],
+            "profiles": ["hard_optimization"],
         },
         "models": {"include": ["patch_probe"]},
         "output": {"root": str(tmp_path / "runs")},
@@ -119,7 +119,7 @@ def test_patch_protocol_materializes_isolated_branch_edits(tmp_path: Path, monke
         config,
         "patch_probe",
         {"adapter": "patch_probe", "model_id": "patch-probe-v1"},
-        "paper_development",
+        "hard_optimization",
         run_id="patch_probe",
     )
 

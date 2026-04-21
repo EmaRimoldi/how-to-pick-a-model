@@ -41,7 +41,7 @@ ADAPTERS = {
 def run_from_config(config: dict[str, Any], *, model_ids: list[str] | None = None, profiles: list[str] | None = None, steps: int | None = None, run_id: str | None = None) -> list[Path]:
     model_configs = _load_model_configs()
     include_models = model_ids or list(config.get("models", {}).get("include", ["local_stub"]))
-    include_profiles = profiles or list(config.get("benchmark", {}).get("profiles", ["paper_development"]))
+    include_profiles = profiles or list(config.get("benchmark", {}).get("profiles", ["hard_optimization"]))
     completed: list[Path] = []
     for model_key in include_models:
         if model_key not in model_configs:

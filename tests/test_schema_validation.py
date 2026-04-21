@@ -30,7 +30,7 @@ def test_step_record_schema() -> None:
     ]
     record = StepRecord(
         run_id="r",
-        profile_id="paper_development",
+        profile_id="hard_optimization",
         model_id="m",
         step=0,
         current_solution_hash="parent",
@@ -64,7 +64,7 @@ def test_step_record_allows_controlled_mode_selection() -> None:
     ]
     record = StepRecord(
         run_id="r",
-        profile_id="paper_development",
+        profile_id="hard_optimization",
         model_id="m",
         step=0,
         current_solution_hash="parent",

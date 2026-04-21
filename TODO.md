@@ -54,10 +54,11 @@
 - [x] Debug edit-protocol token overhead and implement compact `structured_edits` for future real-model runs.
 - [x] Implement and validate Haiku batched structured-edit generation for `mode_probs + 6 candidates` in one model call.
 - [x] Run a one-step live Haiku batch speed check and generate `artifacts/haiku_batch_speed_debug_report.*`.
+- [x] Replace active benchmark profiles with a single difficult `hard_optimization` profile.
 
 ## Remaining
 
-- [ ] Resume/extend Opus teacher production collection when Claude CLI budget/availability allows the 3-profile x 3-repeat x 5-step target matrix.
+- [ ] Resume/extend teacher production collection when Claude CLI budget/availability allows a repeated-run matrix on `hard_optimization`.
 - [ ] Before scaling real-model teacher data, run a slightly larger batched `structured_edits` smoke and confirm candidate rejection rates are acceptable.
 - [ ] Tighten batched structured-edit prompt/repair for source-safety rejections such as banned list attribute calls.
 - [ ] Replace adapter scaffolds with real Claude Code and OpenAI-compatible model calls when credentials/endpoints are available.
@@ -68,4 +69,4 @@
 - [ ] Re-run routing-only student after collecting substantially more and less imbalanced teacher data.
 - [ ] Try a larger cached/open local instruct model for routing only if it is available without gating or new quota.
 - [ ] Add stricter split reporting for tiny-data comparisons so supplemental split models cannot be mistaken for leave-one-out results.
-- [ ] Run larger multi-profile and holdout experiments after protocol validation is reviewed.
+- [ ] Run larger repeated `hard_optimization` experiments after protocol validation is reviewed.

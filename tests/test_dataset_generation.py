@@ -32,7 +32,7 @@ def test_dataset_generation_from_toy_log(tmp_path: Path) -> None:
         )
     record = StepRecord(
         run_id="toy",
-        profile_id="paper_development",
+        profile_id="hard_optimization",
         model_id="local",
         step=0,
         current_solution_hash="parent",

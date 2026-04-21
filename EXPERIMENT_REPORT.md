@@ -480,6 +480,24 @@ Artifacts:
 - `artifacts/haiku_batch_speed_debug_report.json`
 - `artifacts/haiku_batch_speed_debug_report.md`
 
+## Single Hard Benchmark Profile
+
+The active benchmark profile set has been collapsed to one canonical profile, `hard_optimization`. This removes profile-selection ambiguity for the next round of experiments and makes every new run target the same difficult mixed workload.
+
+Profile design:
+
+- all nine workload families are included;
+- `initial_size=2600`;
+- `key_space=120000`;
+- `trace_length=1200`;
+- `traces_per_family=1`;
+- `repetitions=2`;
+- `warmup_prefix=120`.
+
+The point is to avoid an easy single-mode workload. The profile simultaneously pressures point lookups, hot-key access, bursty updates, local and wide range queries, distribution shifts, repeated windows, top-k queries, and negative lookup/delete churn. This should make routing errors more informative because different modes can plausibly help or hurt depending on the current parent solution.
+
+Historical artifacts still contain older profile names because they describe past runs. New configs and defaults now point to `hard_optimization`.
+
 ## C(b) Feedback-Use Diagnostic Infrastructure
 
 C(b) is now implemented as an optional protocol condition, without running any new Claude calls.

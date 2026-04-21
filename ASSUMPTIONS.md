@@ -8,8 +8,8 @@
 - In the default C(a) `top1_only` regime, the selected top-probability branch is promoted even if it is incorrect, matching the protocol's online visibility rule.
 - The first implementation prioritizes clean routing supervision data and smoke validation; LoRA/QLoRA training entrypoints are scaffolded but do not train unless explicitly run later.
 - Routing gain targets are computed over the requested/declared branch mode so every step has exactly one candidate per mode. Inferred modes are also logged and used by mode-conditioned diagnostic summaries.
-- The smoke run uses the full `paper_development` profile rather than a reduced toy profile for the protocol-level experiment.
-- Phase 2 deterministic expansion uses reduced `instance_overrides` inside the three named dev profiles. This keeps validation inexpensive while still exercising three profile IDs and all protocol machinery.
+- New smoke/protocol runs use `hard_optimization` as the only active benchmark profile. Small `instance_overrides` may still be used for quick validator tests.
+- Earlier Phase 2/3 historical artifacts used multiple profile names; those are preserved as historical data but no longer define the active benchmark.
 - In C(a), previous `mode_probs` remain visible in history because they are part of the model's own prior decision state. Offline branch feedback for non-selected modes is the leakage-sensitive object and is excluded from next-step visible branch history.
 - Phase 2 run directories remain under `runs/phase2_dev/`; repository `.gitignore` excludes `runs/*`, so committed Phase 2 outputs are the compact artifacts under `artifacts/` plus configs/tests/code.
 - Phase 3 used Claude CLI transport because `ANTHROPIC_API_KEY` was not present. The backend also includes a direct Anthropic Messages API transport for environments with an API key.
@@ -35,3 +35,5 @@
 - Controlled mode selection is an experimental override. When `selection_policy` is not `top1`, `selected_mode_top1` still records the model argmax, while `selected_mode` records the branch actually promoted as parent.
 - A one-step Haiku smoke shows the fastest current real-model route is batched `structured_edits`: one Claude call returns `mode_probs` plus all six branch-local edit candidates. This reduces repeated context/token overhead compared with six serial candidate calls.
 - The batched `structured_edits` result is a speed/cost finding, not yet a production-quality teacher-data decision. One of six batched candidates was rejected by source safety validation and logged as a no-op, so prompt/repair hardening is required before scaling.
+- New benchmark runs now use a single canonical profile, `hard_optimization`. Older profile names may remain in historical run artifacts, docs, and offline datasets, but the active benchmark configuration and experiment configs should not use them for new runs.
+- `hard_optimization` is intentionally mixed rather than mode-specific: all nine workload families are included so that routing has to manage tradeoffs among indexing, summaries, top-k, caching, layout, and micro edits.

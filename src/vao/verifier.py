@@ -180,7 +180,7 @@ def smoke_test() -> None:
     root.mkdir(parents=True, exist_ok=True)
     result = evaluate_solution(
         Path("benchmarks/stateful_query_engine/solution_template.py"),
-        "paper_development",
+        "hard_optimization",
         240,
         root / "baseline_verification.json",
         run_id="baseline_smoke",
@@ -192,7 +192,7 @@ def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--smoke_test", action="store_true")
     parser.add_argument("--solution")
-    parser.add_argument("--profile", default="paper_development")
+    parser.add_argument("--profile", default="hard_optimization")
     parser.add_argument("--out", default="artifacts/verifier_eval.json")
     parser.add_argument("--timeout", type=int, default=240)
     args = parser.parse_args(argv)

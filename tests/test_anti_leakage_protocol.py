@@ -60,7 +60,7 @@ def test_top1_visibility_does_not_promote_best_counterfactual(tmp_path: Path, mo
         },
         "benchmark": {
             "template_path": "benchmarks/stateful_query_engine/solution_template.py",
-            "profiles": ["paper_development"],
+            "profiles": ["hard_optimization"],
         },
         "models": {"include": ["leakage_probe"]},
         "output": {"root": str(tmp_path / "runs")},
@@ -69,7 +69,7 @@ def test_top1_visibility_does_not_promote_best_counterfactual(tmp_path: Path, mo
         config,
         "leakage_probe",
         {"adapter": "leakage_probe", "model_id": "leakage-probe-v1"},
-        "paper_development",
+        "hard_optimization",
         run_id="anti_leakage_probe",
     )
     rows = read_jsonl(run_dir / "evaluations.jsonl")
@@ -139,7 +139,7 @@ def test_cb_all_branches_with_fixed_mode_selection(tmp_path: Path, monkeypatch: 
         },
         "benchmark": {
             "template_path": "benchmarks/stateful_query_engine/solution_template.py",
-            "profiles": ["paper_development"],
+            "profiles": ["hard_optimization"],
         },
         "models": {"include": ["local_stub"]},
         "output": {"root": str(tmp_path / "runs")},
@@ -148,7 +148,7 @@ def test_cb_all_branches_with_fixed_mode_selection(tmp_path: Path, monkeypatch: 
         config,
         "local_stub",
         {"adapter": "local_stub", "model_id": "local-stub-v1"},
-        "paper_development",
+        "hard_optimization",
         run_id="cb_fixed_mode",
     )
     row = read_jsonl(run_dir / "evaluations.jsonl")[0]
@@ -213,7 +213,7 @@ def test_batched_candidate_generation_preserves_six_branch_contract(tmp_path: Pa
         },
         "benchmark": {
             "template_path": "benchmarks/stateful_query_engine/solution_template.py",
-            "profiles": ["paper_development"],
+            "profiles": ["hard_optimization"],
         },
         "models": {"include": ["local_stub"]},
         "output": {"root": str(tmp_path / "runs")},
@@ -222,7 +222,7 @@ def test_batched_candidate_generation_preserves_six_branch_contract(tmp_path: Pa
         config,
         "local_stub",
         {"adapter": "local_stub", "model_id": "local-stub-v1"},
-        "paper_development",
+        "hard_optimization",
         run_id="batched_local_contract",
     )
     row = read_jsonl(run_dir / "evaluations.jsonl")[0]

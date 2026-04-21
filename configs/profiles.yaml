@@ -1,10 +1,7 @@
 profiles:
   dev:
-    - paper_development
-    - search_hard_90min
-    - memory_holdout
+    - hard_optimization
   holdout:
-    - paper_holdout
-    - memory_holdout
+    - hard_optimization
   smoke:
-    - paper_development
+    - hard_optimization
