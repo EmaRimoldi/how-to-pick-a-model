@@ -16,3 +16,5 @@
 - The configured `claude_haiku` model id is `haiku`, which the local Claude CLI mapped to a current Haiku model during live runs.
 - Phase 3 uses reduced benchmark `instance_overrides` for the named profiles, matching Phase 2's protocol-validation style and keeping verifier runtime bounded.
 - Claude CLI token counts include cache creation/read tokens from Claude Code's runtime context. They are useful for cost tracking but should not be interpreted as minimal prompt-token counts for a direct Messages API implementation.
+- For future Claude runs, candidate generation is patch-based: the model must emit a `unified_diff` edit for the branch-local parent. The verifier still receives a complete `proposed_solution.py`, but that file is materialized by applying the patch rather than by asking the model to regenerate the full source.
+- Deterministic local/mock backends may continue to write complete candidate files directly because they are protocol-test utilities, not cost-sensitive real-model editing backends.

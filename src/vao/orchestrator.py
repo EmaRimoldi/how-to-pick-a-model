@@ -184,6 +184,9 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
             )
             evaluation.validation_failures.extend([] if source_validation.get("passed") else source_validation.get("errors", []))
             evaluation.gain = gain(step_parent_loss, evaluation.latent_loss, evaluation.correctness, incorrect_penalty)
+            model_edit_path = branch_dir / "model_edit.diff"
+            if model_edit_path.exists():
+                evaluation.model_edit_path = str(model_edit_path)
             branch_evaluations.append(evaluation)
 
         selected_eval = next(branch for branch in branch_evaluations if branch.declared_mode == selected_mode)

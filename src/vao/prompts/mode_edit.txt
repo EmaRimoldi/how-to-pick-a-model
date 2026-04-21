@@ -1,6 +1,6 @@
 You are participating in a verifiable agentic optimization experiment.
 
-Task: produce exactly one complete replacement solution.py for the requested primary edit mode.
+Task: produce exactly one patch edit for the requested primary edit mode.
 
 Requested primary mode: $mode
 
@@ -29,12 +29,16 @@ Safety constraints:
 
 - Return only structured JSON matching the requested schema.
 - Include declared_mode exactly equal to "$mode".
-- Include solution_py as a complete Python file, not a diff.
-- The code must be self-contained.
+- Include edit_format exactly equal to "unified_diff".
+- Include unified_diff as a standard unified diff from parent_solution.py to proposed_solution.py.
+- Do not return a complete replacement file.
+- The materialized code after applying the diff must be self-contained.
 - Allowed imports: __future__, array, bisect, collections, dataclasses, heapq, itertools, math, typing.
 - No file IO, network, subprocess, eval, exec, dynamic imports, or hidden global state outside each instance.
 - Do not import the benchmark, reference implementation, or previous candidates.
 - Do not include chain-of-thought.
+- The diff must apply cleanly to the exact parent solution.py shown below.
+- Keep the edit scoped to the requested primary mode.
 
 Profile summary:
 $profile_summary

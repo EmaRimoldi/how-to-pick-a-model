@@ -84,6 +84,7 @@ class BranchEvaluation(BaseModel):
     source_hash: str
     source_parent_hash: str | None = None
     file_path: str
+    model_edit_path: str | None = None
     correctness: bool
     latent_loss: float
     gain: float = 0.0

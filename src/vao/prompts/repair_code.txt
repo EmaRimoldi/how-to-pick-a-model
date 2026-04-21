@@ -5,9 +5,9 @@ Requested primary mode: $mode
 Failure details:
 $failure_details
 
-Previous candidate source:
-```python
-$candidate_source
+Previous candidate edit:
+```diff
+$candidate_edit
 ```
 
 Parent solution.py:
@@ -15,4 +15,4 @@ Parent solution.py:
 $current_solution_source
 ```
 
-Return only corrected structured JSON matching the requested schema. Include declared_mode exactly equal to "$mode" and solution_py as a complete safe Python file defining CandidateQueryEngine.
+Return only corrected structured JSON matching the requested schema. Include declared_mode exactly equal to "$mode", edit_format exactly equal to "unified_diff", and unified_diff as a patch that applies cleanly to the parent and produces a safe Python file defining CandidateQueryEngine.

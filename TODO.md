@@ -30,10 +30,13 @@
 - [x] Run Haiku smoke: 1 profile, 2 steps, 12 branches.
 - [x] Run Haiku dev: 3 profiles, 1 run each, 3 steps each.
 - [x] Generate Phase 3 Haiku estimator, routing, summary, and failure-mode artifacts.
+- [x] Convert Claude Haiku candidate outputs from full-file replacement to patch-based `unified_diff` edits.
+- [x] Add strict unified-diff application and tests for patch parsing/application failures.
 
 ## Remaining
 
 - [ ] Replace adapter scaffolds with real Claude Code and OpenAI-compatible model calls when credentials/endpoints are available.
+- [ ] Run a short Haiku patch-based smoke before any further real-model scaling.
 - [ ] Add pre-verifier dynamic source smoke tests for generated candidate constructors and common operations.
 - [ ] Improve prompts for `indexing` and `micro` declared-mode adherence.
 - [ ] Add controlled shared-checkpoint phi experiment implementation.

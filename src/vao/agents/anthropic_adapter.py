@@ -91,6 +91,7 @@ class ClaudeHaikuAdapter:
         validate_mode(mode)
         parent_path = branch_dir / "parent_solution.py"
         proposed_path = branch_dir / "proposed_solution.py"
+        model_edit_path = branch_dir / "model_edit.diff"
         parent_source = parent_path.read_text(encoding="utf-8")
         prompt = render_template(
             "mode_edit.txt",
@@ -106,7 +107,7 @@ class ClaudeHaikuAdapter:
         parsed: dict[str, Any] | None = None
         try:
             raw, meta = self._complete(prompt, self._edit_schema(mode), self.max_tokens_edit)
-            parsed = parse_edit_payload(raw, mode)
+            parsed = parse_edit_payload(raw, mode, parent_source=parent_source)
         except (BackendUnavailable, ModelOutputError, RuntimeError) as exc:
             errors.append(f"initial_edit_failed:{type(exc).__name__}:{exc}")
             if raw:
@@ -115,26 +116,30 @@ class ClaudeHaikuAdapter:
                         "repair_code.txt",
                         mode=mode,
                         failure_details=str(exc),
-                        candidate_source=_candidate_source_from_raw(raw),
+                        candidate_edit=_candidate_edit_from_raw(raw),
                         current_solution_source=parent_source,
                     )
                     raw, meta = self._complete(repair_prompt, self._edit_schema(mode), self.max_tokens_edit)
-                    parsed = parse_edit_payload(raw, mode)
+                    parsed = parse_edit_payload(raw, mode, parent_source=parent_source)
                     validation_failures.append("repair_used")
                 except (BackendUnavailable, ModelOutputError, RuntimeError) as repair_exc:
                     errors.append(f"repair_failed:{type(repair_exc).__name__}:{repair_exc}")
 
         if parsed is None:
             proposed_path.write_text(parent_source, encoding="utf-8")
+            model_edit_path.write_text("", encoding="utf-8")
             validation_failures.append("candidate_rejected_after_repair")
             parsed = {
                 "declared_mode": mode,
                 "secondary_modes": [],
                 "rationale": "Rejected malformed or unavailable Claude candidate; parent copied unchanged.",
+                "edit_format": "rejected_noop",
+                "unified_diff": "",
                 "source_validation": {"passed": True, "errors": []},
             }
         else:
             proposed_path.write_text(str(parsed["solution_py"]), encoding="utf-8")
+            model_edit_path.write_text(str(parsed.get("unified_diff", "")), encoding="utf-8")
 
         changed = sha256_file(parent_path) != sha256_file(proposed_path)
         prompt_hash = sha256_text(prompt)
@@ -153,6 +158,7 @@ class ClaudeHaikuAdapter:
                 if key != "solution_py"
             }
             | {
+                "model_edit_path": str(model_edit_path),
                 "transport": meta.get("transport"),
                 "usage": meta.get("usage"),
                 "cost_usd": meta.get("cost_usd"),
@@ -319,21 +325,27 @@ class ClaudeHaikuAdapter:
             "additionalProperties": False,
             "properties": {
                 "declared_mode": {"type": "string", "enum": [mode]},
+                "edit_format": {"type": "string", "enum": ["unified_diff"]},
                 "secondary_modes": {
                     "type": "array",
                     "items": {"type": "string", "enum": MODES},
                 },
                 "rationale": {"type": "string"},
-                "solution_py": {"type": "string"},
+                "unified_diff": {"type": "string"},
             },
-            "required": ["declared_mode", "rationale", "solution_py"],
+            "required": ["declared_mode", "edit_format", "rationale", "unified_diff"],
         }
 
 
-def _candidate_source_from_raw(raw: str) -> str:
+def _candidate_edit_from_raw(raw: str) -> str:
     try:
         payload = json.loads(raw)
     except json.JSONDecodeError:
         return raw
-    source = payload.get("solution_py") if isinstance(payload, dict) else None
+    if not isinstance(payload, dict):
+        return raw
+    diff_text = payload.get("unified_diff")
+    if isinstance(diff_text, str):
+        return diff_text
+    source = payload.get("solution_py")
     return source if isinstance(source, str) else raw

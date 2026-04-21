@@ -116,3 +116,16 @@
 - One candidate required repair after unsafe source validation (`banned attribute call: remove`); repair succeeded.
 - One branch caused a verifier runtime failure due to generated code using `bisect_left` with incompatible key/tuple comparison.
 - The pipeline is ready for a small Opus teacher pilot from a protocol standpoint, but prompt tuning and stricter pre-verifier dynamic checks are recommended first. Opus was not run in Phase 3.
+
+### Patch-Based Edit Protocol Update
+
+- Replaced the Claude Haiku candidate contract from complete `solution.py` replacement output to structured patch output.
+- The Claude edit prompt and JSON schema now require `edit_format: "unified_diff"` and a `unified_diff` from `parent_solution.py` to `proposed_solution.py`.
+- Added `src/vao/patches.py` with strict unified-diff application. Context and removed lines must match the branch parent exactly; malformed patches are rejected rather than guessed.
+- Updated `ClaudeHaikuAdapter` so each branch starts from the copied parent, saves the model patch as `model_edit.diff`, applies it to materialize `proposed_solution.py`, then lets the existing verifier evaluate that materialized file.
+- Added `model_edit_path` to branch evaluation records when a saved model patch exists.
+- Kept deterministic local backends working; they may still materialize full candidate files directly for cheap protocol tests.
+- Added fixture tests for patch parsing, exact patch application, context mismatch rejection, and prompt rendering that forbids complete replacement-file output.
+- Ran `pytest -q`: 27 tests passed.
+- Ran `PYTHONPATH=src:. python -m vao.verifier --smoke_test`: passed.
+- Ran a 1-step local orchestrator smoke at `runs/phase1_dev/patch_protocol_local_smoke`; `vao.validate_run` passed with 1 step and 6 branch evaluations.

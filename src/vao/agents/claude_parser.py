@@ -9,6 +9,7 @@ from typing import Any
 
 from pydantic import ValidationError
 
+from vao.patches import PatchApplyError, apply_unified_diff
 from vao.schemas import ModeDistribution
 from vao.taxonomy import MODES, MODE_SET, normalize_mode_probs, validate_mode
 from vao.verifier import validate_source
@@ -108,19 +109,17 @@ def parse_mode_distribution(raw_text: str) -> ModeDistribution:
         raise ModelOutputError(str(exc)) from exc
 
 
-def parse_edit_payload(raw_text: str, expected_mode: str) -> dict[str, Any]:
+def parse_edit_payload(raw_text: str, expected_mode: str, parent_source: str | None = None) -> dict[str, Any]:
     validate_mode(expected_mode)
     payload = parse_json_object(raw_text)
     declared = payload.get("declared_mode")
     if declared != expected_mode:
         raise ModelOutputError(f"declared_mode_mismatch:{declared!r}!={expected_mode!r}")
-    source = payload.get("solution_py")
-    if not isinstance(source, str) or not source.strip():
-        raise ModelOutputError("solution_py_missing_or_empty")
+    source = _materialize_candidate_source(payload, parent_source)
     validation = validate_candidate_source(source)
     if not validation["passed"]:
         raise ModelOutputError("candidate_source_invalid:" + ";".join(validation["errors"]))
-    return {**payload, "source_validation": validation}
+    return {**payload, "solution_py": source, "source_validation": validation}
 
 
 def validate_candidate_source(source: str) -> dict[str, Any]:
@@ -139,7 +138,7 @@ def validate_candidate_source(source: str) -> dict[str, Any]:
 
 
 def _looks_like_protocol_object(parsed: dict[str, Any]) -> bool:
-    return "mode_probs" in parsed or "solution_py" in parsed or "declared_mode" in parsed
+    return "mode_probs" in parsed or "solution_py" in parsed or "unified_diff" in parsed or "declared_mode" in parsed
 
 
 def _loads_object(text: str) -> dict[str, Any]:
@@ -150,3 +149,21 @@ def _loads_object(text: str) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ModelOutputError("json_payload_not_object")
     return payload
+
+
+def _materialize_candidate_source(payload: dict[str, Any], parent_source: str | None) -> str:
+    diff_text = payload.get("unified_diff")
+    if isinstance(diff_text, str) and diff_text.strip():
+        if parent_source is None:
+            raise ModelOutputError("parent_source_required_for_unified_diff")
+        try:
+            return apply_unified_diff(parent_source, diff_text)
+        except PatchApplyError as exc:
+            raise ModelOutputError(f"unified_diff_apply_failed:{exc}") from exc
+
+    # Legacy replacement-file support keeps old fixtures and placeholder
+    # adapters parseable, but the Claude Haiku prompt/schema now require patches.
+    source = payload.get("solution_py")
+    if isinstance(source, str) and source.strip():
+        return source
+    raise ModelOutputError("unified_diff_missing_or_empty")

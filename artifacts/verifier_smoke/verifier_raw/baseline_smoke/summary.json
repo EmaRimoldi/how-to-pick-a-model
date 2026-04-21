@@ -1,6 +1,6 @@
 {
   "run_id": "baseline_smoke",
-  "timestamp": "2026-04-21T05:28:12.913586+00:00",
+  "timestamp": "2026-04-21T06:23:46.763124+00:00",
   "candidate": "open_ended_solution",
   "candidate_file": "benchmarks/stateful_query_engine/solution_template.py",
   "candidate_id": "open_step_0000:c1b0166eb357",
@@ -61,17 +61,17 @@
     }
   },
   "score": {
-    "latent_loss": 0.9756598800664695,
+    "latent_loss": 0.9930935602705403,
     "family_losses": {
-      "uniform_read_heavy": 0.9936430366442695,
-      "zipf_hot_key": 0.9834235547790422,
-      "bursty_mixed": 0.9619651750156765,
-      "range_local_scans": 0.9711926530671043,
-      "distribution_shift": 0.9798134851198146,
-      "wide_range_churn": 0.9763668560168763,
-      "temporal_repeat_windows": 0.9691098792616589,
-      "topk_stress": 0.9684940987495867,
-      "negative_lookup_churn": 0.9769301819441963
+      "uniform_read_heavy": 1.001736424267857,
+      "zipf_hot_key": 0.9961244797076678,
+      "bursty_mixed": 0.9867519165309995,
+      "range_local_scans": 0.9998403035562662,
+      "distribution_shift": 1.0033125608604294,
+      "wide_range_churn": 1.0137465664806478,
+      "temporal_repeat_windows": 0.9398208385856854,
+      "topk_stress": 1.000671019717051,
+      "negative_lookup_churn": 0.9958379327282587
     },
     "weights": {
       "latency": 0.95,
@@ -79,7 +79,7 @@
     },
     "correct": true
   },
-  "elapsed_wall_seconds": 9.45656500000041,
+  "elapsed_wall_seconds": 9.349288541998249,
   "accounting_cost": 1.00647,
   "trace_manifest": [
     {
@@ -223,19 +223,19 @@
     "load_error": null,
     "correctness": true,
     "first_divergence": null,
-    "development_score": 0.9756598800664695,
+    "development_score": 0.9930935602705403,
     "holdout_score": null,
-    "latent_loss": 0.9756598800664695,
+    "latent_loss": 0.9930935602705403,
     "family_losses": {
-      "uniform_read_heavy": 0.9936430366442695,
-      "zipf_hot_key": 0.9834235547790422,
-      "bursty_mixed": 0.9619651750156765,
-      "range_local_scans": 0.9711926530671043,
-      "distribution_shift": 0.9798134851198146,
-      "wide_range_churn": 0.9763668560168763,
-      "temporal_repeat_windows": 0.9691098792616589,
-      "topk_stress": 0.9684940987495867,
-      "negative_lookup_churn": 0.9769301819441963
+      "uniform_read_heavy": 1.001736424267857,
+      "zipf_hot_key": 0.9961244797076678,
+      "bursty_mixed": 0.9867519165309995,
+      "range_local_scans": 0.9998403035562662,
+      "distribution_shift": 1.0033125608604294,
+      "wide_range_churn": 1.0137465664806478,
+      "temporal_repeat_windows": 0.9398208385856854,
+      "topk_stress": 1.000671019717051,
+      "negative_lookup_churn": 0.9958379327282587
     },
     "workload_families": [
       "bursty_mixed",
@@ -248,7 +248,7 @@
       "wide_range_churn",
       "zipf_hot_key"
     ],
-    "elapsed_wall_seconds": 9.45656500000041,
+    "elapsed_wall_seconds": 9.349288541998249,
     "accounting_cost": 1.00647,
     "memory_reads": 0,
     "memory_writes": 0,

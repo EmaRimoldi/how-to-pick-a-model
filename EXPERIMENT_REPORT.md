@@ -182,3 +182,23 @@ Correctness and failures:
 Readiness for Opus:
 
 The protocol and logging pipeline are ready for a small Opus teacher pilot. Before spending Opus budget, the Haiku run suggests adding stricter pre-verifier dynamic smoke checks for candidate constructors and common operations, and improving prompts for `indexing` and `micro` so declared mode better matches inferred behavior.
+
+## Patch-Based Edit Protocol Update
+
+After reviewing the Phase 3 timing and token profile, the Claude Haiku candidate contract was changed from full-file replacement to patch-based editing.
+
+Current behavior for future Claude runs:
+
+- The parent `solution.py` is still duplicated into six independent branch workspaces, one per mode.
+- Claude now returns a structured `unified_diff`, not a complete `solution.py`.
+- The framework saves the model's patch as `model_edit.diff`.
+- The framework applies the patch to the branch-local parent copy and materializes `proposed_solution.py` only for validation and verifier import.
+- All six branches still share the same parent hash, are evaluated offline, and only the top-1 branch by `mode_probs` is promoted.
+
+Validation after the change:
+
+- `pytest -q`: 27 passed.
+- `PYTHONPATH=src:. python -m vao.verifier --smoke_test`: passed.
+- `PYTHONPATH=src:. python -m vao.validate_run --run_dir runs/phase1_dev/patch_protocol_local_smoke`: passed with 1 step and 6 branches.
+
+The existing Phase 3 Haiku artifacts were produced before this patch-based contract change and should be interpreted as full-file replacement runs. New Claude runs will use patch-based candidate edits.

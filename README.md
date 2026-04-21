@@ -26,6 +26,8 @@ pytest -q
 
 Every run writes a self-contained directory containing `run_manifest.json`, `baseline_verification.json`, `evaluations.jsonl`, `run_summary.json`, resolved config, step branch workspaces, verifier outputs, and candidate source snapshots.
 
+For real Claude/Anthropic runs, candidate generation is patch-based: the model returns one `unified_diff` per mode. The framework saves that edit as `model_edit.diff`, applies it to the copied branch parent, and materializes `proposed_solution.py` only so the verifier can import a complete Python file.
+
 ## Main Entry Points
 
 - `python -m vao.orchestrator --config configs/phase1_dev.yaml`
