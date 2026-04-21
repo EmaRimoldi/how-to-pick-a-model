@@ -9,3 +9,6 @@
 - The first implementation prioritizes clean routing supervision data and smoke validation; LoRA/QLoRA training entrypoints are scaffolded but do not train unless explicitly run later.
 - Routing gain targets are computed over the requested/declared branch mode so every step has exactly one candidate per mode. Inferred modes are also logged and used by mode-conditioned diagnostic summaries.
 - The smoke run uses the full `paper_development` profile rather than a reduced toy profile for the protocol-level experiment.
+- Phase 2 deterministic expansion uses reduced `instance_overrides` inside the three named dev profiles. This keeps validation inexpensive while still exercising three profile IDs and all protocol machinery.
+- In C(a), previous `mode_probs` remain visible in history because they are part of the model's own prior decision state. Offline branch feedback for non-selected modes is the leakage-sensitive object and is excluded from next-step visible branch history.
+- Phase 2 run directories remain under `runs/phase2_dev/`; repository `.gitignore` excludes `runs/*`, so committed Phase 2 outputs are the compact artifacts under `artifacts/` plus configs/tests/code.

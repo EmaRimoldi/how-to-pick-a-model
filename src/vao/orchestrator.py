@@ -15,7 +15,7 @@ from benchmarks.stateful_query_engine.harness.run_benchmark import load_instance
 
 from vao.agents.base import AgentAdapter, AgentState
 from vao.agents.claude_code_adapter import ClaudeCodeAdapter
-from vao.agents.local_stub_adapter import LocalStubAdapter
+from vao.agents.local_stub_adapter import LeakageProbeAdapter, LocalStubAdapter
 from vao.agents.openai_compatible_adapter import OpenAICompatibleAdapter
 from vao.estimators import gain
 from vao.logging_utils import append_jsonl, now_iso, sha256_file, write_json
@@ -28,6 +28,7 @@ from vao.workspaces import create_run_dir, create_step_branches, init_workspace,
 
 ADAPTERS = {
     "local_stub": LocalStubAdapter,
+    "leakage_probe": LeakageProbeAdapter,
     "claude_code": ClaudeCodeAdapter,
     "openai_compatible": OpenAICompatibleAdapter,
 }
@@ -101,6 +102,7 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
         if wall_budget_seconds is not None and elapsed >= float(wall_budget_seconds):
             break
         parent_hash = sha256_file(workspace_solution)
+        step_parent_loss = parent_loss
         residual_wall = None if wall_budget_seconds is None else max(float(wall_budget_seconds) - elapsed, 0.0)
         state = AgentState(
             run_id=run_id_actual,
@@ -169,7 +171,7 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
                 instance_overrides=config.get("benchmark", {}).get("instance_overrides"),
             )
             evaluation.validation_failures.extend([] if source_validation.get("passed") else source_validation.get("errors", []))
-            evaluation.gain = gain(parent_loss, evaluation.latent_loss, evaluation.correctness, incorrect_penalty)
+            evaluation.gain = gain(step_parent_loss, evaluation.latent_loss, evaluation.correctness, incorrect_penalty)
             branch_evaluations.append(evaluation)
 
         selected_eval = next(branch for branch in branch_evaluations if branch.declared_mode == selected_mode)
@@ -189,6 +191,7 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
             timestamp=now_iso(),
             current_solution_hash=parent_hash,
             parent_solution_hash=parent_hash,
+            parent_latent_loss=step_parent_loss,
             mode_probs=normalize_mode_probs(distribution.mode_probs),
             mode_ranking=distribution.mode_ranking,
             selected_mode_top1=selected_mode,

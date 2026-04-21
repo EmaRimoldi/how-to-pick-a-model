@@ -82,6 +82,38 @@ class LocalStubAdapter:
         )
 
 
+class LeakageProbeAdapter(LocalStubAdapter):
+    """Deterministic adapter for anti-leakage tests.
+
+    It always routes top-1 to caching, while reusing the same candidate sources
+    as the local stub. On normal workloads the indexing branch is often the best
+    counterfactual, making this adapter useful for proving that promotion follows
+    q_t rather than the verifier result.
+    """
+
+    def __init__(self, model_id: str = "leakage-probe-v1", **kwargs: object) -> None:
+        super().__init__(model_id=model_id, **kwargs)
+
+    def propose_mode_distribution(self, state: AgentState) -> ModeDistribution:
+        probs = {
+            "layout": 0.10,
+            "indexing": 0.20,
+            "topk": 0.05,
+            "caching": 0.45,
+            "summaries": 0.15,
+            "micro": 0.05,
+        }
+        ranking = sorted(MODES, key=lambda mode: probs[mode], reverse=True)
+        parsed = {
+            "mode_probs": probs,
+            "mode_ranking": ranking,
+            "mode_rationales": {mode: f"Leakage probe rationale for {mode}." for mode in MODES},
+            "visible_history_snapshot": state.visible_history,
+        }
+        raw = json.dumps(parsed, sort_keys=True)
+        return ModeDistribution(raw_text=raw, parsed_json=parsed, **parsed)
+
+
 LAYOUT_SOURCE = '''"""Layout-mode candidate: dictionary-backed point operations."""
 
 from __future__ import annotations

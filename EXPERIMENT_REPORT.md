@@ -65,3 +65,50 @@ Validation result:
 - Shared-checkpoint controlled phi and full C(b) pre/post feedback-use diagnostics are not implemented beyond shared estimator/scaffold functions.
 - Routing LoRA training is intentionally scaffolded only; no model training was run.
 - The PDFs were not parsed because `pdftotext` is unavailable; the Markdown implementation guide was used as the operational source of truth.
+
+## Phase 2 Protocol Audit Results
+
+Phase 2 did not integrate Claude, Opus, Haiku, Qwen, or any expensive model backend. It focused on validating the C(a) protocol with deterministic local backends.
+
+Audit implementation:
+
+- Added `python -m vao.validate_run --run_dir <RUN_DIR>`.
+- Added a leakage-probe backend and pytest case where `caching` is top-1 by model probability while `indexing` is the best verified counterfactual.
+- Added explicit `parent_latent_loss` logging to step records.
+
+Audit findings:
+
+- All six candidate branches at each step are generated from the exact same parent solution hash.
+- All six branches are evaluated offline.
+- Only the top-1 branch according to `mode_probs` is promoted in `top1_only`.
+- Non-selected counterfactual results are logged in `evaluations.jsonl` but are excluded from next-step visible branch feedback.
+- `selected_as_visible` and `promoted_as_parent` are correctly logged as one branch per step in C(a).
+- `candidate_batch_id` groups exactly six candidate proposals per step.
+- `mode_probs` include exactly the six canonical modes and sum to 1.
+- `declared_mode` and `inferred_mode` are logged separately.
+- The audit found and fixed one bug: `parent_latent_loss` was initially logged after promotion. Gain computation already used the pre-promotion parent loss; the logged field now also records the step-start parent loss.
+
+Phase 2 deterministic expansion:
+
+- Profiles: `paper_development`, `memory_development`, `development`
+- Repeats per profile: 3
+- Steps per run: 5
+- Branches per step: 6
+- Runs: 9
+- Total steps: 45
+- Total branch evaluations: 270
+- Validator result: all 9 runs passed
+
+Generated Phase 2 artifacts:
+
+- `artifacts/phase2_dev_estimators.csv`
+- `artifacts/phase2_routing_dataset.jsonl`
+- `artifacts/phase2_summary.json`
+
+Aggregate Phase 2 summary:
+
+- Routing records: 45
+- Mean best loss across estimator rows: `0.5315144632525265`
+- Mean routing regret: `0.4836351511535289`
+- Mean JSD: `0.31462168201836854`
+- Invalid branch rate: `0.0`

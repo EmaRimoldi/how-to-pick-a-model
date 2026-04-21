@@ -17,6 +17,13 @@
 - [x] Generate routing dataset JSONL.
 - [x] Generate a simple endpoint table.
 - [x] Write `EXPERIMENT_REPORT.md`.
+- [x] Initialize git and commit the smoke-pass framework.
+- [x] Add C(a) run validator.
+- [x] Add explicit anti-leakage pytest coverage.
+- [x] Add parent-loss audit logging.
+- [x] Run 3-profile x 3-repeat x 5-step deterministic Phase 2 expansion.
+- [x] Validate every Phase 2 run.
+- [x] Generate Phase 2 estimator CSV, routing JSONL, and summary JSON.
 
 ## Remaining
 
@@ -24,4 +31,4 @@
 - [ ] Add controlled shared-checkpoint phi experiment implementation.
 - [ ] Add full C(b) pre/post feedback distribution diagnostic.
 - [ ] Add training implementation for `train_routing_lora.py`.
-- [ ] Run multi-profile and holdout experiments after smoke results are reviewed.
+- [ ] Run larger multi-profile and holdout experiments after protocol validation is reviewed.

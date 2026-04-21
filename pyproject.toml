@@ -29,6 +29,7 @@ vao-run = "vao.orchestrator:main"
 vao-verify = "vao.verifier:main"
 vao-estimators = "vao.analysis.compute_estimators:main"
 vao-build-routing-dataset = "vao.training.build_routing_dataset:main"
+vao-validate-run = "vao.validate_run:main"
 
 [build-system]
 requires = ["setuptools>=69", "wheel"]

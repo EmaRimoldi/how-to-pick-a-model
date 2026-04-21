@@ -115,6 +115,7 @@ class StepRecord(BaseModel):
     timestamp: str = Field(default_factory=utc_now_iso)
     current_solution_hash: str
     parent_solution_hash: str
+    parent_latent_loss: float | None = None
     mode_probs: dict[str, float]
     mode_ranking: list[str]
     selected_mode_top1: str

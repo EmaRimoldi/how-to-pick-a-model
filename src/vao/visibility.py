@@ -25,6 +25,7 @@ def build_visible_history(records: list[StepRecord], regime: str) -> list[dict[s
                 "branches": [
                     {
                         "primary_mode": branch.primary_mode,
+                        "declared_mode": branch.declared_mode,
                         "inferred_mode": branch.inferred_mode,
                         "correctness": branch.correctness,
                         "latent_loss": _finite_or_none(branch.latent_loss),

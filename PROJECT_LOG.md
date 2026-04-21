@@ -58,3 +58,36 @@
 - Smoke run completed 2 steps, 12 branch evaluations, 6 candidates per step, top-1 promotions `indexing` then `caching`.
 - Smoke best visible loss: `0.14148213936363915`; best counterfactual loss: `0.14148213936363915`.
 - Generated `artifacts/phase1_dev_estimators.csv`, `artifacts/routing_all.jsonl`, `artifacts/routing_train.jsonl`, `artifacts/routing_dev.jsonl`, and `artifacts/tables_endpoint.md`.
+
+### Phase 2: Protocol Audit and Anti-Leakage Validation
+
+- Initialized git and committed the smoke-pass framework as `Initial VAO experimental framework smoke pass`.
+- Added explicit `parent_latent_loss` logging to step records.
+- Added `python -m vao.validate_run --run_dir <RUN_DIR>` to validate C(a) protocol invariants from `evaluations.jsonl` plus branch artifacts.
+- Added `LeakageProbeAdapter`, a deterministic backend that assigns top probability to `caching` while the synthetic best counterfactual branch is `indexing`.
+- Added `tests/test_anti_leakage_protocol.py` to prove top-1 promotion follows `mode_probs`, not verifier hindsight, and that non-selected branch feedback is absent from the next visible branch history.
+- The new anti-leakage test initially exposed a parent-loss auditability bug: `parent_latent_loss` was being logged after branch promotion. Gain computation itself used the pre-promotion parent loss, but the logged parent-loss field was wrong. Fixed `vao.orchestrator` to snapshot `step_parent_loss` at step start and use it for both gain computation and logging.
+- Validated the existing phase1 smoke run with `vao.validate_run`; it passed.
+
+### Phase 2: Small Dev-Profile Expansion
+
+- Added `configs/phase2_dev.yaml` with three dev profiles: `paper_development`, `memory_development`, and `development`.
+- Ran deterministic local backend expansion: 3 profiles x 3 repeats x 5 steps x 6 branches.
+- Outputs are stored under `runs/phase2_dev/`.
+- All 9 phase2 runs passed `vao.validate_run`.
+- Total phase2 branch evaluations: 270.
+- Generated `artifacts/phase2_dev_estimators.csv` with 9 rows.
+- Generated `artifacts/phase2_routing_dataset.jsonl` with 45 routing records.
+- Generated `artifacts/phase2_summary.json`.
+
+### Phase 2 Protocol Audit Results
+
+- All six candidate branches at each step are generated from the same parent solution hash.
+- All six branches are evaluated offline and have `verification.json` artifacts.
+- In `top1_only`, exactly one branch is marked `selected_as_visible` and exactly one branch is marked `promoted_as_parent`.
+- The promoted branch matches `argmax(mode_probs)`, not necessarily the best verified counterfactual branch.
+- Non-selected counterfactual results remain in the step record but are excluded from reconstructed next-step visible branch history.
+- Gains are computed relative to the step-start parent loss and `parent_latent_loss` is now logged consistently.
+- Each step has one `candidate_batch_id` grouping exactly six candidate proposals.
+- `mode_probs` are validated to include exactly the six canonical modes and sum to 1.
+- `declared_mode` and `inferred_mode` are logged separately for each branch.

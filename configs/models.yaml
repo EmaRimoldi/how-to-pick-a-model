@@ -4,6 +4,11 @@ models:
     model_id: local-stub-v1
     temperature: 0.0
     timeout_seconds: 30
+  leakage_probe:
+    adapter: leakage_probe
+    model_id: leakage-probe-v1
+    temperature: 0.0
+    timeout_seconds: 30
   strong_claude:
     adapter: claude_code
     model_id: claude-opus-current
