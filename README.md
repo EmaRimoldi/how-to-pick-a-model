@@ -37,5 +37,17 @@ For real Claude/Anthropic runs, candidate generation is protocol-configurable. P
 - `python -m vao.validate_run --run_dir runs/phase2_dev/<run_id>`
 - `python -m vao.orchestrator --config configs/phase3_haiku_smoke.yaml --models claude_haiku --profiles paper_development --steps 2`
 - `python -m vao.analysis.phase3_summary --runs runs/phase35_patch/haiku_dev --summary_out artifacts/phase35_patch_summary.json --failure_modes_out artifacts/phase35_patch_failure_modes.json`
+- `python -m vao.orchestrator --config configs/phase4_teacher_opus_pilot.yaml --models claude_opus_teacher --steps 3`
+- `python -m vao.training.build_routing_dataset --runs runs/phase4_teacher_opus_pilot runs/phase4_teacher_opus --out artifacts/phase4_teacher_routing_dataset.jsonl`
+- `python -m vao.training.train_routing_lora --config configs/phase5_routing_student.yaml`
+- `python -m vao.orchestrator --config configs/phase5_routing_student_online.yaml --models local_stub,routing_student --steps 3`
 
 The closed-source and open-weight model adapters are scaffolded behind the same interface as the deterministic `local_stub` backend. `claude_haiku` is the first real backend. It can use `ANTHROPIC_API_KEY` through the Messages API or the authenticated Claude CLI transport when available. Normal tests use fixtures and do not require live model calls.
+
+## Current Milestone Status
+
+- Production teacher-data protocol is frozen as C(a) replacement-file candidate generation.
+- Opus teacher pilot produced 3 validated runs, 9 steps, and 54 branch evaluations.
+- Production Opus collection was attempted under `runs/phase4_teacher_opus/`; the first run produced 3 validated steps before `claude_cli_failed:1` stopped further collection.
+- The first routing-only student is a local TF-IDF/logistic router because `peft`/`trl` are not installed in the current environment. It writes `training/phase5_routing_student/model.pkl` and emits six-mode `mode_probs`.
+- Offline student eval on the tiny split improved regret/JSD versus the original teacher route on that split, but the online local controlled experiment was worse than the local-stub router. Treat Phase 5 as infrastructure plus a negative first result, not as evidence of a useful student yet.

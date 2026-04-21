@@ -1,0 +1,62 @@
+{
+  "created_for": "phase4_teacher_routing_dataset",
+  "entries": [
+    {
+      "branch_evaluation_count": 18,
+      "errors": [],
+      "model_id": "opus",
+      "profile_id": "paper_development",
+      "run_dir": "runs/phase4_teacher_opus_pilot/opus_teacher_pilot_claude_opus_teacher_paper_development",
+      "run_id": "opus_teacher_pilot_claude_opus_teacher_paper_development",
+      "source_root": "runs/phase4_teacher_opus_pilot",
+      "step_count": 3,
+      "validated": true,
+      "warnings": []
+    },
+    {
+      "branch_evaluation_count": 18,
+      "errors": [],
+      "model_id": "opus",
+      "profile_id": "development",
+      "run_dir": "runs/phase4_teacher_opus_pilot/opus_teacher_pilot_retry2_claude_opus_teacher_development",
+      "run_id": "opus_teacher_pilot_retry2_claude_opus_teacher_development",
+      "source_root": "runs/phase4_teacher_opus_pilot",
+      "step_count": 3,
+      "validated": true,
+      "warnings": []
+    },
+    {
+      "branch_evaluation_count": 18,
+      "errors": [],
+      "model_id": "opus",
+      "profile_id": "memory_development",
+      "run_dir": "runs/phase4_teacher_opus_pilot/opus_teacher_pilot_retry2_claude_opus_teacher_memory_development",
+      "run_id": "opus_teacher_pilot_retry2_claude_opus_teacher_memory_development",
+      "source_root": "runs/phase4_teacher_opus_pilot",
+      "step_count": 3,
+      "validated": true,
+      "warnings": []
+    },
+    {
+      "branch_evaluation_count": 18,
+      "errors": [],
+      "model_id": "opus",
+      "profile_id": "paper_development",
+      "run_dir": "runs/phase4_teacher_opus/opus_teacher_dev_r0",
+      "run_id": "opus_teacher_dev_r0",
+      "source_root": "runs/phase4_teacher_opus",
+      "step_count": 3,
+      "validated": true,
+      "warnings": []
+    }
+  ],
+  "production_matrix_completed": "limited_by_claude_cli_failure_after_one_partial_validated_run",
+  "production_matrix_target": {
+    "dev_profiles": 3,
+    "repeats_per_profile": 3,
+    "steps_per_run": 5
+  },
+  "validated_branch_evaluation_count": 72,
+  "validated_run_count": 4,
+  "validated_step_count": 12
+}

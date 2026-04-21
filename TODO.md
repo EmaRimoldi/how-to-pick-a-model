@@ -35,17 +35,20 @@
 - [x] Run corrected Phase 3.5 Haiku patch smoke and 3-profile dev validation.
 - [x] Compare Phase 3 replacement-file and Phase 3.5 patch-based protocols.
 - [x] Freeze production teacher-data protocol as replacement-file C(a).
+- [x] Run Opus teacher pilot with the frozen replacement-file protocol.
+- [x] Generate first validated Opus teacher routing dataset.
+- [x] Implement routing-only student training and offline evaluation.
+- [x] Run online routing-student comparison with deterministic local candidate edits.
+- [x] Add training implementation for `train_routing_lora.py`.
 
 ## Remaining
 
-- [ ] Run Opus teacher pilot with the frozen replacement-file protocol.
-- [ ] Generate first validated Opus teacher routing dataset.
-- [ ] Implement routing-only student training and offline evaluation.
-- [ ] Run online routing-student comparison if integration remains straightforward.
+- [ ] Resume/extend Opus teacher production collection when Claude CLI budget/availability allows the 3-profile x 3-repeat x 5-step target matrix.
 - [ ] Replace adapter scaffolds with real Claude Code and OpenAI-compatible model calls when credentials/endpoints are available.
 - [ ] Add pre-verifier dynamic source smoke tests for generated candidate constructors and common operations.
 - [ ] Improve prompts for `indexing` and `micro` declared-mode adherence.
 - [ ] Add controlled shared-checkpoint phi experiment implementation.
 - [ ] Add full C(b) pre/post feedback distribution diagnostic.
-- [ ] Add training implementation for `train_routing_lora.py`.
+- [ ] Replace the Phase 5 TF-IDF routing student with a LoRA-capable instruct model when `peft`/`trl` are available.
+- [ ] Re-run routing-only student after collecting substantially more teacher data.
 - [ ] Run larger multi-profile and holdout experiments after protocol validation is reviewed.

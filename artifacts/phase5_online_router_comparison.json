@@ -1,0 +1,36 @@
+{
+  "models": {
+    "local-stub-v1": {
+      "best_loss": 0.5609087939479241,
+      "invalid_rate": 0.0,
+      "mean_gain_caching": -0.7019953930365679,
+      "mean_gain_indexing": 0.5401278369505356,
+      "mean_gain_layout": 0.14326225272971657,
+      "mean_gain_micro": 0.1779851227085174,
+      "mean_gain_summaries": -2.830110843969399,
+      "mean_gain_topk": -0.8592217022085334,
+      "mean_jsd": 0.29794548674283794,
+      "mean_routing_regret": 0.41225891166210665,
+      "run_count": 3
+    },
+    "routing-student-v1": {
+      "best_loss": 0.9289299822748313,
+      "invalid_rate": 0.0,
+      "mean_gain_caching": -0.5855586517958135,
+      "mean_gain_indexing": 0.6616792505130529,
+      "mean_gain_layout": 0.26569927228269963,
+      "mean_gain_micro": 0.2929896607270989,
+      "mean_gain_summaries": -2.7104549525254793,
+      "mean_gain_topk": -0.7343019370730496,
+      "mean_jsd": 0.3984903302315484,
+      "mean_routing_regret": 0.9519646135760867,
+      "run_count": 3
+    }
+  },
+  "note": "Online router comparison uses deterministic local-stub candidate edits; only q_t differs.",
+  "student_minus_baseline": {
+    "best_loss": 0.3680211883269071,
+    "mean_jsd": 0.10054484348871046,
+    "mean_routing_regret": 0.5397057019139802
+  }
+}

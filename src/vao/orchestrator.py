@@ -18,6 +18,7 @@ from vao.agents.anthropic_adapter import ClaudeHaikuAdapter
 from vao.agents.claude_code_adapter import ClaudeCodeAdapter
 from vao.agents.local_stub_adapter import LeakageProbeAdapter, LocalStubAdapter
 from vao.agents.openai_compatible_adapter import OpenAICompatibleAdapter
+from vao.agents.routing_student_adapter import RoutingStudentAdapter
 from vao.estimators import gain
 from vao.logging_utils import append_jsonl, now_iso, sha256_file, write_json
 from vao.schemas import BranchEvaluation, ModeDistribution, RunManifest, StepRecord
@@ -33,6 +34,7 @@ ADAPTERS = {
     "claude_haiku": ClaudeHaikuAdapter,
     "claude_code": ClaudeCodeAdapter,
     "openai_compatible": OpenAICompatibleAdapter,
+    "routing_student": RoutingStudentAdapter,
 }
 
 

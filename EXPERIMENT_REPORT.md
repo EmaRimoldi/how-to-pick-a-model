@@ -247,3 +247,77 @@ Patch dev summary:
 The frozen production protocol for teacher-data generation is C(a) with full replacement-file candidate outputs.
 
 Reason: patch-based editing is semantically closer to literal code editing, but it is not yet the better production data protocol. On dev-to-dev comparison, patch-based Haiku was slower (`435.12574399842157` s/step vs `340.8956255912781` s/step), costlier (`0.5358607722222222` USD/step vs `0.46949549444444444`), and less stable than replacement-file generation. Patch mode remains useful for future method work, but teacher data should use the replacement-file protocol now so the project can move to Opus teacher data and routing-only post-training.
+
+## Phase 4 Teacher Experiments
+
+Teacher backend: Claude Opus through the already authenticated Claude CLI transport. The local CLI mapped `--model opus` to `claude-opus-4-6`.
+
+Pilot:
+
+- Runs: 3
+- Steps: 9
+- Branch evaluations: 54
+- Average wall-clock per step: `643.0542123052809` seconds
+- Average agent cost per step: `1.7984121666666668` USD
+- Correctness rate: `1.0` for every declared mode
+- Mean routing regret: `1.1281139870550456`
+- Mean JSD: `0.5378889006272523`
+- Best visible loss: `0.6531563169239188`
+- Best counterfactual loss: `0.6247162061075843`
+- Parse/repair/rejection failure rate: `0.1111111111111111`
+- Code validation failure rate: `0.12962962962962962`
+- Verifier failure rate: `0.0`
+
+Production collection:
+
+- Target matrix: 3 dev profiles x 3 repeats/profile x 5 steps/run.
+- Completed usable production data: one partial run, `runs/phase4_teacher_opus/opus_teacher_dev_r0`, with 3 validated steps and 18 branch evaluations.
+- Failure mode: `claude_cli_failed:1` during the next distribution call. The failed call produced no additional step record.
+- Decision: do not hammer the CLI after the failure. Use only validated steps and record the incomplete matrix explicitly in `artifacts/phase4_teacher_run_index.json`.
+
+Combined validated teacher dataset:
+
+- Validated runs: 4
+- Validated steps: 12
+- Branch evaluations: 72
+- Routing records: 12 in `artifacts/phase4_teacher_routing_dataset.jsonl`
+- Artifacts: `artifacts/phase4_teacher_dev_summary.json`, `artifacts/phase4_teacher_dev_estimators.csv`, `artifacts/phase4_teacher_dev_failure_modes.json`, `artifacts/phase4_teacher_run_index.json`
+
+Teacher data quality is sufficient for plumbing and a first routing-only experiment, but not sufficient for a strong post-training claim. The dataset is small, contains repair/no-op events, and covers only one validated partial production repeat beyond the pilot.
+
+## Phase 5 Routing-Only Post-Training
+
+Training setup:
+
+- Dataset: `artifacts/phase4_teacher_routing_dataset.jsonl`
+- Records: 12
+- Train/eval split: 9/3
+- Student: TF-IDF plus logistic-regression router saved at `training/phase5_routing_student/model.pkl`
+- LoRA status: not used because `peft` and `trl` are unavailable in the current environment.
+
+Offline eval on the tiny held-out split:
+
+- Top-1 productive-mode accuracy: `0.3333333333333333`
+- Original top-1 accuracy: `0.0`
+- Student predicted top-1 regret: `0.3552415586184802`
+- Original top-1 regret: `1.8929338747685003`
+- Student predicted JSD: `0.4982921482896754`
+- Original JSD: `0.6960718717431963`
+
+Online controlled routing-only eval:
+
+- Setup: deterministic local-stub candidate edits for all branches; only router `mode_probs` differ.
+- Baseline local-stub runs: 3
+- Routing-student runs: 3
+- All 6 online runs passed `vao.validate_run`.
+- Local-stub mean routing regret: `0.41225891166210665`
+- Student mean routing regret: `0.9519646135760867`
+- Local-stub average best loss: `0.5609087939479241`
+- Student average best loss: `0.9289299822748313`
+
+Conclusion:
+
+- The production protocol is frozen and validated.
+- The teacher pipeline works, but Opus collection is currently budget/availability limited.
+- The routing student improved offline regret/JSD on a very small held-out split but did not improve online behavior.
+- Before within-mode or feedback-use post-training, collect more validated teacher data, replace the TF-IDF router with a LoRA-capable local model when dependencies are available, and rerun the routing-only evaluation.

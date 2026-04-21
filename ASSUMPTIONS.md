@@ -19,3 +19,8 @@
 - Claude candidate generation is protocol-configurable. `patch_unified_diff` is kept as an experimental patch-faithful protocol, while `replacement_file` is frozen as the production teacher-data protocol after Phase 3.5 because it is faster, cheaper, and more reliable on the validated Haiku runs.
 - Deterministic local/mock backends may continue to write complete candidate files directly because they are protocol-test utilities, not cost-sensitive real-model editing backends.
 - Phase 4 teacher runs should use the frozen replacement-file C(a) protocol unless a future patch protocol clearly improves both reliability and wall-clock/cost.
+- Claude Opus teacher runs use the same Claude CLI transport as Haiku and the `claude_opus_teacher` model config. The local CLI maps `--model opus` to `claude-opus-4-6`.
+- Opus production collection is treated as budget/availability constrained. Completed steps from an interrupted run are usable only when `vao.validate_run` passes on the run directory.
+- The first Phase 4 teacher routing dataset combines validated pilot runs and the validated partial production run because the target production matrix was interrupted by `claude_cli_failed:1`.
+- The first routing-only student uses `sklearn` TF-IDF plus logistic regression rather than LoRA because `peft` and `trl` are missing in the current environment. This is a lightweight local routing student, not an end-to-end code-editing model.
+- The Phase 5 online experiment isolates routing only by using the trained student for mode probabilities and deterministic local-stub candidate edits for all six branches.

@@ -1,6 +1,6 @@
 {
   "run_id": "baseline_smoke",
-  "timestamp": "2026-04-21T08:25:22.674633+00:00",
+  "timestamp": "2026-04-21T10:42:08.890879+00:00",
   "candidate": "open_ended_solution",
   "candidate_file": "benchmarks/stateful_query_engine/solution_template.py",
   "candidate_id": "open_step_0000:c1b0166eb357",
@@ -61,17 +61,17 @@
     }
   },
   "score": {
-    "latent_loss": 1.006800326072132,
+    "latent_loss": 1.000346251868998,
     "family_losses": {
-      "uniform_read_heavy": 1.0059997382724994,
-      "zipf_hot_key": 0.996904133676872,
-      "bursty_mixed": 1.0001179096829624,
-      "range_local_scans": 1.0010113906547606,
-      "distribution_shift": 0.9986640049322165,
-      "wide_range_churn": 0.9974387248878871,
-      "temporal_repeat_windows": 1.0615342358865427,
-      "topk_stress": 1.0031608999884336,
-      "negative_lookup_churn": 0.9963718966670154
+      "uniform_read_heavy": 0.995560791206573,
+      "zipf_hot_key": 1.002050717693486,
+      "bursty_mixed": 0.9982903284556717,
+      "range_local_scans": 1.002293512501325,
+      "distribution_shift": 1.0001605880667301,
+      "wide_range_churn": 1.0039408864479031,
+      "temporal_repeat_windows": 1.0012136792395565,
+      "topk_stress": 1.000128767831157,
+      "negative_lookup_churn": 0.9994769953785803
     },
     "weights": {
       "latency": 0.95,
@@ -79,7 +79,7 @@
     },
     "correct": true
   },
-  "elapsed_wall_seconds": 12.077298082993366,
+  "elapsed_wall_seconds": 12.045621917000972,
   "accounting_cost": 1.00647,
   "trace_manifest": [
     {
@@ -223,19 +223,19 @@
     "load_error": null,
     "correctness": true,
     "first_divergence": null,
-    "development_score": 1.006800326072132,
+    "development_score": 1.000346251868998,
     "holdout_score": null,
-    "latent_loss": 1.006800326072132,
+    "latent_loss": 1.000346251868998,
     "family_losses": {
-      "uniform_read_heavy": 1.0059997382724994,
-      "zipf_hot_key": 0.996904133676872,
-      "bursty_mixed": 1.0001179096829624,
-      "range_local_scans": 1.0010113906547606,
-      "distribution_shift": 0.9986640049322165,
-      "wide_range_churn": 0.9974387248878871,
-      "temporal_repeat_windows": 1.0615342358865427,
-      "topk_stress": 1.0031608999884336,
-      "negative_lookup_churn": 0.9963718966670154
+      "uniform_read_heavy": 0.995560791206573,
+      "zipf_hot_key": 1.002050717693486,
+      "bursty_mixed": 0.9982903284556717,
+      "range_local_scans": 1.002293512501325,
+      "distribution_shift": 1.0001605880667301,
+      "wide_range_churn": 1.0039408864479031,
+      "temporal_repeat_windows": 1.0012136792395565,
+      "topk_stress": 1.000128767831157,
+      "negative_lookup_churn": 0.9994769953785803
     },
     "workload_families": [
       "bursty_mixed",
@@ -248,7 +248,7 @@
       "wide_range_churn",
       "zipf_hot_key"
     ],
-    "elapsed_wall_seconds": 12.077298082993366,
+    "elapsed_wall_seconds": 12.045621917000972,
     "accounting_cost": 1.00647,
     "memory_reads": 0,
     "memory_writes": 0,

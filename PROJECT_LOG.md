@@ -147,3 +147,28 @@
 - Dev-to-dev comparison: patch averaged `435.12574399842157` seconds per step vs replacement `340.8956255912781`; patch averaged `$0.5358607722222222` per step vs replacement `$0.46949549444444444`.
 - Patch failure rates were also higher: parse/repair/rejection rate `0.18518518518518517`, source validation failure rate `0.12962962962962962`, verifier failure rate `0.18518518518518517`.
 - Replacement-file remains the production protocol for Opus teacher data. Patch mode remains available for later method work but will not block teacher/routing-only milestones.
+
+### Phase 4 Teacher Experiments
+
+- Added `configs/phase4_teacher_opus_pilot.yaml` and `configs/phase4_teacher_opus.yaml` using the frozen replacement-file C(a) protocol.
+- Verified the local Claude CLI can invoke Opus, mapped by the CLI to `claude-opus-4-6`.
+- Ran the Opus teacher pilot across `paper_development`, `memory_development`, and `development`: 3 validated runs, 9 steps, 54 branch evaluations.
+- Pilot validation passed: `pytest -q` passed with 33 tests before routing-student additions; `PYTHONPATH=src:. python -m vao.verifier --smoke_test` passed; `vao.validate_run` passed on all pilot run directories.
+- Generated `artifacts/phase4_teacher_pilot_summary.json`, `artifacts/phase4_teacher_pilot_estimators.csv`, `artifacts/phase4_teacher_pilot_failure_modes.json`, and `artifacts/phase4_teacher_pilot_routing_dataset.jsonl`.
+- Attempted production Opus collection under `runs/phase4_teacher_opus/` with target matrix 3 profiles x 3 repeats x 5 steps.
+- The first production run `runs/phase4_teacher_opus/opus_teacher_dev_r0` completed 3 valid steps and 18 branch evaluations before `claude_cli_failed:1` stopped the next distribution call.
+- The partial production run passed `vao.validate_run`, so its completed steps were retained as valid teacher data.
+- Combined validated teacher data now contains 4 runs, 12 steps, and 72 branch evaluations.
+- Generated `artifacts/phase4_teacher_dev_summary.json`, `artifacts/phase4_teacher_dev_estimators.csv`, `artifacts/phase4_teacher_routing_dataset.jsonl`, and `artifacts/phase4_teacher_run_index.json`.
+
+### Phase 5 Routing-Only Post-Training
+
+- Added a routing-only training pipeline in `src/vao/training/train_routing_lora.py`.
+- Because `peft` and `trl` are not installed locally, the first student uses a deterministic TF-IDF plus logistic-regression router and records `lora_used: false`.
+- Added `src/vao/agents/routing_student_adapter.py`, which uses the trained router for `mode_probs` and deterministic local-stub candidate edits for online routing-only evaluation.
+- Added `configs/phase5_routing_student.yaml` and `configs/phase5_routing_student_online.yaml`.
+- Trained on `artifacts/phase4_teacher_routing_dataset.jsonl`: 12 records total, 9 train, 3 eval.
+- Offline eval: top-1 accuracy `0.3333333333333333`; predicted top-1 regret `0.3552415586184802` vs original top-1 regret `1.8929338747685003` on the tiny eval split; predicted JSD `0.4982921482896754` vs original JSD `0.6960718717431963`.
+- Ran online local controlled evaluation with 6 validated runs: 3 local-stub baseline runs and 3 routing-student runs.
+- Online result was negative: routing student mean routing regret `0.9519646135760867` vs local-stub `0.41225891166210665`; student best loss was worse by `0.3680211883269071`.
+- Final validation passed: `pytest -q` passed with 34 tests; verifier smoke passed; `vao.validate_run` passed on all Phase 4 and Phase 5 run directories used for artifacts.

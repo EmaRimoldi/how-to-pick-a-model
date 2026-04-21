@@ -1,0 +1,15 @@
+training:
+  base_model: sklearn-tfidf-logreg
+  train_records: artifacts/phase4_teacher_routing_dataset.jsonl
+  output_dir: training/phase5_routing_student
+  train_summary_out: artifacts/phase5_routing_train_summary.json
+  eval_summary_out: artifacts/phase5_routing_eval_summary.json
+  seed: 5105
+  dev_fraction: 0.25
+  max_source_chars: 12000
+  max_features: 5000
+  ngram_range: [1, 2]
+  min_df: 1
+  max_iter: 1000
+  class_weight: balanced
+  lora_unavailable_reason: peft_not_installed_in_current_environment

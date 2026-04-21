@@ -16,7 +16,18 @@ from vao.taxonomy import MODES
 
 
 def summarize(runs_root: Path) -> tuple[dict[str, Any], dict[str, Any]]:
-    run_dirs = iter_run_dirs(runs_root)
+    return summarize_roots([runs_root])
+
+
+def summarize_roots(runs_roots: list[Path]) -> tuple[dict[str, Any], dict[str, Any]]:
+    run_dirs = []
+    seen = set()
+    for root in runs_roots:
+        for run_dir in iter_run_dirs(root):
+            resolved = run_dir.resolve()
+            if resolved not in seen:
+                seen.add(resolved)
+                run_dirs.append(run_dir)
     records = []
     for run_dir in run_dirs:
         records.extend(load_step_records(run_dir))
@@ -136,11 +147,11 @@ def _mean_float_by_mode(values: dict[str, list[float]]) -> dict[str, float | Non
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--runs", required=True)
+    parser.add_argument("--runs", nargs="+", required=True)
     parser.add_argument("--summary_out", required=True)
     parser.add_argument("--failure_modes_out", required=True)
     args = parser.parse_args(argv)
-    summary, failure_modes = summarize(Path(args.runs))
+    summary, failure_modes = summarize_roots([Path(item) for item in args.runs])
     Path(args.summary_out).parent.mkdir(parents=True, exist_ok=True)
     Path(args.summary_out).write_text(json.dumps(summary, indent=2, sort_keys=True, allow_nan=True), encoding="utf-8")
     Path(args.failure_modes_out).write_text(json.dumps(failure_modes, indent=2, sort_keys=True, allow_nan=True), encoding="utf-8")
