@@ -1,0 +1,543 @@
+{
+  "trace_metrics": [
+    {
+      "trace_id": "paper_development_uniform_read_heavy_21000",
+      "family": "uniform_read_heavy",
+      "repetitions": [
+        {
+          "elapsed_seconds": 0.05547037500946317,
+          "throughput_ops_per_sec": 12619.348614113047,
+          "p95_latency_ns": 306004.2,
+          "mean_latency_ns": 76676.09142857142,
+          "peak_memory_bytes": 223512
+        },
+        {
+          "elapsed_seconds": 0.05697920800594147,
+          "throughput_ops_per_sec": 12285.183043032257,
+          "p95_latency_ns": 311106.89999999997,
+          "mean_latency_ns": 78416.91714285714,
+          "peak_memory_bytes": 238984
+        }
+      ],
+      "median_elapsed_seconds": 0.05622479150770232,
+      "median_throughput_ops_per_sec": 12452.265828572652,
+      "median_p95_latency_ns": 308555.55,
+      "median_peak_memory_bytes": 231248.0,
+      "latency_iqr_ns": 2551.3499999999767
+    },
+    {
+      "trace_id": "paper_development_zipf_hot_key_31000",
+      "family": "zipf_hot_key",
+      "repetitions": [
+        {
+          "elapsed_seconds": 0.05743270801031031,
+          "throughput_ops_per_sec": 12188.176811623372,
+          "p95_latency_ns": 308674.35,
+          "mean_latency_ns": 79414.46428571429,
+          "peak_memory_bytes": 219964
+        },
+        {
+          "elapsed_seconds": 0.057369041998754255,
+          "throughput_ops_per_sec": 12201.702793210321,
+          "p95_latency_ns": 309129.15,
+          "mean_latency_ns": 79408.07428571429,
+          "peak_memory_bytes": 219896
+        }
+      ],
+      "median_elapsed_seconds": 0.05740087500453228,
+      "median_throughput_ops_per_sec": 12194.939802416848,
+      "median_p95_latency_ns": 308901.75,
+      "median_peak_memory_bytes": 219930.0,
+      "latency_iqr_ns": 227.40000000002328
+    },
+    {
+      "trace_id": "paper_development_bursty_mixed_41000",
+      "family": "bursty_mixed",
+      "repetitions": [
+        {
+          "elapsed_seconds": 0.104924832994584,
+          "throughput_ops_per_sec": 6671.442593919903,
+          "p95_latency_ns": 349681.55,
+          "mean_latency_ns": 147665.55142857143,
+          "peak_memory_bytes": 196764
+        },
+        {
+          "elapsed_seconds": 0.10593133400834631,
+          "throughput_ops_per_sec": 6608.054232044761,
+          "p95_latency_ns": 351004.19999999995,
+          "mean_latency_ns": 148990.00857142857,
+          "peak_memory_bytes": 196756
+        }
+      ],
+      "median_elapsed_seconds": 0.10542808350146515,
+      "median_throughput_ops_per_sec": 6639.7484129823315,
+      "median_p95_latency_ns": 350342.875,
+      "median_peak_memory_bytes": 196760.0,
+      "latency_iqr_ns": 661.3250000000116
+    },
+    {
+      "trace_id": "paper_development_range_local_scans_51000",
+      "family": "range_local_scans",
+      "repetitions": [
+        {
+          "elapsed_seconds": 0.056951167003717273,
+          "throughput_ops_per_sec": 12291.23188914303,
+          "p95_latency_ns": 299064.89999999997,
+          "mean_latency_ns": 78365.54428571429,
+          "peak_memory_bytes": 275576
+        },
+        {
+          "elapsed_seconds": 0.057025249989237636,
+          "throughput_ops_per_sec": 12275.264030093876,
+          "p95_latency_ns": 300848.55,
+          "mean_latency_ns": 78474.10428571429,
+          "peak_memory_bytes": 275512
+        }
+      ],
+      "median_elapsed_seconds": 0.056988208496477455,
+      "median_throughput_ops_per_sec": 12283.247959618453,
+      "median_p95_latency_ns": 299956.725,
+      "median_peak_memory_bytes": 275544.0,
+      "latency_iqr_ns": 891.8249999999534
+    },
+    {
+      "trace_id": "paper_development_distribution_shift_61000",
+      "family": "distribution_shift",
+      "repetitions": [
+        {
+          "elapsed_seconds": 0.08153433300321922,
+          "throughput_ops_per_sec": 8585.340361738925,
+          "p95_latency_ns": 318429.49999999994,
+          "mean_latency_ns": 113013.80142857143,
+          "peak_memory_bytes": 334788
+        },
+        {
+          "elapsed_seconds": 0.08143133300472982,
+          "throughput_ops_per_sec": 8596.199695752757,
+          "p95_latency_ns": 320547.8999999999,
+          "mean_latency_ns": 112724.21,
+          "peak_memory_bytes": 334716
+        }
+      ],
+      "median_elapsed_seconds": 0.08148283300397452,
+      "median_throughput_ops_per_sec": 8590.770028745841,
+      "median_p95_latency_ns": 319488.69999999995,
+      "median_peak_memory_bytes": 334752.0,
+      "latency_iqr_ns": 1059.2000000000116
+    },
+    {
+      "trace_id": "paper_development_wide_range_churn_71000",
+      "family": "wide_range_churn",
+      "repetitions": [
+        {
+          "elapsed_seconds": 0.14290816699212883,
+          "throughput_ops_per_sec": 4898.250497038108,
+          "p95_latency_ns": 343733.95,
+          "mean_latency_ns": 201448.23285714287,
+          "peak_memory_bytes": 268692
+        },
+        {
+          "elapsed_seconds": 0.1433561669982737,
+          "throughput_ops_per_sec": 4882.943054751383,
+          "p95_latency_ns": 346337.2,
+          "mean_latency_ns": 202098.87,
+          "peak_memory_bytes": 268688
+        }
+      ],
+      "median_elapsed_seconds": 0.14313216699520126,
+      "median_throughput_ops_per_sec": 4890.596775894745,
+      "median_p95_latency_ns": 345035.575,
+      "median_peak_memory_bytes": 268690.0,
+      "latency_iqr_ns": 1301.625
+    },
+    {
+      "trace_id": "paper_development_temporal_repeat_windows_81000",
+      "family": "temporal_repeat_windows",
+      "repetitions": [
+        {
+          "elapsed_seconds": 0.039287958992645144,
+          "throughput_ops_per_sec": 17817.163781173836,
+          "p95_latency_ns": 53147.89999999998,
+          "mean_latency_ns": 53080.061428571425,
+          "peak_memory_bytes": 265268
+        },
+        {
+          "elapsed_seconds": 0.03912858400144614,
+          "throughput_ops_per_sec": 17889.73503293983,
+          "p95_latency_ns": 52906.24999999997,
+          "mean_latency_ns": 52865.59285714286,
+          "peak_memory_bytes": 265196
+        }
+      ],
+      "median_elapsed_seconds": 0.039208271497045644,
+      "median_throughput_ops_per_sec": 17853.449407056833,
+      "median_p95_latency_ns": 53027.074999999975,
+      "median_peak_memory_bytes": 265232.0,
+      "latency_iqr_ns": 120.82500000000437
+    },
+    {
+      "trace_id": "paper_development_topk_stress_91000",
+      "family": "topk_stress",
+      "repetitions": [
+        {
+          "elapsed_seconds": 0.1006726249906933,
+          "throughput_ops_per_sec": 6953.230831764958,
+          "p95_latency_ns": 314387.5,
+          "mean_latency_ns": 136173.6242857143,
+          "peak_memory_bytes": 779856
+        },
+        {
+          "elapsed_seconds": 0.10016137499769684,
+          "throughput_ops_per_sec": 6988.721950113965,
+          "p95_latency_ns": 314678.5,
+          "mean_latency_ns": 135641.7857142857,
+          "peak_memory_bytes": 779792
+        }
+      ],
+      "median_elapsed_seconds": 0.10041699999419507,
+      "median_throughput_ops_per_sec": 6970.976390939461,
+      "median_p95_latency_ns": 314533.0,
+      "median_peak_memory_bytes": 779824.0,
+      "latency_iqr_ns": 145.5
+    },
+    {
+      "trace_id": "paper_development_negative_lookup_churn_101000",
+      "family": "negative_lookup_churn",
+      "repetitions": [
+        {
+          "elapsed_seconds": 0.05896529200254008,
+          "throughput_ops_per_sec": 11871.390376051148,
+          "p95_latency_ns": 307143.75,
+          "mean_latency_ns": 82147.08142857143,
+          "peak_memory_bytes": 166448
+        },
+        {
+          "elapsed_seconds": 0.05863887500890996,
+          "throughput_ops_per_sec": 11937.473218809835,
+          "p95_latency_ns": 305669.05,
+          "mean_latency_ns": 81704.49285714286,
+          "peak_memory_bytes": 166440
+        }
+      ],
+      "median_elapsed_seconds": 0.05880208350572502,
+      "median_throughput_ops_per_sec": 11904.43179743049,
+      "median_p95_latency_ns": 306406.4,
+      "median_peak_memory_bytes": 166444.0,
+      "latency_iqr_ns": 737.3500000000349
+    }
+  ],
+  "family_metrics": {
+    "uniform_read_heavy": {
+      "traces": [
+        {
+          "trace_id": "paper_development_uniform_read_heavy_21000",
+          "family": "uniform_read_heavy",
+          "repetitions": [
+            {
+              "elapsed_seconds": 0.05547037500946317,
+              "throughput_ops_per_sec": 12619.348614113047,
+              "p95_latency_ns": 306004.2,
+              "mean_latency_ns": 76676.09142857142,
+              "peak_memory_bytes": 223512
+            },
+            {
+              "elapsed_seconds": 0.05697920800594147,
+              "throughput_ops_per_sec": 12285.183043032257,
+              "p95_latency_ns": 311106.89999999997,
+              "mean_latency_ns": 78416.91714285714,
+              "peak_memory_bytes": 238984
+            }
+          ],
+          "median_elapsed_seconds": 0.05622479150770232,
+          "median_throughput_ops_per_sec": 12452.265828572652,
+          "median_p95_latency_ns": 308555.55,
+          "median_peak_memory_bytes": 231248.0,
+          "latency_iqr_ns": 2551.3499999999767
+        }
+      ],
+      "median_p95_latency_ns": 308555.55,
+      "median_throughput_ops_per_sec": 12452.265828572652,
+      "median_peak_memory_bytes": 231248.0,
+      "latency_iqr_ns": 2551.3499999999767,
+      "trace_count": 1
+    },
+    "zipf_hot_key": {
+      "traces": [
+        {
+          "trace_id": "paper_development_zipf_hot_key_31000",
+          "family": "zipf_hot_key",
+          "repetitions": [
+            {
+              "elapsed_seconds": 0.05743270801031031,
+              "throughput_ops_per_sec": 12188.176811623372,
+              "p95_latency_ns": 308674.35,
+              "mean_latency_ns": 79414.46428571429,
+              "peak_memory_bytes": 219964
+            },
+            {
+              "elapsed_seconds": 0.057369041998754255,
+              "throughput_ops_per_sec": 12201.702793210321,
+              "p95_latency_ns": 309129.15,
+              "mean_latency_ns": 79408.07428571429,
+              "peak_memory_bytes": 219896
+            }
+          ],
+          "median_elapsed_seconds": 0.05740087500453228,
+          "median_throughput_ops_per_sec": 12194.939802416848,
+          "median_p95_latency_ns": 308901.75,
+          "median_peak_memory_bytes": 219930.0,
+          "latency_iqr_ns": 227.40000000002328
+        }
+      ],
+      "median_p95_latency_ns": 308901.75,
+      "median_throughput_ops_per_sec": 12194.939802416848,
+      "median_peak_memory_bytes": 219930.0,
+      "latency_iqr_ns": 227.40000000002328,
+      "trace_count": 1
+    },
+    "bursty_mixed": {
+      "traces": [
+        {
+          "trace_id": "paper_development_bursty_mixed_41000",
+          "family": "bursty_mixed",
+          "repetitions": [
+            {
+              "elapsed_seconds": 0.104924832994584,
+              "throughput_ops_per_sec": 6671.442593919903,
+              "p95_latency_ns": 349681.55,
+              "mean_latency_ns": 147665.55142857143,
+              "peak_memory_bytes": 196764
+            },
+            {
+              "elapsed_seconds": 0.10593133400834631,
+              "throughput_ops_per_sec": 6608.054232044761,
+              "p95_latency_ns": 351004.19999999995,
+              "mean_latency_ns": 148990.00857142857,
+              "peak_memory_bytes": 196756
+            }
+          ],
+          "median_elapsed_seconds": 0.10542808350146515,
+          "median_throughput_ops_per_sec": 6639.7484129823315,
+          "median_p95_latency_ns": 350342.875,
+          "median_peak_memory_bytes": 196760.0,
+          "latency_iqr_ns": 661.3250000000116
+        }
+      ],
+      "median_p95_latency_ns": 350342.875,
+      "median_throughput_ops_per_sec": 6639.7484129823315,
+      "median_peak_memory_bytes": 196760.0,
+      "latency_iqr_ns": 661.3250000000116,
+      "trace_count": 1
+    },
+    "range_local_scans": {
+      "traces": [
+        {
+          "trace_id": "paper_development_range_local_scans_51000",
+          "family": "range_local_scans",
+          "repetitions": [
+            {
+              "elapsed_seconds": 0.056951167003717273,
+              "throughput_ops_per_sec": 12291.23188914303,
+              "p95_latency_ns": 299064.89999999997,
+              "mean_latency_ns": 78365.54428571429,
+              "peak_memory_bytes": 275576
+            },
+            {
+              "elapsed_seconds": 0.057025249989237636,
+              "throughput_ops_per_sec": 12275.264030093876,
+              "p95_latency_ns": 300848.55,
+              "mean_latency_ns": 78474.10428571429,
+              "peak_memory_bytes": 275512
+            }
+          ],
+          "median_elapsed_seconds": 0.056988208496477455,
+          "median_throughput_ops_per_sec": 12283.247959618453,
+          "median_p95_latency_ns": 299956.725,
+          "median_peak_memory_bytes": 275544.0,
+          "latency_iqr_ns": 891.8249999999534
+        }
+      ],
+      "median_p95_latency_ns": 299956.725,
+      "median_throughput_ops_per_sec": 12283.247959618453,
+      "median_peak_memory_bytes": 275544.0,
+      "latency_iqr_ns": 891.8249999999534,
+      "trace_count": 1
+    },
+    "distribution_shift": {
+      "traces": [
+        {
+          "trace_id": "paper_development_distribution_shift_61000",
+          "family": "distribution_shift",
+          "repetitions": [
+            {
+              "elapsed_seconds": 0.08153433300321922,
+              "throughput_ops_per_sec": 8585.340361738925,
+              "p95_latency_ns": 318429.49999999994,
+              "mean_latency_ns": 113013.80142857143,
+              "peak_memory_bytes": 334788
+            },
+            {
+              "elapsed_seconds": 0.08143133300472982,
+              "throughput_ops_per_sec": 8596.199695752757,
+              "p95_latency_ns": 320547.8999999999,
+              "mean_latency_ns": 112724.21,
+              "peak_memory_bytes": 334716
+            }
+          ],
+          "median_elapsed_seconds": 0.08148283300397452,
+          "median_throughput_ops_per_sec": 8590.770028745841,
+          "median_p95_latency_ns": 319488.69999999995,
+          "median_peak_memory_bytes": 334752.0,
+          "latency_iqr_ns": 1059.2000000000116
+        }
+      ],
+      "median_p95_latency_ns": 319488.69999999995,
+      "median_throughput_ops_per_sec": 8590.770028745841,
+      "median_peak_memory_bytes": 334752.0,
+      "latency_iqr_ns": 1059.2000000000116,
+      "trace_count": 1
+    },
+    "wide_range_churn": {
+      "traces": [
+        {
+          "trace_id": "paper_development_wide_range_churn_71000",
+          "family": "wide_range_churn",
+          "repetitions": [
+            {
+              "elapsed_seconds": 0.14290816699212883,
+              "throughput_ops_per_sec": 4898.250497038108,
+              "p95_latency_ns": 343733.95,
+              "mean_latency_ns": 201448.23285714287,
+              "peak_memory_bytes": 268692
+            },
+            {
+              "elapsed_seconds": 0.1433561669982737,
+              "throughput_ops_per_sec": 4882.943054751383,
+              "p95_latency_ns": 346337.2,
+              "mean_latency_ns": 202098.87,
+              "peak_memory_bytes": 268688
+            }
+          ],
+          "median_elapsed_seconds": 0.14313216699520126,
+          "median_throughput_ops_per_sec": 4890.596775894745,
+          "median_p95_latency_ns": 345035.575,
+          "median_peak_memory_bytes": 268690.0,
+          "latency_iqr_ns": 1301.625
+        }
+      ],
+      "median_p95_latency_ns": 345035.575,
+      "median_throughput_ops_per_sec": 4890.596775894745,
+      "median_peak_memory_bytes": 268690.0,
+      "latency_iqr_ns": 1301.625,
+      "trace_count": 1
+    },
+    "temporal_repeat_windows": {
+      "traces": [
+        {
+          "trace_id": "paper_development_temporal_repeat_windows_81000",
+          "family": "temporal_repeat_windows",
+          "repetitions": [
+            {
+              "elapsed_seconds": 0.039287958992645144,
+              "throughput_ops_per_sec": 17817.163781173836,
+              "p95_latency_ns": 53147.89999999998,
+              "mean_latency_ns": 53080.061428571425,
+              "peak_memory_bytes": 265268
+            },
+            {
+              "elapsed_seconds": 0.03912858400144614,
+              "throughput_ops_per_sec": 17889.73503293983,
+              "p95_latency_ns": 52906.24999999997,
+              "mean_latency_ns": 52865.59285714286,
+              "peak_memory_bytes": 265196
+            }
+          ],
+          "median_elapsed_seconds": 0.039208271497045644,
+          "median_throughput_ops_per_sec": 17853.449407056833,
+          "median_p95_latency_ns": 53027.074999999975,
+          "median_peak_memory_bytes": 265232.0,
+          "latency_iqr_ns": 120.82500000000437
+        }
+      ],
+      "median_p95_latency_ns": 53027.074999999975,
+      "median_throughput_ops_per_sec": 17853.449407056833,
+      "median_peak_memory_bytes": 265232.0,
+      "latency_iqr_ns": 120.82500000000437,
+      "trace_count": 1
+    },
+    "topk_stress": {
+      "traces": [
+        {
+          "trace_id": "paper_development_topk_stress_91000",
+          "family": "topk_stress",
+          "repetitions": [
+            {
+              "elapsed_seconds": 0.1006726249906933,
+              "throughput_ops_per_sec": 6953.230831764958,
+              "p95_latency_ns": 314387.5,
+              "mean_latency_ns": 136173.6242857143,
+              "peak_memory_bytes": 779856
+            },
+            {
+              "elapsed_seconds": 0.10016137499769684,
+              "throughput_ops_per_sec": 6988.721950113965,
+              "p95_latency_ns": 314678.5,
+              "mean_latency_ns": 135641.7857142857,
+              "peak_memory_bytes": 779792
+            }
+          ],
+          "median_elapsed_seconds": 0.10041699999419507,
+          "median_throughput_ops_per_sec": 6970.976390939461,
+          "median_p95_latency_ns": 314533.0,
+          "median_peak_memory_bytes": 779824.0,
+          "latency_iqr_ns": 145.5
+        }
+      ],
+      "median_p95_latency_ns": 314533.0,
+      "median_throughput_ops_per_sec": 6970.976390939461,
+      "median_peak_memory_bytes": 779824.0,
+      "latency_iqr_ns": 145.5,
+      "trace_count": 1
+    },
+    "negative_lookup_churn": {
+      "traces": [
+        {
+          "trace_id": "paper_development_negative_lookup_churn_101000",
+          "family": "negative_lookup_churn",
+          "repetitions": [
+            {
+              "elapsed_seconds": 0.05896529200254008,
+              "throughput_ops_per_sec": 11871.390376051148,
+              "p95_latency_ns": 307143.75,
+              "mean_latency_ns": 82147.08142857143,
+              "peak_memory_bytes": 166448
+            },
+            {
+              "elapsed_seconds": 0.05863887500890996,
+              "throughput_ops_per_sec": 11937.473218809835,
+              "p95_latency_ns": 305669.05,
+              "mean_latency_ns": 81704.49285714286,
+              "peak_memory_bytes": 166440
+            }
+          ],
+          "median_elapsed_seconds": 0.05880208350572502,
+          "median_throughput_ops_per_sec": 11904.43179743049,
+          "median_p95_latency_ns": 306406.4,
+          "median_peak_memory_bytes": 166444.0,
+          "latency_iqr_ns": 737.3500000000349
+        }
+      ],
+      "median_p95_latency_ns": 306406.4,
+      "median_throughput_ops_per_sec": 11904.43179743049,
+      "median_peak_memory_bytes": 166444.0,
+      "latency_iqr_ns": 737.3500000000349,
+      "trace_count": 1
+    }
+  },
+  "aggregate": {
+    "median_p95_latency_ns": 308901.75,
+    "median_throughput_ops_per_sec": 11904.43179743049,
+    "median_peak_memory_bytes": 265232.0,
+    "trace_count": 9
+  }
+}

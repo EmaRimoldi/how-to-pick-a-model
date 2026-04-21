@@ -1,0 +1,15 @@
+training:
+  base_model: Qwen/Qwen3-Coder-Next
+  method: qlora
+  target: soft_productive_mode_distribution
+  train_records: artifacts/routing_train.jsonl
+  eval_records: artifacts/routing_dev.jsonl
+  output_dir: artifacts/qwen_routing_lora
+  max_seq_length: 32768
+  learning_rate: 0.00003
+  lora_rank: 16
+  lora_alpha: 32
+  batch_size: 1
+  gradient_accumulation_steps: 16
+  epochs: 2
+  seed: 1234

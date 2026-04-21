@@ -1,0 +1,15 @@
+experiment:
+  name: feedback_use_cb
+  visibility_regime: all_branches
+  modes: [layout, indexing, topk, caching, summaries, micro]
+  checkpoint_source: runs/phase1_dev
+  checkpoints_per_model: 50
+  ask_post_feedback_distribution: true
+  branch_timeout_seconds: 240
+  seed: 4321
+
+models:
+  include: [local_stub]
+
+output:
+  root: runs/feedback_use_cb

@@ -1,0 +1,22 @@
+models:
+  local_stub:
+    adapter: local_stub
+    model_id: local-stub-v1
+    temperature: 0.0
+    timeout_seconds: 30
+  strong_claude:
+    adapter: claude_code
+    model_id: claude-opus-current
+    temperature: 0.3
+    timeout_seconds: 180
+  mid_claude:
+    adapter: claude_code
+    model_id: claude-haiku-current
+    temperature: 0.3
+    timeout_seconds: 180
+  weak_qwen:
+    adapter: openai_compatible
+    model_id: Qwen/Qwen3-Coder-Next
+    base_url: http://localhost:8000/v1
+    temperature: 0.3
+    timeout_seconds: 180

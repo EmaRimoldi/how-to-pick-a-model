@@ -1,0 +1,10 @@
+profiles:
+  dev:
+    - paper_development
+    - search_hard_90min
+    - memory_holdout
+  holdout:
+    - paper_holdout
+    - memory_holdout
+  smoke:
+    - paper_development

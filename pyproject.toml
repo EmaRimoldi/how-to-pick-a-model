@@ -1,0 +1,47 @@
+[project]
+name = "vao-query-optimization"
+version = "0.1.0"
+description = "Experimental framework for verifiable agentic optimization on stateful query-engine editing"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2",
+    "pyyaml",
+    "numpy",
+    "pandas",
+    "scipy",
+    "tqdm",
+    "rich",
+    "datasets",
+    "transformers",
+    "accelerate",
+    "peft",
+    "trl",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+]
+
+[project.scripts]
+vao-run = "vao.orchestrator:main"
+vao-verify = "vao.verifier:main"
+vao-estimators = "vao.analysis.compute_estimators:main"
+vao-build-routing-dataset = "vao.training.build_routing_dataset:main"
+
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src", "."]
+include = ["vao*", "benchmarks*"]
+
+[tool.setuptools.package-data]
+benchmarks = ["stateful_query_engine/metadata/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+pythonpath = ["src", "."]

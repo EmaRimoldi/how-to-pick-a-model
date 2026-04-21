@@ -1,0 +1,131 @@
+{
+  "profiles": {
+    "development": {
+      "seed": 2000,
+      "initial_size": 2500,
+      "key_space": 50000,
+      "trace_length": 2500,
+      "traces_per_family": 2,
+      "families": ["uniform_read_heavy", "zipf_hot_key", "bursty_mixed", "range_local_scans", "distribution_shift"],
+      "repetitions": 3,
+      "warmup_prefix": 150,
+      "value_max": 1000
+    },
+    "holdout": {
+      "seed": 9000,
+      "initial_size": 3500,
+      "key_space": 65000,
+      "trace_length": 3200,
+      "traces_per_family": 2,
+      "families": ["uniform_read_heavy", "zipf_hot_key", "bursty_mixed", "range_local_scans", "distribution_shift"],
+      "repetitions": 4,
+      "warmup_prefix": 200,
+      "value_max": 1000
+    },
+    "memory_development": {
+      "seed": 4100,
+      "initial_size": 1800,
+      "key_space": 45000,
+      "trace_length": 1800,
+      "traces_per_family": 1,
+      "families": ["uniform_read_heavy", "zipf_hot_key", "bursty_mixed", "range_local_scans", "distribution_shift"],
+      "repetitions": 2,
+      "warmup_prefix": 120,
+      "value_max": 1000
+    },
+    "memory_holdout": {
+      "seed": 12000,
+      "initial_size": 2200,
+      "key_space": 55000,
+      "trace_length": 2200,
+      "traces_per_family": 1,
+      "families": ["uniform_read_heavy", "zipf_hot_key", "bursty_mixed", "range_local_scans", "distribution_shift"],
+      "repetitions": 3,
+      "warmup_prefix": 160,
+      "value_max": 1000
+    },
+    "paper_development": {
+      "seed": 21000,
+      "initial_size": 1200,
+      "key_space": 48000,
+      "trace_length": 700,
+      "traces_per_family": 1,
+      "families": ["uniform_read_heavy", "zipf_hot_key", "bursty_mixed", "range_local_scans", "distribution_shift", "wide_range_churn", "temporal_repeat_windows", "topk_stress", "negative_lookup_churn"],
+      "repetitions": 2,
+      "warmup_prefix": 80,
+      "value_max": 1000
+    },
+    "paper_holdout": {
+      "seed": 61000,
+      "initial_size": 1500,
+      "key_space": 62000,
+      "trace_length": 900,
+      "traces_per_family": 1,
+      "families": ["uniform_read_heavy", "zipf_hot_key", "bursty_mixed", "range_local_scans", "distribution_shift", "wide_range_churn", "temporal_repeat_windows", "topk_stress", "negative_lookup_churn"],
+      "repetitions": 2,
+      "warmup_prefix": 100,
+      "value_max": 1000
+    },
+    "paper_hard_10min": {
+      "seed": 81000,
+      "initial_size": 2600,
+      "key_space": 90000,
+      "trace_length": 1600,
+      "traces_per_family": 2,
+      "families": ["uniform_read_heavy", "zipf_hot_key", "bursty_mixed", "range_local_scans", "distribution_shift", "wide_range_churn", "temporal_repeat_windows", "topk_stress", "negative_lookup_churn"],
+      "repetitions": 2,
+      "warmup_prefix": 140,
+      "value_max": 1000
+    },
+    "search_hard_90min": {
+      "seed": 92000,
+      "initial_size": 3200,
+      "key_space": 140000,
+      "trace_length": 1800,
+      "traces_per_family": 2,
+      "families": ["uniform_read_heavy", "zipf_hot_key", "bursty_mixed", "range_local_scans", "distribution_shift", "wide_range_churn", "temporal_repeat_windows", "topk_stress", "negative_lookup_churn"],
+      "repetitions": 2,
+      "warmup_prefix": 160,
+      "value_max": 1000
+    }
+  },
+  "score": {
+    "latency_weight": 0.95,
+    "memory_weight": 0.05
+  },
+  "measurement": {
+    "context_ceiling_tokens": 200000
+  },
+  "cost_model": {
+    "eval_call": 1.0,
+    "memory_op": 0.1,
+    "context_token": 0.00001,
+    "trace_op": 0.000001
+  },
+  "architectures": {
+    "d00": {
+      "description": "single path, no external memory",
+      "agent_ids": ["agent_0"],
+      "external_memory": false,
+      "shared_memory": false
+    },
+    "d10": {
+      "description": "single path, external memory",
+      "agent_ids": ["agent_0"],
+      "external_memory": true,
+      "shared_memory": false
+    },
+    "d01": {
+      "description": "two independent paths, no shared memory",
+      "agent_ids": ["agent_0", "agent_1"],
+      "external_memory": false,
+      "shared_memory": false
+    },
+    "d11": {
+      "description": "two paths with shared external memory",
+      "agent_ids": ["agent_0", "agent_1"],
+      "external_memory": true,
+      "shared_memory": true
+    }
+  }
+}

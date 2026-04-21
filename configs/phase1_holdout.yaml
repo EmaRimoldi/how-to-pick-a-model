@@ -1,0 +1,21 @@
+experiment:
+  name: phase1_holdout
+  visibility_regime: top1_only
+  modes: [layout, indexing, topk, caching, summaries, micro]
+  steps: 40
+  wall_budget_seconds: 14400
+  branch_timeout_seconds: 240
+  incorrect_penalty: -1.0
+  productive_proxy_fallback: uniform
+  history_policy: full_visible_history
+  seed: 5678
+
+benchmark:
+  template_path: benchmarks/stateful_query_engine/solution_template.py
+  profiles: [paper_holdout, memory_holdout]
+
+models:
+  include: [local_stub]
+
+output:
+  root: runs/phase1_holdout

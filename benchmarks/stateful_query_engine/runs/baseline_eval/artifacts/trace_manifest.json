@@ -1,0 +1,107 @@
+[
+  {
+    "trace_id": "paper_development_uniform_read_heavy_21000",
+    "family": "uniform_read_heavy",
+    "seed": 21000,
+    "initial_size": 1200,
+    "operation_count": 700,
+    "hidden_param_keys": [
+      "range_width",
+      "read_probability"
+    ]
+  },
+  {
+    "trace_id": "paper_development_zipf_hot_key_31000",
+    "family": "zipf_hot_key",
+    "seed": 31000,
+    "initial_size": 1200,
+    "operation_count": 700,
+    "hidden_param_keys": [
+      "hot_probability",
+      "hot_set_size",
+      "range_width"
+    ]
+  },
+  {
+    "trace_id": "paper_development_bursty_mixed_41000",
+    "family": "bursty_mixed",
+    "seed": 41000,
+    "initial_size": 1200,
+    "operation_count": 700,
+    "hidden_param_keys": [
+      "phase_length",
+      "read_heavy_update_probability",
+      "write_heavy_update_probability"
+    ]
+  },
+  {
+    "trace_id": "paper_development_range_local_scans_51000",
+    "family": "range_local_scans",
+    "seed": 51000,
+    "initial_size": 1200,
+    "operation_count": 700,
+    "hidden_param_keys": [
+      "range_width",
+      "stride"
+    ]
+  },
+  {
+    "trace_id": "paper_development_distribution_shift_61000",
+    "family": "distribution_shift",
+    "seed": 61000,
+    "initial_size": 1200,
+    "operation_count": 700,
+    "hidden_param_keys": [
+      "hot_band_width",
+      "shift"
+    ]
+  },
+  {
+    "trace_id": "paper_development_wide_range_churn_71000",
+    "family": "wide_range_churn",
+    "seed": 71000,
+    "initial_size": 1200,
+    "operation_count": 700,
+    "hidden_param_keys": [
+      "medium_width",
+      "purpose",
+      "wide_width"
+    ]
+  },
+  {
+    "trace_id": "paper_development_temporal_repeat_windows_81000",
+    "family": "temporal_repeat_windows",
+    "seed": 81000,
+    "initial_size": 1200,
+    "operation_count": 700,
+    "hidden_param_keys": [
+      "purpose",
+      "range_width",
+      "window_count"
+    ]
+  },
+  {
+    "trace_id": "paper_development_topk_stress_91000",
+    "family": "topk_stress",
+    "seed": 91000,
+    "initial_size": 1200,
+    "operation_count": 700,
+    "hidden_param_keys": [
+      "churn_width",
+      "purpose",
+      "range_width"
+    ]
+  },
+  {
+    "trace_id": "paper_development_negative_lookup_churn_101000",
+    "family": "negative_lookup_churn",
+    "seed": 101000,
+    "initial_size": 1200,
+    "operation_count": 700,
+    "hidden_param_keys": [
+      "absent_span",
+      "purpose",
+      "range_width"
+    ]
+  }
+]
