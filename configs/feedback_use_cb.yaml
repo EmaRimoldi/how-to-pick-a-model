@@ -1,12 +1,29 @@
 experiment:
   name: feedback_use_cb
+  feedback_condition: cb
   visibility_regime: all_branches
   modes: [layout, indexing, topk, caching, summaries, micro]
-  checkpoint_source: runs/phase1_dev
-  checkpoints_per_model: 50
+  steps: 2
+  wall_budget_seconds: 900
   ask_post_feedback_distribution: true
-  branch_timeout_seconds: 240
+  selection_policy: fixed_mode
+  selected_mode: micro
+  branch_timeout_seconds: 60
+  incorrect_penalty: -1.0
   seed: 4321
+
+benchmark:
+  template_path: benchmarks/stateful_query_engine/solution_template.py
+  profiles: [paper_development]
+  instance_overrides:
+    initial_size: 80
+    key_space: 1500
+    trace_length: 80
+    traces_per_family: 1
+    families: [uniform_read_heavy, range_local_scans]
+    repetitions: 1
+    warmup_prefix: 5
+    value_max: 1000
 
 models:
   include: [local_stub]

@@ -19,7 +19,7 @@ from vao.agents.claude_code_adapter import ClaudeCodeAdapter
 from vao.agents.local_stub_adapter import LeakageProbeAdapter, LocalStubAdapter
 from vao.agents.openai_compatible_adapter import OpenAICompatibleAdapter
 from vao.agents.routing_student_adapter import RoutingStudentAdapter
-from vao.estimators import gain
+from vao.estimators import gain, jsd, productive_mode_proxy, routing_regret
 from vao.logging_utils import append_jsonl, now_iso, sha256_file, write_json
 from vao.schemas import BranchEvaluation, ModeDistribution, RunManifest, StepRecord
 from vao.taxonomy import MODES, classify_edit_mode, normalize_mode_probs
@@ -61,6 +61,11 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
     if modes != MODES:
         raise ValueError(f"The canonical protocol requires modes {MODES}; got {modes}")
     visibility_regime = str(experiment.get("visibility_regime", "top1_only"))
+    feedback_condition = str(experiment.get("feedback_condition", "ca"))
+    ask_post_feedback_distribution = bool(experiment.get("ask_post_feedback_distribution", feedback_condition == "cb"))
+    selection_policy = str(experiment.get("selection_policy", "top1"))
+    if feedback_condition == "cb" and visibility_regime != "all_branches":
+        raise ValueError("C(b) feedback-use runs require visibility_regime: all_branches")
     max_steps = int(experiment.get("steps", 2))
     wall_budget_seconds = experiment.get("wall_budget_seconds")
     branch_timeout_seconds = int(experiment.get("branch_timeout_seconds", 240))
@@ -81,6 +86,8 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
         visibility_regime=visibility_regime,
         modes=MODES,
         max_steps=max_steps,
+        selection_policy=selection_policy,
+        feedback_condition=feedback_condition,
         wall_budget_seconds=wall_budget_seconds,
         config=config,
     )
@@ -126,7 +133,8 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
         step_input_tokens = _usage_input_tokens(distribution.parsed_json)
         step_output_tokens = _usage_output_tokens(distribution.parsed_json)
         step_cost_usd = _usage_cost(distribution.parsed_json)
-        selected_mode = max(MODES, key=lambda mode: distribution.mode_probs[mode])
+        selected_mode_top1 = max(MODES, key=lambda mode: distribution.mode_probs[mode])
+        selected_mode, selected_mode_reason = _select_mode(experiment, step, selected_mode_top1)
         step_dir = run_dir / "steps" / f"step_{step:04d}"
         branch_dirs = create_step_branches(run_dir, step, workspace_solution, MODES)
         branch_evaluations: list[BranchEvaluation] = []
@@ -197,6 +205,35 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
             branch.promoted_as_parent = branch.declared_mode == selected_mode
             write_json(Path(branch.file_path).parent / "verification.json", branch)
 
+        post_feedback, post_feedback_errors, feedback_metrics = _maybe_propose_post_feedback_distribution(
+            adapter=adapter,
+            state=state,
+            records=records,
+            run_id=run_id_actual,
+            profile_id=profile_id,
+            model_id=model_id,
+            step=step,
+            parent_hash=parent_hash,
+            step_parent_loss=step_parent_loss,
+            distribution=distribution,
+            selected_mode_top1=selected_mode_top1,
+            selected_mode=selected_mode,
+            selected_branch=str(Path(selected_eval.file_path).parent),
+            candidate_batch_id=candidate_batch_id,
+            visibility_regime=visibility_regime,
+            branch_evaluations=branch_evaluations,
+            residual_steps=max_steps - step - 1,
+            residual_wall_seconds=None if wall_budget_seconds is None else max(float(wall_budget_seconds) - (time.time() - run_started), 0.0),
+            selection_policy=selection_policy,
+            selected_mode_reason=selected_mode_reason,
+            enabled=ask_post_feedback_distribution,
+        )
+        if post_feedback is not None:
+            post_dump = post_feedback.parsed_json or {}
+            step_input_tokens += _usage_input_tokens(post_dump)
+            step_output_tokens += _usage_output_tokens(post_dump)
+            step_cost_usd += _usage_cost(post_dump)
+
         promote_branch_to_parent(Path(selected_eval.file_path), workspace_solution)
         parent_loss = selected_eval.latent_loss
 
@@ -211,8 +248,10 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
             parent_latent_loss=step_parent_loss,
             mode_probs=normalize_mode_probs(distribution.mode_probs),
             mode_ranking=distribution.mode_ranking,
-            selected_mode_top1=selected_mode,
+            selected_mode_top1=selected_mode_top1,
             selected_mode=selected_mode,
+            selection_policy=selection_policy,
+            selected_mode_reason=selected_mode_reason,
             selected_branch=str(Path(selected_eval.file_path).parent),
             candidate_batch_id=candidate_batch_id,
             visibility_regime=visibility_regime,
@@ -224,6 +263,15 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
             output_tokens=step_output_tokens if step_output_tokens > 0 else None,
             model_output_raw_text=distribution.raw_text,
             parsed_model_output_json=distribution.parsed_json,
+            post_feedback_mode_probs=post_feedback.mode_probs if post_feedback is not None else None,
+            post_feedback_mode_ranking=post_feedback.mode_ranking if post_feedback is not None else None,
+            post_feedback_model_output_raw_text=post_feedback.raw_text if post_feedback is not None else None,
+            post_feedback_parsed_model_output_json=post_feedback.parsed_json if post_feedback is not None else None,
+            post_feedback_errors=post_feedback_errors,
+            post_feedback_retries=post_feedback.retries if post_feedback is not None else 0,
+            post_feedback_validation_failures=post_feedback.validation_failures if post_feedback is not None else [],
+            feedback_regret_improvement=feedback_metrics.get("feedback_regret_improvement"),
+            feedback_jsd_improvement=feedback_metrics.get("feedback_jsd_improvement"),
             errors=distribution_errors,
             retries=distribution.retries,
             validation_failures=distribution.validation_failures,
@@ -235,6 +283,107 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
     summary = _run_summary(run_id_actual, profile_id, model_id, visibility_regime, records, baseline, run_started)
     write_json(run_dir / "run_summary.json", summary)
     return run_dir
+
+
+def _select_mode(experiment: dict[str, Any], step: int, top1_mode: str) -> tuple[str, str]:
+    policy = str(experiment.get("selection_policy", "top1"))
+    if policy == "top1":
+        return top1_mode, "argmax_mode_probs"
+    if policy == "fixed_mode":
+        mode = str(experiment.get("selected_mode") or experiment.get("forced_mode") or "")
+        if mode not in MODES:
+            raise ValueError(f"selection_policy=fixed_mode requires selected_mode in {MODES}; got {mode!r}")
+        return mode, f"fixed_mode:{mode}"
+    if policy == "mode_sequence":
+        sequence = list(experiment.get("selected_mode_sequence", []))
+        if not sequence:
+            raise ValueError("selection_policy=mode_sequence requires selected_mode_sequence")
+        mode = str(sequence[step % len(sequence)])
+        if mode not in MODES:
+            raise ValueError(f"selected_mode_sequence contains invalid mode {mode!r}")
+        return mode, f"mode_sequence[{step % len(sequence)}]:{mode}"
+    raise ValueError(f"Unknown selection_policy {policy!r}; expected top1, fixed_mode, or mode_sequence")
+
+
+def _maybe_propose_post_feedback_distribution(
+    *,
+    adapter: AgentAdapter,
+    state: AgentState,
+    records: list[StepRecord],
+    run_id: str,
+    profile_id: str,
+    model_id: str,
+    step: int,
+    parent_hash: str,
+    step_parent_loss: float,
+    distribution: ModeDistribution,
+    selected_mode_top1: str,
+    selected_mode: str,
+    selected_branch: str,
+    candidate_batch_id: str,
+    visibility_regime: str,
+    branch_evaluations: list[BranchEvaluation],
+    residual_steps: int,
+    residual_wall_seconds: float | None,
+    selection_policy: str,
+    selected_mode_reason: str,
+    enabled: bool,
+) -> tuple[ModeDistribution | None, list[str], dict[str, float | None]]:
+    if not enabled:
+        return None, [], {}
+    provisional = StepRecord(
+        run_id=run_id,
+        profile_id=profile_id,
+        model_id=model_id,
+        step=step,
+        current_solution_hash=parent_hash,
+        parent_solution_hash=parent_hash,
+        parent_latent_loss=step_parent_loss,
+        mode_probs=distribution.mode_probs,
+        mode_ranking=distribution.mode_ranking,
+        selected_mode_top1=selected_mode_top1,
+        selected_mode=selected_mode,
+        selection_policy=selection_policy,
+        selected_mode_reason=selected_mode_reason,
+        selected_branch=selected_branch,
+        candidate_batch_id=candidate_batch_id,
+        visibility_regime=visibility_regime,
+        branches=branch_evaluations,
+        residual_steps=residual_steps,
+        residual_wall_seconds=residual_wall_seconds,
+        model_output_raw_text=distribution.raw_text,
+        parsed_model_output_json=distribution.parsed_json,
+    )
+    post_state = AgentState(
+        run_id=state.run_id,
+        profile_id=state.profile_id,
+        model_id=state.model_id,
+        step=state.step,
+        current_solution_path=state.current_solution_path,
+        current_solution_source=state.current_solution_source,
+        visible_history=build_visible_history(records + [provisional], "all_branches"),
+        profile_summary=state.profile_summary,
+        residual_steps=state.residual_steps,
+        residual_wall_seconds=state.residual_wall_seconds,
+        visibility_regime="all_branches",
+        metadata={
+            **state.metadata,
+            "feedback_condition": "cb",
+            "post_feedback_distribution": True,
+            "feedback_step": step,
+        },
+    )
+    post_distribution, errors = _propose_distribution(adapter, post_state)
+    gains = {branch.declared_mode: float(branch.gain) for branch in branch_evaluations}
+    pstar = productive_mode_proxy(gains)
+    pre_regret = routing_regret(gains, selected_mode_top1)
+    post_top1 = max(MODES, key=lambda mode: post_distribution.mode_probs[mode])
+    post_regret = routing_regret(gains, post_top1)
+    metrics = {
+        "feedback_regret_improvement": float(pre_regret - post_regret),
+        "feedback_jsd_improvement": float(jsd(distribution.mode_probs, pstar) - jsd(post_distribution.mode_probs, pstar)),
+    }
+    return post_distribution, errors, metrics
 
 
 def _propose_distribution(adapter: AgentAdapter, state: AgentState) -> tuple[ModeDistribution, list[str]]:

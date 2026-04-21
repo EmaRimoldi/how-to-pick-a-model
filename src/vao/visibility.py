@@ -21,7 +21,12 @@ def build_visible_history(records: list[StepRecord], regime: str) -> list[dict[s
             {
                 "step": record.step,
                 "selected_mode": record.selected_mode,
+                "selected_mode_top1": record.selected_mode_top1,
+                "selection_policy": record.selection_policy,
                 "mode_probs": record.mode_probs,
+                "post_feedback_mode_probs": record.post_feedback_mode_probs,
+                "feedback_regret_improvement": record.feedback_regret_improvement,
+                "feedback_jsd_improvement": record.feedback_jsd_improvement,
                 "branches": [
                     {
                         "primary_mode": branch.primary_mode,

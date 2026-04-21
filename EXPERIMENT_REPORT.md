@@ -62,7 +62,8 @@ Validation result:
 ## Known Gaps
 
 - Claude Code and OpenAI-compatible adapters are scaffolds that fall back to `local_stub`.
-- Shared-checkpoint controlled phi and full C(b) pre/post feedback-use diagnostics are not implemented beyond shared estimator/scaffold functions.
+- Shared-checkpoint controlled phi is not yet fully implemented.
+- C(b) pre/post feedback-use diagnostics are implemented and locally validated, but have not yet been run with a live Claude/teacher model because quota is unavailable.
 - Routing LoRA training is intentionally scaffolded only; no model training was run.
 - The PDFs were not parsed because `pdftotext` is unavailable; the Markdown implementation guide was used as the operational source of truth.
 
@@ -429,3 +430,54 @@ Based on current Opus logs, projected serial cost/time is approximately:
 - Dev plus holdout: about `$115.69` and `11.61` serial hours
 
 Detailed resume checklist and run-manifest plan are in `artifacts/future_teacher_scaling_plan.md`. After collecting more data, rerun the dataset audit, replay leaderboard, classical routing comparisons, and local LoRA routing experiment before attempting within-mode or feedback-use training.
+
+## C(b) Feedback-Use Diagnostic Infrastructure
+
+C(b) is now implemented as an optional protocol condition, without running any new Claude calls.
+
+Configuration:
+
+- `feedback_condition: cb`
+- `visibility_regime: all_branches`
+- `ask_post_feedback_distribution: true`
+- `selection_policy: top1`, `fixed_mode`, or `mode_sequence`
+
+Logged per step:
+
+- `mode_probs`: pre-feedback distribution `q_pre`
+- `post_feedback_mode_probs`: post-feedback distribution `q_post`
+- `selected_mode_top1`: model argmax before any controlled override
+- `selected_mode`: branch actually promoted
+- `feedback_regret_improvement`: `epsilon_pre - epsilon_post`
+- `feedback_jsd_improvement`: `JSD(q_pre, p*) - JSD(q_post, p*)`
+
+Local smoke:
+
+- Run: `runs/feedback_use_cb/cb_local_fixed_micro`
+- Steps: 2
+- Branch evaluations: 12
+- Selection policy: fixed promotion of `micro`
+- Validation: `vao.validate_run` passed
+
+Because the smoke uses `local_stub`, `q_post` is identical to `q_pre` and feedback improvement is zero. That is expected; the smoke proves the logging and validation path. A meaningful estimate of `G` requires a live model to revise its distribution after seeing verifier feedback.
+
+## Diagnostic Visualizations
+
+Added per-run visual diagnostics in `src/vao/analysis/run_diagnostics_visuals.py`.
+
+For each run it can produce:
+
+- mode probability trajectories by step
+- single-mode probability/gain trajectory across steps
+- latent loss by step and mode
+- verified gain heatmap by step and mode
+- token/USD cost by step
+- C(b) pre/post probability comparison when `post_feedback_mode_probs` exists
+
+Generated plots are under:
+
+- `artifacts/plots/run_cb_local_fixed_micro/`
+- `artifacts/plots/run_opus_teacher_pilot_claude_opus_teacher_paper_development/`
+- `artifacts/plots/run_opus_teacher_pilot_retry2_claude_opus_teacher_development/`
+- `artifacts/plots/run_opus_teacher_pilot_retry2_claude_opus_teacher_memory_development/`
+- `artifacts/plots/run_opus_teacher_dev_r0/`

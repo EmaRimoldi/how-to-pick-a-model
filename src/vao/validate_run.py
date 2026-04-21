@@ -66,8 +66,11 @@ def _validate_step_record(
             errors.append(f"{prefix}: mode_probs do not sum to 1")
 
     expected_top1 = max(MODES, key=lambda mode: probs[mode])
-    if record.selected_mode != expected_top1 or record.selected_mode_top1 != expected_top1:
+    if record.selected_mode_top1 != expected_top1:
+        errors.append(f"{prefix}: selected_mode_top1 {record.selected_mode_top1} does not match argmax(mode_probs) {expected_top1}")
+    if record.selection_policy == "top1" and record.selected_mode != expected_top1:
         errors.append(f"{prefix}: selected mode {record.selected_mode} does not match argmax(mode_probs) {expected_top1}")
+    expected_promoted = record.selected_mode
 
     batch_ids = {record.candidate_batch_id}
     proposal_batch_ids = _proposal_batch_ids(run_dir, record)
@@ -82,10 +85,10 @@ def _validate_step_record(
             errors.append(f"{prefix}: expected exactly one selected_as_visible branch, found {len(selected_visible)}")
         if len(promoted) != 1:
             errors.append(f"{prefix}: expected exactly one promoted_as_parent branch, found {len(promoted)}")
-    if promoted and promoted[0].declared_mode != expected_top1:
-        errors.append(f"{prefix}: promoted branch {promoted[0].declared_mode} does not match argmax(mode_probs) {expected_top1}")
-    if selected_visible and record.visibility_regime == "top1_only" and selected_visible[0].declared_mode != expected_top1:
-        errors.append(f"{prefix}: visible branch {selected_visible[0].declared_mode} does not match argmax(mode_probs) {expected_top1}")
+    if promoted and promoted[0].declared_mode != expected_promoted:
+        errors.append(f"{prefix}: promoted branch {promoted[0].declared_mode} does not match selected_mode {expected_promoted}")
+    if selected_visible and record.visibility_regime == "top1_only" and selected_visible[0].declared_mode != expected_promoted:
+        errors.append(f"{prefix}: visible branch {selected_visible[0].declared_mode} does not match selected_mode {expected_promoted}")
 
     parent_hashes = {branch.source_parent_hash for branch in record.branches}
     if parent_hashes != {record.parent_solution_hash}:
@@ -95,7 +98,7 @@ def _validate_step_record(
         errors.append(f"{prefix}: parent_solution.py hashes {file_parent_hashes} do not match parent_solution_hash")
 
     for branch in record.branches:
-        _validate_branch(run_dir, record, branch, expected_top1, errors, warnings)
+        _validate_branch(run_dir, record, branch, expected_promoted, errors, warnings)
 
     parent_loss = _expected_parent_loss(record, index, records)
     if parent_loss is not None:
@@ -111,22 +114,22 @@ def _validate_step_record(
         last_visible = visible_history[-1]
         if record.visibility_regime == "top1_only":
             visible_modes = {branch["declared_mode"] for branch in last_visible["branches"]}
-            invisible_modes = set(MODES) - {expected_top1}
-            if visible_modes != {expected_top1}:
-                errors.append(f"{prefix}: reconstructed visible history contains {visible_modes}, expected only {expected_top1}")
+            invisible_modes = set(MODES) - {expected_promoted}
+            if visible_modes != {expected_promoted}:
+                errors.append(f"{prefix}: reconstructed visible history contains {visible_modes}, expected only {expected_promoted}")
             leaked = visible_modes & invisible_modes
             if leaked:
                 errors.append(f"{prefix}: invisible branch modes leaked into reconstructed visible history: {sorted(leaked)}")
         snapshot = records[index + 1].parsed_model_output_json or {}
         if isinstance(snapshot, dict) and "visible_history_snapshot" in snapshot:
-            _validate_visible_snapshot(snapshot["visible_history_snapshot"], record, expected_top1, errors)
+            _validate_visible_snapshot(snapshot["visible_history_snapshot"], record, expected_promoted, record.visibility_regime, errors)
 
 
 def _validate_branch(
     run_dir: Path,
     record: StepRecord,
     branch: BranchEvaluation,
-    expected_top1: str,
+    expected_promoted: str,
     errors: list[str],
     warnings: list[str],
 ) -> None:
@@ -137,7 +140,7 @@ def _validate_branch(
         errors.append(f"{prefix}: invalid inferred_mode")
     if branch.declared_mode == branch.inferred_mode:
         pass
-    if branch.declared_mode != expected_top1 and branch.promoted_as_parent:
+    if branch.declared_mode != expected_promoted and branch.promoted_as_parent:
         errors.append(f"{prefix}: non-top1 branch promoted")
     branch_path = Path(branch.file_path)
     if not branch_path.exists():
@@ -185,7 +188,13 @@ def _expected_parent_loss(record: StepRecord, index: int, records: list[StepReco
     return None
 
 
-def _validate_visible_snapshot(snapshot: Any, previous_record: StepRecord, expected_top1: str, errors: list[str]) -> None:
+def _validate_visible_snapshot(
+    snapshot: Any,
+    previous_record: StepRecord,
+    expected_promoted: str,
+    visibility_regime: str,
+    errors: list[str],
+) -> None:
     if not isinstance(snapshot, list) or not snapshot:
         errors.append(f"step={previous_record.step}: next-step visible_history_snapshot is empty or malformed")
         return
@@ -195,9 +204,10 @@ def _validate_visible_snapshot(snapshot: Any, previous_record: StepRecord, expec
         return
     branches = matching[-1].get("branches", [])
     modes = {branch.get("declared_mode") for branch in branches if isinstance(branch, dict)}
-    if modes != {expected_top1}:
+    expected_modes = set(MODES) if visibility_regime == "all_branches" else {expected_promoted}
+    if modes != expected_modes:
         errors.append(
-            f"step={previous_record.step}: next-step visible_history_snapshot has modes {sorted(modes)}, expected only {expected_top1}"
+            f"step={previous_record.step}: next-step visible_history_snapshot has modes {sorted(modes)}, expected {sorted(expected_modes)}"
         )
 
 

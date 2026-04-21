@@ -48,6 +48,9 @@
 - [x] Run a toy local LoRA smoke test without any external model calls.
 - [x] Train a cached `distilbert-base-uncased` LoRA routing classifier on existing teacher data only.
 - [x] Write replay, dataset-audit, failure-analysis, and future teacher-scaling artifacts.
+- [x] Implement C(b) post-feedback distribution logging with `q_pre`, `q_post`, regret improvement, and JSD improvement.
+- [x] Add controlled mode promotion via `selection_policy: fixed_mode` and `selection_policy: mode_sequence`.
+- [x] Add per-run visual diagnostics for mode probabilities, loss by mode, gain heatmaps, cost per step, and single-mode trajectories.
 
 ## Remaining
 
@@ -56,7 +59,7 @@
 - [ ] Add pre-verifier dynamic source smoke tests for generated candidate constructors and common operations.
 - [ ] Improve prompts for `indexing` and `micro` declared-mode adherence.
 - [ ] Add controlled shared-checkpoint phi experiment implementation.
-- [ ] Add full C(b) pre/post feedback distribution diagnostic.
+- [ ] Run C(b) with a real model when Claude budget returns; current validation is local/offline only.
 - [ ] Re-run routing-only student after collecting substantially more and less imbalanced teacher data.
 - [ ] Try a larger cached/open local instruct model for routing only if it is available without gating or new quota.
 - [ ] Add stricter split reporting for tiny-data comparisons so supplemental split models cannot be mistaken for leave-one-out results.

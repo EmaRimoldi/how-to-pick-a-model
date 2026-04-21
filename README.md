@@ -46,6 +46,8 @@ For real Claude/Anthropic runs, candidate generation is protocol-configurable. P
 - `python -m vao.training.offline_routing_experiments --config configs/offline_routing_student.yaml`
 - `python -m vao.training.lora_smoke --out artifacts/local_lora_smoke.json --env_out artifacts/local_training_stack_audit.json`
 - `python -m vao.training.train_local_lora_router --config configs/offline_lora_router.yaml`
+- `python -m vao.orchestrator --config configs/feedback_use_cb.yaml --run-id cb_local_fixed_micro`
+- `python -m vao.analysis.run_diagnostics_visuals --run_dir runs/feedback_use_cb/cb_local_fixed_micro --single_mode micro`
 
 The closed-source and open-weight model adapters are scaffolded behind the same interface as the deterministic `local_stub` backend. `claude_haiku` is the first real backend. It can use `ANTHROPIC_API_KEY` through the Messages API or the authenticated Claude CLI transport when available. Normal tests use fixtures and do not require live model calls.
 
@@ -58,4 +60,6 @@ The closed-source and open-weight model adapters are scaffolded behind the same 
 - The existing teacher routing dataset has 12 examples. It is useful for tooling and failure analysis, but it is too small and imbalanced for a strong learned-routing claim.
 - The strongest current classical offline student is `tfidf_word_multinomial_nb` selected by leave-one-out expected regret. `always_layout` is still the best replay baseline by expected regret because `layout` dominates productive labels.
 - The local training stack now includes `peft` and `trl`; a toy LoRA smoke test passed, and a cached `distilbert-base-uncased` LoRA router was trained locally. It overfits toward `layout` and does not beat the classical/replay baselines on the tiny split.
+- C(b) feedback-use infrastructure is implemented for local/offline validation: set `feedback_condition: cb`, `visibility_regime: all_branches`, and `ask_post_feedback_distribution: true`. Controlled promotion is available through `selection_policy: fixed_mode` or `mode_sequence`.
+- Per-run diagnostics plots are available for mode probabilities, single-mode trajectories, loss by mode, gain heatmaps, and cost per step under `artifacts/plots/run_<run_id>/`.
 - Offline student eval on the tiny split improved regret/JSD versus the original teacher route on that split, but the online local controlled experiment was worse than the local-stub router. Treat Phase 5 as infrastructure plus a negative first result, not as evidence of a useful student yet.

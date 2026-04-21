@@ -196,3 +196,12 @@
 - Generated `artifacts/routing_choice_summary.json` and `artifacts/routing_choice_visuals.md`.
 - Generated visualizations under `artifacts/plots/` for dataset-level accuracy, Phase 4 Opus correct/incorrect counts, selected-vs-best mode counts, confusion matrix, and per-step routing regret.
 - Phase 4 Opus teacher result by verified-best branch: 4 correct choices and 8 incorrect choices across 12 validated teacher steps.
+
+### C(b) Feedback-Use Infrastructure
+
+- Added optional C(b) protocol support to `vao.orchestrator`: `feedback_condition: cb`, `visibility_regime: all_branches`, and `ask_post_feedback_distribution: true`.
+- Added controlled promotion through `selection_policy: top1`, `fixed_mode`, or `mode_sequence`. Non-top1 controlled runs preserve `selected_mode_top1` as the model argmax and log the actual promoted branch in `selected_mode`.
+- Each C(b) step can now log `post_feedback_mode_probs`, `post_feedback_mode_ranking`, raw/parsed post-feedback model output, `feedback_regret_improvement`, and `feedback_jsd_improvement`.
+- Updated `vao.validate_run` so C(a) top-1 invariants remain strict while controlled-selection C(b) runs validate the explicitly selected promoted mode.
+- Updated `configs/feedback_use_cb.yaml` and ran a local C(b) smoke: `runs/feedback_use_cb/cb_local_fixed_micro`, 2 steps, 12 branch evaluations, validation passed.
+- Added `src/vao/analysis/run_diagnostics_visuals.py` and generated per-run plots for the local C(b) smoke plus all validated Phase 4 Opus teacher runs.
