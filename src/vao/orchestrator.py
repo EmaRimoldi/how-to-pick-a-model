@@ -14,6 +14,7 @@ import yaml
 from benchmarks.stateful_query_engine.harness.run_benchmark import load_instance_config
 
 from vao.agents.base import AgentAdapter, AgentState
+from vao.agents.anthropic_adapter import ClaudeHaikuAdapter
 from vao.agents.claude_code_adapter import ClaudeCodeAdapter
 from vao.agents.local_stub_adapter import LeakageProbeAdapter, LocalStubAdapter
 from vao.agents.openai_compatible_adapter import OpenAICompatibleAdapter
@@ -29,6 +30,7 @@ from vao.workspaces import create_run_dir, create_step_branches, init_workspace,
 ADAPTERS = {
     "local_stub": LocalStubAdapter,
     "leakage_probe": LeakageProbeAdapter,
+    "claude_haiku": ClaudeHaikuAdapter,
     "claude_code": ClaudeCodeAdapter,
     "openai_compatible": OpenAICompatibleAdapter,
 }
@@ -119,6 +121,9 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
             metadata={"model_key": model_key},
         )
         distribution, distribution_errors = _propose_distribution(adapter, state)
+        step_input_tokens = _usage_input_tokens(distribution.parsed_json)
+        step_output_tokens = _usage_output_tokens(distribution.parsed_json)
+        step_cost_usd = _usage_cost(distribution.parsed_json)
         selected_mode = max(MODES, key=lambda mode: distribution.mode_probs[mode])
         step_dir = run_dir / "steps" / f"step_{step:04d}"
         branch_dirs = create_step_branches(run_dir, step, workspace_solution, MODES)
@@ -132,10 +137,17 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
                 proposal = adapter.propose_edit_for_mode(state, mode, branch_dir)
             except Exception as exc:  # noqa: BLE001 - keep protocol running and log failed branch.
                 proposal_errors.append(f"{type(exc).__name__}: {exc}")
-                proposed = branch_dir / "proposed_solution.py"
-                proposed.write_text((branch_dir / "parent_solution.py").read_text(encoding="utf-8"), encoding="utf-8")
-                proposal = LocalStubAdapter().propose_edit_for_mode(state, mode, branch_dir)
-                proposal.errors.extend(proposal_errors)
+                if getattr(adapter, "strict_failures", False):
+                    proposal = _rejected_noop_proposal(state, mode, branch_dir, proposal_errors)
+                else:
+                    proposed = branch_dir / "proposed_solution.py"
+                    proposed.write_text((branch_dir / "parent_solution.py").read_text(encoding="utf-8"), encoding="utf-8")
+                    proposal = LocalStubAdapter().propose_edit_for_mode(state, mode, branch_dir)
+                    proposal.errors.extend(proposal_errors)
+            proposal_dump = proposal.model_dump(mode="json")
+            step_input_tokens += _usage_input_tokens(proposal_dump)
+            step_output_tokens += _usage_output_tokens(proposal_dump)
+            step_cost_usd += _usage_cost(proposal_dump)
 
             parent_source = (branch_dir / "parent_solution.py").read_text(encoding="utf-8")
             proposed_path = branch_dir / "proposed_solution.py"
@@ -144,7 +156,7 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
             source_validation = validate_source(post_source)
             inferred_mode, secondary_modes, classifier_details = classify_edit_mode(parent_source, post_source)
             proposal_record = {
-                **proposal.model_dump(mode="json"),
+                **proposal_dump,
                 "candidate_batch_id": candidate_batch_id,
                 "source_validation": source_validation,
                 "classifier": {
@@ -202,9 +214,9 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
             branches=branch_evaluations,
             residual_steps=max_steps - step - 1,
             residual_wall_seconds=None if wall_budget_seconds is None else max(float(wall_budget_seconds) - (time.time() - run_started), 0.0),
-            agent_cost_usd=None,
-            input_tokens=None,
-            output_tokens=None,
+            agent_cost_usd=step_cost_usd if step_cost_usd > 0 else None,
+            input_tokens=step_input_tokens if step_input_tokens > 0 else None,
+            output_tokens=step_output_tokens if step_output_tokens > 0 else None,
             model_output_raw_text=distribution.raw_text,
             parsed_model_output_json=distribution.parsed_json,
             errors=distribution_errors,
@@ -226,12 +238,74 @@ def _propose_distribution(adapter: AgentAdapter, state: AgentState) -> tuple[Mod
         return adapter.propose_mode_distribution(state), errors
     except Exception as exc:  # noqa: BLE001 - retry once through deterministic fallback.
         errors.append(f"distribution_error={type(exc).__name__}: {exc}")
+        if getattr(adapter, "strict_failures", False):
+            raise
     fallback = LocalStubAdapter()
     distribution = fallback.propose_mode_distribution(state)
     distribution.agent_contract_failed = True
     distribution.retries = 1
     distribution.validation_failures.extend(errors)
     return distribution, errors
+
+
+def _rejected_noop_proposal(state: AgentState, mode: str, branch_dir: Path, errors: list[str]) -> Any:
+    from vao.schemas import CandidateProposal
+
+    parent_path = branch_dir / "parent_solution.py"
+    proposed_path = branch_dir / "proposed_solution.py"
+    parent_source = parent_path.read_text(encoding="utf-8")
+    proposed_path.write_text(parent_source, encoding="utf-8")
+    return CandidateProposal(
+        branch_index=MODES.index(mode),
+        primary_mode=mode,
+        secondary_modes=[],
+        declared_mode=mode,
+        source_hash=sha256_file(proposed_path),
+        source_parent_hash=sha256_file(parent_path),
+        file_path=str(proposed_path),
+        raw_output_text="",
+        parsed_output_json={
+            "declared_mode": mode,
+            "rationale": "Rejected strict-backend candidate; parent copied unchanged.",
+            "run_id": state.run_id,
+            "step": state.step,
+        },
+        prompt_hash=None,
+        changed=False,
+        errors=errors,
+        validation_failures=["strict_backend_exception_noop"],
+    )
+
+
+def _usage_input_tokens(payload: dict[str, Any] | None) -> int:
+    usage = _usage_payload(payload)
+    return int(
+        usage.get("input_tokens", 0)
+        + usage.get("cache_creation_input_tokens", 0)
+        + usage.get("cache_read_input_tokens", 0)
+    )
+
+
+def _usage_output_tokens(payload: dict[str, Any] | None) -> int:
+    usage = _usage_payload(payload)
+    return int(usage.get("output_tokens", 0))
+
+
+def _usage_cost(payload: dict[str, Any] | None) -> float:
+    if not isinstance(payload, dict):
+        return 0.0
+    value = payload.get("cost_usd")
+    try:
+        return float(value) if value is not None else 0.0
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _usage_payload(payload: dict[str, Any] | None) -> dict[str, Any]:
+    if not isinstance(payload, dict):
+        return {}
+    usage = payload.get("usage")
+    return usage if isinstance(usage, dict) else {}
 
 
 def _build_adapter(model_config: dict[str, Any]) -> AgentAdapter:

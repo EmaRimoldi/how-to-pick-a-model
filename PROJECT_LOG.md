@@ -91,3 +91,28 @@
 - Each step has one `candidate_batch_id` grouping exactly six candidate proposals.
 - `mode_probs` are validated to include exactly the six canonical modes and sum to 1.
 - `declared_mode` and `inferred_mode` are logged separately for each branch.
+
+### Phase 3: Claude Haiku Backend
+
+- Added a strict Claude Haiku backend in `src/vao/agents/anthropic_adapter.py`.
+- Added prompt templates under `src/vao/prompts/` for mode distribution, mode-constrained edit generation, JSON repair, and code repair.
+- Added parser and validation helpers in `src/vao/agents/claude_parser.py`.
+- Added fixture-based parser/prompt tests. Normal pytest does not require live API calls.
+- The environment did not have `ANTHROPIC_API_KEY` or the `anthropic` Python package installed, but it did have an authenticated Claude CLI. Phase 3 used Claude CLI transport with `--model haiku`, structured output schema, no tools, and per-call budget caps.
+- Added `configs/phase3_haiku_smoke.yaml` and `configs/phase3_haiku_dev.yaml`.
+- Ran live Haiku smoke: 1 profile, 2 steps, 12 branches. The run passed `vao.validate_run`.
+- Ran live Haiku dev: 3 profiles, 1 run per profile, 3 steps per run, 54 branches. All runs passed `vao.validate_run`.
+- Combined Phase 3 totals: 4 runs, 11 steps, 66 branch evaluations.
+- Generated `artifacts/phase3_haiku_estimators.csv`, `artifacts/phase3_haiku_routing_dataset.jsonl`, `artifacts/phase3_haiku_summary.json`, and `artifacts/phase3_haiku_failure_modes.json`.
+- Total logged Claude CLI cost estimate across Phase 3 live runs: approximately `$5.18`.
+
+### Phase 3 Real Backend Results
+
+- Haiku followed the outer protocol: all runs validated with six branches per step, exactly one top-1 promoted branch, and no counterfactual leakage in visible history.
+- `mode_probs` were non-degenerate and changed across steps; selected modes included `indexing` and `topk`.
+- Generated edits were diverse across declared modes, but declared/inferred agreement was uneven: strong for `layout`, `caching`, `topk`, and `summaries`, weak for `indexing` and `micro`.
+- Counterfactual branches exposed routing mistakes: mean routing regret was `1.179063963942385`, substantially higher than Phase 2 local-stub mean routing regret `0.4836351511535289`.
+- Correctness rates by declared mode were: layout `1.0`, indexing `0.9091`, topk `0.8182`, caching `1.0`, summaries `1.0`, micro `0.9091`.
+- One candidate required repair after unsafe source validation (`banned attribute call: remove`); repair succeeded.
+- One branch caused a verifier runtime failure due to generated code using `bisect_left` with incompatible key/tuple comparison.
+- The pipeline is ready for a small Opus teacher pilot from a protocol standpoint, but prompt tuning and stricter pre-verifier dynamic checks are recommended first. Opus was not run in Phase 3.

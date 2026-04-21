@@ -24,10 +24,18 @@
 - [x] Run 3-profile x 3-repeat x 5-step deterministic Phase 2 expansion.
 - [x] Validate every Phase 2 run.
 - [x] Generate Phase 2 estimator CSV, routing JSONL, and summary JSON.
+- [x] Add Claude Haiku backend with strict structured output parsing.
+- [x] Add prompt templates for distribution, edit generation, JSON repair, and code repair.
+- [x] Add fixture-based Claude parser and prompt rendering tests.
+- [x] Run Haiku smoke: 1 profile, 2 steps, 12 branches.
+- [x] Run Haiku dev: 3 profiles, 1 run each, 3 steps each.
+- [x] Generate Phase 3 Haiku estimator, routing, summary, and failure-mode artifacts.
 
 ## Remaining
 
 - [ ] Replace adapter scaffolds with real Claude Code and OpenAI-compatible model calls when credentials/endpoints are available.
+- [ ] Add pre-verifier dynamic source smoke tests for generated candidate constructors and common operations.
+- [ ] Improve prompts for `indexing` and `micro` declared-mode adherence.
 - [ ] Add controlled shared-checkpoint phi experiment implementation.
 - [ ] Add full C(b) pre/post feedback distribution diagnostic.
 - [ ] Add training implementation for `train_routing_lora.py`.

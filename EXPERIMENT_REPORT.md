@@ -112,3 +112,73 @@ Aggregate Phase 2 summary:
 - Mean routing regret: `0.4836351511535289`
 - Mean JSD: `0.31462168201836854`
 - Invalid branch rate: `0.0`
+
+## Phase 3 Real Backend Results
+
+Phase 3 integrated the first real LLM backend and ran only small controlled Haiku experiments. Opus, Qwen, and post-training were not run.
+
+Backend implementation:
+
+- Added `ClaudeHaikuAdapter` with strict output parsing and validation.
+- Added prompt templates in `src/vao/prompts/`.
+- Added deterministic JSON repair for mode distributions and one model-reprompt repair path for invalid JSON/code.
+- Added fixture-based parser/prompt tests so normal `pytest` does not require live Claude calls.
+- The local environment had no `ANTHROPIC_API_KEY` and no installed `anthropic` package. It did have an authenticated Claude CLI, so live runs used Claude CLI transport with `--model haiku`, structured output schemas, disabled tools, and per-call budget caps.
+
+Live runs:
+
+- Smoke: `runs/phase3_real_backend/haiku_smoke/haiku_smoke`
+- Dev: `runs/phase3_real_backend/haiku_dev/haiku_dev_paper_development`
+- Dev: `runs/phase3_real_backend/haiku_dev/haiku_dev_memory_development`
+- Dev: `runs/phase3_real_backend/haiku_dev/haiku_dev_development`
+
+Totals:
+
+- Runs: 4
+- Steps: 11
+- Branch evaluations: 66
+- Routing dataset records: 11
+- All Phase 3 runs passed `vao.validate_run`.
+- Logged Claude CLI cost estimate: about `$5.18` total, averaging `0.4711532409090909` USD per step.
+- Average wall-clock time: `337.27964359521866` seconds per step.
+
+Artifacts:
+
+- `artifacts/phase3_haiku_estimators.csv`
+- `artifacts/phase3_haiku_routing_dataset.jsonl`
+- `artifacts/phase3_haiku_summary.json`
+- `artifacts/phase3_haiku_failure_modes.json`
+
+Protocol behavior:
+
+- Haiku followed the protocol shape: six branches per step, valid mode distributions, top-1 promotion, and no leakage of non-selected branch feedback into next-step visible history.
+- `mode_probs` were meaningful rather than uniform-only or single-mode degenerate. Haiku selected mostly `indexing` and `topk` in these small runs.
+- Generated edits were diverse across declared modes.
+- Declared/inferred agreement was mixed:
+  - `layout`: `1.0`
+  - `indexing`: `0.09090909090909091`
+  - `topk`: `0.9090909090909091`
+  - `caching`: `1.0`
+  - `summaries`: `0.9090909090909091`
+  - `micro`: `0.0`
+- Counterfactual branches revealed routing mistakes. Mean routing regret was `1.179063963942385`, compared with Phase 2 local-stub mean routing regret `0.4836351511535289`.
+- Mean JSD was `0.4415179926671302`, compared with Phase 2 local-stub mean JSD `0.31462168201836854`.
+
+Correctness and failures:
+
+- Correctness by declared mode:
+  - `layout`: `1.0`
+  - `indexing`: `0.9090909090909091`
+  - `topk`: `0.8181818181818182`
+  - `caching`: `1.0`
+  - `summaries`: `1.0`
+  - `micro`: `0.9090909090909091`
+- Parse/repair failure rate: `0.015151515151515152`
+- Code validation failure rate: `0.015151515151515152`
+- Verifier runtime failure rate: `0.015151515151515152`
+- One unsafe candidate used a banned `.remove()` attribute call during initial generation; the repair prompt produced a safe candidate.
+- One indexing branch failed at verifier runtime due to invalid `bisect_left` tuple/key comparison.
+
+Readiness for Opus:
+
+The protocol and logging pipeline are ready for a small Opus teacher pilot. Before spending Opus budget, the Haiku run suggests adding stricter pre-verifier dynamic smoke checks for candidate constructors and common operations, and improving prompts for `indexing` and `micro` so declared mode better matches inferred behavior.

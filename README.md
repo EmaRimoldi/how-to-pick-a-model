@@ -32,5 +32,7 @@ Every run writes a self-contained directory containing `run_manifest.json`, `bas
 - `python -m vao.verifier --smoke_test`
 - `python -m vao.analysis.compute_estimators --runs runs/phase1_dev --out artifacts/phase1_dev_estimators.csv`
 - `python -m vao.training.build_routing_dataset --runs runs/phase1_dev --train_out artifacts/routing_train.jsonl --dev_out artifacts/routing_dev.jsonl`
+- `python -m vao.validate_run --run_dir runs/phase2_dev/<run_id>`
+- `python -m vao.orchestrator --config configs/phase3_haiku_smoke.yaml --models claude_haiku --profiles paper_development --steps 2`
 
-The closed-source and open-weight model adapters are scaffolded behind the same interface as the deterministic `local_stub` backend. The smoke experiment intentionally uses `local_stub` so the framework is reproducible without external model credentials.
+The closed-source and open-weight model adapters are scaffolded behind the same interface as the deterministic `local_stub` backend. `claude_haiku` is the first real backend. It can use `ANTHROPIC_API_KEY` through the Messages API or the authenticated Claude CLI transport when available. Normal tests use fixtures and do not require live model calls.

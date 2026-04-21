@@ -1,0 +1,11 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "result": "Done.",
+  "structured_output": {
+    "declared_mode": "layout",
+    "secondary_modes": [],
+    "rationale": "Use a dictionary layout for faster get, put, and delete.",
+    "solution_py": "from __future__ import annotations\n\nclass CandidateQueryEngine:\n    def __init__(self, items: dict[int, int] | None = None):\n        self._values = {int(k): int(v) for k, v in (items or {}).items()}\n\n    def put(self, key: int, value: int) -> None:\n        self._values[int(key)] = int(value)\n        return None\n\n    def delete(self, key: int) -> None:\n        self._values.pop(int(key), None)\n        return None\n\n    def get(self, key: int) -> int | None:\n        return self._values.get(int(key))\n\n    def range_sum(self, lo: int, hi: int) -> int:\n        lo = int(lo)\n        hi = int(hi)\n        if lo > hi:\n            return 0\n        return sum(value for key, value in self._values.items() if lo <= key <= hi)\n\n    def aggregate_count(self, lo: int, hi: int) -> int:\n        lo = int(lo)\n        hi = int(hi)\n        if lo > hi:\n            return 0\n        return sum(1 for key in self._values if lo <= key <= hi)\n\n    def top_k(self, lo: int, hi: int, k: int) -> list[tuple[int, int]]:\n        lo = int(lo)\n        hi = int(hi)\n        k = int(k)\n        if lo > hi or k <= 0:\n            return []\n        rows = [(key, value) for key, value in self._values.items() if lo <= key <= hi]\n        rows.sort(key=lambda item: (-item[1], item[0]))\n        return rows[:k]\n"
+  }
+}

@@ -1,0 +1,30 @@
+experiment:
+  name: phase3_haiku_dev
+  visibility_regime: top1_only
+  modes: [layout, indexing, topk, caching, summaries, micro]
+  steps: 3
+  wall_budget_seconds: 3600
+  branch_timeout_seconds: 180
+  incorrect_penalty: -1.0
+  productive_proxy_fallback: uniform
+  history_policy: full_visible_history
+  seed: 4680
+
+benchmark:
+  template_path: benchmarks/stateful_query_engine/solution_template.py
+  profiles: [paper_development, memory_development, development]
+  instance_overrides:
+    initial_size: 120
+    key_space: 3000
+    trace_length: 120
+    traces_per_family: 1
+    families: [uniform_read_heavy, range_local_scans, topk_stress]
+    repetitions: 1
+    warmup_prefix: 10
+    value_max: 1000
+
+models:
+  include: [claude_haiku]
+
+output:
+  root: runs/phase3_real_backend/haiku_dev

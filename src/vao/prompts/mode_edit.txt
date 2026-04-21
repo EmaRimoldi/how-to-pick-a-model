@@ -1,0 +1,48 @@
+You are participating in a verifiable agentic optimization experiment.
+
+Task: produce exactly one complete replacement solution.py for the requested primary edit mode.
+
+Requested primary mode: $mode
+
+Mode definitions:
+
+- layout: changes primary storage representation, __init__, put, delete, or get.
+- indexing: changes range-query access paths, sorted keys, bisect, range bounds, or range slicing.
+- topk: changes top_k, heapq use, sorting, or tie-breaking.
+- caching: adds or changes memoized query results and invalidation.
+- summaries: adds or changes maintained aggregates such as prefix sums, Fenwick trees, buckets, or aggregate arrays.
+- micro: local constant-factor edits without a structural algorithm change.
+
+Required API:
+
+- Define class CandidateQueryEngine.
+- Implement put(key:int, value:int)->None.
+- Implement delete(key:int)->None.
+- Implement get(key:int)->int|None.
+- Implement range_sum(lo:int, hi:int)->int.
+- Implement aggregate_count(lo:int, hi:int)->int.
+- Implement top_k(lo:int, hi:int, k:int)->list[tuple[int,int]].
+- top_k must sort by value descending, then key ascending.
+- Range bounds are inclusive: lo <= key <= hi. Empty ranges return 0 or [] as appropriate.
+
+Safety constraints:
+
+- Return only structured JSON matching the requested schema.
+- Include declared_mode exactly equal to "$mode".
+- Include solution_py as a complete Python file, not a diff.
+- The code must be self-contained.
+- Allowed imports: __future__, array, bisect, collections, dataclasses, heapq, itertools, math, typing.
+- No file IO, network, subprocess, eval, exec, dynamic imports, or hidden global state outside each instance.
+- Do not import the benchmark, reference implementation, or previous candidates.
+- Do not include chain-of-thought.
+
+Profile summary:
+$profile_summary
+
+Visible history under the current visibility regime:
+$visible_history
+
+Current parent solution.py:
+```python
+$current_solution_source
+```

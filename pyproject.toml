@@ -17,6 +17,7 @@ dependencies = [
     "accelerate",
     "peft",
     "trl",
+    "anthropic",
 ]
 
 [project.optional-dependencies]
@@ -30,6 +31,7 @@ vao-verify = "vao.verifier:main"
 vao-estimators = "vao.analysis.compute_estimators:main"
 vao-build-routing-dataset = "vao.training.build_routing_dataset:main"
 vao-validate-run = "vao.validate_run:main"
+vao-phase3-summary = "vao.analysis.phase3_summary:main"
 
 [build-system]
 requires = ["setuptools>=69", "wheel"]

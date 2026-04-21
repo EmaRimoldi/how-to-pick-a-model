@@ -9,6 +9,16 @@ models:
     model_id: leakage-probe-v1
     temperature: 0.0
     timeout_seconds: 30
+  claude_haiku:
+    adapter: claude_haiku
+    model_id: haiku
+    transport: cli
+    temperature: 0.2
+    timeout_seconds: 240
+    max_budget_usd: 0.25
+    max_tokens_distribution: 2048
+    max_tokens_edit: 12000
+    retries: 1
   strong_claude:
     adapter: claude_code
     model_id: claude-opus-current

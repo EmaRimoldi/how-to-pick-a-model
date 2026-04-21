@@ -1,0 +1,31 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "result": "Done.",
+  "structured_output": {
+    "mode_probs": {
+      "layout": 2,
+      "indexing": 3,
+      "topk": 1,
+      "caching": 2,
+      "summaries": 1,
+      "micro": 1
+    },
+    "mode_ranking": ["indexing", "layout", "caching", "topk", "summaries", "micro"],
+    "mode_rationales": {
+      "layout": "Dictionary layout may improve point lookups.",
+      "indexing": "Sorted keys directly target range queries.",
+      "topk": "Top-k may benefit from heap selection.",
+      "caching": "Repeated queries could reuse results.",
+      "summaries": "Aggregates can accelerate range sums.",
+      "micro": "Local rewrites may reduce overhead."
+    }
+  },
+  "usage": {
+    "input_tokens": 10,
+    "cache_creation_input_tokens": 20,
+    "cache_read_input_tokens": 30,
+    "output_tokens": 40
+  },
+  "total_cost_usd": 0.001
+}

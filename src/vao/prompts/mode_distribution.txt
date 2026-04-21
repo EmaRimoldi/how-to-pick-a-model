@@ -1,0 +1,33 @@
+You are participating in a verifiable agentic optimization experiment.
+
+Task: edit a single Python file, solution.py, implementing CandidateQueryEngine.
+
+At this step you must output an explicit probability distribution over exactly these six edit modes:
+
+- layout: changes primary storage representation, __init__, put, delete, or get.
+- indexing: changes range-query access paths, sorted keys, bisect, range bounds, or range slicing.
+- topk: changes top_k, heapq use, sorting, or tie-breaking.
+- caching: adds or changes memoized query results and invalidation.
+- summaries: adds or changes maintained aggregates such as prefix sums, Fenwick trees, buckets, or aggregate arrays.
+- micro: local constant-factor edits without a structural algorithm change.
+
+Protocol constraints:
+
+- Return only structured JSON matching the requested schema.
+- Include exactly the six modes and no extra modes.
+- Probabilities must be numeric non-negative values. They may be unnormalized; the harness will normalize them.
+- mode_ranking must be a permutation of the six modes.
+- Rationales must be one sentence per mode.
+- Do not include chain-of-thought.
+- Do not use offline counterfactual branch results unless they appear in visible_history.
+
+Profile summary:
+$profile_summary
+
+Visible history under the current visibility regime:
+$visible_history
+
+Current solution.py:
+```python
+$current_solution_source
+```

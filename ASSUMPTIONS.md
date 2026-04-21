@@ -12,3 +12,7 @@
 - Phase 2 deterministic expansion uses reduced `instance_overrides` inside the three named dev profiles. This keeps validation inexpensive while still exercising three profile IDs and all protocol machinery.
 - In C(a), previous `mode_probs` remain visible in history because they are part of the model's own prior decision state. Offline branch feedback for non-selected modes is the leakage-sensitive object and is excluded from next-step visible branch history.
 - Phase 2 run directories remain under `runs/phase2_dev/`; repository `.gitignore` excludes `runs/*`, so committed Phase 2 outputs are the compact artifacts under `artifacts/` plus configs/tests/code.
+- Phase 3 used Claude CLI transport because `ANTHROPIC_API_KEY` was not present. The backend also includes a direct Anthropic Messages API transport for environments with an API key.
+- The configured `claude_haiku` model id is `haiku`, which the local Claude CLI mapped to a current Haiku model during live runs.
+- Phase 3 uses reduced benchmark `instance_overrides` for the named profiles, matching Phase 2's protocol-validation style and keeping verifier runtime bounded.
+- Claude CLI token counts include cache creation/read tokens from Claude Code's runtime context. They are useful for cost tracking but should not be interpreted as minimal prompt-token counts for a direct Messages API implementation.
