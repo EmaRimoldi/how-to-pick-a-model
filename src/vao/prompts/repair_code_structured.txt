@@ -19,3 +19,7 @@ Return only corrected structured JSON matching the requested schema.
 Include primary_mode and declared_mode exactly equal to "$mode", edit_format
 exactly equal to "structured_edits", and a compact edits list. Do not return
 solution_py or a complete replacement source file.
+Avoid banned attribute calls: connect, mkdir, open, popen, read_bytes,
+read_text, remove, rename, replace, rmdir, socket, system, unlink,
+write_bytes, write_text. In particular, do not use list.remove; rebuild lists,
+use slices, or use pop(index) instead.

@@ -129,31 +129,42 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
             visibility_regime=visibility_regime,
             metadata={"model_key": model_key},
         )
-        distribution, distribution_errors = _propose_distribution(adapter, state)
+        step_dir = run_dir / "steps" / f"step_{step:04d}"
+        branch_dirs = create_step_branches(run_dir, step, workspace_solution, MODES)
+        candidate_batch_id = f"{run_id_actual}:step_{step:04d}:{parent_hash[:12]}"
+        batch_proposals: dict[str, Any] | None = None
+        if str(experiment.get("candidate_generation", "per_mode")) == "batched":
+            batch_fn = getattr(adapter, "propose_step_batch", None)
+            if not callable(batch_fn):
+                raise ValueError(f"Adapter {type(adapter).__name__} does not support batched candidate_generation")
+            distribution, batch_proposals = batch_fn(state, branch_dirs)
+            distribution_errors: list[str] = []
+        else:
+            distribution, distribution_errors = _propose_distribution(adapter, state)
         step_input_tokens = _usage_input_tokens(distribution.parsed_json)
         step_output_tokens = _usage_output_tokens(distribution.parsed_json)
         step_cost_usd = _usage_cost(distribution.parsed_json)
         selected_mode_top1 = max(MODES, key=lambda mode: distribution.mode_probs[mode])
         selected_mode, selected_mode_reason = _select_mode(experiment, step, selected_mode_top1)
-        step_dir = run_dir / "steps" / f"step_{step:04d}"
-        branch_dirs = create_step_branches(run_dir, step, workspace_solution, MODES)
         branch_evaluations: list[BranchEvaluation] = []
-        candidate_batch_id = f"{run_id_actual}:step_{step:04d}:{parent_hash[:12]}"
 
         for mode in MODES:
             branch_dir = branch_dirs[mode]
             proposal_errors: list[str] = []
-            try:
-                proposal = adapter.propose_edit_for_mode(state, mode, branch_dir)
-            except Exception as exc:  # noqa: BLE001 - keep protocol running and log failed branch.
-                proposal_errors.append(f"{type(exc).__name__}: {exc}")
-                if getattr(adapter, "strict_failures", False):
-                    proposal = _rejected_noop_proposal(state, mode, branch_dir, proposal_errors)
-                else:
-                    proposed = branch_dir / "proposed_solution.py"
-                    proposed.write_text((branch_dir / "parent_solution.py").read_text(encoding="utf-8"), encoding="utf-8")
-                    proposal = LocalStubAdapter().propose_edit_for_mode(state, mode, branch_dir)
-                    proposal.errors.extend(proposal_errors)
+            if batch_proposals is not None:
+                proposal = batch_proposals[mode]
+            else:
+                try:
+                    proposal = adapter.propose_edit_for_mode(state, mode, branch_dir)
+                except Exception as exc:  # noqa: BLE001 - keep protocol running and log failed branch.
+                    proposal_errors.append(f"{type(exc).__name__}: {exc}")
+                    if getattr(adapter, "strict_failures", False):
+                        proposal = _rejected_noop_proposal(state, mode, branch_dir, proposal_errors)
+                    else:
+                        proposed = branch_dir / "proposed_solution.py"
+                        proposed.write_text((branch_dir / "parent_solution.py").read_text(encoding="utf-8"), encoding="utf-8")
+                        proposal = LocalStubAdapter().propose_edit_for_mode(state, mode, branch_dir)
+                        proposal.errors.extend(proposal_errors)
             proposal_dump = proposal.model_dump(mode="json")
             step_input_tokens += _usage_input_tokens(proposal_dump)
             step_output_tokens += _usage_output_tokens(proposal_dump)

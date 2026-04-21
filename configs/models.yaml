@@ -27,6 +27,18 @@ models:
     max_tokens_distribution: 2048
     max_tokens_edit: 4096
     retries: 1
+  claude_haiku_batch:
+    adapter: claude_haiku
+    model_id: haiku
+    transport: cli
+    edit_protocol: structured_edits
+    temperature: 0.2
+    timeout_seconds: 420
+    max_budget_usd: 0.8
+    max_tokens_distribution: 2048
+    max_tokens_edit: 4096
+    max_tokens_batch: 12000
+    retries: 1
   claude_haiku_diff_legacy:
     adapter: claude_haiku
     model_id: haiku

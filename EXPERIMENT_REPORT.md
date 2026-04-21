@@ -458,6 +458,28 @@ Decision: use `structured_edits` as the default real-model edit protocol when bu
 
 Artifact: `artifacts/edit_protocol_debug_report.md`.
 
+## Haiku Batch Speed Check
+
+The first live test of `structured_edits` was still slow because it made seven serial Claude calls per step: one distribution call plus one candidate-generation call per mode. That repeated the parent source/context six times, so shorter edit payloads did not translate into lower wall-clock time.
+
+I added a batched path where one Haiku call returns `mode_probs`, `mode_ranking`, and all six structured-edit candidates. The harness still creates six isolated branch copies, applies each branch-local edit independently, evaluates all six offline, and promotes only the top-1 mode by normalized `mode_probs`.
+
+Observed 1-step Haiku smoke:
+
+| protocol | sec/step | USD/step | input tokens/step | output tokens/step |
+|---|---:|---:|---:|---:|
+| replacement smoke | `326.4` | `0.479` | `332968` | `48314` |
+| structured edits, six calls | `480.4` | `0.629` | `331817` | `72751` |
+| structured edits, one batch call | `132.7` | `0.179` | `64324` | `24346` |
+
+Conclusion: the credible speed path is batched structured editing, not six separate mode calls. The batch smoke passed `vao.validate_run`, but one `indexing` candidate was rejected by source safety validation and logged as an explicit no-op. Before scaling teacher runs, batch mode needs a slightly larger quality smoke and prompt/repair tightening for source-safety failures.
+
+Artifacts:
+
+- `runs/phase3_real_backend/haiku_structured_batch_smoke/haiku_structured_batch_speed`
+- `artifacts/haiku_batch_speed_debug_report.json`
+- `artifacts/haiku_batch_speed_debug_report.md`
+
 ## C(b) Feedback-Use Diagnostic Infrastructure
 
 C(b) is now implemented as an optional protocol condition, without running any new Claude calls.

@@ -1,0 +1,75 @@
+{
+  "answer": "yes_for_this_smoke",
+  "comparison": {
+    "historical_replacement_smoke": {
+      "branch_evaluations": 12,
+      "changed_candidate_rate": 1.0,
+      "cost_usd_per_step": 0.47861309999999996,
+      "input_tokens_per_step": 332967.5,
+      "mean_edit_chars_per_candidate": null,
+      "mean_raw_chars_per_candidate": 4003.6666666666665,
+      "median_raw_chars_per_candidate": 3824.5,
+      "output_tokens_per_step": 48313.5,
+      "parse_or_candidate_error_rate": 0.0,
+      "proposal_validation_failure_rate": 0.0,
+      "run_dir": "runs/phase3_real_backend/haiku_smoke/haiku_smoke",
+      "seconds_per_step": 326.4316976070404,
+      "steps": 2,
+      "verifier_failure_rate": 0.0
+    },
+    "phase3_replacement_dev_average": {
+      "branch_evaluations": 66,
+      "code_validation_failure_rate": 0.015151515151515152,
+      "cost_usd_per_step": 0.4711532409090909,
+      "input_tokens_per_step": 327980.45454545453,
+      "output_tokens_per_step": 48556.09090909091,
+      "parse_failure_rate": 0.015151515151515152,
+      "seconds_per_step": 337.27964359521866,
+      "steps": 11,
+      "verifier_failure_rate": 0.015151515151515152
+    },
+    "structured_edits_batched_smoke": {
+      "branch_evaluations": 6,
+      "changed_candidate_rate": 0.8333333333333334,
+      "cost_usd_per_step": 0.17853760000000002,
+      "input_tokens_per_step": 64324,
+      "mean_edit_chars_per_candidate": 1829.5,
+      "mean_raw_chars_per_candidate": 2704.5,
+      "median_raw_chars_per_candidate": 3085.5,
+      "output_tokens_per_step": 24346,
+      "parse_or_candidate_error_rate": 0.16666666666666666,
+      "proposal_validation_failure_rate": 0.16666666666666666,
+      "run_dir": "runs/phase3_real_backend/haiku_structured_batch_smoke/haiku_structured_batch_speed",
+      "seconds_per_step": 132.72114205360413,
+      "steps": 1,
+      "verifier_failure_rate": 0.16666666666666666
+    },
+    "structured_edits_per_mode_smoke": {
+      "branch_evaluations": 6,
+      "changed_candidate_rate": 1.0,
+      "cost_usd_per_step": 0.62889475,
+      "input_tokens_per_step": 331817,
+      "mean_edit_chars_per_candidate": 2079.3333333333335,
+      "mean_raw_chars_per_candidate": 2612.8333333333335,
+      "median_raw_chars_per_candidate": 2910.0,
+      "output_tokens_per_step": 72751,
+      "parse_or_candidate_error_rate": 0.0,
+      "proposal_validation_failure_rate": 0.0,
+      "run_dir": "runs/phase3_real_backend/haiku_smoke/haiku_structured_smoke_speed",
+      "seconds_per_step": 480.42223167419434,
+      "steps": 1,
+      "verifier_failure_rate": 0.0
+    }
+  },
+  "cost_reduction_vs_replacement_smoke_mean": 0.6269688397580424,
+  "cost_reduction_vs_structured_per_mode": 0.7161089355571818,
+  "notes": [
+    "The earlier structured_edits per-mode smoke was slow because it still made distribution + six serial Claude calls.",
+    "The batched run sends the parent source once and accounts usage on the distribution record only.",
+    "One indexing candidate in the batched smoke was rejected by source safety validation and logged as an explicit no-op; the run still validates but candidate-quality prompts need tightening before scaling.",
+    "Verifier runtime remains small relative to model generation."
+  ],
+  "question": "Does Haiku speed up when switching from six separate structured-edit calls to one batched structured-edit call?",
+  "speedup_vs_replacement_smoke": 2.4595305055105645,
+  "speedup_vs_structured_per_mode": 3.619786751685416
+}

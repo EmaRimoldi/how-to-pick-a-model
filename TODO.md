@@ -52,11 +52,14 @@
 - [x] Add controlled mode promotion via `selection_policy: fixed_mode` and `selection_policy: mode_sequence`.
 - [x] Add per-run visual diagnostics for mode probabilities, loss by mode, gain heatmaps, cost per step, and single-mode trajectories.
 - [x] Debug edit-protocol token overhead and implement compact `structured_edits` for future real-model runs.
+- [x] Implement and validate Haiku batched structured-edit generation for `mode_probs + 6 candidates` in one model call.
+- [x] Run a one-step live Haiku batch speed check and generate `artifacts/haiku_batch_speed_debug_report.*`.
 
 ## Remaining
 
 - [ ] Resume/extend Opus teacher production collection when Claude CLI budget/availability allows the 3-profile x 3-repeat x 5-step target matrix.
-- [ ] First run after Claude budget returns should compare `structured_edits` against legacy replacement on a 1-profile, 2-step smoke before scaling teacher data.
+- [ ] Before scaling real-model teacher data, run a slightly larger batched `structured_edits` smoke and confirm candidate rejection rates are acceptable.
+- [ ] Tighten batched structured-edit prompt/repair for source-safety rejections such as banned list attribute calls.
 - [ ] Replace adapter scaffolds with real Claude Code and OpenAI-compatible model calls when credentials/endpoints are available.
 - [ ] Add pre-verifier dynamic source smoke tests for generated candidate constructors and common operations.
 - [ ] Improve prompts for `indexing` and `micro` declared-mode adherence.

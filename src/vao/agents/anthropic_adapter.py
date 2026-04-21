@@ -16,6 +16,7 @@ from vao.agents.base import AgentState
 from vao.agents.claude_parser import (
     ModelOutputError,
     parse_edit_payload,
+    parse_json_object,
     parse_mode_distribution,
     parse_replacement_payload,
     parse_structured_edit_payload,
@@ -67,6 +68,132 @@ class ClaudeHaikuAdapter:
             raise ValueError(f"unsupported edit_protocol: {self.edit_protocol}")
         self.config = kwargs
         self._last_distribution_usage: dict[str, Any] = {}
+
+    def propose_step_batch(self, state: AgentState, branch_dirs: dict[str, Path]) -> tuple[ModeDistribution, dict[str, CandidateProposal]]:
+        """Produce q(m) and one structured-edit candidate per mode in one Claude call.
+
+        This is the low-token variant of the C(a) protocol: the parent source
+        appears once in the prompt, Claude returns compact branch-local edits
+        for all six modes, and the framework materializes each candidate in its
+        own branch directory before verifier evaluation.
+        """
+        if self.edit_protocol != "structured_edits":
+            raise ValueError("batched Claude candidate generation requires edit_protocol=structured_edits")
+
+        parent_sources = {
+            mode: (branch_dirs[mode] / "parent_solution.py").read_text(encoding="utf-8")
+            for mode in MODES
+        }
+        parent_source = parent_sources[MODES[0]]
+        if any(source != parent_source for source in parent_sources.values()):
+            raise ValueError("batched candidate generation requires identical parent sources across branches")
+
+        prompt = render_template(
+            "step_batch_structured.txt",
+            profile_summary=json.dumps(state.profile_summary, sort_keys=True),
+            visible_history=json.dumps(state.visible_history, sort_keys=True),
+            current_solution_source=parent_source,
+        )
+        raw = ""
+        meta: dict[str, Any] = {}
+        failures: list[str] = []
+        try:
+            raw, meta = self._complete(prompt, self._step_batch_schema(), int(self.config.get("max_tokens_batch", 12000)))
+            payload = parse_json_object(raw)
+        except (BackendUnavailable, ModelOutputError, RuntimeError) as exc:
+            failures.append(f"batch_parse_failed:{type(exc).__name__}:{exc}")
+            if raw:
+                repair_prompt = render_template("repair_json.txt", failure_details=str(exc), raw_response=raw)
+                raw, meta = self._complete(repair_prompt, self._step_batch_schema(), int(self.config.get("max_tokens_batch", 12000)))
+                payload = parse_json_object(raw)
+                failures.append("batch_repair_used")
+            else:
+                raise
+
+        distribution = parse_mode_distribution(json.dumps(payload, sort_keys=True))
+        distribution.raw_text = raw
+        distribution.validation_failures.extend(failures)
+        distribution.parsed_json = {
+            **(distribution.parsed_json or {}),
+            "candidate_generation": "batched_structured_edits",
+            "transport": meta.get("transport"),
+            "usage": meta.get("usage"),
+            "cost_usd": meta.get("cost_usd"),
+            "model": meta.get("model", self.model_id),
+        }
+
+        candidates = payload.get("candidates")
+        if not isinstance(candidates, dict):
+            raise ModelOutputError("batch_candidates_missing_or_not_object")
+
+        proposals: dict[str, CandidateProposal] = {}
+        prompt_hash = sha256_text(prompt)
+        for mode in MODES:
+            branch_dir = branch_dirs[mode]
+            parent_path = branch_dir / "parent_solution.py"
+            proposed_path = branch_dir / "proposed_solution.py"
+            model_edit_path = branch_dir / "model_edit.json"
+            mode_payload = candidates.get(mode)
+            errors: list[str] = []
+            validation_failures: list[str] = []
+            parsed: dict[str, Any] | None = None
+            mode_raw = json.dumps(mode_payload, sort_keys=True) if isinstance(mode_payload, dict) else str(mode_payload)
+            try:
+                if not isinstance(mode_payload, dict):
+                    raise ModelOutputError(f"candidate_payload_missing_or_not_object:{mode}")
+                parsed = parse_structured_edit_payload(mode_raw, mode, parent_source=parent_source)
+            except ModelOutputError as exc:
+                errors.append(f"batch_candidate_invalid:{type(exc).__name__}:{exc}")
+                validation_failures.append("candidate_rejected_from_batch")
+
+            if parsed is None:
+                proposed_path.write_text(parent_source, encoding="utf-8")
+                model_edit_path.write_text("", encoding="utf-8")
+                parsed = {
+                    "primary_mode": mode,
+                    "declared_mode": mode,
+                    "secondary_modes": [],
+                    "rationale": "Rejected malformed batched Claude candidate; parent copied unchanged.",
+                    "edit_format": "rejected_noop",
+                    "edits": [],
+                    "patch_parse_status": "failed",
+                    "patch_apply_status": "not_applied",
+                    "structured_edit_parse_status": "failed",
+                    "structured_edit_apply_status": "not_applied",
+                    "source_validation": {"passed": True, "errors": []},
+                    "source_validation_status": "not_applicable_noop",
+                }
+            else:
+                proposed_path.write_text(str(parsed["solution_py"]), encoding="utf-8")
+                model_edit_path.write_text(json.dumps(parsed.get("edits", []), indent=2, sort_keys=True), encoding="utf-8")
+
+            changed = sha256_file(parent_path) != sha256_file(proposed_path)
+            proposals[mode] = CandidateProposal(
+                branch_index=MODES.index(mode),
+                primary_mode=mode,
+                secondary_modes=[str(item) for item in parsed.get("secondary_modes", []) if item in set(MODES)],
+                declared_mode=mode,
+                source_hash=sha256_file(proposed_path),
+                source_parent_hash=sha256_file(parent_path),
+                file_path=str(proposed_path),
+                raw_output_text=mode_raw,
+                parsed_output_json={
+                    key: value
+                    for key, value in parsed.items()
+                    if key != "solution_py"
+                }
+                | {
+                    "model_edit_path": str(model_edit_path) if model_edit_path.exists() else None,
+                    "edit_protocol": self.edit_protocol,
+                    "candidate_generation": "batched_structured_edits",
+                    "batch_usage_accounted_on_distribution": True,
+                },
+                prompt_hash=prompt_hash,
+                changed=changed,
+                errors=errors,
+                validation_failures=validation_failures,
+            )
+        return distribution, proposals
 
     def propose_mode_distribution(self, state: AgentState) -> ModeDistribution:
         prompt = render_template(
@@ -390,6 +517,55 @@ class ClaudeHaikuAdapter:
         }
 
     def _structured_edit_schema(self, mode: str) -> dict[str, Any]:
+        return {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": self._structured_candidate_properties(mode),
+            "required": ["primary_mode", "declared_mode", "edit_format", "rationale", "edits"],
+        }
+
+    def _step_batch_schema(self) -> dict[str, Any]:
+        return {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "mode_probs": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {mode: {"type": "number", "minimum": 0} for mode in MODES},
+                    "required": MODES,
+                },
+                "mode_ranking": {
+                    "type": "array",
+                    "items": {"type": "string", "enum": MODES},
+                    "minItems": 6,
+                    "maxItems": 6,
+                },
+                "mode_rationales": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {mode: {"type": "string"} for mode in MODES},
+                    "required": MODES,
+                },
+                "candidates": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        mode: {
+                            "type": "object",
+                            "additionalProperties": False,
+                            "properties": self._structured_candidate_properties(mode),
+                            "required": ["primary_mode", "declared_mode", "edit_format", "rationale", "edits"],
+                        }
+                        for mode in MODES
+                    },
+                    "required": MODES,
+                },
+            },
+            "required": ["mode_probs", "mode_ranking", "mode_rationales", "candidates"],
+        }
+
+    def _structured_candidate_properties(self, mode: str) -> dict[str, Any]:
         edit_item = {
             "type": "object",
             "additionalProperties": False,
@@ -408,29 +584,24 @@ class ClaudeHaikuAdapter:
             "required": ["op"],
         }
         return {
-            "type": "object",
-            "additionalProperties": False,
-            "properties": {
-                "primary_mode": {"type": "string", "enum": [mode]},
-                "declared_mode": {"type": "string", "enum": [mode]},
-                "edit_format": {"type": "string", "enum": ["structured_edits"]},
-                "secondary_modes": {
-                    "type": "array",
-                    "items": {"type": "string", "enum": MODES},
-                },
-                "rationale": {"type": "string"},
-                "target_regions": {
-                    "type": "array",
-                    "items": {"type": "string"},
-                },
-                "edits": {
-                    "type": "array",
-                    "items": edit_item,
-                    "minItems": 1,
-                    "maxItems": 8,
-                },
+            "primary_mode": {"type": "string", "enum": [mode]},
+            "declared_mode": {"type": "string", "enum": [mode]},
+            "edit_format": {"type": "string", "enum": ["structured_edits"]},
+            "secondary_modes": {
+                "type": "array",
+                "items": {"type": "string", "enum": MODES},
             },
-            "required": ["primary_mode", "declared_mode", "edit_format", "rationale", "edits"],
+            "rationale": {"type": "string"},
+            "target_regions": {
+                "type": "array",
+                "items": {"type": "string"},
+            },
+            "edits": {
+                "type": "array",
+                "items": edit_item,
+                "minItems": 1,
+                "maxItems": 8,
+            },
         }
 
     def _edit_prompt_template(self) -> str:

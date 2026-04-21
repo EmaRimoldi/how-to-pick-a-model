@@ -75,3 +75,19 @@ def test_structured_prompt_forbids_solution_py() -> None:
     assert "structured_edits" in rendered
     assert "Do not return solution_py" in rendered
     assert "complete replacement file" in rendered
+    assert "Do not call banned attributes" in rendered
+
+
+def test_batch_structured_prompt_requests_one_candidate_per_mode() -> None:
+    rendered = render_template(
+        "step_batch_structured.txt",
+        profile_summary="{}",
+        visible_history="[]",
+        current_solution_source="class CandidateQueryEngine:\n    pass\n",
+    )
+    assert "mode_probs" in rendered
+    assert "Exactly one compact structured edit candidate for each mode" in rendered
+    assert "Do not return solution_py" in rendered
+    assert "Do not call banned attributes" in rendered
+    for mode in ["layout", "indexing", "topk", "caching", "summaries", "micro"]:
+        assert mode in rendered

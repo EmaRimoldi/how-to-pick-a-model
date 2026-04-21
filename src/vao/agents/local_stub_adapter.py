@@ -43,6 +43,22 @@ class LocalStubAdapter:
         raw = json.dumps(parsed, sort_keys=True)
         return ModeDistribution(raw_text=raw, parsed_json=parsed, **parsed)
 
+    def propose_step_batch(self, state: AgentState, branch_dirs: dict[str, Path]) -> tuple[ModeDistribution, dict[str, CandidateProposal]]:
+        """Deterministic batched interface used to test the orchestrator path."""
+        distribution = self.propose_mode_distribution(state)
+        distribution.parsed_json = {
+            **(distribution.parsed_json or {}),
+            "candidate_generation": "batched_local_stub",
+        }
+        proposals = {mode: self.propose_edit_for_mode(state, mode, branch_dirs[mode]) for mode in MODES}
+        for proposal in proposals.values():
+            proposal.parsed_output_json = {
+                **(proposal.parsed_output_json or {}),
+                "candidate_generation": "batched_local_stub",
+                "batch_usage_accounted_on_distribution": True,
+            }
+        return distribution, proposals
+
     def propose_edit_for_mode(self, state: AgentState, mode: str, branch_dir: Path) -> CandidateProposal:
         validate_mode(mode)
         parent_path = branch_dir / "parent_solution.py"

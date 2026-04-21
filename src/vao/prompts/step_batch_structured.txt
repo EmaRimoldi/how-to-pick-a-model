@@ -1,15 +1,17 @@
 You are participating in a verifiable agentic optimization experiment.
 
-Task: produce exactly one compact structured edit for the requested primary edit mode.
+Task: in one response, produce:
 
-Requested primary mode: $mode
+1. An explicit probability distribution over the six primary edit modes.
+2. A ranking of those six modes.
+3. Exactly one compact structured edit candidate for each mode.
 
-The framework has already copied the visible parent solution.py into this
-mode's isolated branch. Your structured edit will be applied locally only to
-that branch-local copy. It must not assume or observe edits from any other mode
-branch.
+The framework has one visible parent solution.py. It will copy that same parent
+into six isolated branch directories, one per mode. Each candidate edit you
+return will be applied locally only to its own branch-local copy. Candidates
+must not assume or observe edits from any other mode branch.
 
-Mode definitions:
+Canonical modes:
 
 - layout: changes primary storage representation, __init__, put, delete, or get.
 - indexing: changes range-query access paths, sorted keys, bisect, range bounds, or range slicing.
@@ -18,7 +20,7 @@ Mode definitions:
 - summaries: adds or changes maintained aggregates such as prefix sums, Fenwick trees, buckets, or aggregate arrays.
 - micro: local constant-factor edits without a structural algorithm change.
 
-Required API after edits:
+Required API after every branch edit:
 
 - Define class CandidateQueryEngine.
 - Implement put(key:int, value:int)->None.
@@ -30,14 +32,14 @@ Required API after edits:
 - top_k must sort by value descending, then key ascending.
 - Range bounds are inclusive: lo <= key <= hi. Empty ranges return 0 or [] as appropriate.
 
-Structured edit format:
+Structured edit rules:
 
 - Return only structured JSON matching the requested schema.
-- Include primary_mode exactly equal to "$mode".
-- Include declared_mode exactly equal to "$mode".
-- Include edit_format exactly equal to "structured_edits".
-- Include 1 to 8 edits. Prefer the fewest edits that are sufficient.
+- Do not include markdown.
 - Do not return solution_py or any complete replacement file.
+- For each candidate, include primary_mode and declared_mode exactly equal to that candidate's mode.
+- For each candidate, include edit_format exactly equal to "structured_edits".
+- For each candidate, include 1 to 8 edits. Prefer the fewest edits that are sufficient.
 - Use one of these operations:
   - replace_exact: {"op":"replace_exact","old":"exact existing text","new":"replacement text"}
   - delete_exact: {"op":"delete_exact","text":"exact existing text"}
@@ -49,14 +51,21 @@ Structured edit format:
 
 Safety constraints:
 
-- The materialized code after applying edits must be self-contained.
+- The materialized code after applying each edit must be self-contained.
 - Allowed imports: __future__, array, bisect, collections, dataclasses, heapq, itertools, math, typing.
 - No file IO, network, subprocess, eval, exec, dynamic imports, or hidden global state outside each instance.
 - Do not call banned attributes: connect, mkdir, open, popen, read_bytes, read_text, remove, rename, replace, rmdir, socket, system, unlink, write_bytes, write_text.
 - For list deletion, use comprehensions, slices, pop(index), or rebuilt lists; do not use list.remove.
 - Do not import the benchmark, reference implementation, or previous candidates.
 - Do not include chain-of-thought.
-- Keep the edit scoped to the requested primary mode.
+- Keep each candidate scoped to its requested primary mode.
+
+Mode probability requirements:
+
+- mode_probs must contain exactly layout, indexing, topk, caching, summaries, micro.
+- Probabilities must be numeric and nonnegative.
+- The framework will normalize probabilities if they are slightly off, but you should sum to 1.
+- mode_ranking must be a permutation of the six modes sorted from most to least promising.
 
 Profile summary:
 $profile_summary

@@ -215,3 +215,17 @@
 - Added parser/prompt support for `edit_format: "structured_edits"` and made it the default future edit protocol for `claude_haiku` and `claude_opus_teacher`.
 - Kept `claude_haiku_diff_legacy` and `claude_opus_teacher_replacement_legacy` model configs for fallback comparisons.
 - Generated `artifacts/edit_protocol_debug_report.json` and `artifacts/edit_protocol_debug_report.md`.
+
+### Haiku Batch Speed Check
+
+- Added `candidate_generation: batched` support in `vao.orchestrator`.
+- Added `ClaudeHaikuAdapter.propose_step_batch`, which asks Haiku for `mode_probs`, `mode_ranking`, and all six structured-edit candidates in one Claude call.
+- Added local-stub batch support and regression tests proving the six-branch C(a) contract still holds.
+- Added `src/vao/prompts/step_batch_structured.txt`, `configs/phase3_haiku_structured_batch_smoke.yaml`, and `claude_haiku_batch`.
+- Ran live Haiku batch smoke: `runs/phase3_real_backend/haiku_structured_batch_smoke/haiku_structured_batch_speed`, 1 step, 6 branches, `vao.validate_run` passed.
+- Measured Haiku batch smoke at `132.72114205360413` seconds/step and `$0.17853760000000002` per step.
+- Comparison: Haiku structured per-mode smoke was `480.42223167419434` seconds/step and `$0.62889475`; historical Haiku replacement smoke was `326.4316976070404` seconds/step and about `$0.4786131`.
+- The speedup came from avoiding six serial candidate-generation calls and repeating the parent/context six times, not merely from shorter candidate text.
+- Caveat: one batched `indexing` candidate was rejected by source safety validation and logged as an explicit no-op; batch prompting/repair should be tightened before scaling.
+- Generated `artifacts/haiku_batch_speed_debug_report.json` and `artifacts/haiku_batch_speed_debug_report.md`.
+- Validation after the speed check: `pytest -q` passed with 47 tests; `PYTHONPATH=src:. python -m vao.verifier --smoke_test` passed; `vao.validate_run` passed on the batch smoke.

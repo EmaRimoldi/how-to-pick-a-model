@@ -28,6 +28,8 @@ Every run writes a self-contained directory containing `run_manifest.json`, `bas
 
 For real Claude/Anthropic runs, candidate generation is protocol-configurable. Phase 3.5 validated a `unified_diff` patch mode, but it was slower and less reliable than replacement files because diff application and repair failed too often. The current default for future Claude runs is `structured_edits`: the model returns compact exact edits such as `replace_exact` or `replace_function`, the harness applies them to six branch-local copies, and the verifier still evaluates full materialized `proposed_solution.py` files.
 
+The fastest current Haiku path is the batched structured-edit variant: one model call returns `mode_probs`, `mode_ranking`, and six mode-constrained structured edits. Use `candidate_generation: batched` or `configs/phase3_haiku_structured_batch_smoke.yaml` for that path. The one-step speed smoke passed validation, but one candidate was rejected and logged as a no-op, so this needs a larger quality smoke before teacher-data scaling.
+
 ## Main Entry Points
 
 - `python -m vao.orchestrator --config configs/phase1_dev.yaml`
@@ -36,6 +38,7 @@ For real Claude/Anthropic runs, candidate generation is protocol-configurable. P
 - `python -m vao.training.build_routing_dataset --runs runs/phase1_dev --train_out artifacts/routing_train.jsonl --dev_out artifacts/routing_dev.jsonl`
 - `python -m vao.validate_run --run_dir runs/phase2_dev/<run_id>`
 - `python -m vao.orchestrator --config configs/phase3_haiku_smoke.yaml --models claude_haiku --profiles paper_development --steps 2`
+- `python -m vao.orchestrator --config configs/phase3_haiku_structured_batch_smoke.yaml --models claude_haiku_batch --profiles paper_development --steps 1`
 - `python -m vao.analysis.phase3_summary --runs runs/phase35_patch/haiku_dev --summary_out artifacts/phase35_patch_summary.json --failure_modes_out artifacts/phase35_patch_failure_modes.json`
 - `python -m vao.orchestrator --config configs/phase4_teacher_opus_pilot.yaml --models claude_opus_teacher --steps 3`
 - `python -m vao.training.build_routing_dataset --runs runs/phase4_teacher_opus_pilot runs/phase4_teacher_opus --out artifacts/phase4_teacher_routing_dataset.jsonl`
@@ -63,4 +66,5 @@ The closed-source and open-weight model adapters are scaffolded behind the same 
 - C(b) feedback-use infrastructure is implemented for local/offline validation: set `feedback_condition: cb`, `visibility_regime: all_branches`, and `ask_post_feedback_distribution: true`. Controlled promotion is available through `selection_policy: fixed_mode` or `mode_sequence`.
 - Per-run diagnostics plots are available for mode probabilities, single-mode trajectories, loss by mode, gain heatmaps, and cost per step under `artifacts/plots/run_<run_id>/`.
 - Edit-protocol diagnostics are in `artifacts/edit_protocol_debug_report.md`. Observed replacement outputs were around 3.7k raw chars/candidate; a structured one-line edit example is 219 chars and a structured function edit example is 533 chars.
+- Batched Haiku speed diagnostics are in `artifacts/haiku_batch_speed_debug_report.md`: 132.7 seconds/step and `$0.179`/step on the one-step batch smoke, versus 480.4 seconds/step for six separate structured-edit calls and 326.4 seconds/step for the historical replacement smoke.
 - Offline student eval on the tiny split improved regret/JSD versus the original teacher route on that split, but the online local controlled experiment was worse than the local-stub router. Treat Phase 5 as infrastructure plus a negative first result, not as evidence of a useful student yet.
