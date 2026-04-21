@@ -6,8 +6,10 @@ import pytest
 
 from vao.logging_utils import read_jsonl, write_json
 from vao.orchestrator import run_single
+from vao.records import load_step_records
 from vao.schemas import BranchEvaluation
 from vao.validate_run import validate_run
+from vao.visibility import summarize_history_for_prompt
 
 
 def test_top1_visibility_does_not_promote_best_counterfactual(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -85,6 +87,7 @@ def test_top1_visibility_does_not_promote_best_counterfactual(tmp_path: Path, mo
     previous_step_visible = [row for row in step1_snapshot if row["step"] == 0][0]
     visible_branch_modes = [branch["declared_mode"] for branch in previous_step_visible["branches"]]
     assert visible_branch_modes == ["caching"]
+    assert "best_counterfactual" not in summarize_history_for_prompt(load_step_records(run_dir))
 
     validation = validate_run(run_dir)
     assert validation["passed"], validation

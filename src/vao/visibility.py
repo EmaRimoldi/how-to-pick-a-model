@@ -54,17 +54,9 @@ def summarize_history_for_prompt(records: list[StepRecord], max_rows: int = 12) 
                 "selected_mode": record.selected_mode,
                 "selected_loss": _finite_or_none(selected.latent_loss) if selected else None,
                 "selected_correct": selected.correctness if selected else None,
-                "best_counterfactual_mode": _best_mode(record),
             }
         )
     return "\n".join(str(row) for row in rows)
-
-
-def _best_mode(record: StepRecord) -> str | None:
-    finite = [branch for branch in record.branches if branch.correctness and math.isfinite(branch.latent_loss)]
-    if not finite:
-        return None
-    return min(finite, key=lambda branch: branch.latent_loss).primary_mode
 
 
 def _finite_or_none(value: float | None) -> float | None:

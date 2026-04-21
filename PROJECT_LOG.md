@@ -229,3 +229,11 @@
 - Caveat: one batched `indexing` candidate was rejected by source safety validation and logged as an explicit no-op; batch prompting/repair should be tightened before scaling.
 - Generated `artifacts/haiku_batch_speed_debug_report.json` and `artifacts/haiku_batch_speed_debug_report.md`.
 - Validation after the speed check: `pytest -q` passed with 47 tests; `PYTHONPATH=src:. python -m vao.verifier --smoke_test` passed; `vao.validate_run` passed on the batch smoke.
+
+### Anti-Leakage Context Recheck
+
+- Rechecked C(a) next-step visibility after adding batched Haiku generation.
+- `build_visible_history(..., "top1_only")` still includes only branches with `selected_as_visible=True`.
+- `vao.orchestrator` marks exactly one branch visible/promoted in C(a): the branch selected by `selected_mode`, which defaults to `argmax(mode_probs)`.
+- `vao.validate_run` checks that next-step visible history contains only the promoted branch when a `visible_history_snapshot` is logged.
+- Tightened `summarize_history_for_prompt` so it no longer includes `best_counterfactual_mode`; this prevents future prompt summaries from accidentally leaking offline verifier winners.
