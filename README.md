@@ -26,7 +26,7 @@ pytest -q
 
 Every run writes a self-contained directory containing `run_manifest.json`, `baseline_verification.json`, `evaluations.jsonl`, `run_summary.json`, resolved config, step branch workspaces, verifier outputs, and candidate source snapshots.
 
-For real Claude/Anthropic runs, candidate generation is protocol-configurable. Phase 3.5 validated a patch mode where the model returns one `unified_diff` per mode, saved as `model_edit.diff` and materialized into `proposed_solution.py`. The production protocol for teacher-data generation is the validated replacement-file C(a) protocol because it is currently faster and more reliable than patch mode.
+For real Claude/Anthropic runs, candidate generation is protocol-configurable. Phase 3.5 validated a `unified_diff` patch mode, but it was slower and less reliable than replacement files because diff application and repair failed too often. The current default for future Claude runs is `structured_edits`: the model returns compact exact edits such as `replace_exact` or `replace_function`, the harness applies them to six branch-local copies, and the verifier still evaluates full materialized `proposed_solution.py` files.
 
 ## Main Entry Points
 
@@ -53,7 +53,7 @@ The closed-source and open-weight model adapters are scaffolded behind the same 
 
 ## Current Milestone Status
 
-- Production teacher-data protocol is frozen as C(a) replacement-file candidate generation.
+- Future teacher-data protocol should use C(a) with `structured_edits` candidate generation. Replacement-file and unified-diff protocols remain available as legacy fallbacks.
 - Opus teacher pilot produced 3 validated runs, 9 steps, and 54 branch evaluations.
 - Production Opus collection was attempted under `runs/phase4_teacher_opus/`; the first run produced 3 validated steps before `claude_cli_failed:1` stopped further collection.
 - Claude quota is currently unavailable, so current work is offline only: no Claude, Opus, Haiku, or new teacher generation.
@@ -62,4 +62,5 @@ The closed-source and open-weight model adapters are scaffolded behind the same 
 - The local training stack now includes `peft` and `trl`; a toy LoRA smoke test passed, and a cached `distilbert-base-uncased` LoRA router was trained locally. It overfits toward `layout` and does not beat the classical/replay baselines on the tiny split.
 - C(b) feedback-use infrastructure is implemented for local/offline validation: set `feedback_condition: cb`, `visibility_regime: all_branches`, and `ask_post_feedback_distribution: true`. Controlled promotion is available through `selection_policy: fixed_mode` or `mode_sequence`.
 - Per-run diagnostics plots are available for mode probabilities, single-mode trajectories, loss by mode, gain heatmaps, and cost per step under `artifacts/plots/run_<run_id>/`.
+- Edit-protocol diagnostics are in `artifacts/edit_protocol_debug_report.md`. Observed replacement outputs were around 3.7k raw chars/candidate; a structured one-line edit example is 219 chars and a structured function edit example is 533 chars.
 - Offline student eval on the tiny split improved regret/JSD versus the original teacher route on that split, but the online local controlled experiment was worse than the local-stub router. Treat Phase 5 as infrastructure plus a negative first result, not as evidence of a useful student yet.

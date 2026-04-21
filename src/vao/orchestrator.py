@@ -194,8 +194,8 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
             )
             evaluation.validation_failures.extend([] if source_validation.get("passed") else source_validation.get("errors", []))
             evaluation.gain = gain(step_parent_loss, evaluation.latent_loss, evaluation.correctness, incorrect_penalty)
-            model_edit_path = branch_dir / "model_edit.diff"
-            if model_edit_path.exists():
+            model_edit_path = _model_edit_artifact_path(branch_dir)
+            if model_edit_path is not None:
                 evaluation.model_edit_path = str(model_edit_path)
             branch_evaluations.append(evaluation)
 
@@ -303,6 +303,14 @@ def _select_mode(experiment: dict[str, Any], step: int, top1_mode: str) -> tuple
             raise ValueError(f"selected_mode_sequence contains invalid mode {mode!r}")
         return mode, f"mode_sequence[{step % len(sequence)}]:{mode}"
     raise ValueError(f"Unknown selection_policy {policy!r}; expected top1, fixed_mode, or mode_sequence")
+
+
+def _model_edit_artifact_path(branch_dir: Path) -> Path | None:
+    for name in ("model_edit.json", "model_edit.diff"):
+        path = branch_dir / name
+        if path.exists():
+            return path
+    return None
 
 
 def _maybe_propose_post_feedback_distribution(

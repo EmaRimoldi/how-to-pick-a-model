@@ -51,10 +51,12 @@
 - [x] Implement C(b) post-feedback distribution logging with `q_pre`, `q_post`, regret improvement, and JSD improvement.
 - [x] Add controlled mode promotion via `selection_policy: fixed_mode` and `selection_policy: mode_sequence`.
 - [x] Add per-run visual diagnostics for mode probabilities, loss by mode, gain heatmaps, cost per step, and single-mode trajectories.
+- [x] Debug edit-protocol token overhead and implement compact `structured_edits` for future real-model runs.
 
 ## Remaining
 
 - [ ] Resume/extend Opus teacher production collection when Claude CLI budget/availability allows the 3-profile x 3-repeat x 5-step target matrix.
+- [ ] First run after Claude budget returns should compare `structured_edits` against legacy replacement on a 1-profile, 2-step smoke before scaling teacher data.
 - [ ] Replace adapter scaffolds with real Claude Code and OpenAI-compatible model calls when credentials/endpoints are available.
 - [ ] Add pre-verifier dynamic source smoke tests for generated candidate constructors and common operations.
 - [ ] Improve prompts for `indexing` and `micro` declared-mode adherence.

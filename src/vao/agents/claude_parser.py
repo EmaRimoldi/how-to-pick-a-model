@@ -11,6 +11,7 @@ from pydantic import ValidationError
 
 from vao.patches import PatchApplyError, apply_unified_diff
 from vao.schemas import ModeDistribution
+from vao.structured_edits import StructuredEditError, apply_structured_edits
 from vao.taxonomy import MODES, MODE_SET, normalize_mode_probs, validate_mode
 from vao.verifier import validate_source
 
@@ -134,6 +135,43 @@ def parse_edit_payload(raw_text: str, expected_mode: str, parent_source: str | N
     }
 
 
+def parse_structured_edit_payload(raw_text: str, expected_mode: str, parent_source: str | None = None) -> dict[str, Any]:
+    validate_mode(expected_mode)
+    if parent_source is None:
+        raise ModelOutputError("parent_source_required_for_structured_edits")
+    payload = parse_json_object(raw_text)
+    primary = payload.get("primary_mode")
+    if primary != expected_mode:
+        raise ModelOutputError(f"primary_mode_mismatch:{primary!r}!={expected_mode!r}")
+    declared = payload.get("declared_mode")
+    if declared != expected_mode:
+        raise ModelOutputError(f"declared_mode_mismatch:{declared!r}!={expected_mode!r}")
+    if payload.get("edit_format") != "structured_edits":
+        raise ModelOutputError(f"edit_format_mismatch:{payload.get('edit_format')!r}")
+    edits = payload.get("edits")
+    if not isinstance(edits, list) or not edits:
+        raise ModelOutputError("structured_edits_missing_or_empty")
+    if isinstance(payload.get("solution_py"), str):
+        raise ModelOutputError("replacement_file_output_not_allowed")
+    try:
+        source = apply_structured_edits(parent_source, edits)
+    except StructuredEditError as exc:
+        raise ModelOutputError(f"structured_edit_apply_failed:{exc}") from exc
+    validation = validate_candidate_source(source)
+    if not validation["passed"]:
+        raise ModelOutputError("candidate_source_invalid:" + ";".join(validation["errors"]))
+    return {
+        **payload,
+        "solution_py": source,
+        "patch_parse_status": "not_applicable_structured",
+        "patch_apply_status": "not_applicable_structured",
+        "structured_edit_parse_status": "passed",
+        "structured_edit_apply_status": "passed",
+        "source_validation": validation,
+        "source_validation_status": "passed",
+    }
+
+
 def parse_replacement_payload(raw_text: str, expected_mode: str) -> dict[str, Any]:
     validate_mode(expected_mode)
     payload = parse_json_object(raw_text)
@@ -176,7 +214,13 @@ def validate_candidate_source(source: str) -> dict[str, Any]:
 
 
 def _looks_like_protocol_object(parsed: dict[str, Any]) -> bool:
-    return "mode_probs" in parsed or "solution_py" in parsed or "unified_diff" in parsed or "declared_mode" in parsed
+    return (
+        "mode_probs" in parsed
+        or "solution_py" in parsed
+        or "unified_diff" in parsed
+        or "edits" in parsed
+        or "declared_mode" in parsed
+    )
 
 
 def _loads_object(text: str) -> dict[str, Any]:

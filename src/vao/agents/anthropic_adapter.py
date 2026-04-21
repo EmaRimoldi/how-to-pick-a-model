@@ -13,7 +13,13 @@ from pathlib import Path
 from typing import Any
 
 from vao.agents.base import AgentState
-from vao.agents.claude_parser import ModelOutputError, parse_edit_payload, parse_mode_distribution, parse_replacement_payload
+from vao.agents.claude_parser import (
+    ModelOutputError,
+    parse_edit_payload,
+    parse_mode_distribution,
+    parse_replacement_payload,
+    parse_structured_edit_payload,
+)
 from vao.logging_utils import sha256_file, sha256_text
 from vao.prompts import render_template
 from vao.schemas import CandidateProposal, ModeDistribution
@@ -57,7 +63,7 @@ class ClaudeHaikuAdapter:
         self.max_budget_usd = max_budget_usd
         self.retries = int(retries)
         self.edit_protocol = str(edit_protocol)
-        if self.edit_protocol not in {"patch_unified_diff", "replacement_file"}:
+        if self.edit_protocol not in {"patch_unified_diff", "replacement_file", "structured_edits"}:
             raise ValueError(f"unsupported edit_protocol: {self.edit_protocol}")
         self.config = kwargs
         self._last_distribution_usage: dict[str, Any] = {}
@@ -95,7 +101,7 @@ class ClaudeHaikuAdapter:
         validate_mode(mode)
         parent_path = branch_dir / "parent_solution.py"
         proposed_path = branch_dir / "proposed_solution.py"
-        model_edit_path = branch_dir / "model_edit.diff"
+        model_edit_path = branch_dir / ("model_edit.json" if self.edit_protocol == "structured_edits" else "model_edit.diff")
         parent_source = parent_path.read_text(encoding="utf-8")
         prompt = render_template(
             self._edit_prompt_template(),
@@ -141,8 +147,11 @@ class ClaudeHaikuAdapter:
                 "rationale": "Rejected malformed or unavailable Claude candidate; parent copied unchanged.",
                 "edit_format": "rejected_noop",
                 "unified_diff": "",
+                "edits": [],
                 "patch_parse_status": "failed",
                 "patch_apply_status": "not_applied",
+                "structured_edit_parse_status": "failed" if self.edit_protocol == "structured_edits" else "not_applicable",
+                "structured_edit_apply_status": "not_applied" if self.edit_protocol == "structured_edits" else "not_applicable",
                 "source_validation": {"passed": True, "errors": []},
                 "source_validation_status": "not_applicable_noop",
             }
@@ -150,6 +159,8 @@ class ClaudeHaikuAdapter:
             proposed_path.write_text(str(parsed["solution_py"]), encoding="utf-8")
             if self.edit_protocol == "patch_unified_diff":
                 model_edit_path.write_text(str(parsed.get("unified_diff", "")), encoding="utf-8")
+            elif self.edit_protocol == "structured_edits":
+                model_edit_path.write_text(json.dumps(parsed.get("edits", []), indent=2, sort_keys=True), encoding="utf-8")
 
         changed = sha256_file(parent_path) != sha256_file(proposed_path)
         prompt_hash = sha256_text(prompt)
@@ -333,6 +344,8 @@ class ClaudeHaikuAdapter:
     def _edit_schema(self, mode: str) -> dict[str, Any]:
         if self.edit_protocol == "replacement_file":
             return self._replacement_schema(mode)
+        if self.edit_protocol == "structured_edits":
+            return self._structured_edit_schema(mode)
         return {
             "type": "object",
             "additionalProperties": False,
@@ -376,15 +389,65 @@ class ClaudeHaikuAdapter:
             "required": ["primary_mode", "declared_mode", "edit_format", "rationale", "solution_py"],
         }
 
+    def _structured_edit_schema(self, mode: str) -> dict[str, Any]:
+        edit_item = {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "op": {
+                    "type": "string",
+                    "enum": ["replace_exact", "delete_exact", "insert_before", "insert_after", "replace_function"],
+                },
+                "function": {"type": "string"},
+                "old": {"type": "string"},
+                "new": {"type": "string"},
+                "anchor": {"type": "string"},
+                "text": {"type": "string"},
+                "source": {"type": "string"},
+            },
+            "required": ["op"],
+        }
+        return {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "primary_mode": {"type": "string", "enum": [mode]},
+                "declared_mode": {"type": "string", "enum": [mode]},
+                "edit_format": {"type": "string", "enum": ["structured_edits"]},
+                "secondary_modes": {
+                    "type": "array",
+                    "items": {"type": "string", "enum": MODES},
+                },
+                "rationale": {"type": "string"},
+                "target_regions": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                },
+                "edits": {
+                    "type": "array",
+                    "items": edit_item,
+                    "minItems": 1,
+                    "maxItems": 8,
+                },
+            },
+            "required": ["primary_mode", "declared_mode", "edit_format", "rationale", "edits"],
+        }
+
     def _edit_prompt_template(self) -> str:
+        if self.edit_protocol == "structured_edits":
+            return "mode_edit_structured.txt"
         return "mode_edit_replacement.txt" if self.edit_protocol == "replacement_file" else "mode_edit.txt"
 
     def _repair_prompt_template(self) -> str:
+        if self.edit_protocol == "structured_edits":
+            return "repair_code_structured.txt"
         return "repair_code_replacement.txt" if self.edit_protocol == "replacement_file" else "repair_code.txt"
 
     def _parse_edit_response(self, raw: str, mode: str, parent_source: str) -> dict[str, Any]:
         if self.edit_protocol == "replacement_file":
             return parse_replacement_payload(raw, mode)
+        if self.edit_protocol == "structured_edits":
+            return parse_structured_edit_payload(raw, mode, parent_source=parent_source)
         return parse_edit_payload(raw, mode, parent_source=parent_source)
 
 
@@ -398,5 +461,8 @@ def _candidate_edit_from_raw(raw: str) -> str:
     diff_text = payload.get("unified_diff")
     if isinstance(diff_text, str):
         return diff_text
+    edits = payload.get("edits")
+    if isinstance(edits, list):
+        return json.dumps(edits, indent=2, sort_keys=True)
     source = payload.get("solution_py")
     return source if isinstance(source, str) else raw

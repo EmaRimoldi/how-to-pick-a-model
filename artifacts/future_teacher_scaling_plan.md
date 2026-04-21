@@ -2,11 +2,13 @@
 
 This plan is prepared for when Claude/Anthropic quota returns. Do not run it during quota pause.
 
-## Frozen Protocol
+## Current Protocol
 
-- Protocol: C(a), replacement-file candidate outputs.
+- Protocol: C(a), structured edit candidate outputs.
 - Backend config: `claude_opus_teacher`.
 - Run config: `configs/phase4_teacher_opus.yaml`.
+- Fallback backend config: `claude_opus_teacher_replacement_legacy`.
+- First action after quota returns: run a 1-profile, 2-step structured-edit smoke and validate before launching the matrix.
 
 ## Target Matrix
 
@@ -26,7 +28,7 @@ This plan is prepared for when Claude/Anthropic quota returns. Do not run it dur
 ## Resume Checklist
 
 1. Confirm Claude CLI/API quota is available.
-2. Run one 1-step Opus smoke and validate.
+2. Run one 2-step Opus `structured_edits` smoke and validate.
 3. Launch one profile/repeat at a time so partial failures remain usable.
 4. Validate each run with `python -m vao.validate_run --run_dir <RUN_DIR>`.
 5. Rebuild `artifacts/phase4_teacher_routing_dataset.jsonl` from validated runs only.

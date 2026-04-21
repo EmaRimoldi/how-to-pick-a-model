@@ -20,6 +20,17 @@ models:
     adapter: claude_haiku
     model_id: haiku
     transport: cli
+    edit_protocol: structured_edits
+    temperature: 0.2
+    timeout_seconds: 240
+    max_budget_usd: 0.25
+    max_tokens_distribution: 2048
+    max_tokens_edit: 4096
+    retries: 1
+  claude_haiku_diff_legacy:
+    adapter: claude_haiku
+    model_id: haiku
+    transport: cli
     edit_protocol: patch_unified_diff
     temperature: 0.2
     timeout_seconds: 240
@@ -28,6 +39,17 @@ models:
     max_tokens_edit: 12000
     retries: 1
   claude_opus_teacher:
+    adapter: claude_haiku
+    model_id: opus
+    transport: cli
+    edit_protocol: structured_edits
+    temperature: 0.2
+    timeout_seconds: 360
+    max_budget_usd: 1.2
+    max_tokens_distribution: 2048
+    max_tokens_edit: 4096
+    retries: 1
+  claude_opus_teacher_replacement_legacy:
     adapter: claude_haiku
     model_id: opus
     transport: cli

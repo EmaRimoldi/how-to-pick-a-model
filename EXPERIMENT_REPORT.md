@@ -249,6 +249,8 @@ The frozen production protocol for teacher-data generation is C(a) with full rep
 
 Reason: patch-based editing is semantically closer to literal code editing, but it is not yet the better production data protocol. On dev-to-dev comparison, patch-based Haiku was slower (`435.12574399842157` s/step vs `340.8956255912781` s/step), costlier (`0.5358607722222222` USD/step vs `0.46949549444444444`), and less stable than replacement-file generation. Patch mode remains useful for future method work, but teacher data should use the replacement-file protocol now so the project can move to Opus teacher data and routing-only post-training.
 
+Update: this decision is superseded for future runs by the later `structured_edits` protocol, which is designed to preserve local edit semantics without unified-diff fragility. The replacement-file protocol remains as a legacy fallback.
+
 ## Phase 4 Teacher Experiments
 
 Teacher backend: Claude Opus through the already authenticated Claude CLI transport. The local CLI mapped `--model opus` to `claude-opus-4-6`.
@@ -318,7 +320,7 @@ Online controlled routing-only eval:
 
 Conclusion:
 
-- The production protocol is frozen and validated.
+- The C(a) framework is validated. Replacement-file teacher runs are validated historically; future teacher runs should first smoke-test `structured_edits`.
 - The teacher pipeline works, but Opus collection is currently budget/availability limited.
 - The routing student improved offline regret/JSD on a very small held-out split but did not improve online behavior.
 - Before within-mode or feedback-use post-training, collect more validated teacher data, replace the TF-IDF router with a LoRA-capable local model when dependencies are available, and rerun the routing-only evaluation.
@@ -418,7 +420,7 @@ The correct next scientific step is not more offline model tuning on these 12 re
 
 ## Next Step Once Teacher Budget Returns
 
-Resume the frozen replacement-file C(a) teacher pipeline, not patch mode. The immediate target remains the moderate Phase 4 matrix:
+Resume with a small `structured_edits` C(a) smoke first. If it validates, use `structured_edits` for the next teacher collection; keep `claude_opus_teacher_replacement_legacy` only as a fallback. The moderate Phase 4 matrix remains:
 
 - Dev: 3 profiles x 3 repeats x 5 steps = 45 teacher steps
 - Optional holdout: 2 profiles x 2 repeats x 5 steps = 20 teacher steps
@@ -430,6 +432,31 @@ Based on current Opus logs, projected serial cost/time is approximately:
 - Dev plus holdout: about `$115.69` and `11.61` serial hours
 
 Detailed resume checklist and run-manifest plan are in `artifacts/future_teacher_scaling_plan.md`. After collecting more data, rerun the dataset audit, replay leaderboard, classical routing comparisons, and local LoRA routing experiment before attempting within-mode or feedback-use training.
+
+## Structured Edit Protocol Debug
+
+The previous production protocol asked the model for complete replacement `solution.py` files. That was reliable, but it does not measure the cost of small line edits. The earlier `unified_diff` patch protocol reduced output length but failed too often because model-generated hunks were malformed, ambiguous, or needed repair.
+
+New default candidate protocol for future Claude runs:
+
+- `edit_format: "structured_edits"`
+- supported operations: `replace_exact`, `delete_exact`, `insert_before`, `insert_after`, `replace_function`
+- the framework still creates six isolated branch copies, one per mode
+- the model returns compact edit operations, not a full file
+- the harness applies edits locally, materializes `proposed_solution.py`, validates source safety, then runs the verifier
+
+Observed/debug numbers:
+
+- Phase 3 Haiku replacement: mean raw candidate output about `3706` chars
+- Phase 4 Opus replacement: mean raw candidate output about `3738` chars
+- Phase 3.5 unified diff: mean raw candidate output about `2958` chars, but many repair/apply failures
+- Structured one-line edit example: `219` chars
+- Structured function-replacement example: `533` chars
+- Full template replacement payload example: `2496` chars
+
+Decision: use `structured_edits` as the default real-model edit protocol when budget returns. Legacy replacement and unified-diff configs remain for fallback comparisons.
+
+Artifact: `artifacts/edit_protocol_debug_report.md`.
 
 ## C(b) Feedback-Use Diagnostic Infrastructure
 

@@ -43,6 +43,7 @@ vao-lora-smoke = "vao.training.lora_smoke:main"
 vao-train-local-lora-router = "vao.training.train_local_lora_router:main"
 vao-routing-choice-visuals = "vao.analysis.routing_choice_visuals:main"
 vao-run-diagnostics-visuals = "vao.analysis.run_diagnostics_visuals:main"
+vao-edit-protocol-debug = "vao.analysis.edit_protocol_debug:main"
 
 [build-system]
 requires = ["setuptools>=69", "wheel"]

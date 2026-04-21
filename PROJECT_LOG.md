@@ -205,3 +205,13 @@
 - Updated `vao.validate_run` so C(a) top-1 invariants remain strict while controlled-selection C(b) runs validate the explicitly selected promoted mode.
 - Updated `configs/feedback_use_cb.yaml` and ran a local C(b) smoke: `runs/feedback_use_cb/cb_local_fixed_micro`, 2 steps, 12 branch evaluations, validation passed.
 - Added `src/vao/analysis/run_diagnostics_visuals.py` and generated per-run plots for the local C(b) smoke plus all validated Phase 4 Opus teacher runs.
+
+### Structured Edit Protocol Debug
+
+- Audited existing replacement vs unified-diff logs with `src/vao/analysis/edit_protocol_debug.py`.
+- Observed replacement outputs were about `3706` to `3738` raw chars per candidate on Phase 3/4 runs; unified diff reduced raw output to about `2958` chars but had many apply/repair failures.
+- A compact structured one-line edit example is `219` chars and a structured single-function replacement example is `533` chars, compared with `2496` chars for a full template replacement payload.
+- Added `src/vao/structured_edits.py` with exact `replace_exact`, `delete_exact`, `insert_before`, `insert_after`, and `replace_function` operations.
+- Added parser/prompt support for `edit_format: "structured_edits"` and made it the default future edit protocol for `claude_haiku` and `claude_opus_teacher`.
+- Kept `claude_haiku_diff_legacy` and `claude_opus_teacher_replacement_legacy` model configs for fallback comparisons.
+- Generated `artifacts/edit_protocol_debug_report.json` and `artifacts/edit_protocol_debug_report.md`.
