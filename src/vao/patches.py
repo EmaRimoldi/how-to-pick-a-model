@@ -40,15 +40,15 @@ def apply_unified_diff(parent_source: str, diff_text: str) -> str:
             raise PatchApplyError(f"invalid_hunk_header:{line}")
         saw_hunk = True
         old_start = int(match.group("old_start"))
-        hunk_parent_index = old_start - 1
-        if hunk_parent_index < parent_index:
-            raise PatchApplyError("overlapping_or_out_of_order_hunk")
-        if hunk_parent_index > len(parent_lines):
+        suggested_index = old_start - 1
+        if suggested_index < parent_index:
+            suggested_index = parent_index
+        if suggested_index > len(parent_lines):
             raise PatchApplyError("hunk_starts_beyond_parent")
-
-        output.extend(parent_lines[parent_index:hunk_parent_index])
-        parent_index = hunk_parent_index
         diff_index += 1
+
+        old_block: list[str] = []
+        new_block: list[str] = []
 
         while diff_index < len(diff_lines) and not diff_lines[diff_index].startswith("@@"):
             hunk_line = diff_lines[diff_index]
@@ -60,19 +60,22 @@ def apply_unified_diff(parent_source: str, diff_text: str) -> str:
             prefix = hunk_line[0]
             content = hunk_line[1:]
             if prefix == " ":
-                _require_parent_line(parent_lines, parent_index, content)
-                output.append(content)
-                parent_index += 1
+                old_block.append(content)
+                new_block.append(content)
             elif prefix == "-":
-                _require_parent_line(parent_lines, parent_index, content)
-                parent_index += 1
+                old_block.append(content)
             elif prefix == "+":
-                output.append(content)
+                new_block.append(content)
             elif prefix in {"-", "+", " "}:
                 raise PatchApplyError("unreachable_invalid_prefix")
             else:
                 raise PatchApplyError(f"invalid_hunk_line_prefix:{prefix}")
             diff_index += 1
+
+        match_index = _find_hunk_match(parent_lines, old_block, parent_index, suggested_index)
+        output.extend(parent_lines[parent_index:match_index])
+        output.extend(new_block)
+        parent_index = match_index + len(old_block)
 
     if not saw_hunk:
         raise PatchApplyError("no_hunks_found")
@@ -82,14 +85,31 @@ def apply_unified_diff(parent_source: str, diff_text: str) -> str:
     return "\n".join(output) + trailing_newline
 
 
-def _require_parent_line(parent_lines: list[str], index: int, expected: str) -> None:
-    if index >= len(parent_lines):
-        raise PatchApplyError("hunk_consumes_past_parent")
-    actual = parent_lines[index]
-    if actual != expected:
+def _find_hunk_match(parent_lines: list[str], old_block: list[str], parent_index: int, suggested_index: int) -> int:
+    if not old_block:
+        return suggested_index
+    if _block_matches(parent_lines, suggested_index, old_block):
+        return suggested_index
+    matches = [
+        index
+        for index in range(parent_index, len(parent_lines) - len(old_block) + 1)
+        if _block_matches(parent_lines, index, old_block)
+    ]
+    if not matches:
+        expected = old_block[0] if old_block else ""
+        actual = parent_lines[suggested_index] if suggested_index < len(parent_lines) else "<eof>"
         raise PatchApplyError(
             "hunk_context_mismatch:"
-            f"line={index + 1}:"
+            f"line={suggested_index + 1}:"
             f"expected={expected!r}:"
             f"actual={actual!r}"
         )
+    if len(matches) > 1:
+        raise PatchApplyError(f"ambiguous_hunk_context:{matches[:5]}")
+    return matches[0]
+
+
+def _block_matches(parent_lines: list[str], index: int, block: list[str]) -> bool:
+    if index < 0 or index + len(block) > len(parent_lines):
+        return False
+    return parent_lines[index : index + len(block)] == block

@@ -1,0 +1,18 @@
+The previous candidate replacement solution.py was invalid or unsafe.
+
+Requested primary mode: $mode
+
+Failure details:
+$failure_details
+
+Previous candidate source or model response:
+```python
+$candidate_source
+```
+
+Parent solution.py:
+```python
+$current_solution_source
+```
+
+Return only corrected structured JSON matching the requested schema. Include primary_mode and declared_mode exactly equal to "$mode", edit_format exactly equal to "replacement_file", and solution_py as a complete safe Python file defining CandidateQueryEngine.

@@ -202,3 +202,48 @@ Validation after the change:
 - `PYTHONPATH=src:. python -m vao.validate_run --run_dir runs/phase1_dev/patch_protocol_local_smoke`: passed with 1 step and 6 branches.
 
 The existing Phase 3 Haiku artifacts were produced before this patch-based contract change and should be interpreted as full-file replacement runs. New Claude runs will use patch-based candidate edits.
+
+## Phase 3.5 Patch-Based Refactor and Revalidation
+
+Phase 3.5 implemented true branch-local patch editing and revalidated C(a). The patch protocol creates the same six branch workspaces, asks Claude for one `unified_diff` per mode, saves that patch as `model_edit.diff`, applies it to the branch parent, materializes `proposed_solution.py`, evaluates all six branches, and promotes only top-1 by `mode_probs`.
+
+Patch runs:
+
+- Smoke V2: `runs/phase35_patch/haiku_smoke/haiku_patch_smoke_v2`
+- Dev: `runs/phase35_patch/haiku_dev/haiku_patch_dev_claude_haiku_paper_development`
+- Dev: `runs/phase35_patch/haiku_dev/haiku_patch_dev_claude_haiku_memory_development`
+- Dev: `runs/phase35_patch/haiku_dev/haiku_patch_dev_claude_haiku_development`
+
+Validation:
+
+- `pytest -q`: 31 passed.
+- `PYTHONPATH=src:. python -m vao.verifier --smoke_test`: passed.
+- `vao.validate_run`: passed for the corrected smoke and all three dev runs.
+
+Artifacts:
+
+- `artifacts/phase35_patch_summary.json`
+- `artifacts/phase35_patch_failure_modes.json`
+- `artifacts/phase35_patch_estimators.csv`
+- `artifacts/phase35_patch_routing_dataset.jsonl`
+- `artifacts/phase35_patch_vs_replacement.json`
+
+Patch dev summary:
+
+- Runs: 3
+- Steps: 9
+- Branch evaluations: 54
+- Average wall-clock per step: `435.12574399842157` seconds
+- Average cost per step: `0.5358607722222222` USD
+- Mean routing regret: `1.5526810046891615`
+- Best visible loss: `0.48901087929497367`
+- Best counterfactual loss: `0.48753714261372894`
+- Parse/repair/rejection failure rate: `0.18518518518518517`
+- Source validation failure rate: `0.12962962962962962`
+- Verifier failure rate: `0.18518518518518517`
+
+## Production Protocol Decision
+
+The frozen production protocol for teacher-data generation is C(a) with full replacement-file candidate outputs.
+
+Reason: patch-based editing is semantically closer to literal code editing, but it is not yet the better production data protocol. On dev-to-dev comparison, patch-based Haiku was slower (`435.12574399842157` s/step vs `340.8956255912781` s/step), costlier (`0.5358607722222222` USD/step vs `0.46949549444444444`), and less stable than replacement-file generation. Patch mode remains useful for future method work, but teacher data should use the replacement-file protocol now so the project can move to Opus teacher data and routing-only post-training.

@@ -129,3 +129,21 @@
 - Ran `pytest -q`: 27 tests passed.
 - Ran `PYTHONPATH=src:. python -m vao.verifier --smoke_test`: passed.
 - Ran a 1-step local orchestrator smoke at `runs/phase1_dev/patch_protocol_local_smoke`; `vao.validate_run` passed with 1 step and 6 branch evaluations.
+
+### Phase 3.5 Patch-Based Refactor and Revalidation
+
+- Added protocol-configurable Claude candidate generation: `patch_unified_diff` for patch-faithful experiments and `replacement_file` for production teacher-data generation.
+- Added replacement-file prompt/repair templates with explicit `edit_format: "replacement_file"` so production runs are no longer ambiguous.
+- Improved unified-diff application to tolerate incorrect hunk line numbers only when the old hunk context matches exactly and uniquely in the branch-local parent.
+- Ran patch Haiku smoke V2: `runs/phase35_patch/haiku_smoke/haiku_patch_smoke_v2`, 2 steps, 12 branches, passed `vao.validate_run`.
+- Ran patch Haiku dev: 3 profiles x 1 run x 3 steps, 54 branches, all three runs passed `vao.validate_run`.
+- Validation after Phase 3.5: `pytest -q` passed with 31 tests; `PYTHONPATH=src:. python -m vao.verifier --smoke_test` passed.
+- Generated `artifacts/phase35_patch_summary.json`, `artifacts/phase35_patch_failure_modes.json`, `artifacts/phase35_patch_estimators.csv`, `artifacts/phase35_patch_routing_dataset.jsonl`, and `artifacts/phase35_patch_vs_replacement.json`.
+
+### Production Protocol Decision
+
+- Frozen production protocol for teacher-data generation: C(a) with full replacement-file candidate outputs.
+- Rationale: patch-based editing is more faithful to literal edit semantics, but the validated Phase 3.5 dev run was slower and less stable than the Phase 3 replacement-file dev run.
+- Dev-to-dev comparison: patch averaged `435.12574399842157` seconds per step vs replacement `340.8956255912781`; patch averaged `$0.5358607722222222` per step vs replacement `$0.46949549444444444`.
+- Patch failure rates were also higher: parse/repair/rejection rate `0.18518518518518517`, source validation failure rate `0.12962962962962962`, verifier failure rate `0.18518518518518517`.
+- Replacement-file remains the production protocol for Opus teacher data. Patch mode remains available for later method work but will not block teacher/routing-only milestones.

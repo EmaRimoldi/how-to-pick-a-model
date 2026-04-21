@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from vao.agents.base import AgentState
-from vao.agents.claude_parser import ModelOutputError, parse_edit_payload, parse_mode_distribution
+from vao.agents.claude_parser import ModelOutputError, parse_edit_payload, parse_mode_distribution, parse_replacement_payload
 from vao.logging_utils import sha256_file, sha256_text
 from vao.prompts import render_template
 from vao.schemas import CandidateProposal, ModeDistribution
@@ -45,6 +45,7 @@ class ClaudeHaikuAdapter:
         max_tokens_edit: int = 12000,
         max_budget_usd: float | None = 0.20,
         retries: int = 1,
+        edit_protocol: str = "patch_unified_diff",
         **kwargs: object,
     ) -> None:
         self.model_id = model_id
@@ -55,6 +56,9 @@ class ClaudeHaikuAdapter:
         self.max_tokens_edit = int(max_tokens_edit)
         self.max_budget_usd = max_budget_usd
         self.retries = int(retries)
+        self.edit_protocol = str(edit_protocol)
+        if self.edit_protocol not in {"patch_unified_diff", "replacement_file"}:
+            raise ValueError(f"unsupported edit_protocol: {self.edit_protocol}")
         self.config = kwargs
         self._last_distribution_usage: dict[str, Any] = {}
 
@@ -94,7 +98,7 @@ class ClaudeHaikuAdapter:
         model_edit_path = branch_dir / "model_edit.diff"
         parent_source = parent_path.read_text(encoding="utf-8")
         prompt = render_template(
-            "mode_edit.txt",
+            self._edit_prompt_template(),
             mode=mode,
             profile_summary=json.dumps(state.profile_summary, sort_keys=True),
             visible_history=json.dumps(state.visible_history, sort_keys=True),
@@ -107,20 +111,21 @@ class ClaudeHaikuAdapter:
         parsed: dict[str, Any] | None = None
         try:
             raw, meta = self._complete(prompt, self._edit_schema(mode), self.max_tokens_edit)
-            parsed = parse_edit_payload(raw, mode, parent_source=parent_source)
+            parsed = self._parse_edit_response(raw, mode, parent_source)
         except (BackendUnavailable, ModelOutputError, RuntimeError) as exc:
             errors.append(f"initial_edit_failed:{type(exc).__name__}:{exc}")
             if raw:
                 try:
                     repair_prompt = render_template(
-                        "repair_code.txt",
+                        self._repair_prompt_template(),
                         mode=mode,
                         failure_details=str(exc),
                         candidate_edit=_candidate_edit_from_raw(raw),
+                        candidate_source=_candidate_edit_from_raw(raw),
                         current_solution_source=parent_source,
                     )
                     raw, meta = self._complete(repair_prompt, self._edit_schema(mode), self.max_tokens_edit)
-                    parsed = parse_edit_payload(raw, mode, parent_source=parent_source)
+                    parsed = self._parse_edit_response(raw, mode, parent_source)
                     validation_failures.append("repair_used")
                 except (BackendUnavailable, ModelOutputError, RuntimeError) as repair_exc:
                     errors.append(f"repair_failed:{type(repair_exc).__name__}:{repair_exc}")
@@ -130,16 +135,21 @@ class ClaudeHaikuAdapter:
             model_edit_path.write_text("", encoding="utf-8")
             validation_failures.append("candidate_rejected_after_repair")
             parsed = {
+                "primary_mode": mode,
                 "declared_mode": mode,
                 "secondary_modes": [],
                 "rationale": "Rejected malformed or unavailable Claude candidate; parent copied unchanged.",
                 "edit_format": "rejected_noop",
                 "unified_diff": "",
+                "patch_parse_status": "failed",
+                "patch_apply_status": "not_applied",
                 "source_validation": {"passed": True, "errors": []},
+                "source_validation_status": "not_applicable_noop",
             }
         else:
             proposed_path.write_text(str(parsed["solution_py"]), encoding="utf-8")
-            model_edit_path.write_text(str(parsed.get("unified_diff", "")), encoding="utf-8")
+            if self.edit_protocol == "patch_unified_diff":
+                model_edit_path.write_text(str(parsed.get("unified_diff", "")), encoding="utf-8")
 
         changed = sha256_file(parent_path) != sha256_file(proposed_path)
         prompt_hash = sha256_text(prompt)
@@ -158,11 +168,12 @@ class ClaudeHaikuAdapter:
                 if key != "solution_py"
             }
             | {
-                "model_edit_path": str(model_edit_path),
+                "model_edit_path": str(model_edit_path) if model_edit_path.exists() else None,
                 "transport": meta.get("transport"),
                 "usage": meta.get("usage"),
                 "cost_usd": meta.get("cost_usd"),
                 "model": meta.get("model", self.model_id),
+                "edit_protocol": self.edit_protocol,
             },
             prompt_hash=prompt_hash,
             changed=changed,
@@ -320,10 +331,13 @@ class ClaudeHaikuAdapter:
         }
 
     def _edit_schema(self, mode: str) -> dict[str, Any]:
+        if self.edit_protocol == "replacement_file":
+            return self._replacement_schema(mode)
         return {
             "type": "object",
             "additionalProperties": False,
             "properties": {
+                "primary_mode": {"type": "string", "enum": [mode]},
                 "declared_mode": {"type": "string", "enum": [mode]},
                 "edit_format": {"type": "string", "enum": ["unified_diff"]},
                 "secondary_modes": {
@@ -331,10 +345,47 @@ class ClaudeHaikuAdapter:
                     "items": {"type": "string", "enum": MODES},
                 },
                 "rationale": {"type": "string"},
+                "target_regions": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                },
                 "unified_diff": {"type": "string"},
             },
-            "required": ["declared_mode", "edit_format", "rationale", "unified_diff"],
+            "required": ["primary_mode", "declared_mode", "edit_format", "rationale", "unified_diff"],
         }
+
+    def _replacement_schema(self, mode: str) -> dict[str, Any]:
+        return {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "primary_mode": {"type": "string", "enum": [mode]},
+                "declared_mode": {"type": "string", "enum": [mode]},
+                "edit_format": {"type": "string", "enum": ["replacement_file"]},
+                "secondary_modes": {
+                    "type": "array",
+                    "items": {"type": "string", "enum": MODES},
+                },
+                "rationale": {"type": "string"},
+                "target_regions": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                },
+                "solution_py": {"type": "string"},
+            },
+            "required": ["primary_mode", "declared_mode", "edit_format", "rationale", "solution_py"],
+        }
+
+    def _edit_prompt_template(self) -> str:
+        return "mode_edit_replacement.txt" if self.edit_protocol == "replacement_file" else "mode_edit.txt"
+
+    def _repair_prompt_template(self) -> str:
+        return "repair_code_replacement.txt" if self.edit_protocol == "replacement_file" else "repair_code.txt"
+
+    def _parse_edit_response(self, raw: str, mode: str, parent_source: str) -> dict[str, Any]:
+        if self.edit_protocol == "replacement_file":
+            return parse_replacement_payload(raw, mode)
+        return parse_edit_payload(raw, mode, parent_source=parent_source)
 
 
 def _candidate_edit_from_raw(raw: str) -> str:

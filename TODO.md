@@ -32,11 +32,17 @@
 - [x] Generate Phase 3 Haiku estimator, routing, summary, and failure-mode artifacts.
 - [x] Convert Claude Haiku candidate outputs from full-file replacement to patch-based `unified_diff` edits.
 - [x] Add strict unified-diff application and tests for patch parsing/application failures.
+- [x] Run corrected Phase 3.5 Haiku patch smoke and 3-profile dev validation.
+- [x] Compare Phase 3 replacement-file and Phase 3.5 patch-based protocols.
+- [x] Freeze production teacher-data protocol as replacement-file C(a).
 
 ## Remaining
 
+- [ ] Run Opus teacher pilot with the frozen replacement-file protocol.
+- [ ] Generate first validated Opus teacher routing dataset.
+- [ ] Implement routing-only student training and offline evaluation.
+- [ ] Run online routing-student comparison if integration remains straightforward.
 - [ ] Replace adapter scaffolds with real Claude Code and OpenAI-compatible model calls when credentials/endpoints are available.
-- [ ] Run a short Haiku patch-based smoke before any further real-model scaling.
 - [ ] Add pre-verifier dynamic source smoke tests for generated candidate constructors and common operations.
 - [ ] Improve prompts for `indexing` and `micro` declared-mode adherence.
 - [ ] Add controlled shared-checkpoint phi experiment implementation.

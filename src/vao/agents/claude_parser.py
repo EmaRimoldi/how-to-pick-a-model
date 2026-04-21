@@ -112,14 +112,52 @@ def parse_mode_distribution(raw_text: str) -> ModeDistribution:
 def parse_edit_payload(raw_text: str, expected_mode: str, parent_source: str | None = None) -> dict[str, Any]:
     validate_mode(expected_mode)
     payload = parse_json_object(raw_text)
+    primary = payload.get("primary_mode")
+    if primary != expected_mode:
+        raise ModelOutputError(f"primary_mode_mismatch:{primary!r}!={expected_mode!r}")
     declared = payload.get("declared_mode")
     if declared != expected_mode:
         raise ModelOutputError(f"declared_mode_mismatch:{declared!r}!={expected_mode!r}")
+    if payload.get("edit_format") != "unified_diff":
+        raise ModelOutputError(f"edit_format_mismatch:{payload.get('edit_format')!r}")
     source = _materialize_candidate_source(payload, parent_source)
     validation = validate_candidate_source(source)
     if not validation["passed"]:
         raise ModelOutputError("candidate_source_invalid:" + ";".join(validation["errors"]))
-    return {**payload, "solution_py": source, "source_validation": validation}
+    return {
+        **payload,
+        "solution_py": source,
+        "patch_parse_status": "passed",
+        "patch_apply_status": "passed",
+        "source_validation": validation,
+        "source_validation_status": "passed",
+    }
+
+
+def parse_replacement_payload(raw_text: str, expected_mode: str) -> dict[str, Any]:
+    validate_mode(expected_mode)
+    payload = parse_json_object(raw_text)
+    primary = payload.get("primary_mode")
+    if primary != expected_mode:
+        raise ModelOutputError(f"primary_mode_mismatch:{primary!r}!={expected_mode!r}")
+    declared = payload.get("declared_mode")
+    if declared != expected_mode:
+        raise ModelOutputError(f"declared_mode_mismatch:{declared!r}!={expected_mode!r}")
+    if payload.get("edit_format") != "replacement_file":
+        raise ModelOutputError(f"edit_format_mismatch:{payload.get('edit_format')!r}")
+    source = payload.get("solution_py")
+    if not isinstance(source, str) or not source.strip():
+        raise ModelOutputError("solution_py_missing_or_empty")
+    validation = validate_candidate_source(source)
+    if not validation["passed"]:
+        raise ModelOutputError("candidate_source_invalid:" + ";".join(validation["errors"]))
+    return {
+        **payload,
+        "source_validation": validation,
+        "source_validation_status": "passed",
+        "patch_parse_status": "not_applicable_replacement",
+        "patch_apply_status": "not_applicable_replacement",
+    }
 
 
 def validate_candidate_source(source: str) -> dict[str, Any]:
@@ -161,9 +199,6 @@ def _materialize_candidate_source(payload: dict[str, Any], parent_source: str | 
         except PatchApplyError as exc:
             raise ModelOutputError(f"unified_diff_apply_failed:{exc}") from exc
 
-    # Legacy replacement-file support keeps old fixtures and placeholder
-    # adapters parseable, but the Claude Haiku prompt/schema now require patches.
-    source = payload.get("solution_py")
-    if isinstance(source, str) and source.strip():
-        return source
+    if isinstance(payload.get("solution_py"), str):
+        raise ModelOutputError("replacement_file_output_not_allowed")
     raise ModelOutputError("unified_diff_missing_or_empty")

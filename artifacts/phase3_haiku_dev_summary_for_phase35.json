@@ -1,0 +1,40 @@
+{
+  "average_agent_cost_usd_per_step": 0.46949549444444444,
+  "average_gain_by_mode": {
+    "caching": -0.06981474510662578,
+    "indexing": 0.32044681492229954,
+    "layout": 0.5648830471879822,
+    "micro": -0.4286901568208208,
+    "summaries": -1.2156521930773931,
+    "topk": -0.345837119400318
+  },
+  "average_input_tokens_per_step": 326872.22222222225,
+  "average_output_tokens_per_step": 48610.0,
+  "average_wall_clock_seconds_per_step": 340.8956255912781,
+  "best_counterfactual_loss": 0.43171940787909063,
+  "best_visible_loss": 0.43171940787909063,
+  "branch_evaluation_count": 54,
+  "code_validation_failure_rate": 0.018518518518518517,
+  "correctness_rate_by_mode": {
+    "caching": 1.0,
+    "indexing": 0.8888888888888888,
+    "layout": 1.0,
+    "micro": 0.8888888888888888,
+    "summaries": 1.0,
+    "topk": 0.7777777777777778
+  },
+  "declared_inferred_agreement_by_mode": {
+    "caching": 1.0,
+    "indexing": 0.1111111111111111,
+    "layout": 1.0,
+    "micro": 0.0,
+    "summaries": 0.8888888888888888,
+    "topk": 0.8888888888888888
+  },
+  "mean_jsd": 0.4972016317489727,
+  "mean_routing_regret": 1.369091762682408,
+  "parse_failure_rate": 0.018518518518518517,
+  "run_count": 3,
+  "step_count": 9,
+  "verifier_failure_rate": 0.018518518518518517
+}

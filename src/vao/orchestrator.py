@@ -256,8 +256,10 @@ def _rejected_noop_proposal(state: AgentState, mode: str, branch_dir: Path, erro
 
     parent_path = branch_dir / "parent_solution.py"
     proposed_path = branch_dir / "proposed_solution.py"
+    model_edit_path = branch_dir / "model_edit.diff"
     parent_source = parent_path.read_text(encoding="utf-8")
     proposed_path.write_text(parent_source, encoding="utf-8")
+    model_edit_path.write_text("", encoding="utf-8")
     return CandidateProposal(
         branch_index=MODES.index(mode),
         primary_mode=mode,
@@ -268,7 +270,14 @@ def _rejected_noop_proposal(state: AgentState, mode: str, branch_dir: Path, erro
         file_path=str(proposed_path),
         raw_output_text="",
         parsed_output_json={
+            "primary_mode": mode,
             "declared_mode": mode,
+            "edit_format": "rejected_noop",
+            "unified_diff": "",
+            "model_edit_path": str(model_edit_path),
+            "patch_parse_status": "failed",
+            "patch_apply_status": "not_applied",
+            "source_validation_status": "not_applicable_noop",
             "rationale": "Rejected strict-backend candidate; parent copied unchanged.",
             "run_id": state.run_id,
             "step": state.step,

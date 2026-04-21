@@ -15,4 +15,4 @@ Parent solution.py:
 $current_solution_source
 ```
 
-Return only corrected structured JSON matching the requested schema. Include declared_mode exactly equal to "$mode", edit_format exactly equal to "unified_diff", and unified_diff as a patch that applies cleanly to the parent and produces a safe Python file defining CandidateQueryEngine.
+Return only corrected structured JSON matching the requested schema. Include primary_mode and declared_mode exactly equal to "$mode", edit_format exactly equal to "unified_diff", and unified_diff as a patch that applies cleanly to the parent and produces a safe Python file defining CandidateQueryEngine. Do not return a complete replacement source file.
