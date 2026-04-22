@@ -18,6 +18,10 @@ Historical Haiku batch and Qwen direct-edit configs were removed from the active
 catalog because they are not prompt-identical experiment entrypoints. Their
 validated outputs remain in `runs/` and the retained analysis artifacts.
 
+All active experiment configs that call the orchestrator use
+`candidate_generation: batched`; non-batched generation is now rejected by the
+orchestrator.
+
 ## Teacher, Student, And Analysis
 
 - `phase4_teacher_opus_pilot.yaml`: small Opus teacher pilot.

@@ -116,8 +116,7 @@ def test_structured_parser_rejects_replacement_file() -> None:
 
 def test_structured_prompt_forbids_solution_py() -> None:
     rendered = render_template(
-        "mode_edit_structured.txt",
-        mode="micro",
+        "single_step_program.txt",
         profile_summary="{}",
         visible_history="[]",
         current_solution_source="class CandidateQueryEngine:\n    pass\n",
@@ -126,9 +125,9 @@ def test_structured_prompt_forbids_solution_py() -> None:
     assert "Do not return solution_py" in rendered
     assert "complete replacement file" in rendered
     assert "Do not call banned attributes" in rendered
-    assert "(-value, key)" in rendered
-    assert "Never use `keys.remove(key)`" in rendered
-    assert "Do not mix incompatible representations" in rendered
+    assert "value descending, then key ascending" in rendered
+    assert "do not call list.remove or keys.remove" in rendered
+    assert "not a whitelist of functions or lines" in rendered
     assert "aggregate_count must count keys" in rendered
 
 

@@ -2,6 +2,7 @@ experiment:
   name: feedback_use_cb
   feedback_condition: cb
   visibility_regime: all_branches
+  candidate_generation: batched
   modes: [layout, indexing, topk, caching, summaries, micro]
   steps: 2
   wall_budget_seconds: 900

@@ -1,6 +1,7 @@
 experiment:
   name: phase4_teacher_opus
   visibility_regime: top1_only
+  candidate_generation: batched
   modes: [layout, indexing, topk, caching, summaries, micro]
   steps: 5
   wall_budget_seconds: 10800

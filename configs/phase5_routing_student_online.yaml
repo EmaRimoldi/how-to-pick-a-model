@@ -1,6 +1,7 @@
 experiment:
   name: phase5_routing_student_online
   visibility_regime: top1_only
+  candidate_generation: batched
   modes: [layout, indexing, topk, caching, summaries, micro]
   steps: 3
   wall_budget_seconds: 1800

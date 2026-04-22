@@ -141,7 +141,7 @@ def test_patch_payload_requires_parent_source() -> None:
 
 def test_prompt_template_rendering() -> None:
     rendered = render_template(
-        "mode_distribution.txt",
+        "single_step_program.txt",
         profile_summary="{}",
         visible_history="[]",
         current_solution_source="class CandidateQueryEngine: pass",
@@ -149,32 +149,7 @@ def test_prompt_template_rendering() -> None:
     assert "layout" in rendered
     assert "mode_ranking" in rendered
     assert "CandidateQueryEngine" in rendered
-
-
-def test_edit_prompt_requests_patch_not_replacement_source() -> None:
-    rendered = render_template(
-        "mode_edit.txt",
-        mode="layout",
-        profile_summary="{}",
-        visible_history="[]",
-        current_solution_source="class CandidateQueryEngine: pass",
-    )
-    assert "unified_diff" in rendered
-    assert "primary_mode" in rendered
-    assert "Do not return a complete replacement file" in rendered
-    assert "solution_py" not in rendered
-
-
-def test_replacement_prompt_requests_complete_source() -> None:
-    rendered = render_template(
-        "mode_edit_replacement.txt",
-        mode="layout",
-        profile_summary="{}",
-        visible_history="[]",
-        current_solution_source="class CandidateQueryEngine: pass",
-    )
-    assert "replacement_file" in rendered
-    assert "solution_py as a complete Python file" in rendered
+    assert "VAO_SINGLE_STEP_PROGRAM_V1" in rendered
 
 
 def test_parse_json_object_from_fenced_text() -> None:

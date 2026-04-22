@@ -415,3 +415,14 @@
 - Added prompt snapshot logging for batched runs: `steps/step_XXXX/prompt_snapshot.txt` and `prompt_snapshot.json` now store the exact rendered prompt and metadata.
 - Removed old active entrypoints that caused prompt ambiguity: `configs/hard_haiku_batch_10step.yaml`, `configs/hard_qwen_direct_10step.yaml`, `scripts/run_qwen_direct_edit_smoke.sh`, `claude_haiku_batch`, and `weak_qwen_direct` model aliases.
 - Retained direct-edit implementation and legacy prompt files only as historical/diagnostic/test paths, not current experiment configs.
+
+### Prompt-Pure Model Comparison Surface
+
+- Removed all legacy prompt template files except `src/vao/prompts/single_step_program.txt`.
+- Updated `vao.prompts.render_template` to reject any template name other than `single_step_program.txt`.
+- Disabled real-model distribution-only and per-mode edit generation paths; `ClaudeHaikuAdapter` now requires batched `structured_edits` through `propose_step_batch`.
+- Removed the OpenAI-compatible batch fallback to per-mode generation.
+- Removed the LangGraph direct-edit adapter and tests from the active code surface.
+- Changed the orchestrator default to `candidate_generation: batched` and made non-batched generation an error.
+- Updated remaining experiment configs, including Opus teacher and local/routing-student configs, to specify `candidate_generation: batched` explicitly.
+- Removed non-strict/legacy model aliases that could use old prompt shapes.

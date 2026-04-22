@@ -18,7 +18,6 @@ from vao.agents.anthropic_adapter import ClaudeHaikuAdapter
 from vao.agents.claude_code_adapter import ClaudeCodeAdapter
 from vao.agents.codex_cli_adapter import CodexCliAdapter
 from vao.agents.local_stub_adapter import LeakageProbeAdapter, LocalStubAdapter
-from vao.agents.openai_direct_edit_adapter import OpenAICompatibleDirectEditAdapter
 from vao.agents.openai_compatible_adapter import OpenAICompatibleAdapter
 from vao.agents.openai_responses_adapter import OpenAIResponsesAdapter
 from vao.agents.routing_student_adapter import RoutingStudentAdapter
@@ -38,7 +37,6 @@ ADAPTERS = {
     "claude_code": ClaudeCodeAdapter,
     "codex_cli": CodexCliAdapter,
     "openai_compatible": OpenAICompatibleAdapter,
-    "openai_compatible_direct_edit": OpenAICompatibleDirectEditAdapter,
     "openai_responses": OpenAIResponsesAdapter,
     "routing_student": RoutingStudentAdapter,
 }
@@ -138,15 +136,14 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
         step_dir = run_dir / "steps" / f"step_{step:04d}"
         branch_dirs = create_step_branches(run_dir, step, workspace_solution, MODES)
         candidate_batch_id = f"{run_id_actual}:step_{step:04d}:{parent_hash[:12]}"
-        batch_proposals: dict[str, Any] | None = None
-        if str(experiment.get("candidate_generation", "per_mode")) == "batched":
-            batch_fn = getattr(adapter, "propose_step_batch", None)
-            if not callable(batch_fn):
-                raise ValueError(f"Adapter {type(adapter).__name__} does not support batched candidate_generation")
-            distribution, batch_proposals = batch_fn(state, branch_dirs)
-            distribution_errors: list[str] = []
-        else:
-            distribution, distribution_errors = _propose_distribution(adapter, state)
+        candidate_generation = str(experiment.get("candidate_generation", "batched"))
+        if candidate_generation != "batched":
+            raise ValueError("model-comparison runs require candidate_generation: batched")
+        batch_fn = getattr(adapter, "propose_step_batch", None)
+        if not callable(batch_fn):
+            raise ValueError(f"Adapter {type(adapter).__name__} does not support batched candidate_generation")
+        distribution, batch_proposals = batch_fn(state, branch_dirs)
+        distribution_errors: list[str] = []
         step_input_tokens = _usage_input_tokens(distribution.parsed_json)
         step_output_tokens = _usage_output_tokens(distribution.parsed_json)
         step_cost_usd = _usage_cost(distribution.parsed_json)
@@ -157,20 +154,7 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
         for mode in MODES:
             branch_dir = branch_dirs[mode]
             proposal_errors: list[str] = []
-            if batch_proposals is not None:
-                proposal = batch_proposals[mode]
-            else:
-                try:
-                    proposal = adapter.propose_edit_for_mode(state, mode, branch_dir)
-                except Exception as exc:  # noqa: BLE001 - keep protocol running and log failed branch.
-                    proposal_errors.append(f"{type(exc).__name__}: {exc}")
-                    if getattr(adapter, "strict_failures", False):
-                        proposal = _rejected_noop_proposal(state, mode, branch_dir, proposal_errors)
-                    else:
-                        proposed = branch_dir / "proposed_solution.py"
-                        proposed.write_text((branch_dir / "parent_solution.py").read_text(encoding="utf-8"), encoding="utf-8")
-                        proposal = LocalStubAdapter().propose_edit_for_mode(state, mode, branch_dir)
-                        proposal.errors.extend(proposal_errors)
+            proposal = batch_proposals[mode]
             proposal_dump = proposal.model_dump(mode="json")
             step_input_tokens += _usage_input_tokens(proposal_dump)
             step_output_tokens += _usage_output_tokens(proposal_dump)
@@ -425,44 +409,6 @@ def _propose_distribution(adapter: AgentAdapter, state: AgentState) -> tuple[Mod
     distribution.retries = 1
     distribution.validation_failures.extend(errors)
     return distribution, errors
-
-
-def _rejected_noop_proposal(state: AgentState, mode: str, branch_dir: Path, errors: list[str]) -> Any:
-    from vao.schemas import CandidateProposal
-
-    parent_path = branch_dir / "parent_solution.py"
-    proposed_path = branch_dir / "proposed_solution.py"
-    model_edit_path = branch_dir / "model_edit.diff"
-    parent_source = parent_path.read_text(encoding="utf-8")
-    proposed_path.write_text(parent_source, encoding="utf-8")
-    model_edit_path.write_text("", encoding="utf-8")
-    return CandidateProposal(
-        branch_index=MODES.index(mode),
-        primary_mode=mode,
-        secondary_modes=[],
-        declared_mode=mode,
-        source_hash=sha256_file(proposed_path),
-        source_parent_hash=sha256_file(parent_path),
-        file_path=str(proposed_path),
-        raw_output_text="",
-        parsed_output_json={
-            "primary_mode": mode,
-            "declared_mode": mode,
-            "edit_format": "rejected_noop",
-            "unified_diff": "",
-            "model_edit_path": str(model_edit_path),
-            "patch_parse_status": "failed",
-            "patch_apply_status": "not_applied",
-            "source_validation_status": "not_applicable_noop",
-            "rationale": "Rejected strict-backend candidate; parent copied unchanged.",
-            "run_id": state.run_id,
-            "step": state.step,
-        },
-        prompt_hash=None,
-        changed=False,
-        errors=errors,
-        validation_failures=["strict_backend_exception_noop"],
-    )
 
 
 def _usage_input_tokens(payload: dict[str, Any] | None) -> int:

@@ -82,6 +82,7 @@
 - [x] Consolidate the active real-model C(a) path onto one prompt file, `single_step_program.txt`.
 - [x] Remove active Qwen direct-edit and old Haiku batch configs from the prompt-controlled experiment surface.
 - [x] Add prompt snapshot logging for future run-level prompt audits.
+- [x] Delete legacy prompt templates and direct-edit backend paths so active comparisons cannot fall back to per-mode prompts.
 
 ## Remaining
 

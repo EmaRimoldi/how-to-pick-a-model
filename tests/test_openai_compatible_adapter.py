@@ -103,7 +103,6 @@ def test_strict_batched_adapter_does_not_repair_with_second_prompt(tmp_path: Pat
                 base_url="http://localhost:8000/v1",
                 timeout_seconds=1,
                 allow_batch_repair=False,
-                batch_fallback_to_per_mode=False,
             )
             self.calls = 0
 

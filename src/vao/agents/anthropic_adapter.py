@@ -15,16 +15,14 @@ from typing import Any
 from vao.agents.base import AgentState
 from vao.agents.claude_parser import (
     ModelOutputError,
-    parse_edit_payload,
     parse_json_object,
     parse_mode_distribution,
-    parse_replacement_payload,
     parse_structured_edit_payload,
 )
 from vao.logging_utils import sha256_file, sha256_text
 from vao.prompts import render_template
 from vao.schemas import CandidateProposal, ModeDistribution
-from vao.taxonomy import MODES, validate_mode
+from vao.taxonomy import MODES
 
 
 class BackendUnavailable(RuntimeError):
@@ -52,7 +50,7 @@ class ClaudeHaikuAdapter:
         max_tokens_edit: int = 12000,
         max_budget_usd: float | None = 0.20,
         retries: int = 1,
-        edit_protocol: str = "patch_unified_diff",
+        edit_protocol: str = "structured_edits",
         **kwargs: object,
     ) -> None:
         self.model_id = model_id
@@ -64,8 +62,8 @@ class ClaudeHaikuAdapter:
         self.max_budget_usd = max_budget_usd
         self.retries = int(retries)
         self.edit_protocol = str(edit_protocol)
-        if self.edit_protocol not in {"patch_unified_diff", "replacement_file", "structured_edits"}:
-            raise ValueError(f"unsupported edit_protocol: {self.edit_protocol}")
+        if self.edit_protocol != "structured_edits":
+            raise ValueError("real-model C(a) adapters only support edit_protocol=structured_edits")
         self.config = kwargs
         self._last_distribution_usage: dict[str, Any] = {}
 
@@ -104,13 +102,7 @@ class ClaudeHaikuAdapter:
             payload = parse_json_object(raw)
         except (BackendUnavailable, ModelOutputError, RuntimeError) as exc:
             failures.append(f"batch_parse_failed:{type(exc).__name__}:{exc}")
-            if raw and bool(self.config.get("allow_batch_repair", False)):
-                repair_prompt = render_template("repair_json.txt", failure_details=str(exc), raw_response=raw)
-                raw, meta = self._complete(repair_prompt, self._step_batch_schema(), int(self.config.get("max_tokens_batch", 12000)))
-                payload = parse_json_object(raw)
-                failures.append("batch_repair_used")
-            else:
-                raise
+            raise
 
         distribution = parse_mode_distribution(json.dumps(payload, sort_keys=True))
         distribution.raw_text = raw
@@ -202,132 +194,10 @@ class ClaudeHaikuAdapter:
         return distribution, proposals
 
     def propose_mode_distribution(self, state: AgentState) -> ModeDistribution:
-        prompt = render_template(
-            "mode_distribution.txt",
-            profile_summary=json.dumps(state.profile_summary, sort_keys=True),
-            visible_history=json.dumps(state.visible_history, sort_keys=True),
-            current_solution_source=state.current_solution_source,
-        )
-        raw, meta = self._complete(prompt, self._distribution_schema(), self.max_tokens_distribution)
-        failures: list[str] = []
-        try:
-            distribution = parse_mode_distribution(raw)
-        except ModelOutputError as exc:
-            failures.append(f"parse_failed:{exc}")
-            repair_prompt = render_template("repair_json.txt", failure_details=str(exc), raw_response=raw)
-            raw, meta = self._complete(repair_prompt, self._distribution_schema(), self.max_tokens_distribution)
-            distribution = parse_mode_distribution(raw)
-            distribution.retries += 1
-        distribution.parsed_json = {
-            **(distribution.parsed_json or {}),
-            "transport": meta.get("transport"),
-            "usage": meta.get("usage"),
-            "cost_usd": meta.get("cost_usd"),
-            "model": meta.get("model", self.model_id),
-        }
-        distribution.raw_text = raw
-        distribution.validation_failures.extend(failures)
-        self._last_distribution_usage = meta
-        return distribution
+        raise RuntimeError("single_step_program_only: use candidate_generation=batched and propose_step_batch")
 
     def propose_edit_for_mode(self, state: AgentState, mode: str, branch_dir: Path) -> CandidateProposal:
-        validate_mode(mode)
-        parent_path = branch_dir / "parent_solution.py"
-        proposed_path = branch_dir / "proposed_solution.py"
-        model_edit_path = branch_dir / ("model_edit.json" if self.edit_protocol == "structured_edits" else "model_edit.diff")
-        parent_source = parent_path.read_text(encoding="utf-8")
-        prompt = render_template(
-            self._edit_prompt_template(),
-            mode=mode,
-            profile_summary=json.dumps(state.profile_summary, sort_keys=True),
-            visible_history=json.dumps(state.visible_history, sort_keys=True),
-            current_solution_source=parent_source,
-        )
-        raw = ""
-        meta: dict[str, Any] = {}
-        errors: list[str] = []
-        validation_failures: list[str] = []
-        parsed: dict[str, Any] | None = None
-        try:
-            raw, meta = self._complete(prompt, self._edit_schema(mode), self.max_tokens_edit)
-            parsed = self._parse_edit_response(raw, mode, parent_source)
-        except (BackendUnavailable, ModelOutputError, RuntimeError) as exc:
-            errors.append(f"initial_edit_failed:{type(exc).__name__}:{exc}")
-            if raw:
-                try:
-                    repair_prompt = render_template(
-                        self._repair_prompt_template(),
-                        mode=mode,
-                        failure_details=str(exc),
-                        candidate_edit=_candidate_edit_from_raw(raw),
-                        candidate_source=_candidate_edit_from_raw(raw),
-                        current_solution_source=parent_source,
-                    )
-                    raw, meta = self._complete(repair_prompt, self._edit_schema(mode), self.max_tokens_edit)
-                    parsed = self._parse_edit_response(raw, mode, parent_source)
-                    validation_failures.append("repair_used")
-                except (BackendUnavailable, ModelOutputError, RuntimeError) as repair_exc:
-                    errors.append(f"repair_failed:{type(repair_exc).__name__}:{repair_exc}")
-
-        if parsed is None:
-            proposed_path.write_text(parent_source, encoding="utf-8")
-            model_edit_path.write_text("", encoding="utf-8")
-            validation_failures.append("candidate_rejected_after_repair")
-            parsed = {
-                "primary_mode": mode,
-                "declared_mode": mode,
-                "secondary_modes": [],
-                "rationale": "Rejected malformed or unavailable Claude candidate; parent copied unchanged.",
-                "edit_format": "rejected_noop",
-                "unified_diff": "",
-                "edits": [],
-                "patch_parse_status": "failed",
-                "patch_apply_status": "not_applied",
-                "structured_edit_parse_status": "failed" if self.edit_protocol == "structured_edits" else "not_applicable",
-                "structured_edit_apply_status": "not_applied" if self.edit_protocol == "structured_edits" else "not_applicable",
-                "source_validation": {"passed": True, "errors": []},
-                "source_validation_status": "not_applicable_noop",
-            }
-        else:
-            proposed_path.write_text(str(parsed["solution_py"]), encoding="utf-8")
-            if self.edit_protocol == "patch_unified_diff":
-                model_edit_path.write_text(str(parsed.get("unified_diff", "")), encoding="utf-8")
-            elif self.edit_protocol == "structured_edits":
-                model_edit_path.write_text(json.dumps(parsed.get("edits", []), indent=2, sort_keys=True), encoding="utf-8")
-
-        changed = sha256_file(parent_path) != sha256_file(proposed_path)
-        prompt_hash = sha256_text(prompt)
-        return CandidateProposal(
-            branch_index=MODES.index(mode),
-            primary_mode=mode,
-            secondary_modes=[str(item) for item in parsed.get("secondary_modes", []) if item in set(MODES)],
-            declared_mode=mode,
-            source_hash=sha256_file(proposed_path),
-            source_parent_hash=sha256_file(parent_path),
-            file_path=str(proposed_path),
-            raw_output_text=raw,
-            parsed_output_json={
-                key: value
-                for key, value in parsed.items()
-                if key != "solution_py"
-            }
-            | {
-                "model_edit_path": str(model_edit_path) if model_edit_path.exists() else None,
-                "transport": meta.get("transport"),
-                "usage": meta.get("usage"),
-                "cost_usd": meta.get("cost_usd"),
-                "model": meta.get("model", self.model_id),
-                "edit_protocol": self.edit_protocol,
-            },
-            prompt_hash=prompt_hash,
-            changed=changed,
-            errors=errors,
-            validation_failures=validation_failures,
-            usage=meta.get("usage"),
-            cost_usd=meta.get("cost_usd"),
-            model=meta.get("model", self.model_id),
-            transport=meta.get("transport"),
-        )
+        raise RuntimeError("single_step_program_only: use candidate_generation=batched and propose_step_batch")
 
     def _complete(self, prompt: str, schema: dict[str, Any], max_tokens: int) -> tuple[str, dict[str, Any]]:
         transport = self._resolve_transport()
@@ -448,89 +318,6 @@ class ClaudeHaikuAdapter:
         }
 
 
-    def _distribution_schema(self) -> dict[str, Any]:
-        return {
-            "type": "object",
-            "additionalProperties": False,
-            "properties": {
-                "mode_probs": {
-                    "type": "object",
-                    "additionalProperties": False,
-                    "properties": {mode: {"type": "number", "minimum": 0} for mode in MODES},
-                    "required": MODES,
-                },
-                "mode_ranking": {
-                    "type": "array",
-                    "items": {"type": "string", "enum": MODES},
-                    "minItems": 6,
-                    "maxItems": 6,
-                },
-                "mode_rationales": {
-                    "type": "object",
-                    "additionalProperties": False,
-                    "properties": {mode: {"type": "string"} for mode in MODES},
-                    "required": MODES,
-                },
-            },
-            "required": ["mode_probs", "mode_ranking", "mode_rationales"],
-        }
-
-    def _edit_schema(self, mode: str) -> dict[str, Any]:
-        if self.edit_protocol == "replacement_file":
-            return self._replacement_schema(mode)
-        if self.edit_protocol == "structured_edits":
-            return self._structured_edit_schema(mode)
-        return {
-            "type": "object",
-            "additionalProperties": False,
-            "properties": {
-                "primary_mode": {"type": "string", "enum": [mode]},
-                "declared_mode": {"type": "string", "enum": [mode]},
-                "edit_format": {"type": "string", "enum": ["unified_diff"]},
-                "secondary_modes": {
-                    "type": "array",
-                    "items": {"type": "string", "enum": MODES},
-                },
-                "rationale": {"type": "string"},
-                "target_regions": {
-                    "type": "array",
-                    "items": {"type": "string"},
-                },
-                "unified_diff": {"type": "string"},
-            },
-            "required": ["primary_mode", "declared_mode", "edit_format", "rationale", "unified_diff"],
-        }
-
-    def _replacement_schema(self, mode: str) -> dict[str, Any]:
-        return {
-            "type": "object",
-            "additionalProperties": False,
-            "properties": {
-                "primary_mode": {"type": "string", "enum": [mode]},
-                "declared_mode": {"type": "string", "enum": [mode]},
-                "edit_format": {"type": "string", "enum": ["replacement_file"]},
-                "secondary_modes": {
-                    "type": "array",
-                    "items": {"type": "string", "enum": MODES},
-                },
-                "rationale": {"type": "string"},
-                "target_regions": {
-                    "type": "array",
-                    "items": {"type": "string"},
-                },
-                "solution_py": {"type": "string"},
-            },
-            "required": ["primary_mode", "declared_mode", "edit_format", "rationale", "solution_py"],
-        }
-
-    def _structured_edit_schema(self, mode: str) -> dict[str, Any]:
-        return {
-            "type": "object",
-            "additionalProperties": False,
-            "properties": self._structured_candidate_properties(mode),
-            "required": ["primary_mode", "declared_mode", "edit_format", "rationale", "edits"],
-        }
-
     def _step_batch_schema(self) -> dict[str, Any]:
         return {
             "type": "object",
@@ -611,24 +398,6 @@ class ClaudeHaikuAdapter:
             },
         }
 
-    def _edit_prompt_template(self) -> str:
-        if self.edit_protocol == "structured_edits":
-            return "mode_edit_structured.txt"
-        return "mode_edit_replacement.txt" if self.edit_protocol == "replacement_file" else "mode_edit.txt"
-
-    def _repair_prompt_template(self) -> str:
-        if self.edit_protocol == "structured_edits":
-            return "repair_code_structured.txt"
-        return "repair_code_replacement.txt" if self.edit_protocol == "replacement_file" else "repair_code.txt"
-
-    def _parse_edit_response(self, raw: str, mode: str, parent_source: str) -> dict[str, Any]:
-        if self.edit_protocol == "replacement_file":
-            return parse_replacement_payload(raw, mode)
-        if self.edit_protocol == "structured_edits":
-            return parse_structured_edit_payload(raw, mode, parent_source=parent_source)
-        return parse_edit_payload(raw, mode, parent_source=parent_source)
-
-
 def _step_dir_from_branch_dirs(branch_dirs: dict[str, Path]) -> Path:
     first = branch_dirs[MODES[0]]
     return first.parent.parent if first.parent.name == "branches" else first.parent
@@ -660,20 +429,3 @@ def _write_step_prompt_snapshot(branch_dirs: dict[str, Path], prompt: str, promp
         ),
         encoding="utf-8",
     )
-
-
-def _candidate_edit_from_raw(raw: str) -> str:
-    try:
-        payload = json.loads(raw)
-    except json.JSONDecodeError:
-        return raw
-    if not isinstance(payload, dict):
-        return raw
-    diff_text = payload.get("unified_diff")
-    if isinstance(diff_text, str):
-        return diff_text
-    edits = payload.get("edits")
-    if isinstance(edits, list):
-        return json.dumps(edits, indent=2, sort_keys=True)
-    source = payload.get("solution_py")
-    return source if isinstance(source, str) else raw

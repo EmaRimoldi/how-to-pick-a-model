@@ -31,6 +31,20 @@ class PatchProbeAdapter:
         }
         return ModeDistribution(raw_text=json.dumps(parsed), parsed_json=parsed, **parsed)
 
+    def propose_step_batch(self, state: AgentState, branch_dirs: dict[str, Path]) -> tuple[ModeDistribution, dict[str, CandidateProposal]]:
+        distribution = self.propose_mode_distribution(state)
+        distribution.parsed_json = {
+            **(distribution.parsed_json or {}),
+            "candidate_generation": "batched_patch_probe",
+        }
+        proposals = {mode: self.propose_edit_for_mode(state, mode, branch_dirs[mode]) for mode in MODES}
+        for proposal in proposals.values():
+            proposal.parsed_output_json = {
+                **(proposal.parsed_output_json or {}),
+                "candidate_generation": "batched_patch_probe",
+            }
+        return distribution, proposals
+
     def propose_edit_for_mode(self, state: AgentState, mode: str, branch_dir: Path) -> CandidateProposal:
         parent_path = branch_dir / "parent_solution.py"
         proposed_path = branch_dir / "proposed_solution.py"

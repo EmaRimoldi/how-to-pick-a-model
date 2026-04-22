@@ -13,13 +13,9 @@ import os
 import time
 import urllib.error
 import urllib.request
-from pathlib import Path
 from typing import Any
 
-from vao.agents.base import AgentState
 from vao.agents.anthropic_adapter import ClaudeHaikuAdapter
-from vao.schemas import CandidateProposal, ModeDistribution
-from vao.taxonomy import MODES
 
 
 class OpenAICompatibleAdapter(ClaudeHaikuAdapter):
@@ -47,7 +43,6 @@ class OpenAICompatibleAdapter(ClaudeHaikuAdapter):
         edit_protocol: str = "structured_edits",
         use_response_format: bool = True,
         allow_response_format_retry: bool = True,
-        batch_fallback_to_per_mode: bool = False,
         extra_body: dict[str, Any] | None = None,
         **kwargs: object,
     ) -> None:
@@ -68,37 +63,7 @@ class OpenAICompatibleAdapter(ClaudeHaikuAdapter):
         self.api_key = api_key or os.environ.get("OPENAI_COMPATIBLE_API_KEY") or os.environ.get("OPENAI_API_KEY")
         self.use_response_format = bool(use_response_format)
         self.allow_response_format_retry = bool(allow_response_format_retry)
-        self.batch_fallback_to_per_mode = bool(batch_fallback_to_per_mode)
         self.extra_body = extra_body or {}
-
-    def propose_step_batch(self, state: AgentState, branch_dirs: dict[str, Path]) -> tuple[ModeDistribution, dict[str, CandidateProposal]]:
-        """Try one-call batch generation, then degrade to Qwen per-mode calls.
-
-        Small open-weight models can struggle with the large all-in-one JSON
-        object. The fallback still uses the same Qwen endpoint for routing and
-        all six candidate edits; it only changes call granularity.
-        """
-        try:
-            return super().propose_step_batch(state, branch_dirs)
-        except Exception as exc:
-            if not self.batch_fallback_to_per_mode:
-                raise
-            distribution = self.propose_mode_distribution(state)
-            failure = f"batch_fallback_to_per_mode:{type(exc).__name__}:{exc}"
-            distribution.validation_failures.append(failure)
-            distribution.parsed_json = {
-                **(distribution.parsed_json or {}),
-                "candidate_generation": "batched_fallback_per_mode_structured_edits",
-                "batch_generation_failure": failure,
-            }
-            proposals = {mode: self.propose_edit_for_mode(state, mode, branch_dirs[mode]) for mode in MODES}
-            for proposal in proposals.values():
-                proposal.parsed_output_json = {
-                    **(proposal.parsed_output_json or {}),
-                    "candidate_generation": "batched_fallback_per_mode_structured_edits",
-                    "batch_generation_failure": failure,
-                }
-            return distribution, proposals
 
     def _complete(self, prompt: str, schema: dict[str, Any], max_tokens: int) -> tuple[str, dict[str, Any]]:
         """Return model text plus normalized usage metadata."""

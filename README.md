@@ -97,7 +97,12 @@ This profile creates real tradeoffs between layout, indexing, summaries, caching
 
 The active config catalog is in `configs/README.md`. Retained artifacts are cataloged in `artifacts/README.md` and `artifacts/MANIFEST.json`.
 
-The closed-source and open-weight model adapters share the same interface as the deterministic `local_stub` backend. `claude_haiku` can use `ANTHROPIC_API_KEY` through the Messages API or the authenticated Claude CLI transport when available. `qwen_coder_batch_strict` targets an OpenAI-compatible `/v1/chat/completions` endpoint, such as vLLM/SGLang or the minimal `scripts/qwen_openai_compat_server.py` smoke server. Normal tests use fixtures/mocks and do not require live model calls.
+The closed-source and open-weight model adapters share the same batched C(a)
+interface as the deterministic `local_stub` backend. Claude aliases use
+`ClaudeHaikuAdapter` with API or CLI transport; `qwen_coder_batch_strict`
+targets an OpenAI-compatible `/v1/chat/completions` endpoint, such as
+vLLM/SGLang or the minimal `scripts/qwen_openai_compat_server.py` smoke server.
+Normal tests use fixtures/mocks and do not require live model calls.
 
 ## Qwen Smoke Setup
 
@@ -142,11 +147,11 @@ scripts/run_qwen_smoke.sh
 - Per-run diagnostics plots retained for current runs are under `artifacts/plots/`.
 - The artifact catalog is in `artifacts/README.md`; superseded Phase 1/2/3/3.5 and one-off smoke artifacts were removed.
 - Qwen smoke is validated through `qwen_coder_batch_strict` with `Qwen/Qwen2.5-Coder-1.5B-Instruct`.
-- The LangGraph direct-edit backend remains in code as a historical diagnostic path, but it is no longer an active experiment entrypoint because current comparisons require one shared prompt per step.
+- The historical LangGraph direct-edit backend has been removed from the active code/config/test surface because current comparisons require one shared prompt per step.
 - The Haiku-vs-Qwen hard-profile comparison now has three validated 10-step repeats per backend. Aggregate R0-R2: Haiku batch took `251.4s/step`, `$5.626` total, routing accuracy `5/30`, branch correctness `0.67`, best visible loss `0.1652`, and best counterfactual loss `0.1010`. Qwen direct took `188.4s/step`, local serving cost `$0`, routing accuracy `4/30`, branch correctness `1.00`, best visible loss `0.9708`, and best counterfactual loss `0.9690`. Qwen is safer and faster in this setup but conservative; Haiku finds much stronger edits but has more invalid/incorrect branches.
 - The Haiku-vs-Qwen hard-profile comparison now also has an R0-R4 aggregate with five validated 10-step repeats per backend. Haiku batch: `242.1s/step`, `$9.165` total, routing `10/50`, mean routing regret `0.5583`, branch correctness `0.61`, best visible loss `0.1107`, best counterfactual loss `0.1010`. Qwen direct: `203.9s/step`, local serving cost `$0`, routing `12/50`, mean routing regret `0.0114`, branch correctness `1.00`, best visible loss `0.9708`, best counterfactual loss `0.9690`. R0-R4 artifacts are under `artifacts/haiku_vs_qwen_10step_r0_r4_*`.
 - Post R0-R4 hardening added a fast candidate preflight before full benchmark evaluation. Replay on historical Haiku branches suggests it catches 99/118 invalid branches with zero false rejects. Failure analysis artifacts are under `artifacts/haiku_vs_qwen_r0_r4_failure_analysis.*`.
-- Prompt-control hardening added `src/vao/prompts/shared_canonical_task.txt`. `preflight` remains verifier-side and identical for all candidates; it is not a model prompt. The prompt-controlled Haiku/Qwen configs now enforce a single batched generation prompt per step and disable fallback to six per-mode prompts.
+- Prompt-control hardening now leaves only `src/vao/prompts/single_step_program.txt` as the active model prompt. `preflight` remains verifier-side and identical for all candidates; it is not a model prompt. The prompt-controlled Haiku/Qwen/GPT configs enforce one batched generation prompt per step and no fallback to six per-mode prompts.
 - Strict single-prompt smoke results are in `artifacts/single_prompt_smoke_readout.*`. Haiku passed one step with six valid branches. Cached local `Qwen/Qwen3-0.6B-Base` reached the single batch prompt but failed JSON parsing without fallback. Local `Qwen/Qwen2.5-Coder-1.5B-Instruct` on MPS passed after the batch prompt was hardened with an explicit `candidates` object skeleton.
 - GPT/Codex backends are implemented through both OpenAI Responses and the local Codex CLI. The active matrix aliases use `codex_cli` because this machine has Codex CLI auth but no exported `OPENAI_API_KEY`. Validated one-step C(a) smokes now exist for `gpt-5.4`, `gpt-5.4-mini`, `gpt-5.3-codex`, and `gpt-5.3-codex-spark`; `gpt-5.2-codex` is not supported by the current Codex ChatGPT account.
 - The shared single-prompt matrix config is `configs/hard_single_prompt_model_matrix.yaml`; it includes GPT/Codex, Qwen Coder, Haiku, Sonnet, and Opus 4.6 aliases.

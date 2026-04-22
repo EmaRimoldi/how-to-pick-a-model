@@ -420,7 +420,9 @@ The correct next scientific step is not more offline model tuning on these 12 re
 
 ## Next Step Once Teacher Budget Returns
 
-Resume with a small `structured_edits` C(a) smoke first. If it validates, use `structured_edits` for the next teacher collection; keep `claude_opus_teacher_replacement_legacy` only as a fallback. The moderate Phase 4 matrix remains:
+Resume with a small batched `structured_edits` C(a) smoke first. If it
+validates, use the same `single_step_program.txt` path for the next teacher
+collection. The moderate Phase 4 matrix remains:
 
 - Dev: 3 profiles x 3 repeats x 5 steps = 45 teacher steps
 - Optional holdout: 2 profiles x 2 repeats x 5 steps = 20 teacher steps
@@ -568,7 +570,7 @@ does not fall back to per-mode prompts.
 
 Implementation details:
 
-- `weak_qwen` now uses the real `OpenAICompatibleAdapter` instead of a local-stub fallback.
+- Qwen Coder uses the real `OpenAICompatibleAdapter` instead of a local-stub fallback.
 - The adapter targets `/v1/chat/completions` and can run against vLLM/SGLang or the minimal `scripts/qwen_openai_compat_server.py` server.
 - Qwen 1.5B could produce a valid mode distribution, but its first all-in-one `mode_probs + six edits` batch response was malformed. The historical adapter fell back to Qwen distribution plus six Qwen per-mode structured-edit calls. That fallback is no longer part of active prompt-controlled experiments.
 - Added deterministic parser repairs for fenced/triple-quoted JSON and unindented replacement method bodies. These repairs do not bypass source validation or verifier evaluation.
@@ -598,12 +600,12 @@ Artifacts:
 ## Historical LangGraph Direct-File Editing
 
 An optional direct-file-edit backend was implemented for Qwen-style open-weight
-experiments. It remains in code for diagnostics, but its active config/model
-aliases have been removed because it is not a single-prompt experiment path.
+experiments. It has now been removed from the active code/config/test surface
+because it is not a single-prompt experiment path.
 
 What changed:
 
-- The historical `weak_qwen_direct` alias used `openai_compatible_direct_edit`.
+- The historical `weak_qwen_direct` alias used a direct-edit adapter.
 - The model first produces the usual mode distribution.
 - For each mode branch, a LangGraph loop lets the model call restricted tools that edit only that branch's `proposed_solution.py`.
 - The tool layer, not the model shell, performs the actual file operation. Allowed operations are exact text replacements, inserts, deletes, whole-function replacement, validation, and finish.
@@ -817,6 +819,12 @@ Every new batched run now writes the exact rendered prompt to:
 
 This closes the previous reproducibility gap where logs stored output text and
 prompt hashes but not the full prompt seen by the model.
+
+The legacy prompt files and direct-edit backend have now been removed from the
+active code/config/test surface. Real-model runs cannot silently use a
+distribution-only prompt, six per-mode edit prompts, direct file-edit loops, JSON
+repair prompts, diff prompts, or replacement-file prompts. A configured run must
+use `candidate_generation: batched`, otherwise the orchestrator raises an error.
 
 ## Single-Prompt Smoke Results
 
