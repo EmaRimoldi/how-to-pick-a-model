@@ -128,6 +128,8 @@ def test_structured_prompt_forbids_solution_py() -> None:
     assert "Do not call banned attributes" in rendered
     assert "(-value, key)" in rendered
     assert "Never use `keys.remove(key)`" in rendered
+    assert "Do not mix incompatible representations" in rendered
+    assert "aggregate_count must count keys" in rendered
 
 
 def test_batch_structured_prompt_requests_one_candidate_per_mode() -> None:
@@ -143,5 +145,8 @@ def test_batch_structured_prompt_requests_one_candidate_per_mode() -> None:
     assert "Do not call banned attributes" in rendered
     assert "(-value, key)" in rendered
     assert "Never use `keys.remove(key)`" in rendered
+    assert "Do not use `layout` as a default high-probability mode" in rendered
+    assert "Avoid assigning more than 0.40 probability" in rendered
+    assert "Do not mix incompatible representations" in rendered
     for mode in ["layout", "indexing", "topk", "caching", "summaries", "micro"]:
         assert mode in rendered

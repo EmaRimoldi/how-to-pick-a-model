@@ -67,11 +67,13 @@
 - [x] Run the first validated 10-step Haiku batch vs Qwen direct hard-profile comparison and generate combined summaries/diagnostic plots.
 - [x] Run two additional 10-step Haiku batch vs Qwen direct repeats and aggregate R0-R2 results.
 - [x] Run two more 10-step Haiku batch vs Qwen direct repeats and aggregate R0-R4 results.
+- [x] Audit R0-R4 failure modes and add fast candidate preflight before full verifier evaluation.
+- [x] Harden prompts against mixed storage representations, broken aggregate_count, top_k ordering errors, and Qwen layout-default routing.
 
 ## Remaining
 
 - [ ] Resume/extend teacher production collection when Claude CLI budget/availability allows a repeated-run matrix on `hard_optimization`.
-- [ ] Decide whether to run more repeats or switch to prompt/backend improvements based on the R0-R4 Haiku-vs-Qwen failure analysis.
+- [ ] Run one low-cost post-fix smoke before any new repeated Haiku/Qwen matrix.
 - [ ] Compare Qwen direct-file editing against Qwen structured-edit generation on time, failures, and routing regret using the same 10-step hard-profile config.
 - [ ] Before scaling real-model teacher data, run a slightly larger batched `structured_edits` smoke and confirm candidate rejection rates are acceptable.
 - [ ] Tighten batched structured-edit prompt/repair for source-safety rejections such as banned list attribute calls.

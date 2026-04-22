@@ -32,6 +32,10 @@ Required API after edits:
 - top_k tie-breaking is strict: if two rows have the same value, the smaller key must appear first.
 - If using sorting, use exactly the semantic key `lambda item: (-item[1], item[0])`.
 - If using heapq, push/compare tuples equivalent to `(-value, key)` so ties prefer smaller keys.
+- aggregate_count must count keys satisfying inclusive bounds `lo <= key <= hi`; it must not sum values.
+- If you introduce or rename storage fields such as `_items`, `_keys`, `_values`, `_sums`, caches, buckets, or trees, update `__init__` and every method that reads or writes that representation in the same candidate.
+- Do not mix incompatible representations. A candidate that adds `_items` while any method still reads `_keys`/`_values`, or vice versa, is invalid.
+- Layout edits must preserve get/range_sum/aggregate_count/top_k semantics. For non-layout modes, avoid changing primary storage representation.
 
 Structured edit format:
 
@@ -61,6 +65,7 @@ Safety constraints:
 - Do not import the benchmark, reference implementation, or previous candidates.
 - Do not include chain-of-thought.
 - Keep the edit scoped to the requested primary mode.
+- If the requested mode is not `layout`, do not rewrite `__init__`, `put`, `delete`, and `get` together unless the requested mode cannot be implemented otherwise.
 
 Profile summary:
 $profile_summary

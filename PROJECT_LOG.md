@@ -335,3 +335,14 @@
 - Qwen direct aggregate R0-R4: `203.9s/step`, local serving cost `$0`, routing `12/50`, mean routing regret `0.0114`, branch correctness `1.00`, selected-branch correctness `1.00`, best visible loss `0.9708`, and best counterfactual loss `0.9690`.
 - Interpretation: Qwen remains the safer and cheaper weak baseline but makes small improvements. Haiku remains the better optimizer on best visible/counterfactual loss, but produces many more failed or slow candidates and has lower selected-branch correctness.
 - Generated `artifacts/haiku_vs_qwen_10step_r0_r4_summary.*`, `artifacts/haiku_vs_qwen_10step_r0_r4_estimators.csv`, combined and per-backend routing datasets, loss-based aggregate visualizations, and diagnostic plots for the new R3/R4 runs.
+
+### R0-R4 Failure Analysis and Preflight Hardening
+
+- Audited the R0-R4 branch tensor before launching more expensive runs.
+- Haiku failure pattern: 118/300 branches were incorrect or non-finite, spread across all six modes. Common failures were state-layout inconsistencies, import/runtime errors, aggregate_count divergences, and top_k ordering divergences.
+- Qwen failure pattern: 300/300 branches were verifier-correct, but the router selected `layout` 47/50 times while verified-best modes were distributed across all six modes.
+- Added `src/vao/candidate_preflight.py`, a deterministic subprocess preflight for generated candidates. It checks constructor, get, put, delete, range_sum, aggregate_count, inclusive bounds, and top_k value-desc/key-asc ordering against the trusted reference engine.
+- Integrated preflight into `vao.verifier.evaluate_solution`. A branch that fails preflight is logged as `preflight_failed:*` with `latent_loss=inf` and does not spend the full benchmark verifier budget.
+- Historical replay on Haiku R0-R4: preflight would catch 99/118 invalid Haiku branches (`0.839`) with zero false rejects among 182 correct branches.
+- Hardened structured-edit and direct-file-edit prompts against mixed storage representations, broken aggregate_count semantics, and layout-default routing. Prompt now explicitly discourages assigning `layout` high probability by default.
+- Generated `artifacts/haiku_vs_qwen_r0_r4_failure_analysis.json` and `artifacts/haiku_vs_qwen_r0_r4_failure_analysis.md`.

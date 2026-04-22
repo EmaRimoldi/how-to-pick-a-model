@@ -14,6 +14,7 @@ from typing import Any
 
 from benchmarks.stateful_query_engine.dynamic_benchmark import validate_solution_source
 
+from vao.candidate_preflight import run_candidate_preflight_subprocess
 from vao.logging_utils import sha256_file, write_json
 from vao.schemas import BranchEvaluation
 
@@ -37,11 +38,40 @@ def evaluate_solution(
     source_parent_hash: str | None = None,
     run_id: str | None = None,
     instance_overrides: dict[str, Any] | None = None,
+    preflight_timeout_seconds: int | None = 12,
 ) -> BranchEvaluation:
     """Evaluate a proposed solution file in an isolated benchmark child run."""
     out_path.parent.mkdir(parents=True, exist_ok=True)
     raw_root = out_path.parent / "verifier_raw"
     eval_run_id = run_id or f"eval_{branch_index:02d}"
+    if preflight_timeout_seconds is not None and preflight_timeout_seconds > 0:
+        preflight_started = time.perf_counter()
+        preflight = run_candidate_preflight_subprocess(
+            solution_path,
+            timeout_seconds=int(preflight_timeout_seconds),
+        )
+        if not preflight.get("passed"):
+            elapsed = time.perf_counter() - preflight_started
+            evaluation = BranchEvaluation(
+                branch_index=branch_index,
+                primary_mode=primary_mode,
+                secondary_modes=secondary_modes or [],
+                declared_mode=declared_mode,
+                inferred_mode=inferred_mode,
+                source_hash=sha256_file(solution_path),
+                source_parent_hash=source_parent_hash,
+                file_path=str(solution_path),
+                correctness=False,
+                latent_loss=math.inf,
+                gain=0.0,
+                family_losses={},
+                first_divergence={"reason": "preflight_failed", "preflight": preflight},
+                raw_verifier_path=str(raw_root / eval_run_id),
+                elapsed_wall_seconds=elapsed,
+                errors=[f"preflight_failed:{preflight.get('reason', 'unknown')}"],
+            )
+            write_json(out_path, evaluation)
+            return evaluation
     cmd = [
         sys.executable,
         "-m",

@@ -34,6 +34,10 @@ Required API after every branch edit:
 - top_k tie-breaking is strict: if two rows have the same value, the smaller key must appear first.
 - If using sorting, use exactly the semantic key `lambda item: (-item[1], item[0])`.
 - If using heapq, push/compare tuples equivalent to `(-value, key)` so ties prefer smaller keys.
+- aggregate_count must count keys satisfying inclusive bounds `lo <= key <= hi`; it must not sum values.
+- If you introduce or rename storage fields such as `_items`, `_keys`, `_values`, `_sums`, caches, buckets, or trees, update `__init__` and every method that reads or writes that representation in the same candidate.
+- Do not mix incompatible representations. A candidate that adds `_items` while any method still reads `_keys`/`_values`, or vice versa, is invalid.
+- Layout edits must preserve get/range_sum/aggregate_count/top_k semantics. Non-layout modes should avoid changing primary storage representation.
 
 Structured edit rules:
 
@@ -70,6 +74,11 @@ Mode probability requirements:
 - Probabilities must be numeric and nonnegative.
 - The framework will normalize probabilities if they are slightly off, but you should sum to 1.
 - mode_ranking must be a permutation of the six modes sorted from most to least promising.
+- Do not use `layout` as a default high-probability mode. Assign probability by expected marginal verified gain for the current parent and profile.
+- If recent visible history shows a selected mode produced poor gain or incorrectness, lower that mode unless the current parent clearly changed the opportunity.
+- Keep enough probability mass on non-layout modes when the profile stresses range queries, top_k, repeated windows, or aggregate counts.
+- If `layout` was selected in recent visible history and produced only small gain, make a non-layout mode top-ranked unless there is specific evidence that the parent representation is now broken.
+- Avoid assigning more than 0.40 probability to any one mode unless the current parent/source gives a clear concrete reason.
 
 Profile summary:
 $profile_summary

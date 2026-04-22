@@ -1,0 +1,371 @@
+{
+  "backends": {
+    "haiku_batch": {
+      "best_counts": {
+        "caching": 3,
+        "indexing": 7,
+        "layout": 14,
+        "micro": 8,
+        "summaries": 3,
+        "topk": 6
+      },
+      "branch_correct_by_mode": {
+        "caching": {
+          "correct": 31,
+          "rate": 0.62,
+          "total": 50
+        },
+        "indexing": {
+          "correct": 29,
+          "rate": 0.58,
+          "total": 50
+        },
+        "layout": {
+          "correct": 31,
+          "rate": 0.62,
+          "total": 50
+        },
+        "micro": {
+          "correct": 34,
+          "rate": 0.68,
+          "total": 50
+        },
+        "summaries": {
+          "correct": 29,
+          "rate": 0.58,
+          "total": 50
+        },
+        "topk": {
+          "correct": 28,
+          "rate": 0.56,
+          "total": 50
+        }
+      },
+      "errors_by_mode": {
+        "caching": [
+          [
+            "incorrect_or_nonfinite",
+            19
+          ],
+          [
+            "verifier_returncode=1",
+            5
+          ],
+          [
+            "Traceback (most recent call last):",
+            4
+          ],
+          [
+            "b/NeurIPS_2026/benchmarks/stateful_query_engine/dynamic_benchmark.py\", line 419, in <module>",
+            1
+          ]
+        ],
+        "indexing": [
+          [
+            "incorrect_or_nonfinite",
+            21
+          ],
+          [
+            "verifier_returncode=1",
+            6
+          ],
+          [
+            "Traceback (most recent call last):",
+            5
+          ],
+          [
+            "IPS_2026/benchmarks/stateful_query_engine/dynamic_benchmark.py\", line 419, in <module>",
+            1
+          ],
+          [
+            "candidate_timeout",
+            1
+          ]
+        ],
+        "layout": [
+          [
+            "incorrect_or_nonfinite",
+            19
+          ],
+          [
+            "verifier_returncode=1",
+            8
+          ],
+          [
+            "Traceback (most recent call last):",
+            8
+          ]
+        ],
+        "micro": [
+          [
+            "incorrect_or_nonfinite",
+            16
+          ],
+          [
+            "verifier_returncode=1",
+            5
+          ],
+          [
+            "Traceback (most recent call last):",
+            4
+          ],
+          [
+            "uments/GitHub/NeurIPS_2026/benchmarks/stateful_query_engine/dynamic_benchmark.py\", line 419, in <module>",
+            1
+          ]
+        ],
+        "summaries": [
+          [
+            "incorrect_or_nonfinite",
+            21
+          ],
+          [
+            "verifier_returncode=1",
+            7
+          ],
+          [
+            "Traceback (most recent call last):",
+            7
+          ]
+        ],
+        "topk": [
+          [
+            "incorrect_or_nonfinite",
+            22
+          ],
+          [
+            "verifier_returncode=1",
+            5
+          ],
+          [
+            "Traceback (most recent call last):",
+            4
+          ],
+          [
+            "di/Documents/GitHub/NeurIPS_2026/benchmarks/stateful_query_engine/dynamic_benchmark.py\", line 419, in <module>",
+            1
+          ]
+        ]
+      },
+      "preflight_replay": {
+        "actual_ok": 182,
+        "branches": 300,
+        "by_mode": {
+          "caching": {
+            "actual_ok": 31,
+            "branches": 50,
+            "invalid_caught": 16,
+            "preflight_fail": 16,
+            "preflight_pass": 34
+          },
+          "indexing": {
+            "actual_ok": 29,
+            "branches": 50,
+            "invalid_caught": 17,
+            "preflight_fail": 17,
+            "preflight_pass": 33
+          },
+          "layout": {
+            "actual_ok": 31,
+            "branches": 50,
+            "invalid_caught": 18,
+            "preflight_fail": 18,
+            "preflight_pass": 32
+          },
+          "micro": {
+            "actual_ok": 34,
+            "branches": 50,
+            "invalid_caught": 13,
+            "preflight_fail": 13,
+            "preflight_pass": 37
+          },
+          "summaries": {
+            "actual_ok": 29,
+            "branches": 50,
+            "invalid_caught": 17,
+            "preflight_fail": 17,
+            "preflight_pass": 33
+          },
+          "topk": {
+            "actual_ok": 28,
+            "branches": 50,
+            "invalid_caught": 18,
+            "preflight_fail": 18,
+            "preflight_pass": 32
+          }
+        },
+        "false_reject": 0,
+        "false_reject_rate": 0.0,
+        "invalid_catch_rate": 0.8389830508474576,
+        "invalid_caught": 99,
+        "invalid_missed": 19,
+        "preflight_fail": 99,
+        "preflight_pass": 201,
+        "reasons": [
+          [
+            "operation_divergence",
+            43
+          ],
+          [
+            "constructor_failed",
+            29
+          ],
+          [
+            "candidate_import_failed",
+            21
+          ],
+          [
+            "operation_exception",
+            6
+          ]
+        ]
+      },
+      "selected_correct_by_mode": {
+        "caching": {
+          "correct": 2,
+          "rate": 0.4,
+          "total": 5
+        },
+        "indexing": {
+          "correct": 3,
+          "rate": 0.375,
+          "total": 8
+        },
+        "layout": {
+          "correct": 14,
+          "rate": 0.6086956521739131,
+          "total": 23
+        },
+        "summaries": {
+          "correct": 5,
+          "rate": 0.8333333333333334,
+          "total": 6
+        },
+        "topk": {
+          "correct": 4,
+          "rate": 0.5,
+          "total": 8
+        }
+      },
+      "selected_counts": {
+        "caching": 5,
+        "indexing": 8,
+        "layout": 23,
+        "micro": 0,
+        "summaries": 6,
+        "topk": 8
+      },
+      "top_errors": [
+        [
+          "incorrect_or_nonfinite",
+          118
+        ],
+        [
+          "verifier_returncode=1",
+          36
+        ],
+        [
+          "Traceback (most recent call last):",
+          32
+        ],
+        [
+          "IPS_2026/benchmarks/stateful_query_engine/dynamic_benchmark.py\", line 419, in <module>",
+          1
+        ],
+        [
+          "di/Documents/GitHub/NeurIPS_2026/benchmarks/stateful_query_engine/dynamic_benchmark.py\", line 419, in <module>",
+          1
+        ],
+        [
+          "b/NeurIPS_2026/benchmarks/stateful_query_engine/dynamic_benchmark.py\", line 419, in <module>",
+          1
+        ],
+        [
+          "uments/GitHub/NeurIPS_2026/benchmarks/stateful_query_engine/dynamic_benchmark.py\", line 419, in <module>",
+          1
+        ],
+        [
+          "candidate_timeout",
+          1
+        ]
+      ]
+    },
+    "qwen_direct": {
+      "best_counts": {
+        "caching": 5,
+        "indexing": 7,
+        "layout": 13,
+        "micro": 14,
+        "summaries": 4,
+        "topk": 7
+      },
+      "branch_correct_by_mode": {
+        "caching": {
+          "correct": 50,
+          "rate": 1.0,
+          "total": 50
+        },
+        "indexing": {
+          "correct": 50,
+          "rate": 1.0,
+          "total": 50
+        },
+        "layout": {
+          "correct": 50,
+          "rate": 1.0,
+          "total": 50
+        },
+        "micro": {
+          "correct": 50,
+          "rate": 1.0,
+          "total": 50
+        },
+        "summaries": {
+          "correct": 50,
+          "rate": 1.0,
+          "total": 50
+        },
+        "topk": {
+          "correct": 50,
+          "rate": 1.0,
+          "total": 50
+        }
+      },
+      "errors_by_mode": {
+        "caching": [],
+        "indexing": [],
+        "layout": [],
+        "micro": [],
+        "summaries": [],
+        "topk": []
+      },
+      "selected_correct_by_mode": {
+        "indexing": {
+          "correct": 1,
+          "rate": 1.0,
+          "total": 1
+        },
+        "layout": {
+          "correct": 47,
+          "rate": 1.0,
+          "total": 47
+        },
+        "topk": {
+          "correct": 2,
+          "rate": 1.0,
+          "total": 2
+        }
+      },
+      "selected_counts": {
+        "caching": 0,
+        "indexing": 1,
+        "layout": 47,
+        "micro": 0,
+        "summaries": 0,
+        "topk": 2
+      },
+      "top_errors": []
+    }
+  },
+  "definition": "Loss-based routing correctness uses declared branch mode with minimum finite latent_loss at each step. Preflight replay runs the new deterministic API smoke on historical branch files and compares it to full-verifier outcomes."
+}

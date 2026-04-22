@@ -750,3 +750,27 @@ Artifacts:
 - `artifacts/plots/run_hard_haiku_batch_10step_r4_retry1/`
 - `artifacts/plots/run_hard_qwen_direct_10step_r3/`
 - `artifacts/plots/run_hard_qwen_direct_10step_r4/`
+
+## R0-R4 Failure Analysis and Fixes
+
+Before launching more model runs, I audited the failure surface.
+
+Findings:
+
+- Haiku is optimization-capable but fragile: 118/300 branches were incorrect or non-finite. Failures are not isolated to one mode; they appear across layout, indexing, topk, caching, summaries, and micro.
+- The dominant Haiku failure family is semantic/API breakage: mixed storage representations, broken aggregate_count, top_k ordering mistakes, import/runtime errors, and occasional slow candidates.
+- Qwen is safe but conservative: 300/300 branches were verifier-correct, but it selected `layout` 47/50 times while the verified-best branch was often non-layout.
+
+Implemented fixes:
+
+- Added a fast verifier preflight before the full benchmark. It runs deterministic API checks against the reference engine and catches constructor, get/put/delete, range_sum, aggregate_count, and top_k ordering failures.
+- Historical replay shows the preflight would catch 99/118 invalid Haiku branches with 0 false rejects on correct branches.
+- Hardened prompts so storage-layout changes must update all dependent methods, aggregate_count must count keys under inclusive bounds, and top_k must preserve value-desc/key-asc order.
+- Hardened routing prompts to discourage the Qwen layout-default pattern and to lower recently poor selected modes.
+
+This should reduce wasted verifier time and reduce obvious semantic failures in the next smoke. It does not change C(a): every branch still gets a logged offline evaluation outcome, and only the selected branch is visible/promoted.
+
+Artifacts:
+
+- `artifacts/haiku_vs_qwen_r0_r4_failure_analysis.json`
+- `artifacts/haiku_vs_qwen_r0_r4_failure_analysis.md`

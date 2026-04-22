@@ -20,6 +20,11 @@ Protocol constraints:
 - Rationales must be one sentence per mode.
 - Do not include chain-of-thought.
 - Do not use offline counterfactual branch results unless they appear in visible_history.
+- Do not use `layout` as the default high-probability mode. Assign probabilities by expected marginal verified gain for this parent and profile.
+- If visible history shows a selected mode caused incorrectness, non-finite loss, or poor gain, reduce that mode unless the current parent has changed the opportunity.
+- For mixed hard profiles, consider `indexing`, `topk`, `caching`, `summaries`, and `micro` as real candidates; a conservative all-layout policy is usually low information.
+- If `layout` was selected in recent visible history and produced only small gain, make a non-layout mode top-ranked unless there is specific evidence that the parent representation is now broken.
+- Avoid assigning more than 0.40 probability to any one mode unless the current parent/source gives a clear concrete reason.
 
 Profile summary:
 $profile_summary
