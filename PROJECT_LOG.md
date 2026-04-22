@@ -377,3 +377,17 @@
 - Added `qwen_coder_batch_strict` as the clearer alias for the validated Qwen Coder OpenAI-compatible endpoint.
 - Added `configs/hard_single_prompt_model_matrix.yaml` containing the requested backend list: GPT-5.4, GPT-5.4-mini, GPT-5.3-Codex, GPT-5.3-Codex-Spark, GPT-5.2-Codex, Qwen Coder, Haiku, Sonnet, and Opus 4.6.
 - Added unit tests for OpenAI Responses request construction, output extraction, and six-branch batch materialization. Tests use mocks and do not require live OpenAI calls.
+
+### Codex CLI Live Model Smokes
+
+- Added `src/vao/agents/codex_cli_adapter.py`, a Codex CLI transport for environments where local Codex authentication works but `OPENAI_API_KEY` is not exported.
+- Switched the GPT/Codex strict matrix aliases to `adapter: codex_cli`. The OpenAI Responses adapter remains available for direct API-key environments.
+- The first Codex CLI full-step smoke with `--output-schema` failed because the OpenAI/Codex strict schema validator requires all nested properties to be listed in `required`; the framework's candidate-edit schema has optional edit keys. Updated Codex CLI transport to place the schema in the prompt and rely on local parser/validator enforcement.
+- Validated one-step C(a) smokes:
+  - `gpt-5.4`: `runs/hard_profile/single_prompt/model_matrix/hard_gpt54_codex_cli_single_prompt_smoke_1step_r0`, 1 step, 6 branches, `vao.validate_run` passed.
+  - `gpt-5.4-mini`: `runs/hard_profile/single_prompt/model_matrix/hard_gpt54mini_codex_cli_single_prompt_smoke_1step_r1`, 1 step, 6 branches, `vao.validate_run` passed.
+  - `gpt-5.3-codex`: `runs/hard_profile/single_prompt/model_matrix/hard_gpt53codex_codex_cli_single_prompt_smoke_1step_r0`, 1 step, 6 branches, `vao.validate_run` passed.
+  - `gpt-5.3-codex-spark`: `runs/hard_profile/single_prompt/model_matrix/hard_gpt53codexspark_codex_cli_single_prompt_smoke_1step_r0`, 1 step, 6 branches, `vao.validate_run` passed.
+- `gpt-5.2-codex` is not available through the current Codex ChatGPT account; the CLI returned `invalid_request_error: model is not supported when using Codex with a ChatGPT account`.
+- A full Sonnet C(a) smoke timed out at 600 seconds before producing `evaluations.jsonl`. Minimal CLI probes for Haiku, Sonnet, and Opus 4.6 succeeded, but Sonnet/Opus still need full-step validation before inclusion in a sweep.
+- Validation after changes: `pytest -q` passed with 70 tests; `python -m vao.verifier --smoke_test` passed; `vao.validate_run` passed for Haiku, Qwen Coder, and all four completed GPT/Codex full-step smokes.

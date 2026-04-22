@@ -76,12 +76,15 @@
 - [x] Run and validate a one-step Qwen Coder strict single-prompt smoke after prompt-shape hardening.
 - [x] Add OpenAI Responses API backend for GPT/Codex single-prompt batch experiments.
 - [x] Add strict single-prompt aliases for GPT-5.4, GPT-5.4-mini, GPT-5.3-Codex, GPT-5.3-Codex-Spark, GPT-5.2-Codex, Qwen Coder, Haiku, Sonnet, and Opus 4.6.
+- [x] Add Codex CLI transport for GPT/Codex runs when `OPENAI_API_KEY` is unavailable.
+- [x] Run and validate one-step Codex CLI smokes for GPT-5.4, GPT-5.4-mini, GPT-5.3-Codex, and GPT-5.3-Codex-Spark.
 
 ## Remaining
 
 - [ ] Resume/extend teacher production collection when Claude CLI budget/availability allows a repeated-run matrix on `hard_optimization`.
-- [ ] Run one live GPT/Codex single-prompt smoke with `OPENAI_API_KEY` and validate the output schema.
-- [ ] Run one live Sonnet and one live Opus 4.6 single-prompt smoke when Claude budget is available.
+- [ ] Optionally run one live GPT/Codex single-prompt smoke through `openai_responses` when `OPENAI_API_KEY` is available, to validate the direct API transport separately from Codex CLI.
+- [ ] Re-test GPT-5.2-Codex only if account/API access changes; the current Codex ChatGPT account reports it as unsupported.
+- [ ] Run one live Sonnet and one live Opus 4.6 full C(a) single-prompt smoke when Claude budget/time is available; minimal CLI probes pass, but Sonnet full-step timed out at 600 seconds.
 - [ ] Run a short 3-step single-prompt Haiku vs Qwen Coder comparison now that both one-step smokes pass.
 - [ ] Relaunch the strict Qwen single-prompt smoke on the Engaging GPU endpoint when SSH/GPU access is available, to compare local MPS vs GPU throughput.
 - [ ] Run a prompt-controlled single-prompt Haiku/Qwen ablation with `configs/hard_haiku_prompt_controlled_10step.yaml` and `configs/hard_qwen_prompt_controlled_10step.yaml` when model endpoints are available.

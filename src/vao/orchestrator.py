@@ -16,6 +16,7 @@ from benchmarks.stateful_query_engine.harness.run_benchmark import load_instance
 from vao.agents.base import AgentAdapter, AgentState
 from vao.agents.anthropic_adapter import ClaudeHaikuAdapter
 from vao.agents.claude_code_adapter import ClaudeCodeAdapter
+from vao.agents.codex_cli_adapter import CodexCliAdapter
 from vao.agents.local_stub_adapter import LeakageProbeAdapter, LocalStubAdapter
 from vao.agents.openai_direct_edit_adapter import OpenAICompatibleDirectEditAdapter
 from vao.agents.openai_compatible_adapter import OpenAICompatibleAdapter
@@ -35,6 +36,7 @@ ADAPTERS = {
     "leakage_probe": LeakageProbeAdapter,
     "claude_haiku": ClaudeHaikuAdapter,
     "claude_code": ClaudeCodeAdapter,
+    "codex_cli": CodexCliAdapter,
     "openai_compatible": OpenAICompatibleAdapter,
     "openai_compatible_direct_edit": OpenAICompatibleDirectEditAdapter,
     "openai_responses": OpenAIResponsesAdapter,

@@ -136,3 +136,11 @@ def test_model_matrix_config_contains_requested_backends() -> None:
     for name in requested:
         assert models_config[name]["edit_protocol"] == "structured_edits"
         assert models_config[name]["allow_batch_repair"] is False
+    for name in {
+        "gpt_5_4_batch_strict",
+        "gpt_5_4_mini_batch_strict",
+        "gpt_5_3_codex_batch_strict",
+        "gpt_5_3_codex_spark_batch_strict",
+        "gpt_5_2_codex_batch_strict",
+    }:
+        assert models_config[name]["adapter"] == "codex_cli"

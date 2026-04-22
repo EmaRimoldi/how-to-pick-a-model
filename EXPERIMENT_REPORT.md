@@ -853,10 +853,12 @@ Artifacts:
 The framework now supports the requested hosted and local backends under the
 same C(a) single-prompt batch protocol.
 
-OpenAI/Codex models use the new `openai_responses` adapter. This talks directly
-to the OpenAI Responses API, not the Codex CLI, so the experimental unit remains
-one controlled model call that returns JSON rather than an interactive coding
-agent acting in the workspace.
+GPT/Codex models can use either the direct `openai_responses` adapter or the
+new `codex_cli` adapter. The active local matrix uses `codex_cli` because the
+machine has Codex CLI authentication but no exported `OPENAI_API_KEY`. The
+protocol is still one controlled C(a) model-generation call per step: the model
+returns `mode_probs`, `mode_ranking`, and six structured edits, and the
+framework materializes/evaluates branch copies locally.
 
 Configured model aliases:
 
@@ -876,6 +878,16 @@ The matrix config is:
 
 - `configs/hard_single_prompt_model_matrix.yaml`
 
-Live GPT/Codex runs require `OPENAI_API_KEY`. They have not yet been run in this
-milestone; the implementation is covered by mocked transport tests and should be
-validated with a one-step smoke before any multi-model sweep.
+Live full-step results now available:
+
+| model | run | validation | selected | branch correctness |
+|---|---|---|---|---|
+| `gpt-5.4` | `hard_gpt54_codex_cli_single_prompt_smoke_1step_r0` | passed | `layout` | 6/6 |
+| `gpt-5.4-mini` | `hard_gpt54mini_codex_cli_single_prompt_smoke_1step_r1` | passed | `summaries` | 6/6 |
+| `gpt-5.3-codex` | `hard_gpt53codex_codex_cli_single_prompt_smoke_1step_r0` | passed | `indexing` | 6/6 |
+| `gpt-5.3-codex-spark` | `hard_gpt53codexspark_codex_cli_single_prompt_smoke_1step_r0` | passed | `topk` | 6/6 |
+
+`gpt-5.2-codex` is not available through the current Codex ChatGPT account. A
+full Sonnet single-prompt C(a) smoke timed out at 600 seconds; Haiku, Sonnet,
+and Opus 4.6 minimal CLI probes are reachable, but Sonnet/Opus still need
+validated full-step runs before being included in a sweep.
