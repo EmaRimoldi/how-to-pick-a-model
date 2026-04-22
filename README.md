@@ -45,6 +45,8 @@ For real Claude/Anthropic runs, candidate generation is protocol-configurable. P
 
 The fastest current Haiku path is the batched structured-edit variant: one model call returns `mode_probs`, `mode_ranking`, and six mode-constrained structured edits. Use `candidate_generation: batched` or `configs/phase3_haiku_structured_batch_smoke.yaml` for that path. The one-step speed smoke passed validation, but one candidate was rejected and logged as a no-op, so this needs a larger quality smoke before teacher-data scaling.
 
+The first matched hard-profile comparison now has one 10-step run for Haiku and one 10-step run for Qwen. Haiku used batched structured edits; Qwen used the LangGraph direct-file-edit backend. This is therefore a model-plus-backend comparison, not a pure model-only ablation. Both runs passed `vao.validate_run` with 10 steps and 60 branch evaluations each.
+
 ## Active Benchmark Profile
 
 `hard_optimization` is intentionally hard to optimize with a single obvious edit. It uses:
@@ -65,6 +67,8 @@ This profile creates real tradeoffs between layout, indexing, summaries, caching
 - `python -m vao.orchestrator --config configs/hard_haiku_batch_smoke.yaml --run-id hard_haiku_batch_smoke`
 - `OPENAI_COMPATIBLE_BASE_URL=http://localhost:8000/v1 RUN_ID=hard_qwen_batch_smoke_1step scripts/run_qwen_smoke.sh`
 - `OPENAI_COMPATIBLE_BASE_URL=http://localhost:8000/v1 RUN_ID=hard_qwen_direct_edit_smoke_1step scripts/run_qwen_direct_edit_smoke.sh`
+- `PYTHONPATH=src:. python -m vao.orchestrator --config configs/hard_haiku_batch_10step.yaml --models claude_haiku_batch --profiles hard_optimization --steps 10 --run-id hard_haiku_batch_10step_r0`
+- `PYTHONPATH=src:. OPENAI_COMPATIBLE_BASE_URL=http://localhost:8000/v1 python -m vao.orchestrator --config configs/hard_qwen_direct_10step.yaml --models weak_qwen_direct --profiles hard_optimization --steps 10 --run-id hard_qwen_direct_10step_r0`
 - `python -m vao.verifier --smoke_test`
 - `python -m vao.analysis.compute_estimators --runs runs/phase1_dev --out artifacts/phase1_dev_estimators.csv`
 - `python -m vao.training.build_routing_dataset --runs runs/phase1_dev --train_out artifacts/routing_train.jsonl --dev_out artifacts/routing_dev.jsonl`
@@ -125,6 +129,19 @@ OPENAI_COMPATIBLE_BASE_URL=http://localhost:8000/v1 \
 scripts/run_qwen_direct_edit_smoke.sh
 ```
 
+The 10-step Qwen direct-edit comparison uses:
+
+```bash
+PYTHONPATH=src:. \
+OPENAI_COMPATIBLE_BASE_URL=http://localhost:8000/v1 \
+python -m vao.orchestrator \
+  --config configs/hard_qwen_direct_10step.yaml \
+  --models weak_qwen_direct \
+  --profiles hard_optimization \
+  --steps 10 \
+  --run-id hard_qwen_direct_10step_r0
+```
+
 ## Current Milestone Status
 
 - Future teacher-data protocol should use C(a) with `structured_edits` candidate generation. Replacement-file and unified-diff protocols remain available as legacy fallbacks.
@@ -141,5 +158,6 @@ scripts/run_qwen_direct_edit_smoke.sh
 - Hard-profile readiness diagnostics are in `artifacts/hard_profile_experiment_readiness.md`. The validated Haiku batch full-profile smoke took 346.4 seconds total for one step including baseline, cost `$0.171`, and had zero proposal/verifier failures.
 - The first 3-step hard Haiku batch pilot is summarized in `artifacts/hard_haiku_batch_pilot_readout.md`: 18 branch evaluations, 807.0s total wall-clock, `$0.600` total cost, and validated C(a) logs.
 - Qwen smoke is validated through `weak_qwen` with `Qwen/Qwen2.5-Coder-1.5B-Instruct` served on Engaging. The one-step hard-profile run completed in 240.9s, produced 6 branch evaluations, and passed `vao.validate_run`.
-- The optional `weak_qwen_direct` backend now lets Qwen edit branch-local files directly through LangGraph tools. This has unit/integration coverage but still needs a live GPU smoke before being used for measurements.
+- The optional `weak_qwen_direct` backend now lets Qwen edit branch-local files directly through LangGraph tools. It has unit/integration coverage, a live one-step smoke, and a validated 10-step hard-profile run.
+- The initial Haiku-vs-Qwen hard-profile R0 produced two validated 10-step runs. Haiku batch took `302.7s/step`, `$1.940` total, routing accuracy `0.20`, and mean regret `0.4085`. Qwen direct took `181.0s/step`, local serving cost `$0`, routing accuracy `0.20`, and mean regret `0.0140`. Qwen's selected branches were all correct, but it heavily favored `layout`; Haiku found much lower counterfactual losses but had two incorrect selected visible branches.
 - Offline student eval on the tiny split improved regret/JSD versus the original teacher route on that split, but the online local controlled experiment was worse than the local-stub router. Treat Phase 5 as infrastructure plus a negative first result, not as evidence of a useful student yet.

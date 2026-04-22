@@ -296,3 +296,15 @@
 - Normal C(a) evaluation is unchanged after the edit loop: the orchestrator diffs parent vs proposed, validates source, infers mode, evaluates all six branches offline, and promotes only the selected branch.
 - Added `tests/test_direct_file_edit.py` covering LangGraph tool execution and the direct-edit adapter without live model calls.
 - Validation after changes: `pytest -q` passed with 55 tests; `PYTHONPATH=src:. python -m vao.verifier --smoke_test` passed.
+
+### Haiku vs Qwen Hard-Profile R0
+
+- Ran the first matched 10-step hard-profile comparison after validating Qwen direct-file editing.
+- Haiku run: `runs/hard_profile/haiku_vs_qwen/haiku_batch/hard_haiku_batch_10step_r0`, using `claude_haiku_batch`, C(a), batched structured edits, 10 steps, and 60 branch evaluations.
+- Qwen run: `runs/hard_profile/haiku_vs_qwen/qwen_direct/hard_qwen_direct_10step_r0`, using `weak_qwen_direct`, C(a), LangGraph direct branch-local file editing, 10 steps, and 60 branch evaluations.
+- Both runs passed `vao.validate_run`, preserving six branches per step, same parent hash per step, top-1 promotion, and no counterfactual leakage into visible history.
+- Haiku aggregate: `302.7s/step`, total cost `$1.940`, routing accuracy `0.20`, mean routing regret `0.4085`, branch correctness `0.83`, best visible loss `0.1860`, best counterfactual loss `0.1090`.
+- Qwen direct aggregate: `181.0s/step`, local serving cost `$0`, routing accuracy `0.20`, mean routing regret `0.0140`, branch correctness `1.00`, best visible loss `0.9708`, best counterfactual loss `0.9690`.
+- Interpretation: Qwen direct was faster and safer on this run, but mostly selected `layout` and found only small improvements. Haiku explored more modes and found much lower counterfactual losses, but two selected visible branches were incorrect and the run became unstable late.
+- Generated combined artifacts: `artifacts/haiku_vs_qwen_10step_r0_summary.*`, `artifacts/haiku_vs_qwen_10step_r0_estimators.csv`, `artifacts/haiku_vs_qwen_10step_r0_routing_dataset.jsonl`, and diagnostic plots under `artifacts/plots/run_hard_haiku_batch_10step_r0/` and `artifacts/plots/run_hard_qwen_direct_10step_r0/`.
+- Stopped the Qwen server and released the Engaging GPU allocation after the run completed.

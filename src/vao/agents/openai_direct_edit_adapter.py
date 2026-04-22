@@ -31,9 +31,13 @@ class OpenAICompatibleDirectEditAdapter(OpenAICompatibleAdapter):
         max_direct_edit_iterations: int = 4,
         max_direct_edit_tokens: int = 2048,
         max_source_chars: int = 12000,
+        edit_protocol: str = "direct_file_tools",
         **kwargs: object,
     ) -> None:
-        super().__init__(model_id=model_id, **kwargs)
+        if edit_protocol != "direct_file_tools":
+            raise ValueError(f"unsupported direct edit protocol: {edit_protocol}")
+        super().__init__(model_id=model_id, edit_protocol="structured_edits", **kwargs)
+        self.edit_protocol = "direct_file_tools"
         self.max_direct_edit_iterations = int(max_direct_edit_iterations)
         self.max_direct_edit_tokens = int(max_direct_edit_tokens)
         self.max_source_chars = int(max_source_chars)

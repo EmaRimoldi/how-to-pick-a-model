@@ -663,3 +663,29 @@ Generated plots are under:
 - `artifacts/plots/run_opus_teacher_pilot_retry2_claude_opus_teacher_development/`
 - `artifacts/plots/run_opus_teacher_pilot_retry2_claude_opus_teacher_memory_development/`
 - `artifacts/plots/run_opus_teacher_dev_r0/`
+
+## Haiku vs Qwen Hard-Profile R0
+
+The first direct comparison is complete and validated. It uses the frozen C(a) visibility rule in both runs: every step generates six branches from one parent, all branches are evaluated offline, and only the top-probability branch is promoted as the next visible state.
+
+| model/backend | steps | branches | sec/step | routing acc | mean regret | branch correct | best visible | best counterfactual | cost |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Haiku batch structured edits | 10 | 60 | 302.7 | 0.20 | 0.4085 | 0.83 | 0.1860 | 0.1090 | `$1.940` |
+| Qwen 1.5B direct-file edit | 10 | 60 | 181.0 | 0.20 | 0.0140 | 1.00 | 0.9708 | 0.9690 | `$0` local |
+
+Key readout:
+
+- Qwen direct-file editing is now a working baseline, not just a scaffold. It ran on an Engaging L40S through the OpenAI-compatible local server and passed `vao.validate_run`.
+- Qwen was faster in this R0 and generated far fewer output tokens, but it selected `layout` in 9 of 10 steps and made only small loss improvements.
+- Haiku explored more modes and found much stronger counterfactual branches, but its visible trajectory was less stable: selected branches were incorrect at steps 0 and 9.
+- Both routers chose the verified-best mode only 2 out of 10 times. This gives useful routing-regret signal, but one repeat is not enough for a final model ranking.
+- The comparison is not a pure model ablation because Haiku used batched structured edits while Qwen used LangGraph direct branch-local editing. Treat it as a first system-level protocol run.
+
+Artifacts:
+
+- `artifacts/haiku_vs_qwen_10step_r0_summary.json`
+- `artifacts/haiku_vs_qwen_10step_r0_summary.md`
+- `artifacts/haiku_vs_qwen_10step_r0_estimators.csv`
+- `artifacts/haiku_vs_qwen_10step_r0_routing_dataset.jsonl`
+- `artifacts/plots/run_hard_haiku_batch_10step_r0/`
+- `artifacts/plots/run_hard_qwen_direct_10step_r0/`

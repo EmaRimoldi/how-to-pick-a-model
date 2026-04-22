@@ -63,11 +63,14 @@
 - [x] Run and validate a one-step Qwen smoke on `hard_optimization` with `Qwen/Qwen2.5-Coder-1.5B-Instruct`.
 - [x] Add optional LangGraph direct-file-edit backend for branch-local Qwen editing.
 - [x] Add tests proving direct-file-edit tools modify only branch-local `proposed_solution.py` files.
+- [x] Run a live `weak_qwen_direct` GPU smoke and a validated 10-step hard-profile direct-edit run.
+- [x] Run the first validated 10-step Haiku batch vs Qwen direct hard-profile comparison and generate combined summaries/diagnostic plots.
 
 ## Remaining
 
 - [ ] Resume/extend teacher production collection when Claude CLI budget/availability allows a repeated-run matrix on `hard_optimization`.
-- [ ] Run a live `weak_qwen_direct` GPU smoke and compare direct-file editing against structured-edit Qwen on time, failures, and routing regret.
+- [ ] Add repeated Haiku-vs-Qwen hard-profile runs before drawing model-level conclusions from the R0 comparison.
+- [ ] Compare Qwen direct-file editing against Qwen structured-edit generation on time, failures, and routing regret using the same 10-step hard-profile config.
 - [ ] Before scaling real-model teacher data, run a slightly larger batched `structured_edits` smoke and confirm candidate rejection rates are acceptable.
 - [ ] Tighten batched structured-edit prompt/repair for source-safety rejections such as banned list attribute calls.
 - [ ] Replace the Claude Code scaffold with real agentic terminal editing when credentials/endpoints are available.
