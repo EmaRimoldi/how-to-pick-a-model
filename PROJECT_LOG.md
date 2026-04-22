@@ -367,3 +367,13 @@
 - Hardened the single batch prompt with an explicit JSON skeleton and an instruction that `candidates` must be an object with exactly the six mode keys, not a list.
 - Re-ran Qwen Coder strict single-prompt smoke successfully: `runs/hard_profile/single_prompt/qwen_batch_structured/hard_qwen_coder_single_prompt_smoke_1step_r1_promptfix` passed `vao.validate_run` with 1 step, 6 branch evaluations, 6/6 branch correctness, 377.7s wall-clock, and local `$0` API cost.
 - Qwen Coder selected `caching` with probability 1.0; best counterfactual mode was `micro`, so the smoke produced a routing-regret example while preserving C(a).
+
+### GPT/Codex and Expanded Model Matrix
+
+- Added `src/vao/agents/openai_responses_adapter.py`, a strict OpenAI Responses API transport that reuses the existing C(a) batched structured-edit parser/materializer.
+- Registered `openai_responses` in the orchestrator.
+- Added strict aliases for `gpt-5.4`, `gpt-5.4-mini`, `gpt-5.3-codex`, `gpt-5.3-codex-spark`, and `gpt-5.2-codex`. These use one Responses API call per step, JSON schema output, and no batch repair.
+- Added strict Claude aliases for Sonnet and Opus 4.6 through the same Claude CLI transport as Haiku: `claude_sonnet_batch_strict` and `claude_opus_4_6_batch_strict`.
+- Added `qwen_coder_batch_strict` as the clearer alias for the validated Qwen Coder OpenAI-compatible endpoint.
+- Added `configs/hard_single_prompt_model_matrix.yaml` containing the requested backend list: GPT-5.4, GPT-5.4-mini, GPT-5.3-Codex, GPT-5.3-Codex-Spark, GPT-5.2-Codex, Qwen Coder, Haiku, Sonnet, and Opus 4.6.
+- Added unit tests for OpenAI Responses request construction, output extraction, and six-branch batch materialization. Tests use mocks and do not require live OpenAI calls.

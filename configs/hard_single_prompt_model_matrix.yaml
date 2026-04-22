@@ -1,0 +1,31 @@
+experiment:
+  name: hard_single_prompt_model_matrix
+  visibility_regime: top1_only
+  candidate_generation: batched
+  modes: [layout, indexing, topk, caching, summaries, micro]
+  steps: 1
+  wall_budget_seconds: 21600
+  branch_timeout_seconds: 240
+  incorrect_penalty: -1.0
+  productive_proxy_fallback: uniform
+  history_policy: full_visible_history
+  seed: 2601
+
+benchmark:
+  template_path: benchmarks/stateful_query_engine/solution_template.py
+  profiles: [hard_optimization]
+
+models:
+  include:
+    - gpt_5_4_batch_strict
+    - gpt_5_4_mini_batch_strict
+    - gpt_5_3_codex_batch_strict
+    - gpt_5_3_codex_spark_batch_strict
+    - gpt_5_2_codex_batch_strict
+    - qwen_coder_batch_strict
+    - claude_haiku_batch_strict
+    - claude_sonnet_batch_strict
+    - claude_opus_4_6_batch_strict
+
+output:
+  root: runs/hard_profile/single_prompt/model_matrix

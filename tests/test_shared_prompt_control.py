@@ -113,3 +113,26 @@ def test_prompt_controlled_configs_are_single_prompt_batched() -> None:
     assert models_config["weak_qwen_batch_strict"]["batch_fallback_to_per_mode"] is False
     assert models_config["weak_qwen_batch_strict"]["allow_batch_repair"] is False
     assert models_config["weak_qwen_batch_strict"]["allow_response_format_retry"] is False
+
+
+def test_model_matrix_config_contains_requested_backends() -> None:
+    matrix = yaml.safe_load(Path("configs/hard_single_prompt_model_matrix.yaml").read_text(encoding="utf-8"))
+    models_config = yaml.safe_load(Path("configs/models.yaml").read_text(encoding="utf-8"))["models"]
+    requested = {
+        "gpt_5_4_batch_strict",
+        "gpt_5_4_mini_batch_strict",
+        "gpt_5_3_codex_batch_strict",
+        "gpt_5_3_codex_spark_batch_strict",
+        "gpt_5_2_codex_batch_strict",
+        "qwen_coder_batch_strict",
+        "claude_haiku_batch_strict",
+        "claude_sonnet_batch_strict",
+        "claude_opus_4_6_batch_strict",
+    }
+
+    assert matrix["experiment"]["candidate_generation"] == "batched"
+    assert set(matrix["models"]["include"]) == requested
+    assert all(name in models_config for name in requested)
+    for name in requested:
+        assert models_config[name]["edit_protocol"] == "structured_edits"
+        assert models_config[name]["allow_batch_repair"] is False

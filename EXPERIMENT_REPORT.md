@@ -847,3 +847,35 @@ Artifacts:
 
 - `artifacts/single_prompt_smoke_readout.json`
 - `artifacts/single_prompt_smoke_readout.md`
+
+## Expanded Single-Prompt Model Matrix
+
+The framework now supports the requested hosted and local backends under the
+same C(a) single-prompt batch protocol.
+
+OpenAI/Codex models use the new `openai_responses` adapter. This talks directly
+to the OpenAI Responses API, not the Codex CLI, so the experimental unit remains
+one controlled model call that returns JSON rather than an interactive coding
+agent acting in the workspace.
+
+Configured model aliases:
+
+| alias | model |
+|---|---|
+| `gpt_5_4_batch_strict` | `gpt-5.4` |
+| `gpt_5_4_mini_batch_strict` | `gpt-5.4-mini` |
+| `gpt_5_3_codex_batch_strict` | `gpt-5.3-codex` |
+| `gpt_5_3_codex_spark_batch_strict` | `gpt-5.3-codex-spark` |
+| `gpt_5_2_codex_batch_strict` | `gpt-5.2-codex` |
+| `qwen_coder_batch_strict` | `Qwen/Qwen2.5-Coder-1.5B-Instruct` |
+| `claude_haiku_batch_strict` | Claude Haiku CLI alias |
+| `claude_sonnet_batch_strict` | Claude Sonnet CLI alias |
+| `claude_opus_4_6_batch_strict` | Claude Opus 4.6 CLI alias |
+
+The matrix config is:
+
+- `configs/hard_single_prompt_model_matrix.yaml`
+
+Live GPT/Codex runs require `OPENAI_API_KEY`. They have not yet been run in this
+milestone; the implementation is covered by mocked transport tests and should be
+validated with a one-step smoke before any multi-model sweep.
