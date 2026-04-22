@@ -9,25 +9,40 @@ from typing import Any
 
 from vao.estimators import gains_by_mode, productive_mode_proxy, routing_regret
 from vao.logging_utils import append_jsonl
+from vao.profile_splits import holdout_profiles, load_profile_splits, split_for_profile
 from vao.records import iter_run_dirs, load_step_records
 from vao.schemas import RoutingRecord, StepRecord
 from vao.taxonomy import MODES
 from vao.visibility import build_visible_history
 
 
-def build_records(roots: list[Path], target: str = "soft_productive_mode_distribution") -> list[RoutingRecord]:
+def build_records(
+    roots: list[Path],
+    target: str = "soft_productive_mode_distribution",
+    *,
+    profile_splits: dict[str, list[str]] | None = None,
+    exclude_profiles: set[str] | None = None,
+    exclude_holdout: bool = False,
+) -> list[RoutingRecord]:
     records: list[RoutingRecord] = []
+    excluded = set(exclude_profiles or set())
+    if exclude_holdout and profile_splits:
+        excluded |= holdout_profiles(profile_splits)
     for root in roots:
         for run_dir in iter_run_dirs(root):
             step_records = load_step_records(run_dir)
             for index, step in enumerate(step_records):
+                if step.profile_id in excluded:
+                    continue
                 gains = gains_by_mode(step)
                 fallback = "hard_argmax" if target == "hard_argmax" else "uniform"
                 pstar = productive_mode_proxy(gains, fallback=fallback)
                 top_mode = max(MODES, key=lambda mode: pstar[mode])
                 parent_source = _parent_source_for_step(run_dir, step)
+                profile_split = split_for_profile(step.profile_id, profile_splits or {})
                 input_record = {
                     "profile_summary": _profile_summary_from_step(step),
+                    "profile_split": profile_split,
                     "current_solution_source": parent_source,
                     "current_solution_hash": step.parent_solution_hash,
                     "visible_history": build_visible_history(step_records[:index], step.visibility_regime),
@@ -45,6 +60,7 @@ def build_records(roots: list[Path], target: str = "soft_productive_mode_distrib
                     RoutingRecord(
                         run_id=step.run_id,
                         profile_id=step.profile_id,
+                        profile_split=profile_split,
                         model_id=step.model_id,
                         step=step.step,
                         input=input_record,
@@ -91,11 +107,21 @@ def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--runs", nargs="+", required=True)
     parser.add_argument("--target", default="soft_productive_mode_distribution")
+    parser.add_argument("--profiles_config", default="configs/profiles.yaml")
+    parser.add_argument("--exclude_holdout", action="store_true")
+    parser.add_argument("--exclude_profiles", nargs="*", default=[])
     parser.add_argument("--train_out", required=False)
     parser.add_argument("--dev_out", required=False)
     parser.add_argument("--out", required=False)
     args = parser.parse_args(argv)
-    records = build_records([Path(item) for item in args.runs], target=args.target)
+    profile_splits = load_profile_splits(Path(args.profiles_config))
+    records = build_records(
+        [Path(item) for item in args.runs],
+        target=args.target,
+        profile_splits=profile_splits,
+        exclude_profiles=set(args.exclude_profiles),
+        exclude_holdout=args.exclude_holdout,
+    )
     if args.out:
         write_all(records, Path(args.out))
     if args.train_out and args.dev_out:

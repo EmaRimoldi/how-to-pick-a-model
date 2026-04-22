@@ -422,16 +422,16 @@ The correct next scientific step is not more offline model tuning on these 12 re
 
 Resume with a small batched `structured_edits` C(a) smoke first. If it
 validates, use the same `single_step_program.txt` path for the next teacher
-collection. The moderate Phase 4 matrix remains:
+collection. The moderate Phase 4 dev matrix is:
 
 - Dev: 3 profiles x 3 repeats x 5 steps = 45 teacher steps
-- Optional holdout: 2 profiles x 2 repeats x 5 steps = 20 teacher steps
-- Total target if budget permits: 65 teacher steps
+- Final holdout evaluation after model/protocol freeze: 3 profiles x 2 repeats x 5 steps = 30 steps
+- Total target if budget permits: 75 evaluated steps, with only dev used for post-training
 
 Based on current Opus logs, projected serial cost/time is approximately:
 
 - Dev-only: about `$80.09` and `8.04` serial hours
-- Dev plus holdout: about `$115.69` and `11.61` serial hours
+- Dev plus final holdout evaluation: about `$133.48` and `13.40` serial hours
 
 Detailed resume checklist and run-manifest plan are in `artifacts/future_teacher_scaling_plan.md`. After collecting more data, rerun the dataset audit, replay leaderboard, classical routing comparisons, and local LoRA routing experiment before attempting within-mode or feedback-use training.
 
@@ -927,3 +927,63 @@ Live full-step results now available:
 full Sonnet single-prompt C(a) smoke timed out at 600 seconds; Haiku, Sonnet,
 and Opus 4.6 minimal CLI probes are reachable, but Sonnet/Opus still need
 validated full-step runs before being included in a sweep.
+
+## Paper Generalization Split and Launch Readiness
+
+The paper claim requires generalization beyond a single workload profile. The
+active benchmark has therefore been expanded from the legacy single
+`hard_optimization` profile to three hard task families with paired
+development/holdout instances:
+
+- Balanced mixed: `hard_balanced_dev`, `hard_balanced_holdout`
+- Range/summary-heavy: `hard_range_dev`, `hard_range_holdout`
+- Churn/top-k/update-heavy: `hard_churn_dev`, `hard_churn_holdout`
+
+Development profiles are for prompt debugging, model comparison, teacher data,
+and routing-student training. Holdout profiles are reserved for final evaluation
+after the protocol/model/training choices are frozen. This fixes the previous
+gap where `hard_optimization` was useful for calibration but insufficient for a
+generalization claim.
+
+Implemented support:
+
+- `configs/profiles.yaml` now defines dev, holdout, smoke, and legacy groups.
+- `src/vao/profile_splits.py` and `src/vao/analysis/profile_split_audit.py`
+  audit profile coverage, split overlap, and seed overlap.
+- `vao.training.build_routing_dataset` now records `profile_split` and supports
+  `--exclude_holdout`, so training datasets can be built without holdout leakage.
+- New configs: `configs/paper_profile_local_validation.yaml`,
+  `configs/paper_dev_model_comparison.yaml`, and
+  `configs/paper_holdout_final_eval.yaml`.
+- `configs/phase4_teacher_opus*.yaml` now target the dev split for future
+  teacher data collection.
+
+Automatic validation completed without new live model calls:
+
+- Runs: 6 local C(a) runs across all active dev/holdout profiles
+- Steps: 6 total
+- Branch evaluations: 36 total
+- Validation: all six runs passed `vao.validate_run`
+- Routing records: 6 all-profile records, 3 dev-only records after
+  `--exclude_holdout`
+- Mean wall-clock in this reduced local validation: `1.33s/step`
+- Branch correctness: `36/36`
+
+Generated artifacts:
+
+- `artifacts/profile_split_audit.json`
+- `artifacts/profile_split_audit.md`
+- `artifacts/paper_profile_validation_summary.json`
+- `artifacts/paper_profile_validation_estimators.csv`
+- `artifacts/paper_profile_validation_routing_all.jsonl`
+- `artifacts/paper_profile_validation_routing_dev_only.jsonl`
+- `artifacts/paper_profile_validation_failure_modes.json`
+
+Recommended next live sequence:
+
+1. Run a short dev split comparison with
+   `configs/paper_dev_model_comparison.yaml`.
+2. Build dev-only routing data using `--exclude_holdout`.
+3. Train/evaluate the routing-only student on dev data.
+4. Only then open `configs/paper_holdout_final_eval.yaml` for the final
+   held-out generalization test.

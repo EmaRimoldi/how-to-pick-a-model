@@ -12,10 +12,19 @@ def test_source_validation_baseline() -> None:
     assert validate_source(source)["passed"] is True
 
 
-def test_single_hard_optimization_profile_is_configured() -> None:
+def test_paper_hard_profiles_are_configured() -> None:
     config = load_instance_config()
-    assert set(config["profiles"]) == {"hard_optimization"}
-    profile = config["profiles"]["hard_optimization"]
+    expected = {
+        "hard_balanced_dev",
+        "hard_balanced_holdout",
+        "hard_range_dev",
+        "hard_range_holdout",
+        "hard_churn_dev",
+        "hard_churn_holdout",
+        "hard_optimization",
+    }
+    assert expected <= set(config["profiles"])
+    profile = config["profiles"]["hard_balanced_dev"]
     assert profile["initial_size"] >= 2500
     assert profile["key_space"] >= 100000
     assert profile["trace_length"] >= 1000

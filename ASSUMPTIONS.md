@@ -8,8 +8,8 @@
 - In the default C(a) `top1_only` regime, the selected top-probability branch is promoted even if it is incorrect, matching the protocol's online visibility rule.
 - The first implementation prioritizes clean routing supervision data and smoke validation; LoRA/QLoRA training entrypoints are scaffolded but do not train unless explicitly run later.
 - Routing gain targets are computed over the requested/declared branch mode so every step has exactly one candidate per mode. Inferred modes are also logged and used by mode-conditioned diagnostic summaries.
-- New smoke/protocol runs use `hard_optimization` as the only active benchmark profile. Small `instance_overrides` may still be used for quick validator tests.
-- Earlier Phase 2/3 historical artifacts used multiple profile names; those are preserved as historical data but no longer define the active benchmark.
+- New paper runs use the configured hard dev/holdout split: `hard_balanced_*`, `hard_range_*`, and `hard_churn_*`. Small `instance_overrides` may still be used for quick validator tests.
+- Earlier Phase 2/3/hard-profile historical artifacts used older profile names, including `hard_optimization`; those are preserved as historical data but no longer define the active paper split.
 - In C(a), previous `mode_probs` remain visible in history because they are part of the model's own prior decision state. Offline branch feedback for non-selected modes is the leakage-sensitive object and is excluded from next-step visible branch history.
 - Phase 2 run directories remain under `runs/phase2_dev/`; repository `.gitignore` excludes `runs/*`, so committed Phase 2 outputs are the compact artifacts under `artifacts/` plus configs/tests/code.
 - Phase 3 used Claude CLI transport because `ANTHROPIC_API_KEY` was not present. The backend also includes a direct Anthropic Messages API transport for environments with an API key.
@@ -18,7 +18,7 @@
 - Claude CLI token counts include cache creation/read tokens from Claude Code's runtime context. They are useful for cost tracking but should not be interpreted as minimal prompt-token counts for a direct Messages API implementation.
 - Historical Claude candidate generation was protocol-configurable. Active real-model comparisons now use only batched `structured_edits` through `single_step_program.txt`.
 - Deterministic local/mock backends may continue to write complete candidate files directly because they are protocol-test utilities, not cost-sensitive real-model editing backends.
-- Future Phase 4 teacher runs should use the same batched `structured_edits` C(a) protocol as model comparisons.
+- Future Phase 4 teacher runs should use the same batched `structured_edits` C(a) protocol as model comparisons and should collect teacher data on dev profiles before any holdout evaluation.
 - Claude Opus teacher runs use the same Claude CLI transport as Haiku and the `claude_opus_teacher` model config. The local CLI maps `--model opus` to `claude-opus-4-6`.
 - Opus production collection is treated as budget/availability constrained. Completed steps from an interrupted run are usable only when `vao.validate_run` passes on the run directory.
 - The first Phase 4 teacher routing dataset combines validated pilot runs and the validated partial production run because the target production matrix was interrupted by `claude_cli_failed:1`.
@@ -38,9 +38,10 @@
 - Controlled mode selection is an experimental override. When `selection_policy` is not `top1`, `selected_mode_top1` still records the model argmax, while `selected_mode` records the branch actually promoted as parent.
 - A one-step Haiku smoke shows the fastest current real-model route is batched `structured_edits`: one Claude call returns `mode_probs` plus all six branch-local edit candidates. This reduces repeated context/token overhead compared with six serial candidate calls.
 - The batched `structured_edits` result is a speed/cost finding, not yet a production-quality teacher-data decision. One of six batched candidates was rejected by source safety validation and logged as a no-op, so prompt/repair hardening is required before scaling.
-- New benchmark runs now use a single canonical profile, `hard_optimization`. Older profile names may remain in historical run artifacts, docs, and offline datasets, but the active benchmark configuration and experiment configs should not use them for new runs.
-- `hard_optimization` is intentionally mixed rather than mode-specific: all nine workload families are included so that routing has to manage tradeoffs among indexing, summaries, top-k, caching, layout, and micro edits.
-- On `hard_optimization`, local calibration suggests a baseline verifier cost of about 65 seconds and a post-baseline six-branch step cost of about 78 seconds for deterministic local candidates.
+- The active paper benchmark no longer relies on a single profile. It uses three task families with paired dev/holdout instances so the final claim can test generalization across unseen seeds, sizes, and workload mixtures.
+- `hard_optimization` is retained as a legacy mixed workload for reproducing prior Haiku/Qwen and GPT smoke artifacts, not as the default profile for new paper-scale experiments.
+- Holdout profiles must not be used for prompt selection, routing-student training, or teacher-data model selection. The dataset builder supports `--exclude_holdout` and records `profile_split` metadata to enforce this.
+- A local profile-validation run with reduced instance overrides completed 6 C(a) runs, 6 steps, and 36 branch evaluations across all active dev/holdout profiles with zero validator failures.
 - The validated Haiku batch hard smoke took 346.4 seconds total for one step including baseline, cost `$0.171`, and had zero proposal/source/verifier failures. A 3-step Haiku pilot is estimated at about 15 minutes serial wall-clock and roughly `$0.51`, subject to candidate runtime variance.
 - The first validated 3-step Haiku batch pilot took 807.0 seconds total and cost `$0.600`. The prompt still needs hardening against banned `list.remove` calls, which caused two candidate rejections.
 - Deterministic source repair is allowed only for narrow, auditable safety-screen overreach. The current repair rewrites simple `.remove(...)` calls when that is the only validation error and logs the repair; it does not repair semantic algorithm errors.

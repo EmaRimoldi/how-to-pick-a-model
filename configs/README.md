@@ -5,14 +5,17 @@ This directory intentionally keeps only active or reproducible experiment config
 ## Core
 
 - `models.yaml`: all backend aliases.
-- `profiles.yaml`: benchmark profile definitions; new experiments use `hard_optimization`.
+- `profiles.yaml`: benchmark profile split. Active paper experiments use three dev profiles and three holdout profiles; `hard_optimization` is legacy.
 - `hard_local_smoke.yaml`: deterministic local C(a) smoke for protocol validation.
+- `paper_profile_local_validation.yaml`: deterministic local C(a) validation over all active dev/holdout profiles.
+- `paper_dev_model_comparison.yaml`: prompt-controlled dev split model comparison, currently Haiku vs Qwen Coder.
+- `paper_holdout_final_eval.yaml`: final holdout split model comparison. Do not use this for prompt/model selection or student training.
 
 ## Current Real-Model Experiments
 
-- `hard_haiku_prompt_controlled_10step.yaml`: Haiku C(a) run using the single active prompt, `single_step_program.txt`.
-- `hard_qwen_prompt_controlled_10step.yaml`: Qwen Coder C(a) run using the same single active prompt.
-- `hard_single_prompt_model_matrix.yaml`: one-step model matrix over GPT/Codex, Qwen Coder, Haiku, Sonnet, and Opus aliases using the same single active prompt.
+- `hard_haiku_prompt_controlled_10step.yaml`: legacy single-profile Haiku C(a) run using the single active prompt, `single_step_program.txt`.
+- `hard_qwen_prompt_controlled_10step.yaml`: legacy single-profile Qwen Coder C(a) run using the same single active prompt.
+- `hard_single_prompt_model_matrix.yaml`: legacy single-profile one-step model matrix over GPT/Codex, Qwen Coder, Haiku, Sonnet, and Opus aliases using the same single active prompt.
 
 Historical Haiku batch and Qwen direct-edit configs were removed from the active
 catalog because they are not prompt-identical experiment entrypoints. Their
@@ -24,8 +27,8 @@ orchestrator.
 
 ## Teacher, Student, And Analysis
 
-- `phase4_teacher_opus_pilot.yaml`: small Opus teacher pilot.
-- `phase4_teacher_opus.yaml`: teacher data collection config.
+- `phase4_teacher_opus_pilot.yaml`: small Opus teacher pilot over the dev split.
+- `phase4_teacher_opus.yaml`: teacher data collection config over the dev split.
 - `phase5_routing_student.yaml`: routing-only student training.
 - `phase5_routing_student_online.yaml`: online/local routing-student comparison.
 - `offline_routing_student.yaml`: classical offline routing experiments.

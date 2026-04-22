@@ -192,6 +192,7 @@ class RoutingRecord(BaseModel):
 
     run_id: str
     profile_id: str
+    profile_split: str | None = None
     model_id: str
     step: int
     input: dict[str, Any]

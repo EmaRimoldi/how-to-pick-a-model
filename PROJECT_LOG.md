@@ -426,3 +426,16 @@
 - Changed the orchestrator default to `candidate_generation: batched` and made non-batched generation an error.
 - Updated remaining experiment configs, including Opus teacher and local/routing-student configs, to specify `candidate_generation: batched` explicitly.
 - Removed non-strict/legacy model aliases that could use old prompt shapes.
+
+### Paper Dev/Holdout Profile Split
+
+- Added active paper benchmark profiles: `hard_balanced_dev`, `hard_range_dev`, `hard_churn_dev`, plus matched holdout instances `hard_balanced_holdout`, `hard_range_holdout`, and `hard_churn_holdout`.
+- Retained `hard_optimization` as a legacy profile for reproducing historical hard-profile artifacts, but moved active paper splits to `configs/profiles.yaml`.
+- Added `src/vao/profile_splits.py` and `src/vao/analysis/profile_split_audit.py` to audit profile membership, seed overlap, benchmark metadata coverage, and markdown/json summaries.
+- Extended routing dataset records with `profile_split` and added `--profiles_config`, `--exclude_holdout`, and `--exclude_profiles` to `vao.training.build_routing_dataset`.
+- Added `configs/paper_profile_local_validation.yaml`, `configs/paper_dev_model_comparison.yaml`, and `configs/paper_holdout_final_eval.yaml`.
+- Updated Opus teacher pilot/collection configs to target the dev split instead of the legacy single hard profile.
+- Added `scripts/run_paper_profile_validation.sh`.
+- Ran local no-model validation across all active dev/holdout profiles: 6 runs, 6 steps, 36 branch evaluations. Every run passed `vao.validate_run`.
+- Generated `artifacts/profile_split_audit.*`, `artifacts/paper_profile_validation_summary.json`, `artifacts/paper_profile_validation_estimators.csv`, `artifacts/paper_profile_validation_routing_all.jsonl`, and `artifacts/paper_profile_validation_routing_dev_only.jsonl`.
+- Validation after the split work: `pytest -q` passed with 80 tests; `python -m vao.verifier --smoke_test` passed; `vao.validate_run` passed on all six local profile-validation runs.

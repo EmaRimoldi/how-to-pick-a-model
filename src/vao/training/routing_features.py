@@ -42,6 +42,7 @@ def _render_payload(payload: dict[str, Any], *, max_source_chars: int) -> str:
     if len(source) > max_source_chars:
         source = source[:max_source_chars] + "\n# SOURCE_TRUNCATED"
     parts = [
+        "PROFILE_SPLIT " + str(payload.get("profile_split", "")),
         "PROFILE " + _compact_json(payload.get("profile_summary", {})),
         "SOLUTION_HASH " + str(payload.get("current_solution_hash", "")),
         "VISIBLE_HISTORY " + _compact_json(payload.get("visible_history", [])),
@@ -63,6 +64,7 @@ def structured_features_from_record(record: dict[str, Any]) -> dict[str, float |
     visible_history = payload.get("visible_history") or []
     features: dict[str, float | str] = {
         "profile_id": str(record.get("profile_id", profile.get("profile_id", ""))),
+        "profile_split": str(record.get("profile_split") or payload.get("profile_split") or ""),
         "step": float(record.get("step", 0) or 0),
         "source_chars": float(len(source)),
         "source_lines": float(source.count("\n") + 1 if source else 0),

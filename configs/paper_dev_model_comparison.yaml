@@ -1,15 +1,15 @@
 experiment:
-  name: phase4_teacher_opus_pilot
+  name: paper_dev_model_comparison
   visibility_regime: top1_only
   candidate_generation: batched
   modes: [layout, indexing, topk, caching, summaries, micro]
-  steps: 3
-  wall_budget_seconds: 7200
-  branch_timeout_seconds: 180
+  steps: 10
+  wall_budget_seconds: 21600
+  branch_timeout_seconds: 240
   incorrect_penalty: -1.0
   productive_proxy_fallback: uniform
   history_policy: full_visible_history
-  seed: 7901
+  seed: 6201
 
 benchmark:
   template_path: benchmarks/stateful_query_engine/solution_template.py
@@ -19,7 +19,9 @@ benchmark:
     - hard_churn_dev
 
 models:
-  include: [claude_opus_teacher]
+  include:
+    - claude_haiku_batch_strict
+    - qwen_coder_batch_strict
 
 output:
-  root: runs/phase4_teacher_opus_pilot
+  root: runs/paper_dev/model_comparison

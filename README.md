@@ -13,7 +13,7 @@ The canonical task is iterative editing of a Python `solution.py` implementing `
 
 All six branches are evaluated offline by the verifier. In the default `top1_only` visibility regime, only the branch selected by the model's own top-probability mode is promoted to the next online state, while all counterfactual branch results are logged for analysis.
 
-The active benchmark now uses a single canonical profile: `hard_optimization`. It combines all workload families into one difficult mixed profile so new experiments no longer spread across separate development/holdout/profile variants.
+The active paper benchmark now uses three difficult task families with separate development and holdout instances. Development profiles are used for debugging, model selection, and post-training data; holdout profiles are reserved for final generalization checks. The older `hard_optimization` profile is retained only for historical reproducibility.
 
 ## Quick Start
 
@@ -39,6 +39,16 @@ To additionally run the one-step Haiku batch smoke, use:
 RUN_HAIKU=1 scripts/run_hard_profile_smoke.sh
 ```
 
+To validate the paper dev/holdout profile split without any live model calls:
+
+```bash
+scripts/run_paper_profile_validation.sh
+```
+
+This runs six local C(a) smoke runs, validates every run, writes
+`artifacts/profile_split_audit.*`, and builds both all-profile and dev-only
+routing datasets.
+
 Every run writes a self-contained directory containing `run_manifest.json`, `baseline_verification.json`, `evaluations.jsonl`, `run_summary.json`, resolved config, step branch workspaces, verifier outputs, and candidate source snapshots.
 
 For real-model C(a) runs, the active prompt is a single program:
@@ -62,22 +72,27 @@ paired `hard_haiku_prompt_controlled_10step.yaml` and
 `hard_qwen_prompt_controlled_10step.yaml` configs, or
 `hard_single_prompt_model_matrix.yaml`.
 
-## Active Benchmark Profile
+## Active Benchmark Profiles
 
-`hard_optimization` is intentionally hard to optimize with a single obvious edit. It uses:
+The active paper split is defined in `configs/profiles.yaml` and
+`benchmarks/stateful_query_engine/metadata/instance_config.json`.
 
-- 2,600 initial items
-- 120,000-key space
-- 1,200 operations per trace
-- 1 trace per workload family
-- all nine workload families: point reads, hot keys, bursty updates, local ranges, distribution shifts, wide ranges, repeated windows, top-k stress, and negative lookup churn
-- 2 measurement repetitions with 120 warmup operations
+- Dev: `hard_balanced_dev`, `hard_range_dev`, `hard_churn_dev`
+- Holdout: `hard_balanced_holdout`, `hard_range_holdout`, `hard_churn_holdout`
+- Smoke: `hard_balanced_dev`
+- Legacy: `hard_optimization`
 
-This profile creates real tradeoffs between layout, indexing, summaries, caching, top-k specialization, and micro-optimization. Historical artifacts may still contain older profile names, but new configs point to `hard_optimization`.
+The three task families cover balanced mixed workloads, range/summary-heavy
+workloads, and churn/top-k/update-heavy workloads. Each task has a dev instance
+and a holdout instance with different seeds and scale. Holdout should not be
+used for training or prompt/model selection.
 
 ## Main Entry Points
 
 - `python -m vao.orchestrator --config configs/hard_local_smoke.yaml --run-id hard_local_smoke`
+- `scripts/run_paper_profile_validation.sh`
+- `PYTHONPATH=src:. python -m vao.orchestrator --config configs/paper_dev_model_comparison.yaml --steps 10 --run-id paper_dev_r0`
+- `PYTHONPATH=src:. python -m vao.orchestrator --config configs/paper_holdout_final_eval.yaml --steps 10 --run-id paper_holdout_final`
 - `PYTHONPATH=src:. python -m vao.orchestrator --config configs/hard_haiku_prompt_controlled_10step.yaml --profiles hard_optimization --steps 10 --run-id hard_haiku_single_prompt_10step_r0`
 - `PYTHONPATH=src:. OPENAI_COMPATIBLE_BASE_URL=http://localhost:8000/v1 python -m vao.orchestrator --config configs/hard_qwen_prompt_controlled_10step.yaml --profiles hard_optimization --steps 10 --run-id hard_qwen_single_prompt_10step_r0`
 - `PYTHONPATH=src:. python -m vao.orchestrator --config configs/hard_single_prompt_model_matrix.yaml --models gpt_5_4_batch_strict --profiles hard_optimization --steps 1 --run-id hard_gpt_5_4_single_prompt_smoke`
@@ -85,6 +100,7 @@ This profile creates real tradeoffs between layout, indexing, summaries, caching
 - `python -m vao.verifier --smoke_test`
 - `python -m vao.orchestrator --config configs/phase4_teacher_opus_pilot.yaml --models claude_opus_teacher --steps 3`
 - `python -m vao.training.build_routing_dataset --runs runs/phase4_teacher_opus_pilot runs/phase4_teacher_opus --out artifacts/phase4_teacher_routing_dataset.jsonl`
+- `python -m vao.training.build_routing_dataset --runs runs/paper_dev/model_comparison --exclude_holdout --out artifacts/paper_dev_routing_dataset.jsonl`
 - `python -m vao.training.train_routing_lora --config configs/phase5_routing_student.yaml`
 - `python -m vao.orchestrator --config configs/phase5_routing_student_online.yaml --models local_stub,routing_student --steps 3`
 - `python -m vao.analysis.dataset_audit --dataset artifacts/phase4_teacher_routing_dataset.jsonl --json_out artifacts/offline_routing_dataset_audit.json --md_out artifacts/offline_routing_dataset_audit.md`

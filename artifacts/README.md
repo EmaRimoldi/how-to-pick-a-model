@@ -24,6 +24,20 @@ These are the main Haiku-vs-Qwen hard-profile results: 5 validated 10-step repea
 
 These summarize validated one-step strict single-prompt smokes for Haiku and Qwen Coder. Additional GPT/Codex CLI full-step smoke results are documented in `EXPERIMENT_REPORT.md` and stored in their validated run directories.
 
+## Paper Profile Split
+
+- `profile_split_audit.json`
+- `profile_split_audit.md`
+- `paper_profile_validation_summary.json`
+- `paper_profile_validation_estimators.csv`
+- `paper_profile_validation_routing_all.jsonl`
+- `paper_profile_validation_routing_dev_only.jsonl`
+- `paper_profile_validation_failure_modes.json`
+
+These validate the active dev/holdout profile split with local deterministic C(a)
+runs. The dev-only routing dataset demonstrates that holdout examples can be
+excluded before post-training.
+
 ## Teacher And Routing Student
 
 - `phase4_teacher_routing_dataset.jsonl`

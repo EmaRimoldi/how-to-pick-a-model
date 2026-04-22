@@ -83,16 +83,22 @@
 - [x] Remove active Qwen direct-edit and old Haiku batch configs from the prompt-controlled experiment surface.
 - [x] Add prompt snapshot logging for future run-level prompt audits.
 - [x] Delete legacy prompt templates and direct-edit backend paths so active comparisons cannot fall back to per-mode prompts.
+- [x] Add three hard paper task families with dev/holdout instances.
+- [x] Add profile split audit tooling and dev/holdout leakage checks for routing dataset generation.
+- [x] Add paper dev, holdout, and local validation experiment configs.
+- [x] Run automatic local validation over all six active dev/holdout profiles.
 
 ## Remaining
 
-- [ ] Resume/extend teacher production collection when Claude CLI budget/availability allows a repeated-run matrix on `hard_optimization`.
+- [ ] Resume/extend teacher production collection when Claude CLI budget/availability allows a repeated-run matrix on the three dev profiles.
+- [ ] Run the prompt-controlled Haiku/Qwen or GPT/Qwen dev split comparison with `configs/paper_dev_model_comparison.yaml`.
+- [ ] Only after model selection/post-training is frozen, run final holdout evaluation with `configs/paper_holdout_final_eval.yaml`.
 - [ ] Optionally run one live GPT/Codex single-prompt smoke through `openai_responses` when `OPENAI_API_KEY` is available, to validate the direct API transport separately from Codex CLI.
 - [ ] Re-test GPT-5.2-Codex only if account/API access changes; the current Codex ChatGPT account reports it as unsupported.
 - [ ] Run one live Sonnet and one live Opus 4.6 full C(a) single-prompt smoke when Claude budget/time is available; minimal CLI probes pass, but Sonnet full-step timed out at 600 seconds.
 - [ ] Run a short 3-step single-prompt Haiku vs Qwen Coder comparison now that both one-step smokes pass.
 - [ ] Relaunch the strict Qwen single-prompt smoke on the Engaging GPU endpoint when SSH/GPU access is available, to compare local MPS vs GPU throughput.
-- [ ] Run a prompt-controlled single-prompt Haiku/Qwen ablation with `configs/hard_haiku_prompt_controlled_10step.yaml` and `configs/hard_qwen_prompt_controlled_10step.yaml` when model endpoints are available.
+- [ ] Run a prompt-controlled single-prompt Haiku/Qwen ablation with the paper dev split when model endpoints are available.
 - [ ] Before scaling real-model teacher data, run a slightly larger batched `structured_edits` smoke and confirm candidate rejection rates are acceptable.
 - [ ] Tighten batched structured-edit prompt/repair for source-safety rejections such as banned list attribute calls.
 - [ ] Replace the Claude Code scaffold with real agentic terminal editing when credentials/endpoints are available.
@@ -104,4 +110,4 @@
 - [ ] Re-run routing-only student after collecting substantially more and less imbalanced teacher data.
 - [ ] Try a larger cached/open local instruct model for routing only if it is available without gating or new quota.
 - [ ] Add stricter split reporting for tiny-data comparisons so supplemental split models cannot be mistaken for leave-one-out results.
-- [ ] Run larger repeated `hard_optimization` experiments after protocol validation is reviewed.
+- [ ] Run larger repeated dev-split experiments after local profile validation is reviewed.

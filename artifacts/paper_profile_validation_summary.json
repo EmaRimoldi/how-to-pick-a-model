@@ -1,0 +1,40 @@
+{
+  "average_agent_cost_usd_per_step": null,
+  "average_gain_by_mode": {
+    "caching": -0.5168157723179934,
+    "indexing": 0.510686278297244,
+    "layout": 0.06744736154457835,
+    "micro": 0.11446881873203986,
+    "summaries": -2.340012808567901,
+    "topk": -0.7503780107392451
+  },
+  "average_input_tokens_per_step": null,
+  "average_output_tokens_per_step": null,
+  "average_wall_clock_seconds_per_step": 1.328075647354126,
+  "best_counterfactual_loss": 0.45485303956935086,
+  "best_visible_loss": 0.45485303956935086,
+  "branch_evaluation_count": 36,
+  "code_validation_failure_rate": 0.0,
+  "correctness_rate_by_mode": {
+    "caching": 1.0,
+    "indexing": 1.0,
+    "layout": 1.0,
+    "micro": 1.0,
+    "summaries": 1.0,
+    "topk": 1.0
+  },
+  "declared_inferred_agreement_by_mode": {
+    "caching": 1.0,
+    "indexing": 0.0,
+    "layout": 1.0,
+    "micro": 0.0,
+    "summaries": 1.0,
+    "topk": 1.0
+  },
+  "mean_jsd": 0.3134097116605055,
+  "mean_routing_regret": 0.0,
+  "parse_failure_rate": 0.0,
+  "run_count": 6,
+  "step_count": 6,
+  "verifier_failure_rate": 0.0
+}

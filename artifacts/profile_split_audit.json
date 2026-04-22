@@ -1,0 +1,155 @@
+{
+  "benchmark_profile_count": 7,
+  "counts": {
+    "dev": 3,
+    "holdout": 3,
+    "legacy": 1,
+    "smoke": 1
+  },
+  "dev_holdout_overlap": [],
+  "dev_holdout_seed_overlap": [],
+  "missing_from_benchmark": {
+    "dev": [],
+    "holdout": [],
+    "legacy": [],
+    "smoke": []
+  },
+  "profile_details": {
+    "hard_balanced_dev": {
+      "families": [
+        "uniform_read_heavy",
+        "zipf_hot_key",
+        "bursty_mixed",
+        "range_local_scans",
+        "distribution_shift",
+        "wide_range_churn",
+        "temporal_repeat_windows",
+        "topk_stress",
+        "negative_lookup_churn"
+      ],
+      "initial_size": 2600,
+      "key_space": 120000,
+      "seed": 510100,
+      "split": "dev",
+      "trace_length": 1200
+    },
+    "hard_balanced_holdout": {
+      "families": [
+        "uniform_read_heavy",
+        "zipf_hot_key",
+        "bursty_mixed",
+        "range_local_scans",
+        "distribution_shift",
+        "wide_range_churn",
+        "temporal_repeat_windows",
+        "topk_stress",
+        "negative_lookup_churn"
+      ],
+      "initial_size": 3000,
+      "key_space": 150000,
+      "seed": 910100,
+      "split": "holdout",
+      "trace_length": 1400
+    },
+    "hard_churn_dev": {
+      "families": [
+        "bursty_mixed",
+        "topk_stress",
+        "negative_lookup_churn",
+        "zipf_hot_key",
+        "distribution_shift",
+        "wide_range_churn",
+        "uniform_read_heavy"
+      ],
+      "initial_size": 2400,
+      "key_space": 100000,
+      "seed": 530100,
+      "split": "dev",
+      "trace_length": 1300
+    },
+    "hard_churn_holdout": {
+      "families": [
+        "bursty_mixed",
+        "topk_stress",
+        "negative_lookup_churn",
+        "zipf_hot_key",
+        "distribution_shift",
+        "wide_range_churn",
+        "temporal_repeat_windows"
+      ],
+      "initial_size": 3000,
+      "key_space": 160000,
+      "seed": 930100,
+      "split": "holdout",
+      "trace_length": 1500
+    },
+    "hard_optimization": {
+      "families": [
+        "uniform_read_heavy",
+        "zipf_hot_key",
+        "bursty_mixed",
+        "range_local_scans",
+        "distribution_shift",
+        "wide_range_churn",
+        "temporal_repeat_windows",
+        "topk_stress",
+        "negative_lookup_churn"
+      ],
+      "initial_size": 2600,
+      "key_space": 120000,
+      "seed": 424200,
+      "split": "legacy",
+      "trace_length": 1200
+    },
+    "hard_range_dev": {
+      "families": [
+        "range_local_scans",
+        "wide_range_churn",
+        "temporal_repeat_windows",
+        "distribution_shift",
+        "uniform_read_heavy",
+        "bursty_mixed",
+        "negative_lookup_churn"
+      ],
+      "initial_size": 2800,
+      "key_space": 140000,
+      "seed": 520100,
+      "split": "dev",
+      "trace_length": 1300
+    },
+    "hard_range_holdout": {
+      "families": [
+        "range_local_scans",
+        "wide_range_churn",
+        "temporal_repeat_windows",
+        "distribution_shift",
+        "zipf_hot_key",
+        "bursty_mixed",
+        "negative_lookup_churn"
+      ],
+      "initial_size": 3200,
+      "key_space": 180000,
+      "seed": 920100,
+      "split": "holdout",
+      "trace_length": 1500
+    }
+  },
+  "splits": {
+    "dev": [
+      "hard_balanced_dev",
+      "hard_range_dev",
+      "hard_churn_dev"
+    ],
+    "holdout": [
+      "hard_balanced_holdout",
+      "hard_range_holdout",
+      "hard_churn_holdout"
+    ],
+    "legacy": [
+      "hard_optimization"
+    ],
+    "smoke": [
+      "hard_balanced_dev"
+    ]
+  }
+}
