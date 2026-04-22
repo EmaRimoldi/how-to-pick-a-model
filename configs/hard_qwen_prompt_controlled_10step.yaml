@@ -1,0 +1,22 @@
+experiment:
+  name: hard_qwen_prompt_controlled_10step
+  visibility_regime: top1_only
+  candidate_generation: per_mode
+  modes: [layout, indexing, topk, caching, summaries, micro]
+  steps: 10
+  wall_budget_seconds: 14400
+  branch_timeout_seconds: 240
+  incorrect_penalty: -1.0
+  productive_proxy_fallback: uniform
+  history_policy: full_visible_history
+  seed: 2501
+
+benchmark:
+  template_path: benchmarks/stateful_query_engine/solution_template.py
+  profiles: [hard_optimization]
+
+models:
+  include: [weak_qwen]
+
+output:
+  root: runs/hard_profile/prompt_controlled/qwen_structured

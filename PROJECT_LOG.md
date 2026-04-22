@@ -346,3 +346,12 @@
 - Historical replay on Haiku R0-R4: preflight would catch 99/118 invalid Haiku branches (`0.839`) with zero false rejects among 182 correct branches.
 - Hardened structured-edit and direct-file-edit prompts against mixed storage representations, broken aggregate_count semantics, and layout-default routing. Prompt now explicitly discourages assigning `layout` high probability by default.
 - Generated `artifacts/haiku_vs_qwen_r0_r4_failure_analysis.json` and `artifacts/haiku_vs_qwen_r0_r4_failure_analysis.md`.
+
+### Prompt-Control Hardening
+
+- Clarified that candidate preflight is verifier-side only; it does not alter the model prompt and is applied uniformly to all materialized candidates.
+- Found that the R0-R4 Haiku/Qwen matrix was not prompt-identical: Haiku used batched structured-edit generation, while Qwen direct used a distribution call plus LangGraph branch-local editing tools.
+- Added `src/vao/prompts/shared_canonical_task.txt` and wired it into routing, structured-edit, batched structured-edit, legacy diff/replacement prompts, and Qwen direct-file editing.
+- The shared block fixes task-level parity across real backends: same six modes, same CandidateQueryEngine API, same anti-leakage visibility rule, same safety constraints, same top_k/aggregate_count semantics, and same routing guidance.
+- Backend-specific wrappers remain explicit: structured/batched backends return JSON edits, while direct-file editing returns restricted tool calls. These wrapper differences are documented as transport/protocol differences, not task differences.
+- Added paired prompt-controlled 10-step configs for a future pure ablation: `configs/hard_haiku_prompt_controlled_10step.yaml` and `configs/hard_qwen_prompt_controlled_10step.yaml`, both using per-mode `structured_edits`.

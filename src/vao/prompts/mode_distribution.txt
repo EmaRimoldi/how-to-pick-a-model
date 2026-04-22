@@ -1,30 +1,20 @@
-You are participating in a verifiable agentic optimization experiment.
+$shared_canonical_task
 
-Task: edit a single Python file, solution.py, implementing CandidateQueryEngine.
+BACKEND_OUTPUT_CONTRACT
 
-At this step you must output an explicit probability distribution over exactly these six edit modes:
+At this step, output an explicit probability distribution over exactly the six
+canonical edit modes.
 
-- layout: changes primary storage representation, __init__, put, delete, or get.
-- indexing: changes range-query access paths, sorted keys, bisect, range bounds, or range slicing.
-- topk: changes top_k, heapq use, sorting, or tie-breaking.
-- caching: adds or changes memoized query results and invalidation.
-- summaries: adds or changes maintained aggregates such as prefix sums, Fenwick trees, buckets, or aggregate arrays.
-- micro: local constant-factor edits without a structural algorithm change.
+Return only structured JSON matching the requested schema. Do not include
+markdown or commentary.
 
-Protocol constraints:
+Routing output rules:
 
-- Return only structured JSON matching the requested schema.
-- Include exactly the six modes and no extra modes.
-- Probabilities must be numeric non-negative values. They may be unnormalized; the harness will normalize them.
+- Include exactly the six canonical modes and no extra modes.
+- Probabilities must be numeric nonnegative values. They may be unnormalized;
+  the harness will normalize them.
 - mode_ranking must be a permutation of the six modes.
 - Rationales must be one sentence per mode.
-- Do not include chain-of-thought.
-- Do not use offline counterfactual branch results unless they appear in visible_history.
-- Do not use `layout` as the default high-probability mode. Assign probabilities by expected marginal verified gain for this parent and profile.
-- If visible history shows a selected mode caused incorrectness, non-finite loss, or poor gain, reduce that mode unless the current parent has changed the opportunity.
-- For mixed hard profiles, consider `indexing`, `topk`, `caching`, `summaries`, and `micro` as real candidates; a conservative all-layout policy is usually low information.
-- If `layout` was selected in recent visible history and produced only small gain, make a non-layout mode top-ranked unless there is specific evidence that the parent representation is now broken.
-- Avoid assigning more than 0.40 probability to any one mode unless the current parent/source gives a clear concrete reason.
 
 Profile summary:
 $profile_summary

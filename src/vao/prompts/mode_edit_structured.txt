@@ -1,4 +1,6 @@
-You are participating in a verifiable agentic optimization experiment.
+$shared_canonical_task
+
+BACKEND_OUTPUT_CONTRACT
 
 Task: produce exactly one compact structured edit for the requested primary edit mode.
 
@@ -8,34 +10,6 @@ The framework has already copied the visible parent solution.py into this
 mode's isolated branch. Your structured edit will be applied locally only to
 that branch-local copy. It must not assume or observe edits from any other mode
 branch.
-
-Mode definitions:
-
-- layout: changes primary storage representation, __init__, put, delete, or get.
-- indexing: changes range-query access paths, sorted keys, bisect, range bounds, or range slicing.
-- topk: changes top_k, heapq use, sorting, or tie-breaking.
-- caching: adds or changes memoized query results and invalidation.
-- summaries: adds or changes maintained aggregates such as prefix sums, Fenwick trees, buckets, or aggregate arrays.
-- micro: local constant-factor edits without a structural algorithm change.
-
-Required API after edits:
-
-- Define class CandidateQueryEngine.
-- Implement put(key:int, value:int)->None.
-- Implement delete(key:int)->None.
-- Implement get(key:int)->int|None.
-- Implement range_sum(lo:int, hi:int)->int.
-- Implement aggregate_count(lo:int, hi:int)->int.
-- Implement top_k(lo:int, hi:int, k:int)->list[tuple[int,int]].
-- top_k must sort by value descending, then key ascending.
-- Range bounds are inclusive: lo <= key <= hi. Empty ranges return 0 or [] as appropriate.
-- top_k tie-breaking is strict: if two rows have the same value, the smaller key must appear first.
-- If using sorting, use exactly the semantic key `lambda item: (-item[1], item[0])`.
-- If using heapq, push/compare tuples equivalent to `(-value, key)` so ties prefer smaller keys.
-- aggregate_count must count keys satisfying inclusive bounds `lo <= key <= hi`; it must not sum values.
-- If you introduce or rename storage fields such as `_items`, `_keys`, `_values`, `_sums`, caches, buckets, or trees, update `__init__` and every method that reads or writes that representation in the same candidate.
-- Do not mix incompatible representations. A candidate that adds `_items` while any method still reads `_keys`/`_values`, or vice versa, is invalid.
-- Layout edits must preserve get/range_sum/aggregate_count/top_k semantics. For non-layout modes, avoid changing primary storage representation.
 
 Structured edit format:
 
@@ -53,19 +27,7 @@ Structured edit format:
   - replace_function: {"op":"replace_function","function":"function_name","source":"complete replacement function with exact indentation"}
 - Exact text and anchors must occur exactly once in the parent file.
 - replace_function is preferred when changing a whole method; exact edits are preferred for one-line or small local edits.
-
-Safety constraints:
-
-- The materialized code after applying edits must be self-contained.
-- Allowed imports: __future__, array, bisect, collections, dataclasses, heapq, itertools, math, typing.
-- No file IO, network, subprocess, eval, exec, dynamic imports, or hidden global state outside each instance.
-- Do not call banned attributes: connect, mkdir, open, popen, read_bytes, read_text, remove, rename, replace, rmdir, socket, system, unlink, write_bytes, write_text.
-- For list deletion, use comprehensions, slices, pop(index), or rebuilt lists; do not use list.remove.
-- For sorted-key deletion, prefer `idx = bisect.bisect_left(keys, key)` followed by an equality check and `keys.pop(idx)`. Never use `keys.remove(key)`.
-- Do not import the benchmark, reference implementation, or previous candidates.
-- Do not include chain-of-thought.
-- Keep the edit scoped to the requested primary mode.
-- If the requested mode is not `layout`, do not rewrite `__init__`, `put`, `delete`, and `get` together unless the requested mode cannot be implemented otherwise.
+- If the requested mode is not layout, do not rewrite __init__, put, delete, and get together unless the requested mode cannot be implemented otherwise.
 
 Profile summary:
 $profile_summary

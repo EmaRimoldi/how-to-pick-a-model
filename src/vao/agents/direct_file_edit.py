@@ -10,6 +10,7 @@ from langgraph.graph import END, START, StateGraph
 
 from vao.agents.claude_parser import ModelOutputError, parse_json_object, validate_candidate_source
 from vao.logging_utils import sha256_file
+from vao.prompts import shared_canonical_task
 from vao.structured_edits import StructuredEditError, apply_structured_edits
 from vao.taxonomy import validate_mode
 
@@ -207,7 +208,11 @@ def _render_direct_edit_prompt(graph_state: DirectEditState) -> str:
     source = Path(graph_state["file_path"]).read_text(encoding="utf-8")
     tool_events = graph_state["tool_events"][-8:]
     context = graph_state["prompt_context"]
-    return f"""You are editing one branch-local solution.py directly through tools.
+    return f"""{shared_canonical_task()}
+
+BACKEND_OUTPUT_CONTRACT
+
+You are editing one branch-local solution.py directly through tools.
 
 Primary mode for this branch: {graph_state["mode"]}
 
@@ -232,18 +237,6 @@ Return JSON shaped as:
 
 Use at most 3 tool calls per turn. When the file is valid and the branch edit is
 complete, call validate_file and finish or set done=true with no tool_calls.
-
-Safety and API constraints:
-- Define class CandidateQueryEngine.
-- Implement put, delete, get, range_sum, aggregate_count, top_k.
-- top_k must sort by value descending, then key ascending.
-- aggregate_count must count keys in inclusive bounds, not sum values.
-- If you introduce or rename storage fields such as _items, _keys, _values, _sums, caches, buckets, or trees, update every method that reads or writes that representation.
-- Do not mix incompatible representations. For non-layout branches, avoid changing primary storage representation.
-- Allowed imports: __future__, array, bisect, collections, dataclasses, heapq, itertools, math, typing.
-- No file IO, network, subprocess, eval, exec, dynamic imports, or hidden global state outside each instance.
-- Do not call banned attributes: connect, mkdir, open, popen, read_bytes, read_text, remove, rename, replace, rmdir, socket, system, unlink, write_bytes, write_text.
-- Keep the edit scoped to the requested primary mode.
 
 Profile summary:
 {json.dumps(context["profile_summary"], sort_keys=True)}

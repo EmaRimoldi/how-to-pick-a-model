@@ -69,11 +69,14 @@
 - [x] Run two more 10-step Haiku batch vs Qwen direct repeats and aggregate R0-R4 results.
 - [x] Audit R0-R4 failure modes and add fast candidate preflight before full verifier evaluation.
 - [x] Harden prompts against mixed storage representations, broken aggregate_count, top_k ordering errors, and Qwen layout-default routing.
+- [x] Add a shared canonical task prompt block used across Claude, Qwen structured, batched, and direct-file-edit prompt paths.
+- [x] Add paired prompt-controlled Haiku/Qwen configs using the same per-mode `structured_edits` output protocol.
 
 ## Remaining
 
 - [ ] Resume/extend teacher production collection when Claude CLI budget/availability allows a repeated-run matrix on `hard_optimization`.
 - [ ] Run one low-cost post-fix smoke before any new repeated Haiku/Qwen matrix.
+- [ ] Run a prompt-controlled Haiku/Qwen ablation with `configs/hard_haiku_prompt_controlled_10step.yaml` and `configs/hard_qwen_prompt_controlled_10step.yaml` when model endpoints are available.
 - [ ] Compare Qwen direct-file editing against Qwen structured-edit generation on time, failures, and routing regret using the same 10-step hard-profile config.
 - [ ] Before scaling real-model teacher data, run a slightly larger batched `structured_edits` smoke and confirm candidate rejection rates are acceptable.
 - [ ] Tighten batched structured-edit prompt/repair for source-safety rejections such as banned list attribute calls.

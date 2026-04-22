@@ -774,3 +774,18 @@ Artifacts:
 
 - `artifacts/haiku_vs_qwen_r0_r4_failure_analysis.json`
 - `artifacts/haiku_vs_qwen_r0_r4_failure_analysis.md`
+
+## Prompt-Control and Preflight Clarification
+
+Preflight is not part of the model prompt. It is a local verifier-side check that runs after a candidate branch has been materialized and before the full benchmark spends time on it. It therefore does not advantage Haiku or Qwen through different instructions; it only changes how invalid generated code is diagnosed and short-circuited.
+
+The existing R0-R4 Haiku/Qwen matrix should be interpreted as a system/backend comparison, not a pure prompt-controlled model comparison. Haiku used one batched structured-edit prompt per step. Qwen direct used the same routing interface plus six LangGraph direct-file-edit loops. Those paths were intentionally chosen for speed and edit realism, but they are not byte-identical prompts.
+
+To fix this going forward, all real-model prompt paths now include the shared `CANONICAL_TASK_BLOCK_V1`: same six modes, same `CandidateQueryEngine` API, same branch isolation and anti-leakage rule, same safety constraints, same `top_k` and `aggregate_count` semantics, and same routing guidance. Adapter-specific wrappers remain only where the transport requires them, for example batched JSON output versus restricted direct-file tools.
+
+For a pure prompt-controlled Haiku-vs-Qwen ablation, use:
+
+- `configs/hard_haiku_prompt_controlled_10step.yaml`
+- `configs/hard_qwen_prompt_controlled_10step.yaml`
+
+Both use per-mode `structured_edits`, so Haiku and Qwen receive the same canonical task block and the same output contract shape.
