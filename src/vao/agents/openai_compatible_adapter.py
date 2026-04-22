@@ -47,7 +47,7 @@ class OpenAICompatibleAdapter(ClaudeHaikuAdapter):
         edit_protocol: str = "structured_edits",
         use_response_format: bool = True,
         allow_response_format_retry: bool = True,
-        batch_fallback_to_per_mode: bool = True,
+        batch_fallback_to_per_mode: bool = False,
         extra_body: dict[str, Any] | None = None,
         **kwargs: object,
     ) -> None:

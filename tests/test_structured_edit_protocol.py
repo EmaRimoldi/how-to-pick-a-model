@@ -134,19 +134,19 @@ def test_structured_prompt_forbids_solution_py() -> None:
 
 def test_batch_structured_prompt_requests_one_candidate_per_mode() -> None:
     rendered = render_template(
-        "step_batch_structured.txt",
+        "single_step_program.txt",
         profile_summary="{}",
         visible_history="[]",
         current_solution_source="class CandidateQueryEngine:\n    pass\n",
     )
     assert "mode_probs" in rendered
-    assert "Exactly one compact structured edit candidate for each mode" in rendered
+    assert "exactly one candidate edit for each primary mode" in rendered
     assert "Do not return solution_py" in rendered
     assert "Do not call banned attributes" in rendered
-    assert "(-value, key)" in rendered
-    assert "Never use `keys.remove(key)`" in rendered
+    assert "value descending, then key ascending" in rendered
+    assert "do not call list.remove or keys.remove" in rendered
     assert "Do not use `layout` as a default high-probability mode" in rendered
     assert "Avoid assigning more than 0.40 probability" in rendered
-    assert "Do not mix incompatible representations" in rendered
+    assert "modes are experimental labels, not edit permissions" in rendered
     for mode in ["layout", "indexing", "topk", "caching", "summaries", "micro"]:
         assert mode in rendered

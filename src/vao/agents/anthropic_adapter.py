@@ -89,11 +89,13 @@ class ClaudeHaikuAdapter:
             raise ValueError("batched candidate generation requires identical parent sources across branches")
 
         prompt = render_template(
-            "step_batch_structured.txt",
+            "single_step_program.txt",
             profile_summary=json.dumps(state.profile_summary, sort_keys=True),
             visible_history=json.dumps(state.visible_history, sort_keys=True),
             current_solution_source=parent_source,
         )
+        prompt_hash = sha256_text(prompt)
+        _write_step_prompt_snapshot(branch_dirs, prompt, prompt_hash, "single_step_program.txt")
         raw = ""
         meta: dict[str, Any] = {}
         failures: list[str] = []
@@ -102,7 +104,7 @@ class ClaudeHaikuAdapter:
             payload = parse_json_object(raw)
         except (BackendUnavailable, ModelOutputError, RuntimeError) as exc:
             failures.append(f"batch_parse_failed:{type(exc).__name__}:{exc}")
-            if raw and bool(self.config.get("allow_batch_repair", True)):
+            if raw and bool(self.config.get("allow_batch_repair", False)):
                 repair_prompt = render_template("repair_json.txt", failure_details=str(exc), raw_response=raw)
                 raw, meta = self._complete(repair_prompt, self._step_batch_schema(), int(self.config.get("max_tokens_batch", 12000)))
                 payload = parse_json_object(raw)
@@ -120,6 +122,9 @@ class ClaudeHaikuAdapter:
             "usage": meta.get("usage"),
             "cost_usd": meta.get("cost_usd"),
             "model": meta.get("model", self.model_id),
+            "prompt_template": "single_step_program.txt",
+            "prompt_hash": prompt_hash,
+            "prompt_snapshot_path": _step_prompt_snapshot_path(branch_dirs),
         }
 
         candidates = payload.get("candidates")
@@ -127,7 +132,6 @@ class ClaudeHaikuAdapter:
             raise ModelOutputError("batch_candidates_missing_or_not_object")
 
         proposals: dict[str, CandidateProposal] = {}
-        prompt_hash = sha256_text(prompt)
         for mode in MODES:
             branch_dir = branch_dirs[mode]
             parent_path = branch_dir / "parent_solution.py"
@@ -187,6 +191,8 @@ class ClaudeHaikuAdapter:
                     "edit_protocol": self.edit_protocol,
                     "candidate_generation": "batched_structured_edits",
                     "batch_usage_accounted_on_distribution": True,
+                    "prompt_template": "single_step_program.txt",
+                    "prompt_snapshot_path": _step_prompt_snapshot_path(branch_dirs),
                 },
                 prompt_hash=prompt_hash,
                 changed=changed,
@@ -441,6 +447,7 @@ class ClaudeHaikuAdapter:
             "raw_cli_result": {key: payload.get(key) for key in ["type", "subtype", "stop_reason", "total_cost_usd"]},
         }
 
+
     def _distribution_schema(self) -> dict[str, Any]:
         return {
             "type": "object",
@@ -620,6 +627,39 @@ class ClaudeHaikuAdapter:
         if self.edit_protocol == "structured_edits":
             return parse_structured_edit_payload(raw, mode, parent_source=parent_source)
         return parse_edit_payload(raw, mode, parent_source=parent_source)
+
+
+def _step_dir_from_branch_dirs(branch_dirs: dict[str, Path]) -> Path:
+    first = branch_dirs[MODES[0]]
+    return first.parent.parent if first.parent.name == "branches" else first.parent
+
+
+def _step_prompt_snapshot_path(branch_dirs: dict[str, Path]) -> str:
+    return str(_step_dir_from_branch_dirs(branch_dirs) / "prompt_snapshot.txt")
+
+
+def _write_step_prompt_snapshot(branch_dirs: dict[str, Path], prompt: str, prompt_hash: str, template_name: str) -> None:
+    step_dir = _step_dir_from_branch_dirs(branch_dirs)
+    step_dir.mkdir(parents=True, exist_ok=True)
+    prompt_path = step_dir / "prompt_snapshot.txt"
+    meta_path = step_dir / "prompt_snapshot.json"
+    prompt_path.write_text(prompt, encoding="utf-8")
+    meta_path.write_text(
+        json.dumps(
+            {
+                "template": template_name,
+                "prompt_hash": prompt_hash,
+                "prompt_path": str(prompt_path),
+                "prompt_chars": len(prompt),
+                "prompt_lines": prompt.count("\n") + 1,
+                "single_model_generation_prompt": True,
+                "modes": MODES,
+            },
+            indent=2,
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
 
 
 def _candidate_edit_from_raw(raw: str) -> str:

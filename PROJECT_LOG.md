@@ -405,3 +405,13 @@
 - Removed stale artifacts from old phase experiments, superseded smokes, raw probes, intermediate R0/R0-R2 summaries, and obsolete diagnostic reports.
 - Regenerated `artifacts/routing_choice_summary.json` and `artifacts/routing_choice_visuals.md` using only current retained routing datasets.
 - Added `configs/README.md`, `artifacts/README.md`, and `artifacts/MANIFEST.json` as the active catalogs.
+
+### Single Active Prompt Consolidation
+
+- Audited active prompt paths after user review of the Haiku/Qwen prompt mismatch.
+- Added `src/vao/prompts/single_step_program.txt` as the single active C(a) generation prompt. It is a self-contained autoresearch-style program prompt: one step, one JSON response, explicit `mode_probs`, `mode_ranking`, and exactly one structured edit candidate for each canonical mode.
+- Changed batched real-model adapters to render `single_step_program.txt` instead of composing `shared_canonical_task.txt` plus `step_batch_structured.txt` for active runs.
+- Clarified in the prompt that modes are experimental labels, not edit permissions. Each candidate can modify any part of `CandidateQueryEngine` needed for correctness/coherence; `primary_mode` records the dominant optimization idea.
+- Added prompt snapshot logging for batched runs: `steps/step_XXXX/prompt_snapshot.txt` and `prompt_snapshot.json` now store the exact rendered prompt and metadata.
+- Removed old active entrypoints that caused prompt ambiguity: `configs/hard_haiku_batch_10step.yaml`, `configs/hard_qwen_direct_10step.yaml`, `scripts/run_qwen_direct_edit_smoke.sh`, `claude_haiku_batch`, and `weak_qwen_direct` model aliases.
+- Retained direct-edit implementation and legacy prompt files only as historical/diagnostic/test paths, not current experiment configs.

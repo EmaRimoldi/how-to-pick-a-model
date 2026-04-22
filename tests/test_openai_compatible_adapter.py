@@ -43,11 +43,21 @@ def test_openai_compatible_batched_structured_edits_materialize_candidates(tmp_p
 
     assert distribution.top_mode == "indexing"
     assert distribution.parsed_json["transport"] == "openai_compatible"
+    assert distribution.parsed_json["prompt_template"] == "single_step_program.txt"
+    snapshot_path = run_dir / "steps" / "step_0000" / "prompt_snapshot.txt"
+    snapshot_meta = run_dir / "steps" / "step_0000" / "prompt_snapshot.json"
+    assert snapshot_path.exists()
+    assert snapshot_meta.exists()
+    snapshot = snapshot_path.read_text(encoding="utf-8")
+    assert "VAO_SINGLE_STEP_PROGRAM_V1" in snapshot
+    assert "The modes are experimental labels, not edit permissions" in snapshot
+    assert json.loads(snapshot_meta.read_text(encoding="utf-8"))["template"] == "single_step_program.txt"
     assert set(proposals) == set(MODES)
     for mode, proposal in proposals.items():
         assert proposal.declared_mode == mode
         assert proposal.parsed_output_json["edit_protocol"] == "structured_edits"
         assert proposal.parsed_output_json["candidate_generation"] == "batched_structured_edits"
+        assert proposal.parsed_output_json["prompt_template"] == "single_step_program.txt"
         assert "Qwen smoke" in Path(proposal.file_path).read_text(encoding="utf-8")
 
 

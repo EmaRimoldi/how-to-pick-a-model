@@ -10,11 +10,13 @@ This directory intentionally keeps only active or reproducible experiment config
 
 ## Current Real-Model Experiments
 
-- `hard_haiku_batch_10step.yaml`: Haiku batched structured-edit 10-step hard-profile runs.
-- `hard_qwen_direct_10step.yaml`: Qwen direct branch-local edit 10-step hard-profile runs.
-- `hard_haiku_prompt_controlled_10step.yaml`: prompt-controlled Haiku single-prompt batch ablation.
-- `hard_qwen_prompt_controlled_10step.yaml`: prompt-controlled Qwen single-prompt batch ablation.
-- `hard_single_prompt_model_matrix.yaml`: one-step model matrix over GPT/Codex, Qwen Coder, Haiku, Sonnet, and Opus aliases.
+- `hard_haiku_prompt_controlled_10step.yaml`: Haiku C(a) run using the single active prompt, `single_step_program.txt`.
+- `hard_qwen_prompt_controlled_10step.yaml`: Qwen Coder C(a) run using the same single active prompt.
+- `hard_single_prompt_model_matrix.yaml`: one-step model matrix over GPT/Codex, Qwen Coder, Haiku, Sonnet, and Opus aliases using the same single active prompt.
+
+Historical Haiku batch and Qwen direct-edit configs were removed from the active
+catalog because they are not prompt-identical experiment entrypoints. Their
+validated outputs remain in `runs/` and the retained analysis artifacts.
 
 ## Teacher, Student, And Analysis
 

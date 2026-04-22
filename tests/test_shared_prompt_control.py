@@ -18,6 +18,7 @@ def test_real_backend_prompts_include_shared_canonical_task(tmp_path: Path) -> N
     }
 
     rendered_prompts = [
+        render_template("single_step_program.txt", **common),
         render_template("mode_distribution.txt", **common),
         render_template("mode_edit_structured.txt", mode="micro", **common),
         render_template("step_batch_structured.txt", **common),
@@ -52,7 +53,7 @@ def test_real_backend_prompts_include_shared_canonical_task(tmp_path: Path) -> N
 def test_shared_prompt_keeps_backend_wrappers_separate(tmp_path: Path) -> None:
     source = "class CandidateQueryEngine:\n    pass\n"
     structured_prompt = render_template(
-        "step_batch_structured.txt",
+        "single_step_program.txt",
         profile_summary="{}",
         visible_history="[]",
         current_solution_source=source,
@@ -77,27 +78,29 @@ def test_shared_prompt_keeps_backend_wrappers_separate(tmp_path: Path) -> None:
         }
     )
 
-    assert "Exactly one compact structured edit candidate for each mode" in structured_prompt
+    assert "exactly one candidate edit for each primary mode" in structured_prompt
     assert "Allowed tools:" in direct_prompt
-    assert "CANONICAL_TASK_BLOCK_V1" in structured_prompt
+    assert "VAO_SINGLE_STEP_PROGRAM_V1" in structured_prompt
     assert "CANONICAL_TASK_BLOCK_V1" in direct_prompt
 
 
 def test_single_prompt_batch_prompt_is_explicit() -> None:
     rendered = render_template(
-        "step_batch_structured.txt",
+        "single_step_program.txt",
         profile_summary="{}",
         visible_history="[]",
         current_solution_source="class CandidateQueryEngine:\n    pass\n",
     )
 
     assert "This is the only model-generation prompt for this step" in rendered
-    assert "Do not wait for\nseparate per-mode instructions" in rendered
-    assert "all six mode-specific branch edits in\nthis single response" in rendered
+    assert "Do not wait for or\n  expect separate per-mode prompts" in rendered
+    assert "exactly one candidate edit for each primary mode in a single\n  JSON response" in rendered
     assert '"candidates": {' in rendered
     assert "Do not output candidates as a list" in rendered
     assert '\"layout\": {\"primary_mode\": \"layout\"' in rendered
     assert 'do not use "CandidateQueryEngine.put"' in rendered
+    assert "The modes are experimental labels, not edit permissions" in rendered
+    assert "not a whitelist of functions or lines" in rendered
 
 
 def test_prompt_controlled_configs_are_single_prompt_batched() -> None:
@@ -113,6 +116,7 @@ def test_prompt_controlled_configs_are_single_prompt_batched() -> None:
     assert models_config["weak_qwen_batch_strict"]["batch_fallback_to_per_mode"] is False
     assert models_config["weak_qwen_batch_strict"]["allow_batch_repair"] is False
     assert models_config["weak_qwen_batch_strict"]["allow_response_format_retry"] is False
+    assert "weak_qwen_direct" not in models_config
 
 
 def test_model_matrix_config_contains_requested_backends() -> None:

@@ -16,12 +16,17 @@ Canonical task:
 
 Canonical modes:
 
-- layout: changes primary storage representation, __init__, put, delete, or get.
-- indexing: changes range-query access paths, sorted keys, bisect, range bounds, or range slicing.
-- topk: changes top_k, heapq use, sorting, or tie-breaking.
-- caching: adds or changes memoized query results and invalidation.
-- summaries: adds or changes maintained aggregates such as prefix sums, Fenwick trees, buckets, or aggregate arrays.
-- micro: local constant-factor edits without a structural algorithm change.
+- layout: the main idea changes storage layout or update/read representation.
+- indexing: the main idea improves sorted-key, bisect, bounds, or range access.
+- topk: the main idea improves top_k selection or tie handling.
+- caching: the main idea adds or improves memoized query results/invalidation.
+- summaries: the main idea maintains aggregates such as prefix sums, buckets, or trees.
+- micro: the main idea is a local constant-factor simplification or cleanup.
+
+Modes are experimental labels, not edit permissions. For any candidate, the
+model may modify any part of CandidateQueryEngine that is necessary to make the
+candidate coherent and correct. The primary mode names the dominant optimization
+idea, not a whitelist of functions, fields, or lines.
 
 Required API after every branch edit:
 
@@ -46,8 +51,7 @@ Representation consistency:
   or writes that representation in the same candidate.
 - Do not mix incompatible representations. A candidate that adds _items while
   any method still reads _keys/_values, or vice versa, is invalid.
-- Layout edits must preserve get/range_sum/aggregate_count/top_k semantics.
-- Non-layout modes should avoid changing primary storage representation.
+- Every edit must preserve get/range_sum/aggregate_count/top_k semantics.
 
 Safety constraints:
 

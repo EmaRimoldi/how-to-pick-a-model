@@ -79,6 +79,9 @@
 - [x] Add Codex CLI transport for GPT/Codex runs when `OPENAI_API_KEY` is unavailable.
 - [x] Run and validate one-step Codex CLI smokes for GPT-5.4, GPT-5.4-mini, GPT-5.3-Codex, and GPT-5.3-Codex-Spark.
 - [x] Clean active configs and artifact catalog, removing superseded phase/smoke outputs.
+- [x] Consolidate the active real-model C(a) path onto one prompt file, `single_step_program.txt`.
+- [x] Remove active Qwen direct-edit and old Haiku batch configs from the prompt-controlled experiment surface.
+- [x] Add prompt snapshot logging for future run-level prompt audits.
 
 ## Remaining
 
@@ -89,7 +92,6 @@
 - [ ] Run a short 3-step single-prompt Haiku vs Qwen Coder comparison now that both one-step smokes pass.
 - [ ] Relaunch the strict Qwen single-prompt smoke on the Engaging GPU endpoint when SSH/GPU access is available, to compare local MPS vs GPU throughput.
 - [ ] Run a prompt-controlled single-prompt Haiku/Qwen ablation with `configs/hard_haiku_prompt_controlled_10step.yaml` and `configs/hard_qwen_prompt_controlled_10step.yaml` when model endpoints are available.
-- [ ] Compare Qwen direct-file editing against Qwen structured-edit generation on time, failures, and routing regret using the same 10-step hard-profile config.
 - [ ] Before scaling real-model teacher data, run a slightly larger batched `structured_edits` smoke and confirm candidate rejection rates are acceptable.
 - [ ] Tighten batched structured-edit prompt/repair for source-safety rejections such as banned list attribute calls.
 - [ ] Replace the Claude Code scaffold with real agentic terminal editing when credentials/endpoints are available.

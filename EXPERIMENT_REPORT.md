@@ -560,13 +560,17 @@ Artifacts:
 
 ## Qwen Weak-Model Smoke
 
-The first open-weight weak model smoke now runs through the same C(a) interface as the real Claude backends. The chosen model is `Qwen/Qwen2.5-Coder-1.5B-Instruct`: small, ungated, code-oriented, and runnable on one Engaging L40S GPU.
+The first open-weight weak model smoke used `Qwen/Qwen2.5-Coder-1.5B-Instruct`:
+small, ungated, code-oriented, and runnable on one Engaging L40S GPU. This
+section is historical because the first smoke used a fallback path. Current
+prompt-controlled Qwen comparisons should use `qwen_coder_batch_strict`, which
+does not fall back to per-mode prompts.
 
 Implementation details:
 
 - `weak_qwen` now uses the real `OpenAICompatibleAdapter` instead of a local-stub fallback.
 - The adapter targets `/v1/chat/completions` and can run against vLLM/SGLang or the minimal `scripts/qwen_openai_compat_server.py` server.
-- Qwen 1.5B could produce a valid mode distribution, but its all-in-one `mode_probs + six edits` batch response was malformed. The adapter therefore fell back to Qwen distribution plus six Qwen per-mode structured-edit calls.
+- Qwen 1.5B could produce a valid mode distribution, but its first all-in-one `mode_probs + six edits` batch response was malformed. The historical adapter fell back to Qwen distribution plus six Qwen per-mode structured-edit calls. That fallback is no longer part of active prompt-controlled experiments.
 - Added deterministic parser repairs for fenced/triple-quoted JSON and unindented replacement method bodies. These repairs do not bypass source validation or verifier evaluation.
 
 Validated run:
@@ -591,27 +595,24 @@ Artifacts:
 - `artifacts/hard_qwen_batch_smoke_routing_dataset.jsonl`
 - `artifacts/plots/run_hard_qwen_batch_smoke_1step/`
 
-## LangGraph Direct-File Editing
+## Historical LangGraph Direct-File Editing
 
-An optional direct-file-edit backend is now implemented for Qwen-style open-weight experiments.
+An optional direct-file-edit backend was implemented for Qwen-style open-weight
+experiments. It remains in code for diagnostics, but its active config/model
+aliases have been removed because it is not a single-prompt experiment path.
 
 What changed:
 
-- `weak_qwen_direct` uses `openai_compatible_direct_edit`.
+- The historical `weak_qwen_direct` alias used `openai_compatible_direct_edit`.
 - The model first produces the usual mode distribution.
 - For each mode branch, a LangGraph loop lets the model call restricted tools that edit only that branch's `proposed_solution.py`.
 - The tool layer, not the model shell, performs the actual file operation. Allowed operations are exact text replacements, inserts, deletes, whole-function replacement, validation, and finish.
 - The model cannot access the terminal, the shared parent, or other branch directories in this backend.
 
-This satisfies the requested "directly modify the file" behavior while preserving C(a): all six branch files still start from the same parent, all six are evaluated offline, and only the selected branch is promoted. The current implementation has unit/integration coverage but has not yet run a live `weak_qwen_direct` GPU smoke; the previous live Qwen run used the structured-edit adapter.
-
-Run command once the Qwen endpoint is up:
-
-```bash
-RUN_ID=hard_qwen_direct_edit_smoke_1step \
-OPENAI_COMPATIBLE_BASE_URL=http://localhost:8000/v1 \
-scripts/run_qwen_direct_edit_smoke.sh
-```
+This satisfied the requested "directly modify the file" behavior while
+preserving C(a), but it required a routing prompt plus six per-mode tool loops.
+Therefore it is now treated as a historical diagnostic path, not an active
+Haiku/Qwen/GPT comparison path.
 
 ## C(b) Feedback-Use Diagnostic Infrastructure
 
@@ -789,6 +790,33 @@ For a pure prompt-controlled Haiku-vs-Qwen ablation, use the single-prompt batch
 - `configs/hard_qwen_prompt_controlled_10step.yaml`
 
 Both use `candidate_generation: batched`: one model-generation prompt per step asks for `mode_probs`, `mode_ranking`, and all six mode-specific structured edits. The strict model aliases disable per-mode fallback and batch repair, so malformed all-in-one output is treated as a real backend failure rather than silently turning into seven prompts.
+
+## Single Active Program Prompt
+
+After the prompt audit, the active C(a) real-model path has been consolidated to
+one physical prompt file:
+
+- `src/vao/prompts/single_step_program.txt`
+
+This prompt is adapted as a self-contained experiment program: it defines the
+task, the anti-leakage rule, the six modes, the API contract, safety limits, the
+probability target, and the structured JSON output in one file. The old shared
+and per-mode prompt files are retained only for historical/diagnostic paths and
+tests; they are not current prompt-controlled experiment entrypoints.
+
+The prompt now states explicitly that modes are experimental labels, not edit
+permissions. A `topk` candidate, for example, may modify `__init__` or helper
+state if needed for a coherent correct top-k optimization. The branch's
+`primary_mode` records the dominant optimization idea for routing analysis; it
+does not restrict which functions or lines may change.
+
+Every new batched run now writes the exact rendered prompt to:
+
+- `steps/step_XXXX/prompt_snapshot.txt`
+- `steps/step_XXXX/prompt_snapshot.json`
+
+This closes the previous reproducibility gap where logs stored output text and
+prompt hashes but not the full prompt seen by the model.
 
 ## Single-Prompt Smoke Results
 
