@@ -69,6 +69,30 @@ def test_structured_parser_repairs_banned_list_remove() -> None:
     assert "__vao_keep_item_0" in parsed["solution_py"]
 
 
+def test_structured_parser_repairs_unindented_replace_function_source() -> None:
+    parent = Path("benchmarks/stateful_query_engine/solution_template.py").read_text(encoding="utf-8")
+    new_get = """def get(self, key: int) -> int | None:
+    key = int(key)
+    for existing_key, value in self._items:
+        if existing_key == key:
+            return value
+    return None
+"""
+    raw = json.dumps(
+        {
+            "primary_mode": "micro",
+            "declared_mode": "micro",
+            "edit_format": "structured_edits",
+            "rationale": "Qwen-style unindented function body.",
+            "edits": [{"op": "replace_function", "function": "get", "source": new_get}],
+        }
+    )
+    parsed = parse_structured_edit_payload(raw, "micro", parent_source=parent)
+    assert parsed["edit_repair_status"] == "applied"
+    assert parsed["edit_repairs"] == ["replace_function_auto_indented:get:4"]
+    assert parsed["source_validation_status"] == "passed"
+
+
 def test_structured_edit_rejects_ambiguous_exact_match() -> None:
     with pytest.raises(StructuredEditError, match="ambiguous"):
         apply_structured_edits("x = 1\nx = 1\n", [{"op": "replace_exact", "old": "x = 1", "new": "x = 2"}])

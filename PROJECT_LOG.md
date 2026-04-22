@@ -270,3 +270,18 @@
 - Hardened structured-edit prompts for `top_k`: prompts now require exact ordering by value descending and then key ascending, with sorting/heap semantics equivalent to `(-value, key)`.
 - No semantic auto-repair was added for wrong `top_k` algorithms; those remain verifier-detected candidate failures because local semantic rewrites would change the model's proposed edit.
 - Generated `artifacts/hard_pilot_bugfix_report.json` and `artifacts/hard_pilot_bugfix_report.md`.
+
+### Qwen Open-Weight Smoke
+
+- Implemented a real `OpenAICompatibleAdapter` for `/v1/chat/completions` endpoints. It shares the strict structured-edit parsing, candidate materialization, source validation, and C(a) logging path used by the Claude adapter.
+- Set `weak_qwen` to `Qwen/Qwen2.5-Coder-1.5B-Instruct`, a small ungated code model suitable for a first weak-router/editor smoke.
+- Added `scripts/qwen_openai_compat_server.py`, a minimal `transformers` OpenAI-compatible server for single-GPU smoke tests when vLLM/SGLang are not installed.
+- Added `configs/hard_qwen_batch_smoke.yaml` and `scripts/run_qwen_smoke.sh`.
+- Connected to Engaging, allocated one preemptable L40S GPU on `node1632`, installed the minimal user-space serving dependencies, loaded Qwen, and tunneled the endpoint to local `localhost:8000`.
+- Added deterministic parser repairs for open-weight output quirks: Python triple-quoted string values inside JSON and unindented `replace_function` method bodies. These repairs are logged in parsed candidate metadata and still require normal source validation.
+- Ran adapter-level Qwen probes. The all-in-one batch response was malformed, so the adapter fell back to Qwen distribution plus six Qwen per-mode structured edit calls.
+- Ran the full one-step hard-profile Qwen smoke: `runs/hard_profile/qwen_batch_smoke/hard_qwen_batch_smoke_1step`.
+- Result: 1 step, 6 branch evaluations, 240.9s total wall-clock, 11,658 input tokens, 1,729 output tokens, no USD cost from local serving, and `vao.validate_run` passed.
+- Qwen selected `layout`; the best counterfactual branch was `topk`, so the smoke produced a nonzero routing-regret example while preserving C(a) top-1 visibility.
+- Generated `artifacts/hard_qwen_batch_smoke_summary.json`, `artifacts/hard_qwen_batch_smoke_summary.md`, `artifacts/hard_qwen_batch_smoke_estimators.csv`, `artifacts/hard_qwen_batch_smoke_routing_dataset.jsonl`, and plots under `artifacts/plots/run_hard_qwen_batch_smoke_1step/`.
+- Validation after changes: `pytest -q` passed with 53 tests; `PYTHONPATH=src:. python -m vao.verifier --smoke_test` passed; `vao.validate_run` passed on the Qwen smoke.

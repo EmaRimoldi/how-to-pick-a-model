@@ -179,3 +179,8 @@ def test_replacement_prompt_requests_complete_source() -> None:
 
 def test_parse_json_object_from_fenced_text() -> None:
     assert parse_json_object("```json\n{\"ok\": true}\n```") == {"ok": True}
+
+
+def test_parse_json_object_repairs_triple_quoted_string_values() -> None:
+    raw = '```json\n{"source": """\ndef f():\n    return 1\n"""}\n```'
+    assert parse_json_object(raw) == {"source": "\ndef f():\n    return 1\n"}

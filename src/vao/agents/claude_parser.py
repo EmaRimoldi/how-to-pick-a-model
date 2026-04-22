@@ -154,6 +154,7 @@ def parse_structured_edit_payload(raw_text: str, expected_mode: str, parent_sour
         raise ModelOutputError("structured_edits_missing_or_empty")
     if isinstance(payload.get("solution_py"), str):
         raise ModelOutputError("replacement_file_output_not_allowed")
+    edits, edit_repairs = _repair_structured_edits_if_safe(parent_source, edits)
     try:
         source = apply_structured_edits(parent_source, edits)
     except StructuredEditError as exc:
@@ -173,6 +174,8 @@ def parse_structured_edit_payload(raw_text: str, expected_mode: str, parent_sour
         "source_validation_status": "passed",
         "source_repairs": source_repairs,
         "source_repair_status": "applied" if source_repairs else "not_needed",
+        "edit_repairs": edit_repairs,
+        "edit_repair_status": "applied" if edit_repairs else "not_needed",
     }
 
 
@@ -215,6 +218,55 @@ def validate_candidate_source(source: str) -> dict[str, Any]:
     if not safety.get("passed"):
         errors.extend(str(item) for item in safety.get("errors", []))
     return {"passed": not errors, "errors": sorted(set(errors)), "safety": safety}
+
+
+def _repair_structured_edits_if_safe(
+    parent_source: str,
+    edits: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[str]]:
+    repaired = copy.deepcopy(edits)
+    repairs: list[str] = []
+    function_indents = _function_indents(parent_source)
+    for edit in repaired:
+        if not isinstance(edit, dict) or edit.get("op") != "replace_function":
+            continue
+        function_name = str(edit.get("function", ""))
+        source = edit.get("source")
+        if not function_name or not isinstance(source, str):
+            continue
+        expected_indent = function_indents.get(function_name)
+        if expected_indent is None or expected_indent == 0:
+            continue
+        lines = source.strip("\n").splitlines()
+        if not lines:
+            continue
+        first_nonempty = next((line for line in lines if line.strip()), "")
+        if not first_nonempty.startswith("def ") and not first_nonempty.startswith("async def "):
+            continue
+        actual_indent = len(first_nonempty) - len(first_nonempty.lstrip(" "))
+        if actual_indent != 0:
+            continue
+        prefix = " " * expected_indent
+        edit["source"] = "\n".join(prefix + line if line.strip() else line for line in lines)
+        if source.endswith("\n"):
+            edit["source"] += "\n"
+        repairs.append(f"replace_function_auto_indented:{function_name}:{expected_indent}")
+    return repaired, repairs
+
+
+def _function_indents(source: str) -> dict[str, int]:
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return {}
+    lines = source.splitlines()
+    indents: dict[str, int] = {}
+    for node in ast.walk(tree):
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        line = lines[node.lineno - 1] if 0 <= node.lineno - 1 < len(lines) else ""
+        indents.setdefault(node.name, len(line) - len(line.lstrip(" ")))
+    return indents
 
 
 def _repair_candidate_source_if_safe(source: str, validation: dict[str, Any]) -> tuple[str, dict[str, Any], list[str]]:
@@ -319,10 +371,33 @@ def _loads_object(text: str) -> dict[str, Any]:
     try:
         payload = json.loads(text)
     except json.JSONDecodeError as exc:
-        raise ModelOutputError(str(exc)) from exc
+        repaired = _repair_triple_quoted_json_strings(text)
+        if repaired != text:
+            try:
+                payload = json.loads(repaired)
+            except json.JSONDecodeError:
+                raise ModelOutputError(str(exc)) from exc
+        else:
+            raise ModelOutputError(str(exc)) from exc
     if not isinstance(payload, dict):
         raise ModelOutputError("json_payload_not_object")
     return payload
+
+
+def _repair_triple_quoted_json_strings(text: str) -> str:
+    """Convert Python-style triple-quoted string literals into JSON strings.
+
+    Small open-weight models often put multi-line Python function bodies in
+    JSON using Python triple-quoted string delimiters. That is not JSON, but
+    the intended value is unambiguous when the triple-quoted span is balanced.
+    The repaired payload is still passed through normal protocol and source
+    validation.
+    """
+
+    def replace(match: re.Match[str]) -> str:
+        return json.dumps(match.group(1))
+
+    return re.sub(r'"""(.*?)"""', replace, text, flags=re.DOTALL)
 
 
 def _materialize_candidate_source(payload: dict[str, Any], parent_source: str | None) -> str:

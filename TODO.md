@@ -58,13 +58,17 @@
 - [x] Add hard-profile local/Haiku experiment configs and validate one-step/ two-step calibration runs.
 - [x] Run and validate the first 3-step Haiku batch pilot on `hard_optimization`.
 - [x] Add deterministic repair for `.remove(...)` safety rejections and harden `top_k` prompt constraints.
+- [x] Replace the OpenAI-compatible scaffold with a real endpoint adapter for Qwen/vLLM-style chat completions.
+- [x] Add a minimal `transformers` OpenAI-compatible Qwen smoke server for Engaging GPU debugging.
+- [x] Run and validate a one-step Qwen smoke on `hard_optimization` with `Qwen/Qwen2.5-Coder-1.5B-Instruct`.
 
 ## Remaining
 
 - [ ] Resume/extend teacher production collection when Claude CLI budget/availability allows a repeated-run matrix on `hard_optimization`.
 - [ ] Before scaling real-model teacher data, run a slightly larger batched `structured_edits` smoke and confirm candidate rejection rates are acceptable.
 - [ ] Tighten batched structured-edit prompt/repair for source-safety rejections such as banned list attribute calls.
-- [ ] Replace adapter scaffolds with real Claude Code and OpenAI-compatible model calls when credentials/endpoints are available.
+- [ ] Replace the Claude Code scaffold with real agentic terminal editing when credentials/endpoints are available.
+- [ ] Try Qwen through vLLM/SGLang and compare against the minimal `transformers` smoke server.
 - [ ] Add pre-verifier dynamic source smoke tests for generated candidate constructors and common operations.
 - [ ] Improve prompts for `indexing` and `micro` declared-mode adherence.
 - [ ] Add controlled shared-checkpoint phi experiment implementation.

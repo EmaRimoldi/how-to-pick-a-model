@@ -63,6 +63,7 @@ This profile creates real tradeoffs between layout, indexing, summaries, caching
 - `python -m vao.orchestrator --config configs/phase1_dev.yaml`
 - `python -m vao.orchestrator --config configs/hard_local_smoke.yaml --run-id hard_local_smoke`
 - `python -m vao.orchestrator --config configs/hard_haiku_batch_smoke.yaml --run-id hard_haiku_batch_smoke`
+- `OPENAI_COMPATIBLE_BASE_URL=http://localhost:8000/v1 RUN_ID=hard_qwen_batch_smoke_1step scripts/run_qwen_smoke.sh`
 - `python -m vao.verifier --smoke_test`
 - `python -m vao.analysis.compute_estimators --runs runs/phase1_dev --out artifacts/phase1_dev_estimators.csv`
 - `python -m vao.training.build_routing_dataset --runs runs/phase1_dev --train_out artifacts/routing_train.jsonl --dev_out artifacts/routing_dev.jsonl`
@@ -83,7 +84,37 @@ This profile creates real tradeoffs between layout, indexing, summaries, caching
 - `python -m vao.analysis.run_diagnostics_visuals --run_dir runs/feedback_use_cb/cb_local_fixed_micro --single_mode micro`
 - `python -m vao.analysis.run_diagnostics_visuals --run_dir runs/hard_profile/haiku_batch_smoke/hard_haiku_batch_smoke_1step --single_mode indexing`
 
-The closed-source and open-weight model adapters are scaffolded behind the same interface as the deterministic `local_stub` backend. `claude_haiku` is the first real backend. It can use `ANTHROPIC_API_KEY` through the Messages API or the authenticated Claude CLI transport when available. Normal tests use fixtures and do not require live model calls.
+The closed-source and open-weight model adapters share the same interface as the deterministic `local_stub` backend. `claude_haiku` can use `ANTHROPIC_API_KEY` through the Messages API or the authenticated Claude CLI transport when available. `weak_qwen` now targets an OpenAI-compatible `/v1/chat/completions` endpoint, such as vLLM/SGLang or the minimal `scripts/qwen_openai_compat_server.py` smoke server. Normal tests use fixtures/mocks and do not require live model calls.
+
+## Qwen Smoke Setup
+
+For an Engaging GPU smoke, the tested path was:
+
+```bash
+ssh engaging
+salloc -p mit_preemptable -t 01:00:00 -c 8 --mem=32G --gres=gpu:l40s:1
+module load miniforge/25.11.0-0 cuda/12.9.1
+python -m pip install --user --upgrade 'transformers>=4.46' accelerate sentencepiece safetensors
+python ~/vao_qwen_smoke/qwen_openai_compat_server.py \
+  --model Qwen/Qwen2.5-Coder-1.5B-Instruct \
+  --host 0.0.0.0 \
+  --port 8000 \
+  --dtype bfloat16
+```
+
+Then tunnel `localhost:8000` to the compute node, replacing `node1632` with the allocated node:
+
+```bash
+ssh -N -L 8000:node1632:8000 engaging
+```
+
+Run locally:
+
+```bash
+RUN_ID=hard_qwen_batch_smoke_1step \
+OPENAI_COMPATIBLE_BASE_URL=http://localhost:8000/v1 \
+scripts/run_qwen_smoke.sh
+```
 
 ## Current Milestone Status
 
@@ -100,4 +131,5 @@ The closed-source and open-weight model adapters are scaffolded behind the same 
 - Batched Haiku speed diagnostics are in `artifacts/haiku_batch_speed_debug_report.md`: 132.7 seconds/step and `$0.179`/step on the one-step batch smoke, versus 480.4 seconds/step for six separate structured-edit calls and 326.4 seconds/step for the historical replacement smoke.
 - Hard-profile readiness diagnostics are in `artifacts/hard_profile_experiment_readiness.md`. The validated Haiku batch full-profile smoke took 346.4 seconds total for one step including baseline, cost `$0.171`, and had zero proposal/verifier failures.
 - The first 3-step hard Haiku batch pilot is summarized in `artifacts/hard_haiku_batch_pilot_readout.md`: 18 branch evaluations, 807.0s total wall-clock, `$0.600` total cost, and validated C(a) logs.
+- Qwen smoke is validated through `weak_qwen` with `Qwen/Qwen2.5-Coder-1.5B-Instruct` served on Engaging. The one-step hard-profile run completed in 240.9s, produced 6 branch evaluations, and passed `vao.validate_run`.
 - Offline student eval on the tiny split improved regret/JSD versus the original teacher route on that split, but the online local controlled experiment was worse than the local-stub router. Treat Phase 5 as infrastructure plus a negative first result, not as evidence of a useful student yet.

@@ -552,9 +552,44 @@ Artifacts:
 - `artifacts/hard_haiku_batch_pilot_readout.md`
 - `artifacts/hard_haiku_batch_pilot_summary.json`
 - `artifacts/hard_pilot_bugfix_report.md`
+- `artifacts/hard_qwen_batch_smoke_summary.md`
 - `artifacts/plots/run_hard_local_dev_2step_calibration/`
 - `artifacts/plots/run_hard_haiku_batch_smoke_1step/`
 - `artifacts/plots/run_hard_haiku_batch_pilot_3step/`
+- `artifacts/plots/run_hard_qwen_batch_smoke_1step/`
+
+## Qwen Weak-Model Smoke
+
+The first open-weight weak model smoke now runs through the same C(a) interface as the real Claude backends. The chosen model is `Qwen/Qwen2.5-Coder-1.5B-Instruct`: small, ungated, code-oriented, and runnable on one Engaging L40S GPU.
+
+Implementation details:
+
+- `weak_qwen` now uses the real `OpenAICompatibleAdapter` instead of a local-stub fallback.
+- The adapter targets `/v1/chat/completions` and can run against vLLM/SGLang or the minimal `scripts/qwen_openai_compat_server.py` server.
+- Qwen 1.5B could produce a valid mode distribution, but its all-in-one `mode_probs + six edits` batch response was malformed. The adapter therefore fell back to Qwen distribution plus six Qwen per-mode structured-edit calls.
+- Added deterministic parser repairs for fenced/triple-quoted JSON and unindented replacement method bodies. These repairs do not bypass source validation or verifier evaluation.
+
+Validated run:
+
+| run | model | steps | branches | wall sec/step | input tokens | output tokens | validation |
+|---|---|---:|---:|---:|---:|---:|---|
+| `hard_qwen_batch_smoke_1step` | `Qwen/Qwen2.5-Coder-1.5B-Instruct` | `1` | `6` | `240.9` | `11658` | `1729` | passed |
+
+Qwen selected `layout` with normalized mode probabilities:
+
+```json
+{"layout": 0.3, "indexing": 0.2, "topk": 0.2, "caching": 0.1, "summaries": 0.1, "micro": 0.1}
+```
+
+The selected visible branch improved loss from `1.001238` to `1.000535`. The best counterfactual branch was `topk` with loss `0.999924`, producing routing regret `0.000610`. This is useful as a weak-router smoke: Qwen follows the protocol enough to generate a logged six-branch tensor, but it is not yet a high-quality teacher.
+
+Artifacts:
+
+- `artifacts/hard_qwen_batch_smoke_summary.json`
+- `artifacts/hard_qwen_batch_smoke_summary.md`
+- `artifacts/hard_qwen_batch_smoke_estimators.csv`
+- `artifacts/hard_qwen_batch_smoke_routing_dataset.jsonl`
+- `artifacts/plots/run_hard_qwen_batch_smoke_1step/`
 
 ## C(b) Feedback-Use Diagnostic Infrastructure
 
