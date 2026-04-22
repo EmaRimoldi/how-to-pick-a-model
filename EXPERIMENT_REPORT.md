@@ -789,3 +789,39 @@ For a pure prompt-controlled Haiku-vs-Qwen ablation, use the single-prompt batch
 - `configs/hard_qwen_prompt_controlled_10step.yaml`
 
 Both use `candidate_generation: batched`: one model-generation prompt per step asks for `mode_probs`, `mode_ranking`, and all six mode-specific structured edits. The strict model aliases disable per-mode fallback and batch repair, so malformed all-in-one output is treated as a real backend failure rather than silently turning into seven prompts.
+
+## Single-Prompt Smoke Results
+
+I ran the strict single-prompt path after correcting the configs.
+
+Haiku completed successfully:
+
+- Run: `runs/hard_profile/single_prompt/haiku_batch_structured/hard_haiku_single_prompt_smoke_1step_r0`
+- Validation: passed
+- Steps: 1
+- Branch evaluations: 6
+- Wall-clock: 520.3 seconds
+- Cost: `$0.2166`
+- Branch correctness: 6/6
+- Selected mode: `layout`
+- Best counterfactual mode: `indexing`
+- Selected visible loss: `0.1617`
+- Best counterfactual loss: `0.1218`
+
+This confirms that Haiku can satisfy the intended single-prompt batch protocol.
+It also produced the desired counterfactual routing signal: the model promoted
+`layout`, but the best verified branch was `indexing`.
+
+Qwen Coder on Engaging was not available through the local endpoint during this
+smoke, and non-interactive SSH to Engaging failed. I therefore tested the same
+strict path with cached local `Qwen/Qwen3-0.6B-Base`. That run completed baseline
+verification but failed at the single batch JSON contract with `ModelOutputError:
+Extra data`. Per-mode fallback was disabled, so it produced zero branch
+evaluations rather than silently becoming seven prompts. This is a valid negative
+infrastructure result for the cached local model, not a successful Qwen Coder
+comparison.
+
+Artifacts:
+
+- `artifacts/single_prompt_smoke_readout.json`
+- `artifacts/single_prompt_smoke_readout.md`

@@ -22,7 +22,12 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 MODEL: Any = None
 TOKENIZER: Any = None
 MODEL_ID = ""
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+if torch.cuda.is_available():
+    DEVICE = "cuda"
+elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+    DEVICE = "mps"
+else:
+    DEVICE = "cpu"
 
 
 class QwenOpenAIHandler(BaseHTTPRequestHandler):
@@ -143,6 +148,8 @@ def main() -> None:
         torch_dtype=dtype,
         device_map="auto" if DEVICE == "cuda" else None,
     )
+    if DEVICE != "cuda":
+        MODEL = MODEL.to(DEVICE)
     MODEL.eval()
     server = ThreadingHTTPServer((args.host, args.port), QwenOpenAIHandler)
     print(f"Serving {MODEL_ID} at http://{args.host}:{args.port}/v1", flush=True)

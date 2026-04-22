@@ -1,0 +1,37 @@
+{
+  "created_at": "2026-04-22",
+  "protocol": "C(a) single-prompt batched structured_edits",
+  "haiku": {
+    "run_dir": "runs/hard_profile/single_prompt/haiku_batch_structured/hard_haiku_single_prompt_smoke_1step_r0",
+    "validated": true,
+    "steps": 1,
+    "branch_evaluations": 6,
+    "elapsed_wall_seconds": 520.3028481006622,
+    "agent_cost_usd": 0.21656485,
+    "input_tokens": 118509,
+    "output_tokens": 29249,
+    "mode_probs": {
+      "layout": 0.28,
+      "indexing": 0.2,
+      "topk": 0.15,
+      "caching": 0.22,
+      "summaries": 0.08,
+      "micro": 0.07
+    },
+    "selected_mode": "layout",
+    "best_counterfactual_mode": "indexing",
+    "selected_loss": 0.1616895565470603,
+    "best_counterfactual_loss": 0.12183606214139621,
+    "branch_correctness_rate": 1.0
+  },
+  "qwen_local_cached": {
+    "run_dir": "runs/hard_profile/single_prompt/qwen_batch_structured/hard_qwen_local_cached_single_prompt_smoke_1step_r0_retry1",
+    "model": "Qwen/Qwen3-0.6B-Base",
+    "validated": false,
+    "failure": "single_prompt_batch_parse_failed: ModelOutputError Extra data",
+    "fallback_to_per_mode": false,
+    "baseline_completed": true,
+    "branch_evaluations": 0,
+    "notes": "Local cached Qwen smoke used one strict batched prompt with max_tokens_batch=2048. The model returned malformed JSON and the framework did not fall back to per-mode prompts."
+  }
+}

@@ -357,3 +357,8 @@
 - Added paired prompt-controlled 10-step configs for a future pure ablation: `configs/hard_haiku_prompt_controlled_10step.yaml` and `configs/hard_qwen_prompt_controlled_10step.yaml`.
 - Corrected the prompt-controlled configs to use `candidate_generation: batched`: one model-generation prompt per step returns `mode_probs`, `mode_ranking`, and one structured edit for each of the six modes. The framework then applies those six edits to six isolated branch copies.
 - Added strict batch model aliases `claude_haiku_batch_strict` and `weak_qwen_batch_strict`. Strict mode disables batch repair and Qwen per-mode fallback so a prompt-controlled run cannot silently become seven prompts.
+- Ran a one-step Haiku single-prompt strict smoke: `runs/hard_profile/single_prompt/haiku_batch_structured/hard_haiku_single_prompt_smoke_1step_r0`. It passed `vao.validate_run` with 1 step and 6 branch evaluations.
+- Haiku smoke result: 520.3s wall-clock, `$0.2166`, 6/6 branch correctness, selected `layout`, best counterfactual `indexing`, visible selected loss `0.1617`, best counterfactual loss `0.1218`.
+- Local Qwen endpoint for the prior Engaging 1.5B Coder run was unavailable. Non-interactive SSH to Engaging failed, so I tested a cached local `Qwen/Qwen3-0.6B-Base` through the same strict single-prompt batch path.
+- The cached local Qwen run completed baseline verification but failed the single batch JSON contract with `ModelOutputError: Extra data`. It did not fall back to per-mode prompts and produced zero branch evaluations, which is the correct strict-protocol behavior for malformed batch output.
+- Added `artifacts/single_prompt_smoke_readout.json` and `artifacts/single_prompt_smoke_readout.md`.
