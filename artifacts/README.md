@@ -38,6 +38,20 @@ These validate the active dev/holdout profile split with local deterministic C(a
 runs. The dev-only routing dataset demonstrates that holdout examples can be
 excluded before post-training.
 
+## Paper Dev R0
+
+- `paper_dev_gpt53spark_r0_summary.json`
+- `paper_dev_gpt53spark_r0_estimators.csv`
+- `paper_dev_gpt53spark_r0_routing_dataset.jsonl`
+- `paper_dev_gpt53spark_r0_failure_modes.json`
+- `paper_dev_gpt53spark_r0_routing_choice_summary.json`
+- `paper_dev_gpt53spark_r0_routing_choice_visuals.md`
+- `plots/paper_dev_gpt53spark_r0_routing/`
+- `plots/run_paper_dev_gpt53spark_r0_*/`
+
+These are the first real prompt-controlled dev-split runs on the new paper
+profiles: `gpt-5.3-codex-spark`, three dev profiles, three steps each.
+
 ## Teacher And Routing Student
 
 - `phase4_teacher_routing_dataset.jsonl`

@@ -87,11 +87,13 @@
 - [x] Add profile split audit tooling and dev/holdout leakage checks for routing dataset generation.
 - [x] Add paper dev, holdout, and local validation experiment configs.
 - [x] Run automatic local validation over all six active dev/holdout profiles.
+- [x] Run first real prompt-controlled dev R0 with `gpt-5.3-codex-spark` across all three dev profiles.
 
 ## Remaining
 
 - [ ] Resume/extend teacher production collection when Claude CLI budget/availability allows a repeated-run matrix on the three dev profiles.
-- [ ] Run the prompt-controlled Haiku/Qwen or GPT/Qwen dev split comparison with `configs/paper_dev_model_comparison.yaml`.
+- [ ] Bring Qwen Coder endpoint back online and run the matched dev split comparison against `gpt-5.3-codex-spark` or Haiku.
+- [ ] Add at least 2 more repeats for the selected live backends on the dev split before interpreting model differences.
 - [ ] Only after model selection/post-training is frozen, run final holdout evaluation with `configs/paper_holdout_final_eval.yaml`.
 - [ ] Optionally run one live GPT/Codex single-prompt smoke through `openai_responses` when `OPENAI_API_KEY` is available, to validate the direct API transport separately from Codex CLI.
 - [ ] Re-test GPT-5.2-Codex only if account/API access changes; the current Codex ChatGPT account reports it as unsupported.

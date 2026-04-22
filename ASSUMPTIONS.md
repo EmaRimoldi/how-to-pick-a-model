@@ -69,3 +69,5 @@
 - Codex CLI does not use `--output-schema` for the full candidate-edit schema because the CLI/OpenAI strict schema validator rejects optional nested edit fields. The schema is included in the prompt, then the existing local parser, source validator, preflight, verifier, and `vao.validate_run` enforce correctness.
 - `gpt-5.2-codex` is currently unavailable through this Codex ChatGPT account. It should be retried only if account/model access changes or through a direct API environment that supports it.
 - Claude Sonnet and Opus 4.6 aliases use the same Claude CLI transport as Haiku. The `opus` CLI alias is treated as the local route to Opus 4.6, matching earlier validated assumptions.
+- The first paper dev R0 used `gpt-5.3-codex-spark` because Codex CLI was available and the local Qwen OpenAI-compatible endpoint was not running. This is a live dev experiment, not a completed model comparison.
+- The paper dev R0 keeps holdout closed. Its routing dataset is dev-only and can be used for analysis/training experiments without holdout leakage.

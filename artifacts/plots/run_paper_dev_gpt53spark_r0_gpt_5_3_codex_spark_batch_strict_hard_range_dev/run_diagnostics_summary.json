@@ -1,0 +1,143 @@
+{
+  "model_id": "gpt-5.3-codex-spark",
+  "plots": {
+    "cost_per_step": "artifacts/plots/run_paper_dev_gpt53spark_r0_gpt_5_3_codex_spark_batch_strict_hard_range_dev/cost_per_step.png",
+    "gain_heatmap": "artifacts/plots/run_paper_dev_gpt53spark_r0_gpt_5_3_codex_spark_batch_strict_hard_range_dev/gain_heatmap_by_step_mode.png",
+    "loss_by_mode": "artifacts/plots/run_paper_dev_gpt53spark_r0_gpt_5_3_codex_spark_batch_strict_hard_range_dev/loss_by_step_by_mode.png",
+    "mode_probs": "artifacts/plots/run_paper_dev_gpt53spark_r0_gpt_5_3_codex_spark_batch_strict_hard_range_dev/mode_probs_by_step.png"
+  },
+  "profile_id": "hard_range_dev",
+  "run_dir": "runs/paper_dev/model_comparison/paper_dev_gpt53spark_r0_gpt_5_3_codex_spark_batch_strict_hard_range_dev",
+  "run_id": "paper_dev_gpt53spark_r0_gpt_5_3_codex_spark_batch_strict_hard_range_dev",
+  "steps": [
+    {
+      "agent_cost_usd": null,
+      "best_counterfactual_loss": 0.29685298185165304,
+      "branch_wall_seconds": 152.57005429198034,
+      "feedback_jsd_improvement": null,
+      "feedback_regret_improvement": null,
+      "gain_by_mode": {
+        "caching": 0.08114158523650228,
+        "indexing": 0.07684584688726492,
+        "layout": 0.7445118669633575,
+        "micro": 0.22708751699130447,
+        "summaries": 0.0772956089688065,
+        "topk": 0.0831686694063144
+      },
+      "input_tokens": null,
+      "loss_by_mode": {
+        "caching": 0.9602232635785082,
+        "indexing": 0.9645190019277455,
+        "layout": 0.29685298185165304,
+        "micro": 0.814277331823706,
+        "summaries": 0.964069239846204,
+        "topk": 0.9581961794086961
+      },
+      "mode_probs": {
+        "caching": 0.14,
+        "indexing": 0.3,
+        "layout": 0.1,
+        "micro": 0.06,
+        "summaries": 0.2,
+        "topk": 0.2
+      },
+      "output_tokens": null,
+      "post_feedback_mode_probs": null,
+      "routing_regret": 0.6676660200760925,
+      "selected_loss": 0.9645190019277455,
+      "selected_mode": "indexing",
+      "selected_mode_top1": "indexing",
+      "selected_policy_regret": 0.6676660200760925,
+      "selection_policy": "top1",
+      "step": 0,
+      "total_tokens": 0,
+      "verified_best_mode": "layout"
+    },
+    {
+      "agent_cost_usd": null,
+      "best_counterfactual_loss": 0.10870187487248154,
+      "branch_wall_seconds": 59.25901150004938,
+      "feedback_jsd_improvement": null,
+      "feedback_regret_improvement": null,
+      "gain_by_mode": {
+        "caching": 0.22222543521899385,
+        "indexing": 0.855817127055264,
+        "layout": 0.7309853191050728,
+        "micro": 0.19076489176938582,
+        "summaries": -3.841261878688911,
+        "topk": 0.1947865698899678
+      },
+      "input_tokens": null,
+      "loss_by_mode": {
+        "caching": 0.7422935667087517,
+        "indexing": 0.10870187487248154,
+        "layout": 0.2335336828226727,
+        "micro": 0.7737541101583597,
+        "summaries": 4.805780880616656,
+        "topk": 0.7697324320377777
+      },
+      "mode_probs": {
+        "caching": 0.2,
+        "indexing": 0.23,
+        "layout": 0.11,
+        "micro": 0.11,
+        "summaries": 0.28,
+        "topk": 0.07
+      },
+      "output_tokens": null,
+      "post_feedback_mode_probs": null,
+      "routing_regret": 4.6970790057441745,
+      "selected_loss": 4.805780880616656,
+      "selected_mode": "summaries",
+      "selected_mode_top1": "summaries",
+      "selected_policy_regret": 4.6970790057441745,
+      "selection_policy": "top1",
+      "step": 1,
+      "total_tokens": 0,
+      "verified_best_mode": "indexing"
+    },
+    {
+      "agent_cost_usd": null,
+      "best_counterfactual_loss": 2.982786785914829,
+      "branch_wall_seconds": 81.97913583205082,
+      "feedback_jsd_improvement": null,
+      "feedback_regret_improvement": null,
+      "gain_by_mode": {
+        "caching": 0.06452183902469066,
+        "indexing": 1.8229940947018273,
+        "layout": 0.1570545912685004,
+        "micro": -1.734189099980708,
+        "summaries": -1.0,
+        "topk": 0.049765183517834544
+      },
+      "input_tokens": null,
+      "loss_by_mode": {
+        "caching": 4.741259041591966,
+        "indexing": 2.982786785914829,
+        "layout": 4.648726289348156,
+        "micro": 6.539969980597364,
+        "summaries": Infinity,
+        "topk": 4.756015697098822
+      },
+      "mode_probs": {
+        "caching": 0.19,
+        "indexing": 0.3,
+        "layout": 0.12,
+        "micro": 0.03,
+        "summaries": 0.15,
+        "topk": 0.21
+      },
+      "output_tokens": null,
+      "post_feedback_mode_probs": null,
+      "routing_regret": 0.0,
+      "selected_loss": 2.982786785914829,
+      "selected_mode": "indexing",
+      "selected_mode_top1": "indexing",
+      "selected_policy_regret": 0.0,
+      "selection_policy": "top1",
+      "step": 2,
+      "total_tokens": 0,
+      "verified_best_mode": "indexing"
+    }
+  ]
+}

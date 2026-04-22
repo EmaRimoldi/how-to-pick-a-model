@@ -987,3 +987,53 @@ Recommended next live sequence:
 3. Train/evaluate the routing-only student on dev data.
 4. Only then open `configs/paper_holdout_final_eval.yaml` for the final
    held-out generalization test.
+
+## Paper Dev R0: GPT-5.3-Codex-Spark
+
+The first real dev-split run after adding holdout separation used
+`gpt-5.3-codex-spark` through the Codex CLI. Qwen was not served on
+`localhost:8000` at launch time, so this is a single-backend R0 rather than a
+matched model comparison.
+
+Run matrix:
+
+- Profiles: `hard_balanced_dev`, `hard_range_dev`, `hard_churn_dev`
+- Repeats: 1
+- Steps per profile: 3
+- Branches per step: 6
+- Total: 3 runs, 9 steps, 54 branch evaluations
+- Protocol: C(a), one `single_step_program.txt` prompt per step
+- Validation: all three runs passed `vao.validate_run`
+
+Aggregate result:
+
+- Average wall-clock: `105.0s/step`
+- Best visible loss: `0.1784`
+- Best counterfactual loss: `0.1087`
+- Mean routing regret: `0.7856`
+- Mean JSD: `0.3554`
+- Correct branch rate by mode stayed at or above `0.8889`; aggregate source/parse failure rate was `0.0741`
+- Routing top-1 matched a verified-best branch on `2/9` steps
+
+By profile:
+
+| profile | steps | best visible loss | best counterfactual loss | mean routing regret |
+| --- | ---: | ---: | ---: | ---: |
+| `hard_balanced_dev` | 3 | `0.3093` | `0.1500` | `0.4427` |
+| `hard_range_dev` | 3 | `0.9645` | `0.1087` | `1.7882` |
+| `hard_churn_dev` | 3 | `0.1784` | `0.1146` | `0.1260` |
+
+The range-heavy task is the clearest routing bottleneck in this R0: the
+counterfactual branch tensor contained a much better branch than the visible
+route selected online. This is exactly the kind of evidence the framework is
+meant to expose before routing post-training.
+
+Artifacts:
+
+- `artifacts/paper_dev_gpt53spark_r0_summary.json`
+- `artifacts/paper_dev_gpt53spark_r0_estimators.csv`
+- `artifacts/paper_dev_gpt53spark_r0_routing_dataset.jsonl`
+- `artifacts/paper_dev_gpt53spark_r0_failure_modes.json`
+- `artifacts/paper_dev_gpt53spark_r0_routing_choice_summary.json`
+- `artifacts/paper_dev_gpt53spark_r0_routing_choice_visuals.md`
+- `artifacts/plots/run_paper_dev_gpt53spark_r0_*`

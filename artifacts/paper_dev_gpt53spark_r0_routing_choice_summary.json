@@ -1,0 +1,253 @@
+{
+  "datasets": [
+    {
+      "accuracy_by_productive_label": 0.2222222222222222,
+      "accuracy_by_verified_best": 0.2222222222222222,
+      "by_profile": {
+        "hard_balanced_dev": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "incorrect": 3,
+          "total": 3
+        },
+        "hard_churn_dev": {
+          "accuracy": 0.3333333333333333,
+          "correct": 1,
+          "incorrect": 2,
+          "total": 3
+        },
+        "hard_range_dev": {
+          "accuracy": 0.3333333333333333,
+          "correct": 1,
+          "incorrect": 2,
+          "total": 3
+        }
+      },
+      "confusion_selected_vs_verified_best": {
+        "caching": {
+          "caching": 0,
+          "indexing": 1,
+          "layout": 0,
+          "micro": 0,
+          "summaries": 0,
+          "topk": 0
+        },
+        "indexing": {
+          "caching": 0,
+          "indexing": 2,
+          "layout": 2,
+          "micro": 1,
+          "summaries": 0,
+          "topk": 0
+        },
+        "layout": {
+          "caching": 0,
+          "indexing": 1,
+          "layout": 0,
+          "micro": 0,
+          "summaries": 0,
+          "topk": 0
+        },
+        "micro": {
+          "caching": 0,
+          "indexing": 0,
+          "layout": 0,
+          "micro": 0,
+          "summaries": 0,
+          "topk": 0
+        },
+        "summaries": {
+          "caching": 0,
+          "indexing": 1,
+          "layout": 0,
+          "micro": 0,
+          "summaries": 0,
+          "topk": 0
+        },
+        "topk": {
+          "caching": 0,
+          "indexing": 0,
+          "layout": 0,
+          "micro": 1,
+          "summaries": 0,
+          "topk": 0
+        }
+      },
+      "correct_by_productive_label": 2,
+      "correct_by_verified_best": 2,
+      "incorrect_by_productive_label": 7,
+      "incorrect_by_verified_best": 7,
+      "mean_routing_regret": 0.7856441840529254,
+      "name": "paper_dev_gpt53spark_r0",
+      "path": "artifacts/paper_dev_gpt53spark_r0_routing_dataset.jsonl",
+      "positive_regret_count": 7,
+      "record_count": 9,
+      "rows": [
+        {
+          "best_gain": 0.7417638969542624,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "indexing",
+          "profile_id": "hard_balanced_dev",
+          "routing_regret": 0.09007225220785431,
+          "run_id": "paper_dev_gpt53spark_r0_gpt_5_3_codex_spark_batch_strict_hard_balanced_dev",
+          "selected_gain": 0.6516916447464081,
+          "selected_mode": "layout",
+          "step": 0,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.15931927675304702,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "indexing",
+          "profile_id": "hard_balanced_dev",
+          "routing_regret": 0.1869762804748143,
+          "run_id": "paper_dev_gpt53spark_r0_gpt_5_3_codex_spark_batch_strict_hard_balanced_dev",
+          "selected_gain": -0.02765700372176727,
+          "selected_mode": "caching",
+          "step": 1,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.051005107139734496,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "micro",
+          "profile_id": "hard_balanced_dev",
+          "routing_regret": 1.0510051071397344,
+          "run_id": "paper_dev_gpt53spark_r0_gpt_5_3_codex_spark_batch_strict_hard_balanced_dev",
+          "selected_gain": -1.0,
+          "selected_mode": "indexing",
+          "step": 2,
+          "verified_best_mode": "micro",
+          "verified_best_modes": [
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.7445118669633575,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_range_dev",
+          "routing_regret": 0.6676660200760925,
+          "run_id": "paper_dev_gpt53spark_r0_gpt_5_3_codex_spark_batch_strict_hard_range_dev",
+          "selected_gain": 0.07684584688726492,
+          "selected_mode": "indexing",
+          "step": 0,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.855817127055264,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "indexing",
+          "profile_id": "hard_range_dev",
+          "routing_regret": 4.6970790057441745,
+          "run_id": "paper_dev_gpt53spark_r0_gpt_5_3_codex_spark_batch_strict_hard_range_dev",
+          "selected_gain": -3.841261878688911,
+          "selected_mode": "summaries",
+          "step": 1,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 1.8229940947018273,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "hard_range_dev",
+          "routing_regret": 0.0,
+          "run_id": "paper_dev_gpt53spark_r0_gpt_5_3_codex_spark_batch_strict_hard_range_dev",
+          "selected_gain": 1.8229940947018273,
+          "selected_mode": "indexing",
+          "step": 2,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.6893700302323376,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "indexing",
+          "profile_id": "hard_churn_dev",
+          "routing_regret": 0.0,
+          "run_id": "paper_dev_gpt53spark_r0_gpt_5_3_codex_spark_batch_strict_hard_churn_dev",
+          "selected_gain": 0.6893700302323376,
+          "selected_mode": "indexing",
+          "step": 0,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.011463648024878204,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_churn_dev",
+          "routing_regret": 0.15913866814797004,
+          "run_id": "paper_dev_gpt53spark_r0_gpt_5_3_codex_spark_batch_strict_hard_churn_dev",
+          "selected_gain": -0.14767502012309183,
+          "selected_mode": "indexing",
+          "step": 1,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.21149280607003196,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "micro",
+          "profile_id": "hard_churn_dev",
+          "routing_regret": 0.21886032268568856,
+          "run_id": "paper_dev_gpt53spark_r0_gpt_5_3_codex_spark_batch_strict_hard_churn_dev",
+          "selected_gain": -0.0073675166156566,
+          "selected_mode": "topk",
+          "step": 2,
+          "verified_best_mode": "micro",
+          "verified_best_modes": [
+            "micro"
+          ]
+        }
+      ],
+      "selected_mode_counts": {
+        "caching": 1,
+        "indexing": 5,
+        "layout": 1,
+        "micro": 0,
+        "summaries": 1,
+        "topk": 1
+      },
+      "verified_best_mode_counts": {
+        "caching": 0,
+        "indexing": 5,
+        "layout": 2,
+        "micro": 2,
+        "summaries": 0,
+        "topk": 0
+      },
+      "zero_regret_count": 2
+    }
+  ],
+  "plots": {
+    "accuracy_by_dataset": "artifacts/plots/paper_dev_gpt53spark_r0_routing/routing_accuracy_by_dataset.png"
+  }
+}

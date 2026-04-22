@@ -439,3 +439,16 @@
 - Ran local no-model validation across all active dev/holdout profiles: 6 runs, 6 steps, 36 branch evaluations. Every run passed `vao.validate_run`.
 - Generated `artifacts/profile_split_audit.*`, `artifacts/paper_profile_validation_summary.json`, `artifacts/paper_profile_validation_estimators.csv`, `artifacts/paper_profile_validation_routing_all.jsonl`, and `artifacts/paper_profile_validation_routing_dev_only.jsonl`.
 - Validation after the split work: `pytest -q` passed with 80 tests; `python -m vao.verifier --smoke_test` passed; `vao.validate_run` passed on all six local profile-validation runs.
+
+### Paper Dev R0: GPT-5.3-Codex-Spark
+
+- Checked live backend availability before launching real runs: Qwen was not served on `localhost:8000`; Codex CLI was available.
+- Ran the first prompt-controlled dev split R0 with `gpt_5_3_codex_spark_batch_strict`: 3 dev profiles x 3 steps/profile x 6 branches/step.
+- Run directories:
+  - `runs/paper_dev/model_comparison/paper_dev_gpt53spark_r0_gpt_5_3_codex_spark_batch_strict_hard_balanced_dev`
+  - `runs/paper_dev/model_comparison/paper_dev_gpt53spark_r0_gpt_5_3_codex_spark_batch_strict_hard_range_dev`
+  - `runs/paper_dev/model_comparison/paper_dev_gpt53spark_r0_gpt_5_3_codex_spark_batch_strict_hard_churn_dev`
+- All three runs passed `vao.validate_run`: 9 steps and 54 branch evaluations total.
+- Aggregate summary: `105.0s/step`, best visible loss `0.1784`, best counterfactual loss `0.1087`, mean routing regret `0.7856`, parse/source-validation failure rate `0.0741`, verifier failure rate `0.0370`.
+- Routing top-1 matched a verified-best mode on 2/9 steps; this is useful because it exposes routing errors across tasks before any student training.
+- Generated `artifacts/paper_dev_gpt53spark_r0_*` summaries, routing dataset, failure modes, routing-choice visuals, and per-run diagnostic plots.
