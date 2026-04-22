@@ -308,3 +308,19 @@
 - Interpretation: Qwen direct was faster and safer on this run, but mostly selected `layout` and found only small improvements. Haiku explored more modes and found much lower counterfactual losses, but two selected visible branches were incorrect and the run became unstable late.
 - Generated combined artifacts: `artifacts/haiku_vs_qwen_10step_r0_summary.*`, `artifacts/haiku_vs_qwen_10step_r0_estimators.csv`, `artifacts/haiku_vs_qwen_10step_r0_routing_dataset.jsonl`, and diagnostic plots under `artifacts/plots/run_hard_haiku_batch_10step_r0/` and `artifacts/plots/run_hard_qwen_direct_10step_r0/`.
 - Stopped the Qwen server and released the Engaging GPU allocation after the run completed.
+
+### Haiku vs Qwen Hard-Profile R0-R2
+
+- Ran two additional 10-step repeats for both Haiku batch and Qwen direct, producing three validated repeats per backend.
+- Validated runs:
+  - `runs/hard_profile/haiku_vs_qwen/haiku_batch/hard_haiku_batch_10step_r0`
+  - `runs/hard_profile/haiku_vs_qwen/haiku_batch/hard_haiku_batch_10step_r1`
+  - `runs/hard_profile/haiku_vs_qwen/haiku_batch/hard_haiku_batch_10step_r2`
+  - `runs/hard_profile/haiku_vs_qwen/qwen_direct/hard_qwen_direct_10step_r0`
+  - `runs/hard_profile/haiku_vs_qwen/qwen_direct/hard_qwen_direct_10step_r1`
+  - `runs/hard_profile/haiku_vs_qwen/qwen_direct/hard_qwen_direct_10step_r2`
+- Total validated matrix: 6 runs, 60 steps, and 360 branch evaluations.
+- Haiku aggregate R0-R2: `251.4s/step`, `$5.626` total cost, routing `5/30`, branch correctness `0.67`, selected-branch correctness `0.63`, best visible loss `0.1652`, best counterfactual loss `0.1010`.
+- Qwen direct aggregate R0-R2: `188.4s/step`, local serving cost `$0`, routing `4/30`, branch correctness `1.00`, selected-branch correctness `1.00`, best visible loss `0.9708`, best counterfactual loss `0.9690`.
+- Interpretation: Qwen direct is faster and much safer but conservative; Haiku produces better optimization opportunities and lower losses but has substantially more candidate failures.
+- Generated `artifacts/haiku_vs_qwen_10step_r0_r2_summary.*`, `artifacts/haiku_vs_qwen_10step_r0_r2_estimators.csv`, `artifacts/haiku_vs_qwen_10step_r0_r2_routing_dataset.jsonl`, and diagnostic plots for R1/R2.

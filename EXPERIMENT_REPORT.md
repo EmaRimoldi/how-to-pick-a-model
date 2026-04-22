@@ -689,3 +689,29 @@ Artifacts:
 - `artifacts/haiku_vs_qwen_10step_r0_routing_dataset.jsonl`
 - `artifacts/plots/run_hard_haiku_batch_10step_r0/`
 - `artifacts/plots/run_hard_qwen_direct_10step_r0/`
+
+## Haiku vs Qwen Hard-Profile R0-R2
+
+The comparison now has three validated repeats per backend: 6 total runs, 60 total steps, and 360 branch evaluations.
+
+| backend | runs | steps | sec/step | routing correct | mean regret | branch correct | selected correct | best visible | best counterfactual | cost |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Haiku batch structured edits | 3 | 30 | 251.4 | 5/30 | 0.4248 | 0.67 | 0.63 | 0.1652 | 0.1010 | `$5.626` |
+| Qwen 1.5B direct-file edit | 3 | 30 | 188.4 | 4/30 | 0.0167 | 1.00 | 1.00 | 0.9708 | 0.9690 | `$0` local |
+
+Main conclusions:
+
+- Haiku remains the stronger optimizer. It found the best visible and counterfactual losses by a wide margin.
+- Qwen direct remains the safer weak baseline. Across 180 branch evaluations, all branches were verifier-correct and all selected branches were correct.
+- Qwen routing is conservative: it selected `layout` 27/30 times, while verified-best branches were spread across all modes.
+- Haiku routing is more diverse but still weak: 5/30 selected modes matched the best verified branch.
+- Mean regret is not directly comparable as model quality alone because Haiku sometimes takes large incorrect-branch penalties while Qwen mostly makes small but safe local edits.
+
+For this report, "best mode" is the declared branch mode with minimum verified `latent_loss` at that step. This keeps the six controlled C(a) branch identities distinct from the diff-inferred mode classifier.
+
+Artifacts:
+
+- `artifacts/haiku_vs_qwen_10step_r0_r2_summary.json`
+- `artifacts/haiku_vs_qwen_10step_r0_r2_summary.md`
+- `artifacts/haiku_vs_qwen_10step_r0_r2_estimators.csv`
+- `artifacts/haiku_vs_qwen_10step_r0_r2_routing_dataset.jsonl`
