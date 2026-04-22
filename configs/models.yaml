@@ -39,6 +39,19 @@ models:
     max_tokens_edit: 4096
     max_tokens_batch: 12000
     retries: 1
+  claude_haiku_batch_strict:
+    adapter: claude_haiku
+    model_id: haiku
+    transport: cli
+    edit_protocol: structured_edits
+    temperature: 0.2
+    timeout_seconds: 420
+    max_budget_usd: 0.8
+    max_tokens_distribution: 2048
+    max_tokens_edit: 4096
+    max_tokens_batch: 12000
+    retries: 1
+    allow_batch_repair: false
   claude_haiku_diff_legacy:
     adapter: claude_haiku
     model_id: haiku
@@ -94,6 +107,21 @@ models:
     max_tokens_batch: 12000
     retries: 1
     use_response_format: true
+  weak_qwen_batch_strict:
+    adapter: openai_compatible
+    model_id: Qwen/Qwen2.5-Coder-1.5B-Instruct
+    base_url: http://localhost:8000/v1
+    edit_protocol: structured_edits
+    temperature: 0.2
+    timeout_seconds: 900
+    max_tokens_distribution: 2048
+    max_tokens_edit: 4096
+    max_tokens_batch: 12000
+    retries: 1
+    use_response_format: true
+    allow_response_format_retry: false
+    batch_fallback_to_per_mode: false
+    allow_batch_repair: false
   weak_qwen_direct:
     adapter: openai_compatible_direct_edit
     model_id: Qwen/Qwen2.5-Coder-1.5B-Instruct

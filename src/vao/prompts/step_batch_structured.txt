@@ -8,6 +8,11 @@ Task: in one response, produce:
 2. A ranking of those six modes.
 3. Exactly one compact structured edit candidate for each mode.
 
+This is the only model-generation prompt for this step. Do not wait for
+separate per-mode instructions. Propose all six mode-specific branch edits in
+this single response. The framework will apply each edit locally to its own
+branch copy and evaluate all six materialized files offline.
+
 Return only structured JSON matching the requested schema. Do not include
 markdown or commentary.
 

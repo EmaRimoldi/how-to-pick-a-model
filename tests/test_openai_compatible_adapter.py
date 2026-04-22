@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+import pytest
+
 from vao.agents.base import AgentState
 from vao.agents.openai_compatible_adapter import OpenAICompatibleAdapter
 from vao.taxonomy import MODES
@@ -74,6 +76,35 @@ def test_openai_compatible_batched_invalid_candidate_becomes_logged_noop(tmp_pat
     assert micro.validation_failures == ["candidate_rejected_from_batch"]
     assert any("batch_candidate_invalid" in error for error in micro.errors)
     assert Path(micro.file_path).read_text(encoding="utf-8") == parent_source
+
+
+def test_strict_batched_adapter_does_not_repair_with_second_prompt(tmp_path: Path) -> None:
+    parent_source = Path("benchmarks/stateful_query_engine/solution_template.py").read_text(encoding="utf-8")
+    run_dir = tmp_path / "run"
+    workspace = run_dir / "workspace" / "solution.py"
+    workspace.parent.mkdir(parents=True)
+    workspace.write_text(parent_source, encoding="utf-8")
+    branch_dirs = create_step_branches(run_dir, 0, workspace, MODES)
+
+    class InvalidStrictBatchAdapter(OpenAICompatibleAdapter):
+        def __init__(self) -> None:
+            super().__init__(
+                model_id="Qwen/Qwen2.5-Coder-1.5B-Instruct",
+                base_url="http://localhost:8000/v1",
+                timeout_seconds=1,
+                allow_batch_repair=False,
+                batch_fallback_to_per_mode=False,
+            )
+            self.calls = 0
+
+        def _complete(self, prompt: str, schema: dict[str, Any], max_tokens: int) -> tuple[str, dict[str, Any]]:
+            self.calls += 1
+            return "not json", {"transport": "openai_compatible"}
+
+    adapter = InvalidStrictBatchAdapter()
+    with pytest.raises(Exception):
+        adapter.propose_step_batch(_state(workspace, parent_source), branch_dirs)
+    assert adapter.calls == 1
 
 
 def _state(workspace: Path, parent_source: str) -> AgentState:

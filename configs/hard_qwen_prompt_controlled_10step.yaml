@@ -1,7 +1,7 @@
 experiment:
-  name: hard_qwen_prompt_controlled_10step
+  name: hard_qwen_single_prompt_10step
   visibility_regime: top1_only
-  candidate_generation: per_mode
+  candidate_generation: batched
   modes: [layout, indexing, topk, caching, summaries, micro]
   steps: 10
   wall_budget_seconds: 14400
@@ -16,7 +16,7 @@ benchmark:
   profiles: [hard_optimization]
 
 models:
-  include: [weak_qwen]
+  include: [weak_qwen_batch_strict]
 
 output:
-  root: runs/hard_profile/prompt_controlled/qwen_structured
+  root: runs/hard_profile/single_prompt/qwen_batch_structured

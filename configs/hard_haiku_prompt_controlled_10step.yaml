@@ -1,7 +1,7 @@
 experiment:
-  name: hard_haiku_prompt_controlled_10step
+  name: hard_haiku_single_prompt_10step
   visibility_regime: top1_only
-  candidate_generation: per_mode
+  candidate_generation: batched
   modes: [layout, indexing, topk, caching, summaries, micro]
   steps: 10
   wall_budget_seconds: 14400
@@ -16,7 +16,7 @@ benchmark:
   profiles: [hard_optimization]
 
 models:
-  include: [claude_haiku]
+  include: [claude_haiku_batch_strict]
 
 output:
-  root: runs/hard_profile/prompt_controlled/haiku_structured
+  root: runs/hard_profile/single_prompt/haiku_batch_structured

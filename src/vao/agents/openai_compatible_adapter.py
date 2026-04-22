@@ -46,6 +46,7 @@ class OpenAICompatibleAdapter(ClaudeHaikuAdapter):
         retries: int = 1,
         edit_protocol: str = "structured_edits",
         use_response_format: bool = True,
+        allow_response_format_retry: bool = True,
         batch_fallback_to_per_mode: bool = True,
         extra_body: dict[str, Any] | None = None,
         **kwargs: object,
@@ -66,6 +67,7 @@ class OpenAICompatibleAdapter(ClaudeHaikuAdapter):
         self.base_url = os.environ.get("OPENAI_COMPATIBLE_BASE_URL", base_url).rstrip("/")
         self.api_key = api_key or os.environ.get("OPENAI_COMPATIBLE_API_KEY") or os.environ.get("OPENAI_API_KEY")
         self.use_response_format = bool(use_response_format)
+        self.allow_response_format_retry = bool(allow_response_format_retry)
         self.batch_fallback_to_per_mode = bool(batch_fallback_to_per_mode)
         self.extra_body = extra_body or {}
 
@@ -102,7 +104,7 @@ class OpenAICompatibleAdapter(ClaudeHaikuAdapter):
         """Return model text plus normalized usage metadata."""
         errors: list[str] = []
         attempts = [self.use_response_format]
-        if self.use_response_format:
+        if self.use_response_format and self.allow_response_format_retry:
             attempts.append(False)
         for include_response_format in attempts:
             try:

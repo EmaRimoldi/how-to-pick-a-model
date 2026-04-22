@@ -102,7 +102,7 @@ class ClaudeHaikuAdapter:
             payload = parse_json_object(raw)
         except (BackendUnavailable, ModelOutputError, RuntimeError) as exc:
             failures.append(f"batch_parse_failed:{type(exc).__name__}:{exc}")
-            if raw:
+            if raw and bool(self.config.get("allow_batch_repair", True)):
                 repair_prompt = render_template("repair_json.txt", failure_details=str(exc), raw_response=raw)
                 raw, meta = self._complete(repair_prompt, self._step_batch_schema(), int(self.config.get("max_tokens_batch", 12000)))
                 payload = parse_json_object(raw)
