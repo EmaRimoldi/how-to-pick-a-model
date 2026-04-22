@@ -391,3 +391,9 @@
 - `gpt-5.2-codex` is not available through the current Codex ChatGPT account; the CLI returned `invalid_request_error: model is not supported when using Codex with a ChatGPT account`.
 - A full Sonnet C(a) smoke timed out at 600 seconds before producing `evaluations.jsonl`. Minimal CLI probes for Haiku, Sonnet, and Opus 4.6 succeeded, but Sonnet/Opus still need full-step validation before inclusion in a sweep.
 - Validation after changes: `pytest -q` passed with 70 tests; `python -m vao.verifier --smoke_test` passed; `vao.validate_run` passed for Haiku, Qwen Coder, and all four completed GPT/Codex full-step smokes.
+
+### Diagnostic Run Cleanup
+
+- Removed raw failed, superseded, or incomplete diagnostic run directories that were adding noise under `runs/`.
+- Kept validated primary runs and compact summary artifacts used by current reports.
+- Wrote cleanup manifests: `artifacts/diagnostic_run_cleanup_2026_04_22.json` and `artifacts/diagnostic_run_cleanup_2026_04_22.md`.
