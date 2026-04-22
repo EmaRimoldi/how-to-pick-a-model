@@ -1,0 +1,69 @@
+{
+  "purpose": "Compact catalog of retained artifacts after cleanup.",
+  "retention_policy": [
+    "Keep current primary hard-profile comparison outputs.",
+    "Keep validated teacher/student routing outputs.",
+    "Keep offline/replay routing analysis outputs.",
+    "Keep single-prompt smoke readouts and verifier smoke output.",
+    "Remove superseded Phase 1/2/3/3.5, one-off smoke, raw probe, and intermediate diagnostic artifacts."
+  ],
+  "categories": {
+    "primary_hard_profile_comparison": [
+      "haiku_vs_qwen_10step_r0_r4_summary.json",
+      "haiku_vs_qwen_10step_r0_r4_summary.md",
+      "haiku_vs_qwen_10step_r0_r4_estimators.csv",
+      "haiku_vs_qwen_10step_r0_r4_routing_dataset.jsonl",
+      "haiku_vs_qwen_10step_r0_r4_visuals.md",
+      "haiku_vs_qwen_r0_r4_failure_analysis.json",
+      "haiku_vs_qwen_r0_r4_failure_analysis.md"
+    ],
+    "single_prompt_smokes": [
+      "single_prompt_smoke_readout.json",
+      "single_prompt_smoke_readout.md"
+    ],
+    "teacher_and_student": [
+      "phase4_teacher_routing_dataset.jsonl",
+      "phase4_teacher_run_index.json",
+      "phase4_teacher_dev_summary.json",
+      "phase4_teacher_dev_estimators.csv",
+      "phase4_teacher_dev_failure_modes.json",
+      "phase4_teacher_pilot_summary.json",
+      "phase4_teacher_pilot_estimators.csv",
+      "phase4_teacher_pilot_failure_modes.json",
+      "phase4_teacher_pilot_routing_dataset.jsonl",
+      "phase5_routing_train_summary.json",
+      "phase5_routing_eval_summary.json",
+      "phase5_online_router_comparison.json",
+      "phase5_online_router_summary.json",
+      "phase5_online_router_estimators.csv",
+      "phase5_online_router_failure_modes.json"
+    ],
+    "offline_routing": [
+      "offline_routing_dataset_audit.json",
+      "offline_routing_dataset_audit.md",
+      "offline_routing_train_summary.json",
+      "offline_routing_eval_summary.json",
+      "offline_routing_model_comparison.json",
+      "offline_router_leaderboard.json",
+      "offline_router_leaderboard.md",
+      "offline_lora_router_summary.json",
+      "offline_lora_router_predictions.json",
+      "local_lora_smoke.json",
+      "local_training_stack_audit.json",
+      "replay_router_comparison.json",
+      "replay_router_comparison.md",
+      "replay_online_like_summary.json",
+      "replay_online_like_summary.md",
+      "routing_failure_analysis.md",
+      "routing_confusion_analysis.json",
+      "routing_choice_summary.json",
+      "routing_choice_visuals.md"
+    ],
+    "planning_and_validation": [
+      "future_teacher_scaling_plan.md",
+      "diagnostic_run_cleanup_2026_04_22.json",
+      "diagnostic_run_cleanup_2026_04_22.md",
+      "verifier_smoke/"
+    ]
+  }
+}

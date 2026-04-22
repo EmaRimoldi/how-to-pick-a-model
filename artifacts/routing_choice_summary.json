@@ -1,919 +1,85 @@
 {
   "datasets": [
     {
-      "accuracy_by_productive_label": 0.6,
-      "accuracy_by_verified_best": 0.6,
+      "accuracy_by_productive_label": 0.4,
+      "accuracy_by_verified_best": 0.34,
       "by_profile": {
-        "development": {
-          "accuracy": 0.6,
-          "correct": 9,
-          "incorrect": 6,
-          "total": 15
-        },
-        "memory_development": {
-          "accuracy": 0.6,
-          "correct": 9,
-          "incorrect": 6,
-          "total": 15
-        },
-        "paper_development": {
-          "accuracy": 0.6,
-          "correct": 9,
-          "incorrect": 6,
-          "total": 15
-        }
-      },
-      "confusion_selected_vs_verified_best": {
-        "caching": {
-          "caching": 0,
-          "indexing": 18,
-          "layout": 0,
-          "micro": 0,
-          "summaries": 0,
-          "topk": 0
-        },
-        "indexing": {
-          "caching": 0,
-          "indexing": 27,
-          "layout": 0,
-          "micro": 0,
-          "summaries": 0,
-          "topk": 0
-        },
-        "layout": {
-          "caching": 0,
-          "indexing": 0,
-          "layout": 0,
-          "micro": 0,
-          "summaries": 0,
-          "topk": 0
-        },
-        "micro": {
-          "caching": 0,
-          "indexing": 0,
-          "layout": 0,
-          "micro": 0,
-          "summaries": 0,
-          "topk": 0
-        },
-        "summaries": {
-          "caching": 0,
-          "indexing": 0,
-          "layout": 0,
-          "micro": 0,
-          "summaries": 0,
-          "topk": 0
-        },
-        "topk": {
-          "caching": 0,
-          "indexing": 0,
-          "layout": 0,
-          "micro": 0,
-          "summaries": 0,
-          "topk": 0
-        }
-      },
-      "correct_by_productive_label": 27,
-      "correct_by_verified_best": 27,
-      "incorrect_by_productive_label": 18,
-      "incorrect_by_verified_best": 18,
-      "mean_routing_regret": 0.48363515115352895,
-      "name": "phase2_local",
-      "path": "artifacts/phase2_routing_dataset.jsonl",
-      "positive_regret_count": 18,
-      "record_count": 45,
-      "rows": [
-        {
-          "best_gain": 0.43656774597175896,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_development_rep0",
-          "selected_gain": 0.43656774597175896,
-          "selected_mode": "indexing",
-          "step": 0,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": -0.04207564575672973,
-          "correct_by_productive_label": false,
-          "correct_by_verified_best": false,
-          "productive_mode_top1": "layout",
-          "profile_id": "development",
-          "routing_regret": 1.185792806491522,
-          "run_id": "phase2_development_rep0",
-          "selected_gain": -1.2278684522482517,
-          "selected_mode": "caching",
-          "step": 1,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 1.210080639611896,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_development_rep0",
-          "selected_gain": 1.210080639611896,
-          "selected_mode": "indexing",
-          "step": 2,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": -0.009150855286872983,
-          "correct_by_productive_label": false,
-          "correct_by_verified_best": false,
-          "productive_mode_top1": "layout",
-          "profile_id": "development",
-          "routing_regret": 1.188447978977834,
-          "run_id": "phase2_development_rep0",
-          "selected_gain": -1.1975988342647068,
-          "selected_mode": "caching",
-          "step": 3,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 1.171305197174831,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_development_rep0",
-          "selected_gain": 1.171305197174831,
-          "selected_mode": "indexing",
-          "step": 4,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 0.414596068899119,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_development_rep1",
-          "selected_gain": 0.414596068899119,
-          "selected_mode": "indexing",
-          "step": 0,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": -0.0475833024986872,
-          "correct_by_productive_label": false,
-          "correct_by_verified_best": false,
-          "productive_mode_top1": "layout",
-          "profile_id": "development",
-          "routing_regret": 1.0575082979157557,
-          "run_id": "phase2_development_rep1",
-          "selected_gain": -1.1050916004144429,
-          "selected_mode": "caching",
-          "step": 1,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 1.0383789623970776,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_development_rep1",
-          "selected_gain": 1.0383789623970776,
-          "selected_mode": "indexing",
-          "step": 2,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 0.01863949496929196,
-          "correct_by_productive_label": false,
-          "correct_by_verified_best": false,
-          "productive_mode_top1": "indexing",
-          "profile_id": "development",
-          "routing_regret": 1.0397708223723847,
-          "run_id": "phase2_development_rep1",
-          "selected_gain": -1.0211313274030926,
-          "selected_mode": "caching",
-          "step": 3,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 1.0536368653075998,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_development_rep1",
-          "selected_gain": 1.0536368653075998,
-          "selected_mode": "indexing",
-          "step": 4,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 0.3705549757468203,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_development_rep2",
-          "selected_gain": 0.3705549757468203,
-          "selected_mode": "indexing",
-          "step": 0,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": -0.018649474242802055,
-          "correct_by_productive_label": false,
-          "correct_by_verified_best": false,
-          "productive_mode_top1": "layout",
-          "profile_id": "development",
-          "routing_regret": 0.9936838087557216,
-          "run_id": "phase2_development_rep2",
-          "selected_gain": -1.0123332829985237,
-          "selected_mode": "caching",
-          "step": 1,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 1.060507433859231,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_development_rep2",
-          "selected_gain": 1.060507433859231,
-          "selected_mode": "indexing",
-          "step": 2,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": -0.028057630391748023,
-          "correct_by_productive_label": false,
-          "correct_by_verified_best": false,
-          "productive_mode_top1": "layout",
-          "profile_id": "development",
-          "routing_regret": 1.0940061843993676,
-          "run_id": "phase2_development_rep2",
-          "selected_gain": -1.1220638147911155,
-          "selected_mode": "caching",
-          "step": 3,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 1.1016964144825467,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_development_rep2",
-          "selected_gain": 1.1016964144825467,
-          "selected_mode": "indexing",
-          "step": 4,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 0.25384402031312536,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "memory_development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_memory_development_rep0",
-          "selected_gain": 0.25384402031312536,
-          "selected_mode": "indexing",
-          "step": 0,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 0.016972523033803755,
-          "correct_by_productive_label": false,
-          "correct_by_verified_best": false,
-          "productive_mode_top1": "indexing",
-          "profile_id": "memory_development",
-          "routing_regret": 1.1356416998244954,
-          "run_id": "phase2_memory_development_rep0",
-          "selected_gain": -1.1186691767906916,
-          "selected_mode": "caching",
-          "step": 1,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 1.103859330509258,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "memory_development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_memory_development_rep0",
-          "selected_gain": 1.103859330509258,
-          "selected_mode": "indexing",
-          "step": 2,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 0.04796351893129497,
-          "correct_by_productive_label": false,
-          "correct_by_verified_best": false,
-          "productive_mode_top1": "indexing",
-          "profile_id": "memory_development",
-          "routing_regret": 1.153567175561288,
-          "run_id": "phase2_memory_development_rep0",
-          "selected_gain": -1.105603656629993,
-          "selected_mode": "caching",
-          "step": 3,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 1.1142921618259263,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "memory_development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_memory_development_rep0",
-          "selected_gain": 1.1142921618259263,
-          "selected_mode": "indexing",
-          "step": 4,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 0.4774505719610197,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "memory_development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_memory_development_rep1",
-          "selected_gain": 0.4774505719610197,
-          "selected_mode": "indexing",
-          "step": 0,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 0.0040029589059766835,
-          "correct_by_productive_label": false,
-          "correct_by_verified_best": false,
-          "productive_mode_top1": "indexing",
-          "profile_id": "memory_development",
-          "routing_regret": 1.5550800071884905,
-          "run_id": "phase2_memory_development_rep1",
-          "selected_gain": -1.5510770482825138,
-          "selected_mode": "caching",
-          "step": 1,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 1.532429967583492,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "memory_development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_memory_development_rep1",
-          "selected_gain": 1.532429967583492,
-          "selected_mode": "indexing",
-          "step": 2,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": -0.03579464894707973,
-          "correct_by_productive_label": false,
-          "correct_by_verified_best": false,
-          "productive_mode_top1": "layout",
-          "profile_id": "memory_development",
-          "routing_regret": 1.3962815661503902,
-          "run_id": "phase2_memory_development_rep1",
-          "selected_gain": -1.43207621509747,
-          "selected_mode": "caching",
-          "step": 3,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 1.4453214740906004,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "memory_development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_memory_development_rep1",
-          "selected_gain": 1.4453214740906004,
-          "selected_mode": "indexing",
-          "step": 4,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 0.3323229094786112,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "memory_development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_memory_development_rep2",
-          "selected_gain": 0.3323229094786112,
-          "selected_mode": "indexing",
-          "step": 0,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 0.032866142067971005,
-          "correct_by_productive_label": false,
-          "correct_by_verified_best": false,
-          "productive_mode_top1": "indexing",
-          "profile_id": "memory_development",
-          "routing_regret": 1.3972438375857696,
-          "run_id": "phase2_memory_development_rep2",
-          "selected_gain": -1.3643776955177986,
-          "selected_mode": "caching",
-          "step": 1,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 1.3706936056120367,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "memory_development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_memory_development_rep2",
-          "selected_gain": 1.3706936056120367,
-          "selected_mode": "indexing",
-          "step": 2,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": -0.04733221733094373,
-          "correct_by_productive_label": false,
-          "correct_by_verified_best": false,
-          "productive_mode_top1": "layout",
-          "profile_id": "memory_development",
-          "routing_regret": 1.3362581234486086,
-          "run_id": "phase2_memory_development_rep2",
-          "selected_gain": -1.3835903407795525,
-          "selected_mode": "caching",
-          "step": 3,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 1.410680829702784,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "memory_development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_memory_development_rep2",
-          "selected_gain": 1.410680829702784,
-          "selected_mode": "indexing",
-          "step": 4,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 0.4524566864292706,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "paper_development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_paper_development_rep0",
-          "selected_gain": 0.4524566864292706,
-          "selected_mode": "indexing",
-          "step": 0,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 0.0313924449519849,
-          "correct_by_productive_label": false,
-          "correct_by_verified_best": false,
-          "productive_mode_top1": "indexing",
-          "profile_id": "paper_development",
-          "routing_regret": 1.236808923752657,
-          "run_id": "phase2_paper_development_rep0",
-          "selected_gain": -1.205416478800672,
-          "selected_mode": "caching",
-          "step": 1,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 1.2565467602915128,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "paper_development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_paper_development_rep0",
-          "selected_gain": 1.2565467602915128,
-          "selected_mode": "indexing",
-          "step": 2,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": -0.034253115884410934,
-          "correct_by_productive_label": false,
-          "correct_by_verified_best": false,
-          "productive_mode_top1": "layout",
-          "profile_id": "paper_development",
-          "routing_regret": 1.2222964126301306,
-          "run_id": "phase2_paper_development_rep0",
-          "selected_gain": -1.2565495285145416,
-          "selected_mode": "caching",
-          "step": 3,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 1.2206163606106848,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "paper_development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_paper_development_rep0",
-          "selected_gain": 1.2206163606106848,
-          "selected_mode": "indexing",
-          "step": 4,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 0.36213833232714787,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "paper_development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_paper_development_rep1",
-          "selected_gain": 0.36213833232714787,
-          "selected_mode": "indexing",
-          "step": 0,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 0.015538181195362766,
-          "correct_by_productive_label": false,
-          "correct_by_verified_best": false,
-          "productive_mode_top1": "indexing",
-          "profile_id": "paper_development",
-          "routing_regret": 1.141208741149115,
-          "run_id": "phase2_paper_development_rep1",
-          "selected_gain": -1.1256705599537522,
-          "selected_mode": "caching",
-          "step": 1,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 1.1858746534014286,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "paper_development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_paper_development_rep1",
-          "selected_gain": 1.1858746534014286,
-          "selected_mode": "indexing",
-          "step": 2,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": -0.03309397893542909,
-          "correct_by_productive_label": false,
-          "correct_by_verified_best": false,
-          "productive_mode_top1": "layout",
-          "profile_id": "paper_development",
-          "routing_regret": 1.12732325787775,
-          "run_id": "phase2_paper_development_rep1",
-          "selected_gain": -1.1604172368131789,
-          "selected_mode": "caching",
-          "step": 3,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 1.1366772801047755,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "paper_development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_paper_development_rep1",
-          "selected_gain": 1.1366772801047755,
-          "selected_mode": "indexing",
-          "step": 4,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 0.3976847339758065,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "paper_development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_paper_development_rep2",
-          "selected_gain": 0.3976847339758065,
-          "selected_mode": "indexing",
-          "step": 0,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 0.06046328416190161,
-          "correct_by_productive_label": false,
-          "correct_by_verified_best": false,
-          "productive_mode_top1": "indexing",
-          "profile_id": "paper_development",
-          "routing_regret": 1.2502512105610237,
-          "run_id": "phase2_paper_development_rep2",
-          "selected_gain": -1.1897879263991222,
-          "selected_mode": "caching",
-          "step": 1,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 1.226322665388517,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "paper_development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_paper_development_rep2",
-          "selected_gain": 1.226322665388517,
-          "selected_mode": "indexing",
-          "step": 2,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 0.0056691414247918015,
-          "correct_by_productive_label": false,
-          "correct_by_verified_best": false,
-          "productive_mode_top1": "indexing",
-          "profile_id": "paper_development",
-          "routing_regret": 1.2524109472664982,
-          "run_id": "phase2_paper_development_rep2",
-          "selected_gain": -1.2467418058417064,
-          "selected_mode": "caching",
-          "step": 3,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": 1.2580992896341274,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "paper_development",
-          "routing_regret": 0.0,
-          "run_id": "phase2_paper_development_rep2",
-          "selected_gain": 1.2580992896341274,
-          "selected_mode": "indexing",
-          "step": 4,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        }
-      ],
-      "selected_mode_counts": {
-        "caching": 18,
-        "indexing": 27,
-        "layout": 0,
-        "micro": 0,
-        "summaries": 0,
-        "topk": 0
-      },
-      "verified_best_mode_counts": {
-        "caching": 0,
-        "indexing": 45,
-        "layout": 0,
-        "micro": 0,
-        "summaries": 0,
-        "topk": 0
-      },
-      "zero_regret_count": 27
-    },
-    {
-      "accuracy_by_productive_label": 0.36363636363636365,
-      "accuracy_by_verified_best": 0.36363636363636365,
-      "by_profile": {
-        "development": {
-          "accuracy": 0.0,
-          "correct": 0,
-          "incorrect": 3,
-          "total": 3
-        },
-        "memory_development": {
-          "accuracy": 0.3333333333333333,
-          "correct": 1,
-          "incorrect": 2,
-          "total": 3
-        },
-        "paper_development": {
-          "accuracy": 0.6,
-          "correct": 3,
-          "incorrect": 2,
-          "total": 5
+        "hard_optimization": {
+          "accuracy": 0.34,
+          "correct": 34,
+          "incorrect": 66,
+          "total": 100
         }
       },
       "confusion_selected_vs_verified_best": {
         "caching": {
           "caching": 0,
           "indexing": 0,
-          "layout": 0,
-          "micro": 0,
-          "summaries": 0,
-          "topk": 0
-        },
-        "indexing": {
-          "caching": 0,
-          "indexing": 3,
-          "layout": 1,
-          "micro": 0,
-          "summaries": 0,
-          "topk": 0
-        },
-        "layout": {
-          "caching": 0,
-          "indexing": 0,
-          "layout": 0,
-          "micro": 0,
-          "summaries": 0,
-          "topk": 0
-        },
-        "micro": {
-          "caching": 0,
-          "indexing": 0,
-          "layout": 0,
-          "micro": 0,
-          "summaries": 0,
-          "topk": 0
-        },
-        "summaries": {
-          "caching": 0,
-          "indexing": 0,
-          "layout": 0,
+          "layout": 3,
           "micro": 1,
-          "summaries": 0,
-          "topk": 1
+          "summaries": 1,
+          "topk": 0
         },
-        "topk": {
+        "indexing": {
           "caching": 1,
           "indexing": 1,
-          "layout": 2,
+          "layout": 4,
+          "micro": 1,
+          "summaries": 0,
+          "topk": 2
+        },
+        "layout": {
+          "caching": 5,
+          "indexing": 10,
+          "layout": 26,
+          "micro": 15,
+          "summaries": 5,
+          "topk": 9
+        },
+        "micro": {
+          "caching": 0,
+          "indexing": 0,
+          "layout": 0,
           "micro": 0,
           "summaries": 0,
-          "topk": 1
+          "topk": 0
+        },
+        "summaries": {
+          "caching": 0,
+          "indexing": 2,
+          "layout": 1,
+          "micro": 1,
+          "summaries": 0,
+          "topk": 2
+        },
+        "topk": {
+          "caching": 2,
+          "indexing": 0,
+          "layout": 4,
+          "micro": 3,
+          "summaries": 1,
+          "topk": 0
         }
       },
-      "correct_by_productive_label": 4,
-      "correct_by_verified_best": 4,
-      "incorrect_by_productive_label": 7,
-      "incorrect_by_verified_best": 7,
-      "mean_routing_regret": 1.179063963942385,
-      "name": "phase3_haiku_replacement",
-      "path": "artifacts/phase3_haiku_routing_dataset.jsonl",
-      "positive_regret_count": 7,
-      "record_count": 11,
+      "correct_by_productive_label": 40,
+      "correct_by_verified_best": 34,
+      "incorrect_by_productive_label": 60,
+      "incorrect_by_verified_best": 66,
+      "mean_routing_regret": 0.19405137723775723,
+      "name": "haiku_vs_qwen_r0_r4",
+      "path": "artifacts/haiku_vs_qwen_10step_r0_r4_routing_dataset.jsonl",
+      "positive_regret_count": 66,
+      "record_count": 100,
       "rows": [
         {
-          "best_gain": 0.3469819850813046,
+          "best_gain": 0.6486991043115375,
           "correct_by_productive_label": false,
           "correct_by_verified_best": false,
           "productive_mode_top1": "layout",
-          "profile_id": "development",
-          "routing_regret": 0.14930507409751925,
-          "run_id": "haiku_dev_development",
-          "selected_gain": 0.19767691098378537,
+          "profile_id": "hard_optimization",
+          "routing_regret": 1.6486991043115375,
+          "run_id": "hard_haiku_batch_10step_r0",
+          "selected_gain": -1.0,
           "selected_mode": "indexing",
           "step": 0,
           "verified_best_mode": "layout",
@@ -922,46 +88,326 @@
           ]
         },
         {
-          "best_gain": 0.10541694524762513,
-          "correct_by_productive_label": false,
-          "correct_by_verified_best": false,
+          "best_gain": 0.0,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
           "productive_mode_top1": "layout",
-          "profile_id": "development",
-          "routing_regret": 0.6454754482555376,
-          "run_id": "haiku_dev_development",
-          "selected_gain": -0.5400585030079125,
-          "selected_mode": "topk",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_haiku_batch_10step_r0",
+          "selected_gain": 0.0,
+          "selected_mode": "layout",
           "step": 1,
           "verified_best_mode": "layout",
           "verified_best_modes": [
-            "layout"
+            "layout",
+            "indexing"
           ]
         },
         {
-          "best_gain": 0.7100399763068374,
+          "best_gain": 0.07691430395799036,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "micro",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.14316856955997087,
+          "run_id": "hard_haiku_batch_10step_r0",
+          "selected_gain": -0.06625426560198053,
+          "selected_mode": "topk",
+          "step": 2,
+          "verified_best_mode": "micro",
+          "verified_best_modes": [
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.00935140030794454,
           "correct_by_productive_label": false,
           "correct_by_verified_best": false,
           "productive_mode_top1": "topk",
-          "profile_id": "development",
-          "routing_regret": 1.8756627799150722,
-          "run_id": "haiku_dev_development",
-          "selected_gain": -1.165622803608235,
+          "profile_id": "hard_optimization",
+          "routing_regret": 1.1747926253029992,
+          "run_id": "hard_haiku_batch_10step_r0",
+          "selected_gain": -1.1654412249950548,
           "selected_mode": "summaries",
-          "step": 2,
+          "step": 3,
           "verified_best_mode": "topk",
           "verified_best_modes": [
             "topk"
           ]
         },
         {
-          "best_gain": 0.3329544046083236,
+          "best_gain": 0.012410246089783916,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "summaries",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.015558642770896691,
+          "run_id": "hard_haiku_batch_10step_r0",
+          "selected_gain": -0.003148396681112775,
+          "selected_mode": "caching",
+          "step": 4,
+          "verified_best_mode": "summaries",
+          "verified_best_modes": [
+            "summaries"
+          ]
+        },
+        {
+          "best_gain": 0.10619826124484,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_haiku_batch_10step_r0",
+          "selected_gain": 0.10619826124484,
+          "selected_mode": "layout",
+          "step": 5,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.04722102107014914,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "indexing",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.056623365822031424,
+          "run_id": "hard_haiku_batch_10step_r0",
+          "selected_gain": -0.009402344751882286,
+          "selected_mode": "layout",
+          "step": 6,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.043899986247185385,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_haiku_batch_10step_r0",
+          "selected_gain": 0.043899986247185385,
+          "selected_mode": "layout",
+          "step": 7,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.023577179037882257,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "topk",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.023527302786397808,
+          "run_id": "hard_haiku_batch_10step_r0",
+          "selected_gain": 4.987625148444863e-05,
+          "selected_mode": "layout",
+          "step": 8,
+          "verified_best_mode": "topk",
+          "verified_best_modes": [
+            "topk"
+          ]
+        },
+        {
+          "best_gain": 0.022186126334572842,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "topk",
+          "profile_id": "hard_optimization",
+          "routing_regret": 1.0221861263345728,
+          "run_id": "hard_haiku_batch_10step_r0",
+          "selected_gain": -1.0,
+          "selected_mode": "layout",
+          "step": 9,
+          "verified_best_mode": "topk",
+          "verified_best_modes": [
+            "topk"
+          ]
+        },
+        {
+          "best_gain": 0.5961620258691056,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_haiku_batch_10step_r1",
+          "selected_gain": 0.5961620258691056,
+          "selected_mode": "layout",
+          "step": 0,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.13688496900226493,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "indexing",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.018690926538991737,
+          "run_id": "hard_haiku_batch_10step_r1",
+          "selected_gain": 0.1181940424632732,
+          "selected_mode": "layout",
+          "step": 1,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.08431900242672735,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "micro",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.8220583187931272,
+          "run_id": "hard_haiku_batch_10step_r1",
+          "selected_gain": -0.7377393163663999,
+          "selected_mode": "summaries",
+          "step": 2,
+          "verified_best_mode": "micro",
+          "verified_best_modes": [
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.03525830141589714,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "summaries",
+          "profile_id": "hard_optimization",
+          "routing_regret": 1.0352583014158971,
+          "run_id": "hard_haiku_batch_10step_r1",
+          "selected_gain": -1.0,
+          "selected_mode": "topk",
+          "step": 3,
+          "verified_best_mode": "summaries",
+          "verified_best_modes": [
+            "summaries"
+          ]
+        },
+        {
+          "best_gain": -1.0,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_haiku_batch_10step_r1",
+          "selected_gain": -1.0,
+          "selected_mode": "caching",
+          "step": 4,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout",
+            "indexing",
+            "topk",
+            "caching",
+            "summaries",
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.0,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 1.0,
+          "run_id": "hard_haiku_batch_10step_r1",
+          "selected_gain": -1.0,
+          "selected_mode": "layout",
+          "step": 5,
+          "verified_best_mode": "micro",
+          "verified_best_modes": [
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.0,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 1.0,
+          "run_id": "hard_haiku_batch_10step_r1",
+          "selected_gain": -1.0,
+          "selected_mode": "layout",
+          "step": 6,
+          "verified_best_mode": "micro",
+          "verified_best_modes": [
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.0,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 1.0,
+          "run_id": "hard_haiku_batch_10step_r1",
+          "selected_gain": -1.0,
+          "selected_mode": "layout",
+          "step": 7,
+          "verified_best_mode": "summaries",
+          "verified_best_modes": [
+            "summaries"
+          ]
+        },
+        {
+          "best_gain": 0.0,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_haiku_batch_10step_r1",
+          "selected_gain": 0.0,
+          "selected_mode": "topk",
+          "step": 8,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout",
+            "topk",
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.1425680177676678,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_haiku_batch_10step_r1",
+          "selected_gain": 0.1425680177676678,
+          "selected_mode": "layout",
+          "step": 9,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.8352971858261949,
           "correct_by_productive_label": true,
           "correct_by_verified_best": true,
           "productive_mode_top1": "indexing",
-          "profile_id": "memory_development",
+          "profile_id": "hard_optimization",
           "routing_regret": 0.0,
-          "run_id": "haiku_dev_memory_development",
-          "selected_gain": 0.3329544046083236,
+          "run_id": "hard_haiku_batch_10step_r2",
+          "selected_gain": 0.8352971858261949,
           "selected_mode": "indexing",
           "step": 0,
           "verified_best_mode": "indexing",
@@ -970,15 +416,15 @@
           ]
         },
         {
-          "best_gain": 0.019559090192327933,
+          "best_gain": 0.06427007945844983,
           "correct_by_productive_label": false,
           "correct_by_verified_best": false,
           "productive_mode_top1": "micro",
-          "profile_id": "memory_development",
-          "routing_regret": 4.54778683314594,
-          "run_id": "haiku_dev_memory_development",
-          "selected_gain": -4.528227742953612,
-          "selected_mode": "summaries",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.06623177491472589,
+          "run_id": "hard_haiku_batch_10step_r2",
+          "selected_gain": -0.001961695456276058,
+          "selected_mode": "caching",
           "step": 1,
           "verified_best_mode": "micro",
           "verified_best_modes": [
@@ -986,31 +432,666 @@
           ]
         },
         {
-          "best_gain": 4.548724558798914,
+          "best_gain": -0.03893336129250885,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.028689969955667416,
+          "run_id": "hard_haiku_batch_10step_r2",
+          "selected_gain": -0.06762333124817627,
+          "selected_mode": "indexing",
+          "step": 2,
+          "verified_best_mode": "micro",
+          "verified_best_modes": [
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.010074122077067343,
           "correct_by_productive_label": false,
           "correct_by_verified_best": false,
           "productive_mode_top1": "indexing",
-          "profile_id": "memory_development",
-          "routing_regret": 4.576755786414749,
-          "run_id": "haiku_dev_memory_development",
-          "selected_gain": -0.028031227615834986,
-          "selected_mode": "topk",
-          "step": 2,
+          "profile_id": "hard_optimization",
+          "routing_regret": 1.2580327054303069,
+          "run_id": "hard_haiku_batch_10step_r2",
+          "selected_gain": -1.2479585833532396,
+          "selected_mode": "summaries",
+          "step": 3,
           "verified_best_mode": "indexing",
           "verified_best_modes": [
             "indexing"
           ]
         },
         {
-          "best_gain": 0.4731696305001875,
+          "best_gain": 0.06876694088855984,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "caching",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.08144414424861446,
+          "run_id": "hard_haiku_batch_10step_r2",
+          "selected_gain": -0.012677203360054623,
+          "selected_mode": "indexing",
+          "step": 4,
+          "verified_best_mode": "caching",
+          "verified_best_modes": [
+            "caching"
+          ]
+        },
+        {
+          "best_gain": 0.08798755715626472,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "caching",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0871628222260985,
+          "run_id": "hard_haiku_batch_10step_r2",
+          "selected_gain": 0.0008247349301662155,
+          "selected_mode": "topk",
+          "step": 5,
+          "verified_best_mode": "caching",
+          "verified_best_modes": [
+            "caching"
+          ]
+        },
+        {
+          "best_gain": 0.006695065000740019,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "caching",
+          "profile_id": "hard_optimization",
+          "routing_regret": 1.00669506500074,
+          "run_id": "hard_haiku_batch_10step_r2",
+          "selected_gain": -1.0,
+          "selected_mode": "topk",
+          "step": 6,
+          "verified_best_mode": "caching",
+          "verified_best_modes": [
+            "caching"
+          ]
+        },
+        {
+          "best_gain": -1.0,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_haiku_batch_10step_r2",
+          "selected_gain": -1.0,
+          "selected_mode": "indexing",
+          "step": 7,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout",
+            "indexing",
+            "topk",
+            "caching",
+            "summaries",
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.0,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 1.0,
+          "run_id": "hard_haiku_batch_10step_r2",
+          "selected_gain": -1.0,
+          "selected_mode": "indexing",
+          "step": 8,
+          "verified_best_mode": "topk",
+          "verified_best_modes": [
+            "topk"
+          ]
+        },
+        {
+          "best_gain": -1.0,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_haiku_batch_10step_r2",
+          "selected_gain": -1.0,
+          "selected_mode": "indexing",
+          "step": 9,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout",
+            "indexing",
+            "topk",
+            "caching",
+            "summaries",
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.7128988655258703,
           "correct_by_productive_label": true,
           "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "paper_development",
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
           "routing_regret": 0.0,
-          "run_id": "haiku_dev_paper_development",
-          "selected_gain": 0.4731696305001875,
+          "run_id": "hard_haiku_batch_10step_r3_retry2",
+          "selected_gain": 0.7128988655258703,
+          "selected_mode": "layout",
+          "step": 0,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.11458636870628303,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "indexing",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.11449846483527626,
+          "run_id": "hard_haiku_batch_10step_r3_retry2",
+          "selected_gain": 8.7903871006767e-05,
+          "selected_mode": "summaries",
+          "step": 1,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.1254628388912362,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.9631044261576939,
+          "run_id": "hard_haiku_batch_10step_r3_retry2",
+          "selected_gain": -0.8376415872664577,
+          "selected_mode": "summaries",
+          "step": 2,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.15548201119713445,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 1.1554820111971345,
+          "run_id": "hard_haiku_batch_10step_r3_retry2",
+          "selected_gain": -1.0,
+          "selected_mode": "topk",
+          "step": 3,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": -1.0,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_haiku_batch_10step_r3_retry2",
+          "selected_gain": -1.0,
+          "selected_mode": "caching",
+          "step": 4,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout",
+            "indexing",
+            "topk",
+            "caching",
+            "summaries",
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.0,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 1.0,
+          "run_id": "hard_haiku_batch_10step_r3_retry2",
+          "selected_gain": -1.0,
+          "selected_mode": "layout",
+          "step": 5,
+          "verified_best_mode": "topk",
+          "verified_best_modes": [
+            "topk"
+          ]
+        },
+        {
+          "best_gain": -1.0,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_haiku_batch_10step_r3_retry2",
+          "selected_gain": -1.0,
           "selected_mode": "indexing",
+          "step": 6,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout",
+            "indexing",
+            "topk",
+            "caching",
+            "summaries",
+            "micro"
+          ]
+        },
+        {
+          "best_gain": -1.0,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_haiku_batch_10step_r3_retry2",
+          "selected_gain": -1.0,
+          "selected_mode": "layout",
+          "step": 7,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout",
+            "indexing",
+            "topk",
+            "caching",
+            "summaries",
+            "micro"
+          ]
+        },
+        {
+          "best_gain": -1.0,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_haiku_batch_10step_r3_retry2",
+          "selected_gain": -1.0,
+          "selected_mode": "layout",
+          "step": 8,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout",
+            "indexing",
+            "topk",
+            "caching",
+            "summaries",
+            "micro"
+          ]
+        },
+        {
+          "best_gain": -1.0,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_haiku_batch_10step_r3_retry2",
+          "selected_gain": -1.0,
+          "selected_mode": "topk",
+          "step": 9,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout",
+            "indexing",
+            "topk",
+            "caching",
+            "summaries",
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.8882161403787933,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_haiku_batch_10step_r4_retry1",
+          "selected_gain": 0.8882161403787933,
+          "selected_mode": "layout",
+          "step": 0,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.0028354215543798106,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "micro",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.08915197853187011,
+          "run_id": "hard_haiku_batch_10step_r4_retry1",
+          "selected_gain": -0.0863165569774903,
+          "selected_mode": "topk",
+          "step": 1,
+          "verified_best_mode": "micro",
+          "verified_best_modes": [
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.02124410829936252,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "topk",
+          "profile_id": "hard_optimization",
+          "routing_regret": 1.0212441082993626,
+          "run_id": "hard_haiku_batch_10step_r4_retry1",
+          "selected_gain": -1.0,
+          "selected_mode": "summaries",
+          "step": 2,
+          "verified_best_mode": "topk",
+          "verified_best_modes": [
+            "topk"
+          ]
+        },
+        {
+          "best_gain": 0.0,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 1.0,
+          "run_id": "hard_haiku_batch_10step_r4_retry1",
+          "selected_gain": -1.0,
+          "selected_mode": "caching",
+          "step": 3,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": -1.0,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_haiku_batch_10step_r4_retry1",
+          "selected_gain": -1.0,
+          "selected_mode": "layout",
+          "step": 4,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout",
+            "indexing",
+            "topk",
+            "caching",
+            "summaries",
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.0,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_haiku_batch_10step_r4_retry1",
+          "selected_gain": 0.0,
+          "selected_mode": "layout",
+          "step": 5,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.22732677998733242,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_haiku_batch_10step_r4_retry1",
+          "selected_gain": 0.22732677998733242,
+          "selected_mode": "layout",
+          "step": 6,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.0038401962117344812,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "indexing",
+          "profile_id": "hard_optimization",
+          "routing_regret": 1.0038401962117345,
+          "run_id": "hard_haiku_batch_10step_r4_retry1",
+          "selected_gain": -1.0,
+          "selected_mode": "layout",
+          "step": 7,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.0,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_haiku_batch_10step_r4_retry1",
+          "selected_gain": 0.0,
+          "selected_mode": "layout",
+          "step": 8,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout",
+            "topk",
+            "caching",
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.08799929803522544,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_haiku_batch_10step_r4_retry1",
+          "selected_gain": 0.08799929803522544,
+          "selected_mode": "layout",
+          "step": 9,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.00876146622693319,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "caching",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0025621171170170376,
+          "run_id": "hard_qwen_direct_10step_r0",
+          "selected_gain": 0.006199349109916152,
+          "selected_mode": "layout",
+          "step": 0,
+          "verified_best_mode": "caching",
+          "verified_best_modes": [
+            "caching"
+          ]
+        },
+        {
+          "best_gain": -0.007946064164309652,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.01576602749689493,
+          "run_id": "hard_qwen_direct_10step_r0",
+          "selected_gain": -0.023712091661204582,
+          "selected_mode": "layout",
+          "step": 1,
+          "verified_best_mode": "micro",
+          "verified_best_modes": [
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.022938164558281016,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "topk",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0017816264028619466,
+          "run_id": "hard_qwen_direct_10step_r0",
+          "selected_gain": 0.02115653815541907,
+          "selected_mode": "indexing",
+          "step": 2,
+          "verified_best_mode": "topk",
+          "verified_best_modes": [
+            "topk"
+          ]
+        },
+        {
+          "best_gain": -0.00563736796122194,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.05143824929319141,
+          "run_id": "hard_qwen_direct_10step_r0",
+          "selected_gain": -0.05707561725441335,
+          "selected_mode": "layout",
+          "step": 3,
+          "verified_best_mode": "micro",
+          "verified_best_modes": [
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.06113680758661855,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_qwen_direct_10step_r0",
+          "selected_gain": 0.06113680758661855,
+          "selected_mode": "layout",
+          "step": 4,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": -0.02401214473611668,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.00126384103934285,
+          "run_id": "hard_qwen_direct_10step_r0",
+          "selected_gain": -0.02527598577545953,
+          "selected_mode": "layout",
+          "step": 5,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.025767978557891813,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "caching",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.028695698370172718,
+          "run_id": "hard_qwen_direct_10step_r0",
+          "selected_gain": -0.0029277198122809045,
+          "selected_mode": "layout",
+          "step": 6,
+          "verified_best_mode": "caching",
+          "verified_best_modes": [
+            "caching"
+          ]
+        },
+        {
+          "best_gain": 0.005083681214946734,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_qwen_direct_10step_r0",
+          "selected_gain": 0.005083681214946734,
+          "selected_mode": "layout",
+          "step": 7,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.024890821414834674,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "micro",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.00988803436879282,
+          "run_id": "hard_qwen_direct_10step_r0",
+          "selected_gain": 0.015002787046041854,
+          "selected_mode": "layout",
+          "step": 8,
+          "verified_best_mode": "micro",
+          "verified_best_modes": [
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.009557318904240275,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "micro",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.028113870486772607,
+          "run_id": "hard_qwen_direct_10step_r0",
+          "selected_gain": -0.018556551582532332,
+          "selected_mode": "layout",
+          "step": 9,
+          "verified_best_mode": "micro",
+          "verified_best_modes": [
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.029077220652922398,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "indexing",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0010119453454181526,
+          "run_id": "hard_qwen_direct_10step_r1",
+          "selected_gain": 0.028065275307504245,
+          "selected_mode": "layout",
           "step": 0,
           "verified_best_mode": "indexing",
           "verified_best_modes": [
@@ -1018,15 +1099,15 @@
           ]
         },
         {
-          "best_gain": -0.07838313912749245,
-          "correct_by_productive_label": false,
+          "best_gain": -0.018328492239748417,
+          "correct_by_productive_label": true,
           "correct_by_verified_best": false,
           "productive_mode_top1": "layout",
-          "profile_id": "paper_development",
-          "routing_regret": 0.5268399423128536,
-          "run_id": "haiku_dev_paper_development",
-          "selected_gain": -0.6052230814403461,
-          "selected_mode": "topk",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.039948449686850185,
+          "run_id": "hard_qwen_direct_10step_r1",
+          "selected_gain": -0.0582769419265986,
+          "selected_mode": "layout",
           "step": 1,
           "verified_best_mode": "caching",
           "verified_best_modes": [
@@ -1034,229 +1115,319 @@
           ]
         },
         {
-          "best_gain": 0.5333020662697254,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "topk",
-          "profile_id": "paper_development",
-          "routing_regret": 0.0,
-          "run_id": "haiku_dev_paper_development",
-          "selected_gain": 0.5333020662697254,
-          "selected_mode": "topk",
+          "best_gain": 0.04897589378289213,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "micro",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.11357552298124962,
+          "run_id": "hard_qwen_direct_10step_r1",
+          "selected_gain": -0.06459962919835749,
+          "selected_mode": "layout",
           "step": 2,
+          "verified_best_mode": "micro",
+          "verified_best_modes": [
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.12251372812321926,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "indexing",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0037086491832334367,
+          "run_id": "hard_qwen_direct_10step_r1",
+          "selected_gain": 0.11880507893998582,
+          "selected_mode": "layout",
+          "step": 3,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": -0.012007565715533408,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.008624355758567237,
+          "run_id": "hard_qwen_direct_10step_r1",
+          "selected_gain": -0.020631921474100645,
+          "selected_mode": "layout",
+          "step": 4,
+          "verified_best_mode": "micro",
+          "verified_best_modes": [
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.016329875122234827,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "topk",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0045822617948398925,
+          "run_id": "hard_qwen_direct_10step_r1",
+          "selected_gain": 0.011747613327394935,
+          "selected_mode": "layout",
+          "step": 5,
           "verified_best_mode": "topk",
           "verified_best_modes": [
             "topk"
           ]
         },
         {
-          "best_gain": 0.4450344872549348,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "paper_development",
-          "routing_regret": 0.0,
-          "run_id": "haiku_smoke",
-          "selected_gain": 0.4450344872549348,
-          "selected_mode": "indexing",
-          "step": 0,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
-          ]
-        },
-        {
-          "best_gain": -0.021237814388896936,
+          "best_gain": 0.014925622828020901,
           "correct_by_productive_label": false,
           "correct_by_verified_best": false,
-          "productive_mode_top1": "layout",
-          "profile_id": "paper_development",
-          "routing_regret": 0.6478777392245638,
-          "run_id": "haiku_smoke",
-          "selected_gain": -0.6691155536134608,
-          "selected_mode": "topk",
-          "step": 1,
-          "verified_best_mode": "layout",
+          "productive_mode_top1": "micro",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.08123877881457287,
+          "run_id": "hard_qwen_direct_10step_r1",
+          "selected_gain": -0.06631315598655196,
+          "selected_mode": "layout",
+          "step": 6,
+          "verified_best_mode": "micro",
           "verified_best_modes": [
-            "layout"
-          ]
-        }
-      ],
-      "selected_mode_counts": {
-        "caching": 0,
-        "indexing": 4,
-        "layout": 0,
-        "micro": 0,
-        "summaries": 2,
-        "topk": 5
-      },
-      "verified_best_mode_counts": {
-        "caching": 1,
-        "indexing": 4,
-        "layout": 3,
-        "micro": 1,
-        "summaries": 0,
-        "topk": 2
-      },
-      "zero_regret_count": 4
-    },
-    {
-      "accuracy_by_productive_label": 0.3333333333333333,
-      "accuracy_by_verified_best": 0.3333333333333333,
-      "by_profile": {
-        "development": {
-          "accuracy": 0.3333333333333333,
-          "correct": 1,
-          "incorrect": 2,
-          "total": 3
-        },
-        "memory_development": {
-          "accuracy": 0.6666666666666666,
-          "correct": 2,
-          "incorrect": 1,
-          "total": 3
-        },
-        "paper_development": {
-          "accuracy": 0.0,
-          "correct": 0,
-          "incorrect": 3,
-          "total": 3
-        }
-      },
-      "confusion_selected_vs_verified_best": {
-        "caching": {
-          "caching": 0,
-          "indexing": 0,
-          "layout": 0,
-          "micro": 0,
-          "summaries": 0,
-          "topk": 0
-        },
-        "indexing": {
-          "caching": 0,
-          "indexing": 2,
-          "layout": 1,
-          "micro": 0,
-          "summaries": 0,
-          "topk": 0
-        },
-        "layout": {
-          "caching": 0,
-          "indexing": 0,
-          "layout": 0,
-          "micro": 0,
-          "summaries": 0,
-          "topk": 0
-        },
-        "micro": {
-          "caching": 0,
-          "indexing": 0,
-          "layout": 0,
-          "micro": 0,
-          "summaries": 0,
-          "topk": 0
-        },
-        "summaries": {
-          "caching": 0,
-          "indexing": 0,
-          "layout": 1,
-          "micro": 0,
-          "summaries": 0,
-          "topk": 1
-        },
-        "topk": {
-          "caching": 0,
-          "indexing": 0,
-          "layout": 2,
-          "micro": 0,
-          "summaries": 1,
-          "topk": 1
-        }
-      },
-      "correct_by_productive_label": 3,
-      "correct_by_verified_best": 3,
-      "incorrect_by_productive_label": 6,
-      "incorrect_by_verified_best": 6,
-      "mean_routing_regret": 1.5526810046891615,
-      "name": "phase35_haiku_patch",
-      "path": "artifacts/phase35_patch_routing_dataset.jsonl",
-      "positive_regret_count": 6,
-      "record_count": 9,
-      "rows": [
-        {
-          "best_gain": 0.4434217222106548,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "development",
-          "routing_regret": 0.0,
-          "run_id": "haiku_patch_dev_claude_haiku_development",
-          "selected_gain": 0.4434217222106548,
-          "selected_mode": "indexing",
-          "step": 0,
-          "verified_best_mode": "indexing",
-          "verified_best_modes": [
-            "indexing"
+            "micro"
           ]
         },
         {
-          "best_gain": 0.0014737366812447306,
+          "best_gain": 0.08150250076592924,
           "correct_by_productive_label": false,
           "correct_by_verified_best": false,
+          "productive_mode_top1": "micro",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.006391637012968521,
+          "run_id": "hard_qwen_direct_10step_r1",
+          "selected_gain": 0.07511086375296072,
+          "selected_mode": "layout",
+          "step": 7,
+          "verified_best_mode": "micro",
+          "verified_best_modes": [
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.004737358021494553,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
           "productive_mode_top1": "layout",
-          "profile_id": "development",
-          "routing_regret": 0.5874747659105197,
-          "run_id": "haiku_patch_dev_claude_haiku_development",
-          "selected_gain": -0.586001029229275,
-          "selected_mode": "topk",
-          "step": 1,
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_qwen_direct_10step_r1",
+          "selected_gain": 0.004737358021494553,
+          "selected_mode": "layout",
+          "step": 8,
           "verified_best_mode": "layout",
           "verified_best_modes": [
             "layout"
           ]
         },
         {
-          "best_gain": 0.11892342847579307,
+          "best_gain": 0.0011080081971697187,
           "correct_by_productive_label": false,
           "correct_by_verified_best": false,
-          "productive_mode_top1": "topk",
-          "profile_id": "development",
-          "routing_regret": 9.341404845124245,
-          "run_id": "haiku_patch_dev_claude_haiku_development",
-          "selected_gain": -9.222481416648453,
-          "selected_mode": "summaries",
+          "productive_mode_top1": "indexing",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.001412386671286181,
+          "run_id": "hard_qwen_direct_10step_r1",
+          "selected_gain": -0.00030437847411646235,
+          "selected_mode": "layout",
+          "step": 9,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.002227154657351793,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_qwen_direct_10step_r2",
+          "selected_gain": 0.002227154657351793,
+          "selected_mode": "layout",
+          "step": 0,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.0017304849748078777,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "micro",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.026479890459697897,
+          "run_id": "hard_qwen_direct_10step_r2",
+          "selected_gain": -0.02474940548489002,
+          "selected_mode": "topk",
+          "step": 1,
+          "verified_best_mode": "micro",
+          "verified_best_modes": [
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.02986017294438703,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "indexing",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.00108638977997344,
+          "run_id": "hard_qwen_direct_10step_r2",
+          "selected_gain": 0.02877378316441359,
+          "selected_mode": "layout",
           "step": 2,
-          "verified_best_mode": "topk",
-          "verified_best_modes": [
-            "topk"
-          ]
-        },
-        {
-          "best_gain": 0.3408663073717699,
-          "correct_by_productive_label": true,
-          "correct_by_verified_best": true,
-          "productive_mode_top1": "indexing",
-          "profile_id": "memory_development",
-          "routing_regret": 0.0,
-          "run_id": "haiku_patch_dev_claude_haiku_memory_development",
-          "selected_gain": 0.3408663073717699,
-          "selected_mode": "indexing",
-          "step": 0,
           "verified_best_mode": "indexing",
           "verified_best_modes": [
             "indexing"
           ]
         },
         {
-          "best_gain": 0.02261309671927425,
+          "best_gain": -0.0006401082281951576,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.003926756885102245,
+          "run_id": "hard_qwen_direct_10step_r2",
+          "selected_gain": -0.0045668651132974025,
+          "selected_mode": "layout",
+          "step": 3,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
+            "indexing"
+          ]
+        },
+        {
+          "best_gain": 0.0031845624467348177,
           "correct_by_productive_label": false,
           "correct_by_verified_best": false,
           "productive_mode_top1": "summaries",
-          "profile_id": "memory_development",
-          "routing_regret": 0.6046595383243308,
-          "run_id": "haiku_patch_dev_claude_haiku_memory_development",
-          "selected_gain": -0.5820464416050566,
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.00555959654436422,
+          "run_id": "hard_qwen_direct_10step_r2",
+          "selected_gain": -0.0023750340976294027,
+          "selected_mode": "layout",
+          "step": 4,
+          "verified_best_mode": "summaries",
+          "verified_best_modes": [
+            "summaries"
+          ]
+        },
+        {
+          "best_gain": 0.005716505110957226,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.00057313919847779,
+          "run_id": "hard_qwen_direct_10step_r2",
+          "selected_gain": 0.005143365912479436,
           "selected_mode": "topk",
+          "step": 5,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": -0.29770271698813355,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.029774359348911483,
+          "run_id": "hard_qwen_direct_10step_r2",
+          "selected_gain": -0.32747707633704504,
+          "selected_mode": "layout",
+          "step": 6,
+          "verified_best_mode": "caching",
+          "verified_best_modes": [
+            "caching"
+          ]
+        },
+        {
+          "best_gain": 0.0299982155281735,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "topk",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.009370235480798073,
+          "run_id": "hard_qwen_direct_10step_r2",
+          "selected_gain": 0.020627980047375427,
+          "selected_mode": "layout",
+          "step": 7,
+          "verified_best_mode": "topk",
+          "verified_best_modes": [
+            "topk"
+          ]
+        },
+        {
+          "best_gain": -0.00538497681666672,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.007074071910637247,
+          "run_id": "hard_qwen_direct_10step_r2",
+          "selected_gain": -0.012459048727303967,
+          "selected_mode": "layout",
+          "step": 8,
+          "verified_best_mode": "topk",
+          "verified_best_modes": [
+            "topk"
+          ]
+        },
+        {
+          "best_gain": 0.021596093234234726,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "caching",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.01578624837701348,
+          "run_id": "hard_qwen_direct_10step_r2",
+          "selected_gain": 0.005809844857221247,
+          "selected_mode": "layout",
+          "step": 9,
+          "verified_best_mode": "caching",
+          "verified_best_modes": [
+            "caching"
+          ]
+        },
+        {
+          "best_gain": 0.004235752603416021,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "micro",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.006858584786376243,
+          "run_id": "hard_qwen_direct_10step_r3",
+          "selected_gain": -0.002622832182960222,
+          "selected_mode": "layout",
+          "step": 0,
+          "verified_best_mode": "micro",
+          "verified_best_modes": [
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.01949897429306624,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "summaries",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.019940905749904703,
+          "run_id": "hard_qwen_direct_10step_r3",
+          "selected_gain": -0.00044193145683846247,
+          "selected_mode": "layout",
           "step": 1,
           "verified_best_mode": "summaries",
           "verified_best_modes": [
@@ -1264,31 +1435,143 @@
           ]
         },
         {
-          "best_gain": 0.5376742705643326,
+          "best_gain": 0.020553898418940175,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "summaries",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0016484076657292679,
+          "run_id": "hard_qwen_direct_10step_r3",
+          "selected_gain": 0.018905490753210907,
+          "selected_mode": "layout",
+          "step": 2,
+          "verified_best_mode": "summaries",
+          "verified_best_modes": [
+            "summaries"
+          ]
+        },
+        {
+          "best_gain": -0.00011454957544643207,
           "correct_by_productive_label": true,
           "correct_by_verified_best": true,
-          "productive_mode_top1": "topk",
-          "profile_id": "memory_development",
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
           "routing_regret": 0.0,
-          "run_id": "haiku_patch_dev_claude_haiku_memory_development",
-          "selected_gain": 0.5376742705643326,
-          "selected_mode": "topk",
-          "step": 2,
+          "run_id": "hard_qwen_direct_10step_r3",
+          "selected_gain": -0.00011454957544643207,
+          "selected_mode": "layout",
+          "step": 3,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": -0.0031080066941848727,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_qwen_direct_10step_r3",
+          "selected_gain": -0.0031080066941848727,
+          "selected_mode": "layout",
+          "step": 4,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.0031929331308209186,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "micro",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.010430095003677087,
+          "run_id": "hard_qwen_direct_10step_r3",
+          "selected_gain": -0.007237161872856168,
+          "selected_mode": "layout",
+          "step": 5,
+          "verified_best_mode": "micro",
+          "verified_best_modes": [
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.012508029353565653,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_qwen_direct_10step_r3",
+          "selected_gain": 0.012508029353565653,
+          "selected_mode": "layout",
+          "step": 6,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.000746319198462686,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_qwen_direct_10step_r3",
+          "selected_gain": 0.000746319198462686,
+          "selected_mode": "layout",
+          "step": 7,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": -0.002327300804752297,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.004339538786177766,
+          "run_id": "hard_qwen_direct_10step_r3",
+          "selected_gain": -0.006666839590930063,
+          "selected_mode": "layout",
+          "step": 8,
           "verified_best_mode": "topk",
           "verified_best_modes": [
             "topk"
           ]
         },
         {
-          "best_gain": 0.4405898928433568,
+          "best_gain": 0.005088085917406504,
           "correct_by_productive_label": false,
           "correct_by_verified_best": false,
+          "productive_mode_top1": "micro",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0007028427073556553,
+          "run_id": "hard_qwen_direct_10step_r3",
+          "selected_gain": 0.004385243210050849,
+          "selected_mode": "layout",
+          "step": 9,
+          "verified_best_mode": "micro",
+          "verified_best_modes": [
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.0029574294480467778,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
           "productive_mode_top1": "layout",
-          "profile_id": "paper_development",
-          "routing_regret": 1.4405898928433567,
-          "run_id": "haiku_patch_dev_claude_haiku_paper_development",
-          "selected_gain": -1.0,
-          "selected_mode": "indexing",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_qwen_direct_10step_r4",
+          "selected_gain": 0.0029574294480467778,
+          "selected_mode": "layout",
           "step": 0,
           "verified_best_mode": "layout",
           "verified_best_modes": [
@@ -1296,15 +1579,15 @@
           ]
         },
         {
-          "best_gain": 0.0,
-          "correct_by_productive_label": false,
-          "correct_by_verified_best": false,
+          "best_gain": -0.0007973726184203889,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
           "productive_mode_top1": "layout",
-          "profile_id": "paper_development",
-          "routing_regret": 1.0,
-          "run_id": "haiku_patch_dev_claude_haiku_paper_development",
-          "selected_gain": -1.0,
-          "selected_mode": "summaries",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_qwen_direct_10step_r4",
+          "selected_gain": -0.0007973726184203889,
+          "selected_mode": "layout",
           "step": 1,
           "verified_best_mode": "layout",
           "verified_best_modes": [
@@ -1312,40 +1595,151 @@
           ]
         },
         {
-          "best_gain": 0.0,
+          "best_gain": 0.000482939736379584,
           "correct_by_productive_label": false,
           "correct_by_verified_best": false,
-          "productive_mode_top1": "layout",
-          "profile_id": "paper_development",
-          "routing_regret": 1.0,
-          "run_id": "haiku_patch_dev_claude_haiku_paper_development",
-          "selected_gain": -1.0,
-          "selected_mode": "topk",
+          "productive_mode_top1": "micro",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0027712059334463746,
+          "run_id": "hard_qwen_direct_10step_r4",
+          "selected_gain": -0.0022882661970667906,
+          "selected_mode": "layout",
           "step": 2,
+          "verified_best_mode": "micro",
+          "verified_best_modes": [
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.0028078886792863855,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_qwen_direct_10step_r4",
+          "selected_gain": 0.0028078886792863855,
+          "selected_mode": "layout",
+          "step": 3,
           "verified_best_mode": "layout",
           "verified_best_modes": [
-            "layout",
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.0009499966114775438,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "topk",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0023912823775850134,
+          "run_id": "hard_qwen_direct_10step_r4",
+          "selected_gain": -0.0014412857661074696,
+          "selected_mode": "layout",
+          "step": 4,
+          "verified_best_mode": "topk",
+          "verified_best_modes": [
+            "topk"
+          ]
+        },
+        {
+          "best_gain": 0.0017598282483329841,
+          "correct_by_productive_label": true,
+          "correct_by_verified_best": true,
+          "productive_mode_top1": "layout",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0,
+          "run_id": "hard_qwen_direct_10step_r4",
+          "selected_gain": 0.0017598282483329841,
+          "selected_mode": "layout",
+          "step": 5,
+          "verified_best_mode": "layout",
+          "verified_best_modes": [
+            "layout"
+          ]
+        },
+        {
+          "best_gain": 0.0006128473133595325,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "micro",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.00412067243668468,
+          "run_id": "hard_qwen_direct_10step_r4",
+          "selected_gain": -0.003507825123325148,
+          "selected_mode": "layout",
+          "step": 6,
+          "verified_best_mode": "micro",
+          "verified_best_modes": [
+            "micro"
+          ]
+        },
+        {
+          "best_gain": 0.0031277583933003728,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "summaries",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.006246436387771448,
+          "run_id": "hard_qwen_direct_10step_r4",
+          "selected_gain": -0.003118677994471075,
+          "selected_mode": "layout",
+          "step": 7,
+          "verified_best_mode": "summaries",
+          "verified_best_modes": [
+            "summaries"
+          ]
+        },
+        {
+          "best_gain": 0.009886986129008624,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "topk",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.009381989039985883,
+          "run_id": "hard_qwen_direct_10step_r4",
+          "selected_gain": 0.0005049970890227407,
+          "selected_mode": "layout",
+          "step": 8,
+          "verified_best_mode": "topk",
+          "verified_best_modes": [
+            "topk"
+          ]
+        },
+        {
+          "best_gain": 0.0052915767752329534,
+          "correct_by_productive_label": false,
+          "correct_by_verified_best": false,
+          "productive_mode_top1": "indexing",
+          "profile_id": "hard_optimization",
+          "routing_regret": 0.0005306724463743917,
+          "run_id": "hard_qwen_direct_10step_r4",
+          "selected_gain": 0.004760904328858562,
+          "selected_mode": "layout",
+          "step": 9,
+          "verified_best_mode": "indexing",
+          "verified_best_modes": [
             "indexing"
           ]
         }
       ],
       "selected_mode_counts": {
-        "caching": 0,
-        "indexing": 3,
-        "layout": 0,
+        "caching": 5,
+        "indexing": 9,
+        "layout": 70,
         "micro": 0,
-        "summaries": 2,
-        "topk": 4
+        "summaries": 6,
+        "topk": 10
       },
       "verified_best_mode_counts": {
-        "caching": 0,
-        "indexing": 2,
-        "layout": 4,
-        "micro": 0,
-        "summaries": 1,
-        "topk": 2
+        "caching": 8,
+        "indexing": 13,
+        "layout": 38,
+        "micro": 21,
+        "summaries": 7,
+        "topk": 13
       },
-      "zero_regret_count": 3
+      "zero_regret_count": 34
     },
     {
       "accuracy_by_productive_label": 0.3333333333333333,

@@ -18,9 +18,7 @@ from vao.taxonomy import MODES, normalize_mode_probs
 
 
 DEFAULT_DATASETS = {
-    "phase2_local": "artifacts/phase2_routing_dataset.jsonl",
-    "phase3_haiku_replacement": "artifacts/phase3_haiku_routing_dataset.jsonl",
-    "phase35_haiku_patch": "artifacts/phase35_patch_routing_dataset.jsonl",
+    "haiku_vs_qwen_r0_r4": "artifacts/haiku_vs_qwen_10step_r0_r4_routing_dataset.jsonl",
     "phase4_opus_teacher": "artifacts/phase4_teacher_routing_dataset.jsonl",
 }
 

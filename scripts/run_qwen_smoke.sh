@@ -4,7 +4,7 @@ set -euo pipefail
 export PYTHONPATH="${PYTHONPATH:-src:.}"
 
 BASE_URL="${OPENAI_COMPATIBLE_BASE_URL:-http://localhost:8000/v1}"
-RUN_ID="${RUN_ID:-hard_qwen_batch_smoke_1step}"
+RUN_ID="${RUN_ID:-hard_qwen_single_prompt_smoke_1step}"
 
 python - <<'PY'
 import json
@@ -18,10 +18,10 @@ print(json.dumps({"endpoint": base_url, "models": payload.get("data", [])[:3]}, 
 PY
 
 python -m vao.orchestrator \
-  --config configs/hard_qwen_batch_smoke.yaml \
-  --models weak_qwen \
+  --config configs/hard_single_prompt_model_matrix.yaml \
+  --models qwen_coder_batch_strict \
   --profiles hard_optimization \
   --steps 1 \
   --run-id "${RUN_ID}"
 
-python -m vao.validate_run --run_dir "runs/hard_profile/qwen_batch_smoke/${RUN_ID}"
+python -m vao.validate_run --run_dir "runs/hard_profile/single_prompt/model_matrix/${RUN_ID}"

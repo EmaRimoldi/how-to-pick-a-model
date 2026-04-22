@@ -78,6 +78,7 @@
 - [x] Add strict single-prompt aliases for GPT-5.4, GPT-5.4-mini, GPT-5.3-Codex, GPT-5.3-Codex-Spark, GPT-5.2-Codex, Qwen Coder, Haiku, Sonnet, and Opus 4.6.
 - [x] Add Codex CLI transport for GPT/Codex runs when `OPENAI_API_KEY` is unavailable.
 - [x] Run and validate one-step Codex CLI smokes for GPT-5.4, GPT-5.4-mini, GPT-5.3-Codex, and GPT-5.3-Codex-Spark.
+- [x] Clean active configs and artifact catalog, removing superseded phase/smoke outputs.
 
 ## Remaining
 

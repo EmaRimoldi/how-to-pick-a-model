@@ -397,3 +397,11 @@
 - Removed raw failed, superseded, or incomplete diagnostic run directories that were adding noise under `runs/`.
 - Kept validated primary runs and compact summary artifacts used by current reports.
 - Wrote cleanup manifests: `artifacts/diagnostic_run_cleanup_2026_04_22.json` and `artifacts/diagnostic_run_cleanup_2026_04_22.md`.
+
+### Config And Artifact Cleanup
+
+- Reduced `configs/` from historical phase/smoke configs to the active experiment surface: model/profile definitions, local smoke, Haiku/Qwen hard-profile runs, prompt-controlled single-prompt runs, model matrix, C(b), teacher/student, and offline routing configs.
+- Removed superseded Phase 1/2/3/3.5 configs and obsolete one-off smoke configs.
+- Removed stale artifacts from old phase experiments, superseded smokes, raw probes, intermediate R0/R0-R2 summaries, and obsolete diagnostic reports.
+- Regenerated `artifacts/routing_choice_summary.json` and `artifacts/routing_choice_visuals.md` using only current retained routing datasets.
+- Added `configs/README.md`, `artifacts/README.md`, and `artifacts/MANIFEST.json` as the active catalogs.

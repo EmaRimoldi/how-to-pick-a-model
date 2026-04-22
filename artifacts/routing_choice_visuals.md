@@ -4,9 +4,7 @@ Primary correctness criterion: selected top-probability mode is one of the verif
 
 | dataset | steps | correct | incorrect | accuracy | mean regret |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `phase2_local` | `45` | `27` | `18` | `0.6` | `0.48363515115352895` |
-| `phase3_haiku_replacement` | `11` | `4` | `7` | `0.36363636363636365` | `1.179063963942385` |
-| `phase35_haiku_patch` | `9` | `3` | `6` | `0.3333333333333333` | `1.5526810046891615` |
+| `haiku_vs_qwen_r0_r4` | `100` | `34` | `66` | `0.34` | `0.19405137723775723` |
 | `phase4_opus_teacher` | `12` | `4` | `8` | `0.3333333333333333` | `0.9385370051379591` |
 
 ## Phase 4 Opus Teacher

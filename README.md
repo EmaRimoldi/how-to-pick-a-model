@@ -43,7 +43,7 @@ Every run writes a self-contained directory containing `run_manifest.json`, `bas
 
 For real Claude/Anthropic runs, candidate generation is protocol-configurable. Phase 3.5 validated a `unified_diff` patch mode, but it was slower and less reliable than replacement files because diff application and repair failed too often. The current default for future Claude runs is `structured_edits`: the model returns compact exact edits such as `replace_exact` or `replace_function`, the harness applies them to six branch-local copies, and the verifier still evaluates full materialized `proposed_solution.py` files.
 
-The fastest current Haiku path is the batched structured-edit variant: one model call returns `mode_probs`, `mode_ranking`, and six mode-constrained structured edits. Use `candidate_generation: batched` or `configs/phase3_haiku_structured_batch_smoke.yaml` for that path. The one-step speed smoke passed validation, but one candidate was rejected and logged as a no-op, so this needs a larger quality smoke before teacher-data scaling.
+The fastest current Haiku path is the batched structured-edit variant: one model call returns `mode_probs`, `mode_ranking`, and six mode-constrained structured edits. Use `candidate_generation: batched`, `configs/hard_haiku_batch_10step.yaml`, or the strict model matrix config for that path.
 
 The first hard-profile Haiku/Qwen matrix used Haiku batched structured edits and Qwen LangGraph direct-file editing. This is a model-plus-backend comparison, not a pure model-only ablation. From the prompt-control hardening milestone onward, all real-model prompts include the same `CANONICAL_TASK_BLOCK_V1` for task semantics, modes, API, safety rules, branch isolation, visibility, and routing guidance. For a pure single-prompt ablation, use the paired `hard_haiku_prompt_controlled_10step.yaml` and `hard_qwen_prompt_controlled_10step.yaml` configs. Both use `candidate_generation: batched`, so each step makes one generation prompt that asks for `mode_probs`, `mode_ranking`, and all six mode-specific edits in one response. Strict prompt-controlled configs disable per-mode fallback and batch repair.
 
@@ -62,24 +62,14 @@ This profile creates real tradeoffs between layout, indexing, summaries, caching
 
 ## Main Entry Points
 
-- `python -m vao.orchestrator --config configs/phase1_dev.yaml`
 - `python -m vao.orchestrator --config configs/hard_local_smoke.yaml --run-id hard_local_smoke`
-- `python -m vao.orchestrator --config configs/hard_haiku_batch_smoke.yaml --run-id hard_haiku_batch_smoke`
-- `OPENAI_COMPATIBLE_BASE_URL=http://localhost:8000/v1 RUN_ID=hard_qwen_batch_smoke_1step scripts/run_qwen_smoke.sh`
-- `OPENAI_COMPATIBLE_BASE_URL=http://localhost:8000/v1 RUN_ID=hard_qwen_direct_edit_smoke_1step scripts/run_qwen_direct_edit_smoke.sh`
 - `PYTHONPATH=src:. python -m vao.orchestrator --config configs/hard_haiku_batch_10step.yaml --models claude_haiku_batch --profiles hard_optimization --steps 10 --run-id hard_haiku_batch_10step_r0`
 - `PYTHONPATH=src:. OPENAI_COMPATIBLE_BASE_URL=http://localhost:8000/v1 python -m vao.orchestrator --config configs/hard_qwen_direct_10step.yaml --models weak_qwen_direct --profiles hard_optimization --steps 10 --run-id hard_qwen_direct_10step_r0`
 - `PYTHONPATH=src:. python -m vao.orchestrator --config configs/hard_haiku_prompt_controlled_10step.yaml --profiles hard_optimization --steps 10 --run-id hard_haiku_single_prompt_10step_r0`
 - `PYTHONPATH=src:. OPENAI_COMPATIBLE_BASE_URL=http://localhost:8000/v1 python -m vao.orchestrator --config configs/hard_qwen_prompt_controlled_10step.yaml --profiles hard_optimization --steps 10 --run-id hard_qwen_single_prompt_10step_r0`
-- `OPENAI_API_KEY=... PYTHONPATH=src:. python -m vao.orchestrator --config configs/hard_single_prompt_model_matrix.yaml --models gpt_5_4_batch_strict --profiles hard_optimization --steps 1 --run-id hard_gpt_5_4_single_prompt_smoke`
+- `PYTHONPATH=src:. python -m vao.orchestrator --config configs/hard_single_prompt_model_matrix.yaml --models gpt_5_4_batch_strict --profiles hard_optimization --steps 1 --run-id hard_gpt_5_4_single_prompt_smoke`
 - `PYTHONPATH=src:. python -m vao.orchestrator --config configs/hard_single_prompt_model_matrix.yaml --models claude_haiku_batch_strict,claude_sonnet_batch_strict --profiles hard_optimization --steps 1 --run-id hard_claude_single_prompt_smoke`
 - `python -m vao.verifier --smoke_test`
-- `python -m vao.analysis.compute_estimators --runs runs/phase1_dev --out artifacts/phase1_dev_estimators.csv`
-- `python -m vao.training.build_routing_dataset --runs runs/phase1_dev --train_out artifacts/routing_train.jsonl --dev_out artifacts/routing_dev.jsonl`
-- `python -m vao.validate_run --run_dir runs/phase2_dev/<run_id>`
-- `python -m vao.orchestrator --config configs/phase3_haiku_smoke.yaml --models claude_haiku --profiles hard_optimization --steps 2`
-- `python -m vao.orchestrator --config configs/phase3_haiku_structured_batch_smoke.yaml --models claude_haiku_batch --profiles hard_optimization --steps 1`
-- `python -m vao.analysis.phase3_summary --runs runs/phase35_patch/haiku_dev --summary_out artifacts/phase35_patch_summary.json --failure_modes_out artifacts/phase35_patch_failure_modes.json`
 - `python -m vao.orchestrator --config configs/phase4_teacher_opus_pilot.yaml --models claude_opus_teacher --steps 3`
 - `python -m vao.training.build_routing_dataset --runs runs/phase4_teacher_opus_pilot runs/phase4_teacher_opus --out artifacts/phase4_teacher_routing_dataset.jsonl`
 - `python -m vao.training.train_routing_lora --config configs/phase5_routing_student.yaml`
@@ -91,7 +81,8 @@ This profile creates real tradeoffs between layout, indexing, summaries, caching
 - `python -m vao.training.train_local_lora_router --config configs/offline_lora_router.yaml`
 - `python -m vao.orchestrator --config configs/feedback_use_cb.yaml --run-id cb_local_fixed_micro`
 - `python -m vao.analysis.run_diagnostics_visuals --run_dir runs/feedback_use_cb/cb_local_fixed_micro --single_mode micro`
-- `python -m vao.analysis.run_diagnostics_visuals --run_dir runs/hard_profile/haiku_batch_smoke/hard_haiku_batch_smoke_1step --single_mode indexing`
+
+The active config catalog is in `configs/README.md`. Retained artifacts are cataloged in `artifacts/README.md` and `artifacts/MANIFEST.json`.
 
 The closed-source and open-weight model adapters share the same interface as the deterministic `local_stub` backend. `claude_haiku` can use `ANTHROPIC_API_KEY` through the Messages API or the authenticated Claude CLI transport when available. `weak_qwen` targets an OpenAI-compatible `/v1/chat/completions` endpoint, such as vLLM/SGLang or the minimal `scripts/qwen_openai_compat_server.py` smoke server. `weak_qwen_direct` uses a LangGraph direct-file-edit loop: the model calls restricted branch-local tools that immediately modify only that branch's `proposed_solution.py`. Normal tests use fixtures/mocks and do not require live model calls.
 
@@ -156,12 +147,9 @@ python -m vao.orchestrator \
 - The strongest current classical offline student is `tfidf_word_multinomial_nb` selected by leave-one-out expected regret. `always_layout` is still the best replay baseline by expected regret because `layout` dominates productive labels.
 - The local training stack now includes `peft` and `trl`; a toy LoRA smoke test passed, and a cached `distilbert-base-uncased` LoRA router was trained locally. It overfits toward `layout` and does not beat the classical/replay baselines on the tiny split.
 - C(b) feedback-use infrastructure is implemented for local/offline validation: set `feedback_condition: cb`, `visibility_regime: all_branches`, and `ask_post_feedback_distribution: true`. Controlled promotion is available through `selection_policy: fixed_mode` or `mode_sequence`.
-- Per-run diagnostics plots are available for mode probabilities, single-mode trajectories, loss by mode, gain heatmaps, and cost per step under `artifacts/plots/run_<run_id>/`.
-- Edit-protocol diagnostics are in `artifacts/edit_protocol_debug_report.md`. Observed replacement outputs were around 3.7k raw chars/candidate; a structured one-line edit example is 219 chars and a structured function edit example is 533 chars.
-- Batched Haiku speed diagnostics are in `artifacts/haiku_batch_speed_debug_report.md`: 132.7 seconds/step and `$0.179`/step on the one-step batch smoke, versus 480.4 seconds/step for six separate structured-edit calls and 326.4 seconds/step for the historical replacement smoke.
-- Hard-profile readiness diagnostics are in `artifacts/hard_profile_experiment_readiness.md`. The validated Haiku batch full-profile smoke took 346.4 seconds total for one step including baseline, cost `$0.171`, and had zero proposal/verifier failures.
-- The first 3-step hard Haiku batch pilot is summarized in `artifacts/hard_haiku_batch_pilot_readout.md`: 18 branch evaluations, 807.0s total wall-clock, `$0.600` total cost, and validated C(a) logs.
-- Qwen smoke is validated through `weak_qwen` with `Qwen/Qwen2.5-Coder-1.5B-Instruct` served on Engaging. The one-step hard-profile run completed in 240.9s, produced 6 branch evaluations, and passed `vao.validate_run`.
+- Per-run diagnostics plots retained for current runs are under `artifacts/plots/`.
+- The artifact catalog is in `artifacts/README.md`; superseded Phase 1/2/3/3.5 and one-off smoke artifacts were removed.
+- Qwen smoke is validated through `qwen_coder_batch_strict` and `weak_qwen_direct` with `Qwen/Qwen2.5-Coder-1.5B-Instruct`.
 - The optional `weak_qwen_direct` backend now lets Qwen edit branch-local files directly through LangGraph tools. It has unit/integration coverage, a live one-step smoke, and a validated 10-step hard-profile run.
 - The Haiku-vs-Qwen hard-profile comparison now has three validated 10-step repeats per backend. Aggregate R0-R2: Haiku batch took `251.4s/step`, `$5.626` total, routing accuracy `5/30`, branch correctness `0.67`, best visible loss `0.1652`, and best counterfactual loss `0.1010`. Qwen direct took `188.4s/step`, local serving cost `$0`, routing accuracy `4/30`, branch correctness `1.00`, best visible loss `0.9708`, and best counterfactual loss `0.9690`. Qwen is safer and faster in this setup but conservative; Haiku finds much stronger edits but has more invalid/incorrect branches.
 - The Haiku-vs-Qwen hard-profile comparison now also has an R0-R4 aggregate with five validated 10-step repeats per backend. Haiku batch: `242.1s/step`, `$9.165` total, routing `10/50`, mean routing regret `0.5583`, branch correctness `0.61`, best visible loss `0.1107`, best counterfactual loss `0.1010`. Qwen direct: `203.9s/step`, local serving cost `$0`, routing `12/50`, mean routing regret `0.0114`, branch correctness `1.00`, best visible loss `0.9708`, best counterfactual loss `0.9690`. R0-R4 artifacts are under `artifacts/haiku_vs_qwen_10step_r0_r4_*`.
