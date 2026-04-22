@@ -715,3 +715,38 @@ Artifacts:
 - `artifacts/haiku_vs_qwen_10step_r0_r2_summary.md`
 - `artifacts/haiku_vs_qwen_10step_r0_r2_estimators.csv`
 - `artifacts/haiku_vs_qwen_10step_r0_r2_routing_dataset.jsonl`
+
+## Haiku vs Qwen Hard-Profile R0-R4
+
+The comparison now has five validated repeats per backend: 10 total runs, 100 total steps, and 600 branch evaluations.
+
+| backend | runs | steps | sec/step | routing correct | mean regret | branch correct | selected correct | best visible | best counterfactual | cost |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Haiku batch structured edits | 5 | 50 | 242.1 | 10/50 | 0.5583 | 0.61 | 0.56 | 0.1107 | 0.1010 | `$9.165` |
+| Qwen 1.5B direct-file edit | 5 | 50 | 203.9 | 12/50 | 0.0114 | 1.00 | 1.00 | 0.9708 | 0.9690 | `$0` local |
+
+Main conclusions:
+
+- Qwen direct remains the safer weak baseline: every branch and every promoted branch was verifier-correct across 300 branch evaluations.
+- Haiku remains the better optimizer: its best visible and counterfactual losses are far below Qwen's, meaning it finds much stronger edits when it succeeds.
+- Qwen routing is still conservative: it selected `layout` 47/50 times, while the verified-best branch was spread across all six modes.
+- Haiku routing is more diverse but less reliable: selected branches were correct only 56% of the time, and failed/slow candidates materially affect regret and runtime.
+- Three partial Haiku trials were excluded from the aggregate because they did not complete 10 validated steps after `claude_cli_failed:1`.
+
+Definitions used here:
+
+- `best visible`: the lowest verified loss along the actually promoted C(a) trajectory.
+- `best counterfactual`: the lowest verified loss among all offline-evaluated branches, including invisible branches.
+- `branch correct`: fraction of all candidate branch files that passed semantic verifier correctness; it does not mean the branch improved performance.
+
+Artifacts:
+
+- `artifacts/haiku_vs_qwen_10step_r0_r4_summary.json`
+- `artifacts/haiku_vs_qwen_10step_r0_r4_summary.md`
+- `artifacts/haiku_vs_qwen_10step_r0_r4_estimators.csv`
+- `artifacts/haiku_vs_qwen_10step_r0_r4_routing_dataset.jsonl`
+- `artifacts/haiku_vs_qwen_10step_r0_r4_visuals.md`
+- `artifacts/plots/run_hard_haiku_batch_10step_r3_retry2/`
+- `artifacts/plots/run_hard_haiku_batch_10step_r4_retry1/`
+- `artifacts/plots/run_hard_qwen_direct_10step_r3/`
+- `artifacts/plots/run_hard_qwen_direct_10step_r4/`

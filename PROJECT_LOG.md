@@ -324,3 +324,14 @@
 - Qwen direct aggregate R0-R2: `188.4s/step`, local serving cost `$0`, routing `4/30`, branch correctness `1.00`, selected-branch correctness `1.00`, best visible loss `0.9708`, best counterfactual loss `0.9690`.
 - Interpretation: Qwen direct is faster and much safer but conservative; Haiku produces better optimization opportunities and lower losses but has substantially more candidate failures.
 - Generated `artifacts/haiku_vs_qwen_10step_r0_r2_summary.*`, `artifacts/haiku_vs_qwen_10step_r0_r2_estimators.csv`, `artifacts/haiku_vs_qwen_10step_r0_r2_routing_dataset.jsonl`, and diagnostic plots for R1/R2.
+
+### Haiku vs Qwen Hard-Profile R0-R4
+
+- Ran two further 10-step repeats per backend and aggregated five validated repeats per backend.
+- Included Haiku runs: R0, R1, R2, R3 retry2, and R4 retry1. Excluded partial Haiku trials `hard_haiku_batch_10step_r3`, `hard_haiku_batch_10step_r3_retry1`, and `hard_haiku_batch_10step_r4` because the Claude CLI exited with code 1 before completing 10 validated steps.
+- Included Qwen direct runs: R0, R1, R2, R3, and R4.
+- Final validated matrix: 10 runs, 100 steps, and 600 branch evaluations.
+- Haiku batch aggregate R0-R4: `242.1s/step`, `$9.165` total cost, routing `10/50`, mean routing regret `0.5583`, branch correctness `0.61`, selected-branch correctness `0.56`, best visible loss `0.1107`, and best counterfactual loss `0.1010`.
+- Qwen direct aggregate R0-R4: `203.9s/step`, local serving cost `$0`, routing `12/50`, mean routing regret `0.0114`, branch correctness `1.00`, selected-branch correctness `1.00`, best visible loss `0.9708`, and best counterfactual loss `0.9690`.
+- Interpretation: Qwen remains the safer and cheaper weak baseline but makes small improvements. Haiku remains the better optimizer on best visible/counterfactual loss, but produces many more failed or slow candidates and has lower selected-branch correctness.
+- Generated `artifacts/haiku_vs_qwen_10step_r0_r4_summary.*`, `artifacts/haiku_vs_qwen_10step_r0_r4_estimators.csv`, combined and per-backend routing datasets, loss-based aggregate visualizations, and diagnostic plots for the new R3/R4 runs.
