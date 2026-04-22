@@ -285,3 +285,14 @@
 - Qwen selected `layout`; the best counterfactual branch was `topk`, so the smoke produced a nonzero routing-regret example while preserving C(a) top-1 visibility.
 - Generated `artifacts/hard_qwen_batch_smoke_summary.json`, `artifacts/hard_qwen_batch_smoke_summary.md`, `artifacts/hard_qwen_batch_smoke_estimators.csv`, `artifacts/hard_qwen_batch_smoke_routing_dataset.jsonl`, and plots under `artifacts/plots/run_hard_qwen_batch_smoke_1step/`.
 - Validation after changes: `pytest -q` passed with 53 tests; `PYTHONPATH=src:. python -m vao.verifier --smoke_test` passed; `vao.validate_run` passed on the Qwen smoke.
+
+### LangGraph Direct-File Editing
+
+- Added `langgraph>=1.1.9` as a project dependency.
+- Added `src/vao/agents/direct_file_edit.py`, a LangGraph loop with restricted branch-local file tools: `read_file`, `replace_exact`, `delete_exact`, `insert_before`, `insert_after`, `replace_function`, `validate_file`, and `finish`.
+- Added `src/vao/agents/openai_direct_edit_adapter.py` and registered it as `openai_compatible_direct_edit` in the orchestrator.
+- Added `weak_qwen_direct` to `configs/models.yaml`, plus `configs/hard_qwen_direct_edit_smoke.yaml` and `scripts/run_qwen_direct_edit_smoke.sh`.
+- Direct-file editing writes immediately to the branch-local `proposed_solution.py`; it does not give Qwen shell access or access to other branches.
+- Normal C(a) evaluation is unchanged after the edit loop: the orchestrator diffs parent vs proposed, validates source, infers mode, evaluates all six branches offline, and promotes only the selected branch.
+- Added `tests/test_direct_file_edit.py` covering LangGraph tool execution and the direct-edit adapter without live model calls.
+- Validation after changes: `pytest -q` passed with 55 tests; `PYTHONPATH=src:. python -m vao.verifier --smoke_test` passed.

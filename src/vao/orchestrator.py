@@ -17,6 +17,7 @@ from vao.agents.base import AgentAdapter, AgentState
 from vao.agents.anthropic_adapter import ClaudeHaikuAdapter
 from vao.agents.claude_code_adapter import ClaudeCodeAdapter
 from vao.agents.local_stub_adapter import LeakageProbeAdapter, LocalStubAdapter
+from vao.agents.openai_direct_edit_adapter import OpenAICompatibleDirectEditAdapter
 from vao.agents.openai_compatible_adapter import OpenAICompatibleAdapter
 from vao.agents.routing_student_adapter import RoutingStudentAdapter
 from vao.estimators import gain, jsd, productive_mode_proxy, routing_regret
@@ -34,6 +35,7 @@ ADAPTERS = {
     "claude_haiku": ClaudeHaikuAdapter,
     "claude_code": ClaudeCodeAdapter,
     "openai_compatible": OpenAICompatibleAdapter,
+    "openai_compatible_direct_edit": OpenAICompatibleDirectEditAdapter,
     "routing_student": RoutingStudentAdapter,
 }
 

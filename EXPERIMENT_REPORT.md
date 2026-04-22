@@ -591,6 +591,28 @@ Artifacts:
 - `artifacts/hard_qwen_batch_smoke_routing_dataset.jsonl`
 - `artifacts/plots/run_hard_qwen_batch_smoke_1step/`
 
+## LangGraph Direct-File Editing
+
+An optional direct-file-edit backend is now implemented for Qwen-style open-weight experiments.
+
+What changed:
+
+- `weak_qwen_direct` uses `openai_compatible_direct_edit`.
+- The model first produces the usual mode distribution.
+- For each mode branch, a LangGraph loop lets the model call restricted tools that edit only that branch's `proposed_solution.py`.
+- The tool layer, not the model shell, performs the actual file operation. Allowed operations are exact text replacements, inserts, deletes, whole-function replacement, validation, and finish.
+- The model cannot access the terminal, the shared parent, or other branch directories in this backend.
+
+This satisfies the requested "directly modify the file" behavior while preserving C(a): all six branch files still start from the same parent, all six are evaluated offline, and only the selected branch is promoted. The current implementation has unit/integration coverage but has not yet run a live `weak_qwen_direct` GPU smoke; the previous live Qwen run used the structured-edit adapter.
+
+Run command once the Qwen endpoint is up:
+
+```bash
+RUN_ID=hard_qwen_direct_edit_smoke_1step \
+OPENAI_COMPATIBLE_BASE_URL=http://localhost:8000/v1 \
+scripts/run_qwen_direct_edit_smoke.sh
+```
+
 ## C(b) Feedback-Use Diagnostic Infrastructure
 
 C(b) is now implemented as an optional protocol condition, without running any new Claude calls.

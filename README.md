@@ -64,6 +64,7 @@ This profile creates real tradeoffs between layout, indexing, summaries, caching
 - `python -m vao.orchestrator --config configs/hard_local_smoke.yaml --run-id hard_local_smoke`
 - `python -m vao.orchestrator --config configs/hard_haiku_batch_smoke.yaml --run-id hard_haiku_batch_smoke`
 - `OPENAI_COMPATIBLE_BASE_URL=http://localhost:8000/v1 RUN_ID=hard_qwen_batch_smoke_1step scripts/run_qwen_smoke.sh`
+- `OPENAI_COMPATIBLE_BASE_URL=http://localhost:8000/v1 RUN_ID=hard_qwen_direct_edit_smoke_1step scripts/run_qwen_direct_edit_smoke.sh`
 - `python -m vao.verifier --smoke_test`
 - `python -m vao.analysis.compute_estimators --runs runs/phase1_dev --out artifacts/phase1_dev_estimators.csv`
 - `python -m vao.training.build_routing_dataset --runs runs/phase1_dev --train_out artifacts/routing_train.jsonl --dev_out artifacts/routing_dev.jsonl`
@@ -84,7 +85,7 @@ This profile creates real tradeoffs between layout, indexing, summaries, caching
 - `python -m vao.analysis.run_diagnostics_visuals --run_dir runs/feedback_use_cb/cb_local_fixed_micro --single_mode micro`
 - `python -m vao.analysis.run_diagnostics_visuals --run_dir runs/hard_profile/haiku_batch_smoke/hard_haiku_batch_smoke_1step --single_mode indexing`
 
-The closed-source and open-weight model adapters share the same interface as the deterministic `local_stub` backend. `claude_haiku` can use `ANTHROPIC_API_KEY` through the Messages API or the authenticated Claude CLI transport when available. `weak_qwen` now targets an OpenAI-compatible `/v1/chat/completions` endpoint, such as vLLM/SGLang or the minimal `scripts/qwen_openai_compat_server.py` smoke server. Normal tests use fixtures/mocks and do not require live model calls.
+The closed-source and open-weight model adapters share the same interface as the deterministic `local_stub` backend. `claude_haiku` can use `ANTHROPIC_API_KEY` through the Messages API or the authenticated Claude CLI transport when available. `weak_qwen` targets an OpenAI-compatible `/v1/chat/completions` endpoint, such as vLLM/SGLang or the minimal `scripts/qwen_openai_compat_server.py` smoke server. `weak_qwen_direct` uses a LangGraph direct-file-edit loop: the model calls restricted branch-local tools that immediately modify only that branch's `proposed_solution.py`. Normal tests use fixtures/mocks and do not require live model calls.
 
 ## Qwen Smoke Setup
 
@@ -116,6 +117,14 @@ OPENAI_COMPATIBLE_BASE_URL=http://localhost:8000/v1 \
 scripts/run_qwen_smoke.sh
 ```
 
+To test the direct-file-edit variant against the same endpoint:
+
+```bash
+RUN_ID=hard_qwen_direct_edit_smoke_1step \
+OPENAI_COMPATIBLE_BASE_URL=http://localhost:8000/v1 \
+scripts/run_qwen_direct_edit_smoke.sh
+```
+
 ## Current Milestone Status
 
 - Future teacher-data protocol should use C(a) with `structured_edits` candidate generation. Replacement-file and unified-diff protocols remain available as legacy fallbacks.
@@ -132,4 +141,5 @@ scripts/run_qwen_smoke.sh
 - Hard-profile readiness diagnostics are in `artifacts/hard_profile_experiment_readiness.md`. The validated Haiku batch full-profile smoke took 346.4 seconds total for one step including baseline, cost `$0.171`, and had zero proposal/verifier failures.
 - The first 3-step hard Haiku batch pilot is summarized in `artifacts/hard_haiku_batch_pilot_readout.md`: 18 branch evaluations, 807.0s total wall-clock, `$0.600` total cost, and validated C(a) logs.
 - Qwen smoke is validated through `weak_qwen` with `Qwen/Qwen2.5-Coder-1.5B-Instruct` served on Engaging. The one-step hard-profile run completed in 240.9s, produced 6 branch evaluations, and passed `vao.validate_run`.
+- The optional `weak_qwen_direct` backend now lets Qwen edit branch-local files directly through LangGraph tools. This has unit/integration coverage but still needs a live GPU smoke before being used for measurements.
 - Offline student eval on the tiny split improved regret/JSD versus the original teacher route on that split, but the online local controlled experiment was worse than the local-stub router. Treat Phase 5 as infrastructure plus a negative first result, not as evidence of a useful student yet.

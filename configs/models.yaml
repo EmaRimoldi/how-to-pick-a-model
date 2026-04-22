@@ -94,3 +94,16 @@ models:
     max_tokens_batch: 12000
     retries: 1
     use_response_format: true
+  weak_qwen_direct:
+    adapter: openai_compatible_direct_edit
+    model_id: Qwen/Qwen2.5-Coder-1.5B-Instruct
+    base_url: http://localhost:8000/v1
+    edit_protocol: direct_file_tools
+    temperature: 0.2
+    timeout_seconds: 900
+    max_tokens_distribution: 2048
+    max_direct_edit_tokens: 2048
+    max_direct_edit_iterations: 4
+    max_source_chars: 12000
+    retries: 1
+    use_response_format: true

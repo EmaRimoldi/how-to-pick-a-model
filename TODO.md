@@ -61,10 +61,13 @@
 - [x] Replace the OpenAI-compatible scaffold with a real endpoint adapter for Qwen/vLLM-style chat completions.
 - [x] Add a minimal `transformers` OpenAI-compatible Qwen smoke server for Engaging GPU debugging.
 - [x] Run and validate a one-step Qwen smoke on `hard_optimization` with `Qwen/Qwen2.5-Coder-1.5B-Instruct`.
+- [x] Add optional LangGraph direct-file-edit backend for branch-local Qwen editing.
+- [x] Add tests proving direct-file-edit tools modify only branch-local `proposed_solution.py` files.
 
 ## Remaining
 
 - [ ] Resume/extend teacher production collection when Claude CLI budget/availability allows a repeated-run matrix on `hard_optimization`.
+- [ ] Run a live `weak_qwen_direct` GPU smoke and compare direct-file editing against structured-edit Qwen on time, failures, and routing regret.
 - [ ] Before scaling real-model teacher data, run a slightly larger batched `structured_edits` smoke and confirm candidate rejection rates are acceptable.
 - [ ] Tighten batched structured-edit prompt/repair for source-safety rejections such as banned list attribute calls.
 - [ ] Replace the Claude Code scaffold with real agentic terminal editing when credentials/endpoints are available.
