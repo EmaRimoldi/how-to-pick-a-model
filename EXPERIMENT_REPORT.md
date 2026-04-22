@@ -821,6 +821,28 @@ evaluations rather than silently becoming seven prompts. This is a valid negativ
 infrastructure result for the cached local model, not a successful Qwen Coder
 comparison.
 
+I then downloaded and served `Qwen/Qwen2.5-Coder-1.5B-Instruct` locally through
+the same OpenAI-compatible smoke server on MPS. The first strict attempt reached
+the model but returned `candidates` as a list rather than an object keyed by mode.
+After adding an explicit JSON skeleton to the single prompt, Qwen Coder passed:
+
+- Run: `runs/hard_profile/single_prompt/qwen_batch_structured/hard_qwen_coder_single_prompt_smoke_1step_r1_promptfix`
+- Validation: passed
+- Steps: 1
+- Branch evaluations: 6
+- Wall-clock: 377.7 seconds
+- Cost: `$0` local
+- Branch correctness: 6/6
+- Selected mode: `caching`
+- Best counterfactual mode: `micro`
+- Selected visible loss: `0.9950`
+- Best counterfactual loss: `0.9908`
+
+This establishes that both Haiku and Qwen Coder can now run the intended
+single-prompt batched C(a) protocol. Qwen Coder's routing was degenerate in this
+smoke, assigning all probability to `caching`, so the next comparison should
+measure whether that pattern persists over multiple steps.
+
 Artifacts:
 
 - `artifacts/single_prompt_smoke_readout.json`

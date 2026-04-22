@@ -73,11 +73,13 @@
 - [x] Add paired prompt-controlled Haiku/Qwen configs using the same single-prompt batched `structured_edits` output protocol.
 - [x] Run a one-step Haiku strict single-prompt smoke and validate it.
 - [x] Run a cached local Qwen strict single-prompt smoke; record malformed batch JSON as a real no-fallback failure.
+- [x] Run and validate a one-step Qwen Coder strict single-prompt smoke after prompt-shape hardening.
 
 ## Remaining
 
 - [ ] Resume/extend teacher production collection when Claude CLI budget/availability allows a repeated-run matrix on `hard_optimization`.
-- [ ] Relaunch the strict Qwen single-prompt smoke on the Engaging Qwen Coder endpoint when SSH/GPU access is available.
+- [ ] Run a short 3-step single-prompt Haiku vs Qwen Coder comparison now that both one-step smokes pass.
+- [ ] Relaunch the strict Qwen single-prompt smoke on the Engaging GPU endpoint when SSH/GPU access is available, to compare local MPS vs GPU throughput.
 - [ ] Run a prompt-controlled single-prompt Haiku/Qwen ablation with `configs/hard_haiku_prompt_controlled_10step.yaml` and `configs/hard_qwen_prompt_controlled_10step.yaml` when model endpoints are available.
 - [ ] Compare Qwen direct-file editing against Qwen structured-edit generation on time, failures, and routing regret using the same 10-step hard-profile config.
 - [ ] Before scaling real-model teacher data, run a slightly larger batched `structured_edits` smoke and confirm candidate rejection rates are acceptable.

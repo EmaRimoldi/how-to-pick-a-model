@@ -16,6 +16,25 @@ branch copy and evaluate all six materialized files offline.
 Return only structured JSON matching the requested schema. Do not include
 markdown or commentary.
 
+Top-level JSON shape is mandatory:
+
+{
+  "mode_probs": {"layout": 0.0, "indexing": 0.0, "topk": 0.0, "caching": 0.0, "summaries": 0.0, "micro": 0.0},
+  "mode_ranking": ["layout", "indexing", "topk", "caching", "summaries", "micro"],
+  "mode_rationales": {"layout": "...", "indexing": "...", "topk": "...", "caching": "...", "summaries": "...", "micro": "..."},
+  "candidates": {
+    "layout": {"primary_mode": "layout", "declared_mode": "layout", "edit_format": "structured_edits", "rationale": "...", "edits": [...]},
+    "indexing": {"primary_mode": "indexing", "declared_mode": "indexing", "edit_format": "structured_edits", "rationale": "...", "edits": [...]},
+    "topk": {"primary_mode": "topk", "declared_mode": "topk", "edit_format": "structured_edits", "rationale": "...", "edits": [...]},
+    "caching": {"primary_mode": "caching", "declared_mode": "caching", "edit_format": "structured_edits", "rationale": "...", "edits": [...]},
+    "summaries": {"primary_mode": "summaries", "declared_mode": "summaries", "edit_format": "structured_edits", "rationale": "...", "edits": [...]},
+    "micro": {"primary_mode": "micro", "declared_mode": "micro", "edit_format": "structured_edits", "rationale": "...", "edits": [...]}
+  }
+}
+
+Do not output candidates as a list. Do not output one candidate per method.
+There must be exactly one candidate object per mode key.
+
 Structured edit rules:
 
 - Do not return solution_py or any complete replacement file.
@@ -28,6 +47,7 @@ Structured edit rules:
   - insert_before: {"op":"insert_before","anchor":"exact existing text","text":"inserted text"}
   - insert_after: {"op":"insert_after","anchor":"exact existing text","text":"inserted text"}
   - replace_function: {"op":"replace_function","function":"function_name","source":"complete replacement function with exact indentation"}
+- For replace_function, use the bare method name such as "__init__", "put", "delete", "get", "range_sum", "aggregate_count", or "top_k"; do not use "CandidateQueryEngine.put".
 - Exact text and anchors must occur exactly once in the parent file.
 - replace_function is preferred when changing a whole method; exact edits are preferred for one-line or small local edits.
 

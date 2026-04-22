@@ -362,3 +362,8 @@
 - Local Qwen endpoint for the prior Engaging 1.5B Coder run was unavailable. Non-interactive SSH to Engaging failed, so I tested a cached local `Qwen/Qwen3-0.6B-Base` through the same strict single-prompt batch path.
 - The cached local Qwen run completed baseline verification but failed the single batch JSON contract with `ModelOutputError: Extra data`. It did not fall back to per-mode prompts and produced zero branch evaluations, which is the correct strict-protocol behavior for malformed batch output.
 - Added `artifacts/single_prompt_smoke_readout.json` and `artifacts/single_prompt_smoke_readout.md`.
+- Downloaded and served `Qwen/Qwen2.5-Coder-1.5B-Instruct` locally through the OpenAI-compatible smoke server on MPS because Engaging SSH was not available non-interactively.
+- First Qwen Coder strict attempt reached the model but failed with `batch_candidates_missing_or_not_object`: the model returned `candidates` as a list of method edits instead of an object keyed by mode.
+- Hardened the single batch prompt with an explicit JSON skeleton and an instruction that `candidates` must be an object with exactly the six mode keys, not a list.
+- Re-ran Qwen Coder strict single-prompt smoke successfully: `runs/hard_profile/single_prompt/qwen_batch_structured/hard_qwen_coder_single_prompt_smoke_1step_r1_promptfix` passed `vao.validate_run` with 1 step, 6 branch evaluations, 6/6 branch correctness, 377.7s wall-clock, and local `$0` API cost.
+- Qwen Coder selected `caching` with probability 1.0; best counterfactual mode was `micro`, so the smoke produced a routing-regret example while preserving C(a).

@@ -35,6 +35,41 @@ Interpretation: Haiku satisfies the single-prompt batch protocol and produces a
 useful routing-regret example: it selected `layout`, while the best verified
 counterfactual branch was `indexing`.
 
+## Qwen Coder Local MPS
+
+- Run: `runs/hard_profile/single_prompt/qwen_batch_structured/hard_qwen_coder_single_prompt_smoke_1step_r1_promptfix`
+- Model: `Qwen/Qwen2.5-Coder-1.5B-Instruct`
+- Serving path: local OpenAI-compatible server on MPS
+- Validation: passed `vao.validate_run`
+- Steps: 1
+- Branch evaluations: 6
+- Elapsed wall-clock: 377.7 seconds
+- Agent cost: `$0` local
+- Branch correctness: 6/6
+- Selected mode: `caching`
+- Best counterfactual mode: `micro`
+- Selected visible loss: `0.9949925893`
+- Best counterfactual loss: `0.9907873587`
+
+Mode probabilities:
+
+| mode | probability |
+|---|---:|
+| caching | 1.00 |
+| layout | 0.00 |
+| indexing | 0.00 |
+| topk | 0.00 |
+| summaries | 0.00 |
+| micro | 0.00 |
+
+Interpretation: Qwen Coder can satisfy the single-prompt batch protocol after
+the prompt was made explicit that `candidates` must be an object keyed by mode,
+not a list. Routing is degenerate in this smoke: it assigns all probability to
+`caching`, while the best verified counterfactual branch was `micro`.
+
+The raw malformed first-attempt probe is saved at
+`artifacts/qwen_coder_single_prompt_raw_probe.txt`.
+
 ## Qwen Local Cached
 
 - Run: `runs/hard_profile/single_prompt/qwen_batch_structured/hard_qwen_local_cached_single_prompt_smoke_1step_r0_retry1`

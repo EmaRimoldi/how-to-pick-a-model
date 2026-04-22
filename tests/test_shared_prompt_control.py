@@ -94,6 +94,10 @@ def test_single_prompt_batch_prompt_is_explicit() -> None:
     assert "This is the only model-generation prompt for this step" in rendered
     assert "Do not wait for\nseparate per-mode instructions" in rendered
     assert "all six mode-specific branch edits in\nthis single response" in rendered
+    assert '"candidates": {' in rendered
+    assert "Do not output candidates as a list" in rendered
+    assert '\"layout\": {\"primary_mode\": \"layout\"' in rendered
+    assert 'do not use "CandidateQueryEngine.put"' in rendered
 
 
 def test_prompt_controlled_configs_are_single_prompt_batched() -> None:
