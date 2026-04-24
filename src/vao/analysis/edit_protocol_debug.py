@@ -15,7 +15,6 @@ from vao.logging_utils import write_json
 DEFAULT_ROOTS = {
     "phase3_haiku_replacement": "runs/phase3_real_backend/haiku_dev",
     "phase35_haiku_patch": "runs/phase35_patch/haiku_dev",
-    "phase4_opus_replacement": "runs/phase4_teacher_opus_pilot",
 }
 
 

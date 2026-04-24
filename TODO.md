@@ -9,14 +9,12 @@
 - [x] Add project README and tracking files.
 - [x] Copy reusable benchmark components into the new repository.
 - [x] Rewrite copied benchmark imports for the new namespace.
-- [x] Implement schemas, taxonomy, mode classifier, verifier wrapper, workspaces, adapters, orchestrator, estimators, and dataset builder.
+- [x] Implement schemas, taxonomy, mode classifier, verifier wrapper, workspaces, adapters, orchestrator, and estimators.
 - [x] Run dynamic benchmark/verifier baseline smoke.
 - [x] Add and run unit tests.
 - [x] Run the two-step six-branch local smoke experiment.
 - [x] Compute estimator outputs.
-- [x] Generate routing dataset JSONL.
 - [x] Generate a simple endpoint table.
-- [x] Write `EXPERIMENT_REPORT.md`.
 - [x] Initialize git and commit the smoke-pass framework.
 - [x] Add C(a) run validator.
 - [x] Add explicit anti-leakage pytest coverage.
@@ -29,25 +27,11 @@
 - [x] Add fixture-based Claude parser and prompt rendering tests.
 - [x] Run Haiku smoke: 1 profile, 2 steps, 12 branches.
 - [x] Run Haiku dev: 3 profiles, 1 run each, 3 steps each.
-- [x] Generate Phase 3 Haiku estimator, routing, summary, and failure-mode artifacts.
+- [x] Generate Phase 3 Haiku estimator, summary, and failure-mode artifacts.
 - [x] Convert Claude Haiku candidate outputs from full-file replacement to patch-based `unified_diff` edits.
 - [x] Add strict unified-diff application and tests for patch parsing/application failures.
 - [x] Run corrected Phase 3.5 Haiku patch smoke and 3-profile dev validation.
 - [x] Compare Phase 3 replacement-file and Phase 3.5 patch-based protocols.
-- [x] Freeze production teacher-data protocol as replacement-file C(a).
-- [x] Run Opus teacher pilot with the frozen replacement-file protocol.
-- [x] Generate first validated Opus teacher routing dataset.
-- [x] Implement routing-only student training and offline evaluation.
-- [x] Run online routing-student comparison with deterministic local candidate edits.
-- [x] Add training implementation for `train_routing_lora.py`.
-- [x] Audit the existing teacher routing dataset without new Claude calls.
-- [x] Add one-step logged-counterfactual replay evaluation for routing policies.
-- [x] Compare original teacher routing, saved routing student, mode heuristics, frequency, and random replay baselines.
-- [x] Improve offline routing features and run leave-one-out classical routing-student comparisons.
-- [x] Install/validate the local routing training stack with `peft` and `trl`.
-- [x] Run a toy local LoRA smoke test without any external model calls.
-- [x] Train a cached `distilbert-base-uncased` LoRA routing classifier on existing teacher data only.
-- [x] Write replay, dataset-audit, failure-analysis, and future teacher-scaling artifacts.
 - [x] Implement C(b) post-feedback distribution logging with `q_pre`, `q_post`, regret improvement, and JSD improvement.
 - [x] Add controlled mode promotion via `selection_policy: fixed_mode` and `selection_policy: mode_sequence`.
 - [x] Add per-run visual diagnostics for mode probabilities, loss by mode, gain heatmaps, cost per step, and single-mode trajectories.
@@ -72,7 +56,6 @@
 - [x] Add a shared canonical task prompt block used across Claude, Qwen structured, batched, and direct-file-edit prompt paths.
 - [x] Add paired prompt-controlled Haiku/Qwen configs using the same single-prompt batched `structured_edits` output protocol.
 - [x] Run a one-step Haiku strict single-prompt smoke and validate it.
-- [x] Run a cached local Qwen strict single-prompt smoke; record malformed batch JSON as a real no-fallback failure.
 - [x] Run and validate a one-step Qwen Coder strict single-prompt smoke after prompt-shape hardening.
 - [x] Add OpenAI Responses API backend for GPT/Codex single-prompt batch experiments.
 - [x] Add strict single-prompt aliases for GPT-5.4, GPT-5.4-mini, GPT-5.3-Codex, GPT-5.3-Codex-Spark, GPT-5.2-Codex, Qwen Coder, Haiku, Sonnet, and Opus 4.6.
@@ -85,23 +68,23 @@
 - [x] Delete legacy prompt templates and direct-edit backend paths so active comparisons cannot fall back to per-mode prompts.
 - [x] Add three hard paper task families with dev/holdout instances.
 - [x] Add profile split audit tooling and dev/holdout leakage checks for routing dataset generation.
+- [x] Remove the legacy training surface from the repository.
 - [x] Add paper dev, holdout, and local validation experiment configs.
 - [x] Run automatic local validation over all six active dev/holdout profiles.
 - [x] Run first real prompt-controlled dev R0 with `gpt-5.3-codex-spark` across all three dev profiles.
+- [x] Clean retained plot/artifact surface to current paper-dev Codex, compact Haiku reference, and documented catalogs.
 
 ## Remaining
 
-- [ ] Resume/extend teacher production collection when Claude CLI budget/availability allows a repeated-run matrix on the three dev profiles.
 - [ ] Bring Qwen Coder endpoint back online and run the matched dev split comparison against `gpt-5.3-codex-spark` or Haiku.
 - [ ] Add at least 2 more repeats for the selected live backends on the dev split before interpreting model differences.
-- [ ] Only after model selection/post-training is frozen, run final holdout evaluation with `configs/paper_holdout_final_eval.yaml`.
+- [ ] After model selection is frozen, run final holdout evaluation with `configs/paper_holdout_final_eval.yaml`.
 - [ ] Optionally run one live GPT/Codex single-prompt smoke through `openai_responses` when `OPENAI_API_KEY` is available, to validate the direct API transport separately from Codex CLI.
 - [ ] Re-test GPT-5.2-Codex only if account/API access changes; the current Codex ChatGPT account reports it as unsupported.
 - [ ] Run one live Sonnet and one live Opus 4.6 full C(a) single-prompt smoke when Claude budget/time is available; minimal CLI probes pass, but Sonnet full-step timed out at 600 seconds.
 - [ ] Run a short 3-step single-prompt Haiku vs Qwen Coder comparison now that both one-step smokes pass.
 - [ ] Relaunch the strict Qwen single-prompt smoke on the Engaging GPU endpoint when SSH/GPU access is available, to compare local MPS vs GPU throughput.
 - [ ] Run a prompt-controlled single-prompt Haiku/Qwen ablation with the paper dev split when model endpoints are available.
-- [ ] Before scaling real-model teacher data, run a slightly larger batched `structured_edits` smoke and confirm candidate rejection rates are acceptable.
 - [ ] Tighten batched structured-edit prompt/repair for source-safety rejections such as banned list attribute calls.
 - [ ] Replace the Claude Code scaffold with real agentic terminal editing when credentials/endpoints are available.
 - [ ] Try Qwen through vLLM/SGLang and compare against the minimal `transformers` smoke server.
@@ -109,7 +92,4 @@
 - [ ] Improve prompts for `indexing` and `micro` declared-mode adherence.
 - [ ] Add controlled shared-checkpoint phi experiment implementation.
 - [ ] Run C(b) with a real model when Claude budget returns; current validation is local/offline only.
-- [ ] Re-run routing-only student after collecting substantially more and less imbalanced teacher data.
-- [ ] Try a larger cached/open local instruct model for routing only if it is available without gating or new quota.
-- [ ] Add stricter split reporting for tiny-data comparisons so supplemental split models cannot be mistaken for leave-one-out results.
 - [ ] Run larger repeated dev-split experiments after local profile validation is reviewed.

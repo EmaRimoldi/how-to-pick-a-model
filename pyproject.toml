@@ -13,13 +13,8 @@ dependencies = [
     "scipy",
     "tqdm",
     "rich",
-    "datasets",
     "transformers",
-    "accelerate",
-    "peft",
-    "trl",
     "anthropic",
-    "langgraph>=1.1.9",
 ]
 
 [project.optional-dependencies]
@@ -31,18 +26,9 @@ dev = [
 vao-run = "vao.orchestrator:main"
 vao-verify = "vao.verifier:main"
 vao-estimators = "vao.analysis.compute_estimators:main"
-vao-build-routing-dataset = "vao.training.build_routing_dataset:main"
-vao-train-routing-student = "vao.training.train_routing_lora:main"
-vao-evaluate-routing-student = "vao.training.evaluate_student:main"
 vao-validate-run = "vao.validate_run:main"
 vao-phase3-summary = "vao.analysis.phase3_summary:main"
 vao-phase35-compare = "vao.analysis.phase35_compare:main"
-vao-audit-routing-dataset = "vao.analysis.dataset_audit:main"
-vao-replay-routing = "vao.analysis.replay_routing:main"
-vao-offline-routing-experiments = "vao.training.offline_routing_experiments:main"
-vao-lora-smoke = "vao.training.lora_smoke:main"
-vao-train-local-lora-router = "vao.training.train_local_lora_router:main"
-vao-routing-choice-visuals = "vao.analysis.routing_choice_visuals:main"
 vao-run-diagnostics-visuals = "vao.analysis.run_diagnostics_visuals:main"
 vao-edit-protocol-debug = "vao.analysis.edit_protocol_debug:main"
 

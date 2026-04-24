@@ -11,6 +11,7 @@ from vao.agents.claude_parser import (
     parse_json_object,
     parse_mode_distribution,
     parse_replacement_payload,
+    parse_structured_edit_payload,
     repair_distribution_payload,
     validate_candidate_source,
 )
@@ -159,3 +160,138 @@ def test_parse_json_object_from_fenced_text() -> None:
 def test_parse_json_object_repairs_triple_quoted_string_values() -> None:
     raw = '```json\n{"source": """\ndef f():\n    return 1\n"""}\n```'
     assert parse_json_object(raw) == {"source": "\ndef f():\n    return 1\n"}
+
+
+def test_parse_json_object_repairs_qwen_fenced_structured_edit_with_braces() -> None:
+    raw = '''```json
+{
+  "mode_probs": {"layout": 0.2, "indexing": 0.2, "topk": 0.1, "caching": 0.3, "summaries": 0.1, "micro": 0.1},
+  "mode_ranking": ["caching", "indexing", "layout", "micro", "summaries", "topk"],
+  "mode_rationales": {"layout": "", "indexing": "", "topk": "", "caching": "", "summaries": "", "micro": ""},
+  "candidates": {
+    "caching": {
+      "primary_mode": "caching",
+      "declared_mode": "caching",
+      "edit_format": "structured_edits",
+      "rationale": "Use a cache.",
+      "edits": [
+        {
+          "op": "replace_function",
+          "function": "__init__",
+          "source": """
+          def __init__(self):
+              self.cache = {}
+          """
+        }
+      ]
+    }
+  }
+}
+```'''
+    payload = parse_json_object(raw)
+    assert payload["candidates"]["caching"]["edits"][0]["source"].strip().startswith("def __init__")
+    assert "self.cache = {}" in payload["candidates"]["caching"]["edits"][0]["source"]
+
+
+def test_parse_json_object_repairs_qwen_triple_quoted_source_with_nested_docstring() -> None:
+    raw = '''```json
+{
+  "mode_probs": {"layout": 1, "indexing": 0, "topk": 0, "caching": 0, "summaries": 0, "micro": 0},
+  "mode_ranking": ["layout", "indexing", "topk", "caching", "summaries", "micro"],
+  "mode_rationales": {"layout": "", "indexing": "", "topk": "", "caching": "", "summaries": "", "micro": ""},
+  "candidates": {
+    "layout": {
+      "primary_mode": "layout",
+      "declared_mode": "layout",
+      "edit_format": "structured_edits",
+      "rationale": "Dictionary layout.",
+      "edits": [
+        {
+          "op": "replace_function",
+          "function": "__init__",
+          "source": """
+class CandidateQueryEngine:
+    """Correct list-backed baseline implementation."""
+
+    def __init__(self, items: dict[int, int] | None = None):
+        self._items: dict[int, int] = {}
+          """,
+          "new": """
+    def __init__(self, items=None):
+        self._items = {}
+          """
+        }
+      ]
+    }
+  }
+}
+```'''
+    payload = parse_json_object(raw)
+    edit = payload["candidates"]["layout"]["edits"][0]
+    assert '"""Correct list-backed baseline implementation."""' in edit["source"]
+    assert "self._items = {}" in edit["new"]
+
+
+def test_parse_json_object_repairs_missing_comma_after_triple_quoted_string() -> None:
+    raw = '''```json
+{
+  "candidates": {
+    "layout": {
+      "primary_mode": "layout",
+      "declared_mode": "layout",
+      "edit_format": "structured_edits",
+      "edits": [
+        {
+          "op": "replace_function",
+          "function": "__init__",
+          "new": """
+class CandidateQueryEngine:
+    """Docstring that should stay inside the string."""
+
+    def __init__(self):
+        self._items = []
+"""
+          "old": "__init__",
+          "source": "solution.py"
+        }
+      ]
+    }
+  }
+}
+```'''
+    payload = parse_json_object(raw)
+    edit = payload["candidates"]["layout"]["edits"][0]
+    assert '"""Docstring that should stay inside the string."""' in edit["new"]
+    assert edit["old"] == "__init__"
+
+
+def test_structured_edit_repairs_replace_function_with_whole_class_blob() -> None:
+    parent = Path("benchmarks/stateful_query_engine/solution_template.py").read_text(encoding="utf-8")
+    raw = json.dumps(
+        {
+            "primary_mode": "layout",
+            "declared_mode": "layout",
+            "edit_format": "structured_edits",
+            "rationale": "Small model pasted a class instead of one method.",
+            "edits": [
+                {
+                    "op": "replace_function",
+                    "function": "__init__",
+                    "source": '''
+class CandidateQueryEngine:
+    """Docstring."""
+
+    def __init__(self, items: dict[int, int] | None = None):
+        self._items: list[tuple[int, int]] = []
+        if items:
+            for key, value in items.items():
+                self.put(key, value)
+''',
+                }
+            ],
+        }
+    )
+    payload = parse_structured_edit_payload(raw, "layout", parent_source=parent)
+    assert payload["structured_edit_apply_status"] == "passed"
+    assert "replace_function_extracted_from_class_source:__init__" in payload["edit_repairs"]
+    assert "class CandidateQueryEngine" in payload["solution_py"]

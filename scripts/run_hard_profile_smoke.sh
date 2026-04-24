@@ -17,9 +17,6 @@ python -m vao.validate_run --run_dir "runs/hard_profile/local_smoke/$LOCAL_RUN_I
 python -m vao.analysis.compute_estimators \
   --runs "runs/hard_profile/local_smoke/$LOCAL_RUN_ID" \
   --out artifacts/hard_local_smoke_estimators.csv
-python -m vao.training.build_routing_dataset \
-  --runs "runs/hard_profile/local_smoke/$LOCAL_RUN_ID" \
-  --out artifacts/hard_local_smoke_routing_dataset.jsonl
 python -m vao.analysis.phase3_summary \
   --runs "runs/hard_profile/local_smoke/$LOCAL_RUN_ID" \
   --summary_out artifacts/hard_local_smoke_summary.json \
@@ -37,9 +34,6 @@ if [[ "${RUN_HAIKU:-0}" == "1" ]]; then
   python -m vao.analysis.compute_estimators \
     --runs "runs/hard_profile/single_prompt/model_matrix/$HAIKU_RUN_ID" \
     --out artifacts/hard_haiku_single_prompt_smoke_estimators.csv
-  python -m vao.training.build_routing_dataset \
-    --runs "runs/hard_profile/single_prompt/model_matrix/$HAIKU_RUN_ID" \
-    --out artifacts/hard_haiku_single_prompt_smoke_routing_dataset.jsonl
   python -m vao.analysis.phase3_summary \
     --runs "runs/hard_profile/single_prompt/model_matrix/$HAIKU_RUN_ID" \
     --summary_out artifacts/hard_haiku_single_prompt_smoke_summary.json \

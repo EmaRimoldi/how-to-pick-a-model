@@ -6,6 +6,7 @@ import ast
 import copy
 import json
 import re
+import textwrap
 from typing import Any
 
 from pydantic import ValidationError
@@ -241,17 +242,66 @@ def _repair_structured_edits_if_safe(
         if not lines:
             continue
         first_nonempty = next((line for line in lines if line.strip()), "")
+        if first_nonempty.startswith("class "):
+            extracted = _extract_function_source_from_class_blob(source, function_name)
+            if extracted is None:
+                continue
+            reindented = _reindent_function_source(extracted, expected_indent)
+            if reindented is None:
+                continue
+            edit["source"] = reindented
+            repairs.append(f"replace_function_extracted_from_class_source:{function_name}")
+            continue
         if not first_nonempty.startswith("def ") and not first_nonempty.startswith("async def "):
             continue
-        actual_indent = len(first_nonempty) - len(first_nonempty.lstrip(" "))
-        if actual_indent != 0:
+        reindented = _reindent_function_source(source, expected_indent)
+        if reindented is None:
             continue
-        prefix = " " * expected_indent
-        edit["source"] = "\n".join(prefix + line if line.strip() else line for line in lines)
-        if source.endswith("\n"):
-            edit["source"] += "\n"
+        edit["source"] = reindented
         repairs.append(f"replace_function_auto_indented:{function_name}:{expected_indent}")
     return repaired, repairs
+
+
+def _extract_function_source_from_class_blob(source: str, function_name: str) -> str | None:
+    """Extract a method body when a small model pasted a whole class for replace_function."""
+    try:
+        dedented = textwrap.dedent(source.strip("\n"))
+        tree = ast.parse(dedented)
+    except SyntaxError:
+        return None
+    matches = [
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == function_name
+    ]
+    if len(matches) != 1:
+        return None
+    segment = ast.get_source_segment(dedented, matches[0])
+    if not segment or not segment.strip():
+        return None
+    return segment.rstrip("\n")
+
+
+def _reindent_function_source(source: str, expected_indent: int) -> str | None:
+    lines = source.strip("\n").splitlines()
+    if not lines:
+        return None
+    first_nonempty = next((line for line in lines if line.strip()), "")
+    if not first_nonempty.startswith("def ") and not first_nonempty.startswith("async def "):
+        return None
+    actual_indent = len(first_nonempty) - len(first_nonempty.lstrip(" "))
+    if actual_indent == expected_indent:
+        return "\n".join(lines)
+    prefix = " " * expected_indent
+    reindented: list[str] = []
+    for line in lines:
+        if not line.strip():
+            reindented.append(line)
+        elif len(line) >= actual_indent:
+            reindented.append(prefix + line[actual_indent:])
+        else:
+            return None
+    return "\n".join(reindented)
 
 
 def _function_indents(source: str) -> dict[str, int]:
@@ -394,10 +444,63 @@ def _repair_triple_quoted_json_strings(text: str) -> str:
     validation.
     """
 
+    line_repaired = _repair_line_delimited_triple_quoted_json_strings(text)
+    if line_repaired != text:
+        return line_repaired
+
     def replace(match: re.Match[str]) -> str:
         return json.dumps(match.group(1))
 
     return re.sub(r'"""(.*?)"""', replace, text, flags=re.DOTALL)
+
+
+def _repair_line_delimited_triple_quoted_json_strings(text: str) -> str:
+    lines = text.splitlines(keepends=True)
+    out: list[str] = []
+    changed = False
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        open_match = re.match(r'^(?P<prefix>.*:\s*)"""(?P<after>.*)$', line, flags=re.DOTALL)
+        if open_match is None:
+            out.append(line)
+            index += 1
+            continue
+
+        body_parts = [open_match.group("after")]
+        close_index = index + 1
+        close_suffix: str | None = None
+        while close_index < len(lines):
+            candidate = lines[close_index]
+            line_no_newline = candidate.rstrip("\n")
+            newline = "\n" if candidate.endswith("\n") else ""
+            close_match = re.match(r'^\s*"""(?P<suffix>\s*(?:[,}\]].*)?)$', line_no_newline)
+            if close_match is not None:
+                suffix = close_match.group("suffix")
+                if not suffix.strip() and _next_nonempty_line_starts_json_key(lines, close_index + 1):
+                    suffix = ","
+                close_suffix = suffix + newline
+                break
+            body_parts.append(candidate)
+            close_index += 1
+
+        if close_suffix is None:
+            out.append(line)
+            index += 1
+            continue
+
+        out.append(open_match.group("prefix") + json.dumps("".join(body_parts)) + close_suffix)
+        index = close_index + 1
+        changed = True
+    return "".join(out) if changed else text
+
+
+def _next_nonempty_line_starts_json_key(lines: list[str], start_index: int) -> bool:
+    for line in lines[start_index:]:
+        if not line.strip():
+            continue
+        return re.match(r'^\s*"[^"]+"\s*:', line) is not None
+    return False
 
 
 def _materialize_candidate_source(payload: dict[str, Any], parent_source: str | None) -> str:

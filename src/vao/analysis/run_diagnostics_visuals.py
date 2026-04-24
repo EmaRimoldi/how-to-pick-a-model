@@ -65,11 +65,13 @@ def make_plots(summary: dict[str, Any], out_dir: Path, *, single_mode: str | Non
     outputs = {
         "mode_probs": str(out_dir / "mode_probs_by_step.png"),
         "loss_by_mode": str(out_dir / "loss_by_step_by_mode.png"),
+        "best_loss": str(out_dir / "best_loss_by_step.png"),
         "gain_heatmap": str(out_dir / "gain_heatmap_by_step_mode.png"),
         "cost_per_step": str(out_dir / "cost_per_step.png"),
     }
     _plot_mode_probs(summary, Path(outputs["mode_probs"]))
     _plot_loss_by_mode(summary, Path(outputs["loss_by_mode"]))
+    _plot_best_loss(summary, Path(outputs["best_loss"]))
     _plot_gain_heatmap(summary, Path(outputs["gain_heatmap"]))
     _plot_cost(summary, Path(outputs["cost_per_step"]))
     if any(step.get("post_feedback_mode_probs") for step in summary["steps"]):
@@ -175,6 +177,38 @@ def _plot_loss_by_mode(summary: dict[str, Any], path: Path) -> None:
     fig.tight_layout()
     fig.savefig(path, dpi=180)
     plt.close(fig)
+
+
+def _plot_best_loss(summary: dict[str, Any], path: Path) -> None:
+    xs = _steps(summary)
+    selected_losses = [step["selected_loss"] for step in summary["steps"]]
+    step_best_losses = [step["best_counterfactual_loss"] for step in summary["steps"]]
+    visible_best_so_far = _running_min(selected_losses)
+    oracle_best_so_far = _running_min(step_best_losses)
+
+    fig, ax = plt.subplots(figsize=(9, 4.8))
+    ax.plot(xs, selected_losses, marker="o", color="#111827", alpha=0.75, label="selected loss at step")
+    ax.plot(xs, step_best_losses, marker="s", color="#2563eb", alpha=0.75, label="best counterfactual at step")
+    ax.plot(xs, visible_best_so_far, color="#16a34a", linewidth=2.5, label="best visible so far")
+    ax.plot(xs, oracle_best_so_far, color="#dc2626", linewidth=2.5, linestyle="--", label="best counterfactual so far")
+    ax.set_xlabel("step")
+    ax.set_ylabel("latent loss")
+    ax.set_title("Best loss trajectory")
+    ax.legend()
+    fig.tight_layout()
+    fig.savefig(path, dpi=180)
+    plt.close(fig)
+
+
+def _running_min(values: list[float | None]) -> list[float | None]:
+    best: float | None = None
+    out: list[float | None] = []
+    for value in values:
+        if value is not None:
+            numeric = float(value)
+            best = numeric if best is None else min(best, numeric)
+        out.append(best)
+    return out
 
 
 def _plot_gain_heatmap(summary: dict[str, Any], path: Path) -> None:

@@ -20,7 +20,6 @@ from vao.agents.codex_cli_adapter import CodexCliAdapter
 from vao.agents.local_stub_adapter import LeakageProbeAdapter, LocalStubAdapter
 from vao.agents.openai_compatible_adapter import OpenAICompatibleAdapter
 from vao.agents.openai_responses_adapter import OpenAIResponsesAdapter
-from vao.agents.routing_student_adapter import RoutingStudentAdapter
 from vao.estimators import gain, jsd, productive_mode_proxy, routing_regret
 from vao.logging_utils import append_jsonl, now_iso, sha256_file, write_json
 from vao.schemas import BranchEvaluation, ModeDistribution, RunManifest, StepRecord
@@ -38,7 +37,6 @@ ADAPTERS = {
     "codex_cli": CodexCliAdapter,
     "openai_compatible": OpenAICompatibleAdapter,
     "openai_responses": OpenAIResponsesAdapter,
-    "routing_student": RoutingStudentAdapter,
 }
 
 

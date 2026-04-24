@@ -99,6 +99,7 @@ class ClaudeHaikuAdapter:
         failures: list[str] = []
         try:
             raw, meta = self._complete(prompt, self._step_batch_schema(), int(self.config.get("max_tokens_batch", 12000)))
+            _write_step_batch_raw_output(branch_dirs, raw, meta)
             payload = parse_json_object(raw)
         except (BackendUnavailable, ModelOutputError, RuntimeError) as exc:
             failures.append(f"batch_parse_failed:{type(exc).__name__}:{exc}")
@@ -427,5 +428,15 @@ def _write_step_prompt_snapshot(branch_dirs: dict[str, Path], prompt: str, promp
             indent=2,
             sort_keys=True,
         ),
+        encoding="utf-8",
+    )
+
+
+def _write_step_batch_raw_output(branch_dirs: dict[str, Path], raw: str, meta: dict[str, Any]) -> None:
+    step_dir = _step_dir_from_branch_dirs(branch_dirs)
+    step_dir.mkdir(parents=True, exist_ok=True)
+    (step_dir / "batch_raw_output.txt").write_text(raw, encoding="utf-8")
+    (step_dir / "batch_raw_output_meta.json").write_text(
+        json.dumps(meta, indent=2, sort_keys=True),
         encoding="utf-8",
     )

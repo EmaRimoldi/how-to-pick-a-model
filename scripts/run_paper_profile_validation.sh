@@ -23,15 +23,6 @@ python -m vao.analysis.compute_estimators \
   --runs "$RUN_ROOT" \
   --out artifacts/paper_profile_validation_estimators.csv
 
-python -m vao.training.build_routing_dataset \
-  --runs "$RUN_ROOT" \
-  --out artifacts/paper_profile_validation_routing_all.jsonl
-
-python -m vao.training.build_routing_dataset \
-  --runs "$RUN_ROOT" \
-  --exclude_holdout \
-  --out artifacts/paper_profile_validation_routing_dev_only.jsonl
-
 python -m vao.analysis.phase3_summary \
   --runs "$RUN_ROOT" \
   --summary_out artifacts/paper_profile_validation_summary.json \

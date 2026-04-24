@@ -92,7 +92,6 @@ def test_prompt_controlled_configs_are_single_prompt_batched() -> None:
     assert "weak_qwen_direct" not in models_config
     assert "weak_qwen" not in models_config
     assert "claude_haiku_diff_legacy" not in models_config
-    assert "claude_opus_teacher_replacement_legacy" not in models_config
 
 
 def test_model_matrix_config_contains_requested_backends() -> None:
