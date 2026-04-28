@@ -200,7 +200,7 @@ scripts/run_qwen_smoke.sh
 
 - The active benchmark surface is benchmark-only.
 - C(b) feedback-use infrastructure is available for local or controlled diagnostics via `feedback_condition: cb`, `visibility_regime: all_branches`, and `ask_post_feedback_distribution: true`.
-- Run logs, artifacts, and generated summaries are cleaned from the repository after use.
+- The `runs/` tree is local `gitignored` workspace state; prune obsolete smoke, topup, and debug runs periodically to keep the checkout small.
 - First paper dev R0 is complete with `gpt-5.3-codex-spark`: 3 dev profiles, 3 steps each, 54 branch evaluations, all runs validated.
 - Qwen smoke is validated through `qwen_coder_batch_strict` with `Qwen/Qwen2.5-Coder-1.5B-Instruct`.
 - Prompt-control hardening leaves a single active prompt and a single batched generation path across the active comparison surface.

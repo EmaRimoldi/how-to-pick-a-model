@@ -1,5 +1,13 @@
 # Project Log
 
+## 2026-04-28
+
+### Local Run Prune
+
+- Pruned obsolete local run directories under the gitignored `runs/` tree after reconciling them against the retained artifact references.
+- Removed superseded oracle-family smoke, topk-fill, and codex-only iterative leaves that were not serialized into the current paper-facing artifacts.
+- Removed obsolete AutoResearch smoke, model-smoke, throughput, and single-trajectory local runs while retaining the active long-run and artifact-referenced smoke surfaces.
+
 ## 2026-04-21
 
 ### Benchmark Foundation
