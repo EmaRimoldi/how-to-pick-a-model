@@ -1,39 +1,367 @@
-\documentclass[11pt]{article}
+\documentclass{article}
+
 \usepackage{neurips_2026}
 
-\title{How to Pick the Model\\ A Theory Perspective on Agentic Systems}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{xcolor}
 
-\author{
-  Pierfrancesco Beneventano \\
-  MIT \\
-  \texttt{pierbene@mit.edu}
-  \and
-  Tomaso Poggio \\
-  MIT \\
-  \texttt{tp@ai.mit.edu}
-}
+\newtheorem{assumption}{Assumption}
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{remark}{Remark}
 
-\date{}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\newcommand{\cD}{\mathcal{D}}
+\newcommand{\cM}{\mathcal{M}}
+\newcommand{\cT}{\mathcal{T}}
+\newcommand{\cX}{\mathcal{X}}
+\newcommand{\cY}{\mathcal{Y}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prb}{\mathbb{P}}
+\newcommand{\KL}{\mathrm{KL}}
+\newcommand{\MI}{\mathrm{I}}
+\newcommand{\Hent}{\mathrm{H}}
+\newcommand{\Mn}{M_n}
+\newcommand{\pmin}{p_{\min}}
+\newcommand{\dacc}{\delta_{\mathrm{acc}}}
+\newcommand{\dconf}{\delta_{\mathrm{conf}}}
+\newcommand{\Dcross}{D_{\mathrm{cross}}}
+\newcommand{\Dstar}{D^*}
+\newcommand{\mismatch}{\varepsilon}
+
+\title{How to Pick the Model: Decomposable Performance Accounting for Agentic Systems}
+
+\author{Anonymous Authors}
 
 \begin{document}
 
 \maketitle
 
-\input{sections_n/abstract_intro}
+\begin{abstract}
+This is a structural skeleton, not a polished rewrite.
+The unified paper studies how to choose among model and agent-system designs for verifiable tasks.
+Under a packed latent-mode assumption, the performance gap between two designs decomposes into cost, competence, routing information, and routing mismatch.
+The paper will use this decomposition to derive practical model-selection diagnostics, a decomposition-guided selection algorithm, crossover rules for cheap models with retries, and transfer rules for reusing designs across task families.
+\end{abstract}
 
-\input{sections_n/decomposition}
+\section{Introduction}
+\label{sec:introduction}
 
-\input{sections_n/algorithm}
+\paragraph{Planned role.}
+Open with the builder's problem: a practitioner has a task family, a budget, a menu of models, possible retry depths, and possible routing policies.
+The naive method is benchmark racing: evaluate every candidate design end-to-end and pick the best.
+Benchmark racing is simple but opaque: it conflates per-step cost, per-mode competence, information available for routing, and routing mismatch.
 
-\input{sections_n/transfer}
+\paragraph{Central thesis.}
+The paper should argue that model choice in agentic systems is a structured measurement problem.
+Under a packed latent-mode abstraction for verifiable tasks, the performance gap between designs admits a four-term accounting identity.
+This identity does not directly solve the optimization problem, but it tells the builder which lever matters and enables sample-efficient ranking of large design menus from a shared pilot.
 
-\input{sections_n/experiments}
+\paragraph{Contributions to write.}
+\begin{enumerate}[leftmargin=1.4em]
+  \item A packed latent-mode setup for verifiable agent design.
+  \item An exact four-term decomposition into cost, competence, information gain, and routing mismatch.
+  \item A crossover rule explaining when a cheaper model with retries beats a more expensive model.
+  \item A decomposition-guided design-selection algorithm with evaluation cost independent of the number of candidate designs once pilot estimates are collected.
+  \item Experiments validating ranking, robustness, and sensitivity of the resulting design choices.
+  \item A transfer/reuse framework distinguishing competence transfer from orchestration transfer.
+\end{enumerate}
 
-\input{sections_n/related_discussion}
+\section{Setup: Verifiable Agent Design Under Latent Modes}
+\label{sec:setup}
 
+\subsection{Budgeted Verifiable Tasks}
+\label{sec:verifiable-tasks}
+
+\paragraph{Planned content.}
+Define a budgeted transductive task with instance space $\cX$, solution space $\cY$, verifier $v:\cX\times\cY\to\{0,1\}$, and budget $B$.
+The paper should focus on settings where solutions can be externally certified: code repair against tests, theorem proving against proof assistants, query-engine optimization against test harnesses, or similar.
+
+\subsection{Agent Designs}
+\label{sec:agent-designs}
+
+\paragraph{Planned content.}
+Define a design as a tuple containing model $M$, per-step cost $\kappa(M)$, retry depth $D$, routing policy $q$, and verification protocol.
+Explain which dimensions are varied in the main experiments and which are held fixed.
+Keep the full general design tuple in the appendix if it is too heavy for the main text.
+
+\subsection{Packed Latent-Mode Families}
+\label{sec:packed-modes}
+
+\begin{assumption}[Packed latent-mode family]
+\label{ass:packed}
+TODO: State the assumption from the source manuscripts: task instances have a latent mode $S(x)\in\{1,\ldots,\Mn\}$, each model has per-mode success probabilities $p(s,M)$, certified time is geometric or approximately geometric conditional on mode, and the mode prior is exogenous.
+\end{assumption}
+
+\paragraph{Planned clarification.}
+Distinguish theoretical latent modes from empirical task modes.
+In controlled benchmarks, modes may be oracle workload families.
+In real deployments, they may need to be discovered or approximated.
+This distinction is central to the paper's claim scope.
+
+\section{The Four-Term Decomposition}
+\label{sec:decomposition}
+
+\subsection{Routing-Information Identity}
+\label{sec:routing-information}
+
+\paragraph{Planned content.}
+Include the routing-information identity only in the minimal form needed to motivate the main theorem.
+If page pressure is high, move the identity and proof to Appendix~\ref{app:proofs} and state the four-term theorem directly.
+
+\subsection{Model-Aware Four-Term Identity}
+\label{sec:four-term}
+
+\begin{theorem}[Four-term model-aware decomposition]
+\label{thm:four-term}
+TODO: State the source theorem:
+\[
+  \Delta =
+  \underbrace{\log\frac{\kappa_0}{\kappa(M)}}_{\text{cost}}
+  + \underbrace{\sum_s \pi_s \log\frac{p(s,M)}{p(s,M_0)}}_{\text{competence}}
+  + \underbrace{\MI_\pi(S;D_M)}_{\text{information gain}}
+  - \underbrace{\E_D[\KL(\pi_D^M\|q_D)]}_{\text{routing mismatch}}.
+\]
+\end{theorem}
+
+\paragraph{Planned interpretation.}
+Explain each term as an actionable diagnostic.
+Cost means per-step price.
+Competence means per-mode model capability.
+Information gain means how much side information helps identify or exploit the mode.
+Mismatch means how much the implemented routing policy wastes that information.
+
+\subsection{Not a Lagrangian Decomposition}
+\label{sec:lagrangian}
+
+\begin{remark}[Performance accounting, not shadow prices]
+\label{rem:lagrangian}
+TODO: Summarize the negative result from \texttt{final\_paper.tex}: the four terms are components of the primal objective at a feasible design, not Lagrangian dual variables.
+\end{remark}
+
+\subsection{Crossover: When Cheap Models With Retries Win}
+\label{sec:crossover}
+
+\begin{theorem}[Crossover depth]
+\label{thm:crossover}
+TODO: State the single-mode rule
+\[
+  \Dcross=\frac{\log(1-p_l)}{\log(1-p_s)}
+\]
+and the cost-adjusted condition $\Dcross\kappa_s < \kappa_l$.
+Mention the multi-mode generalization and hardest-mode estimate if space permits.
+\end{theorem}
+
+\section{Decomposition-Guided Design Selection}
+\label{sec:algorithm}
+
+\subsection{Algorithm}
+\label{sec:algorithm-box}
+
+\paragraph{Planned algorithm.}
+\begin{enumerate}[leftmargin=1.4em]
+  \item Structured pilot: estimate $\hat p(s,M)$ for each model-mode pair.
+  \item Analytical scoring: compute the decomposition objective for every candidate design without end-to-end racing.
+  \item Confirmation: evaluate only the top candidates on fresh instances.
+\end{enumerate}
+
+\paragraph{Main point.}
+Once the model-mode success table is estimated, scoring is arithmetic.
+The number of task evaluations scales with number of models and modes, not directly with the number of candidate designs $k$.
+
+\subsection{Ranking Objective and Metrics}
+\label{sec:ranking-objective}
+
+\paragraph{Planned content.}
+Define the primary ranking metric used to order designs.
+Candidates include expected log certified time, cost-adjusted negative log success, regret to oracle, or quantile certified time.
+The main text should use one primary metric and explicitly state that there is no universally correct metric across deployments.
+Sensitivity analysis should show whether the selected design is stable under reasonable alternatives.
+
+\subsection{Guarantees}
+\label{sec:guarantees}
+
+\begin{proposition}[Near-optimality]
+\label{prop:near-opt}
+TODO: State the $2\delta$ near-optimality guarantee from \texttt{sections\_n/algorithm.tex}.
+\end{proposition}
+
+\begin{proposition}[Evaluation complexity]
+\label{prop:eval-complexity}
+TODO: State that the decomposition-guided procedure uses $m\Mn n_0 + cN_{\mathrm{conf}}$ evaluations, while racing uses $kn_{\mathrm{eval}}$.
+\end{proposition}
+
+\subsection{Sample Complexity}
+\label{sec:sample-complexity}
+
+\paragraph{Planned content.}
+State the practical pilot-sizing rule and the Hoeffding/Bernstein contrast.
+Keep detailed derivations in Appendix~\ref{app:proofs}.
+This subsection should connect directly to experimental budget choices.
+
+\section{Experiments}
+\label{sec:experiments}
+
+\subsection{Experimental Setup}
+\label{sec:experimental-setup}
+
+\paragraph{Planned content.}
+Specify task families, empirical or oracle modes, train/dev/holdout split, model set, depth grid, cost assumptions, pilot and confirmation budgets, random seeds, and verification protocol.
+If live LLMs or agents are used, report model versions and disclose LLM/agent use as part of the method.
+
+\subsection{Conditions and Protocols}
+\label{sec:conditions-protocols}
+
+\paragraph{Planned content.}
+Separate experiments by what claim they support:
+synthetic packed-family validation, decomposition-guided selection, routing-triviality/crossover, transfer, and real or semi-real benchmark diagnostics.
+Avoid mixing all experiments into one undifferentiated table.
+
+\subsection{Models}
+\label{sec:models}
+
+\paragraph{Planned content.}
+List all evaluated models or model tiers, costs, and any proxy cost assumptions.
+If exact proprietary model prices or versions vary, state the date/version and run configuration.
+
+\subsection{Metrics}
+\label{sec:metrics}
+
+\paragraph{Planned metrics.}
+Report primary objective value, regret, success probability, cost-adjusted score, savings factor, decomposition terms, crossover depth, information gain, mismatch, and transfer regret as appropriate.
+Each table should say which metric defines the ranking.
+
+\subsection{Ranking Construction}
+\label{sec:ranking-construction}
+
+\paragraph{Planned content.}
+Define how candidate designs are ranked from empirical estimates.
+Include uncertainty and tie-breaking.
+Explain that rankings are metric-dependent and protocol-dependent; the contribution is an interpretable ranking procedure, not a universal scalar leaderboard.
+
+\subsection{Main Results}
+\label{sec:main-results}
+
+\paragraph{Planned content.}
+Include a compact main results table showing design ranking and objective values.
+Include a decomposition table or bar chart showing which term drives the winning design.
+Include a crossover/routing-triviality result if it materially changes the design recommendation.
+
+\subsection{Robustness and Sensitivity}
+\label{sec:robustness}
+
+\paragraph{Planned analyses.}
+Show how rankings change under:
+\begin{itemize}[leftmargin=1.4em]
+  \item alternative ranking metrics;
+  \item different cost ratios;
+  \item different mode priors;
+  \item pilot/confirmation budget splits;
+  \item Hoeffding vs Bernstein confidence choices;
+  \item threshold choices for routing-triviality or transfer decisions.
+\end{itemize}
+
+\subsection{Qualitative Log or Transcript Analysis}
+\label{sec:qualitative}
+
+\paragraph{Planned content.}
+If using real agent runs, include brief qualitative evidence from logs showing why certain task modes favor different designs.
+If the final paper remains purely synthetic/semi-synthetic, omit this subsection from the main text and keep any qualitative implementation notes in the appendix.
+
+\subsection{Limitations of the Experimental Evidence}
+\label{sec:experimental-limitations}
+
+\paragraph{Planned content.}
+State whether the experiments use synthetic, semi-synthetic, or live benchmark data.
+Clarify which claims are validated internally under the model assumptions and which remain future external-validity claims.
+Discuss closed-model nondeterminism, limited run counts, oracle mode labels, and missing baselines such as Bayesian optimization if not implemented.
+
+\section{Transfer and Reuse}
+\label{sec:transfer}
+
+\subsection{Two Equivalence Notions}
+\label{sec:equivalence-notions}
+
+\paragraph{Planned content.}
+Define post-training equivalence as similar competence profiles and orchestration equivalence as similar routing structure.
+State why these are independent.
+
+\subsection{Three-Case Rule}
+\label{sec:three-case-rule}
+
+\paragraph{Planned content.}
+Present plug-and-play, re-route, and start-over as a practical decision rule.
+Keep detailed thresholds and proofs in Appendix~\ref{app:transfer}.
+
+\section{Related Work}
+\label{sec:related-work}
+
+\paragraph{Planned content.}
+Cover compound AI systems and LLM routing, test-time compute scaling, algorithm selection and portfolios, racing/successive halving/Bayesian optimization, transfer/domain adaptation, and information-theoretic views of search time.
+Use the concise organization from \texttt{sections\_n/related\_discussion.tex}.
+
+\section{Discussion, Limitations, and Future Directions}
+\label{sec:discussion}
+
+\paragraph{What the paper should leave readers with.}
+The decomposition is valuable because it turns "which model should I pick?" into separately measurable questions.
+It is an accounting identity and diagnostic tool, not a universal optimizer.
+
+\paragraph{When not to use the framework.}
+Single-mode tasks, no pilot data, rapidly shifting distributions, tiny design menus, and cost-adjusted homogeneous model menus where routing is trivial.
+
+\paragraph{Open questions.}
+\begin{itemize}[leftmargin=1.4em]
+  \item How should latent modes be discovered rather than supplied by oracle workload families?
+  \item How does the decomposition degrade under non-geometric certified-time distributions?
+  \item How should practitioners choose among expectation, quantile, and cost-adjusted ranking metrics?
+  \item Can the pilot/confirmation budget split be optimized theoretically?
+  \item When does transfer reuse work in real agent deployments?
+  \item How does the framework extend to continuous design spaces and dependent multi-step agents?
+\end{itemize}
+
+\section*{Acknowledgements}
+
+TODO: Add acknowledgements only in the non-anonymous or camera-ready version if appropriate.
+
+\bibliographystyle{plainnat}
 \bibliography{references}
 
+\appendix
+
+\section{Full Proofs}
+\label{app:proofs}
+
+TODO: Four-term decomposition proof, routing-information identity, Lagrangian non-connection, crossover theorem, sample-complexity and Bernstein derivations.
+
+\section{Additional Experiments}
+\label{app:experiments}
+
+TODO: Extended synthetic experiments, full tables, omitted baselines, sensitivity sweeps, and robustness plots.
+
+\section{Transfer Proofs and Details}
+\label{app:transfer}
+
+TODO: Independence constructions, transfer divergences, three-case bounds, and full transfer grid.
+
+\section{Practitioner and Reproducibility Details}
+\label{app:reproducibility}
+
+TODO: Pilot-sizing tables, decision flowchart, commands, configs, compute resources, code/data availability, and model/API versions.
+
 \newpage
-\input{sections_n/appendix}
+\input{checklist}
 
 \end{document}

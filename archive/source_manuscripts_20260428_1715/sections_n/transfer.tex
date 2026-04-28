@@ -1,0 +1,176 @@
+% ==================================================================
+%  TRANSFER THEORY (pp. 6--7): Pillar 3
+% ==================================================================
+
+\section{Transfer Theory}
+\label{sec:transfer}
+
+When a practitioner deploys an optimized agent design on a new task
+domain, two questions arise.  Can the model selection be reused?  Can the
+routing policy be reused?  This section formalizes both questions, proves
+they are independent, and derives a three-case decision rule with explicit
+thresholds.
+
+\subsection{Two Equivalence Notions}
+\label{sec:equivalences}
+
+Let $\tau_S$ (source) and $\tau_T$ (target) be packed-family distributions
+over $\Mn$ modes with $m$ models.
+
+\begin{definition}[Post-training equivalence]
+\label{def:pt-equiv}
+$\tau_S$ and $\tau_T$ are \emph{post-training equivalent} if their
+competence profiles coincide:
+$p_S(s,M) = p_T(s,M)$ for all modes~$s$ and models~$M$.
+\end{definition}
+
+\begin{definition}[Orchestration equivalence]
+\label{def:orch-equiv}
+$\tau_S$ and $\tau_T$ are \emph{orchestration equivalent} if the optimal
+routing policy is the same: $q^*(\tau_S) = q^*(\tau_T)$.
+\end{definition}
+
+\begin{proposition}[Independence]
+\label{prop:independence}
+Post-training equivalence and orchestration equivalence are logically
+independent.  Concretely, with $\Mn{=}2$ modes and $m{=}2$ models:
+(a)~There exist $\tau_A, \tau_B$ that are post-training equivalent but
+  not orchestration equivalent.
+(b)~There exist $\tau_C, \tau_D$ that are orchestration equivalent but
+  not post-training equivalent.
+\end{proposition}
+
+\begin{proof}[Proof sketch]
+For~(a), take identical competence matrices but
+$\pi_A = (0.7, 0.3)$, $\pi_B = (0.3, 0.7)$.
+The posterior routing distributions differ
+($\KL(\pi_1^A \| \pi_1^B) \approx 0.32$) because mode frequencies
+shift, even though per-mode success probabilities are identical.
+For~(b), take $\pi_C = \pi_D = (0.5, 0.5)$ with the same model-to-mode
+assignment ordering but different magnitudes
+($p_C(1,M_{\mathrm{big}}) = 0.9$ vs.\
+$p_D(1,M_{\mathrm{big}}) = 0.6$).
+The routing policy is identical (same ordering), but the competence
+profiles differ.
+Full constructions in Appendix~\ref{app:independence}.
+\end{proof}
+
+The independence is not a technicality: it means the transfer decision
+space is genuinely two-dimensional.  Knowing that the models perform
+similarly (post-training) tells you nothing about whether the routing
+structure transfers.
+
+\subsection{Transfer Divergences and the Three-Case Rule}
+\label{sec:transfer-rule}
+
+We measure source--target distance with two divergences:
+\begin{align}
+  \alpha_{\mathrm{PT}} &= \max_{s,M}\,
+    \bigl|\log p_S(s,M) - \log p_T(s,M)\bigr|
+    \quad \text{(competence shift)},
+    \label{eq:alpha-pt} \\
+  \alpha_O &= \KL(\pi_S \| \pi_T)
+    \quad \text{(orchestration shift)}.
+    \label{eq:alpha-o}
+\end{align}
+
+\begin{theorem}[Three-case transfer bounds]
+\label{thm:transfer}
+Let $d_S^*$ be the source-optimal design and $d_T^*$ the target-optimal.
+The transfer error
+$\Delta = f(d_S^*;\tau_T) - f(d_T^*;\tau_T)$ satisfies:
+
+\medskip
+\noindent\textbf{Case 1 (Plug-and-play):}
+$\alpha_{\mathrm{PT}} \le \tau_1$, $\alpha_O \le \tau_2$.
+\begin{equation}
+  \Delta \;\le\; 2\,\alpha_{\mathrm{PT}} + \sqrt{2\,\alpha_O}\cdot\log\Mn.
+\end{equation}
+
+\noindent\textbf{Case 2 (Re-route):}
+$\alpha_{\mathrm{PT}} \le \tau_1$, $\alpha_O > \tau_2$.
+Keep $M_S^*$, re-estimate routing from $N_{\mathrm{re}}$ target samples:
+\begin{equation}
+  \Delta \;\le\; \alpha_{\mathrm{PT}} + 2\dacc, \quad
+  N_{\mathrm{re}} = O\!\Bigl(\frac{\Mn\log(\Mn/\dconf)}
+    {\dacc^2\,\pmin^2}\Bigr).
+\end{equation}
+
+\noindent\textbf{Case 3 (Start over):}
+$\alpha_{\mathrm{PT}} > \tau_1$.
+Run full Algorithm~1 on~$\tau_T$.
+$\Delta \le 2\dacc$ with $N_{\mathrm{full}} = O(m\cdot\Mn/R^2)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Decompose the transfer error term-by-term using the four-term identity.
+The cost term is distribution-independent.  The competence shift is
+bounded by $2\alpha_{\mathrm{PT}}$ via the definition of the max-log
+divergence.  The information-gain and routing-mismatch shifts are bounded
+by $\sqrt{2\alpha_O}\cdot\log\Mn$ via Pinsker's inequality and
+entropy continuity.  Cases~2 and~3 follow by composing the transfer bound
+with the near-optimality guarantee (Proposition~\ref{prop:near-opt}).
+Full proof in Appendix~\ref{app:transfer}.
+\end{proof}
+
+The thresholds are derived by inverting the Case~1 bound to a target
+accuracy~$\dtarget$:
+
+\bigskip
+\noindent\fbox{\parbox{0.95\textwidth}{%
+\textbf{Decision Rule: Three-Case Transfer Protocol}
+
+\medskip
+\textbf{Input:} Source design $d_S^*$, divergences $\alpha_{\mathrm{PT}},
+\alpha_O$, target accuracy $\dtarget$.
+
+\textbf{Thresholds:}
+$\tau_1 = \dtarget/2$, \quad
+$\tau_2 = \dtarget^2/(2\log^2\Mn)$.
+
+\textbf{Decision:}
+\begin{enumerate}
+\item $\alpha_{\mathrm{PT}} \le \tau_1$ \textbf{and}
+  $\alpha_O \le \tau_2$:
+  \textbf{Plug-and-play.} Transfer directly.
+  Cost: 0 new evaluations.
+\item $\alpha_{\mathrm{PT}} \le \tau_1$ \textbf{but}
+  $\alpha_O > \tau_2$:
+  \textbf{Re-route.} Keep model, re-estimate
+  routing.  Cost: $O(\Mn/(\dacc^2\pmin^2))$ evaluations
+  (factor $m$ cheaper than full).
+\item $\alpha_{\mathrm{PT}} > \tau_1$:
+  \textbf{Start over.} Run full
+  Algorithm~1 on target.
+\end{enumerate}
+}}
+\bigskip
+
+\subsection{Transfer Savings}
+
+\begin{proposition}[Transfer savings]
+\label{prop:transfer-savings}
+In Case~1, the target cost is zero (amortized over the source).
+In Case~2, the pilot cost drops by a factor of~$m$ relative to
+Case~3, because only one model (the transferred $M_S^*$) requires
+re-piloting.  In Case~3, no savings accrue from transfer.
+\end{proposition}
+
+\subsection{Transfer Experiment: EXP12}
+\label{sec:exp12}
+
+We sweep a $7 \times 6$ grid of
+$(\alpha_{\mathrm{PT}}, \alpha_O)$ values,
+generating target distributions at controlled divergence from a source
+with $\Mn{=}5$ modes and $m{=}5$ models.  At each grid point, we measure
+transfer regret (100 Monte Carlo replications) and record the decision
+rule's case assignment.
+
+The decision rule correctly assigns the transfer case in 73.8\% of
+borderline cells (those within $2\times$ of a threshold).
+On interior cells (far from thresholds), accuracy exceeds 95\%.
+The errors are one-directional: the rule is conservative, defaulting to
+more expensive strategies when uncertain.  This conservatism is by
+design---the thresholds use worst-case bounds.
+
+Monte Carlo verification of both independence directions (EXP11, 200 replications, zero violations) is in Appendix~\ref{app:exp11}.

@@ -1,0 +1,122 @@
+% ==================================================================
+%  RELATED WORK + DISCUSSION (pp. 8--9)
+% ==================================================================
+
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Compound AI systems and routing.}
+The shift from monolithic models to compound
+systems~\citep{zaharia2024compound} has generated a growing literature on
+LLM routing---selecting which model handles which query.
+RouteLLM~\citep{ong2024routellm} and
+FrugalGPT~\citep{chen2023frugalgpt} learn routers from preference data
+or cascading strategies; xRouter and MasRouter train routing policies via
+reinforcement learning or distillation.  These systems solve the routing \emph{execution}
+problem---given a trained router, which model to call.  Our work addresses
+the upstream \emph{design selection} problem: given a menu of possible
+system configurations (model, depth, routing policy), which configuration
+to deploy.  The four-term decomposition provides the analytical scaffold
+that routing systems lack: it quantifies \emph{why} a routing change
+improves performance, separating information gain from mismatch reduction.
+
+\paragraph{Test-time compute scaling.}
+The discovery that repeated sampling can compensate for model
+size~\citep{brown2024monkeys,snell2025testtime} motivates the
+crossover formula~\eqref{eq:crossover}.
+\citet{wu2025inference} derive inference scaling laws relating compute
+to accuracy; \citet{osca2024} optimize sample-compute allocation.
+Our crossover formula makes the tradeoff explicit at the level of individual
+task modes, rather than in aggregate.
+The key distinction is that these works study \emph{how much}
+test-time compute to use; our decomposition studies \emph{which system
+configuration} to use, with test-time compute as one of several levers.
+
+\paragraph{Algorithm selection and transfer.}
+The algorithm selection problem~\citep{rice1976algorithm} asks which
+solver to apply to a given problem instance.
+SATzilla~\citep{xu2012satzilla} and AutoFolio~\citep{lindauer2015autofolio}
+solve this with portfolio-based methods; SMAC~\citep{hutter2011smac} and
+Hyperband~\citep{li2017hyperband} use sequential model-based or
+bandit-based optimization.  These treat each solver as a black box.
+Our separable evaluator exploits the packed-family structure to score
+solvers analytically from shared pilot data, achieving $O(1)$-in-$k$
+evaluation cost where portfolio methods require $O(k)$.
+
+Transfer of algorithm configurations across problem
+distributions connects to domain adaptation
+theory~\citep{bendavid2010theory,mansour2009domain} and
+transferability estimation~\citep{achille2019task2vec,you2021logme,
+pandy2022transferability}.  The Ben-David theory bounds generalization
+error under distribution shift via $\mathcal{H}$-divergence; our transfer bounds
+use the more structured $(\alpha_{\mathrm{PT}}, \alpha_O)$ divergence
+pair, which exploits the decomposition to separate competence shift from
+routing shift.  This finer-grained analysis enables the three-case
+decision rule, which has no analogue in generic domain adaptation.
+
+Racing algorithms~\citep{maron1993hoeffding,maron1997racing} and
+successive halving~\citep{jamieson2016successive} reduce evaluation cost
+by eliminating poor candidates early.  They remain black-box methods:
+each candidate must be evaluated individually.
+Algorithm~\ref{alg:decomp-guided} is white-box in the sense that it
+exploits the algebraic structure of the performance objective to avoid
+per-candidate evaluation entirely in Phase~2.
+Weitzman's Pandora's box rule~\citep{weitzman1979optimal} solves optimal
+sequential search with inspection costs; our setting differs in that the
+separable evaluator makes all inspections simultaneous.
+
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{Limitations.}
+The packed-family assumption is the central modeling commitment.
+It requires that task difficulty clusters into discrete modes with
+geometric time distributions---a reasonable approximation for
+verifiable tasks with independent attempts, but a simplification for
+tasks with complex dependencies between retries (e.g., where each
+attempt builds on the previous one).  Outside the packed family, the
+four-term identity holds only approximately, with a bounded residual
+that depends on departure from the geometric-trials
+model~\citep{beneventano2026framework}.
+
+The transfer thresholds are conservative by design.  The 73.8\% accuracy
+on borderline cells reflects worst-case Pinsker and entropy-continuity
+bounds; tighter bounds (e.g., Bernstein-type refinements or empirical
+validation on diagnostic samples) would likely improve accuracy.  The
+thresholds should be treated as guidelines, not hard boundaries.
+
+The framework is most valuable when models have comparative advantages across modes and $k \gg m \cdot \Mn$; when one model dominates everywhere (as in EXP15), the decomposition correctly diagnoses $G \approx 0$ but offers no advantage over simple model selection.
+
+The design space in our experiments is finite and low-dimensional
+(model $\times$ depth).  Extending to continuous design spaces---joint
+optimization over model mixtures, context budgets, and tool
+configurations---is an important open direction.
+
+\paragraph{Takeaways.}
+Three things are clearer after this work.
+First, the separation of cost, competence, information, and routing
+is not merely a diagnostic convenience---it is the algebraic structure
+that makes $O(1)$-in-$k$ design selection possible.
+Second, the two dimensions of transfer (competence and orchestration)
+are genuinely independent, which means that a single similarity score
+between task domains is insufficient for transfer decisions.
+Third, even when a framework's assumptions are violated (as in EXP15,
+where routing is trivial), the decomposition correctly diagnoses the
+violation and remains useful for scoping.
+
+\paragraph{Open questions.}
+Can the sample-complexity cascade be tightened beyond the Bernstein
+refinement?  Empirical pilot sizes are roughly $29\times$ smaller than
+the Hoeffding bound predicts; closing this gap would make the budget
+prescriptions practical rather than merely conservative.
+Can the framework be extended to tasks where attempts are not independent
+(e.g., agentic loops with memory)?  The geometric-trials assumption is
+the binding constraint.
+Finally, validating the decomposition and transfer theory on production
+agent deployments---where mode structure must be discovered rather than
+assumed---is the most important next step.
+
+\paragraph{Acknowledgements.}
+This work was conducted using the PoggioAI/MSc research pipeline
+\citep{PoggioAIMSc_2026}, an experimental framework for ML theory
+research with humans on the loop.
