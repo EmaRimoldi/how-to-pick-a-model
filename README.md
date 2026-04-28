@@ -48,6 +48,27 @@ To validate the paper dev/holdout split without live model calls:
 scripts/run_paper_profile_validation.sh
 ```
 
+## Paper LaTeX Submodule
+
+The Overleaf LaTeX project is tracked as a Git submodule at `paper_overleaf`.
+After cloning this repository on a new machine, initialize it with:
+
+```bash
+git submodule update --init --recursive
+```
+
+To edit or sync the paper, work inside the submodule:
+
+```bash
+cd paper_overleaf
+git pull
+git status
+```
+
+Commits made inside `paper_overleaf` push to the Overleaf remote. After updating
+the paper submodule, return to this repository and commit the changed submodule
+pointer so other clones receive the same LaTeX revision.
+
 Every run writes a self-contained directory with `run_manifest.json`,
 `baseline_verification.json`, `evaluations.jsonl`, `run_summary.json`, resolved
 config, step branch workspaces, verifier outputs, and prompt snapshots.
