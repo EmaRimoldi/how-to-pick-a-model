@@ -1,0 +1,158 @@
+{
+  "success_threshold": 0.95,
+  "success_mode": "relative_improvement",
+  "improvement_threshold": 0.0,
+  "cost_metric": "wall_seconds",
+  "task_mode_priors": {
+    "range_local_scans": 0.5,
+    "topk_stress": 0.5
+  },
+  "triviality": {
+    "pilot": {
+      "split": "pilot",
+      "task_modes": [
+        "range_local_scans",
+        "topk_stress"
+      ],
+      "cost_metric_delta": 1.3388305549672337,
+      "competence_delta": 0.35667494393873245,
+      "sufficient_condition_fires": true,
+      "routing_is_trivial_empirically": true,
+      "best_model_by_task_mode": {
+        "range_local_scans": "gpt-5.3-codex-spark",
+        "topk_stress": "gpt-5.3-codex-spark"
+      },
+      "unique_best_models": [
+        "gpt-5.3-codex-spark"
+      ]
+    },
+    "holdout": {
+      "split": "holdout",
+      "task_modes": [
+        "range_local_scans",
+        "topk_stress"
+      ],
+      "cost_metric_delta": 1.424074188381196,
+      "competence_delta": 0.1823215567939546,
+      "sufficient_condition_fires": true,
+      "routing_is_trivial_empirically": true,
+      "best_model_by_task_mode": {
+        "range_local_scans": "gpt-5.3-codex-spark",
+        "topk_stress": "gpt-5.3-codex-spark"
+      },
+      "unique_best_models": [
+        "gpt-5.3-codex-spark"
+      ]
+    }
+  },
+  "decomposition": {
+    "pilot_information_gain_nats": 0.001953880761533684,
+    "holdout_information_gain_nats": 3.180182290523834e-05,
+    "pilot_router_mismatch_nats": 0.019924635870609494,
+    "single_model_mismatch_nats": 0.11155011679628357,
+    "pilot_router_holdout_objective": 3.8623951233985903,
+    "oracle_router_holdout_objective": 3.8078400094224847,
+    "single_best_model_holdout_objective": 3.787993750520336,
+    "single_best_model": "gpt-5.3-codex-spark",
+    "pilot_router": {
+      "range_local_scans": {
+        "gpt-5.3-codex": 0.035941668987286755,
+        "gpt-5.3-codex-spark": 0.9640583310127132
+      },
+      "topk_stress": {
+        "gpt-5.3-codex": 0.06287371064057623,
+        "gpt-5.3-codex-spark": 0.9371262893594238
+      }
+    },
+    "oracle_router": {
+      "range_local_scans": {
+        "gpt-5.3-codex": 0.012228070624953704,
+        "gpt-5.3-codex-spark": 0.9877719293750464
+      },
+      "topk_stress": {
+        "gpt-5.3-codex": 0.014043402944853987,
+        "gpt-5.3-codex-spark": 0.9859565970551462
+      }
+    }
+  },
+  "pairwise_crossover": {
+    "split": "holdout",
+    "smaller_model": "gpt-5.3-codex-spark",
+    "larger_model": "gpt-5.3-codex",
+    "small_cost": 44.16876471042633,
+    "large_cost": 183.47750049829483,
+    "cost_ratio": 4.1540102310125,
+    "aggregate_d_cross": 1.0,
+    "family_rows": [
+      {
+        "task_mode_true": "range_local_scans",
+        "success_prob_small": 1.0,
+        "success_prob_large": 0.8333333333333334,
+        "d_cross": 1.0,
+        "cost_ratio": 4.1540102310125,
+        "small_model_dominates_at_equal_cost": true
+      },
+      {
+        "task_mode_true": "topk_stress",
+        "success_prob_small": 1.0,
+        "success_prob_large": 1.0,
+        "d_cross": 1.0,
+        "cost_ratio": 4.1540102310125,
+        "small_model_dominates_at_equal_cost": true
+      }
+    ]
+  },
+  "pairwise_model_terms": {
+    "small_to_large": {
+      "split": "holdout",
+      "baseline_model": "gpt-5.3-codex-spark",
+      "comparison_model": "gpt-5.3-codex",
+      "baseline_cost": 44.16876471042633,
+      "comparison_cost": 183.47750049829483,
+      "cost_term": -1.4240741883811956,
+      "competence_term": -0.0911607783969773,
+      "per_task_mode": [
+        {
+          "task_mode_true": "range_local_scans",
+          "prior": 0.5,
+          "baseline_success_prob": 1.0,
+          "comparison_success_prob": 0.8333333333333334,
+          "competence_contribution": -0.0911607783969773
+        },
+        {
+          "task_mode_true": "topk_stress",
+          "prior": 0.5,
+          "baseline_success_prob": 1.0,
+          "comparison_success_prob": 1.0,
+          "competence_contribution": 0.0
+        }
+      ]
+    },
+    "large_to_small": {
+      "split": "holdout",
+      "baseline_model": "gpt-5.3-codex",
+      "comparison_model": "gpt-5.3-codex-spark",
+      "baseline_cost": 183.47750049829483,
+      "comparison_cost": 44.16876471042633,
+      "cost_term": 1.4240741883811958,
+      "competence_term": 0.0911607783969773,
+      "per_task_mode": [
+        {
+          "task_mode_true": "range_local_scans",
+          "prior": 0.5,
+          "baseline_success_prob": 0.8333333333333334,
+          "comparison_success_prob": 1.0,
+          "competence_contribution": 0.0911607783969773
+        },
+        {
+          "task_mode_true": "topk_stress",
+          "prior": 0.5,
+          "baseline_success_prob": 1.0,
+          "comparison_success_prob": 1.0,
+          "competence_contribution": 0.0
+        }
+      ]
+    }
+  },
+  "task_prior_mode": "uniform"
+}

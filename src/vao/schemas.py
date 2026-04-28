@@ -112,6 +112,11 @@ class StepRecord(BaseModel):
     run_id: str
     profile_id: str
     model_id: str
+    model_alias: str | None = None
+    task_mode_true: str | None = None
+    task_mode_source: str | None = None
+    task_mode_split: str | None = None
+    instance_seed: int | None = None
     step: int
     timestamp: str = Field(default_factory=utc_now_iso)
     current_solution_hash: str
@@ -170,6 +175,11 @@ class RunManifest(BaseModel):
     run_id: str
     profile_id: str
     model_id: str
+    model_alias: str | None = None
+    task_mode_true: str | None = None
+    task_mode_source: str | None = None
+    task_mode_split: str | None = None
+    instance_seed: int | None = None
     visibility_regime: Literal["top1_only", "all_branches"]
     modes: list[str]
     max_steps: int

@@ -1,0 +1,48 @@
+{
+  "action_mode_aliases": {
+    "caching": "regularization and robustness changes",
+    "indexing": "optimizer-family and gradient-dynamics changes",
+    "layout": "architecture and model capacity changes",
+    "micro": "batching and local training-loop tweaks",
+    "summaries": "learning-rate schedule and budget-allocation changes",
+    "topk": "learning-rate scale changes"
+  },
+  "latent_modes": {
+    "capacity_schedule_long_budget": {
+      "description": "Clean full-CIFAR regime with a longer horizon where architecture capacity and learning-rate schedule both matter.",
+      "imbalance_ratio": 1.0,
+      "label_noise_rate": 0.0,
+      "max_train_steps": 6,
+      "seed": 73,
+      "train_subset_size": 50000,
+      "val_subset_size": 10000
+    },
+    "lr_search_short_budget": {
+      "description": "Clean balanced full-CIFAR regime with a tiny fixed-step budget where learning-rate scale dominates early progress.",
+      "imbalance_ratio": 1.0,
+      "label_noise_rate": 0.0,
+      "max_train_steps": 2,
+      "seed": 61,
+      "train_subset_size": 50000,
+      "val_subset_size": 10000
+    },
+    "optimizer_for_long_tail": {
+      "description": "Full-CIFAR long-tail regime under the same compute budget, emphasizing optimizer dynamics and class coverage.",
+      "imbalance_ratio": 0.12,
+      "label_noise_rate": 0.0,
+      "max_train_steps": 2,
+      "seed": 71,
+      "train_subset_size": 50000,
+      "val_subset_size": 10000
+    },
+    "regularization_under_label_noise": {
+      "description": "Short-horizon full-CIFAR training with synthetic label noise, making regularization choices the main lever.",
+      "imbalance_ratio": 1.0,
+      "label_noise_rate": 0.25,
+      "max_train_steps": 2,
+      "seed": 67,
+      "train_subset_size": 50000,
+      "val_subset_size": 10000
+    }
+  }
+}

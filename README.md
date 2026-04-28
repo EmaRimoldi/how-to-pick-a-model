@@ -83,6 +83,77 @@ reserved for final generalization checks.
 The active config catalog is in `configs/README.md`. Experimental outputs are
 not retained in the repository by default.
 
+## Oracle-Family Validation
+
+The repository now includes a paper-aligned oracle-family validation path that
+separates:
+
+- `task modes`: workload families such as `range_local_scans` and `topk_stress`
+- `action modes`: the six branch labels used by the inner editing solver
+
+Main commands:
+
+- `PYTHONPATH=src:. python -m vao.analysis.oracle_family_pilot --config configs/oracle_family_pilot.yaml --models gpt_5_3_codex_spark_batch_strict --families range_local_scans,topk_stress --seeds 7301 --split pilot --steps 1 --run-prefix oracle_family_real --output-root runs/oracle_family_real`
+- `PYTHONPATH=src:. python -m vao.analysis.task_mode_decomposition --runs runs/oracle_family_real runs/oracle_family_spark_ext runs/oracle_family_codex_real --out-dir artifacts/oracle_family_decomposition_rel5 --success-mode relative_improvement --improvement-threshold 0.05 --smaller-model gpt-5.3-codex-spark --larger-model gpt-5.3-codex`
+- `PYTHONPATH=src:. python -m vao.analysis.task_mode_threshold_sweep --runs runs/oracle_family_real runs/oracle_family_spark_ext runs/oracle_family_codex_real --out-dir artifacts/oracle_family_threshold_sweep --thresholds 0.0,0.05,0.1 --smaller-model gpt-5.3-codex-spark --larger-model gpt-5.3-codex`
+- `PYTHONPATH=src:. python -m vao.analysis.task_mode_robustness --runs runs/oracle_family_real runs/oracle_family_spark_ext runs/oracle_family_codex_real --out-dir artifacts/oracle_family_robustness_rel5 --success-mode relative_improvement --improvement-threshold 0.05`
+- `PYTHONPATH=src:. python -m vao.analysis.task_mode_bootstrap --runs runs/oracle_family_real runs/oracle_family_spark_ext runs/oracle_family_codex_real --out-dir artifacts/oracle_family_bootstrap_rel5 --success-mode relative_improvement --improvement-threshold 0.05 --smaller-model gpt-5.3-codex-spark --larger-model gpt-5.3-codex --bootstrap-samples 400 --seed 0`
+- `PYTHONPATH=src:. python -m vao.analysis.oracle_family_campaign_plan --config configs/oracle_family_5model_campaign.yaml --runs runs/oracle_family_real runs/oracle_family_spark_ext runs/oracle_family_codex_real runs/oracle_family_5model_smoke --out-dir artifacts/oracle_family_5model_campaign_plan`
+- `PYTHONPATH=src:. python -m vao.analysis.oracle_family_multimodel_visuals --runs runs/oracle_family_real runs/oracle_family_spark_ext runs/oracle_family_codex_real runs/oracle_family_5model_smoke --out-dir artifacts/oracle_family_multimodel_visuals_rel5 --success-mode relative_improvement --improvement-threshold 0.05`
+
+Iterative extension:
+
+- `PYTHONPATH=src:. python -m vao.analysis.oracle_family_latent_modes --out-dir artifacts/oracle_family_latent_mode_selection -k 4`
+- `PYTHONPATH=src:. python -m vao.analysis.oracle_family_pilot --config configs/oracle_family_iterative_multistep.yaml --models gpt_5_3_codex_spark_batch_strict,gpt_5_3_codex_batch_strict --families negative_lookup_churn,topk_stress,temporal_repeat_windows,wide_range_churn --seeds 8101:2 --split pilot --steps 10 --run-prefix oracle_family_iterative --output-root runs/oracle_family_iterative_top1`
+- `PYTHONPATH=src:. python -m vao.analysis.oracle_family_iterative --runs runs/oracle_family_iterative_top1 runs/oracle_family_iterative_parallel --out-dir artifacts/oracle_family_iterative_partial_multimode --taus 0.0,0.05,0.1 --success-kinds terminal,anytime --smaller-model gpt-5.3-codex-spark --larger-model gpt-5.3-codex`
+- `PYTHONPATH=src:. python -m vao.analysis.oracle_family_pilot --config configs/oracle_family_iterative_fixed_mode.yaml --models gpt_5_3_codex_spark_batch_strict --families topk_stress --seeds 9101:1 --split pilot --steps 10 --selection-policy fixed_mode --selected-mode indexing --output-root runs/oracle_family_iterative_fixed_indexing --run-prefix oracle_family_iterative_fixed_indexing`
+- `PYTHONPATH=src:. python -m vao.analysis.oracle_family_policy_compare --analysis top1=artifacts/oracle_family_iterative_partial_top1 fixed_indexing=artifacts/oracle_family_iterative_fixed_indexing_partial fixed_topk=artifacts/oracle_family_iterative_fixed_topk_partial --out-dir artifacts/oracle_family_policy_compare_partial_topk --success-kind anytime --tau 0.05`
+
+The iterative path adds three pieces missing from the one-step theorem-facing
+analysis:
+
+- horizon selection via a one-standard-error rule on the oracle objective curve
+- per-step action-routing diagnostics over the six action modes
+- fixed-mode ablations that treat a single action mode as a locked policy
+
+Paper-facing summary:
+
+- `docs/Document_4_Oracle_Family_Empirical_Validation.md`
+- `docs/Document_5_Multimodel_Campaign_and_Figures.md`
+
+Paper-facing artifacts use uniform task-mode priors for the main theorem-facing
+comparison:
+
+- `artifacts/oracle_family_decomposition_rel5_topup_uniform/`
+- `artifacts/oracle_family_bootstrap_rel5_topup_uniform/`
+- `artifacts/oracle_family_threshold_sweep_topup_uniform/`
+- `artifacts/oracle_family_robustness_rel5_topup_uniformstate/`
+
+## AutoResearch CIFAR-10 Benchmark
+
+The repository now also contains a second benchmark surface under
+`benchmarks/autoresearch_cifar10/`. It keeps the same iterative branch protocol
+and theorem-facing quantities, but changes the optimized object from a query
+engine to a CPU-only CIFAR-10 training script.
+
+Main commands:
+
+- `PYTHONPATH=src:. python -m vao.orchestrator --config configs/autoresearch_cifar10_local_smoke.yaml --steps 1 --run-id autoresearch_cifar10_smoke`
+- `PYTHONPATH=src:. python -m vao.analysis.autoresearch_cifar10_mode_catalog --out-dir artifacts/autoresearch_cifar10_mode_catalog`
+- `PYTHONPATH=src:. python -m vao.analysis.autoresearch_cifar10_pilot --config configs/autoresearch_cifar10_pilot.yaml --models autoresearch_local_stub --families short_budget_clean,noisy_regularized --seeds 7001 --steps 1 --train-subset-size 512 --val-subset-size 256 --max-train-steps 2 --output-root runs/autoresearch_cifar10/pilot_smoke --run-prefix autoresearch_pilot_smoke`
+
+In this benchmark:
+
+- latent modes are training regimes (`short_budget_clean`, `noisy_regularized`,
+  `imbalanced_long_tail`, `schedule_sensitive`)
+- the six canonical branch labels are reused as action-mode aliases for
+  architecture, optimizer, learning-rate, regularization, schedule, and
+  batching edits
+- task quality is validation loss (`val_loss` / `val_bpb`)
+
+See `docs/Document_6_AutoResearch_CIFAR10_Task.md` for the benchmark-specific
+mapping.
+
 ## Prompt Surface
 
 The only active model-generation prompt is

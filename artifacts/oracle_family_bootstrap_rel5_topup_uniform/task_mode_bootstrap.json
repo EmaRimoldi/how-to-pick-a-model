@@ -1,0 +1,344 @@
+{
+  "success_threshold": 0.95,
+  "success_mode": "relative_improvement",
+  "improvement_threshold": 0.05,
+  "cost_metric": "wall_seconds",
+  "bootstrap_samples": 400,
+  "random_seed": 0,
+  "task_prior_mode": "uniform",
+  "point_estimate": {
+    "decomposition": {
+      "pilot_information_gain_nats": 0.510121340189456,
+      "holdout_information_gain_nats": 0.6600695747444513,
+      "pilot_router_mismatch_nats": 0.03330675654604587,
+      "single_model_mismatch_nats": 6.959220957296808,
+      "pilot_router_holdout_objective": 4.894107418753356,
+      "oracle_router_holdout_objective": 4.541397069685047,
+      "single_best_model_holdout_objective": 10.69574902950247,
+      "single_best_model": "gpt-5.3-codex-spark"
+    },
+    "triviality": {
+      "pilot": {
+        "split": "pilot",
+        "task_modes": [
+          "range_local_scans",
+          "topk_stress"
+        ],
+        "cost_metric_delta": 1.3388305549672337,
+        "competence_delta": 2.3025850929940455,
+        "sufficient_condition_fires": false,
+        "routing_is_trivial_empirically": false,
+        "best_model_by_task_mode": {
+          "range_local_scans": "gpt-5.3-codex-spark",
+          "topk_stress": "gpt-5.3-codex"
+        },
+        "unique_best_models": [
+          "gpt-5.3-codex",
+          "gpt-5.3-codex-spark"
+        ]
+      },
+      "holdout": {
+        "split": "holdout",
+        "task_modes": [
+          "range_local_scans",
+          "topk_stress"
+        ],
+        "cost_metric_delta": 1.424074188381196,
+        "competence_delta": 13.815510557964274,
+        "sufficient_condition_fires": false,
+        "routing_is_trivial_empirically": false,
+        "best_model_by_task_mode": {
+          "range_local_scans": "gpt-5.3-codex-spark",
+          "topk_stress": "gpt-5.3-codex"
+        },
+        "unique_best_models": [
+          "gpt-5.3-codex",
+          "gpt-5.3-codex-spark"
+        ]
+      }
+    },
+    "pairwise_terms": {
+      "baseline_model": "gpt-5.3-codex-spark",
+      "comparison_model": "gpt-5.3-codex",
+      "cost_term": -1.4240741883811956,
+      "competence_term": 6.816594500585159,
+      "per_task_mode": [
+        {
+          "task_mode_true": "range_local_scans",
+          "prior": 0.5,
+          "baseline_success_prob": 1.0,
+          "comparison_success_prob": 0.8333333333333334,
+          "competence_contribution": -0.0911607783969773
+        },
+        {
+          "task_mode_true": "topk_stress",
+          "prior": 0.5,
+          "baseline_success_prob": 1e-06,
+          "comparison_success_prob": 1.0,
+          "competence_contribution": 6.907755278982137
+        }
+      ]
+    },
+    "cell_success": {
+      "holdout::range_local_scans::gpt-5.3-codex": 0.8333333333333334,
+      "holdout::range_local_scans::gpt-5.3-codex-spark": 1.0,
+      "holdout::topk_stress::gpt-5.3-codex": 1.0,
+      "holdout::topk_stress::gpt-5.3-codex-spark": 0.0,
+      "pilot::range_local_scans::gpt-5.3-codex": 1.0,
+      "pilot::range_local_scans::gpt-5.3-codex-spark": 0.8,
+      "pilot::topk_stress::gpt-5.3-codex": 1.0,
+      "pilot::topk_stress::gpt-5.3-codex-spark": 0.1
+    }
+  },
+  "bootstrap_summary": {
+    "numeric": {
+      "decomposition.pilot_information_gain_nats": {
+        "point_estimate": 0.510121340189456,
+        "mean": 0.4609075668031369,
+        "std": 0.16745936718354987,
+        "q025": 0.08772288244955495,
+        "q50": 0.5143254710948817,
+        "q975": 0.6478747241026395,
+        "samples": 400
+      },
+      "decomposition.holdout_information_gain_nats": {
+        "point_estimate": 0.6600695747444513,
+        "mean": 0.6579286147724622,
+        "std": 0.014590855980724432,
+        "q025": 0.6348150143460458,
+        "q50": 0.6593981217854454,
+        "q975": 0.6855297470982371,
+        "samples": 400
+      },
+      "decomposition.pilot_router_mismatch_nats": {
+        "point_estimate": 0.03330675654604587,
+        "mean": 0.09718446267563544,
+        "std": 0.15070692540933286,
+        "q025": 0.00029683239936659987,
+        "q50": 0.03283774368303103,
+        "q975": 0.5128991302995977,
+        "samples": 400
+      },
+      "decomposition.single_model_mismatch_nats": {
+        "point_estimate": 6.959220957296808,
+        "mean": 6.882908039642732,
+        "std": 0.10466220234615428,
+        "q025": 6.687769405643926,
+        "q50": 6.9273660186493835,
+        "q975": 7.015542404001144,
+        "samples": 400
+      },
+      "decomposition.pilot_router_holdout_objective": {
+        "point_estimate": 4.894107418753356,
+        "mean": 5.373723573644707,
+        "std": 1.1699554003758907,
+        "q025": 4.523455877704073,
+        "q50": 4.864498296721443,
+        "q975": 8.472098662641596,
+        "samples": 400
+      },
+      "decomposition.oracle_router_holdout_objective": {
+        "point_estimate": 4.541397069685047,
+        "mean": 4.541407484505688,
+        "std": 0.027027778581610706,
+        "q025": 4.504643715308603,
+        "q50": 4.538735052994818,
+        "q975": 4.624967548865188,
+        "samples": 400
+      },
+      "decomposition.single_best_model_holdout_objective": {
+        "point_estimate": 10.69574902950247,
+        "mean": 8.304776537901214,
+        "std": 2.689894413394187,
+        "q025": 5.189377017853846,
+        "q50": 10.66934287586328,
+        "q975": 10.77840469607676,
+        "samples": 400
+      },
+      "pairwise.cost_term": {
+        "point_estimate": -1.4240741883811956,
+        "mean": -1.4174638624987876,
+        "std": 0.044124899215312034,
+        "q025": -1.4972059425466075,
+        "q50": -1.4216840175197056,
+        "q975": -1.317834183707064,
+        "samples": 400
+      },
+      "pairwise.competence_term": {
+        "point_estimate": 6.816594500585159,
+        "mean": 6.814177746149418,
+        "std": 0.10082822094572508,
+        "q025": 6.561181688702164,
+        "q50": 6.816594500585159,
+        "q975": 6.907755278982137,
+        "samples": 400
+      },
+      "pairwise.success_prob_comparison.range_local_scans": {
+        "point_estimate": null,
+        "mean": 0.8445833333333332,
+        "std": 0.14765820282718933,
+        "q025": 0.5,
+        "q50": 0.8333333333333334,
+        "q975": 1.0,
+        "samples": 400
+      },
+      "pairwise.success_prob_baseline.range_local_scans": {
+        "point_estimate": null,
+        "mean": 1.0,
+        "std": 0.0,
+        "q025": 1.0,
+        "q50": 1.0,
+        "q975": 1.0,
+        "samples": 400
+      },
+      "pairwise.success_prob_comparison.topk_stress": {
+        "point_estimate": null,
+        "mean": 1.0,
+        "std": 0.0,
+        "q025": 1.0,
+        "q50": 1.0,
+        "q975": 1.0,
+        "samples": 400
+      },
+      "pairwise.success_prob_baseline.topk_stress": {
+        "point_estimate": null,
+        "mean": 1.0000000000000002e-06,
+        "std": 2.1202343195420225e-22,
+        "q025": 1e-06,
+        "q50": 1e-06,
+        "q975": 1e-06,
+        "samples": 400
+      },
+      "cell_success.holdout::range_local_scans::gpt-5.3-codex": {
+        "point_estimate": null,
+        "mean": 0.8445833333333332,
+        "std": 0.14765820282718933,
+        "q025": 0.5,
+        "q50": 0.8333333333333334,
+        "q975": 1.0,
+        "samples": 400
+      },
+      "cell_success.holdout::range_local_scans::gpt-5.3-codex-spark": {
+        "point_estimate": null,
+        "mean": 1.0,
+        "std": 0.0,
+        "q025": 1.0,
+        "q50": 1.0,
+        "q975": 1.0,
+        "samples": 400
+      },
+      "cell_success.holdout::topk_stress::gpt-5.3-codex": {
+        "point_estimate": null,
+        "mean": 1.0,
+        "std": 0.0,
+        "q025": 1.0,
+        "q50": 1.0,
+        "q975": 1.0,
+        "samples": 400
+      },
+      "cell_success.holdout::topk_stress::gpt-5.3-codex-spark": {
+        "point_estimate": null,
+        "mean": 0.0,
+        "std": 0.0,
+        "q025": 0.0,
+        "q50": 0.0,
+        "q975": 0.0,
+        "samples": 400
+      },
+      "cell_success.pilot::range_local_scans::gpt-5.3-codex": {
+        "point_estimate": null,
+        "mean": 1.0,
+        "std": 0.0,
+        "q025": 1.0,
+        "q50": 1.0,
+        "q975": 1.0,
+        "samples": 400
+      },
+      "cell_success.pilot::range_local_scans::gpt-5.3-codex-spark": {
+        "point_estimate": null,
+        "mean": 0.8005000000000001,
+        "std": 0.12625212472467043,
+        "q025": 0.5,
+        "q50": 0.8,
+        "q975": 1.0,
+        "samples": 400
+      },
+      "cell_success.pilot::topk_stress::gpt-5.3-codex": {
+        "point_estimate": null,
+        "mean": 1.0,
+        "std": 0.0,
+        "q025": 1.0,
+        "q50": 1.0,
+        "q975": 1.0,
+        "samples": 400
+      },
+      "cell_success.pilot::topk_stress::gpt-5.3-codex-spark": {
+        "point_estimate": null,
+        "mean": 0.10175000000000001,
+        "std": 0.09667109574159019,
+        "q025": 0.0,
+        "q50": 0.1,
+        "q975": 0.3,
+        "samples": 400
+      }
+    },
+    "boolean": {
+      "triviality.pilot.sufficient_condition_fires": {
+        "point_estimate": false,
+        "bootstrap_mean": 0.085,
+        "bootstrap_probability_true": 0.085,
+        "samples": 400
+      },
+      "triviality.pilot.routing_is_trivial_empirically": {
+        "point_estimate": false,
+        "bootstrap_mean": 0.085,
+        "bootstrap_probability_true": 0.085,
+        "samples": 400
+      },
+      "triviality.holdout.sufficient_condition_fires": {
+        "point_estimate": false,
+        "bootstrap_mean": 0.0,
+        "bootstrap_probability_true": 0.0,
+        "samples": 400
+      },
+      "triviality.holdout.routing_is_trivial_empirically": {
+        "point_estimate": false,
+        "bootstrap_mean": 0.0,
+        "bootstrap_probability_true": 0.0,
+        "samples": 400
+      }
+    },
+    "categorical": {
+      "decomposition.single_best_model": {
+        "point_estimate": "gpt-5.3-codex-spark",
+        "bootstrap_mode": "gpt-5.3-codex-spark",
+        "bootstrap_agreement": 0.555,
+        "samples": 400
+      },
+      "triviality.pilot.best_range_local_scans": {
+        "point_estimate": null,
+        "bootstrap_mode": "gpt-5.3-codex-spark",
+        "bootstrap_agreement": 1.0,
+        "samples": 400
+      },
+      "triviality.pilot.best_topk_stress": {
+        "point_estimate": null,
+        "bootstrap_mode": "gpt-5.3-codex",
+        "bootstrap_agreement": 0.915,
+        "samples": 400
+      },
+      "triviality.holdout.best_range_local_scans": {
+        "point_estimate": null,
+        "bootstrap_mode": "gpt-5.3-codex-spark",
+        "bootstrap_agreement": 1.0,
+        "samples": 400
+      },
+      "triviality.holdout.best_topk_stress": {
+        "point_estimate": null,
+        "bootstrap_mode": "gpt-5.3-codex",
+        "bootstrap_agreement": 1.0,
+        "samples": 400
+      }
+    }
+  }
+}

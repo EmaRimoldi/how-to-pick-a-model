@@ -59,6 +59,32 @@ class LocalStubAdapter:
             }
         return distribution, proposals
 
+    def propose_step_single(self, state: AgentState, branch_dirs: dict[str, Path]) -> tuple[ModeDistribution, CandidateProposal]:
+        distribution = self.propose_mode_distribution(state)
+        selected_mode = distribution.top_mode
+        one_hot = {
+            mode: (1.0 if mode == selected_mode else 0.0)
+            for mode in MODES
+        }
+        single_distribution = ModeDistribution(
+            mode_probs=one_hot,
+            mode_ranking=[selected_mode, *[mode for mode in MODES if mode != selected_mode]],
+            mode_rationales={mode: ("selected by local stub" if mode == selected_mode else "") for mode in MODES},
+            raw_text=distribution.raw_text,
+            parsed_json={
+                **(distribution.parsed_json or {}),
+                "candidate_generation": "single_local_stub",
+                "selected_mode": selected_mode,
+            },
+        )
+        proposal = self.propose_edit_for_mode(state, selected_mode, branch_dirs[selected_mode])
+        proposal.parsed_output_json = {
+            **(proposal.parsed_output_json or {}),
+            "candidate_generation": "single_local_stub",
+            "usage_accounted_on_distribution": True,
+        }
+        return single_distribution, proposal
+
     def propose_edit_for_mode(self, state: AgentState, mode: str, branch_dir: Path) -> CandidateProposal:
         validate_mode(mode)
         parent_path = branch_dir / "parent_solution.py"

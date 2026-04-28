@@ -1,4 +1,4 @@
-"""Verifier wrapper around the ported stateful query-engine benchmark."""
+"""Verifier wrappers for benchmark-specific offline evaluation."""
 
 from __future__ import annotations
 
@@ -12,15 +12,19 @@ import time
 from pathlib import Path
 from typing import Any
 
-from benchmarks.stateful_query_engine.dynamic_benchmark import validate_solution_source
-
 from vao.candidate_preflight import run_candidate_preflight_subprocess
 from vao.logging_utils import sha256_file, write_json
 from vao.schemas import BranchEvaluation
 
 
-def validate_source(source_text: str) -> dict[str, Any]:
-    return validate_solution_source(source_text)
+def validate_source(source_text: str, *, benchmark_id: str = "stateful_query_engine") -> dict[str, Any]:
+    if benchmark_id == "stateful_query_engine":
+        return _validate_stateful_source(source_text)
+    if benchmark_id == "autoresearch_cifar10":
+        from benchmarks.autoresearch_cifar10.task_spec import validate_solution_source as validate_autoresearch_source
+
+        return validate_autoresearch_source(source_text)
+    raise KeyError(f"Unknown benchmark_id {benchmark_id!r}")
 
 
 def evaluate_solution(
@@ -39,8 +43,67 @@ def evaluate_solution(
     run_id: str | None = None,
     instance_overrides: dict[str, Any] | None = None,
     preflight_timeout_seconds: int | None = 12,
+    benchmark_id: str = "stateful_query_engine",
 ) -> BranchEvaluation:
-    """Evaluate a proposed solution file in an isolated benchmark child run."""
+    if benchmark_id == "stateful_query_engine":
+        return _evaluate_stateful_solution(
+            solution_path,
+            profile_id,
+            timeout_seconds,
+            out_path,
+            branch_index=branch_index,
+            primary_mode=primary_mode,
+            secondary_modes=secondary_modes,
+            declared_mode=declared_mode,
+            inferred_mode=inferred_mode,
+            baseline_perf_path=baseline_perf_path,
+            source_parent_hash=source_parent_hash,
+            run_id=run_id,
+            instance_overrides=instance_overrides,
+            preflight_timeout_seconds=preflight_timeout_seconds,
+        )
+    if benchmark_id == "autoresearch_cifar10":
+        return _evaluate_autoresearch_solution(
+            solution_path,
+            profile_id,
+            timeout_seconds,
+            out_path,
+            branch_index=branch_index,
+            primary_mode=primary_mode,
+            secondary_modes=secondary_modes,
+            declared_mode=declared_mode,
+            inferred_mode=inferred_mode,
+            source_parent_hash=source_parent_hash,
+            run_id=run_id,
+            instance_overrides=instance_overrides,
+        )
+    raise KeyError(f"Unknown benchmark_id {benchmark_id!r}")
+
+
+def _validate_stateful_source(source_text: str) -> dict[str, Any]:
+    from benchmarks.stateful_query_engine.dynamic_benchmark import validate_solution_source
+
+    return validate_solution_source(source_text)
+
+
+def _evaluate_stateful_solution(
+    solution_path: Path,
+    profile_id: str,
+    timeout_seconds: int,
+    out_path: Path,
+    *,
+    branch_index: int = 0,
+    primary_mode: str = "micro",
+    secondary_modes: list[str] | None = None,
+    declared_mode: str = "micro",
+    inferred_mode: str = "micro",
+    baseline_perf_path: Path | None = None,
+    source_parent_hash: str | None = None,
+    run_id: str | None = None,
+    instance_overrides: dict[str, Any] | None = None,
+    preflight_timeout_seconds: int | None = 12,
+) -> BranchEvaluation:
+    """Evaluate a proposed solution file in an isolated stateful benchmark child run."""
     out_path.parent.mkdir(parents=True, exist_ok=True)
     raw_root = out_path.parent / "verifier_raw"
     eval_run_id = run_id or f"eval_{branch_index:02d}"
@@ -193,6 +256,62 @@ def evaluate_solution(
     return evaluation
 
 
+def _evaluate_autoresearch_solution(
+    solution_path: Path,
+    profile_id: str,
+    timeout_seconds: int,
+    out_path: Path,
+    *,
+    branch_index: int = 0,
+    primary_mode: str = "micro",
+    secondary_modes: list[str] | None = None,
+    declared_mode: str = "micro",
+    inferred_mode: str = "micro",
+    source_parent_hash: str | None = None,
+    run_id: str | None = None,
+    instance_overrides: dict[str, Any] | None = None,
+) -> BranchEvaluation:
+    from benchmarks.autoresearch_cifar10.dynamic_benchmark import run_candidate
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    raw_root = out_path.parent / "verifier_raw"
+    eval_run_id = run_id or f"eval_{branch_index:02d}"
+    started = time.perf_counter()
+    summary = run_candidate(
+        solution_path,
+        profile_id,
+        raw_root,
+        run_id=eval_run_id,
+        timeout_seconds=timeout_seconds,
+        instance_overrides=instance_overrides,
+    )
+    elapsed = time.perf_counter() - started
+    score = summary.get("score", {})
+    correctness = summary.get("correctness", {})
+    metrics = summary.get("metrics", {})
+    evaluation = BranchEvaluation(
+        branch_index=branch_index,
+        primary_mode=primary_mode,
+        secondary_modes=secondary_modes or [],
+        declared_mode=declared_mode,
+        inferred_mode=inferred_mode,
+        source_hash=sha256_file(solution_path),
+        source_parent_hash=source_parent_hash,
+        file_path=str(solution_path),
+        correctness=bool(correctness.get("passed")),
+        latent_loss=float(score.get("latent_loss", math.inf)),
+        gain=0.0,
+        family_losses={str(k): float(v) for k, v in (score.get("family_losses") or {}).items()},
+        first_divergence=correctness.get("first_divergence"),
+        raw_verifier_path=str(raw_root / eval_run_id),
+        elapsed_wall_seconds=float(summary.get("elapsed_wall_seconds", elapsed)),
+        accounting_cost=float(summary.get("accounting_cost", metrics.get("training_seconds", 0.0) or 0.0)),
+        errors=[] if correctness.get("passed") else ["autoresearch_runtime_failed"],
+    )
+    write_json(out_path, evaluation)
+    return evaluation
+
+
 def _candidate_perf_aggregate(raw_run_dir: Path) -> dict[str, float | None]:
     perf_path = raw_run_dir / "artifacts" / "candidate_perf.json"
     if not perf_path.exists():
@@ -214,6 +333,7 @@ def smoke_test() -> None:
         240,
         root / "baseline_verification.json",
         run_id="baseline_smoke",
+        benchmark_id="stateful_query_engine",
     )
     print(json.dumps(result.model_dump(mode="json"), indent=2, allow_nan=True))
 
@@ -225,13 +345,20 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--profile", default="hard_optimization")
     parser.add_argument("--out", default="artifacts/verifier_eval.json")
     parser.add_argument("--timeout", type=int, default=240)
+    parser.add_argument("--benchmark-id", default="stateful_query_engine")
     args = parser.parse_args(argv)
     if args.smoke_test:
         smoke_test()
         return
     if not args.solution:
         parser.error("--solution is required unless --smoke_test is set")
-    result = evaluate_solution(Path(args.solution), args.profile, args.timeout, Path(args.out))
+    result = evaluate_solution(
+        Path(args.solution),
+        args.profile,
+        args.timeout,
+        Path(args.out),
+        benchmark_id=args.benchmark_id,
+    )
     print(json.dumps(result.model_dump(mode="json"), indent=2, allow_nan=True))
 
 

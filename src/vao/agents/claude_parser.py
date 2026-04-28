@@ -8,6 +8,7 @@ import json
 import re
 import textwrap
 from typing import Any
+from typing import Callable
 
 from pydantic import ValidationError
 
@@ -112,7 +113,13 @@ def parse_mode_distribution(raw_text: str) -> ModeDistribution:
         raise ModelOutputError(str(exc)) from exc
 
 
-def parse_edit_payload(raw_text: str, expected_mode: str, parent_source: str | None = None) -> dict[str, Any]:
+def parse_edit_payload(
+    raw_text: str,
+    expected_mode: str,
+    parent_source: str | None = None,
+    *,
+    source_validator: Callable[[str], dict[str, Any]] | None = None,
+) -> dict[str, Any]:
     validate_mode(expected_mode)
     payload = parse_json_object(raw_text)
     primary = payload.get("primary_mode")
@@ -124,7 +131,7 @@ def parse_edit_payload(raw_text: str, expected_mode: str, parent_source: str | N
     if payload.get("edit_format") != "unified_diff":
         raise ModelOutputError(f"edit_format_mismatch:{payload.get('edit_format')!r}")
     source = _materialize_candidate_source(payload, parent_source)
-    validation = validate_candidate_source(source)
+    validation = validate_candidate_source(source, source_validator=source_validator)
     if not validation["passed"]:
         raise ModelOutputError("candidate_source_invalid:" + ";".join(validation["errors"]))
     return {
@@ -137,7 +144,13 @@ def parse_edit_payload(raw_text: str, expected_mode: str, parent_source: str | N
     }
 
 
-def parse_structured_edit_payload(raw_text: str, expected_mode: str, parent_source: str | None = None) -> dict[str, Any]:
+def parse_structured_edit_payload(
+    raw_text: str,
+    expected_mode: str,
+    parent_source: str | None = None,
+    *,
+    source_validator: Callable[[str], dict[str, Any]] | None = None,
+) -> dict[str, Any]:
     validate_mode(expected_mode)
     if parent_source is None:
         raise ModelOutputError("parent_source_required_for_structured_edits")
@@ -160,8 +173,12 @@ def parse_structured_edit_payload(raw_text: str, expected_mode: str, parent_sour
         source = apply_structured_edits(parent_source, edits)
     except StructuredEditError as exc:
         raise ModelOutputError(f"structured_edit_apply_failed:{exc}") from exc
-    validation = validate_candidate_source(source)
-    source, validation, source_repairs = _repair_candidate_source_if_safe(source, validation)
+    validation = validate_candidate_source(source, source_validator=source_validator)
+    source, validation, source_repairs = _repair_candidate_source_if_safe(
+        source,
+        validation,
+        source_validator=source_validator,
+    )
     if not validation["passed"]:
         raise ModelOutputError("candidate_source_invalid:" + ";".join(validation["errors"]))
     return {
@@ -180,7 +197,12 @@ def parse_structured_edit_payload(raw_text: str, expected_mode: str, parent_sour
     }
 
 
-def parse_replacement_payload(raw_text: str, expected_mode: str) -> dict[str, Any]:
+def parse_replacement_payload(
+    raw_text: str,
+    expected_mode: str,
+    *,
+    source_validator: Callable[[str], dict[str, Any]] | None = None,
+) -> dict[str, Any]:
     validate_mode(expected_mode)
     payload = parse_json_object(raw_text)
     primary = payload.get("primary_mode")
@@ -194,7 +216,7 @@ def parse_replacement_payload(raw_text: str, expected_mode: str) -> dict[str, An
     source = payload.get("solution_py")
     if not isinstance(source, str) or not source.strip():
         raise ModelOutputError("solution_py_missing_or_empty")
-    validation = validate_candidate_source(source)
+    validation = validate_candidate_source(source, source_validator=source_validator)
     if not validation["passed"]:
         raise ModelOutputError("candidate_source_invalid:" + ";".join(validation["errors"]))
     return {
@@ -206,7 +228,13 @@ def parse_replacement_payload(raw_text: str, expected_mode: str) -> dict[str, An
     }
 
 
-def validate_candidate_source(source: str) -> dict[str, Any]:
+def validate_candidate_source(
+    source: str,
+    *,
+    source_validator: Callable[[str], dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    if source_validator is not None:
+        return source_validator(source)
     errors: list[str] = []
     try:
         tree = ast.parse(source)
@@ -319,7 +347,12 @@ def _function_indents(source: str) -> dict[str, int]:
     return indents
 
 
-def _repair_candidate_source_if_safe(source: str, validation: dict[str, Any]) -> tuple[str, dict[str, Any], list[str]]:
+def _repair_candidate_source_if_safe(
+    source: str,
+    validation: dict[str, Any],
+    *,
+    source_validator: Callable[[str], dict[str, Any]] | None = None,
+) -> tuple[str, dict[str, Any], list[str]]:
     """Apply narrow deterministic repairs for over-broad safety rejections.
 
     The benchmark safety screen bans every `.remove(...)` attribute call to
@@ -344,7 +377,7 @@ def _repair_candidate_source_if_safe(source: str, validation: dict[str, Any]) ->
         return source, validation, []
     if rewriter.rewrite_count == 0 or repaired_source == source:
         return source, validation, []
-    repaired_validation = validate_candidate_source(repaired_source)
+    repaired_validation = validate_candidate_source(repaired_source, source_validator=source_validator)
     if not repaired_validation.get("passed"):
         return source, validation, []
     return repaired_source, repaired_validation, ["list_remove_rewritten_to_comprehension"]

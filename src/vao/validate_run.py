@@ -51,10 +51,15 @@ def _validate_step_record(
     warnings: list[str],
 ) -> None:
     prefix = f"step={record.step}"
-    if len(record.branches) != len(MODES):
-        errors.append(f"{prefix}: expected 6 branches, found {len(record.branches)}")
+    candidate_generation = str((record.parsed_model_output_json or {}).get("candidate_generation") or "batched")
+    expected_branch_count = 1 if candidate_generation.startswith("single") else len(MODES)
+    if len(record.branches) != expected_branch_count:
+        errors.append(f"{prefix}: expected {expected_branch_count} branches, found {len(record.branches)}")
     declared_modes = [branch.declared_mode for branch in record.branches]
-    if set(declared_modes) != MODE_SET or len(declared_modes) != len(MODES):
+    if candidate_generation.startswith("single"):
+        if len(declared_modes) != 1 or declared_modes[0] not in MODE_SET:
+            errors.append(f"{prefix}: single-candidate step must contain exactly one canonical declared mode: {declared_modes}")
+    elif set(declared_modes) != MODE_SET or len(declared_modes) != len(MODES):
         errors.append(f"{prefix}: declared modes are not exactly canonical modes: {declared_modes}")
     try:
         probs = normalize_mode_probs(record.mode_probs)

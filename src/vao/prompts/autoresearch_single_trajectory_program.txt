@@ -1,0 +1,97 @@
+VAO_AUTORESEARCH_SINGLE_TRAJECTORY_PROGRAM_V1
+CANONICAL_TASK_BLOCK_V1
+
+You are running one step of an autonomous code-optimization experiment.
+
+The task is to improve a single Python file, solution.py. During evaluation,
+the framework will place your file next to a fixed read-only prepare.py and run
+it as train.py on a CPU-only CIFAR-10 benchmark.
+
+This protocol is single-trajectory:
+
+- You do NOT need to output a probability distribution over six branches.
+- You must choose exactly one dominant action family and propose exactly one
+  candidate edit for this step.
+- The evaluator will execute only that one candidate and then continue the
+  trajectory from the resulting visible parent state.
+
+Goal:
+
+Minimize verified validation loss while preserving executability and contract
+compliance. A stable candidate that improves loss is better than a more
+ambitious candidate that crashes or diverges.
+
+Available action families:
+
+- layout: architecture and model-capacity changes such as depth, width,
+  classifier shape, or normalization layout.
+- indexing: optimizer-family and gradient-dynamics changes such as Adam/AdamW/SGD,
+  momentum, betas, or related optimizer helpers.
+- topk: learning-rate scale changes. Treat this as the family for adjusting
+  step size or nearby scalar optimization magnitudes.
+- caching: regularization and robustness changes such as weight decay, dropout,
+  or other anti-overfitting edits.
+- summaries: schedule and budget-allocation changes such as warmup, cosine
+  decay, decay milestones, or how the fixed training budget is used.
+- micro: batching, loop-local stability, or small training-script cleanups.
+
+Choose the one family that is most likely to yield verified improvement at this
+step for the current visible state and training regime.
+
+Required contract after the edit:
+
+- The file must remain a valid Python training script.
+- It must define the existing constants and entrypoints used by the baseline:
+  `SEED`, `DEPTH`, `BASE_CHANNELS`, `CHANNEL_MULT`, `USE_BATCHNORM`,
+  `DROPOUT_RATE`, `FC_HIDDEN`, `OPTIMIZER`, `LEARNING_RATE`, `WEIGHT_DECAY`,
+  `MOMENTUM`, `ADAM_BETAS`, `USE_LR_SCHEDULE`, `BATCH_SIZE`, `NUM_WORKERS`,
+  `CIFAR10Net`, `build_optimizer`, `build_scheduler`, and `main`.
+- It may import only standard baseline dependencies already present in the
+  parent file.
+- Do not use file IO, network, subprocess, eval, exec, or hidden global state.
+
+Profile summary:
+
+- `task_mode_true` identifies the latent training regime when available.
+- `label_noise_rate`, `imbalance_ratio`, and `max_train_steps` describe the
+  regime.
+
+Output format:
+
+Return only JSON matching the schema. Do not include markdown or commentary.
+
+Top-level JSON shape:
+
+{
+  "primary_mode": "layout|indexing|topk|caching|summaries|micro",
+  "declared_mode": "layout|indexing|topk|caching|summaries|micro",
+  "edit_format": "structured_edits",
+  "secondary_modes": ["... optional ..."],
+  "rationale": "...",
+  "edits": [...]
+}
+
+Candidate edit rules:
+
+- primary_mode and declared_mode must be identical.
+- Use 1 to 8 edits. Prefer the fewest edits that are sufficient.
+- Use one of these operations:
+  - replace_exact: {"op":"replace_exact","old":"exact existing text","new":"replacement text"}
+  - delete_exact: {"op":"delete_exact","text":"exact existing text"}
+  - insert_before: {"op":"insert_before","anchor":"exact existing text","text":"inserted text"}
+  - insert_after: {"op":"insert_after","anchor":"exact existing text","text":"inserted text"}
+  - replace_function: {"op":"replace_function","function":"function_name","source":"complete replacement function with exact indentation"}
+- Exact text and anchors must occur exactly once in the parent file.
+- replace_function is preferred when changing a whole helper or `main`; exact
+  edits are preferred for constant tweaks.
+
+Visible history:
+$visible_history
+
+Profile summary:
+$profile_summary
+
+Current parent solution.py:
+```python
+$current_solution_source
+```

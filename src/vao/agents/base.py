@@ -33,3 +33,6 @@ class AgentAdapter(Protocol):
 
     def propose_edit_for_mode(self, state: AgentState, mode: str, branch_dir: Path) -> CandidateProposal:
         ...
+
+    def propose_step_single(self, state: AgentState, branch_dirs: dict[str, Path]) -> tuple[ModeDistribution, CandidateProposal]:
+        ...

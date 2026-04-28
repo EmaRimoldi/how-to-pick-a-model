@@ -19,9 +19,11 @@ from vao.agents.claude_parser import (
     parse_mode_distribution,
     parse_structured_edit_payload,
 )
+from vao.benchmark_registry import get_benchmark_spec
 from vao.logging_utils import sha256_file, sha256_text
 from vao.prompts import render_template
 from vao.schemas import CandidateProposal, ModeDistribution
+from vao.taxonomy import validate_mode
 from vao.taxonomy import MODES
 
 
@@ -86,24 +88,32 @@ class ClaudeHaikuAdapter:
         if any(source != parent_source for source in parent_sources.values()):
             raise ValueError("batched candidate generation requires identical parent sources across branches")
 
+        prompt_template = str(state.metadata.get("prompt_template", "single_step_program.txt"))
         prompt = render_template(
-            "single_step_program.txt",
+            prompt_template,
             profile_summary=json.dumps(state.profile_summary, sort_keys=True),
             visible_history=json.dumps(state.visible_history, sort_keys=True),
             current_solution_source=parent_source,
         )
         prompt_hash = sha256_text(prompt)
-        _write_step_prompt_snapshot(branch_dirs, prompt, prompt_hash, "single_step_program.txt")
+        _write_step_prompt_snapshot(branch_dirs, prompt, prompt_hash, prompt_template)
         raw = ""
         meta: dict[str, Any] = {}
         failures: list[str] = []
-        try:
-            raw, meta = self._complete(prompt, self._step_batch_schema(), int(self.config.get("max_tokens_batch", 12000)))
-            _write_step_batch_raw_output(branch_dirs, raw, meta)
-            payload = parse_json_object(raw)
-        except (BackendUnavailable, ModelOutputError, RuntimeError) as exc:
-            failures.append(f"batch_parse_failed:{type(exc).__name__}:{exc}")
-            raise
+        payload: dict[str, Any] | None = None
+        last_exc: Exception | None = None
+        for attempt_index in range(max(self.retries, 1)):
+            try:
+                raw, meta = self._complete(prompt, self._step_batch_schema(), int(self.config.get("max_tokens_batch", 12000)))
+                _write_step_batch_raw_output(branch_dirs, raw, meta)
+                payload = parse_json_object(raw)
+                break
+            except (BackendUnavailable, ModelOutputError, RuntimeError) as exc:
+                last_exc = exc
+                failures.append(f"batch_parse_failed:attempt_{attempt_index + 1}:{type(exc).__name__}:{exc}")
+        if payload is None:
+            assert last_exc is not None
+            raise last_exc
 
         distribution = parse_mode_distribution(json.dumps(payload, sort_keys=True))
         distribution.raw_text = raw
@@ -115,7 +125,7 @@ class ClaudeHaikuAdapter:
             "usage": meta.get("usage"),
             "cost_usd": meta.get("cost_usd"),
             "model": meta.get("model", self.model_id),
-            "prompt_template": "single_step_program.txt",
+            "prompt_template": prompt_template,
             "prompt_hash": prompt_hash,
             "prompt_snapshot_path": _step_prompt_snapshot_path(branch_dirs),
         }
@@ -125,6 +135,8 @@ class ClaudeHaikuAdapter:
             raise ModelOutputError("batch_candidates_missing_or_not_object")
 
         proposals: dict[str, CandidateProposal] = {}
+        benchmark_id = str(state.metadata.get("benchmark_id", "stateful_query_engine"))
+        source_validator = get_benchmark_spec(benchmark_id).validate_source
         for mode in MODES:
             branch_dir = branch_dirs[mode]
             parent_path = branch_dir / "parent_solution.py"
@@ -138,7 +150,12 @@ class ClaudeHaikuAdapter:
             try:
                 if not isinstance(mode_payload, dict):
                     raise ModelOutputError(f"candidate_payload_missing_or_not_object:{mode}")
-                parsed = parse_structured_edit_payload(mode_raw, mode, parent_source=parent_source)
+                parsed = parse_structured_edit_payload(
+                    mode_raw,
+                    mode,
+                    parent_source=parent_source,
+                    source_validator=source_validator,
+                )
             except ModelOutputError as exc:
                 errors.append(f"batch_candidate_invalid:{type(exc).__name__}:{exc}")
                 validation_failures.append("candidate_rejected_from_batch")
@@ -184,7 +201,7 @@ class ClaudeHaikuAdapter:
                     "edit_protocol": self.edit_protocol,
                     "candidate_generation": "batched_structured_edits",
                     "batch_usage_accounted_on_distribution": True,
-                    "prompt_template": "single_step_program.txt",
+                    "prompt_template": prompt_template,
                     "prompt_snapshot_path": _step_prompt_snapshot_path(branch_dirs),
                 },
                 prompt_hash=prompt_hash,
@@ -193,6 +210,113 @@ class ClaudeHaikuAdapter:
                 validation_failures=validation_failures,
             )
         return distribution, proposals
+
+    def propose_step_single(self, state: AgentState, branch_dirs: dict[str, Path]) -> tuple[ModeDistribution, CandidateProposal]:
+        if self.edit_protocol != "structured_edits":
+            raise ValueError("single-candidate Claude generation requires edit_protocol=structured_edits")
+
+        parent_sources = {
+            mode: (branch_dirs[mode] / "parent_solution.py").read_text(encoding="utf-8")
+            for mode in MODES
+        }
+        parent_source = parent_sources[MODES[0]]
+        if any(source != parent_source for source in parent_sources.values()):
+            raise ValueError("single candidate generation requires identical parent sources across branches")
+
+        prompt_template = str(state.metadata.get("prompt_template", "autoresearch_single_trajectory_program.txt"))
+        prompt = render_template(
+            prompt_template,
+            profile_summary=json.dumps(state.profile_summary, sort_keys=True),
+            visible_history=json.dumps(state.visible_history, sort_keys=True),
+            current_solution_source=parent_source,
+        )
+        prompt_hash = sha256_text(prompt)
+        _write_step_prompt_snapshot(branch_dirs, prompt, prompt_hash, prompt_template)
+
+        raw = ""
+        meta: dict[str, Any] = {}
+        failures: list[str] = []
+        payload: dict[str, Any] | None = None
+        last_exc: Exception | None = None
+        for attempt_index in range(max(self.retries, 1)):
+            try:
+                raw, meta = self._complete(prompt, self._single_candidate_schema(), self.max_tokens_edit)
+                _write_step_batch_raw_output(branch_dirs, raw, meta)
+                payload = parse_json_object(raw)
+                break
+            except (BackendUnavailable, ModelOutputError, RuntimeError) as exc:
+                last_exc = exc
+                failures.append(f"single_parse_failed:attempt_{attempt_index + 1}:{type(exc).__name__}:{exc}")
+        if payload is None:
+            assert last_exc is not None
+            raise last_exc
+
+        selected_mode = str(payload.get("primary_mode") or payload.get("declared_mode") or "")
+        validate_mode(selected_mode)
+        if payload.get("declared_mode") != selected_mode:
+            raise ModelOutputError(f"declared_mode_mismatch:{payload.get('declared_mode')!r}!={selected_mode!r}")
+
+        mode_raw = json.dumps(payload, sort_keys=True)
+        benchmark_id = str(state.metadata.get("benchmark_id", "stateful_query_engine"))
+        source_validator = get_benchmark_spec(benchmark_id).validate_source
+        parsed = parse_structured_edit_payload(
+            mode_raw,
+            selected_mode,
+            parent_source=parent_source,
+            source_validator=source_validator,
+        )
+        branch_dir = branch_dirs[selected_mode]
+        parent_path = branch_dir / "parent_solution.py"
+        proposed_path = branch_dir / "proposed_solution.py"
+        model_edit_path = branch_dir / "model_edit.json"
+        proposed_path.write_text(str(parsed["solution_py"]), encoding="utf-8")
+        model_edit_path.write_text(json.dumps(parsed.get("edits", []), indent=2, sort_keys=True), encoding="utf-8")
+
+        one_hot = {mode: (1.0 if mode == selected_mode else 0.0) for mode in MODES}
+        distribution = ModeDistribution(
+            mode_probs=one_hot,
+            mode_ranking=[selected_mode, *[mode for mode in MODES if mode != selected_mode]],
+            mode_rationales={mode: (str(payload.get("rationale", "")) if mode == selected_mode else "") for mode in MODES},
+            raw_text=raw,
+            parsed_json={
+                "candidate_generation": "single_structured_edit",
+                "transport": meta.get("transport"),
+                "usage": meta.get("usage"),
+                "cost_usd": meta.get("cost_usd"),
+                "model": meta.get("model", self.model_id),
+                "prompt_template": prompt_template,
+                "prompt_hash": prompt_hash,
+                "prompt_snapshot_path": _step_prompt_snapshot_path(branch_dirs),
+                "selected_mode": selected_mode,
+            },
+            validation_failures=failures,
+        )
+        proposal = CandidateProposal(
+            branch_index=MODES.index(selected_mode),
+            primary_mode=selected_mode,
+            secondary_modes=[str(item) for item in parsed.get("secondary_modes", []) if item in set(MODES)],
+            declared_mode=selected_mode,
+            source_hash=sha256_file(proposed_path),
+            source_parent_hash=sha256_file(parent_path),
+            file_path=str(proposed_path),
+            raw_output_text=mode_raw,
+            parsed_output_json={
+                key: value
+                for key, value in parsed.items()
+                if key != "solution_py"
+            }
+            | {
+                "model_edit_path": str(model_edit_path) if model_edit_path.exists() else None,
+                "edit_protocol": self.edit_protocol,
+                "candidate_generation": "single_structured_edit",
+                "usage_accounted_on_distribution": True,
+                "prompt_template": prompt_template,
+                "prompt_snapshot_path": _step_prompt_snapshot_path(branch_dirs),
+            },
+            prompt_hash=prompt_hash,
+            changed=sha256_file(parent_path) != sha256_file(proposed_path),
+        )
+        return distribution, proposal
 
     def propose_mode_distribution(self, state: AgentState) -> ModeDistribution:
         raise RuntimeError("single_step_program_only: use candidate_generation=batched and propose_step_batch")
@@ -358,6 +482,45 @@ class ClaudeHaikuAdapter:
                 },
             },
             "required": ["mode_probs", "mode_ranking", "mode_rationales", "candidates"],
+        }
+
+    def _single_candidate_schema(self) -> dict[str, Any]:
+        return {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "primary_mode": {"type": "string", "enum": MODES},
+                "declared_mode": {"type": "string", "enum": MODES},
+                "edit_format": {"type": "string", "enum": ["structured_edits"]},
+                "secondary_modes": {
+                    "type": "array",
+                    "items": {"type": "string", "enum": MODES},
+                },
+                "rationale": {"type": "string"},
+                "edits": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": False,
+                        "properties": {
+                            "op": {
+                                "type": "string",
+                                "enum": ["replace_exact", "delete_exact", "insert_before", "insert_after", "replace_function"],
+                            },
+                            "function": {"type": "string"},
+                            "old": {"type": "string"},
+                            "new": {"type": "string"},
+                            "anchor": {"type": "string"},
+                            "text": {"type": "string"},
+                            "source": {"type": "string"},
+                        },
+                        "required": ["op"],
+                    },
+                    "minItems": 1,
+                    "maxItems": 8,
+                },
+            },
+            "required": ["primary_mode", "declared_mode", "edit_format", "rationale", "edits"],
         }
 
     def _structured_candidate_properties(self, mode: str) -> dict[str, Any]:

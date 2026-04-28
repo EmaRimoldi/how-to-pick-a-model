@@ -31,6 +31,19 @@ vao-phase3-summary = "vao.analysis.phase3_summary:main"
 vao-phase35-compare = "vao.analysis.phase35_compare:main"
 vao-run-diagnostics-visuals = "vao.analysis.run_diagnostics_visuals:main"
 vao-edit-protocol-debug = "vao.analysis.edit_protocol_debug:main"
+vao-oracle-family-pilot = "vao.analysis.oracle_family_pilot:main"
+vao-task-mode-decomposition = "vao.analysis.task_mode_decomposition:main"
+vao-task-mode-threshold-sweep = "vao.analysis.task_mode_threshold_sweep:main"
+vao-task-mode-robustness = "vao.analysis.task_mode_robustness:main"
+vao-task-mode-bootstrap = "vao.analysis.task_mode_bootstrap:main"
+vao-oracle-family-campaign-plan = "vao.analysis.oracle_family_campaign_plan:main"
+vao-oracle-family-multimodel-visuals = "vao.analysis.oracle_family_multimodel_visuals:main"
+vao-oracle-family-latent-modes = "vao.analysis.oracle_family_latent_modes:main"
+vao-oracle-family-iterative = "vao.analysis.oracle_family_iterative:main"
+vao-oracle-family-policy-compare = "vao.analysis.oracle_family_policy_compare:main"
+vao-autoresearch-cifar10-pilot = "vao.analysis.autoresearch_cifar10_pilot:main"
+vao-autoresearch-cifar10-mode-catalog = "vao.analysis.autoresearch_cifar10_mode_catalog:main"
+vao-autoresearch-cifar10-single-trajectory = "vao.analysis.autoresearch_cifar10_single_trajectory_campaign:main"
 
 [build-system]
 requires = ["setuptools>=69", "wheel"]
@@ -41,7 +54,7 @@ where = ["src", "."]
 include = ["vao*", "benchmarks*"]
 
 [tool.setuptools.package-data]
-benchmarks = ["stateful_query_engine/metadata/*.json"]
+benchmarks = ["stateful_query_engine/metadata/*.json", "autoresearch_cifar10/metadata/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

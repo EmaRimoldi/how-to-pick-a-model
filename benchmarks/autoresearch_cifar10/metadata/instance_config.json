@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "autoresearch_cifar10": {
+      "families": [
+        "lr_search_short_budget"
+      ],
+      "train_subset_size": 50000,
+      "val_subset_size": 10000,
+      "label_noise_rate": 0.0,
+      "imbalance_ratio": 1.0,
+      "max_train_steps": 2,
+      "seed": 61
+    }
+  }
+}

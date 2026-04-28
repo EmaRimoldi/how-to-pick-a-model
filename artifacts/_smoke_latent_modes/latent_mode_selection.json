@@ -1,0 +1,43 @@
+{
+  "profile": "hard_optimization",
+  "families": [
+    "uniform_read_heavy",
+    "zipf_hot_key",
+    "bursty_mixed",
+    "range_local_scans",
+    "distribution_shift",
+    "wide_range_churn",
+    "temporal_repeat_windows",
+    "topk_stress",
+    "negative_lookup_churn"
+  ],
+  "observable_keys": [
+    "query_ratio",
+    "update_ratio",
+    "get_ratio",
+    "put_ratio",
+    "delete_ratio",
+    "range_sum_ratio",
+    "aggregate_count_ratio",
+    "topk_ratio",
+    "mean_range_width",
+    "mean_topk_k",
+    "mean_center_jump"
+  ],
+  "selection_metric": "observable_only",
+  "selected_families": [
+    "negative_lookup_churn",
+    "topk_stress",
+    "temporal_repeat_windows",
+    "wide_range_churn"
+  ],
+  "selection_k": 4,
+  "traces_per_family": 6,
+  "trace_length": 200,
+  "initial_size": 200,
+  "key_space": 2000,
+  "value_max": 1000,
+  "base_seed": 7000,
+  "observable_min_pairwise_distance": 5.359545957393328,
+  "combined_min_pairwise_distance": 5.359545957393328
+}

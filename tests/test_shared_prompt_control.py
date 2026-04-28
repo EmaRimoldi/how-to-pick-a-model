@@ -13,7 +13,11 @@ def test_only_single_program_prompt_file_is_active() -> None:
         path.name
         for path in Path("src/vao/prompts").glob("*.txt")
     }
-    assert prompt_files == {"single_step_program.txt"}
+    assert prompt_files == {
+        "single_step_program.txt",
+        "autoresearch_single_step_program.txt",
+        "autoresearch_single_trajectory_program.txt",
+    }
 
 
 def test_single_program_prompt_contains_full_protocol() -> None:
@@ -30,6 +34,34 @@ def test_single_program_prompt_contains_full_protocol() -> None:
     assert "exactly one candidate edit for each primary mode" in rendered
     assert "This is the only model-generation prompt for this step" in rendered
     assert "The modes are experimental labels, not edit permissions" in rendered
+
+
+def test_autoresearch_prompt_contains_task_specific_contract() -> None:
+    source = "def main():\n    pass\n"
+    rendered = render_template(
+        "autoresearch_single_step_program.txt",
+        profile_summary="{}",
+        visible_history="[]",
+        current_solution_source=source,
+    )
+    assert "VAO_AUTORESEARCH_SINGLE_STEP_PROGRAM_V1" in rendered
+    assert "fixed-step training on CPU and\n  record validation loss" in rendered
+    assert "layout: architecture and model-capacity changes" in rendered
+    assert "`SEED`, `DEPTH`, `BASE_CHANNELS`" in rendered
+
+
+def test_autoresearch_single_trajectory_prompt_contains_single_candidate_contract() -> None:
+    source = "def main():\n    pass\n"
+    rendered = render_template(
+        "autoresearch_single_trajectory_program.txt",
+        profile_summary="{}",
+        visible_history="[]",
+        current_solution_source=source,
+    )
+    assert "VAO_AUTORESEARCH_SINGLE_TRAJECTORY_PROGRAM_V1" in rendered
+    assert "single-trajectory" in rendered
+    assert "You do NOT need to output a probability distribution over six branches." in rendered
+    assert "must choose exactly one dominant action family" in rendered
 
 
 @pytest.mark.parametrize(
@@ -123,3 +155,12 @@ def test_model_matrix_config_contains_requested_backends() -> None:
         "gpt_5_2_codex_batch_strict",
     }:
         assert models_config[name]["adapter"] == "codex_cli"
+
+
+def test_autoresearch_single_trajectory_campaign_config_is_single_candidate() -> None:
+    config = yaml.safe_load(Path("configs/autoresearch_cifar10_single_trajectory_campaign.yaml").read_text(encoding="utf-8"))
+
+    assert config["experiment"]["candidate_generation"] == "single"
+    assert config["experiment"]["steps"] == 20
+    assert config["experiment"]["prompt_template"] == "autoresearch_single_trajectory_program.txt"
+    assert config["benchmark"]["id"] == "autoresearch_cifar10"

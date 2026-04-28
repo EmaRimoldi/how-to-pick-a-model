@@ -1,0 +1,25 @@
+experiment:
+  name: oracle_family_pilot
+  visibility_regime: top1_only
+  candidate_generation: batched
+  modes: [layout, indexing, topk, caching, summaries, micro]
+  steps: 3
+  wall_budget_seconds: 7200
+  branch_timeout_seconds: 180
+  incorrect_penalty: -1.0
+  productive_proxy_fallback: uniform
+  history_policy: full_visible_history
+  seed: 7101
+
+benchmark:
+  template_path: benchmarks/stateful_query_engine/solution_template.py
+  profiles:
+    - hard_optimization
+
+models:
+  include:
+    - gpt_5_4_mini_batch_strict
+    - gpt_5_4_batch_strict
+
+output:
+  root: runs/oracle_family_pilot

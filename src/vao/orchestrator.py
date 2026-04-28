@@ -11,26 +11,27 @@ from typing import Any
 
 import yaml
 
-from benchmarks.stateful_query_engine.harness.run_benchmark import load_instance_config
-
 from vao.agents.base import AgentAdapter, AgentState
+from vao.agents.autoresearch_local_stub_adapter import AutoResearchLocalStubAdapter
 from vao.agents.anthropic_adapter import ClaudeHaikuAdapter
 from vao.agents.claude_code_adapter import ClaudeCodeAdapter
 from vao.agents.codex_cli_adapter import CodexCliAdapter
 from vao.agents.local_stub_adapter import LeakageProbeAdapter, LocalStubAdapter
 from vao.agents.openai_compatible_adapter import OpenAICompatibleAdapter
 from vao.agents.openai_responses_adapter import OpenAIResponsesAdapter
+from vao.benchmark_registry import get_benchmark_spec, infer_benchmark_id
 from vao.estimators import gain, jsd, productive_mode_proxy, routing_regret
 from vao.logging_utils import append_jsonl, now_iso, sha256_file, write_json
 from vao.schemas import BranchEvaluation, ModeDistribution, RunManifest, StepRecord
-from vao.taxonomy import MODES, classify_edit_mode, normalize_mode_probs
-from vao.verifier import evaluate_solution, validate_source
+from vao.taxonomy import MODES, normalize_mode_probs
+from vao.verifier import evaluate_solution
 from vao.visibility import build_visible_history
 from vao.workspaces import create_run_dir, create_step_branches, init_workspace, promote_branch_to_parent, write_diff
 
 
 ADAPTERS = {
     "local_stub": LocalStubAdapter,
+    "autoresearch_local_stub": AutoResearchLocalStubAdapter,
     "leakage_probe": LeakageProbeAdapter,
     "claude_haiku": ClaudeHaikuAdapter,
     "claude_code": ClaudeCodeAdapter,
@@ -59,6 +60,8 @@ def run_from_config(config: dict[str, Any], *, model_ids: list[str] | None = Non
 
 def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, Any], profile_id: str, *, run_id: str | None = None) -> Path:
     experiment = config["experiment"]
+    benchmark_id = infer_benchmark_id(config)
+    benchmark = get_benchmark_spec(benchmark_id)
     modes = list(experiment.get("modes", MODES))
     if modes != MODES:
         raise ValueError(f"The canonical protocol requires modes {MODES}; got {modes}")
@@ -72,6 +75,11 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
     wall_budget_seconds = experiment.get("wall_budget_seconds")
     branch_timeout_seconds = int(experiment.get("branch_timeout_seconds", 240))
     incorrect_penalty = float(experiment.get("incorrect_penalty", -1.0))
+    instance_overrides = dict(config.get("benchmark", {}).get("instance_overrides") or {})
+    task_mode_true = benchmark.task_mode_from_instance_overrides(instance_overrides)
+    task_mode_source = "oracle_family_override" if task_mode_true is not None else None
+    task_mode_split = str(experiment.get("task_mode_split")) if experiment.get("task_mode_split") else None
+    instance_seed = int(instance_overrides["seed"]) if "seed" in instance_overrides else None
 
     run_dir = create_run_dir(Path(config["output"]["root"]), config, run_id=run_id)
     run_id_actual = run_dir.name
@@ -85,6 +93,11 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
         run_id=run_id_actual,
         profile_id=profile_id,
         model_id=model_id,
+        model_alias=model_key,
+        task_mode_true=task_mode_true,
+        task_mode_source=task_mode_source,
+        task_mode_split=task_mode_split,
+        instance_seed=instance_seed,
         visibility_regime=visibility_regime,
         modes=MODES,
         max_steps=max_steps,
@@ -105,6 +118,7 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
         inferred_mode="micro",
         run_id="baseline",
         instance_overrides=config.get("benchmark", {}).get("instance_overrides"),
+        benchmark_id=benchmark_id,
     )
     baseline_perf_path = Path(baseline.raw_verifier_path or "") / "artifacts" / "baseline_perf.json"
     parent_loss = baseline.latent_loss
@@ -125,45 +139,108 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
             current_solution_path=workspace_solution,
             current_solution_source=workspace_solution.read_text(encoding="utf-8"),
             visible_history=build_visible_history(records, visibility_regime),
-            profile_summary=_profile_summary(profile_id),
+            profile_summary=benchmark.profile_summary(profile_id, instance_overrides=instance_overrides),
             residual_steps=max_steps - step,
             residual_wall_seconds=residual_wall,
             visibility_regime=visibility_regime,
-            metadata={"model_key": model_key},
+            metadata={
+                "model_key": model_key,
+                "benchmark_id": benchmark_id,
+                "prompt_template": str(experiment.get("prompt_template", benchmark.prompt_template)),
+            },
         )
         step_dir = run_dir / "steps" / f"step_{step:04d}"
         branch_dirs = create_step_branches(run_dir, step, workspace_solution, MODES)
         candidate_batch_id = f"{run_id_actual}:step_{step:04d}:{parent_hash[:12]}"
         candidate_generation = str(experiment.get("candidate_generation", "batched"))
-        if candidate_generation != "batched":
-            raise ValueError("model-comparison runs require candidate_generation: batched")
-        batch_fn = getattr(adapter, "propose_step_batch", None)
-        if not callable(batch_fn):
-            raise ValueError(f"Adapter {type(adapter).__name__} does not support batched candidate_generation")
-        distribution, batch_proposals = batch_fn(state, branch_dirs)
+        step_input_tokens = 0
+        step_output_tokens = 0
+        step_cost_usd = 0.0
         distribution_errors: list[str] = []
-        step_input_tokens = _usage_input_tokens(distribution.parsed_json)
-        step_output_tokens = _usage_output_tokens(distribution.parsed_json)
-        step_cost_usd = _usage_cost(distribution.parsed_json)
-        selected_mode_top1 = max(MODES, key=lambda mode: distribution.mode_probs[mode])
-        selected_mode, selected_mode_reason = _select_mode(experiment, step, selected_mode_top1)
-        branch_evaluations: list[BranchEvaluation] = []
+        if candidate_generation == "batched":
+            batch_fn = getattr(adapter, "propose_step_batch", None)
+            if not callable(batch_fn):
+                raise ValueError(f"Adapter {type(adapter).__name__} does not support batched candidate_generation")
+            distribution, batch_proposals = batch_fn(state, branch_dirs)
+            step_input_tokens += _usage_input_tokens(distribution.parsed_json)
+            step_output_tokens += _usage_output_tokens(distribution.parsed_json)
+            step_cost_usd += _usage_cost(distribution.parsed_json)
+            selected_mode_top1 = max(MODES, key=lambda mode: distribution.mode_probs[mode])
+            selected_mode, selected_mode_reason = _select_mode(experiment, step, selected_mode_top1)
+            branch_evaluations: list[BranchEvaluation] = []
 
-        for mode in MODES:
-            branch_dir = branch_dirs[mode]
-            proposal_errors: list[str] = []
-            proposal = batch_proposals[mode]
+            for mode in MODES:
+                branch_dir = branch_dirs[mode]
+                proposal = batch_proposals[mode]
+                proposal_dump = proposal.model_dump(mode="json")
+                step_input_tokens += _usage_input_tokens(proposal_dump)
+                step_output_tokens += _usage_output_tokens(proposal_dump)
+                step_cost_usd += _usage_cost(proposal_dump)
+
+                parent_source = (branch_dir / "parent_solution.py").read_text(encoding="utf-8")
+                proposed_path = branch_dir / "proposed_solution.py"
+                post_source = proposed_path.read_text(encoding="utf-8")
+                write_diff(parent_source, post_source, branch_dir / "patch.diff")
+                source_validation = benchmark.validate_source(post_source)
+                inferred_mode, secondary_modes, classifier_details = benchmark.classify_edit_mode(parent_source, post_source)
+                proposal_record = {
+                    **proposal_dump,
+                    "candidate_batch_id": candidate_batch_id,
+                    "source_validation": source_validation,
+                    "classifier": {
+                        "inferred_mode": inferred_mode,
+                        "secondary_modes": secondary_modes,
+                        "details": classifier_details,
+                    },
+                }
+                write_json(branch_dir / "proposal.json", proposal_record)
+
+                evaluation = evaluate_solution(
+                    proposed_path,
+                    profile_id,
+                    branch_timeout_seconds,
+                    branch_dir / "verification.json",
+                    branch_index=MODES.index(mode),
+                    primary_mode=inferred_mode,
+                    secondary_modes=secondary_modes,
+                    declared_mode=mode,
+                    inferred_mode=inferred_mode,
+                    baseline_perf_path=baseline_perf_path if baseline_perf_path.exists() else None,
+                    source_parent_hash=parent_hash,
+                    run_id=f"step_{step:04d}_{mode}",
+                    instance_overrides=config.get("benchmark", {}).get("instance_overrides"),
+                    benchmark_id=benchmark_id,
+                )
+                evaluation.validation_failures.extend([] if source_validation.get("passed") else source_validation.get("errors", []))
+                evaluation.gain = gain(step_parent_loss, evaluation.latent_loss, evaluation.correctness, incorrect_penalty)
+                model_edit_path = _model_edit_artifact_path(branch_dir)
+                if model_edit_path is not None:
+                    evaluation.model_edit_path = str(model_edit_path)
+                branch_evaluations.append(evaluation)
+
+            selected_eval = next(branch for branch in branch_evaluations if branch.declared_mode == selected_mode)
+        elif candidate_generation == "single":
+            single_fn = getattr(adapter, "propose_step_single", None)
+            if not callable(single_fn):
+                raise ValueError(f"Adapter {type(adapter).__name__} does not support single candidate_generation")
+            distribution, proposal = single_fn(state, branch_dirs)
+            step_input_tokens += _usage_input_tokens(distribution.parsed_json)
+            step_output_tokens += _usage_output_tokens(distribution.parsed_json)
+            step_cost_usd += _usage_cost(distribution.parsed_json)
             proposal_dump = proposal.model_dump(mode="json")
             step_input_tokens += _usage_input_tokens(proposal_dump)
             step_output_tokens += _usage_output_tokens(proposal_dump)
             step_cost_usd += _usage_cost(proposal_dump)
-
+            selected_mode_top1 = proposal.declared_mode
+            selected_mode = proposal.declared_mode
+            selected_mode_reason = "single_candidate_self_selected"
+            branch_dir = branch_dirs[selected_mode]
             parent_source = (branch_dir / "parent_solution.py").read_text(encoding="utf-8")
             proposed_path = branch_dir / "proposed_solution.py"
             post_source = proposed_path.read_text(encoding="utf-8")
             write_diff(parent_source, post_source, branch_dir / "patch.diff")
-            source_validation = validate_source(post_source)
-            inferred_mode, secondary_modes, classifier_details = classify_edit_mode(parent_source, post_source)
+            source_validation = benchmark.validate_source(post_source)
+            inferred_mode, secondary_modes, classifier_details = benchmark.classify_edit_mode(parent_source, post_source)
             proposal_record = {
                 **proposal_dump,
                 "candidate_batch_id": candidate_batch_id,
@@ -175,30 +252,30 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
                 },
             }
             write_json(branch_dir / "proposal.json", proposal_record)
-
-            evaluation = evaluate_solution(
+            selected_eval = evaluate_solution(
                 proposed_path,
                 profile_id,
                 branch_timeout_seconds,
                 branch_dir / "verification.json",
-                branch_index=MODES.index(mode),
+                branch_index=MODES.index(selected_mode),
                 primary_mode=inferred_mode,
                 secondary_modes=secondary_modes,
-                declared_mode=mode,
+                declared_mode=selected_mode,
                 inferred_mode=inferred_mode,
                 baseline_perf_path=baseline_perf_path if baseline_perf_path.exists() else None,
                 source_parent_hash=parent_hash,
-                run_id=f"step_{step:04d}_{mode}",
+                run_id=f"step_{step:04d}_{selected_mode}",
                 instance_overrides=config.get("benchmark", {}).get("instance_overrides"),
+                benchmark_id=benchmark_id,
             )
-            evaluation.validation_failures.extend([] if source_validation.get("passed") else source_validation.get("errors", []))
-            evaluation.gain = gain(step_parent_loss, evaluation.latent_loss, evaluation.correctness, incorrect_penalty)
+            selected_eval.validation_failures.extend([] if source_validation.get("passed") else source_validation.get("errors", []))
+            selected_eval.gain = gain(step_parent_loss, selected_eval.latent_loss, selected_eval.correctness, incorrect_penalty)
             model_edit_path = _model_edit_artifact_path(branch_dir)
             if model_edit_path is not None:
-                evaluation.model_edit_path = str(model_edit_path)
-            branch_evaluations.append(evaluation)
-
-        selected_eval = next(branch for branch in branch_evaluations if branch.declared_mode == selected_mode)
+                selected_eval.model_edit_path = str(model_edit_path)
+            branch_evaluations = [selected_eval]
+        else:
+            raise ValueError(f"Unknown candidate_generation {candidate_generation!r}; expected batched or single")
         for branch in branch_evaluations:
             branch.selected_as_visible = visibility_regime == "all_branches" or branch.declared_mode == selected_mode
             branch.promoted_as_parent = branch.declared_mode == selected_mode
@@ -240,6 +317,11 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
             run_id=run_id_actual,
             profile_id=profile_id,
             model_id=model_id,
+            model_alias=model_key,
+            task_mode_true=task_mode_true,
+            task_mode_source=task_mode_source,
+            task_mode_split=task_mode_split,
+            instance_seed=instance_seed,
             step=step,
             timestamp=now_iso(),
             current_solution_hash=parent_hash,
@@ -463,19 +545,9 @@ def _with_overrides(config: dict[str, Any], model_key: str, profile_id: str, ste
     return copied
 
 
-def _profile_summary(profile_id: str) -> dict[str, Any]:
-    config = load_instance_config()
-    profile = config["profiles"][profile_id]
-    return {
-        "profile_id": profile_id,
-        "initial_size": profile.get("initial_size"),
-        "key_space": profile.get("key_space"),
-        "trace_length": profile.get("trace_length"),
-        "traces_per_family": profile.get("traces_per_family"),
-        "families": profile.get("families"),
-        "repetitions": profile.get("repetitions"),
-        "warmup_prefix": profile.get("warmup_prefix"),
-    }
+def _profile_summary(profile_id: str, instance_overrides: dict[str, Any] | None = None) -> dict[str, Any]:
+    benchmark = get_benchmark_spec("stateful_query_engine")
+    return benchmark.profile_summary(profile_id, instance_overrides=instance_overrides)
 
 
 def _run_summary(
@@ -499,6 +571,17 @@ def _run_summary(
         for branch in record.branches
         if branch.correctness and math.isfinite(branch.latent_loss)
     ]
+    selected_accounting = [
+        float(branch.accounting_cost or 0.0)
+        for record in records
+        for branch in record.branches
+        if branch.promoted_as_parent
+    ]
+    all_branch_accounting = [
+        float(branch.accounting_cost or 0.0)
+        for record in records
+        for branch in record.branches
+    ]
     return {
         "run_id": run_id,
         "profile_id": profile_id,
@@ -510,6 +593,8 @@ def _run_summary(
         "baseline_loss": baseline.latent_loss,
         "best_visible_loss": min(selected_losses) if selected_losses else None,
         "best_counterfactual_loss": min(all_branch_losses) if all_branch_losses else None,
+        "selected_accounting_cost": sum(selected_accounting) if selected_accounting else 0.0,
+        "total_branch_accounting_cost": sum(all_branch_accounting) if all_branch_accounting else 0.0,
         "elapsed_wall_seconds": time.time() - run_started,
         "completed_at": now_iso(),
     }

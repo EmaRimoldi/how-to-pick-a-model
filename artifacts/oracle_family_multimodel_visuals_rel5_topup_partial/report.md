@@ -1,0 +1,10 @@
+# Oracle-Family Multi-Model Visuals
+
+## Figures
+
+- holdout_success_heatmap: `artifacts/oracle_family_multimodel_visuals_rel5_topup_partial/holdout_success_heatmap.png`
+- holdout_cost_heatmap: `artifacts/oracle_family_multimodel_visuals_rel5_topup_partial/holdout_cost_heatmap.png`
+- holdout_improvement_heatmap: `artifacts/oracle_family_multimodel_visuals_rel5_topup_partial/holdout_improvement_heatmap.png`
+- holdout_pareto: `artifacts/oracle_family_multimodel_visuals_rel5_topup_partial/holdout_pareto.png`
+- objective_bars: `artifacts/oracle_family_multimodel_visuals_rel5_topup_partial/pilot_holdout_objectives.png`
+- pairwise_mode_wins: `artifacts/oracle_family_multimodel_visuals_rel5_topup_partial/pairwise_mode_wins.png`

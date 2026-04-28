@@ -1,0 +1,24 @@
+[
+  {
+    "run_name": "autoresearch_long20_holdout_lr_search_short_budget_seed9301_autoresearch_local_stub",
+    "model_alias": "autoresearch_local_stub",
+    "latent_mode": "lr_search_short_budget",
+    "steps_completed": 20,
+    "baseline_loss": 2.303801,
+    "best_visible_loss": 2.298544,
+    "final_selected_loss": 2.298544,
+    "final_cumulative_total_wall_seconds": 207.50109233270632,
+    "final_cumulative_agent_cost_usd": 0.0
+  },
+  {
+    "run_name": "autoresearch_long20_holdout_lr_search_short_budget_seed9301_gpt_5_3_codex_spark_batch_strict",
+    "model_alias": "gpt_5_3_codex_spark_batch_strict",
+    "latent_mode": "lr_search_short_budget",
+    "steps_completed": 20,
+    "baseline_loss": 2.303801,
+    "best_visible_loss": 2.297457,
+    "final_selected_loss": 3.749645,
+    "final_cumulative_total_wall_seconds": 663.8426613734337,
+    "final_cumulative_agent_cost_usd": 0.0
+  }
+]

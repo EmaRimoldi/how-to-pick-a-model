@@ -116,6 +116,40 @@ def test_strict_batched_adapter_does_not_repair_with_second_prompt(tmp_path: Pat
     assert adapter.calls == 1
 
 
+def test_openai_compatible_single_structured_edit_materializes_one_candidate(tmp_path: Path) -> None:
+    parent_source = Path("benchmarks/autoresearch_cifar10/solution_template.py").read_text(encoding="utf-8")
+    run_dir = tmp_path / "run"
+    workspace = run_dir / "workspace" / "solution.py"
+    workspace.parent.mkdir(parents=True)
+    workspace.write_text(parent_source, encoding="utf-8")
+    branch_dirs = create_step_branches(run_dir, 0, workspace, MODES)
+    adapter = FakeOpenAICompatibleAdapter(
+        {
+            "primary_mode": "topk",
+            "declared_mode": "topk",
+            "edit_format": "structured_edits",
+            "secondary_modes": [],
+            "rationale": "Adjust the learning rate for the short-budget regime.",
+            "edits": [
+                {
+                    "op": "replace_exact",
+                    "old": "LEARNING_RATE = 5e-4",
+                    "new": "LEARNING_RATE = 0.0012",
+                }
+            ],
+        }
+    )
+
+    distribution, proposal = adapter.propose_step_single(_autoresearch_state(workspace, parent_source), branch_dirs)
+
+    assert distribution.top_mode == "topk"
+    assert distribution.parsed_json["candidate_generation"] == "single_structured_edit"
+    assert distribution.parsed_json["prompt_template"] == "autoresearch_single_trajectory_program.txt"
+    assert proposal.declared_mode == "topk"
+    assert proposal.parsed_output_json["candidate_generation"] == "single_structured_edit"
+    assert "LEARNING_RATE = 0.0012" in Path(proposal.file_path).read_text(encoding="utf-8")
+
+
 def _state(workspace: Path, parent_source: str) -> AgentState:
     return AgentState(
         run_id="qwen_test",
@@ -130,6 +164,36 @@ def _state(workspace: Path, parent_source: str) -> AgentState:
         residual_wall_seconds=300.0,
         visibility_regime="top1_only",
         metadata={},
+    )
+
+
+def _autoresearch_state(workspace: Path, parent_source: str) -> AgentState:
+    return AgentState(
+        run_id="qwen_autoresearch_test",
+        profile_id="autoresearch_cifar10",
+        model_id="Qwen/Qwen2.5-Coder-1.5B-Instruct",
+        step=0,
+        current_solution_path=workspace,
+        current_solution_source=parent_source,
+        visible_history=[],
+        profile_summary={
+            "profile_id": "autoresearch_cifar10",
+            "task_mode_true": "lr_search_short_budget",
+            "train_subset_size": 50000,
+            "val_subset_size": 10000,
+            "label_noise_rate": 0.0,
+            "imbalance_ratio": 1.0,
+            "max_train_steps": 500,
+            "seed": 61,
+            "action_mode_aliases": {},
+        },
+        residual_steps=20,
+        residual_wall_seconds=300.0,
+        visibility_regime="top1_only",
+        metadata={
+            "benchmark_id": "autoresearch_cifar10",
+            "prompt_template": "autoresearch_single_trajectory_program.txt",
+        },
     )
 
 
