@@ -1,0 +1,85 @@
+%% ====================================================================
+%%  SECTION 1 --- INTRODUCTION (~2.5pp)
+%% ====================================================================
+\section{Introduction}
+\label{sec:intro}
+
+A builder of agent systems faces a question every deployment cycle: \emph{I have a task family, a compute budget, and a menu of models ranging from fine-tuned specialists to frontier generalists.
+What system should I build?}
+
+The question is not merely which model to call.
+It is which model, which orchestration policy, and how many sequential attempts jointly minimize time to verified solution.
+The dominant methodology is benchmark racing: run both models on a test set, pick the winner, repeat when the next model arrives.
+
+Benchmark racing is fast and requires no theory.
+It is also structurally blind.
+It conflates per-step cost, within-mode competence, task-relevant information, and routing quality into a single opaque comparison.
+When GPT-4 beats Claude on one benchmark but Claude beats GPT-4 on another, benchmark racing cannot diagnose whether the difference comes from per-step competence, from routing mismatch (the evaluation protocol suits one model's strengths), from cost allocation, or from the inherent information structure of the task.
+All four factors are real; they interact, and benchmark racing conflates them into a single number.
+
+This paper disentangles them.
+
+\paragraph{The decomposition.}
+Under the packed latent-mode family assumption (a task distribution with discrete solution strategies), the performance gap between any two agent designs decomposes exactly as
+\begin{equation}
+\label{eq:four-term-intro}
+\Delta = \log\frac{\kappa_0}{\kappa} + \varphi + G - \varepsilon,
+\end{equation}
+separating per-step cost, within-mode competence, information generation quality, and routing mismatch into four independently measurable terms.
+The decomposition is an algebraic identity---no approximation, no limit.
+A builder who estimates these four numbers from a structured pilot knows which lever to pull: switch models if cost or competence dominates, rebuild the router if mismatch~$\varepsilon$ is large, or restructure the task distribution if the information term~$G$ is small.
+
+The hero equation is simpler still.
+With model held fixed, the Routing-Information Identity reduces to
+\[
+\Delta = G - \varepsilon:
+\]
+certified log-speedup equals information generated minus information wasted.
+
+A natural expectation, given the algebraic structure, is that these four terms are shadow prices of resource constraints---the dual variables of a Lagrangian relaxation.
+We show that this expectation is precisely wrong (Section~\ref{sec:lagrangian}).
+The four terms are components of the primal objective, not the dual.
+The decomposition's value to optimization is as a separable evaluator, not as a dual decomposition.
+
+\paragraph{The crossover theorem.}
+The decomposition also yields a concrete decision rule.
+Given a large expensive model (success probability $p_l$ per attempt, cost $\kappa_l$) and a small cheap model ($p_s$, $\kappa_s$), the number of cheap-model attempts needed to match one expensive-model attempt is
+\begin{equation}
+\label{eq:crossover-intro}
+\Dcross = \frac{\log(1 - p_l)}{\log(1 - p_s)}.
+\end{equation}
+If $\Dcross \le \kappa_l/\kappa_s$, the small model wins.
+This is the paper's most actionable result: one formula, immediately deployable.
+
+\paragraph{Challenging folklore.}
+The paper directly challenges four widespread assumptions:
+
+\begin{enumerate}
+\item \emph{``Scale is all you need.''}\;
+Model competence is one of four terms, and not always the dominant one.
+
+\item \emph{``More agents is better.''}\;
+Optimal orchestration depth \emph{decreases} with model competence: for strong models, the optimal architecture is simpler.
+
+\item \emph{``Benchmark performance predicts deployment performance.''}\;
+The decomposition shows exactly what benchmarks miss: routing mismatch and information structure are invisible to fixed-routing evaluation.
+
+\item \emph{``Agent design is engineering, not science.''}\;
+Agent design has mathematical structure amenable to theory---simpler than optimization theory, but real.
+\end{enumerate}
+
+\paragraph{Contributions.}
+The paper makes five contributions:
+(1)~An exact four-term decomposition of the performance gap between agent designs (Section~\ref{sec:decomposition}), valid under the packed-family assumption with a bounded remainder outside it.
+(2)~An honest negative result: the four terms are performance accounting, not Lagrangian shadow prices (Section~\ref{sec:lagrangian}).
+(3)~A graph-depth model characterizing optimal orchestration depth, with monotonicity in competence and cost (Section~\ref{sec:graph-depth}), and a closed-form crossover theorem (Section~\ref{sec:crossover}).
+(4)~Proxy validity (Section~\ref{sec:proxy-validity}) and Bernstein-improved sample complexity bounds (Section~\ref{sec:sample-complexity}) that make the framework practical.
+(5)~Synthetic validation showing up to 50x evaluation efficiency over benchmark racing in settings with $k = 100$ designs (Section~\ref{sec:validation}), with honest scoping of when the framework should not be used (Section~\ref{sec:scoping}).
+
+\paragraph{Roadmap.}
+Section~\ref{sec:prelim} defines the mathematical objects.
+Sections~\ref{sec:decomposition}--\ref{sec:lagrangian} develop the decomposition and its Lagrangian non-connection.
+Sections~\ref{sec:graph-depth}--\ref{sec:bernstein} derive the depth-cost tradeoff and sample complexity.
+Section~\ref{sec:validation} validates and scopes the framework.
+Section~\ref{sec:related} positions the paper.
+Section~\ref{sec:discussion} discusses limitations and open problems.

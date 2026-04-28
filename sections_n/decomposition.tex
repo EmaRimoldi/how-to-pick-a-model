@@ -1,0 +1,122 @@
+% ==================================================================
+%  SETUP + DECOMPOSITION (pp. 2--3): Pillar 1
+% ==================================================================
+
+\section{Setup and the Four-Term Decomposition}
+\label{sec:decomposition}
+
+\subsection{Problem Setup}
+\label{sec:setup}
+
+A \emph{budgeted transductive task} consists of an instance space~$\cX$,
+a solution space~$\cY$ with an external verifier
+$v\colon \cX \times \cY \to \{0,1\}$, and a resource budget~$B$.
+The agent receives $x \in \cX$ and must produce~$y$ with $v(x,y)=1$
+within budget~$B$.  Canonical examples include code repair verified against
+test suites and formal proofs checked by a proof assistant.
+
+A \emph{design} is a tuple $d = (M, D, \kappa)$ specifying a model~$M$,
+a retry depth~$D$, and a per-step cost~$\kappa(M)$.  The \emph{design
+menu} $\cD = \{d_1,\ldots,d_k\}$ enumerates the candidates.  Our goal is
+to select the design in~$\cD$ that maximizes expected performance
+(verified-solution probability) subject to a cost--quality tradeoff.
+
+\begin{assumption}[Packed latent-mode family]
+\label{ass:packed}
+The task distribution admits a latent partition into $\Mn$ modes
+with distribution $\pi = (\pi_1,\ldots,\pi_{\Mn})$ such that:
+(i)~each instance has a unique dominant mode;
+(ii)~conditional on mode~$s$, the number of attempts to a verified
+solution under model~$M$ follows
+$T(s,M) \sim \mathrm{Geometric}(p(s,M))$;
+(iii)~the mode distribution~$\pi$ does not shift with model choice.
+\end{assumption}
+
+The assumption holds when task difficulty clusters into discrete types
+(e.g., repository-specific bug patterns in SWE-bench, or theorem
+categories in formal mathematics) and each type admits a memoryless solve
+probability.  Outside the packed family, the decomposition below holds with
+a bounded residual of order
+$O(\delta \log \Mn + \eta)$~\citep{beneventano2026framework}.
+
+\subsection{The Four-Term Identity}
+\label{sec:four-term}
+
+\begin{theorem}[Four-term decomposition]
+\label{thm:four-term}
+Under Assumption~\ref{ass:packed}, the log-performance gap between designs
+$(M_0, q_0)$ and $(M, q)$ decomposes as
+\begin{equation}
+\label{eq:four-term}
+  \Delta \;=\;
+  \underbrace{\log\frac{\kappa_0}{\kappa(M)}}_{\text{cost}}
+  \;+\; \underbrace{\sum_s \pi_s \log\frac{p(s,M)}{p(s,M_0)}}_{\varphi\;\text{(competence)}}
+  \;+\; \underbrace{\MI_\pi(S;\,D_M)}_{G\;\text{(info gain)}}
+  \;-\; \underbrace{\E_D\!\bigl[\KL(\pi_D^M \| q_D)\bigr]}_{\mismatch\;\text{(mismatch)}}.
+\end{equation}
+Each term is independently estimable from pilot data.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Expand $\E[-\log T]$ under the geometric-trials model and rewrite the
+routing allocation via the chain rule for KL divergence.  The cost term
+separates because $\kappa$ does not depend on the task mode.  The
+competence term collects the per-mode log-probability ratios.  The
+remaining cross-terms decompose into mutual information (information
+gain) and KL divergence (routing mismatch) by standard
+identities~\citep{beneventano2026framework}.
+Full proof in Appendix~\ref{app:four-term}.
+\end{proof}
+
+The \textbf{cost term} measures the per-step price difference.  The
+\textbf{competence term}~$\varphi$ measures how much better model~$M$ is
+at each mode, averaged over the task distribution.  The \textbf{information
+gain}~$G$ measures the benefit of mode-aware routing---it is the value of
+knowing which task type you face, in the sense of
+Kelly~\citeyearpar{kelly1956new}.  The \textbf{mismatch} measures how far
+actual routing deviates from the posterior-optimal allocation.
+
+\subsection{The Crossover Formula}
+\label{sec:crossover}
+
+\begin{theorem}[Crossover depth]
+\label{thm:crossover}
+Consider a large model with per-attempt success probability~$p_l$ and
+per-step cost~$\kappa_l$, and a small model with $p_s < p_l$ and
+$\kappa_s < \kappa_l$.
+On a single-mode task, the small model with $D$ retries achieves the
+same expected verified-solution probability as the large model (single
+attempt) when
+\begin{equation}
+\label{eq:crossover}
+  D_{\mathrm{cross}} = \frac{\log(1 - p_l)}{\log(1 - p_s)}.
+\end{equation}
+The small model dominates whenever $D_{\mathrm{cross}} \cdot \kappa_s < \kappa_l$.
+\end{theorem}
+
+\begin{proof}
+The success probability after $D$ retries is $1 - (1-p_s)^D$.
+Setting this equal to~$p_l$ and solving for~$D$ gives~\eqref{eq:crossover}.
+\end{proof}
+
+As a worked example: if $p_l = 0.50$ and $p_s = 0.10$, then
+$D_{\mathrm{cross}} = \log(0.50)/\log(0.90) \approx 6.6$.
+If the large model costs $10\times$ more per step, the small model
+with 7 retries is both cheaper and more accurate.
+
+\begin{corollary}[Monotonicity]
+\label{cor:monotonicity}
+Under Assumption~\ref{ass:packed}, the optimal depth $D^*(M)$ is
+non-increasing in the per-mode success probability: stronger models need
+fewer retries.  For fixed depth, the expected performance is monotonically
+increasing in $p(s,M)$ for every mode.
+\end{corollary}
+
+\begin{remark}[The Lagrangian non-connection]
+\label{rem:lagrangian}
+The four terms in~\eqref{eq:four-term} are components of the primal
+objective evaluated at any feasible point, not dual variables of a
+Lagrangian relaxation.  A natural conjecture that they are shadow prices
+is precisely wrong: the KKT conditions yield a single scalar multiplier,
+not four (Appendix~\ref{app:lagrangian}).
+\end{remark}
