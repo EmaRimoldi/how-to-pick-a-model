@@ -8,7 +8,7 @@
 \usepackage{url}
 \usepackage{booktabs}
 \usepackage{graphicx}
-\usepackage{amsmath,amssymb,amsthm}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
 \usepackage{enumitem}
 \usepackage{microtype}
 \usepackage{xcolor}
@@ -22,27 +22,36 @@
 
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator{\KL}{KL}
+\DeclareMathOperator{\MI}{I}
+\DeclareMathOperator{\Hent}{H}
 
 \newcommand{\cD}{\mathcal{D}}
 \newcommand{\cM}{\mathcal{M}}
+\newcommand{\cS}{\mathcal{S}}
 \newcommand{\cT}{\mathcal{T}}
 \newcommand{\cX}{\mathcal{X}}
 \newcommand{\cY}{\mathcal{Y}}
 \newcommand{\E}{\mathbb{E}}
 \newcommand{\Prb}{\mathbb{P}}
-\newcommand{\KL}{\mathrm{KL}}
-\newcommand{\MI}{\mathrm{I}}
-\newcommand{\Hent}{\mathrm{H}}
-\newcommand{\Mn}{M_n}
+\newcommand{\eps}{\varepsilon}
 \newcommand{\pmin}{p_{\min}}
-\newcommand{\dacc}{\delta_{\mathrm{acc}}}
 \newcommand{\dconf}{\delta_{\mathrm{conf}}}
+\newcommand{\dacc}{\delta_{\mathrm{acc}}}
 \newcommand{\Dcross}{D_{\mathrm{cross}}}
-\newcommand{\Dstar}{D^*}
-\newcommand{\mismatch}{\varepsilon}
+\newcommand{\J}{\mathcal{J}}
+\newcommand{\placeholder}[2]{%
+  \begin{center}
+  \fbox{\begin{minipage}{#1}
+  \vspace{0.4em}
+  \textbf{Figure placeholder.} #2
+  \vspace{0.4em}
+  \end{minipage}}
+  \end{center}
+}
 
-\title{How to Pick the Model: 
-\\ Performance Accounting in Agentic Systems}
+\title{How to Pick the Model:\\
+Decomposable Performance Accounting for Verifiable Agentic Systems}
 
 \author{Anonymous Authors}
 
@@ -51,316 +60,569 @@
 \maketitle
 
 \begin{abstract}
-This is a structural skeleton, not a polished rewrite.
-The unified paper studies how to choose among model and agent-system designs for verifiable tasks.
-Under a packed latent-mode assumption, the performance gap between two designs decomposes into cost, competence, routing information, and routing mismatch.
-The paper will use this decomposition to derive practical model-selection diagnostics, a decomposition-guided selection algorithm, crossover rules for cheap models with retries, and transfer rules for reusing designs across task families.
+Agent builders rarely need to know whether a sufficiently well-prompted model can eventually solve a verifiable task; they need to know which model and harness will reach a verified solution fastest, cheapest, and robustly under repeated deployment.
+We formalize this question as design selection for verifiable agentic systems.
+Under a packed latent-mode model of tasks, the expected log certified effort of a model-routing design decomposes into four separately measurable terms: per-step cost, within-mode competence, routing information, and routing mismatch.
+This accounting identity turns model choice from an opaque benchmark race into a diagnostic procedure: it predicts when a cheap model with retries beats an expensive model, when routing is worth engineering, and how many pilot evaluations are needed before committing to a design.
+We instantiate the framework in a code-editing harness that evaluates six counterfactual edit branches per step and in an AutoResearch-style CIFAR-10 editing task.
+Preliminary live-agent results on a stateful query-engine benchmark show nontrivial comparative advantage across task modes: a cheaper model dominates range-local workloads, a stronger model dominates top-$k$ workloads, and a pilot-estimated router closes most of the gap to an oracle router while exposing residual mismatch.
+The paper contributes a theorem-backed measurement language, a sample-efficient selection algorithm, and a concrete experimental campaign for deciding which model belongs inside an agent harness.
 \end{abstract}
 
 \section{Introduction}
-\label{sec:introduction}
+\label{sec:intro}
 
-\paragraph{Planned role.}
-Open with the builder's problem: a practitioner has a task family, a budget, a menu of models, possible retry depths, and possible routing policies.
-The naive method is benchmark racing: evaluate every candidate design end-to-end and pick the best.
-Benchmark racing is simple but opaque: it conflates per-step cost, per-mode competence, information available for routing, and routing mismatch.
+A team building an agent system faces a practical question: given a task family, a verifier, a model menu, retry budgets, and possible routing policies, which model should be placed inside the harness?
+The common answer is benchmark racing.
+Run Sonnet and Opus, or a cheap specialist and a frontier generalist, on a held-out set; if the cheap model passes, use it, otherwise pay for the larger one.
+This answer is attractive because it is simple, but it answers the wrong scientific question.
+For many verifiable tasks, a weak model, a strong model, and several intermediate systems may all eventually reach a correct solution if the harness gives them enough attempts, feedback, tools, and time.
+The deployment question is not only whether they can solve the task.
+It is how fast they reach a verified solution, how much this costs, and which part of the harness explains the difference.
 
-\paragraph{Central thesis.}
-The paper should argue that model choice in agentic systems is a structured measurement problem.
-Under a packed latent-mode abstraction for verifiable tasks, the performance gap between designs admits a four-term accounting identity.
-This identity does not directly solve the optimization problem, but it tells the builder which lever matters and enables sample-efficient ranking of large design menus from a shared pilot.
+This paper studies \emph{model choice as performance accounting} for verifiable agentic systems.
+The motivating regime includes code editing against tests, query-engine optimization against a deterministic benchmark, proof search against a proof assistant, and small AutoResearch loops whose outputs can be scored by a script.
+These tasks are transductive in the operational sense: the system is handed a concrete instance and must produce a concrete artifact.
+They are also externally verifiable: after each proposal, a checker can certify success or provide a scalar quality signal.
+In this regime, the natural capability object is certified time-to-solution or a cost-adjusted surrogate, not standalone accuracy.
 
-\paragraph{Contributions to write.}
-\begin{enumerate}[leftmargin=1.4em]
-  \item A packed latent-mode setup for verifiable agent design.
-  \item An exact four-term decomposition into cost, competence, information gain, and routing mismatch.
-  \item A crossover rule explaining when a cheaper model with retries beats a more expensive model.
-  \item A decomposition-guided design-selection algorithm with evaluation cost independent of the number of candidate designs once pilot estimates are collected.
-  \item Experiments validating ranking, robustness, and sensitivity of the resulting design choices.
-  \item A transfer/reuse framework distinguishing competence transfer from orchestration transfer.
+The difficulty is that a single benchmark score conflates four different mechanisms.
+A model can win because it is cheaper per step.
+It can win because it is more competent on the relevant task mode.
+It can win because its interaction with the verifier reveals which mode the instance belongs to.
+Or it can win because the harness routes computation toward the mode implied by that information.
+These mechanisms imply different interventions.
+If the cost term dominates, retries with a cheaper model may be rational.
+If competence is mode-specific, a router or cascade may be needed.
+If information gain is high but realized speed is low, the harness is learning the right thing and failing to use it.
+
+\paragraph{Research questions.}
+We organize the paper around four questions that are both mathematical and experimentally testable.
+
+\begin{enumerate}[leftmargin=1.4em,itemsep=0.15em]
+  \item \textbf{Can the time-to-solution gap between agent designs be decomposed into measurable terms?}
+  We prove an exact four-term identity under a packed latent-mode assumption (Section~\ref{sec:accounting}).
+  \item \textbf{Can the decomposition replace end-to-end racing for model selection?}
+  We derive a structured pilot algorithm whose evaluation cost depends on the number of models and task modes, rather than directly on the number of candidate designs (Section~\ref{sec:selection}).
+  \item \textbf{When does a cheaper model with retries beat a stronger model?}
+  We give a closed-form crossover rule and show how it changes across task modes (Section~\ref{sec:crossover}).
+  \item \textbf{Does the repository's agent harness support a falsifiable campaign?}
+  We map every claim to an observable in the existing six-branch editing protocol and report preliminary evidence from the query-engine benchmark (Section~\ref{sec:experiments}).
 \end{enumerate}
 
-\section{Setup: Verifiable Agent Design Under Latent Modes}
+\paragraph{Contributions.}
+The paper makes three contributions.
+First, it gives a model-aware performance decomposition for verifiable agentic systems, separating cost, competence, information, and mismatch.
+Second, it turns the decomposition into a design-selection protocol with explicit pilot sizing and confirmation rules.
+Third, it grounds the theory in a concrete experimental architecture: a code-editing harness that logs all branch counterfactuals, task-mode labels, model costs, verifier outcomes, and routing distributions.
+This makes the claims falsifiable: the final campaign can show not only which model wins, but why it wins and when that recommendation changes.
+
+\section{Verifiable agent design}
 \label{sec:setup}
 
-\subsection{Budgeted Verifiable Tasks}
-\label{sec:verifiable-tasks}
+\begin{definition}[Budgeted verifiable task]
+\label{def:task}
+A budgeted verifiable task is a tuple
+$\cT=(\cX,\cY,V,B,\mu)$.
+Here $\cX$ is an instance space, $\cY$ is an artifact or solution space, $V:\cX\times\cY\to\{0,1\}$ is an external verifier, $B$ is a resource budget, and $\mu$ is the deployment distribution over instances.
+An agent succeeds on $x\sim\mu$ if it produces $y$ with $V(x,y)=1$ before exhausting $B$.
+\end{definition}
 
-\paragraph{Planned content.}
-Define a budgeted transductive task with instance space $\cX$, solution space $\cY$, verifier $v:\cX\times\cY\to\{0,1\}$, and budget $B$.
-The paper should focus on settings where solutions can be externally certified: code repair against tests, theorem proving against proof assistants, query-engine optimization against test harnesses, or similar.
+The verifier may be binary, as in tests or proof checking, or scalar, as in a validation loss that is thresholded for success.
+The key requirement is that success is evaluated outside the model.
+The model proposes artifacts; the task supplies the criterion.
 
-\subsection{Agent Designs}
-\label{sec:agent-designs}
+\begin{definition}[Agent design]
+\label{def:design}
+An agent design is a tuple
+$d=(M,h,q,\kappa)$, where $M$ is the base model, $h$ is a harness specification including retry depth and tool protocol, $q$ is a routing or allocation policy over modes/actions, and $\kappa(M)$ is the per-step cost used for deployment accounting.
+The design menu $\cD=\{d_1,\ldots,d_k\}$ is the finite set of candidates considered by the builder.
+\end{definition}
 
-\paragraph{Planned content.}
-Define a design as a tuple containing model $M$, per-step cost $\kappa(M)$, retry depth $D$, routing policy $q$, and verification protocol.
-Explain which dimensions are varied in the main experiments and which are held fixed.
-Keep the full general design tuple in the appendix if it is too heavy for the main text.
-
-\subsection{Packed Latent-Mode Families}
-\label{sec:packed-modes}
+The harness can include a single model call, a repeated-sampling loop, a tool-using code agent, or a multi-branch editor.
+We keep the mathematical development finite-menu because this is the regime in which a NeurIPS-scale experimental campaign can be completed cleanly: models, retry depths, and routing policies are enumerable.
+Continuous design spaces are discussed as a limitation.
 
 \begin{assumption}[Packed latent-mode family]
 \label{ass:packed}
-TODO: State the assumption from the source manuscripts: task instances have a latent mode $S(x)\in\{1,\ldots,\Mn\}$, each model has per-mode success probabilities $p(s,M)$, certified time is geometric or approximately geometric conditional on mode, and the mode prior is exogenous.
+Instances have a latent task mode $S\in\cS=\{1,\ldots,m_S\}$ with prior $\pi$.
+Conditional on mode $s$, model $M$ has certified per-attempt success probability $p_M(s)>0$.
+During execution, the harness observes a feedback variable $Z_M$ with posterior
+$\pi_z^M(s)=\Prb[S=s\mid Z_M=z]$.
+Given feedback $z$, the router allocates mode share $q_z(s)$ with support containing the support of $\pi_z^M$.
+The certified effort surrogate under mode $s$ is proportional to
+\begin{equation}
+  T_{M,q}(s,z) \propto \frac{\kappa(M)}{p_M(s)\,q_z(s)} .
+  \label{eq:effort-surrogate}
+\end{equation}
 \end{assumption}
 
-\paragraph{Planned clarification.}
-Distinguish theoretical latent modes from empirical task modes.
-In controlled benchmarks, modes may be oracle workload families.
-In real deployments, they may need to be discovered or approximated.
-This distinction is central to the paper's claim scope.
+Assumption~\ref{ass:packed} is deliberately restrictive.
+It says that a finite mode abstraction captures the relevant differences between instances and that attempts are summarized by a memoryless success probability.
+The assumption is not meant to describe all agent systems.
+It isolates exactly the regime where the model-selection question becomes inspectable: different models can have different per-mode competence, feedback can reveal the mode, and routing can use or waste that information.
+In our experiments, modes are oracle workload families such as \texttt{range\_local\_scans} and \texttt{topk\_stress}; discovering modes from traces is left to the final campaign and appendix.
 
-\section{The Four-Term Decomposition}
-\label{sec:decomposition}
+\section{Performance accounting}
+\label{sec:accounting}
 
-\subsection{Routing-Information Identity}
-\label{sec:routing-information}
-
-\paragraph{Planned content.}
-Include the routing-information identity only in the minimal form needed to motivate the main theorem.
-If page pressure is high, move the identity and proof to Appendix~\ref{app:proofs} and state the four-term theorem directly.
-
-\subsection{Model-Aware Four-Term Identity}
-\label{sec:four-term}
+For a design $d=(M,q)$, define the expected cost-adjusted certified log-effort
+\begin{equation}
+  \J(M,q)
+  =
+  \log \kappa(M)
+  + \E_{S\sim\pi}[-\log p_M(S)]
+  + \E_{Z_M}\!\left[
+      \Hent(\pi_{Z_M}^M) +
+      \KL(\pi_{Z_M}^M\|q_{Z_M})
+    \right].
+  \label{eq:objective}
+\end{equation}
+The first term is price, the second is within-mode competence, and the last two terms are the cross-entropy cost of routing computation toward the correct latent mode.
+Lower $\J$ is better.
 
 \begin{theorem}[Four-term model-aware decomposition]
 \label{thm:four-term}
-TODO: State the source theorem:
-\[
-  \Delta =
-  \underbrace{\log\frac{\kappa_0}{\kappa(M)}}_{\text{cost}}
-  + \underbrace{\sum_s \pi_s \log\frac{p(s,M)}{p(s,M_0)}}_{\text{competence}}
-  + \underbrace{\MI_\pi(S;D_M)}_{\text{information gain}}
-  - \underbrace{\E_D[\KL(\pi_D^M\|q_D)]}_{\text{routing mismatch}}.
-\]
+Under Assumption~\ref{ass:packed}, compare a prior-matched baseline design $(M_0,\pi)$ with a deployed design $(M,q)$.
+The improvement in expected certified log-effort,
+$\Delta=\J(M_0,\pi)-\J(M,q)$, decomposes as
+\begin{equation}
+\label{eq:four-term}
+  \Delta
+  =
+  \underbrace{\log\frac{\kappa(M_0)}{\kappa(M)}}_{\text{cost}}
+  +
+  \underbrace{\sum_{s\in\cS}\pi_s\log\frac{p_M(s)}{p_{M_0}(s)}}_{\text{competence}}
+  +
+  \underbrace{\MI_\pi(S;Z_M)}_{\text{routing information}}
+  -
+  \underbrace{\E_{Z_M}\!\left[\KL(\pi_{Z_M}^M\|q_{Z_M})\right]}_{\text{routing mismatch}} .
+\end{equation}
 \end{theorem}
 
-\paragraph{Planned interpretation.}
-Explain each term as an actionable diagnostic.
-Cost means per-step price.
-Competence means per-mode model capability.
-Information gain means how much side information helps identify or exploit the mode.
-Mismatch means how much the implemented routing policy wastes that information.
+\begin{proof}[Proof sketch]
+Taking logs in~\eqref{eq:effort-surrogate} gives
+$\log T_{M,q}(s,z)=C+\log\kappa(M)-\log p_M(s)-\log q_z(s)$.
+Conditioning on $Z_M=z$ and averaging over $S\sim\pi_z^M$ converts
+$-\E\log q_z(S)$ into the cross-entropy
+$\Hent(\pi_z^M)+\KL(\pi_z^M\|q_z)$.
+Subtracting the prior-matched baseline cancels constants and uses
+$\Hent(\pi)-\E_Z\Hent(\pi_Z^M)=\MI_\pi(S;Z_M)$.
+The full proof, including support conditions and the non-prior baseline variant, is in Appendix~\ref{app:proofs}.
+\end{proof}
 
-\subsection{Not a Lagrangian Decomposition}
-\label{sec:lagrangian}
+The theorem is an accounting identity, not a black-box optimizer.
+Its value is diagnostic.
+If the cost term is large and positive, a cheap model has room to spend retries.
+If the competence term changes sign across modes, a single global winner is unlikely.
+If information gain is high, the verifier or early trajectory exposes useful task structure.
+If mismatch is high, the harness observes useful structure but fails to route computation according to it.
 
-\begin{remark}[Performance accounting, not shadow prices]
-\label{rem:lagrangian}
-TODO: Summarize the negative result from \texttt{final\_paper.tex}: the four terms are components of the primal objective at a feasible design, not Lagrangian dual variables.
+\begin{remark}[Not a Lagrangian decomposition]
+The four terms in~\eqref{eq:four-term} are primal accounting terms evaluated at a feasible design.
+They are not dual variables and should not be interpreted as shadow prices of four constraints.
+The appendix gives the short KKT calculation: a natural Lagrangian relaxation yields scalar multipliers tied to explicit constraints, whereas the four terms above arise from the cross-entropy identity.
 \end{remark}
 
-\subsection{Crossover: When Cheap Models With Retries Win}
+\subsection{When cheap retries win}
 \label{sec:crossover}
 
-\begin{theorem}[Crossover depth]
+\begin{theorem}[Single-mode crossover]
 \label{thm:crossover}
-TODO: State the single-mode rule
-\[
-  \Dcross=\frac{\log(1-p_l)}{\log(1-p_s)}
-\]
-and the cost-adjusted condition $\Dcross\kappa_s < \kappa_l$.
-Mention the multi-mode generalization and hardest-mode estimate if space permits.
+On a single-mode task, let a large model have one-shot success probability $p_l$ and cost $\kappa_l$.
+Let a small model have success probability $p_s<p_l$ and cost $\kappa_s<\kappa_l$.
+The number of small-model retries needed to match the large model's success probability is
+\begin{equation}
+  \Dcross=\frac{\log(1-p_l)}{\log(1-p_s)} .
+  \label{eq:d-cross}
+\end{equation}
+The small model is cost-favorable at the crossover whenever
+$\Dcross\,\kappa_s<\kappa_l$.
 \end{theorem}
 
-\section{Decomposition-Guided Design Selection}
-\label{sec:algorithm}
+The multi-mode case is where the decomposition matters.
+The same small model may dominate a range-local mode and fail completely on a top-$k$ mode.
+Averaging these into a single benchmark score hides the deployment decision.
+The right question is whether the task distribution has nontrivial comparative advantage: are there modes for which different models are cost-adjusted winners?
+Section~\ref{sec:experiments} shows that the current query-engine pilot already exhibits this structure.
 
-\subsection{Algorithm}
-\label{sec:algorithm-box}
+\begin{figure}[t]
+\placeholder{0.93\linewidth}{
+Final figure: a left-to-right schematic of the accounting pipeline.
+Inputs are task instances with latent modes, model/harness candidates, verifier feedback, and cost logs.
+The center panel computes the four terms in Theorem~\ref{thm:four-term}.
+The right panel emits three decisions: single-model deployment, mode router, or additional pilot runs.
+Expected takeaway: the same benchmark score can be explained by different term profiles, which imply different interventions.
+}
+\caption{Performance accounting turns model choice into a measurement problem rather than a scalar leaderboard race.}
+\label{fig:pipeline}
+\end{figure}
 
-\paragraph{Planned algorithm.}
-\begin{enumerate}[leftmargin=1.4em]
-  \item Structured pilot: estimate $\hat p(s,M)$ for each model-mode pair.
-  \item Analytical scoring: compute the decomposition objective for every candidate design without end-to-end racing.
-  \item Confirmation: evaluate only the top candidates on fresh instances.
-\end{enumerate}
+\section{Decomposition-guided selection}
+\label{sec:selection}
 
-\paragraph{Main point.}
-Once the model-mode success table is estimated, scoring is arithmetic.
-The number of task evaluations scales with number of models and modes, not directly with the number of candidate designs $k$.
+The decomposition suggests a practical protocol.
+Instead of evaluating every candidate design end-to-end, the builder first estimates shared quantities: per-mode success, per-step cost, and router mismatch.
+Then all designs in a finite menu can be scored analytically.
 
-\subsection{Ranking Objective and Metrics}
-\label{sec:ranking-objective}
+\begin{center}
+\fbox{\begin{minipage}{0.94\linewidth}
+\textbf{Algorithm 1: Decomposition-guided model and harness selection}
 
-\paragraph{Planned content.}
-Define the primary ranking metric used to order designs.
-Candidates include expected log certified time, cost-adjusted negative log success, regret to oracle, or quantile certified time.
-The main text should use one primary metric and explicitly state that there is no universally correct metric across deployments.
-Sensitivity analysis should show whether the selected design is stable under reasonable alternatives.
+\smallskip
+\textbf{Input:} design menu $\cD$, mode set $\cS$, models $\cM$, pilot budget $N_{\mathrm{pilot}}$, confirmation budget $N_{\mathrm{conf}}$, number of finalists $c$.
 
-\subsection{Guarantees}
-\label{sec:guarantees}
+\smallskip
+\textbf{1. Structured pilot.}
+For each model $M\in\cM$ and mode $s\in\cS$, run $n_0$ verified attempts or trajectories.
+Estimate $\hat p_M(s)$, $\hat\kappa(M)$, and uncertainty intervals.
 
-\begin{proposition}[Near-optimality]
+\textbf{2. Analytical scoring.}
+For every design $d=(M,h,q,\kappa)\in\cD$, compute $\hat\J(d)$ using~\eqref{eq:objective}, including the cost of retries, routing, and verifier calls.
+
+\textbf{3. Confirmation.}
+Evaluate the top $c$ designs end-to-end on fresh holdout instances.
+Return the design with the best confirmed objective and report the four accounting terms.
+\end{minipage}}
+\end{center}
+
+\begin{proposition}[Regret under uniform scoring error]
 \label{prop:near-opt}
-TODO: State the $2\delta$ near-optimality guarantee from \texttt{sections\_n/algorithm.tex}.
+If $|\hat\J(d)-\J(d)|\le \dacc$ for every $d\in\cD$, and $\hat d=\argmin_d\hat\J(d)$, then
+\begin{equation}
+  \J(\hat d)\le \min_{d\in\cD}\J(d)+2\dacc .
+\end{equation}
+If the confirmation phase has uniform error at most $\eta$ over the finalist set, the returned design has regret at most $2\dacc+2\eta$.
 \end{proposition}
 
-\begin{proposition}[Evaluation complexity]
-\label{prop:eval-complexity}
-TODO: State that the decomposition-guided procedure uses $m\Mn n_0 + cN_{\mathrm{conf}}$ evaluations, while racing uses $kn_{\mathrm{eval}}$.
+The proof is the standard plug-in selection argument and is included in Appendix~\ref{app:proofs}.
+The important point is where the sample size enters.
+Let $m=|\cM|$ be the number of distinct models and $m_S=|\cS|$ the number of modes.
+The pilot evaluates $m\,m_S$ model-mode cells.
+Racing evaluates $k$ complete designs.
+When the menu includes many retry depths, routing temperatures, fallback policies, and model combinations, $k$ can be much larger than $m\,m_S$.
+
+\begin{proposition}[Evaluation cost]
+\label{prop:eval-cost}
+With $n_0(\dacc)$ pilot evaluations per model-mode cell and $N_{\mathrm{conf}}$ confirmation evaluations per finalist, Algorithm~1 uses
+\begin{equation}
+  N_{\mathrm{ours}}
+  =
+  m\,m_S\,n_0(\dacc)+c\,N_{\mathrm{conf}}
+  \label{eq:ours-cost}
+\end{equation}
+task evaluations.
+Black-box racing with $n_{\mathrm{eval}}$ evaluations per design uses
+$N_{\mathrm{race}}=k\,n_{\mathrm{eval}}$.
+For fixed model and mode sets, the pilot cost is independent of the number of analytically scored designs.
 \end{proposition}
 
-\subsection{Sample Complexity}
-\label{sec:sample-complexity}
+This guarantee is intentionally modest.
+It does not say the decomposition is assumption-free.
+It says that when the packed-mode abstraction is a good approximation, the builder can amortize pilot data across a large design menu and reserve expensive end-to-end evaluation for the finalists.
 
-\paragraph{Planned content.}
-State the practical pilot-sizing rule and the Hoeffding/Bernstein contrast.
-Keep detailed derivations in Appendix~\ref{app:proofs}.
-This subsection should connect directly to experimental budget choices.
-
-\section{Experiments}
+\section{Experimental architecture and campaign}
 \label{sec:experiments}
 
-\subsection{Experimental Setup}
-\label{sec:experimental-setup}
+The repository already contains the experimental architecture needed to test the claims.
+The primary benchmark is a stateful query-engine editing task.
+Each instance is a workload family generated from a controlled task mode, and each candidate artifact is a Python implementation of a query engine.
+The verifier checks correctness against a reference engine and measures latency and memory against a baseline.
+The loss is a weighted ratio of candidate to baseline performance, with incorrect programs assigned infinite loss.
 
-\paragraph{Planned content.}
-Specify task families, empirical or oracle modes, train/dev/holdout split, model set, depth grid, cost assumptions, pilot and confirmation budgets, random seeds, and verification protocol.
-If live LLMs or agents are used, report model versions and disclose LLM/agent use as part of the method.
+\paragraph{Six-branch counterfactual protocol.}
+At every step, the agent emits a probability distribution over six action modes and one concrete edit for each mode:
+\texttt{layout}, \texttt{indexing}, \texttt{topk}, \texttt{caching}, \texttt{summaries}, and \texttt{micro}.
+The harness applies each edit in a branch-local workspace, evaluates all six branches offline, and promotes only the selected online branch.
+This is crucial: the promoted trajectory measures what the agent actually did, while the unpromoted branches reveal counterfactual competence and routing regret.
+Thus the protocol directly observes the terms needed by Theorem~\ref{thm:four-term}.
 
-\subsection{Conditions and Protocols}
-\label{sec:conditions-protocols}
+\paragraph{Task modes and models.}
+The current pilot uses oracle workload modes such as \texttt{range\_local\_scans}, \texttt{topk\_stress}, and \texttt{negative\_lookup\_churn}.
+The main model comparison currently includes \texttt{gpt-5.3-codex-spark} and \texttt{gpt-5.3-codex}; the broader campaign plan supports a five-model menu.
+Costs are measured as wall-clock seconds in the current artifacts and can be replaced or supplemented by API cost once all model usage logs are complete.
 
-\paragraph{Planned content.}
-Separate experiments by what claim they support:
-synthetic packed-family validation, decomposition-guided selection, routing-triviality/crossover, transfer, and real or semi-real benchmark diagnostics.
-Avoid mixing all experiments into one undifferentiated table.
+\paragraph{Primary metrics.}
+The main objective is expected cost-adjusted negative log success,
+$-\log \hat p_M(s)+\log \hat\kappa(M)$, averaged over task-mode priors and optionally mixed by a router.
+We also report success probability, best loss, median cost, information gain, mismatch, pairwise crossover depth, and bootstrap intervals.
+The main paper will rank designs by the primary objective and put alternative objectives in the appendix.
 
-\subsection{Models}
-\label{sec:models}
+\begin{figure}[t]
+\placeholder{0.93\linewidth}{
+Final figure: three aligned heatmaps generated from the query-engine artifacts.
+Left: model-by-mode success probabilities.
+Middle: model-by-mode cost-adjusted scores.
+Right: pilot router and oracle router choices.
+Expected takeaway: the task is not routing-trivial at $\tau=0.05$; \texttt{gpt-5.3-codex-spark} is preferred on \texttt{range\_local\_scans}, while \texttt{gpt-5.3-codex} is preferred on \texttt{topk\_stress}.
+}
+\caption{Planned main empirical figure: model competence and routing are mode-dependent.}
+\label{fig:heatmaps}
+\end{figure}
 
-\paragraph{Planned content.}
-List all evaluated models or model tiers, costs, and any proxy cost assumptions.
-If exact proprietary model prices or versions vary, state the date/version and run configuration.
+\subsection{Preliminary query-engine evidence}
+\label{sec:prelim}
 
-\subsection{Metrics}
-\label{sec:metrics}
+Table~\ref{tab:pilot} summarizes the current theorem-facing pilot using uniform task-mode priors and a relative-improvement success threshold of $0.05$.
+These numbers are not yet the final NeurIPS campaign, but they demonstrate feasibility and determine what the final figures should show.
 
-\paragraph{Planned metrics.}
-Report primary objective value, regret, success probability, cost-adjusted score, savings factor, decomposition terms, crossover depth, information gain, mismatch, and transfer regret as appropriate.
-Each table should say which metric defines the ranking.
+\begin{table}[t]
+\centering
+\small
+\caption{Preliminary query-engine decomposition at relative-improvement threshold $0.05$.
+Lower objective is better.
+The pilot router is estimated on pilot modes and evaluated on holdout; the oracle router uses holdout labels for diagnostic comparison only.}
+\label{tab:pilot}
+\begin{tabular}{@{}l r@{}}
+\toprule
+Quantity & Value \\
+\midrule
+Single-best holdout objective (\texttt{gpt-5.3-codex-spark}) & 10.696 \\
+Pilot-router holdout objective & 4.894 \\
+Oracle-router holdout objective & 4.541 \\
+Pilot routing information gain & 0.510 nats \\
+Pilot router mismatch to oracle & 0.033 nats \\
+Holdout routing information gain & 0.660 nats \\
+Single-model mismatch & 6.959 nats \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-\subsection{Ranking Construction}
-\label{sec:ranking-construction}
+The key qualitative result is comparative advantage.
+On holdout \texttt{range\_local\_scans}, \texttt{gpt-5.3-codex-spark} succeeds in $10/10$ attempts with median cost $43.86$s, while \texttt{gpt-5.3-codex} succeeds in $5/6$ attempts with median cost $170.01$s.
+On holdout \texttt{topk\_stress}, the pattern reverses: \texttt{gpt-5.3-codex} succeeds in $2/2$ attempts, while \texttt{gpt-5.3-codex-spark} has $0/10$ successes under the same threshold.
+The resulting cost ratio is $4.15$.
+The small model's crossover depth is $1$ on the range-local mode and effectively infinite on the top-$k$ mode.
+This is exactly the situation benchmark racing obscures: neither model is globally right without knowing the task mode.
 
-\paragraph{Planned content.}
-Define how candidate designs are ranked from empirical estimates.
-Include uncertainty and tie-breaking.
-Explain that rankings are metric-dependent and protocol-dependent; the contribution is an interpretable ranking procedure, not a universal scalar leaderboard.
+\paragraph{Threshold sensitivity.}
+The routing conclusion changes with the success threshold, which is why the final paper must report threshold sensitivity rather than a single table.
+At $\tau=0.00$, holdout routing is trivial: \texttt{gpt-5.3-codex-spark} is selected for both displayed modes.
+At $\tau=0.05$ and $\tau=0.10$, routing becomes nontrivial: \texttt{gpt-5.3-codex-spark} wins range-local workloads and \texttt{gpt-5.3-codex} wins top-$k$ workloads.
+This motivates a main figure showing the threshold at which comparative advantage appears.
 
-\subsection{Main Results}
-\label{sec:main-results}
+\paragraph{Uncertainty and top-up plan.}
+Bootstrap intervals are already implemented.
+For the current pilot, the cost term for the small-to-large comparison is $-1.424$ with a 95\% bootstrap interval $[-1.497,-1.318]$, while the competence term is $6.817$ with interval $[6.561,6.908]$.
+The information-gain interval is wider on the pilot split, $[0.088,0.648]$ nats, reflecting small per-cell sample counts.
+The robustness audit estimates that the largest current cell needs 27 additional trials to reach the target Wilson half-width used by the diagnostic script.
+The final campaign will top up these cells before promoting numerical claims from preliminary to final.
 
-\paragraph{Planned content.}
-Include a compact main results table showing design ranking and objective values.
-Include a decomposition table or bar chart showing which term drives the winning design.
-Include a crossover/routing-triviality result if it materially changes the design recommendation.
+\begin{figure}[t]
+\placeholder{0.93\linewidth}{
+Final figure: bootstrap and robustness panel.
+Panel A: point estimates and 95\% bootstrap intervals for cost, competence, information gain, mismatch, single-best objective, pilot-router objective, and oracle-router objective.
+Panel B: threshold sweep over $\tau\in\{0,0.05,0.10\}$ showing when routing becomes nontrivial.
+Panel C: top-up requirements per model-mode cell.
+Expected takeaway: the direction of comparative advantage is stable, while pilot information gain needs additional samples for tighter intervals.
+}
+\caption{Planned uncertainty figure connecting the theorem terms to the final sampling plan.}
+\label{fig:uncertainty}
+\end{figure}
 
-\subsection{Robustness and Sensitivity}
-\label{sec:robustness}
+\subsection{Campaign design}
+\label{sec:campaign}
 
-\paragraph{Planned analyses.}
-Show how rankings change under:
-\begin{itemize}[leftmargin=1.4em]
-  \item alternative ranking metrics;
-  \item different cost ratios;
-  \item different mode priors;
-  \item pilot/confirmation budget splits;
-  \item Hoeffding vs Bernstein confidence choices;
-  \item threshold choices for routing-triviality or transfer decisions.
-\end{itemize}
+The final campaign has four experiment blocks.
+Each block corresponds to a paper claim.
 
-\subsection{Qualitative Log or Transcript Analysis}
-\label{sec:qualitative}
+\begin{enumerate}[leftmargin=1.4em,itemsep=0.15em]
+  \item \textbf{Decomposition validity and ranking.}
+  Estimate the four terms on pilot modes, score all model-depth-router designs, and confirm the top designs on holdout modes.
+  Main plots: Figure~\ref{fig:heatmaps}, Table~\ref{tab:pilot}, and a final regret table.
+  \item \textbf{Crossover and routing triviality.}
+  Sweep success thresholds, cost assumptions, and mode priors to identify when a single model dominates and when routing is required.
+  Main plot: threshold sensitivity and pairwise crossover.
+  \item \textbf{Iterative horizon selection.}
+  Use the multi-step query-engine runs to choose retry horizons.
+  Current partial data over 13 trajectories recommends horizon $1$ for $\tau=0$ and horizon $2$ for $\tau\in\{0.05,0.10\}$ under both anytime and terminal objectives.
+  Final plots: horizon objective curves and action-gain heatmaps.
+  \item \textbf{Second-domain stress test.}
+  Use the AutoResearch CIFAR-10 editing benchmark as an external surface.
+  This task maps the six action modes to architecture, optimizer, learning-rate, regularization, schedule, and batching edits.
+  The current long-run smoke verifies feasibility; the final campaign should add at least two latent training regimes before making cross-domain claims.
+\end{enumerate}
 
-\paragraph{Planned content.}
-If using real agent runs, include brief qualitative evidence from logs showing why certain task modes favor different designs.
-If the final paper remains purely synthetic/semi-synthetic, omit this subsection from the main text and keep any qualitative implementation notes in the appendix.
+This campaign is intentionally narrower than a universal theory of model choice.
+It is designed to establish that the decomposition is measurable in a live agent harness, that it predicts a nontrivial model recommendation, and that its failure modes are visible when routing is trivial or uncertainty is too high.
 
-\subsection{Limitations of the Experimental Evidence}
-\label{sec:experimental-limitations}
+\section{Related work}
+\label{sec:related}
 
-\paragraph{Planned content.}
-State whether the experiments use synthetic, semi-synthetic, or live benchmark data.
-Clarify which claims are validated internally under the model assumptions and which remain future external-validity claims.
-Discuss closed-model nondeterminism, limited run counts, oracle mode labels, and missing baselines such as Bayesian optimization if not implemented.
+\paragraph{Compound systems and routing.}
+Recent work argues that progress increasingly comes from compound AI systems rather than isolated model calls~\citep{zaharia2024compound}.
+LLM routing systems such as FrugalGPT and RouteLLM learn when to call cheaper or stronger models~\citep{chen2023frugalgpt,ong2024routellm}, and related work studies model selection inside compound systems~\citep{chen2025optimizing}.
+Our work addresses an upstream question.
+Rather than only training a router, we ask how a builder should measure whether routing is needed, which model should be routed to which task mode, and whether a cheaper model's cost advantage compensates for lower competence.
 
-\section{Transfer and Reuse}
-\label{sec:transfer}
+\paragraph{Test-time compute.}
+Repeated sampling and inference-time scaling can make smaller or weaker models competitive when verification is available~\citep{brown2024monkeys,snell2025testtime,wu2025inference,osca2024}.
+Our crossover theorem formalizes the simplest version of that tradeoff and embeds it in a mode-aware accounting identity.
+The point is not that retries always beat stronger models.
+The preliminary query-engine result shows the opposite on \texttt{topk\_stress}: when the small model's per-mode success is near zero, no realistic retry budget compensates.
 
-\subsection{Two Equivalence Notions}
-\label{sec:equivalence-notions}
+\paragraph{Algorithm selection and configuration.}
+The algorithm selection literature asks which solver to use for which instance~\citep{rice1976algorithm,kotthoff2016algorithm}, with portfolio systems such as SATzilla and AutoFolio as classic examples~\citep{xu2012satzilla,lindauer2015autofolio}.
+Racing, best-arm identification, successive halving, Hyperband, and SMAC reduce the cost of black-box selection~\citep{maron1993hoeffding,maron1997racing,kaufmann2016bestarm,jamieson2016successive,li2017hyperband,hutter2011smac}.
+Our method differs by exploiting structure in verifiable agent logs.
+When model-mode success and routing terms are shared across many candidate designs, we can score a large design menu without evaluating every design as an independent arm.
 
-\paragraph{Planned content.}
-Define post-training equivalence as similar competence profiles and orchestration equivalence as similar routing structure.
-State why these are independent.
+\paragraph{Information, transfer, and time.}
+The conceptual basis for a time-centric view of verifiable transduction is closely related to Achille and Soatto's formulation of agents as task solvers where the relevant resource is time~\citep{achille2025agents}.
+The information-gain term also has a Kelly-like interpretation: posterior-matched allocation maximizes expected log growth, while KL mismatch is the loss from misallocation~\citep{kelly1956new,cover2006elements}.
+Transfer and domain adaptation work studies when knowledge from one distribution helps another~\citep{bendavid2010theory,mansour2009domain,pan2010survey,achille2019task2vec,you2021logme,pandy2022transferability,wang2019negative}.
+We keep transfer as an appendix-level extension in this draft because the current repository evidence is strongest for within-task model and routing selection.
 
-\subsection{Three-Case Rule}
-\label{sec:three-case-rule}
-
-\paragraph{Planned content.}
-Present plug-and-play, re-route, and start-over as a practical decision rule.
-Keep detailed thresholds and proofs in Appendix~\ref{app:transfer}.
-
-\section{Related Work}
-\label{sec:related-work}
-
-\paragraph{Planned content.}
-Cover compound AI systems and LLM routing, test-time compute scaling, algorithm selection and portfolios, racing/successive halving/Bayesian optimization, transfer/domain adaptation, and information-theoretic views of search time.
-Use the concise organization from \texttt{sections\_n/related\_discussion.tex}.
-
-\section{Discussion, Limitations, and Future Directions}
+\section{Discussion targets and limitations}
 \label{sec:discussion}
 
-\paragraph{What the paper should leave readers with.}
-The decomposition is valuable because it turns "which model should I pick?" into separately measurable questions.
-It is an accounting identity and diagnostic tool, not a universal optimizer.
+This section is intentionally left as a structured completion target until the final campaign has run.
+The final discussion should be short and tied to observed results, not a speculative essay.
 
-\paragraph{When not to use the framework.}
-Single-mode tasks, no pilot data, rapidly shifting distributions, tiny design menus, and cost-adjusted homogeneous model menus where routing is trivial.
-
-\paragraph{Open questions.}
-\begin{itemize}[leftmargin=1.4em]
-  \item How should latent modes be discovered rather than supplied by oracle workload families?
-  \item How does the decomposition degrade under non-geometric certified-time distributions?
-  \item How should practitioners choose among expectation, quantile, and cost-adjusted ranking metrics?
-  \item Can the pilot/confirmation budget split be optimized theoretically?
-  \item When does transfer reuse work in real agent deployments?
-  \item How does the framework extend to continuous design spaces and dependent multi-step agents?
+\paragraph{Points to expand after final results.}
+\begin{itemize}[leftmargin=1.4em,itemsep=0.15em]
+  \item Whether the final holdout confirms the preliminary comparative advantage: cheap model for range-local workloads, stronger model for top-$k$ workloads.
+  \item Whether pilot-router mismatch remains small after top-up, or whether the current low mismatch is an artifact of small samples.
+  \item Whether horizon-$2$ remains the recommended iterative depth once the multi-step campaign is complete.
+  \item Whether the AutoResearch CIFAR-10 surface shows the same decomposition behavior or mainly serves as a negative/diagnostic case.
+  \item How much cheaper decomposition-guided selection is than racing once the final design menu size is fixed.
 \end{itemize}
 
-\section*{Acknowledgements}
+\paragraph{Current limitations.}
+The packed-mode assumption is the main modeling limitation.
+Real agent trajectories are stateful, attempts are not always independent, and modes may be ambiguous or discovered rather than oracle-labeled.
+The current evidence uses small live-agent samples; bootstrap intervals and Wilson audits are therefore central, not cosmetic.
+The present design menu is finite and mostly model-depth-router based.
+Continuous optimization over prompts, tools, memory, and context allocation is outside the main claim.
+Finally, cost is currently measured primarily by wall-clock time in the query-engine artifacts; final deployment claims should include API cost and token accounting wherever available.
 
-TODO: Add acknowledgements only in the non-anonymous or camera-ready version if appropriate.
+\paragraph{Expected final takeaway.}
+If the final campaign supports the preliminary pattern, the paper's message is simple: model choice inside an agent harness is not a scalar leaderboard problem.
+It is a measurable decomposition problem.
+The right model depends on task mode, verifier feedback, routing quality, retry budget, and cost.
+The decomposition tells the builder which of these levers is responsible.
 
 \bibliographystyle{plainnat}
 \bibliography{references}
 
 \appendix
 
-\section{Full Proofs}
+\section{Proof details}
 \label{app:proofs}
 
-TODO: Four-term decomposition proof, routing-information identity, Lagrangian non-connection, crossover theorem, sample-complexity and Bernstein derivations.
+\subsection{Four-term identity}
 
-\section{Additional Experiments}
-\label{app:experiments}
+For completeness we include the full algebraic proof for the prior-matched baseline.
+Under Assumption~\ref{ass:packed},
+\[
+  \log T_{M,q}(S,Z)
+  = C+\log\kappa(M)-\log p_M(S)-\log q_Z(S).
+\]
+Conditioning on $Z=z$,
+\[
+  \E[-\log q_z(S)\mid Z=z]
+  =
+  \sum_s \pi_z^M(s)\log\frac{1}{q_z(s)}
+  =
+  \Hent(\pi_z^M)+\KL(\pi_z^M\|q_z).
+\]
+Therefore
+\[
+  \E[\log T_{M,q}]
+  =
+  C+\log\kappa(M)+\E_\pi[-\log p_M(S)]
+  +\E_Z[\Hent(\pi_Z^M)]
+  +\E_Z[\KL(\pi_Z^M\|q_Z)].
+\]
+For the prior-matched baseline $(M_0,\pi)$,
+\[
+  \E[\log T_{M_0,\pi}]
+  =
+  C+\log\kappa(M_0)+\E_\pi[-\log p_{M_0}(S)]
+  +\Hent(\pi).
+\]
+Subtracting the deployed effort from the baseline effort yields
+\[
+  \Delta
+  =
+  \log\frac{\kappa(M_0)}{\kappa(M)}
+  + \E_\pi\!\left[\log\frac{p_M(S)}{p_{M_0}(S)}\right]
+  + \Hent(\pi)-\E_Z[\Hent(\pi_Z^M)]
+  - \E_Z[\KL(\pi_Z^M\|q_Z)] .
+\]
+The entropy difference is $\MI_\pi(S;Z_M)$, giving~\eqref{eq:four-term}.
 
-TODO: Extended synthetic experiments, full tables, omitted baselines, sensitivity sweeps, and robustness plots.
+\subsection{Near-optimality}
 
-\section{Transfer Proofs and Details}
-\label{app:transfer}
+Let $d^*=\argmin_{d\in\cD}\J(d)$ and $\hat d=\argmin_{d\in\cD}\hat\J(d)$.
+If $|\hat\J(d)-\J(d)|\le\dacc$ for all $d$,
+\[
+  \J(\hat d)
+  \le
+  \hat\J(\hat d)+\dacc
+  \le
+  \hat\J(d^*)+\dacc
+  \le
+  \J(d^*)+2\dacc .
+\]
+The confirmation-phase extension applies the same inequality inside the finalist set.
 
-TODO: Independence constructions, transfer divergences, three-case bounds, and full transfer grid.
+\subsection{Pilot concentration}
 
-\section{Practitioner and Reproducibility Details}
-\label{app:reproducibility}
+For binary success observations in a model-mode cell, Hoeffding gives
+\[
+  \Prb(|\hat p_M(s)-p_M(s)|>\alpha)\le 2\exp(-2n_0\alpha^2).
+\]
+If all true probabilities are at least $\pmin$, then the log-probability error obeys
+$|\log \hat p-\log p|\le \alpha/\pmin+O(\alpha^2/\pmin^2)$ on the good event.
+A union bound over $m\,m_S$ cells yields the conservative pilot rule
+\[
+  n_0
+  =
+  O\!\left(
+  \frac{\log(m\,m_S/\dconf)}{\dacc^2\pmin^2}
+  \right).
+\]
+The repository's robustness script also reports Wilson intervals and a Bernstein-style diagnostic, which are more informative at the small sample sizes used during the pilot.
 
-TODO: Pilot-sizing tables, decision flowchart, commands, configs, compute resources, code/data availability, and model/API versions.
+\section{Experimental implementation details}
+\label{app:experiment-details}
+
+\paragraph{Main reproducible commands.}
+The current repository exposes the following paper-facing analysis path:
+\begin{verbatim}
+PYTHONPATH=src:. python -m vao.analysis.task_mode_decomposition \
+  --runs runs/oracle_family_real runs/oracle_family_spark_ext \
+         runs/oracle_family_codex_real \
+  --out-dir artifacts/oracle_family_decomposition_rel5_topup_uniform \
+  --success-mode relative_improvement \
+  --improvement-threshold 0.05 \
+  --smaller-model gpt-5.3-codex-spark \
+  --larger-model gpt-5.3-codex
+\end{verbatim}
+Bootstrap, threshold, robustness, iterative, and visualization scripts are implemented in
+\texttt{src/vao/analysis/}.
+The final paper should replace this paragraph with exact frozen commands and commit hashes.
+
+\paragraph{Figure replacement list.}
+The placeholders in the main text should be replaced by:
+\begin{itemize}[leftmargin=1.4em,itemsep=0.1em]
+  \item \textbf{Figure~\ref{fig:pipeline}:} a custom schematic, not data-dependent.
+  \item \textbf{Figure~\ref{fig:heatmaps}:} \texttt{success\_prob\_heatmap.png}, \texttt{cost\_adjusted\_score\_heatmap.png}, and \texttt{router\_choice\_heatmap.png}.
+  \item \textbf{Figure~\ref{fig:uncertainty}:} bootstrap interval plot, threshold sweep plot, and per-cell top-up audit.
+\end{itemize}
+
+\paragraph{AutoResearch CIFAR-10 surface.}
+The second benchmark edits a CPU-only CIFAR-10 training script.
+Latent modes include short-budget learning-rate search, label-noise regularization, optimizer choice under long-tail data, and capacity/schedule sensitivity.
+The six action modes are mapped to architecture, optimizer, learning-rate, regularization, schedule, and batching edits.
+Current smoke results verify the logging and verifier path, but the main paper should treat this as a stress test until at least two live latent regimes have sufficient samples.
+
+\section{Checklist notes for finalization}
+\label{app:checklist-notes}
+
+Before submission, the checklist should be updated to reflect the final state of the experiments.
+The current draft already contains the elements needed for affirmative answers on claims, limitations, theory assumptions, experimental settings, statistical reporting, and compute reporting, but the final answers should cite the exact sections after results are frozen.
 
 \newpage
 \input{checklist}
