@@ -60,28 +60,29 @@ Decomposable Performance Accounting for Verifiable Agentic Systems}
 \maketitle
 
 \begin{abstract}
-Agent builders rarely need to know whether a sufficiently well-prompted model can eventually solve a verifiable task; they need to know which model and harness will reach a verified solution fastest, cheapest, and robustly under repeated deployment.
-We formalize this question as design selection for verifiable agentic systems.
-Under a packed latent-mode model of tasks, the expected log certified effort of a model-routing design decomposes into four separately measurable terms: per-step cost, within-mode competence, routing information, and routing mismatch.
-This accounting identity turns model choice from an opaque benchmark race into a diagnostic procedure: it predicts when a cheap model with retries beats an expensive model, when routing is worth engineering, and how many pilot evaluations are needed before committing to a design.
-We instantiate the framework in a code-editing harness that evaluates six counterfactual edit branches per step and in an AutoResearch-style CIFAR-10 editing task.
-Preliminary live-agent results on a stateful query-engine benchmark show nontrivial comparative advantage across task modes: a cheaper model dominates range-local workloads, a stronger model dominates top-$k$ workloads, and a pilot-estimated router closes most of the gap to an oracle router while exposing residual mismatch.
-The paper contributes a theorem-backed measurement language, a sample-efficient selection algorithm, and a concrete experimental campaign for deciding which model belongs inside an agent harness.
+% Agent builders rarely need to know whether a sufficiently well-prompted model can eventually solve a verifiable task; they need to know which model and harness will reach a verified solution fastest, cheapest, and robustly under repeated deployment.
+% We formalize this question as design selection for verifiable agentic systems.
+% Under a packed latent-mode model of tasks, the expected log certified effort of a model-routing design decomposes into four separately measurable terms: per-step cost, within-mode competence, routing information, and routing mismatch.
+% This accounting identity turns model choice from an opaque benchmark race into a diagnostic procedure: it predicts when a cheap model with retries beats an expensive model, when routing is worth engineering, and how many pilot evaluations are needed before committing to a design.
+% We instantiate the framework in a code-editing harness that evaluates six counterfactual edit branches per step and in an AutoResearch-style CIFAR-10 editing task.
+% Preliminary live-agent results on a stateful query-engine benchmark show nontrivial comparative advantage across task modes: a cheaper model dominates range-local workloads, a stronger model dominates top-$k$ workloads, and a pilot-estimated router closes most of the gap to an oracle router while exposing residual mismatch.
+% The paper contributes a theorem-backed measurement language, a sample-efficient selection algorithm, and a concrete experimental campaign for deciding which model belongs inside an agent harness.
+We solve deep learning :)
 \end{abstract}
 
 \section{Introduction}
 \label{sec:intro}
 
-A team building an agent system faces a practical question: given a task family, a verifier, a model menu, retry budgets, and possible routing policies, which model should be placed inside the harness?
+A team building an agent system faces a practical question: given a task family, a verifier, a model menu, budgets, and possible routing policies, which model should be placed inside the harness?
 The common answer is benchmark racing.
 Run Sonnet and Opus, or a cheap specialist and a frontier generalist, on a held-out set; if the cheap model passes, use it, otherwise pay for the larger one.
 This answer is attractive because it is simple, but it answers the wrong scientific question.
 For many verifiable tasks, a weak model, a strong model, and several intermediate systems may all eventually reach a correct solution if the harness gives them enough attempts, feedback, tools, and time.
 The deployment question is not only whether they can solve the task.
-It is how fast they reach a verified solution, how much this costs, and which part of the harness explains the difference.
+It is how fast they reach a verified solution \cite{achille2019task2vec}, how much this costs, and which part of the harness explains the difference.
 
-This paper studies \emph{model choice as performance accounting} for verifiable agentic systems.
-The motivating regime includes code editing against tests, query-engine optimization against a deterministic benchmark, proof search against a proof assistant, and small AutoResearch loops whose outputs can be scored by a script.
+This paper studies \emph{model choice through performance accounting} for verifiable agentic systems.
+The motivating regime includes code editing against unit tests, query-engine optimization against a deterministic benchmark, proof search against a proof reviewer, and AutoResearch.
 These tasks are transductive in the operational sense: the system is handed a concrete instance and must produce a concrete artifact.
 They are also externally verifiable: after each proposal, a checker can certify success or provide a scalar quality signal.
 In this regime, the natural capability object is certified time-to-solution or a cost-adjusted surrogate, not standalone accuracy.
