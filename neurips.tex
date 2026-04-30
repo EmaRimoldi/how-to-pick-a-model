@@ -19,6 +19,7 @@
 \newtheorem{proposition}{Proposition}
 \newtheorem{corollary}{Corollary}
 \newtheorem{remark}{Remark}
+\newtheorem{algorithm}{Algorithm}
 
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator*{\argmax}{arg\,max}
@@ -106,29 +107,22 @@ If competence is mode-specific, a router or cascade may be needed.
 If the tool-choice or tool-use term dominates, the right intervention is to change the harness rather than the model.
 If information gain is high but realized speed is low, the harness is learning the right thing and failing to use it.
 
-\paragraph{Research questions.}
-We organize the paper around four questions that are both mathematical and experimentally testable.
+\paragraph{Research questions and contributions.}
+We organize the paper around three questions, each paired with the contribution that answers it.
 
 \begin{enumerate}[leftmargin=1.4em,itemsep=0.15em]
   \item \textbf{Can the time-to-solution gap between agent designs be decomposed into measurable terms?}
-  We prove an exact four-term identity under a packed latent-mode assumption (Section~\ref{sec:accounting}).
+  \emph{Contribution:} Theorem~\ref{thm:four-term} gives an exact four-term identity under a packed latent-mode assumption: cost, within-mode competence, routing information, and routing mismatch additively explain the improvement in expected certified log-effort.
   \item \textbf{Can the decomposition replace end-to-end racing for model selection?}
-  We derive a structured pilot algorithm whose evaluation cost depends on the number of models and task modes, rather than directly on the number of candidate designs (Section~\ref{sec:selection}).
+  \emph{Contribution:} Algorithm~\ref{alg:decomp-selection} and Proposition~\ref{prop:eval-cost} turn the identity into a structured pilot protocol whose evaluation cost depends on the number of models and task modes, rather than directly on the number of candidate designs.
   \item \textbf{When does a cheaper model with retries beat a stronger model?}
-  We give a closed-form crossover rule and show how it changes across task modes (Section~\ref{sec:crossover}).
-  \item \textbf{How should the theory be operationalized in long-horizon agent tasks?}
-  We map every theorem term to trajectory-level estimators, horizons, routers, uncertainty intervals, and result tables for a frozen experimental campaign (Section~\ref{sec:experiments}).
+  \emph{Contribution:} Theorem~\ref{thm:crossover} gives the single-mode crossover rule, and the multi-mode accounting shows why the answer changes across task modes.
 \end{enumerate}
-
-\paragraph{Contributions.}
-The paper makes three contributions.
-First, it gives a model-aware performance decomposition for verifiable agentic systems, separating cost, competence, information, and mismatch.
-Second, it turns the decomposition into a design-selection protocol with explicit pilot sizing and confirmation rules.
-Third, it grounds the theory in a concrete experimental architecture: a code-editing harness that logs all branch counterfactuals, task-mode labels, model costs, verifier outcomes, and routing distributions.
-This makes the claims falsifiable: the final campaign can show not only which model wins, but why it wins and when that recommendation changes.
 
 \section{Verifiable agent design}
 \label{sec:setup}
+
+Following B\&P~\citep{bp_task_definition_placeholder} and the time-centered formulation of agents as task solvers in \citet{achille2025agents}, we model an agent deployment problem as a budgeted verifiable task.
 
 \begin{definition}[Budgeted verifiable task]
 \label{def:task}
@@ -153,6 +147,21 @@ The harness can include a single model call, a repeated-sampling loop, a tool-us
 We keep the mathematical development finite-menu because this is the regime in which a NeurIPS-scale experimental campaign can be completed cleanly: models, retry depths, and routing policies are enumerable.
 Continuous design spaces are discussed as a limitation.
 
+\begin{definition}[Task instances and task modes]
+\label{def:modes}
+Given a task $\cT=(\cX,\cY,V,B,\mu)$, a \emph{task instance} is a concrete draw $X=x\in\cX$.
+A \emph{task mode} is a finite latent variable $S=\sigma(X)\in\cS=\{1,\ldots,m_S\}$ induced by a measurable map $\sigma:\cX\to\cS$.
+It defines a prior $\pi_s=\Prb_\mu[\sigma(X)=s]$ and mode-conditional instance distributions $\mu_s=\mu(\cdot\mid\sigma(X)=s)$.
+Modes group instances that share solver-relevant structure, such as the same constraint pattern, tool requirement, or failure mode; they need not be observed by the model.
+\end{definition}
+
+A toy email task makes the abstraction concrete.
+An instance $x$ may specify a recipient, intent, facts to include, privacy constraints, attachments, tone, and deadline.
+Plausible modes include a scheduling email, a status update with an attachment, a confidential reply with content restrictions, and a multilingual external message.
+The verifier checks whether the draft satisfies the requested recipients, constraints, content, and formatting.
+For a nontrivial task such as query optimization, an instance is a workload and repository state, while modes may correspond to range scans, top-$k$ stress, cache invalidation, or multi-file invariants.
+For Karpathy's AutoResearch, an instance is a training-code state together with an experimental budget and research objective; modes may correspond to optimizer changes, model-size changes, data or augmentation changes, or evaluation-protocol changes.
+
 \begin{assumption}[Packed latent-mode family]
 \label{ass:packed}
 Instances have a latent task mode $S\in\cS=\{1,\ldots,m_S\}$ with prior $\pi$.
@@ -173,12 +182,11 @@ The assumption is not meant to describe all agent systems.
 It isolates exactly the regime where the model-selection question becomes inspectable: different models can have different per-mode competence, feedback can reveal the mode, and routing can use or waste that information.
 In our experiments, modes are oracle workload families such as \texttt{range\_local\_scans} and \texttt{topk\_stress}; discovering modes from traces is left to the final campaign and appendix.
 
-\section{Performance accounting}
-\label{sec:accounting}
-
-For a design $d=(M,q)$, define the expected cost-adjusted certified log-effort
+\begin{definition}[Cost-adjusted certified log-effort objective]
+\label{def:objective}
+For a design $d=(M,h,q,\kappa)$ satisfying Assumption~\ref{ass:packed}, define
 \begin{equation}
-  \J(M,q)
+  \J(d)\equiv \J(M,q)
   =
   \log \kappa(M)
   + \E_{S\sim\pi}[-\log p_M(S)]
@@ -188,8 +196,36 @@ For a design $d=(M,q)$, define the expected cost-adjusted certified log-effort
     \right].
   \label{eq:objective}
 \end{equation}
-The first term is price, the second is within-mode competence, and the last two terms are the cross-entropy cost of routing computation toward the correct latent mode.
+The design-selection problem is
+\begin{equation}
+  d^\star\in\argmin_{d\in\cD}\J(d).
+  \label{eq:design-selection}
+\end{equation}
 Lower $\J$ is better.
+\end{definition}
+
+This objective is the expected logarithm of the certified effort surrogate in~\eqref{eq:effort-surrogate}, up to constants that do not affect design choice.
+The logarithm is deliberate: multiplicative changes in per-step price, within-mode success probability, and routing allocation become additive terms that can be compared on the same scale.
+Thus $\J$ is not an arbitrary score; it is the deployment optimization objective induced by cost-adjusted verified effort under the packed-mode abstraction.
+
+\section{Performance accounting}
+\label{sec:accounting}
+
+We now decompose the objective in Definition~\ref{def:objective}.
+For a fixed feedback value $z$, the relevant cross-entropy is between two distributions on the finite mode set $\cS$: the posterior mode distribution $\pi_z^M$ induced by the harness feedback and the router allocation $q_z$.
+Explicitly,
+\begin{equation}
+  \mathrm{CE}(\pi_z^M,q_z)
+  :=
+  -\sum_{s\in\cS}\pi_z^M(s)\log q_z(s)
+  =
+  \Hent(\pi_z^M)+\KL(\pi_z^M\|q_z),
+  \label{eq:cross-entropy-routing}
+\end{equation}
+where
+$\Hent(\pi_z^M)=-\sum_s\pi_z^M(s)\log\pi_z^M(s)$ and
+$\KL(\pi_z^M\|q_z)=\sum_s\pi_z^M(s)\log\{\pi_z^M(s)/q_z(s)\}$.
+The KL term is therefore a divergence over latent task-mode distributions, not over token distributions or output artifacts.
 
 \begin{theorem}[Four-term model-aware decomposition]
 \label{thm:four-term}
@@ -214,24 +250,23 @@ $\Delta=\J(M_0,\pi)-\J(M,q)$, decomposes as
 Taking logs in~\eqref{eq:effort-surrogate} gives
 $\log T_{M,q}(s,z)=C+\log\kappa(M)-\log p_M(s)-\log q_z(s)$.
 Conditioning on $Z_M=z$ and averaging over $S\sim\pi_z^M$ converts
-$-\E\log q_z(S)$ into the cross-entropy
-$\Hent(\pi_z^M)+\KL(\pi_z^M\|q_z)$.
+$-\E_{S\sim\pi_z^M}\log q_z(S)$ into the cross-entropy in~\eqref{eq:cross-entropy-routing}.
 Subtracting the prior-matched baseline cancels constants and uses
 $\Hent(\pi)-\E_Z\Hent(\pi_Z^M)=\MI_\pi(S;Z_M)$.
 The full proof, including support conditions and the non-prior baseline variant, is in Appendix~\ref{app:proofs}.
 \end{proof}
 
-The theorem is an accounting identity, not a black-box optimizer.
-Its value is diagnostic.
+The theorem is an accounting identity whose value is diagnostic.
 If the cost term is large and positive, a cheap model has room to spend retries.
 If the competence term changes sign across modes, a single global winner is unlikely.
 If information gain is high, the verifier or early trajectory exposes useful task structure.
 If mismatch is high, the harness observes useful structure but fails to route computation according to it.
 
-\begin{remark}[Not a Lagrangian decomposition]
-The four terms in~\eqref{eq:four-term} are primal accounting terms evaluated at a feasible design.
-They are not dual variables and should not be interpreted as shadow prices of four constraints.
-The appendix gives the short KKT calculation: a natural Lagrangian relaxation yields scalar multipliers tied to explicit constraints, whereas the four terms above arise from the cross-entropy identity.
+\begin{remark}[Interpretation of the routing terms]
+For each realized feedback value $z$, both $\pi_z^M$ and $q_z$ are distributions on $\cS$.
+The mismatch term averages $\KL(\pi_z^M\|q_z)$ over feedback values and is zero exactly when the router allocates computation according to the posterior mode distribution revealed by that feedback.
+The information term $\MI_\pi(S;Z_M)$ is the entropy reduction $\Hent(\pi)-\E_Z\Hent(\pi_Z^M)$; it measures how much mode information the harness observes before routing.
+Useful feedback increases the possible gain, while mismatch subtracts the part of that gain that the router fails to exploit.
 \end{remark}
 
 \subsection{When cheap retries win}
@@ -275,26 +310,30 @@ The decomposition suggests a practical protocol.
 Instead of evaluating every candidate design end-to-end, the builder first estimates shared quantities: per-mode success, per-step cost, and router mismatch.
 Then all designs in a finite menu can be scored analytically.
 
-\begin{center}
-\fbox{\begin{minipage}{0.94\linewidth}
-\textbf{Algorithm 1: Decomposition-guided model and harness selection}
+\begin{algorithm}[Decomposition-guided model and harness selection]
+\label{alg:decomp-selection}
+\normalfont\small
+\begin{tabular}{@{}r p{0.86\linewidth}@{}}
+\textit{Input:} &
+Design menu $\cD$, mode set $\cS$, models $\cM$, pilot size $n_0$, confirmation budget $N_{\mathrm{conf}}$, number of finalists $c$.\\[0.25em]
+\textit{Output:} &
+Confirmed design $\hat d$ and the four accounting terms.\\[0.35em]
+1 &
+\textit{Structured pilot.} For each $M\in\cM$ and $s\in\cS$, run $n_0$ verified attempts or trajectories and estimate $\hat p_M(s)$, $\hat\kappa(M)$, and uncertainty intervals.\\
+2 &
+\textit{Feedback and routing estimates.} Estimate the feedback posterior $\hat\pi_z^M$ and each candidate router allocation $\hat q_z$ from the same pilot traces.\\
+3 &
+\textit{Analytical scoring.} For every fixed design $d=(M,h,q,\kappa)\in\cD$, compute $\hat\J(d)$ using~\eqref{eq:objective}, including retries, routing overhead, and verifier calls.\\
+4 &
+\textit{Finalist selection.} Keep the $c$ designs with the lowest $\hat\J(d)$ after uncertainty checks.\\
+5 &
+\textit{Confirmation.} Evaluate the finalists end-to-end on fresh holdout instances, return the best confirmed design, and report the four terms in~\eqref{eq:four-term}.
+\end{tabular}
+\end{algorithm}
 
-\smallskip
-\textbf{Input:} design menu $\cD$, mode set $\cS$, models $\cM$, pilot budget $N_{\mathrm{pilot}}$, confirmation budget $N_{\mathrm{conf}}$, number of finalists $c$.
-
-\smallskip
-\textbf{1. Structured pilot.}
-For each model $M\in\cM$ and mode $s\in\cS$, run $n_0$ verified attempts or trajectories.
-Estimate $\hat p_M(s)$, $\hat\kappa(M)$, and uncertainty intervals.
-
-\textbf{2. Analytical scoring.}
-For every design $d=(M,h,q,\kappa)\in\cD$, compute $\hat\J(d)$ using~\eqref{eq:objective}, including the cost of retries, routing, and verifier calls.
-
-\textbf{3. Confirmation.}
-Evaluate the top $c$ designs end-to-end on fresh holdout instances.
-Return the design with the best confirmed objective and report the four accounting terms.
-\end{minipage}}
-\end{center}
+The cost comparison is between a shared decomposition pilot and independent end-to-end racing over complete designs.
+Algorithm~\ref{alg:decomp-selection} is worthwhile when the model-mode estimates, feedback posteriors, and router estimates can be reused across many fixed designs.
+If the menu is small, if modes are unavailable, or if routing features must be remeasured for every candidate harness, the saving can disappear; the confirmation phase is included precisely to catch this failure mode.
 
 \begin{proposition}[Regret under uniform scoring error]
 \label{prop:near-opt}
@@ -314,7 +353,7 @@ When the menu includes many retry depths, routing temperatures, fallback policie
 
 \begin{proposition}[Evaluation cost]
 \label{prop:eval-cost}
-With $n_0(\dacc)$ pilot evaluations per model-mode cell and $N_{\mathrm{conf}}$ confirmation evaluations per finalist, Algorithm~1 uses
+With $n_0(\dacc)$ pilot evaluations per model-mode cell and $N_{\mathrm{conf}}$ confirmation evaluations per finalist, Algorithm~\ref{alg:decomp-selection} uses
 \begin{equation}
   N_{\mathrm{ours}}
   =
