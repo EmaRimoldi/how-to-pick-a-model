@@ -19,7 +19,18 @@
 \newtheorem{proposition}{Proposition}
 \newtheorem{corollary}{Corollary}
 \newtheorem{remark}{Remark}
-\newtheorem{algorithm}{Algorithm}
+
+\newcounter{algorithm}
+\newenvironment{algorithm}[1][]{%
+  \refstepcounter{algorithm}%
+  \par\medskip
+  \noindent\textbf{Algorithm~\thealgorithm}%
+  \if\relax\detokenize{#1}\relax\else\ \normalfont(#1).\fi%
+  \par\vspace{0.45em}%
+  \normalfont\small
+}{%
+  \par\medskip
+}
 
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator*{\argmax}{arg\,max}
