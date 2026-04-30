@@ -12,6 +12,20 @@ Implement and run the experimental campaign infrastructure needed to operational
 
 The theory section is not your target. Do not rewrite the theoretical framework. Your work should support the experimental section: long-horizon trajectories, `tau`, survival curves, hazards, routing information, mismatch, decomposition residuals, and final campaign artifacts.
 
+## Autonomy and Iterative Debugging
+
+Work autonomously. Do not stop at the first failing command unless the failure is genuinely unrecoverable. When something fails, debug it iteratively:
+
+1. Read the traceback, logs, config, and relevant source code.
+2. Form a concrete hypothesis about the failure.
+3. Make the smallest scoped fix that preserves the intended experimental protocol.
+4. Re-run the smallest failing smoke test.
+5. Repeat until the smoke path passes or the blocker is external, such as missing credentials, model unavailability, rate limits, or a hard API outage.
+
+Prefer continuing with partial but well-documented progress over waiting for human input. If a primary model, task mode, or horizon is blocked, run the largest complete fallback rectangle that is still scientifically meaningful and record the deviation in `OVERNIGHT_STATUS.md`.
+
+You are allowed to create or modify configs, analysis scripts, small helpers, and status reports as needed to complete the overnight mission. Keep changes scoped to the campaign. Do not ask for permission for routine debugging, reruns, config fixes, parser fixes, plotting fixes, or analysis-script fixes.
+
 ## Hard Constraints
 
 - Do not delete existing `runs/` or `artifacts/` data.
@@ -24,6 +38,7 @@ The theory section is not your target. Do not rewrite the theoretical framework.
 - If API credentials, model access, or rate limits block a run, record the blocker and continue with available smoke or partial runs.
 - Respect configured model budgets and timeouts. Do not remove budget guards.
 - Log every command you run and every failure you encounter.
+- If you make code changes while debugging, run the relevant tests or smoke commands before launching long jobs.
 
 ## Required Reading
 
@@ -78,10 +93,11 @@ Publication-ready target from `Next_steps.md`:
 For the overnight run, prioritize in this order:
 
 1. Implement missing logging/analysis required for `tau`, survival curves, hazards, and decomposition residuals.
-2. Run smoke tests for all changed code.
+2. Run smoke tests for all changed code and debug failures until the smoke path is stable.
 3. Launch the largest feasible overnight batch using available models and budget.
-4. Generate artifacts and reports from whatever completes.
-5. Leave a concise status report with completed cells, failed cells, blockers, and next commands.
+4. Monitor early outputs long enough to catch obvious configuration or parsing failures; fix and restart if needed.
+5. Generate artifacts and reports from whatever completes.
+6. Leave a concise status report with completed cells, failed cells, fixes applied, blockers, and next commands.
 
 ## Implementation Tasks
 
@@ -155,6 +171,8 @@ Run in this order:
 
 If the full 4-model campaign is not feasible overnight, run the largest complete rectangular subset possible. Prefer a complete model-mode-task rectangle over scattered partial cells.
 
+If an overnight batch fails partway through, do not abandon the campaign. Inspect the first failing run, fix the root cause when possible, resume from completed cells, and document which cells were skipped or retried.
+
 ## Required Outputs
 
 At the end, write:
@@ -166,6 +184,7 @@ It must include:
 - git commit hash used
 - configs used
 - commands executed
+- debugging fixes applied
 - models attempted
 - task modes attempted
 - horizons attempted
@@ -200,4 +219,3 @@ When finished, report:
 3. What failed and why.
 4. Whether the campaign is ready to promote any paper claim.
 5. The exact next commands for continuing the campaign.
-
