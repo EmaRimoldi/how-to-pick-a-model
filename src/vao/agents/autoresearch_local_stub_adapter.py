@@ -76,7 +76,7 @@ class AutoResearchLocalStubAdapter:
                     "candidate_generation": "batched_structured_edits",
                     "adapter": "autoresearch_local_stub",
                     "benchmark_id": "autoresearch_cifar10",
-                    "mode_alias": state.profile_summary.get("action_mode_aliases", {}).get(mode),
+                    "mode_description": state.profile_summary.get("task_mode_descriptions", {}).get(mode),
                 },
                 prompt_hash=prompt_hash,
                 changed=sha256_file(parent_path) != sha256_file(proposed_path),
@@ -124,14 +124,7 @@ def _mode_scores(profile_summary: dict[str, Any]) -> dict[str, float]:
     label_noise = float(profile_summary.get("label_noise_rate", 0.0))
     imbalance_ratio = float(profile_summary.get("imbalance_ratio", 1.0))
     max_steps = int(profile_summary.get("max_train_steps", 0))
-    scores = {
-        "layout": 1.0,
-        "indexing": 1.0,
-        "topk": 1.0,
-        "caching": 1.0,
-        "summaries": 1.0,
-        "micro": 1.0,
-    }
+    scores = {mode: 1.0 for mode in MODES}
     if max_steps <= 2:
         scores["topk"] += 1.6
         scores["micro"] += 0.8
@@ -144,31 +137,36 @@ def _mode_scores(profile_summary: dict[str, Any]) -> dict[str, float]:
     if imbalance_ratio < 0.999:
         scores["indexing"] += 1.2
         scores["micro"] += 0.4
-    if task_mode == "lr_search_short_budget":
+    if task_mode == "lr-sensitive":
         scores["topk"] += 2.2
         scores["micro"] += 0.6
-    elif task_mode == "regularization_under_label_noise":
+    elif task_mode == "regularization-sensitive":
         scores["caching"] += 2.2
         scores["indexing"] += 0.6
-    elif task_mode == "optimizer_for_long_tail":
+    elif task_mode in {"optimizer-sensitive", "data-skew-sensitive"}:
         scores["indexing"] += 2.2
         scores["micro"] += 0.6
-    elif task_mode == "capacity_schedule_long_budget":
+    elif task_mode == "capacity-sensitive":
+        scores["layout"] += 2.0
+        scores["summaries"] += 0.8
+    elif task_mode == "schedule-sensitive":
         scores["summaries"] += 1.8
-        scores["layout"] += 1.4
+        scores["layout"] += 1.0
     return scores
 
 
 def _mode_rationale(profile_summary: dict[str, Any], mode: str) -> str:
     task_mode = profile_summary.get("task_mode_true", "unknown")
     aliases = profile_summary.get("action_mode_aliases", {})
-    if mode == "topk" and task_mode == "lr_search_short_budget":
+    if mode == "topk" and task_mode == "lr-sensitive":
         return f"{task_mode}: short budget, so learning-rate scale is likely to move validation loss fastest."
-    if mode == "caching" and task_mode == "regularization_under_label_noise":
+    if mode == "caching" and task_mode == "regularization-sensitive":
         return f"{task_mode}: noisy labels make regularization more valuable."
-    if mode == "indexing" and task_mode == "optimizer_for_long_tail":
-        return f"{task_mode}: long-tail data makes optimizer dynamics and coverage the main bottleneck."
-    if mode == "summaries" and task_mode == "capacity_schedule_long_budget":
+    if mode == "indexing" and task_mode in {"optimizer-sensitive", "data-skew-sensitive"}:
+        return f"{task_mode}: optimizer dynamics and coverage are the main bottleneck."
+    if mode == "layout" and task_mode == "capacity-sensitive":
+        return f"{task_mode}: model capacity is likely to dominate."
+    if mode == "summaries" and task_mode == "schedule-sensitive":
         return f"{task_mode}: longer horizon makes schedule tuning worthwhile."
     return f"{task_mode}: heuristic allocation for {aliases.get(mode, mode)}."
 
@@ -180,23 +178,23 @@ def _candidate_edits(mode: str, profile_summary: dict[str, Any]) -> list[dict[st
     imbalance_ratio = float(profile_summary.get("imbalance_ratio", 1.0))
 
     if mode == "layout":
-        depth = 3 if task_mode == "capacity_schedule_long_budget" else 2
-        base_channels = 16 if task_mode == "capacity_schedule_long_budget" else 12
-        fc_hidden = 64 if task_mode == "capacity_schedule_long_budget" else 48
+        depth = 3 if task_mode == "capacity-sensitive" else 2
+        base_channels = 16 if task_mode == "capacity-sensitive" else 12
+        fc_hidden = 64 if task_mode == "capacity-sensitive" else 48
         return [
             {"op": "replace_exact", "old": "DEPTH = 2", "new": f"DEPTH = {depth}"},
             {"op": "replace_exact", "old": "BASE_CHANNELS = 12", "new": f"BASE_CHANNELS = {base_channels}"},
             {"op": "replace_exact", "old": "FC_HIDDEN = 48", "new": f"FC_HIDDEN = {fc_hidden}"},
         ]
     if mode == "indexing":
-        optimizer = "sgd" if task_mode == "optimizer_for_long_tail" or imbalance_ratio < 0.999 else "adamw"
+        optimizer = "sgd" if task_mode in {"optimizer-sensitive", "data-skew-sensitive"} or imbalance_ratio < 0.999 else "adamw"
         return [
             {"op": "replace_exact", "old": 'OPTIMIZER = "adam"', "new": f'OPTIMIZER = "{optimizer}"'},
             {"op": "replace_exact", "old": "MOMENTUM = 0.9", "new": "MOMENTUM = 0.95"},
             {"op": "replace_exact", "old": "ADAM_BETAS = (0.9, 0.999)", "new": "ADAM_BETAS = (0.9, 0.99)"},
         ]
     if mode == "topk":
-        lr = 0.0015 if task_mode == "lr_search_short_budget" or max_steps <= 2 else 0.0008
+        lr = 0.0015 if task_mode == "lr-sensitive" or max_steps <= 2 else 0.0008
         return [
             {"op": "replace_exact", "old": "LEARNING_RATE = 5e-4", "new": f"LEARNING_RATE = {lr}"},
         ]

@@ -1,6 +1,6 @@
 experiment:
-  name: autoresearch_cifar10_single_trajectory
-  steps: 20
+  name: autoresearch_cifar10_model_routing
+  steps: 8
   visibility_regime: top1_only
   feedback_condition: ca
   candidate_generation: single
@@ -14,7 +14,7 @@ benchmark:
   profiles:
     - autoresearch_cifar10
 output:
-  root: runs/autoresearch_cifar10/single_trajectory_campaign
+  root: runs/autoresearch_cifar10/model_routing
 models:
   include:
     - gpt_5_4_mini_batch_strict

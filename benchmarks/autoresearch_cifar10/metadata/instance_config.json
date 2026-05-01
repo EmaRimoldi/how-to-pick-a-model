@@ -2,7 +2,7 @@
   "profiles": {
     "autoresearch_cifar10": {
       "families": [
-        "lr_search_short_budget"
+        "lr-sensitive"
       ],
       "train_subset_size": 50000,
       "val_subset_size": 10000,

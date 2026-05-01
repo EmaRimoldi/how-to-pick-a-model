@@ -1,4 +1,4 @@
-"""Run oracle-family pilot studies for the AutoResearch CIFAR-10 task."""
+"""Run task-mode pilot studies for the AutoResearch CIFAR-10 task."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from typing import Any
 
 import yaml
 
-from benchmarks.autoresearch_cifar10.task_spec import ALL_FAMILIES, single_family_instance_overrides, validate_task_mode
+from benchmarks.autoresearch_cifar10.task_spec import ALL_FAMILIES, single_family_instance_overrides, task_mode_template_path, validate_task_mode
 from vao.orchestrator import _load_model_configs, run_single
 
 
@@ -78,6 +78,7 @@ def main(argv: list[str] | None = None) -> None:
                 effective.setdefault("models", {})["include"] = [model_key]
                 effective.setdefault("benchmark", {})["profiles"] = [args.profile]
                 effective["benchmark"]["instance_overrides"] = overrides
+                effective["benchmark"]["template_path"] = str(task_mode_template_path(family))
                 effective.setdefault("experiment", {})["task_mode_split"] = args.split
                 if args.steps is not None:
                     effective["experiment"]["steps"] = int(args.steps)

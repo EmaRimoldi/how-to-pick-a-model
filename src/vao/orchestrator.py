@@ -77,7 +77,7 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
     incorrect_penalty = float(experiment.get("incorrect_penalty", -1.0))
     instance_overrides = dict(config.get("benchmark", {}).get("instance_overrides") or {})
     task_mode_true = benchmark.task_mode_from_instance_overrides(instance_overrides)
-    task_mode_source = "oracle_family_override" if task_mode_true is not None else None
+    task_mode_source = "task_mode_override" if task_mode_true is not None else None
     task_mode_split = str(experiment.get("task_mode_split")) if experiment.get("task_mode_split") else None
     instance_seed = int(instance_overrides["seed"]) if "seed" in instance_overrides else None
 
@@ -546,7 +546,7 @@ def _with_overrides(config: dict[str, Any], model_key: str, profile_id: str, ste
 
 
 def _profile_summary(profile_id: str, instance_overrides: dict[str, Any] | None = None) -> dict[str, Any]:
-    benchmark = get_benchmark_spec("stateful_query_engine")
+    benchmark = get_benchmark_spec("autoresearch_cifar10")
     return benchmark.profile_summary(profile_id, instance_overrides=instance_overrides)
 
 

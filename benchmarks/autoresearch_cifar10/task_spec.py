@@ -9,19 +9,21 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
+from benchmarks.autoresearch_cifar10.initial_templates import template_path_for_task_mode
+
 METADATA_PATH = Path(__file__).resolve().parent / "metadata" / "instance_config.json"
 
-ACTION_MODE_ALIASES = {
-    "layout": "architecture and model capacity changes",
-    "indexing": "optimizer-family and gradient-dynamics changes",
-    "topk": "learning-rate scale changes",
-    "caching": "regularization and robustness changes",
-    "summaries": "learning-rate schedule and budget-allocation changes",
-    "micro": "batching and local training-loop tweaks",
+TASK_MODE_DESCRIPTIONS = {
+    "lr-sensitive": "Instances where small learning-rate or local optimization-scale changes dominate the next gain.",
+    "regularization-sensitive": "Instances where robustness, overfitting control, or label-noise handling dominate.",
+    "optimizer-sensitive": "Instances where optimizer family or gradient-dynamics choices dominate.",
+    "data-skew-sensitive": "Instances where class imbalance, coverage, or skew-aware data handling dominate.",
+    "capacity-sensitive": "Instances where model depth, width, or architectural capacity dominate.",
+    "schedule-sensitive": "Instances where warmup, decay, or long-horizon budget allocation dominate.",
 }
 
 LATENT_MODE_REGISTRY: dict[str, dict[str, Any]] = {
-    "lr_search_short_budget": {
+    "lr-sensitive": {
         "description": "Clean balanced full-CIFAR regime with a tiny fixed-step budget where learning-rate scale dominates early progress.",
         "train_subset_size": 50000,
         "val_subset_size": 10000,
@@ -30,7 +32,7 @@ LATENT_MODE_REGISTRY: dict[str, dict[str, Any]] = {
         "max_train_steps": 2,
         "seed": 61,
     },
-    "regularization_under_label_noise": {
+    "regularization-sensitive": {
         "description": "Short-horizon full-CIFAR training with synthetic label noise, making regularization choices the main lever.",
         "train_subset_size": 50000,
         "val_subset_size": 10000,
@@ -39,8 +41,17 @@ LATENT_MODE_REGISTRY: dict[str, dict[str, Any]] = {
         "max_train_steps": 2,
         "seed": 67,
     },
-    "optimizer_for_long_tail": {
-        "description": "Full-CIFAR long-tail regime under the same compute budget, emphasizing optimizer dynamics and class coverage.",
+    "optimizer-sensitive": {
+        "description": "Balanced regime where optimizer family and gradient dynamics dominate more than local hyperparameter tweaks.",
+        "train_subset_size": 50000,
+        "val_subset_size": 10000,
+        "label_noise_rate": 0.0,
+        "imbalance_ratio": 1.0,
+        "max_train_steps": 2,
+        "seed": 69,
+    },
+    "data-skew-sensitive": {
+        "description": "Long-tail regime under the same compute budget, emphasizing class coverage and skew-aware training choices.",
         "train_subset_size": 50000,
         "val_subset_size": 10000,
         "label_noise_rate": 0.0,
@@ -48,8 +59,8 @@ LATENT_MODE_REGISTRY: dict[str, dict[str, Any]] = {
         "max_train_steps": 2,
         "seed": 71,
     },
-    "capacity_schedule_long_budget": {
-        "description": "Clean full-CIFAR regime with a longer horizon where architecture capacity and learning-rate schedule both matter.",
+    "capacity-sensitive": {
+        "description": "Clean regime with a longer horizon where architecture capacity is the main solver-relevant bottleneck.",
         "train_subset_size": 50000,
         "val_subset_size": 10000,
         "label_noise_rate": 0.0,
@@ -57,9 +68,28 @@ LATENT_MODE_REGISTRY: dict[str, dict[str, Any]] = {
         "max_train_steps": 6,
         "seed": 73,
     },
+    "schedule-sensitive": {
+        "description": "Clean regime with a longer horizon where scheduling and budget allocation dominate the next verified gains.",
+        "train_subset_size": 50000,
+        "val_subset_size": 10000,
+        "label_noise_rate": 0.0,
+        "imbalance_ratio": 1.0,
+        "max_train_steps": 6,
+        "seed": 79,
+    },
 }
 
 ALL_FAMILIES = list(LATENT_MODE_REGISTRY)
+TASK_MODE_SET = set(ALL_FAMILIES)
+
+ACTION_MODE_ALIASES = {
+    "layout": "architecture/capacity changes",
+    "indexing": "optimizer-family changes",
+    "topk": "learning-rate scale changes",
+    "caching": "regularization changes",
+    "summaries": "schedule and budget-allocation changes",
+    "micro": "small batching or local loop tweaks",
+}
 
 REQUIRED_BINDINGS = {
     "SEED",
@@ -92,7 +122,7 @@ def load_instance_config() -> dict[str, Any]:
 
 def validate_task_mode(mode: str) -> str:
     if mode not in LATENT_MODE_REGISTRY:
-        raise ValueError(f"Unknown AutoResearch latent mode {mode!r}; expected one of {sorted(LATENT_MODE_REGISTRY)}")
+        raise ValueError(f"Unknown AutoResearch task mode {mode!r}; expected one of {sorted(LATENT_MODE_REGISTRY)}")
     return mode
 
 
@@ -123,6 +153,10 @@ def single_family_instance_overrides(
     return {"families": [family], **spec}
 
 
+def task_mode_template_path(mode: str) -> Path:
+    return template_path_for_task_mode(validate_task_mode(mode))
+
+
 def apply_instance_overrides(config: dict[str, Any], profile_id: str, instance_overrides: dict[str, Any] | None) -> dict[str, Any]:
     effective = deepcopy(config)
     profile = effective["profiles"][profile_id]
@@ -150,6 +184,7 @@ def profile_summary(profile_id: str, instance_overrides: dict[str, Any] | None =
     effective = apply_instance_overrides(config, profile_id, instance_overrides)
     profile = effective["profiles"][profile_id]
     task_mode_true = task_mode_from_instance_overrides(instance_overrides)
+    template_path = str(task_mode_template_path(task_mode_true)) if task_mode_true else None
     return {
         "profile_id": profile_id,
         "task_mode_true": task_mode_true,
@@ -160,7 +195,9 @@ def profile_summary(profile_id: str, instance_overrides: dict[str, Any] | None =
         "imbalance_ratio": float(profile.get("imbalance_ratio", 1.0)),
         "max_train_steps": int(profile.get("max_train_steps", 0)),
         "seed": int(profile.get("seed", 0)),
+        "task_mode_descriptions": TASK_MODE_DESCRIPTIONS,
         "action_mode_aliases": ACTION_MODE_ALIASES,
+        "initial_template_path": template_path,
     }
 
 
@@ -240,16 +277,15 @@ def classify_edit_mode(pre_source: str, post_source: str) -> tuple[str, list[str
     if changed_names & {"USE_LR_SCHEDULE", "WARMUP_EPOCHS", "LR_DECAY_FACTOR", "LR_DECAY_EPOCHS", "build_scheduler"}:
         add("summaries", 4.0, f"schedule bindings changed: {sorted(changed_names & {'USE_LR_SCHEDULE', 'WARMUP_EPOCHS', 'LR_DECAY_FACTOR', 'LR_DECAY_EPOCHS', 'build_scheduler'})}")
     if changed_names & {"BATCH_SIZE", "NUM_WORKERS", "main"}:
-        add("micro", 3.0, f"training-loop bindings changed: {sorted(changed_names & {'BATCH_SIZE', 'NUM_WORKERS', 'main'})}")
+        add("micro", 2.0, f"data-loading or loop bindings changed: {sorted(changed_names & {'BATCH_SIZE', 'NUM_WORKERS', 'main'})}")
 
     lower_added = "\n".join(added).lower()
     if "clip_grad" in lower_added or "nan" in lower_added:
-        add("micro", 1.5, "stability helper added")
-
+        add("indexing", 1.5, "gradient stability helper added")
     if all(value == 0.0 for value in scores.values()):
         add("micro", 1.0, "no benchmark-specific structural evidence")
 
-    priority = ["layout", "indexing", "topk", "caching", "summaries", "micro"]
+    priority = list(ACTION_MODE_ALIASES)
     primary = max(scores, key=lambda mode: (scores[mode], -priority.index(mode)))
     secondary = [mode for mode in priority if mode != primary and scores[mode] > 0.0]
     details = {
@@ -258,7 +294,7 @@ def classify_edit_mode(pre_source: str, post_source: str) -> tuple[str, list[str
         "changed_bindings": sorted(changed_names),
         "added_line_count": len(added),
         "removed_line_count": len(removed),
-        "mode_aliases": ACTION_MODE_ALIASES,
+        "action_mode_aliases": ACTION_MODE_ALIASES,
     }
     return primary, secondary, details
 

@@ -135,7 +135,7 @@ class ClaudeHaikuAdapter:
             raise ModelOutputError("batch_candidates_missing_or_not_object")
 
         proposals: dict[str, CandidateProposal] = {}
-        benchmark_id = str(state.metadata.get("benchmark_id", "stateful_query_engine"))
+        benchmark_id = str(state.metadata.get("benchmark_id", "autoresearch_cifar10"))
         source_validator = get_benchmark_spec(benchmark_id).validate_source
         for mode in MODES:
             branch_dir = branch_dirs[mode]
@@ -257,7 +257,7 @@ class ClaudeHaikuAdapter:
             raise ModelOutputError(f"declared_mode_mismatch:{payload.get('declared_mode')!r}!={selected_mode!r}")
 
         mode_raw = json.dumps(payload, sort_keys=True)
-        benchmark_id = str(state.metadata.get("benchmark_id", "stateful_query_engine"))
+        benchmark_id = str(state.metadata.get("benchmark_id", "autoresearch_cifar10"))
         source_validator = get_benchmark_spec(benchmark_id).validate_source
         parsed = parse_structured_edit_payload(
             mode_raw,

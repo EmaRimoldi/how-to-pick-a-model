@@ -1,11 +1,12 @@
 experiment:
-  name: autoresearch_cifar10_oracle_family
-  steps: 4
+  name: autoresearch_cifar10_task_mode_pilot
+  steps: 8
   visibility_regime: top1_only
   feedback_condition: ca
-  candidate_generation: batched
+  candidate_generation: single
   selection_policy: top1
-  branch_timeout_seconds: 300
+  prompt_template: autoresearch_single_trajectory_program.txt
+  branch_timeout_seconds: 1800
   incorrect_penalty: -1.0
 benchmark:
   id: autoresearch_cifar10
@@ -13,7 +14,10 @@ benchmark:
   profiles:
     - autoresearch_cifar10
 output:
-  root: runs/autoresearch_cifar10/oracle_family
+  root: runs/autoresearch_cifar10/task_mode_pilot
 models:
   include:
-    - autoresearch_local_stub
+    - gpt_5_4_mini_batch_strict
+    - gpt_5_3_codex_batch_strict
+    - gpt_5_3_codex_spark_batch_strict
+    - claude_sonnet_batch_strict
