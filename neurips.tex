@@ -390,17 +390,21 @@ It says that when the packed-mode abstraction is a good approximation, the build
 \section{Operational experimental campaign}
 \label{sec:experiments}
 
-The experimental section operationalizes the accounting identity on an AutoResearch-style CIFAR-10 substrate rather than reporting exploratory model races.
-All numerical claims in the final version will be produced only after freezing the model menu, task-mode construction rules, pilot/holdout splits, verifier threshold, cost convention, and failure-handling rules.
+The experimental section operationalizes the accounting identity on an AutoResearch-style CIFAR-10 substrate and now reports the protocol-freezing pilot evidence that determines the final campaign design.
+At the time of this draft, the completed blocks already freeze the model menu, inner verifier budgets, success threshold, long-horizon policy, router-visible signal, and the distinction between theorem-facing entry competence and operational occupancy competence.
+The only remaining long-horizon pilot work is the completion of four rerun cells in the no-stop occupancy snapshot; all protocol choices below are already stable under the currently completed evidence.
 The unit of assignment is a \emph{trajectory}: one task instance $x$, one routed model $M$, and one maximum horizon $H$ for that model's full run.
 At step $h\le H$, the chosen model proposes a revised \texttt{train.py}; the harness launches a fixed-budget training run, the verifier returns a scalar loss and success bit, and the logger records incremental wall-clock, token, API, and verifier costs.
-The primary stopping time is
+The theorem-facing stopping time is
 \[
   \tau=\min\{h\le H:V_{\mathrm{succ}}(x,y_h)=1\},
 \]
 with $\tau=\infty$ if no verified solution appears before $H$.
-The main campaign uses a frozen long-run horizon $H_{\mathrm{main}}=24$ and reports a horizon ablation over $H\in\{8,16,32\}$.
-This choice is motivated by CPU-side calibration runs: once the CIFAR data are cached, evaluation time is dominated by fixed per-run overhead rather than by the raw number of optimizer steps, so moving from very short inner runs to materially larger budgets is affordable and makes the verifier less noisy.
+The mainline pilot does \emph{not} early-stop at $\tau$: every trajectory is run for the full horizon, and $\tau$, $C_{\tau\wedge H}$, and threshold occupancy are reconstructed offline from the logged step records.
+The current working horizon is $H_{\mathrm{main}}=24$.
+Offline truncation of the no-stop pilot shows that $H=8$ is too short for schedule-sensitive and optimizer-sensitive instances, $H=16$ is already informative as an ablation, and $H=24$ retains late-step occupancy signal without making the per-cell wall-clock impractical.
+The planned $H=32$ appendix sweep is therefore retained as a follow-up rather than the primary horizon.
+This horizon choice is consistent with the CPU-side throughput calibration runs: once the CIFAR data are cached, evaluation time is dominated by fixed per-run overhead rather than by the raw number of optimizer steps, so moving from very short inner runs to materially larger verifier budgets is affordable and materially reduces scalar-verifier noise.
 
 \paragraph{Task and task-instance instantiation.}
 The underlying task is AutoResearch on fixed-budget CIFAR-10 training.
@@ -414,35 +418,39 @@ For comparison, in repository repair the analogous instance would be a concrete 
 
 \paragraph{Task modes as bottleneck classes.}
 Task modes are latent classes of AutoResearch instances that share a solver-relevant bottleneck.
-The paper's task modes are not action labels; they are properties of instances that change which models are comparatively effective.
-Table~\ref{tab:autoresearch-modes} gives the planned mode taxonomy.
+They are not action labels; they are properties of instances that change which models are comparatively effective.
+Table~\ref{tab:autoresearch-modes} records the current working taxonomy after the protocol-freezing pilot.
+Five modes are stable enough for the mainline routed comparison, while the present \texttt{regularization-sensitive} construction is retained only as an appendix stress test because the current pilot shows zero threshold hits for all four models at $\delta=0.05$.
 Each mode is instantiated by pairing a regime with an initial \texttt{train.py} defect or weakness that makes one bottleneck dominant, while leaving seeds and minor nuisance variables free to vary inside the mode.
 
 \begin{table}[t]
 \centering
-\small
-\caption{Planned AutoResearch task modes.
-Each mode is a latent class of task instances that shares a practitioner-recognizable bottleneck.
-The final paper will freeze the exact generation rules and counts before pilot evaluation.}
+\scriptsize
+\caption{Current AutoResearch task modes after the protocol-freezing pilot.
+The first five rows are the current mainline benchmark modes.
+The regularization-sensitive row is kept as an appendix stress test because the current instantiation is empirically too hard relative to the other five.}
 \label{tab:autoresearch-modes}
-\begin{tabular}{@{}p{0.18\linewidth}p{0.30\linewidth}p{0.24\linewidth}p{0.22\linewidth}@{}}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}p{0.15\linewidth}p{0.21\linewidth}p{0.11\linewidth}p{0.22\linewidth}p{0.23\linewidth}@{}}
 \toprule
-Mode & Bottleneck intuition & Instance construction sketch & Live signal cues $Z$ \\
+Mode & Bottleneck intuition & Current status & Instance construction sketch & Restricted pre-run probe signature \\
 \midrule
-lr-sensitive & Small local hyperparameter errors dominate early progress & Clean regime with mis-scaled learning rate and a 128-step verifier budget & initial loss slope, train/val gap, logged LR, cheap probe instability \\
-regularization-sensitive & Noise or overfitting dominates the next improvement & Label-noise regime with weak dropout / weight decay under a 128-step budget & noise metadata, early generalization gap, regularization flags \\
-optimizer-sensitive & Gradient dynamics and optimizer family dominate & Stiff-optimization regime with a poor optimizer choice under a 128-step budget & optimizer family, momentum/beta settings, throughput and stability probe \\
-data-skew-sensitive & Sampling and coverage dominate progress & Imbalanced regime with weak skew handling under a 128-step budget & imbalance metadata, class-count summary, early rare-class failures \\
-capacity-sensitive & The model class is too small or poorly structured & Architecture starts under-sized for a longer 512-step budget & parameter-count proxy, depth/width features, plateau under cheap probe \\
-schedule-sensitive & Longer-horizon coordination matters more than local tweaks & Longer 512-step budget with missing or poor LR schedule / warmup / decay policy & budget metadata, scheduler flags, later-step probe response \\
+lr-sensitive & Small local hyperparameter errors dominate early progress & mainline & Clean regime with mis-scaled learning rate and a 128-step verifier budget & high baseline loss despite normal parameter count and cheap-probe runtime \\
+regularization-sensitive & Noise or overfitting dominates the next improvement & appendix stress test & Label-noise regime with weak dropout / weight decay under a 128-step budget & weak baseline improvement under the probe; currently too hard for the four-model menu \\
+optimizer-sensitive & Gradient dynamics and optimizer family dominate & mainline & Stiff-optimization regime with a poor optimizer choice under a 128-step budget & under-performance relative to parameter count and cheap-probe wall profile \\
+data-skew-sensitive & Sampling and coverage dominate progress & mainline & Imbalanced regime with weak skew handling under a 128-step budget & depressed validation accuracy relative to loss and parameter count \\
+capacity-sensitive & The model class is too small or poorly structured & mainline & Architecture starts under-sized for a longer 512-step budget & low parameter count plus a plateauing probe loss \\
+schedule-sensitive & Longer-horizon coordination matters more than local tweaks & mainline & Longer 512-step budget with missing or poor LR schedule / warmup / decay policy & moderate immediate loss improvement but low sustained occupancy without scheduler-aware edits \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 \paragraph{Model menu and routed deployment.}
 The main model menu prioritizes the Codex and Claude families available in our stack.
-A concrete four-model menu is a cheap OpenAI point (\textit{GPT-5.4 mini}), two stronger Codex-family points (\textit{GPT-5.3 Codex} and \textit{GPT-5.3 Codex Spark}), and one strong Claude-family point (\textit{Claude Sonnet}).
-Optional appendix runs may add another cheap Claude point or a stronger OpenAI point, but the core claim does not depend on expanding the menu.
+The frozen working four-model menu is a cheap OpenAI point (\textit{GPT-5.4 mini}), two stronger Codex-family points (\textit{GPT-5.3 Codex} and \textit{GPT-5.3 Codex Spark}), and one strong Claude-family point (\textit{Claude Sonnet}).
+All four backends passed the availability smoke test before the pilot was launched.
+Optional appendix runs may add another cheap Claude point or a stronger OpenAI point, but the core claim no longer depends on expanding the menu.
 The router does not see the true mode label.
 Instead it observes a permitted live signal $Z$ and outputs a posterior-like allocation $\hat q_\psi(s\mid Z)$ over task modes.
 Pilot estimates of per-mode competence and cost then induce a routed model choice
@@ -460,16 +468,20 @@ which is the deployment action actually taken on the instance.
 This is the practitioner-facing meaning of routing in the paper: infer the likely bottleneck class from cheap signals, then choose the model that is predicted to minimize cost-adjusted verified effort.
 
 \paragraph{Live signal $Z$, pilot, and holdout.}
-The live signal $Z$ is restricted to information a practitioner could plausibly inspect before committing to a full run.
-It includes the declared budget and regime metadata, static features of the initial \texttt{train.py} state (optimizer family, learning rate, schedule flags, regularization flags, depth/width proxies, batch size), and a cheap calibration probe from the unedited starting script (for example a very short warm-start run that yields an initial validation loss, train/validation gap, throughput, and instability flags).
+The live signal $Z$ is now restricted to a cheap \emph{baseline-only probe} from the unedited starting script.
+The retained features are the baseline validation loss, baseline validation accuracy, training seconds, total wall-clock seconds, parameter count, and total optimizer steps completed in the probe.
+We explicitly removed template-level knobs and regime metadata from the default routed signal after an ablation showed that this restricted probe-only signal matched the leave-one-out mode-prediction accuracy of the previously leaky feature set: on the 30-run multi-seed baseline probe, both \texttt{probe-only} and \texttt{probe+budget} achieved macro accuracy $0.933$, matching the previous leaky feature set, while \texttt{budget-only} dropped to $0.333$.
 The true task mode label is retained only by the evaluator.
-Pilot data are mode-balanced and are used for three purposes: estimating $\hat p_M(s)$ and $\hat\kappa(M)$, fitting the mode predictor that yields $\hat q_\psi(s\mid Z)$, and selecting final routed designs.
-Holdout data are mode-balanced and are used only for the final theorem-facing estimates and router evaluation.
-Table~\ref{tab:campaign} records the campaign template and leaves the final counts as placeholders to be frozen before the run.
+Pilot data are mode-balanced and are used for three purposes: estimating $\hat p_M(s)$ and $\hat\kappa(M)$, stress-testing the entry-versus-occupancy distinction, and fitting the restricted router that yields $\hat q_\psi(s\mid Z)$.
+Holdout data are mode-balanced and are used only for the final theorem-facing estimates and restricted-$Z$ router evaluation.
+Table~\ref{tab:campaign} summarizes the completed protocol-freezing blocks and the one still-open no-stop occupancy block.
 
 \paragraph{Success criterion and primary cost.}
 The scalar verifier is the final validation loss after each fixed-budget training run.
-For theorem-facing binary success, we freeze a relative-improvement threshold $\delta>0$ before holdout and define
+The completed 24-cell threshold sweep freezes the theorem-facing relative-improvement threshold at $\delta=0.05$.
+Empirically, the early-stop pilot retained overall entry success probability $0.833$ at $\delta\in\{0.01,0.02,0.05\}$, but this dropped to $0.625$ at $\delta=0.10$ and $0.292$ at $\delta=0.15$.
+The $5\%$ threshold is therefore the largest working threshold that preserves broad coverage while leaving headroom for occupancy and late-step persistence to separate modes such as optimizer-sensitive and schedule-sensitive.
+With this frozen threshold, theorem-facing binary success is defined by
 \[
   V_{\mathrm{succ}}(x,y)=\mathbf{1}\!\left[\frac{L_{\mathrm{base}}(x)-L(x,y)}{L_{\mathrm{base}}(x)}\ge \delta\right],
 \]
@@ -481,7 +493,12 @@ Separately, the operational AutoResearch analysis also reports a persistence dia
 \]
 where $L_{i,h}$ is the loss of the selected trajectory artifact at step $h$.
 This occupancy statistic records how often a run stays above threshold; it does not replace $\tau_i$ in the theorem-facing term definitions.
-The primary deployment cost is wall-clock time to $\tau\wedge H$; token and API cost are reported as sensitivity analyses.
+The primary deployment cost is wall-clock time to $\tau\wedge H$ reconstructed offline from the no-stop traces; token and API cost are reported as sensitivity analyses.
+
+\paragraph{Completed budget calibration.}
+The short-budget throughput sweep covered six modes over $2$--$128$ inner training steps (42 verifier runs), and the long-budget sweep covered the three long-horizon modes over $64$--$512$ steps (12 verifier runs).
+The median wall-clock at the adopted short verifier budget (128 steps) was approximately $13.7$ seconds, while the median wall-clock at the adopted long verifier budget (512 steps) was approximately $24.7$ seconds.
+The throughput figures show that fixed verifier overhead dominates very short runs, so moving to 128-step short budgets and 512-step long budgets materially improves signal quality without making the CPU-side campaign infeasible.
 
 \paragraph{Estimator map.}
 For each model $M$ and mode $s$, the one-step theorem quantity is estimated by
@@ -533,20 +550,20 @@ Negative controls include a weak heuristic router, a corrupted-signal router, an
 \centering
 \small
 \setlength{\tabcolsep}{3pt}
-\caption{Campaign template for the final submission.
-Exact counts remain placeholders until protocol freeze; the table records the structure needed to instantiate Theorem~\ref{thm:four-term}, Theorem~\ref{thm:crossover}, and Algorithm~\ref{alg:decomp-selection}.}
+\caption{Completed protocol-freezing blocks and current status.
+The final theorem-facing holdout remains pending, but the blocks below already determine the working protocol used in the remainder of the paper.}
 \label{tab:campaign}
-\begin{tabular}{@{}p{0.28\linewidth}p{0.36\linewidth}rr@{}}
+\begin{tabular}{@{}p{0.25\linewidth}p{0.25\linewidth}p{0.12\linewidth}p{0.30\linewidth}@{}}
 \toprule
-Block & Design & Traj. & Max calls \\
+Block & Scale & Status & Main decision supported \\
 \midrule
-Pilot competence cells & $|\mathcal M|\times |\mathcal S|\times n_{\mathrm{pilot}}$ mode-balanced instances & placeholder & placeholder \\
-Pilot router training & same pilot instances with frozen live signal $Z$ and held-out mode labels & placeholder & placeholder \\
-Holdout evaluation & $|\mathcal M|\times |\mathcal S|\times n_{\mathrm{hold}}$ mode-balanced instances & placeholder & placeholder \\
-Horizon ablation & chosen finalist models and routers over $H\in\mathcal H_{\mathrm{abl}}$ & placeholder & placeholder \\
-Negative controls & corrupted-signal routers, no-routing baseline, optional extra models & placeholder & placeholder \\
-\midrule
-Total target & frozen after model menu and split counts are locked & placeholder & placeholder \\
+Model-menu smoke & four deployed backends & complete & all four routed models are reachable and usable \\
+Short throughput calibration & $6$ modes $\times$ $7$ inner budgets & complete & adopt 128-step short verifier \\
+Long throughput calibration & $3$ long modes $\times$ $4$ inner budgets & complete & adopt 512-step long verifier \\
+Initialization diagnostics & six mode-specific candidate/control banks & complete & five stable starting states; optimizer weak, regularization tiny margin \\
+Entry threshold pilot & $4$ models $\times$ $6$ modes $\times$ $1$ seed & complete & freeze $\delta=0.05$ \\
+No-stop occupancy pilot & same $24$ cells without early stop & $20/24$ complete at render time & occupancy separates schedule/optimizer even when entry saturates; regularization remains dead \\
+Restricted-$Z$ ablation & $6$ modes $\times$ $5$ baseline-only seeds & complete & probe-only signal matches the previous leaky feature set \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -554,47 +571,47 @@ Total target & frozen after model menu and split counts are locked & placeholder
 \begin{table*}[t]
 \centering
 \small
-\caption{Illustrative layout preview for the model-by-mode competence table.
-Numbers are synthetic placeholders included only to preview the final table geometry and relative density; they are not experimental results.}
-\label{tab:synthetic-preview}
-\begin{tabular}{@{}p{0.19\linewidth}ccccp{0.14\linewidth}@{}}
+\caption{Working protocol decisions induced by the completed pilot evidence.}
+\label{tab:freeze-decisions}
+\begin{tabular}{@{}p{0.18\linewidth}p{0.43\linewidth}p{0.31\linewidth}@{}}
 \toprule
-Task mode & \textit{GPT-5.4 mini} & \textit{GPT-5.3 Codex} & \textit{GPT-5.3 Codex Spark} & \textit{Claude Sonnet} & Oracle winner \\
+Decision & Evidence from completed blocks & Current working choice \\
 \midrule
-lr-sensitive & 0.54 & 0.68 & 0.63 & 0.61 & \textit{GPT-5.3 Codex} \\
-regularization-sensitive & 0.49 & 0.58 & 0.56 & 0.64 & \textit{Claude Sonnet} \\
-optimizer-sensitive & 0.46 & 0.66 & 0.62 & 0.57 & \textit{GPT-5.3 Codex} \\
-data-skew-sensitive & 0.42 & 0.61 & 0.59 & 0.55 & \textit{GPT-5.3 Codex} \\
-capacity-sensitive & 0.31 & 0.57 & 0.51 & 0.60 & \textit{Claude Sonnet} \\
-schedule-sensitive & 0.38 & 0.55 & 0.58 & 0.62 & \textit{Claude Sonnet} \\
+Model menu & availability smoke succeeded on all four backends; early-stop costs span $131.9$--$253.5$ seconds per trajectory & \textit{GPT-5.4 mini}, \textit{GPT-5.3 Codex}, \textit{GPT-5.3 Codex Spark}, \textit{Claude Sonnet} \\
+Stable mainline modes & five modes show meaningful entry or occupancy structure; regularization is uniformly zero at $\delta=0.05$ & keep lr/data-skew/optimizer/capacity/schedule in the mainline, move regularization to the appendix \\
+Inner verifier budgets & short median wall-clock $\approx 13.7$s at 128 steps; long median wall-clock $\approx 24.7$s at 512 steps & 128-step short verifier, 512-step long verifier \\
+Horizon & no-stop truncation shows $H=8$ too short and $H=16$ informative but still truncating schedule occupancy & $H_{\mathrm{main}}=24$ with $H=16$ ablation and $H=32$ deferred appendix sweep \\
+Success threshold & entry success stays at $0.833$ through $\delta=0.05$ and drops sharply afterwards & freeze $\delta=0.05$ \\
+Router-visible signal $Z$ & probe-only and leaky-current both reach macro accuracy $0.933$ on the 30-run multi-seed baseline probe & use restricted probe-only $Z$ by default; keep the leaky feature set only as a control \\
+Trajectory policy & hit-once competence saturates on several modes but occupancy continues to separate schedule and optimizer & run full no-stop trajectories and report both entry and occupancy competence \\
+Failure handling & long-horizon reruns exposed invalid structured edits that should not abort the whole run & log irrecoverable single-edit failures as explicit no-op unsuccessful steps \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
-\paragraph{Primary result structure.}
-The main paper will report four result blocks.
-R1 tests mode-specific competence: whether the cost-adjusted winner changes across AutoResearch task modes and horizons.
-R2 tests routing: whether the learned router extracts enough information from $Z$ to approach oracle routing and whether mismatch explains the remaining gap.
-R3 tests selection efficiency: whether decomposition-guided selection reaches lower regret than scalar leaderboards or black-box racing at the same pilot budget.
-R4 tests approximation quality: whether the certified-effort surrogate predicts observed time-to-verification and where long-horizon statefulness creates residual error.
+\paragraph{Current pilot conclusions.}
+The completed blocks already resolve the main protocol questions.
+First, theorem-facing entry competence is useful for threshold calibration but saturates too quickly to be the only operational metric: in the 24-cell early-stop sweep at $\delta=0.05$, every mode except regularization-sensitive has entry success probability $1.0$ across the four-model menu.
+Second, the no-stop occupancy snapshot keeps discriminative structure after entry saturates: optimizer-sensitive and schedule-sensitive remain distinctly lower-occupancy than lr-sensitive and data-skew-sensitive, while regularization-sensitive remains identically zero.
+Third, the router signal can be meaningfully restricted to the cheap baseline probe without losing predictive power, so the final routed evaluation no longer depends on template-level or metadata-level leakage.
 
 \begin{table}[t]
 \centering
 \small
-\caption{Claim-to-result map for the final AutoResearch campaign.
-This table is the paper-facing scaffold for the theorem and proposition checks that will be filled after the final runs.}
+\caption{Current quantitative pilot summary for the four-model menu.
+Entry success uses the completed 24-cell early-stop sweep at $\delta=0.05$.
+Occupancy uses the current 20/24-cell no-stop snapshot at the same threshold.}
 \label{tab:claim-map}
-\begin{tabular}{@{}p{0.28\linewidth}p{0.22\linewidth}p{0.26\linewidth}p{0.16\linewidth}@{}}
+\begin{tabular}{@{}p{0.30\linewidth}p{0.18\linewidth}p{0.18\linewidth}p{0.22\linewidth}@{}}
 \toprule
-Target claim & Theory object & Main empirical object & Placeholder output \\
+Quantity & Current value & Data source & Interpretation \\
 \midrule
-Four-term accounting & Theorem~\ref{thm:four-term} & mode-conditional cost, competence, information, mismatch, residual & Table of term estimates \\
-
-Cheap-vs-strong crossover & Theorem~\ref{thm:crossover} & pairwise cost/competence crossover by selected modes & crossover figure \\
-
-Decomposition-guided selection & Algorithm~\ref{alg:decomp-selection} & regret versus pilot budget for routed designs & selection-efficiency plot \\
-
-Sample-efficient finalist confirmation & Proposition~\ref{prop:eval-cost} & pilot budget, finalist budget, and total evaluation count & campaign-cost table \\
+Overall entry success at $\delta=0.05$ & $0.833$ & 24-cell early-stop sweep & broad coverage retained at the frozen threshold \\
+Overall entry success at $\delta=0.10$ & $0.625$ & same sweep & threshold becomes too severe for the current menu \\
+Overall no-stop occupancy at $\delta=0.05$ & $0.572$ & current 20/24 no-stop snapshot & occupancy preserves separation after entry saturation \\
+Overall no-stop occupancy at $\delta=0.10$ & $0.467$ & same snapshot & higher threshold collapses schedule-style persistence \\
+Restricted-$Z$ macro accuracy & $0.933$ & 30 baseline-only probes & cheap probe-only $Z$ retains the routing signal \\
+Budget-only macro accuracy & $0.333$ & same probe set & budget alone is insufficient as a routed signal \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -608,53 +625,21 @@ Routing mismatch estimates the KL between the oracle posterior on modes and the 
 The residual compares observed holdout log effort against the predicted objective from Definition~\ref{def:objective} and Theorem~\ref{thm:four-term}.
 
 \begin{figure}[t]
-\plotplaceholder{0.93\linewidth}{2.35in}{
-Final 2-by-2 result panel. Top-left: model-by-mode $\hat\rho_H(M,s)$ heatmap for the six AutoResearch task modes. Top-right: survival curves $\hat F_M(s,h)$ for representative bottlenecks. Bottom-left: best-single-model, learned-router, and oracle-router objectives versus pilot budget. Bottom-right: predicted $\hat\J_H$ versus observed log effort, with residuals labeled by task mode.
-}
-\caption{Main empirical figure: operationalized decomposition across long-horizon AutoResearch trajectories.
-The figure is designed to show not only which design wins, but which term explains the win.}
+\centering
+\includegraphics[width=0.98\linewidth]{figures/autoresearch/current_protocol_overview.pdf}
+\caption{Current protocol-freezing overview.
+Top-left: theorem-facing entry competence at $\delta=0.05$ from the completed 24-cell early-stop pilot, showing immediate saturation on every mode except regularization-sensitive.
+Top-right: threshold occupancy at the same threshold from the currently completed 20/24 no-stop snapshot, where schedule-sensitive and optimizer-sensitive remain meaningfully separated from lr-sensitive and data-skew-sensitive.
+Bottom-left: overall threshold calibration on the early-stop pilot, which motivates freezing $\delta=0.05$ rather than $0.10$ or $0.15$.
+Bottom-right: leave-one-out mode-prediction accuracy for candidate router-visible feature sets, showing that the restricted probe-only signal matches the previous leaky feature set.}
 \label{fig:main-results}
 \end{figure}
 
-\begin{table}[t]
-\centering
-\small
-\caption{Main result table template.
-Numerical entries will be filled only after protocol freeze and final held-out evaluation.}
-\label{tab:main-results}
-\begin{tabular}{@{}p{0.31\linewidth}p{0.18\linewidth}p{0.18\linewidth}p{0.21\linewidth}@{}}
-\toprule
-Claim & Primary metric & Baselines & Reported decision \\
-\midrule
-Model choice is mode-dependent & interaction in $\hat\rho_H(M,s)$ & scalar leaderboard & single model vs router \\
-Routing uses information & $\hat I(S;Z)$ and mismatch KL & oracle, weak router & learned-router gap \\
-Selection is sample-efficient & regret vs pilot budget & black-box racing & budget to near-optimality \\
-Surrogate is calibrated & residual of predicted log effort & empirical survival curves & accepted or rejected approximation \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[t]
-\centering
-\small
-\caption{Illustrative decomposition summary preview.
-These values are synthetic and only preview the expected width and structure of the final theorem-facing summary.}
-\label{tab:synthetic-decomposition-preview}
-\begin{tabular}{@{}p{0.30\linewidth}ccccc@{}}
-\toprule
-Design & Cost & Competence & Info. & Mismatch & Residual \\
-\midrule
-\textit{GPT-5.4 mini} & $-0.42$ & $0.18$ & $0.00$ & $0.00$ & $0.11$ \\
-\textit{GPT-5.3 Codex} & $0.00$ & $0.00$ & $0.00$ & $0.00$ & $0.07$ \\
-\textit{Claude Sonnet} & $0.09$ & $0.06$ & $0.00$ & $0.00$ & $0.05$ \\
-Learned router & $0.04$ & $0.12$ & $0.17$ & $0.06$ & $0.04$ \\
-Oracle router & $0.04$ & $0.15$ & $0.24$ & $0.00$ & $0.04$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Most supporting analyses are deferred to the appendix: exact split sizes, full estimator definitions, horizon-specific hazards, threshold sensitivity, cost-metric sensitivity, sample-size calculations, negative controls, and additional plots for optional models.
-This keeps the main paper focused on the operational bridge from theorem to verifiable measurement.
+\paragraph{Primary result structure after the freeze.}
+The final holdout paper will still report four result blocks: mode-specific competence, routing quality, selection efficiency, and surrogate calibration.
+What changes after the present pilot is not the protocol, but the amount of held-out data behind those blocks.
+Mode-specific competence will be displayed as paired entry/occupancy heatmaps; routing quality will be evaluated only under the restricted probe-only signal; selection efficiency will use the frozen menu, frozen threshold, and frozen horizon; and surrogate calibration will test whether the first-passage theorem remains predictive once occupancy-style persistence is reported alongside it.
+Most supporting analyses are reported in the appendix: exact throughput curves, initialization-diagnostic scores, threshold-sensitivity heatmaps, cost profiles, the restricted-$Z$ ablation, and the current no-stop occupancy snapshot.
 
 \section{Related work}
 \label{sec:related}
@@ -842,7 +827,9 @@ All plots that support model recommendations must be reproducible under at least
 When a model fails before producing a parseable artifact, its cost is still counted and the run is marked unsuccessful.
 
 \paragraph{Routing information.}
-Let $Z_i$ be the start-of-run router observation for task instance $i$: budget and regime metadata, static features of the initial \texttt{train.py}, and a cheap calibration probe from the unedited baseline program.
+Let $Z_i$ be the start-of-run router observation for task instance $i$.
+In the current frozen protocol, $Z_i$ is restricted to the cheap baseline probe from the unedited program: validation loss, validation accuracy, training seconds, total wall-clock seconds, parameter count, and total optimizer steps completed in the probe.
+Template-level knobs and regime metadata are excluded from the default routed signal and are retained only for control ablations.
 A router outputs $\hat\pi_\psi(s\mid Z_i)$.
 On held-out data,
 \[
@@ -853,6 +840,11 @@ On held-out data,
   \hat I(S;Z)=\hat H(S)-\widehat{H}(S\mid Z).
 \]
 This quantity answers the practitioner question ``do cheap pre-run signals tell us enough about the instance bottleneck to justify routing at all?''
+
+\paragraph{Failure handling and reruns.}
+The long-horizon no-stop pilot initially exposed two structured-edit failure modes: responses that remained unparsable after repair, and responses that parsed but could not be applied to the parent source.
+The current harness treats irrecoverable single-candidate failures as explicit unsuccessful no-op steps rather than aborting the entire trajectory.
+Four long-horizon cells were rerun under this policy, and the current no-stop occupancy snapshot in the main text marks still-pending cells as missing rather than imputing values.
 
 \paragraph{Routing mismatch.}
 For held-out AutoResearch modes, the oracle allocation is computed from held-out model-mode scores.
@@ -881,23 +873,67 @@ Aggregated objectives, information, mismatch, and residuals use nonparametric bo
 Selection efficiency is reported with bootstrap confidence bands over pilot subsets.
 The final paper will not promote a model-selection claim unless the selected design is stable under bootstrap resampling or the instability is explicitly reported.
 
-\section{Full campaign appendix plan}
+\section{Current appendix figures}
 \label{app:campaign-plan}
 
-\paragraph{Appendix figures.}
-The appendix should contain:
-\begin{itemize}[leftmargin=1.4em,itemsep=0.1em]
-  \item survival and hazard curves for every primary model-mode cell;
-  \item horizon-ablation curves for $H\in\{1,3,8,16\}$;
-  \item cost-sensitivity plots for wall-clock, token, and API cost;
-  \item threshold-sensitivity plots for scalar verifier thresholds;
-  \item negative-control plots for corrupted modes, weak routers, and no-routing baselines;
-  \item optional fifth-model comparisons.
-\end{itemize}
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.98\linewidth]{figures/autoresearch/throughput_calibration.pdf}
+\caption{Verifier throughput calibration.
+Left: validation-loss response for the short-budget sweep over $2$--$128$ inner training steps across all six modes.
+Right: training-time growth for the long-budget sweep over $64$--$512$ inner steps on the three long-horizon modes.
+These curves justify moving away from extremely short inner runs: fixed overhead dominates very short budgets, while the adopted 128-step and 512-step settings remain affordable and substantially less noisy.}
+\label{fig:app-throughput}
+\end{figure*}
 
-\paragraph{Appendix tables.}
-The appendix should report the full model menu, task-mode generation rules, split sizes, failure counts, parse-error counts, rerun policy, total compute, and per-cell confidence intervals.
-It should also include a frozen command block with exact config paths, commit hashes, and artifact directories after the final campaign is run.
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.92\linewidth]{figures/autoresearch/init_diagnostics.pdf}
+\caption{Mode-specific initialization diagnostics.
+For each mode, the left bar is the selected candidate's margin over the best control perturbation, and the right bar is the candidate's gain over its baseline template.
+Positive scores indicate that the chosen starting state makes the intended bottleneck more salient than nearby controls.
+The weak optimizer-sensitive and tiny regularization-sensitive margins foreshadow the later pilot difficulties of those modes.}
+\label{fig:app-init}
+\end{figure*}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.72\linewidth]{figures/autoresearch/threshold_by_mode.pdf}
+\caption{Threshold sensitivity by mode on the completed 24-cell early-stop pilot.
+Each heatmap entry is the entry success probability for one mode at one relative-improvement threshold.
+The figure shows that $\delta=0.05$ is the largest threshold that keeps the five stable modes broadly alive, while $\delta=0.10$ is already too severe for schedule-style progress and $\delta=0.15$ collapses most of the grid.}
+\label{fig:app-threshold-mode}
+\end{figure*}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.98\linewidth]{figures/autoresearch/nostop_partial_snapshot.pdf}
+\caption{Current no-stop pilot snapshot at $\delta=0.05$.
+Left: entry competence on the 20 completed cells from the long-horizon no-stop grid.
+Right: threshold occupancy on the same cells.
+The occupancy panel is the main operational diagnostic: even when entry success saturates, schedule-sensitive and optimizer-sensitive instances still separate strongly from the easier lr-sensitive and data-skew-sensitive modes.
+Cells labeled \emph{pending} correspond to the four long-horizon reruns still in progress at render time.}
+\label{fig:app-nostop}
+\end{figure*}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.78\linewidth]{figures/autoresearch/z_ablation.pdf}
+\caption{Restricted-$Z$ ablation for start-of-run mode prediction.
+The bars report leave-one-out macro accuracy for different router-visible feature sets on both the 24-run single-seed baseline probe and the 30-run multi-seed baseline probe.
+The restricted probe-only signal matches the accuracy of the previous leaky feature set on both datasets, while budget-only features are far weaker.
+This is why the main routed protocol now defaults to the cheap baseline probe only.}
+\label{fig:app-z}
+\end{figure*}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.72\linewidth]{figures/autoresearch/pilot_costs.pdf}
+\caption{Wall-clock cost profile of the completed 24-cell early-stop pilot.
+Bars report mean and median wall-clock seconds per trajectory for each model.
+The cost ordering already matters at pilot scale: \textit{GPT-5.3 Codex Spark} is the cheapest point in the menu, while \textit{Claude Sonnet} is clearly the most expensive.}
+\label{fig:app-costs}
+\end{figure*}
 
 \section{Checklist notes for finalization}
 \label{app:checklist-notes}
