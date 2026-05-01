@@ -1,0 +1,35 @@
+{
+  "config": "configs/autoresearch_cifar10_model_routing_smoke.yaml",
+  "models_config": "configs/models.yaml",
+  "python": "3.6.8 (default, Apr 24 2024, 21:55:04) \n[GCC 8.5.0 20210514 (Red Hat 8.5.0-22)]",
+  "results": [
+    {
+      "model_key": "gpt_5_4_mini_batch_strict",
+      "adapter": "codex_cli",
+      "model_id": "gpt-5.4-mini",
+      "response": "{\"ok\": true, \"backend\": \"codex\"}",
+      "ok": true
+    },
+    {
+      "model_key": "gpt_5_3_codex_batch_strict",
+      "adapter": "codex_cli",
+      "model_id": "gpt-5.3-codex",
+      "response": "{\"ok\": true, \"backend\": \"codex\"}",
+      "ok": true
+    },
+    {
+      "model_key": "gpt_5_3_codex_spark_batch_strict",
+      "adapter": "codex_cli",
+      "model_id": "gpt-5.3-codex-spark",
+      "response": "{\"ok\": true, \"backend\": \"codex\"}",
+      "ok": true
+    },
+    {
+      "model_key": "claude_sonnet_batch_strict",
+      "adapter": "claude_haiku",
+      "model_id": "sonnet",
+      "response": "{\"type\":\"result\",\"subtype\":\"success\",\"is_error\":false,\"duration_ms\":2167,\"duration_api_ms\":1926,\"num_turns\":1,\"result\":\"{\\\"ok\\\": true, \\\"backend\\\": \\\"claude\\\"}\",\"stop_reason\":\"end_turn\",\"session_id\":\"530d3db9-a5a1-4193-8ccf-42feef89f6a4\",\"total_cost_usd\":0.09617775,\"usage\":{\"input_tokens\":3,\"cache_creation_input_tokens\":25589,\"cache_read_input_tokens\":0,\"output_tokens\":14,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":25589,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[],\"speed\":\"standard\"},\"modelUsage\":{\"claude-sonnet-4-6\":{\"inputTokens\":3,\"outputTokens\":14,\"cacheReadInputTokens\":0,\"cacheCreationInputTokens\":25589,\"webSearchRequests\":0,\"costUSD\":0.09617775,\"contextWindow\":200000,\"maxOutputTokens\":32000}},\"permission_denials\":[],\"terminal_reason\":\"completed\",\"fast_mode_state\":\"off\",\"uuid\":\"b11f5f62-b89e-492f-8480-adc400a1310b\"}",
+      "ok": true
+    }
+  ]
+}
