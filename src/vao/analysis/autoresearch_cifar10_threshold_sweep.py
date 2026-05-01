@@ -1,9 +1,11 @@
-"""Sweep relative success thresholds and derive induced tau statistics.
+"""Sweep relative success thresholds and derive induced entry/occupancy statistics.
 
 This script calibrates the theorem-facing binary verifier for AutoResearch runs.
 A threshold ``delta`` induces a first-passage time ``tau``: the first trajectory
 step at which the best visible validation loss improves over baseline by at
-least ``delta`` in relative terms.
+least ``delta`` in relative terms. Alongside that theorem-facing entry metric,
+the script also reports occupancy-style diagnostics based on how often the
+selected trajectory stays above threshold over the full horizon.
 """
 
 from __future__ import annotations
@@ -122,12 +124,16 @@ def _summarize_group(traces: list[RunTrace], threshold: float) -> dict[str, Any]
     return {
         "attempt_count": len(traces),
         "success_prob": (len(successes) / len(traces)) if traces else 0.0,
+        "entry_success_prob": (len(successes) / len(traces)) if traces else 0.0,
         "median_tau": statistics.median(successes) if successes else None,
         "mean_tau": statistics.fmean(successes) if successes else None,
         "mean_final_relative_improvement": statistics.fmean(rel_improvements) if rel_improvements else 0.0,
         "mean_selected_hit_count": statistics.fmean(selected_hit_counts) if selected_hit_counts else 0.0,
         "mean_selected_hit_rate": statistics.fmean(selected_hit_rates) if selected_hit_rates else 0.0,
+        "mean_selected_threshold_hit_count": statistics.fmean(selected_hit_counts) if selected_hit_counts else 0.0,
+        "mean_selected_threshold_occupancy": statistics.fmean(selected_hit_rates) if selected_hit_rates else 0.0,
         "mean_best_hit_count": statistics.fmean(best_hit_counts) if best_hit_counts else 0.0,
+        "mean_best_threshold_hit_count": statistics.fmean(best_hit_counts) if best_hit_counts else 0.0,
         "mean_selected_relative_improvement_over_steps": statistics.fmean(mean_selected_rel) if mean_selected_rel else 0.0,
         "mean_best_relative_improvement_over_steps": statistics.fmean(mean_best_rel) if mean_best_rel else 0.0,
     }
