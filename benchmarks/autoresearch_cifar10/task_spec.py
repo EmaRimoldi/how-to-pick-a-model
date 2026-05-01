@@ -29,7 +29,7 @@ LATENT_MODE_REGISTRY: dict[str, dict[str, Any]] = {
         "val_subset_size": 10000,
         "label_noise_rate": 0.0,
         "imbalance_ratio": 1.0,
-        "max_train_steps": 2,
+        "max_train_steps": 128,
         "seed": 61,
     },
     "regularization-sensitive": {
@@ -38,7 +38,7 @@ LATENT_MODE_REGISTRY: dict[str, dict[str, Any]] = {
         "val_subset_size": 10000,
         "label_noise_rate": 0.25,
         "imbalance_ratio": 1.0,
-        "max_train_steps": 2,
+        "max_train_steps": 128,
         "seed": 67,
     },
     "optimizer-sensitive": {
@@ -47,7 +47,7 @@ LATENT_MODE_REGISTRY: dict[str, dict[str, Any]] = {
         "val_subset_size": 10000,
         "label_noise_rate": 0.0,
         "imbalance_ratio": 1.0,
-        "max_train_steps": 2,
+        "max_train_steps": 128,
         "seed": 69,
     },
     "data-skew-sensitive": {
@@ -56,7 +56,7 @@ LATENT_MODE_REGISTRY: dict[str, dict[str, Any]] = {
         "val_subset_size": 10000,
         "label_noise_rate": 0.0,
         "imbalance_ratio": 0.12,
-        "max_train_steps": 2,
+        "max_train_steps": 128,
         "seed": 71,
     },
     "capacity-sensitive": {
@@ -65,7 +65,7 @@ LATENT_MODE_REGISTRY: dict[str, dict[str, Any]] = {
         "val_subset_size": 10000,
         "label_noise_rate": 0.0,
         "imbalance_ratio": 1.0,
-        "max_train_steps": 6,
+        "max_train_steps": 512,
         "seed": 73,
     },
     "schedule-sensitive": {
@@ -74,7 +74,7 @@ LATENT_MODE_REGISTRY: dict[str, dict[str, Any]] = {
         "val_subset_size": 10000,
         "label_noise_rate": 0.0,
         "imbalance_ratio": 1.0,
-        "max_train_steps": 6,
+        "max_train_steps": 512,
         "seed": 79,
     },
 }

@@ -42,6 +42,11 @@ modes:
 
 These are properties of instances, not action labels.
 
+Current verifier budgets:
+
+- short modes (`lr-sensitive`, `regularization-sensitive`, `optimizer-sensitive`, `data-skew-sensitive`): **128 training steps**
+- long modes (`capacity-sensitive`, `schedule-sensitive`): **512 training steps**
+
 ## Active protocol
 
 The paper-facing protocol is **task-level model routing**:
@@ -53,6 +58,9 @@ The paper-facing protocol is **task-level model routing**:
    - best single model
    - learned router
    - oracle router
+
+The current main horizon is **H=24** full-run optimization steps, with planned
+ablations around smaller and larger horizons.
 
 The active model menu prioritizes Codex-family and Claude-family models.
 

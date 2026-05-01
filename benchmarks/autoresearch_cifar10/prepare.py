@@ -26,10 +26,12 @@ torch.set_num_threads(1)
 torch.set_num_interop_threads(1)
 
 try:
+    from PIL import Image
     from torchvision import datasets, transforms  # type: ignore
 except ModuleNotFoundError:
     datasets = None
     transforms = None
+    Image = None
 
 
 # --- Constants ---------------------------------------------------------------
@@ -288,7 +290,10 @@ class ArrayDataset(Dataset):
         return int(len(self.targets))
 
     def __getitem__(self, index: int):
-        image = torch.from_numpy(self.data[index]).float().div(255.0)
+        if transforms is not None:
+            image = Image.fromarray(np.transpose(self.data[index], (1, 2, 0)))
+        else:
+            image = torch.from_numpy(self.data[index]).float().div(255.0)
         label = int(self.targets[index])
         if self.transform is not None:
             image = self.transform(image)

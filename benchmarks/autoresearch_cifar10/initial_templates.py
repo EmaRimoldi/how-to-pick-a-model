@@ -13,6 +13,7 @@ from pathlib import Path
 
 BASE_TEMPLATE_PATH = Path(__file__).resolve().parent / "solution_template.py"
 GENERATED_DIR = Path(__file__).resolve().parent / "initial_states"
+RECOMMENDED_PATH = Path(__file__).resolve().parent / "recommended_initializations.json"
 
 MODE_KEYS = {
     "lr-sensitive",
@@ -23,7 +24,7 @@ MODE_KEYS = {
     "schedule-sensitive",
 }
 
-_TEMPLATE_REPLACEMENTS: dict[str, dict[str, str]] = {
+_DEFAULT_TEMPLATE_REPLACEMENTS: dict[str, dict[str, str]] = {
     "lr-sensitive": {
         "LEARNING_RATE = 5e-4": "LEARNING_RATE = 5e-5",
         "# --- Optimizer hyperparameters ----------------------------------------------": "# Mode seed: lr-sensitive\n# --- Optimizer hyperparameters ----------------------------------------------",
@@ -57,6 +58,21 @@ _TEMPLATE_REPLACEMENTS: dict[str, dict[str, str]] = {
 }
 
 
+def _load_recommendations() -> dict[str, dict[str, str]]:
+    if not RECOMMENDED_PATH.exists():
+        return _DEFAULT_TEMPLATE_REPLACEMENTS
+    import json
+
+    payload = json.loads(RECOMMENDED_PATH.read_text(encoding="utf-8"))
+    replacements = {mode: dict(spec["replacements"]) for mode, spec in payload.items() if mode in MODE_KEYS}
+    for mode in MODE_KEYS:
+        replacements.setdefault(mode, dict(_DEFAULT_TEMPLATE_REPLACEMENTS.get(mode, {})))
+    return replacements
+
+
+_TEMPLATE_REPLACEMENTS = _load_recommendations()
+
+
 def render_template_for_task_mode(task_mode: str) -> str:
     if task_mode not in MODE_KEYS:
         raise ValueError(f"unknown_task_mode:{task_mode}")
@@ -65,6 +81,11 @@ def render_template_for_task_mode(task_mode: str) -> str:
         if old not in text:
             raise ValueError(f"template_anchor_missing:{task_mode}:{old}")
         text = text.replace(old, new, 1)
+    marker = f"# Mode seed: {task_mode}\n"
+    if marker not in text:
+        anchor = "# ---"
+        if anchor in text:
+            text = text.replace(anchor, marker + anchor, 1)
     return text
 
 
