@@ -1,0 +1,111 @@
+{
+  "feature_sets": {
+    "budget_only": {
+      "accuracy": 0.3333333333333333,
+      "confusion": {
+        "capacity-sensitive": {
+          "capacity-sensitive": 5
+        },
+        "data-skew-sensitive": {
+          "data-skew-sensitive": 5
+        },
+        "lr-sensitive": {
+          "data-skew-sensitive": 5
+        },
+        "optimizer-sensitive": {
+          "data-skew-sensitive": 5
+        },
+        "regularization-sensitive": {
+          "data-skew-sensitive": 5
+        },
+        "schedule-sensitive": {
+          "capacity-sensitive": 5
+        }
+      },
+      "count": 30,
+      "macro_accuracy": 0.3333333333333333
+    },
+    "leaky_current": {
+      "accuracy": 0.9333333333333333,
+      "confusion": {
+        "capacity-sensitive": {
+          "capacity-sensitive": 5
+        },
+        "data-skew-sensitive": {
+          "data-skew-sensitive": 5
+        },
+        "lr-sensitive": {
+          "lr-sensitive": 4,
+          "regularization-sensitive": 1
+        },
+        "optimizer-sensitive": {
+          "optimizer-sensitive": 4,
+          "regularization-sensitive": 1
+        },
+        "regularization-sensitive": {
+          "regularization-sensitive": 5
+        },
+        "schedule-sensitive": {
+          "schedule-sensitive": 5
+        }
+      },
+      "count": 30,
+      "macro_accuracy": 0.9333333333333332
+    },
+    "probe_only": {
+      "accuracy": 0.9333333333333333,
+      "confusion": {
+        "capacity-sensitive": {
+          "capacity-sensitive": 5
+        },
+        "data-skew-sensitive": {
+          "data-skew-sensitive": 5
+        },
+        "lr-sensitive": {
+          "lr-sensitive": 4,
+          "regularization-sensitive": 1
+        },
+        "optimizer-sensitive": {
+          "optimizer-sensitive": 4,
+          "regularization-sensitive": 1
+        },
+        "regularization-sensitive": {
+          "regularization-sensitive": 5
+        },
+        "schedule-sensitive": {
+          "schedule-sensitive": 5
+        }
+      },
+      "count": 30,
+      "macro_accuracy": 0.9333333333333332
+    },
+    "probe_plus_budget": {
+      "accuracy": 0.9333333333333333,
+      "confusion": {
+        "capacity-sensitive": {
+          "capacity-sensitive": 5
+        },
+        "data-skew-sensitive": {
+          "data-skew-sensitive": 5
+        },
+        "lr-sensitive": {
+          "lr-sensitive": 4,
+          "regularization-sensitive": 1
+        },
+        "optimizer-sensitive": {
+          "optimizer-sensitive": 4,
+          "regularization-sensitive": 1
+        },
+        "regularization-sensitive": {
+          "regularization-sensitive": 5
+        },
+        "schedule-sensitive": {
+          "schedule-sensitive": 5
+        }
+      },
+      "count": 30,
+      "macro_accuracy": 0.9333333333333332
+    }
+  },
+  "record_count": 30
+}

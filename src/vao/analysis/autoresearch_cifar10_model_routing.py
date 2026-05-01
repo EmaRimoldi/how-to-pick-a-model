@@ -136,20 +136,54 @@ def _extract_program_features(template_path: Path | None) -> dict[str, float]:
     }
 
 
-def _router_visible_features(manifest: dict[str, Any]) -> dict[str, float]:
+def _baseline_probe_features(run_dir: Path) -> dict[str, float]:
+    metrics_path = run_dir / "verifier_raw" / "baseline" / "artifacts" / "candidate_metrics.json"
+    if not metrics_path.exists():
+        return {
+            "baseline_val_loss": 0.0,
+            "baseline_val_accuracy": 0.0,
+            "baseline_training_seconds": 0.0,
+            "baseline_total_seconds": 0.0,
+            "baseline_param_count": 0.0,
+            "baseline_total_steps": 0.0,
+        }
+    metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
+    return {
+        "baseline_val_loss": float(metrics.get("val_loss", 0.0)),
+        "baseline_val_accuracy": float(metrics.get("val_accuracy", 0.0)),
+        "baseline_training_seconds": float(metrics.get("training_seconds", 0.0)),
+        "baseline_total_seconds": float(metrics.get("total_seconds", 0.0)),
+        "baseline_param_count": float(metrics.get("param_count", 0.0)),
+        "baseline_total_steps": float(metrics.get("total_steps", 0.0)),
+    }
+
+
+def _router_visible_features(manifest: dict[str, Any], run_dir: Path, *, feature_set: str) -> dict[str, float]:
     config = manifest.get("config") or {}
     benchmark = config.get("benchmark") or {}
     instance_overrides = benchmark.get("instance_overrides") or {}
     template_path = benchmark.get("template_path")
-    features = {
+    metadata_features = {
         "train_subset_size": float(instance_overrides.get("train_subset_size", 0.0)),
         "val_subset_size": float(instance_overrides.get("val_subset_size", 0.0)),
         "label_noise_rate": float(instance_overrides.get("label_noise_rate", 0.0)),
         "imbalance_ratio": float(instance_overrides.get("imbalance_ratio", 1.0)),
         "max_train_steps": float(instance_overrides.get("max_train_steps", 0.0)),
     }
-    features.update(_extract_program_features(Path(template_path) if template_path else None))
-    return features
+    program_features = _extract_program_features(Path(template_path) if template_path else None)
+    probe_features = _baseline_probe_features(run_dir)
+    if feature_set == "leaky_current":
+        features = dict(metadata_features)
+        features.update(program_features)
+        features.update(probe_features)
+        return features
+    if feature_set == "probe_only":
+        return probe_features
+    if feature_set == "probe_plus_budget":
+        return {"max_train_steps": metadata_features["max_train_steps"], **probe_features}
+    if feature_set == "budget_only":
+        return {"max_train_steps": metadata_features["max_train_steps"]}
+    raise ValueError(f"unknown_router_feature_set:{feature_set}")
 
 
 def _attempt_success(
@@ -169,6 +203,7 @@ def load_attempt_records(
     roots: list[Path],
     *,
     improvement_threshold: float | None,
+    router_feature_set: str = "probe_only",
 ) -> list[AttemptRecord]:
     records: list[AttemptRecord] = []
     for root in roots:
@@ -213,7 +248,7 @@ def load_attempt_records(
                     wall_seconds=_coerce_float(summary.get("elapsed_wall_seconds")),
                     agent_cost_usd=run_cost["usd"],
                     total_tokens=_coerce_int(run_cost["tokens"]),
-                    feature_dict=_router_visible_features(manifest),
+                    feature_dict=_router_visible_features(manifest, run_dir, feature_set=router_feature_set),
                 )
             )
     return records
@@ -459,11 +494,20 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--cost-metric", default="wall_seconds", choices=["wall_seconds", "usd", "tokens"])
     parser.add_argument("--pilot-split", default="pilot")
     parser.add_argument("--holdout-split", default="holdout")
+    parser.add_argument(
+        "--router-feature-set",
+        default="probe_only",
+        choices=["probe_only", "probe_plus_budget", "budget_only", "leaky_current"],
+    )
     parser.add_argument("--temperature", type=float, default=1.0)
     args = parser.parse_args(argv)
 
     roots = [Path(root) for root in args.roots]
-    records = load_attempt_records(roots, improvement_threshold=args.improvement_threshold)
+    records = load_attempt_records(
+        roots,
+        improvement_threshold=args.improvement_threshold,
+        router_feature_set=args.router_feature_set,
+    )
     summary = summarize_attempts(records, cost_metric=args.cost_metric)
     report = evaluate_holdout(
         records,
