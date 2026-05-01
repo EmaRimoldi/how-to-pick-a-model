@@ -23,8 +23,7 @@ from vao.benchmark_registry import get_benchmark_spec
 from vao.logging_utils import sha256_file, sha256_text
 from vao.prompts import render_template
 from vao.schemas import CandidateProposal, ModeDistribution
-from vao.taxonomy import validate_mode
-from vao.taxonomy import MODES
+from vao.taxonomy import DEFAULT_MODE, MODES, validate_mode
 
 
 class BackendUnavailable(RuntimeError):
@@ -264,8 +263,52 @@ class ClaudeHaikuAdapter:
                 last_exc = exc
                 failures.append(f"single_parse_failed:attempt_{attempt_index + 1}:{type(exc).__name__}:{exc}")
         if payload is None or parsed is None:
-            assert last_exc is not None
-            raise last_exc
+            fallback_mode = selected_mode if selected_mode in MODES else DEFAULT_MODE
+            branch_dir = branch_dirs[fallback_mode]
+            parent_path = branch_dir / "parent_solution.py"
+            proposed_path = branch_dir / "proposed_solution.py"
+            proposed_path.write_text(parent_source, encoding="utf-8")
+            distribution = ModeDistribution(
+                mode_probs={mode: (1.0 if mode == fallback_mode else 0.0) for mode in MODES},
+                mode_ranking=[fallback_mode, *[mode for mode in MODES if mode != fallback_mode]],
+                mode_rationales={mode: "" for mode in MODES},
+                raw_text=raw,
+                parsed_json={
+                    "candidate_generation": "single_structured_edit_fallback_noop",
+                    "transport": meta.get("transport"),
+                    "usage": meta.get("usage"),
+                    "cost_usd": meta.get("cost_usd"),
+                    "model": meta.get("model", self.model_id),
+                    "prompt_template": prompt_template,
+                    "prompt_hash": prompt_hash,
+                    "prompt_snapshot_path": _step_prompt_snapshot_path(branch_dirs),
+                    "selected_mode": fallback_mode,
+                },
+                validation_failures=failures,
+                agent_contract_failed=True,
+            )
+            proposal = CandidateProposal(
+                branch_index=MODES.index(fallback_mode),
+                primary_mode=fallback_mode,
+                secondary_modes=[],
+                declared_mode=fallback_mode,
+                source_hash=sha256_file(proposed_path),
+                source_parent_hash=sha256_file(parent_path),
+                file_path=str(proposed_path),
+                raw_output_text=raw,
+                parsed_output_json={
+                    "candidate_generation": "single_structured_edit_fallback_noop",
+                    "fallback_reason": str(last_exc) if last_exc is not None else "unknown_single_candidate_failure",
+                    "edit_protocol": self.edit_protocol,
+                    "prompt_template": prompt_template,
+                    "prompt_snapshot_path": _step_prompt_snapshot_path(branch_dirs),
+                },
+                prompt_hash=prompt_hash,
+                changed=False,
+                errors=[str(last_exc)] if last_exc is not None else ["single_candidate_generation_failed"],
+                validation_failures=failures,
+            )
+            return distribution, proposal
         branch_dir = branch_dirs[selected_mode]
         parent_path = branch_dir / "parent_solution.py"
         proposed_path = branch_dir / "proposed_solution.py"
