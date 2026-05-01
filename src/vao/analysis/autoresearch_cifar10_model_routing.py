@@ -19,6 +19,12 @@ from pathlib import Path
 from typing import Any
 
 from benchmarks.autoresearch_cifar10.task_spec import TASK_MODE_SET, task_mode_from_instance_overrides
+from vao.success_metrics import (
+    DEFAULT_SUCCESS_THRESHOLD_RELATIVE,
+    relative_improvement,
+    success_on_relative_threshold,
+    validate_relative_threshold,
+)
 
 EPS = 1e-6
 
@@ -58,12 +64,6 @@ def _coerce_int(value: Any) -> int | None:
         return int(value)
     except (TypeError, ValueError):
         return None
-
-
-def _relative_improvement(baseline_loss: float, best_loss: float) -> float:
-    if not math.isfinite(baseline_loss) or baseline_loss <= 0 or not math.isfinite(best_loss):
-        return 0.0
-    return max(0.0, (baseline_loss - best_loss) / baseline_loss)
 
 
 def _cost_from_run_dir(run_dir: Path) -> dict[str, float | None]:
@@ -158,13 +158,17 @@ def _attempt_success(
     best_loss: float,
     improvement_threshold: float,
 ) -> bool:
-    return _relative_improvement(baseline_loss, best_loss) >= improvement_threshold
+    return success_on_relative_threshold(
+        baseline_loss,
+        best_loss,
+        threshold=improvement_threshold,
+    )
 
 
 def load_attempt_records(
     roots: list[Path],
     *,
-    improvement_threshold: float,
+    improvement_threshold: float | None,
 ) -> list[AttemptRecord]:
     records: list[AttemptRecord] = []
     for root in roots:
@@ -182,7 +186,12 @@ def load_attempt_records(
                 continue
             baseline_loss = float(summary.get("baseline_loss") or math.inf)
             best_loss = float(summary.get("best_visible_loss") or math.inf)
-            relative_improvement = _relative_improvement(baseline_loss, best_loss)
+            relative_improvement_value = relative_improvement(baseline_loss, best_loss)
+            threshold_value = validate_relative_threshold(
+                improvement_threshold
+                if improvement_threshold is not None
+                else summary.get("success_threshold_relative", DEFAULT_SUCCESS_THRESHOLD_RELATIVE)
+            )
             run_cost = _cost_from_run_dir(run_dir)
             records.append(
                 AttemptRecord(
@@ -195,11 +204,11 @@ def load_attempt_records(
                     instance_seed=_coerce_int(manifest.get("instance_seed")),
                     baseline_loss=baseline_loss,
                     best_loss=best_loss,
-                    relative_improvement=relative_improvement,
+                    relative_improvement=relative_improvement_value,
                     success=_attempt_success(
                         baseline_loss=baseline_loss,
                         best_loss=best_loss,
-                        improvement_threshold=improvement_threshold,
+                        improvement_threshold=threshold_value,
                     ),
                     wall_seconds=_coerce_float(summary.get("elapsed_wall_seconds")),
                     agent_cost_usd=run_cost["usd"],
@@ -446,7 +455,7 @@ def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("roots", nargs="+", help="Run roots containing run_summary.json files")
     parser.add_argument("--output", required=True)
-    parser.add_argument("--improvement-threshold", type=float, default=0.05)
+    parser.add_argument("--improvement-threshold", type=float, default=None)
     parser.add_argument("--cost-metric", default="wall_seconds", choices=["wall_seconds", "usd", "tokens"])
     parser.add_argument("--pilot-split", default="pilot")
     parser.add_argument("--holdout-split", default="holdout")

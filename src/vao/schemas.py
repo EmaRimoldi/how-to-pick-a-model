@@ -134,6 +134,7 @@ class StepRecord(BaseModel):
     branches: list[BranchEvaluation]
     residual_steps: int
     residual_wall_seconds: float | None = None
+    step_wall_seconds: float | None = None
     agent_cost_usd: float | None = None
     input_tokens: int | None = None
     output_tokens: int | None = None
@@ -148,6 +149,10 @@ class StepRecord(BaseModel):
     post_feedback_validation_failures: list[str] = Field(default_factory=list)
     feedback_regret_improvement: float | None = None
     feedback_jsd_improvement: float | None = None
+    best_visible_so_far: float | None = None
+    relative_improvement_so_far: float | None = None
+    success_threshold_relative: float | None = None
+    successful_step: bool | None = None
     errors: list[str] = Field(default_factory=list)
     retries: int = 0
     validation_failures: list[str] = Field(default_factory=list)
@@ -186,6 +191,8 @@ class RunManifest(BaseModel):
     selection_policy: str = "top1"
     feedback_condition: str = "ca"
     wall_budget_seconds: float | None = None
+    success_threshold_relative: float | None = None
+    stop_on_success: bool = False
     created_at: str = Field(default_factory=utc_now_iso)
     config: dict[str, Any] = Field(default_factory=dict)
 

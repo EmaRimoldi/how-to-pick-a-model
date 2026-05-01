@@ -23,6 +23,12 @@ from vao.benchmark_registry import get_benchmark_spec, infer_benchmark_id
 from vao.estimators import gain, jsd, productive_mode_proxy, routing_regret
 from vao.logging_utils import append_jsonl, now_iso, sha256_file, write_json
 from vao.schemas import BranchEvaluation, ModeDistribution, RunManifest, StepRecord
+from vao.success_metrics import (
+    DEFAULT_SUCCESS_THRESHOLD_RELATIVE,
+    relative_improvement,
+    success_on_relative_threshold,
+    validate_relative_threshold,
+)
 from vao.taxonomy import MODES, normalize_mode_probs
 from vao.verifier import evaluate_solution
 from vao.visibility import build_visible_history
@@ -75,6 +81,10 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
     wall_budget_seconds = experiment.get("wall_budget_seconds")
     branch_timeout_seconds = int(experiment.get("branch_timeout_seconds", 240))
     incorrect_penalty = float(experiment.get("incorrect_penalty", -1.0))
+    success_threshold_relative = validate_relative_threshold(
+        experiment.get("success_relative_improvement_threshold", DEFAULT_SUCCESS_THRESHOLD_RELATIVE)
+    )
+    stop_on_success = bool(experiment.get("stop_on_success", False))
     instance_overrides = dict(config.get("benchmark", {}).get("instance_overrides") or {})
     task_mode_true = benchmark.task_mode_from_instance_overrides(instance_overrides)
     task_mode_source = "task_mode_override" if task_mode_true is not None else None
@@ -104,6 +114,8 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
         selection_policy=selection_policy,
         feedback_condition=feedback_condition,
         wall_budget_seconds=wall_budget_seconds,
+        success_threshold_relative=success_threshold_relative,
+        stop_on_success=stop_on_success,
         config=config,
     )
     write_json(run_dir / "run_manifest.json", manifest)
@@ -123,11 +135,14 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
     baseline_perf_path = Path(baseline.raw_verifier_path or "") / "artifacts" / "baseline_perf.json"
     parent_loss = baseline.latent_loss
     records: list[StepRecord] = []
+    best_visible_so_far = baseline.latent_loss if baseline.correctness and math.isfinite(baseline.latent_loss) else math.inf
+    tau_step: int | None = None
 
     for step in range(max_steps):
         elapsed = time.time() - run_started
         if wall_budget_seconds is not None and elapsed >= float(wall_budget_seconds):
             break
+        step_started = time.time()
         parent_hash = sha256_file(workspace_solution)
         step_parent_loss = parent_loss
         residual_wall = None if wall_budget_seconds is None else max(float(wall_budget_seconds) - elapsed, 0.0)
@@ -312,6 +327,17 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
 
         promote_branch_to_parent(Path(selected_eval.file_path), workspace_solution)
         parent_loss = selected_eval.latent_loss
+        if selected_eval.correctness and math.isfinite(selected_eval.latent_loss):
+            best_visible_so_far = min(best_visible_so_far, selected_eval.latent_loss)
+        relative_improvement_so_far = relative_improvement(baseline.latent_loss, best_visible_so_far)
+        successful_step = success_on_relative_threshold(
+            baseline.latent_loss,
+            best_visible_so_far,
+            threshold=success_threshold_relative,
+        )
+        if tau_step is None and successful_step:
+            tau_step = step + 1
+        step_wall_seconds = time.time() - step_started
 
         step_record = StepRecord(
             run_id=run_id_actual,
@@ -339,6 +365,7 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
             branches=branch_evaluations,
             residual_steps=max_steps - step - 1,
             residual_wall_seconds=None if wall_budget_seconds is None else max(float(wall_budget_seconds) - (time.time() - run_started), 0.0),
+            step_wall_seconds=step_wall_seconds,
             agent_cost_usd=step_cost_usd if step_cost_usd > 0 else None,
             input_tokens=step_input_tokens if step_input_tokens > 0 else None,
             output_tokens=step_output_tokens if step_output_tokens > 0 else None,
@@ -353,6 +380,10 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
             post_feedback_validation_failures=post_feedback.validation_failures if post_feedback is not None else [],
             feedback_regret_improvement=feedback_metrics.get("feedback_regret_improvement"),
             feedback_jsd_improvement=feedback_metrics.get("feedback_jsd_improvement"),
+            best_visible_so_far=best_visible_so_far if math.isfinite(best_visible_so_far) else None,
+            relative_improvement_so_far=relative_improvement_so_far,
+            success_threshold_relative=success_threshold_relative,
+            successful_step=successful_step,
             errors=distribution_errors,
             retries=distribution.retries,
             validation_failures=distribution.validation_failures,
@@ -360,8 +391,20 @@ def run_single(config: dict[str, Any], model_key: str, model_config: dict[str, A
         write_json(step_dir / "step_record.json", step_record)
         append_jsonl(run_dir / "evaluations.jsonl", step_record)
         records.append(step_record)
+        if stop_on_success and successful_step:
+            break
 
-    summary = _run_summary(run_id_actual, profile_id, model_id, visibility_regime, records, baseline, run_started)
+    summary = _run_summary(
+        run_id_actual,
+        profile_id,
+        model_id,
+        visibility_regime,
+        records,
+        baseline,
+        run_started,
+        success_threshold_relative=success_threshold_relative,
+        stop_on_success=stop_on_success,
+    )
     write_json(run_dir / "run_summary.json", summary)
     return run_dir
 
@@ -558,6 +601,9 @@ def _run_summary(
     records: list[StepRecord],
     baseline: BranchEvaluation,
     run_started: float,
+    *,
+    success_threshold_relative: float,
+    stop_on_success: bool,
 ) -> dict[str, Any]:
     selected_losses = [
         branch.latent_loss
@@ -582,6 +628,16 @@ def _run_summary(
         for record in records
         for branch in record.branches
     ]
+    best_visible_loss = min(selected_losses) if selected_losses else None
+    best_counterfactual_loss = min(all_branch_losses) if all_branch_losses else None
+    relative_improvement_visible = relative_improvement(baseline.latent_loss, best_visible_loss)
+    relative_improvement_counterfactual = relative_improvement(baseline.latent_loss, best_counterfactual_loss)
+    success = success_on_relative_threshold(
+        baseline.latent_loss,
+        best_visible_loss,
+        threshold=success_threshold_relative,
+    )
+    tau_step = next((record.step + 1 for record in records if record.successful_step), None)
     return {
         "run_id": run_id,
         "profile_id": profile_id,
@@ -591,8 +647,14 @@ def _run_summary(
         "branch_evaluations": sum(len(record.branches) for record in records),
         "baseline_correctness": baseline.correctness,
         "baseline_loss": baseline.latent_loss,
-        "best_visible_loss": min(selected_losses) if selected_losses else None,
-        "best_counterfactual_loss": min(all_branch_losses) if all_branch_losses else None,
+        "success_threshold_relative": success_threshold_relative,
+        "stop_on_success": stop_on_success,
+        "success": success,
+        "tau_step": tau_step,
+        "best_visible_loss": best_visible_loss,
+        "best_visible_relative_improvement": relative_improvement_visible,
+        "best_counterfactual_loss": best_counterfactual_loss,
+        "best_counterfactual_relative_improvement": relative_improvement_counterfactual,
         "selected_accounting_cost": sum(selected_accounting) if selected_accounting else 0.0,
         "total_branch_accounting_cost": sum(all_branch_accounting) if all_branch_accounting else 0.0,
         "elapsed_wall_seconds": time.time() - run_started,
