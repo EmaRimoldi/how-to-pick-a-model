@@ -8,7 +8,7 @@ experiment:
   branch_timeout_seconds: 300
   incorrect_penalty: -1.0
   success_relative_improvement_threshold: 0.05
-  stop_on_success: true
+  stop_on_success: false
 benchmark:
   id: autoresearch_cifar10
   template_path: benchmarks/autoresearch_cifar10/solution_template.py

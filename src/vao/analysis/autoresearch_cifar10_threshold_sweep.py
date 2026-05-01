@@ -29,6 +29,7 @@ class RunTrace:
     task_mode_true: str | None
     baseline_loss: float
     final_best_visible_loss: float | None
+    selected_loss_by_step: list[float | None]
     best_visible_by_step: list[float | None]
 
 
@@ -61,6 +62,7 @@ def _load_traces(roots: list[Path]) -> list[RunTrace]:
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
             baseline_loss = float(summary.get("baseline_loss") or float("inf"))
             running_best = baseline_loss if baseline_loss > 0 else float("inf")
+            selected_loss_by_step: list[float | None] = []
             best_visible_by_step: list[float | None] = []
             for line in evals_path.read_text(encoding="utf-8").splitlines():
                 if not line.strip():
@@ -71,6 +73,7 @@ def _load_traces(roots: list[Path]) -> list[RunTrace]:
                     for branch in (record.get("branches") or [])
                     if branch.get("promoted_as_parent") and branch.get("correctness")
                 ]
+                selected_loss_by_step.append(min(selected_losses) if selected_losses else None)
                 if selected_losses:
                     running_best = min(running_best, min(selected_losses))
                 best_visible_by_step.append(running_best if running_best != float("inf") else None)
@@ -84,6 +87,7 @@ def _load_traces(roots: list[Path]) -> list[RunTrace]:
                     task_mode_true=manifest.get("task_mode_true"),
                     baseline_loss=baseline_loss,
                     final_best_visible_loss=_coerce_float(summary.get("best_visible_loss")),
+                    selected_loss_by_step=selected_loss_by_step,
                     best_visible_by_step=best_visible_by_step,
                 )
             )
@@ -91,18 +95,41 @@ def _load_traces(roots: list[Path]) -> list[RunTrace]:
 
 
 def _summarize_group(traces: list[RunTrace], threshold: float) -> dict[str, Any]:
+    threshold = validate_relative_threshold(threshold)
     tau_values = [
         first_success_step(trace.baseline_loss, trace.best_visible_by_step, threshold=threshold)
         for trace in traces
     ]
     successes = [tau for tau in tau_values if tau is not None]
     rel_improvements = [relative_improvement(trace.baseline_loss, trace.final_best_visible_loss) for trace in traces]
+    selected_hit_counts = []
+    selected_hit_rates = []
+    best_hit_counts = []
+    mean_selected_rel = []
+    mean_best_rel = []
+    for trace in traces:
+        selected_rels = [relative_improvement(trace.baseline_loss, loss) for loss in trace.selected_loss_by_step]
+        best_rels = [relative_improvement(trace.baseline_loss, loss) for loss in trace.best_visible_by_step]
+        if selected_rels:
+            mean_selected_rel.append(statistics.fmean(selected_rels))
+            selected_hits = sum(1 for value in selected_rels if value >= threshold)
+            selected_hit_counts.append(selected_hits)
+            selected_hit_rates.append(selected_hits / len(selected_rels))
+        if best_rels:
+            mean_best_rel.append(statistics.fmean(best_rels))
+            best_hits = sum(1 for value in best_rels if value >= threshold)
+            best_hit_counts.append(best_hits)
     return {
         "attempt_count": len(traces),
         "success_prob": (len(successes) / len(traces)) if traces else 0.0,
         "median_tau": statistics.median(successes) if successes else None,
         "mean_tau": statistics.fmean(successes) if successes else None,
         "mean_final_relative_improvement": statistics.fmean(rel_improvements) if rel_improvements else 0.0,
+        "mean_selected_hit_count": statistics.fmean(selected_hit_counts) if selected_hit_counts else 0.0,
+        "mean_selected_hit_rate": statistics.fmean(selected_hit_rates) if selected_hit_rates else 0.0,
+        "mean_best_hit_count": statistics.fmean(best_hit_counts) if best_hit_counts else 0.0,
+        "mean_selected_relative_improvement_over_steps": statistics.fmean(mean_selected_rel) if mean_selected_rel else 0.0,
+        "mean_best_relative_improvement_over_steps": statistics.fmean(mean_best_rel) if mean_best_rel else 0.0,
     }
 
 
