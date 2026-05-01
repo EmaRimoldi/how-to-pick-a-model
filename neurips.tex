@@ -85,8 +85,8 @@ Agent builders rarely need to know whether a sufficiently well-prompted model ca
 We formalize this question as design selection for verifiable agentic systems.
 Under a packed latent-mode model of tasks, the expected log certified effort of a model-routing design decomposes into four separately measurable terms: per-step cost, within-mode competence, routing information, and routing mismatch.
 This accounting identity turns model choice from an opaque benchmark race into a diagnostic procedure: it predicts when a cheap model with retries beats an expensive model, when routing is worth engineering, and how many pilot evaluations are needed before committing to a design.
-We operationalize the identity in a long-horizon experimental protocol with controlled latent modes, semi-synthetic coding/tool-use tasks, and naturalistic verifiable agent traces.
-The protocol specifies the model menu, trajectory horizon, time-to-verification estimators, routing estimators, uncertainty intervals, and result tables needed to turn the theorem into a falsifiable NeurIPS-scale campaign.
+We operationalize the identity in an AutoResearch-centered protocol where a start-of-run router observes live task signals, chooses one model or subagent from a small Codex/Claude-family menu, and that choice performs the whole run.
+The protocol specifies the task instances, bottleneck-style task modes, trajectory horizon, verifier, cost convention, routing estimators, uncertainty intervals, and result tables needed to turn the theorem into a falsifiable NeurIPS-scale campaign.
 The paper contributes a theorem-backed measurement language, a sample-efficient selection algorithm, and a concrete publication-ready campaign for deciding which model belongs inside an agent harness.
 \end{abstract}
 
@@ -102,7 +102,7 @@ The deployment question is not only whether they can solve the task.
 It is how fast they reach a verified solution, how much this costs, and which part of the harness explains the difference, matching the time-centric view of agents as task solvers in \citet{achille2025agents}.
 
 This paper studies \emph{model choice through performance accounting} for verifiable agentic systems.
-The motivating regime includes code editing against unit tests, query-engine tuning against a deterministic benchmark, theorem or proof search against a formal checker, and Karpathy's AutoResearch-style loops, where an agent edits an LLM training program, runs a fixed-budget experiment, and keeps changes only when validation improves~\citep{karpathy2026autoresearch}.
+The motivating regime includes code editing against unit tests, repository repair against continuous-integration checks, theorem or proof search against a formal checker, and Karpathy's AutoResearch-style loops, where an agent edits an LLM training program, runs a fixed-budget experiment, and keeps changes only when validation improves~\citep{karpathy2026autoresearch}.
 These tasks are transductive in Vapnik's sense~\citep{vapnik1996structure}: the system is handed a concrete instance and must produce a concrete artifact, rather than first solving a more general modeling problem.
 They are also externally verifiable: after each proposal, a checker can certify success or provide a scalar quality signal.
 In this regime, the natural capability object is certified time-to-solution or a cost-adjusted surrogate, not standalone accuracy.
@@ -110,12 +110,10 @@ In this regime, the natural capability object is certified time-to-solution or a
 The difficulty is that a single benchmark score conflates mechanisms that call for different interventions.
 A system can win because its model is cheaper per step.
 It can win because the model is more competent on the specific task mode.
-It can win because the model or harness chooses the right tool or action for the instance.
-It can win because, once a tool or action is selected, the model uses it effectively.
-Finally, verifier feedback or early trajectory observations can reveal the latent mode, but the router may either exploit that signal or waste it through mismatched allocation.
+It can win because the start-of-run router observes signals that reveal which model is likely to handle the instance.
+Finally, the router may either exploit that signal or waste it through mismatched allocation.
 If the cost term dominates, retries with a cheaper model may be rational.
-If competence is mode-specific, a router or cascade may be needed.
-If the tool-choice or tool-use term dominates, the right intervention is to change the harness rather than the model.
+If competence is mode-specific, a start-of-run model router may be needed.
 If information gain is high but realized speed is low, the harness is learning the right thing and failing to use it.
 
 \paragraph{Research questions and contributions.}
@@ -150,11 +148,14 @@ The model proposes artifacts; the task supplies the criterion.
 \begin{definition}[Agent design]
 \label{def:design}
 An agent design is a tuple
-$d=(M,h,q,\kappa)$, where $M$ is the base model, $h$ is a harness specification including retry depth and tool protocol, $q$ is a routing or allocation policy over modes/actions, and $\kappa(M)$ is the per-step cost used for deployment accounting.
+$d=(\mathcal M,h,q,\kappa)$, where $\mathcal M$ is either a single base model or a finite model menu, $h$ is a harness specification including retry depth and tool protocol, $q$ is a start-of-run routing policy over task modes that may induce a model choice from $\mathcal M$, and $\kappa(M)$ is the per-step cost used for deployment accounting for deployed model $M\in\mathcal M$.
 The design menu $\cD=\{d_1,\ldots,d_k\}$ is the finite set of candidates considered by the builder.
 \end{definition}
 
-The harness can include a single model call, a repeated-sampling loop, a tool-using code agent, or a multi-branch editor.
+The harness can include a single model call, a repeated-sampling loop, a tool-using code agent, or a fixed AutoResearch run script.
+In the main experimental setting, the router observes live signals before the run begins, chooses one model or subagent from the menu, and that chosen model performs the whole run; we do not use step-level model routing in the main paper.
+When the menu has one element, the notation collapses to a single base model.
+To keep the theorem algebra light, we write $M$ for the deployed model chosen by the routed design whenever the dependence on $(\mathcal M,q)$ is clear from context.
 We keep the mathematical development finite-menu because this is the regime in which a NeurIPS-scale experimental campaign can be completed cleanly: models, retry depths, and routing policies are enumerable.
 Continuous design spaces are discussed as a limitation.
 
@@ -170,16 +171,20 @@ A toy email task makes the abstraction concrete.
 An instance $x$ may specify a recipient, intent, facts to include, privacy constraints, attachments, tone, and deadline.
 Plausible modes include a scheduling email, a status update with an attachment, a confidential reply with content restrictions, and a multilingual external message.
 The verifier checks whether the draft satisfies the requested recipients, constraints, content, and formatting.
-For a nontrivial task such as query optimization, an instance is a workload and repository state, while modes may correspond to range scans, top-$k$ stress, cache invalidation, or multi-file invariants.
-For Karpathy's AutoResearch, an instance is a training-code state together with an experimental budget and research objective; modes may correspond to optimizer changes, model-size changes, data or augmentation changes, or evaluation-protocol changes.
+For repository repair, an instance may be a commit state, failing tests, dependency lockfile, timeout budget, and CI command.
+Modes may correspond to instances whose bottleneck is type-interface repair, flaky-test isolation, dependency-version conflict, performance regression, or multi-file invariant restoration.
+For AutoResearch, an instance is an initial \texttt{train.py} state together with a run budget, verifier and evaluation setup, data/training regime, seed, and research objective.
+Modes are latent classes of instances sharing solver-relevant bottleneck structure.
+For example, an instance may be \emph{lr-sensitive}, \emph{regularization-sensitive}, \emph{optimizer-sensitive}, \emph{data-skew-sensitive}, \emph{capacity-sensitive}, or \emph{schedule-sensitive}.
+These labels describe properties of the instance distribution, not edit labels or action labels; practitioners may choose different task modes in their own domains when different bottlenecks drive solver success.
 
 \begin{assumption}[Packed latent-mode family]
 \label{ass:packed}
 Instances have a latent task mode $S\in\cS=\{1,\ldots,m_S\}$ with prior $\pi$.
 Conditional on mode $s$, model $M$ has certified per-attempt success probability $p_M(s)>0$.
-During execution, the harness observes a feedback variable $Z_M$ with posterior
+At the start of a run, the router observes a live signal $Z_M$ with posterior
 $\pi_z^M(s)=\Prb[S=s\mid Z_M=z]$.
-Given feedback $z$, the router allocates mode share $q_z(s)$ with support containing the support of $\pi_z^M$.
+Given signal $z$, the router allocates mode share $q_z(s)$ with support containing the support of $\pi_z^M$.
 The certified effort surrogate under mode $s$ is proportional to
 \begin{equation}
   T_{M,q}(s,z) \propto \frac{\kappa(M)}{p_M(s)\,q_z(s)} .
@@ -190,12 +195,13 @@ The certified effort surrogate under mode $s$ is proportional to
 Assumption~\ref{ass:packed} is deliberately restrictive.
 It says that a finite mode abstraction captures the relevant differences between instances and that attempts are summarized by a memoryless success probability.
 The assumption is not meant to describe all agent systems.
-It isolates exactly the regime where the model-selection question becomes inspectable: different models can have different per-mode competence, feedback can reveal the mode, and routing can use or waste that information.
-In our experiments, modes are oracle workload families such as \texttt{range\_local\_scans} and \texttt{topk\_stress}; discovering modes from traces is left to the final campaign and appendix.
+It isolates exactly the regime where the model-selection question becomes inspectable: different models can have different per-mode competence, start-of-run signals can reveal the mode, and routing can use or waste that information.
+In our experiments, modes are AutoResearch bottleneck classes such as learning-rate sensitivity, regularization sensitivity, optimizer sensitivity, data-skew sensitivity, capacity sensitivity, and schedule sensitivity.
+The mode labels are used for measurement and oracle comparisons; the learned router only sees the permitted live signals $Z$.
 
 \begin{definition}[Cost-adjusted certified log-effort objective]
 \label{def:objective}
-For a design $d=(M,h,q,\kappa)$ satisfying Assumption~\ref{ass:packed}, define
+For a design $d=(\mathcal M,h,q,\kappa)$ satisfying Assumption~\ref{ass:packed}, define the routed objective of the deployed model induced by $d$ as
 \begin{equation}
   \J(d)\equiv \J(M,q)
   =
@@ -270,7 +276,7 @@ The full proof, including support conditions and the non-prior baseline variant,
 The theorem is an accounting identity whose value is diagnostic.
 If the cost term is large and positive, a cheap model has room to spend retries.
 If the competence term changes sign across modes, a single global winner is unlikely.
-If information gain is high, the verifier or early trajectory exposes useful task structure.
+If information gain is high, the start-of-run signals expose useful task structure.
 If mismatch is high, the harness observes useful structure but fails to route computation according to it.
 
 \begin{remark}[Interpretation of the routing terms]
@@ -297,17 +303,17 @@ $\Dcross\,\kappa_s<\kappa_l$.
 \end{theorem}
 
 The multi-mode case is where the decomposition matters.
-The same small model may dominate a range-local mode and fail completely on a top-$k$ mode.
+The same cheaper model may handle lr-sensitive AutoResearch instances efficiently and fail on capacity-sensitive instances that need broader architectural edits.
 Averaging these into a single benchmark score hides the deployment decision.
 The right question is whether the task distribution has nontrivial comparative advantage: are there modes for which different models are cost-adjusted winners?
-Section~\ref{sec:experiments} describes the long-horizon campaign used to test whether this structure appears in controlled, semi-synthetic, and naturalistic verifiable tasks.
+Section~\ref{sec:experiments} describes the AutoResearch campaign used to test whether this structure appears under a start-of-run model-routing protocol.
 
 \begin{figure}[t]
 \placeholder{0.93\linewidth}{
 Final figure: a left-to-right schematic of the accounting pipeline.
 Inputs are task instances with latent modes, model/harness candidates, verifier feedback, and cost logs.
 The center panel computes the four terms in Theorem~\ref{thm:four-term}.
-The right panel emits three decisions: single-model deployment, mode router, or additional pilot runs.
+The right panel emits three decisions: single-model deployment, start-of-run model router, or additional pilot runs.
 Expected takeaway: the same benchmark score can be explained by different term profiles, which imply different interventions.
 }
 \caption{Performance accounting turns model choice into a measurement problem rather than a scalar leaderboard race.}
@@ -384,16 +390,90 @@ It says that when the packed-mode abstraction is a good approximation, the build
 \section{Operational experimental campaign}
 \label{sec:experiments}
 
-The experimental section operationalizes the accounting identity rather than reporting exploratory runs.
-All numerical claims in the final version will be produced after freezing the model menu, horizons, task splits, verifier, cost convention, and failure-handling rules.
-The unit of assignment is a \emph{trajectory}: one model, one task instance, and one maximum horizon $H$.
-At step $h\le H$, the harness proposes an artifact, the verifier returns a success bit and scalar loss, and the logger records incremental wall-clock, token, API, and verifier costs.
+The experimental section operationalizes the accounting identity on an AutoResearch-style CIFAR-10 substrate rather than reporting exploratory model races.
+All numerical claims in the final version will be produced only after freezing the model menu, task-mode construction rules, pilot/holdout splits, verifier threshold, cost convention, and failure-handling rules.
+The unit of assignment is a \emph{trajectory}: one task instance $x$, one routed model $M$, and one maximum horizon $H$ for that model's full run.
+At step $h\le H$, the chosen model proposes a revised \texttt{train.py}; the harness launches a fixed-budget training run, the verifier returns a scalar loss and success bit, and the logger records incremental wall-clock, token, API, and verifier costs.
 The primary stopping time is
 \[
-  \tau=\min\{h\le H:V(x,y_h)=1\},
+  \tau=\min\{h\le H:V_{\mathrm{succ}}(x,y_h)=1\},
 \]
 with $\tau=\infty$ if no verified solution appears before $H$.
-The main campaign uses $H=8$; a horizon ablation evaluates $H\in\{1,3,8,16\}$ to expose short- and long-horizon dynamics.
+The main campaign uses a frozen long-run horizon $H_{\mathrm{main}}$ and reports a horizon ablation over a small grid such as $H\in\{1,3,8,16\}$.
+
+\paragraph{Task and task-instance instantiation.}
+The underlying task is AutoResearch on fixed-budget CIFAR-10 training.
+A task instance is a concrete realization
+\[
+  x=(\texttt{train.py}_0, r, u, B, V),
+\]
+where $\texttt{train.py}_0$ is the initial editable training program, $r$ is the data and training regime, $u$ is a nuisance draw such as the seed and exact subset realization, $B$ is the fixed experimental budget, and $V$ is the verifier that converts validation loss into success.
+In practitioner terms, each instance is a real debugging or optimization job: a particular starting script, a particular budget, and a particular regime under which certain changes matter more than others.
+For comparison, in repository repair the analogous instance would be a concrete repository state, failing tests, CI command, and timeout budget.
+
+\paragraph{Task modes as bottleneck classes.}
+Task modes are latent classes of AutoResearch instances that share a solver-relevant bottleneck.
+The paper's task modes are not action labels; they are properties of instances that change which models are comparatively effective.
+Table~\ref{tab:autoresearch-modes} gives the planned mode taxonomy.
+Each mode is instantiated by pairing a regime with an initial \texttt{train.py} defect or weakness that makes one bottleneck dominant, while leaving seeds and minor nuisance variables free to vary inside the mode.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Planned AutoResearch task modes.
+Each mode is a latent class of task instances that shares a practitioner-recognizable bottleneck.
+The final paper will freeze the exact generation rules and counts before pilot evaluation.}
+\label{tab:autoresearch-modes}
+\begin{tabular}{@{}p{0.18\linewidth}p{0.30\linewidth}p{0.24\linewidth}p{0.22\linewidth}@{}}
+\toprule
+Mode & Bottleneck intuition & Instance construction sketch & Live signal cues $Z$ \\
+\midrule
+lr-sensitive & Small local hyperparameter errors dominate early progress & Short-budget clean regime with clearly mis-scaled learning rate and otherwise reasonable defaults & initial loss slope, train/val gap, logged LR, cheap probe instability \\
+regularization-sensitive & Noise or overfitting dominates the next improvement & Label-noise or robustness regime with weak dropout / weight decay / augmentation defaults & noise metadata, early generalization gap, regularization flags \\
+optimizer-sensitive & Gradient dynamics and optimizer family dominate & Long-tail or stiff-optimization regime with a poor optimizer choice or momentum setting & optimizer family, momentum/beta settings, throughput and stability probe \\
+data-skew-sensitive & Sampling and coverage dominate progress & Imbalanced or skewed regime with weak class coverage behavior & imbalance metadata, class-count summary, early rare-class failures \\
+capacity-sensitive & The model class is too small or poorly structured & Architecture starts under-sized for the regime and budget & parameter-count proxy, depth/width features, plateau under cheap probe \\
+schedule-sensitive & Longer-horizon coordination matters more than local tweaks & Longer budget with missing or poor LR schedule / warmup / decay policy & budget metadata, scheduler flags, later-step probe response \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Model menu and routed deployment.}
+The main model menu prioritizes the Codex and Claude families available in our stack.
+A concrete four-model menu is a cheap OpenAI point (\texttt{gpt\_5\_4\_mini\_batch\_strict}), two stronger Codex-family points (\texttt{gpt\_5\_3\_codex\_batch\_strict} and \texttt{gpt\_5\_3\_codex\_spark\_batch\_strict}), and one strong Claude-family point (\texttt{claude\_sonnet\_batch\_strict}).
+Optional appendix runs may add another cheap Claude point or a stronger OpenAI point, but the core claim does not depend on expanding the menu.
+The router does not see the true mode label.
+Instead it observes a permitted live signal $Z$ and outputs a posterior-like allocation $\hat q_\psi(s\mid Z)$ over task modes.
+Pilot estimates of per-mode competence and cost then induce a routed model choice
+\[
+  \hat M_\psi(Z)
+  =
+  \argmin_{M\in\mathcal M}
+  \Bigl[
+    \log \hat\kappa(M)
+    +
+    \sum_s \hat q_\psi(s\mid Z)\,\bigl(-\log \hat p_M(s)\bigr)
+  \Bigr],
+\]
+which is the deployment action actually taken on the instance.
+This is the practitioner-facing meaning of routing in the paper: infer the likely bottleneck class from cheap signals, then choose the model that is predicted to minimize cost-adjusted verified effort.
+
+\paragraph{Live signal $Z$, pilot, and holdout.}
+The live signal $Z$ is restricted to information a practitioner could plausibly inspect before committing to a full run.
+It includes the declared budget and regime metadata, static features of the initial \texttt{train.py} state (optimizer family, learning rate, schedule flags, regularization flags, depth/width proxies, batch size), and a cheap calibration probe from the unedited starting script (for example a very short warm-start run that yields an initial validation loss, train/validation gap, throughput, and instability flags).
+The true task mode label is retained only by the evaluator.
+Pilot data are mode-balanced and are used for three purposes: estimating $\hat p_M(s)$ and $\hat\kappa(M)$, fitting the mode predictor that yields $\hat q_\psi(s\mid Z)$, and selecting final routed designs.
+Holdout data are mode-balanced and are used only for the final theorem-facing estimates and router evaluation.
+Table~\ref{tab:campaign} records the campaign template and leaves the final counts as placeholders to be frozen before the run.
+
+\paragraph{Success criterion and primary cost.}
+The scalar verifier is the final validation loss after each fixed-budget training run.
+For theorem-facing binary success, we freeze a relative-improvement threshold $\delta>0$ before holdout and define
+\[
+  V_{\mathrm{succ}}(x,y)=\mathbf{1}\!\left[\frac{L_{\mathrm{base}}(x)-L(x,y)}{L_{\mathrm{base}}(x)}\ge \delta\right],
+\]
+where $L_{\mathrm{base}}(x)$ is the loss of the unedited starting script and $L(x,y)$ is the loss achieved by artifact $y$ under the same evaluation protocol.
+The primary deployment cost is wall-clock time to $\tau\wedge H$; token and API cost are reported as sensitivity analyses.
 
 \paragraph{Estimator map.}
 For each model $M$ and mode $s$, the one-step theorem quantity is estimated by
@@ -428,52 +508,79 @@ Residual & observed log effort minus predicted $\hat \J_H$ & calibration scatter
 \end{tabular}
 \end{table}
 
-\paragraph{Tasks and modes.}
-We use three surfaces.
-First, a controlled latent-mode code benchmark generates verifiable tasks from known modes, including range/indexing workloads, top-$k$ workloads, cache invalidation, summary maintenance, multi-file invariants, and adversarial edge cases.
-Second, a semi-synthetic coding/tool-use benchmark injects controlled faults into realistic repositories or notebooks; the evaluator knows the injected mode, but the router observes only task metadata, early traces, and verifier feedback.
-Third, a naturalistic benchmark uses real verifiable agent tasks and treats modes as discovered clusters rather than ground truth.
-This ordering separates exact theorem validation from external validity.
-
-\paragraph{Models and routers.}
-The main four-model menu is a cheap generalist, a strong generalist, a coding-specialized model, and a cross-provider balanced model: \texttt{gpt\_5\_4\_mini\_batch\_strict}, \texttt{gpt\_5\_4\_batch\_strict}, \texttt{gpt\_5\_3\_codex\_batch\_strict}, and \texttt{claude\_sonnet\_batch\_strict}.
-Appendix runs may add \texttt{claude\_haiku\_batch\_strict} for a second cheap point or \texttt{claude\_opus\_4\_6\_batch\_strict} as an upper-capability point.
-Routers include a single-model baseline, an oracle-mode router, a learned metadata router, a learned early-trace router, and weak/noisy routers for negative controls.
+\paragraph{Baselines and router variants.}
+We compare three main deployments.
+The \emph{best single model} baseline commits to one model for every instance.
+The \emph{oracle router} observes the true mode label and chooses
+\[
+  M^*(s)=\argmin_{M\in\mathcal M}\bigl[\log \hat\kappa(M)-\log \hat p_M(s)\bigr]
+\]
+using pilot-fitted per-mode scores.
+The \emph{learned router} only sees $Z$ and chooses $\hat M_\psi(Z)$.
+Negative controls include a weak heuristic router, a corrupted-signal router, and a no-routing policy that ignores mode information entirely.
 
 \begin{table}[t]
 \centering
 \small
 \setlength{\tabcolsep}{3pt}
-\caption{Frozen campaign design for the final submission.
-Trajectory counts are assignments; model-step calls are worst-case upper bounds before early stopping.}
+\caption{Campaign template for the final submission.
+Exact counts remain placeholders until protocol freeze; the table records the structure needed to instantiate Theorem~\ref{thm:four-term}, Theorem~\ref{thm:crossover}, and Algorithm~\ref{alg:decomp-selection}.}
 \label{tab:campaign}
 \begin{tabular}{@{}p{0.28\linewidth}p{0.36\linewidth}rr@{}}
 \toprule
 Block & Design & Traj. & Max calls \\
 \midrule
-Controlled latent modes & 4 models $\times$ 6 modes $\times$ 30 tasks, $H=8$ & 720 & 5,760 \\
-Semi-synthetic coding/tool use & 4 models $\times$ 6 modes $\times$ 20 tasks, $H=8$ & 480 & 3,840 \\
-Naturalistic agent tasks & 3 models $\times$ 150 tasks, $H=8$ & 450 & 3,600 \\
-Horizon ablation & 4 models $\times$ 6 modes $\times$ 10 tasks, extra $H\in\{1,3,16\}$ & 720 & 4,800 \\
-Negative controls & corrupted modes, weak routers, trivial-routing settings & 150--250 & 1,200--2,000 \\
+Pilot competence cells & $|\mathcal M|\times |\mathcal S|\times n_{\mathrm{pilot}}$ mode-balanced instances & placeholder & placeholder \\
+Pilot router training & same pilot instances with frozen live signal $Z$ and held-out mode labels & placeholder & placeholder \\
+Holdout evaluation & $|\mathcal M|\times |\mathcal S|\times n_{\mathrm{hold}}$ mode-balanced instances & placeholder & placeholder \\
+Horizon ablation & chosen finalist models and routers over $H\in\mathcal H_{\mathrm{abl}}$ & placeholder & placeholder \\
+Negative controls & corrupted-signal routers, no-routing baseline, optional extra models & placeholder & placeholder \\
 \midrule
-Total target & including stress tests, before failed-run reruns & 2,520--2,620 & 19,200--20,000 \\
+Total target & frozen after model menu and split counts are locked & placeholder & placeholder \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \paragraph{Primary result structure.}
-The main paper will report four results.
-R1 tests mode-specific competence: whether the best cost-adjusted model changes across modes and horizons.
-R2 tests routing: whether learned routers recover enough information to approach oracle routing and whether mismatch explains failures.
+The main paper will report four result blocks.
+R1 tests mode-specific competence: whether the cost-adjusted winner changes across AutoResearch task modes and horizons.
+R2 tests routing: whether the learned router extracts enough information from $Z$ to approach oracle routing and whether mismatch explains the remaining gap.
 R3 tests selection efficiency: whether decomposition-guided selection reaches lower regret than scalar leaderboards or black-box racing at the same pilot budget.
 R4 tests approximation quality: whether the certified-effort surrogate predicts observed time-to-verification and where long-horizon statefulness creates residual error.
 
+\begin{table}[t]
+\centering
+\small
+\caption{Claim-to-result map for the final AutoResearch campaign.
+This table is the paper-facing scaffold for the theorem and proposition checks that will be filled after the final runs.}
+\label{tab:claim-map}
+\begin{tabular}{@{}p{0.28\linewidth}p{0.22\linewidth}p{0.26\linewidth}p{0.16\linewidth}@{}}
+\toprule
+Target claim & Theory object & Main empirical object & Placeholder output \\
+\midrule
+Four-term accounting & Theorem~\ref{thm:four-term} & mode-conditional cost, competence, information, mismatch, residual & Table of term estimates \\
+
+Cheap-vs-strong crossover & Theorem~\ref{thm:crossover} & pairwise cost/competence crossover by selected modes & crossover figure \\
+
+Decomposition-guided selection & Algorithm~\ref{alg:decomp-selection} & regret versus pilot budget for routed designs & selection-efficiency plot \\
+
+Sample-efficient finalist confirmation & Proposition~\ref{prop:eval-cost} & pilot budget, finalist budget, and total evaluation count & campaign-cost table \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{How the theorem terms are computed on this task.}
+Cost uses cumulative wall-clock time to $\tau\wedge H$ as the primary metric, with token and API cost as sensitivity analyses.
+Competence uses the mode-conditional verified success probability $\hat p_M(s)$ together with the long-horizon success curve $\hat F_M(s,H)$.
+Routing information estimates $I(S;Z)$ from the held-out cross-entropy of the learned mode posterior $\hat q_\psi(s\mid Z)$.
+Routing mismatch estimates the KL between the oracle posterior on modes and the router posterior, and also reports the induced model-selection regret after mapping those posteriors through the pilot-estimated per-mode scores.
+The residual compares observed holdout log effort against the predicted objective from Definition~\ref{def:objective} and Theorem~\ref{thm:four-term}.
+
 \begin{figure}[t]
 \plotplaceholder{0.93\linewidth}{2.35in}{
-Final 2-by-2 result panel. Top-left: model-by-mode $\hat\rho_8(M,s)$ heatmap. Top-right: survival curves $\hat F_M(s,h)$ for representative modes. Bottom-left: oracle, learned, and weak-router objectives versus pilot budget. Bottom-right: predicted $\hat\J_H$ versus observed log effort, with residuals labeled by task surface.
+Final 2-by-2 result panel. Top-left: model-by-mode $\hat\rho_H(M,s)$ heatmap for the six AutoResearch task modes. Top-right: survival curves $\hat F_M(s,h)$ for representative bottlenecks. Bottom-left: best-single-model, learned-router, and oracle-router objectives versus pilot budget. Bottom-right: predicted $\hat\J_H$ versus observed log effort, with residuals labeled by task mode.
 }
-\caption{Main empirical figure: operationalized decomposition across long-horizon verifiable trajectories.
+\caption{Main empirical figure: operationalized decomposition across long-horizon AutoResearch trajectories.
 The figure is designed to show not only which design wins, but which term explains the win.}
 \label{fig:main-results}
 \end{figure}
@@ -488,7 +595,7 @@ Numerical entries will be filled only after protocol freeze and final held-out e
 \toprule
 Claim & Primary metric & Baselines & Reported decision \\
 \midrule
-Model choice is mode-dependent & interaction in $\hat\rho_8(M,s)$ & scalar leaderboard & single model vs router \\
+Model choice is mode-dependent & interaction in $\hat\rho_H(M,s)$ & scalar leaderboard & single model vs router \\
 Routing uses information & $\hat I(S;Z)$ and mismatch KL & oracle, weak router & learned-router gap \\
 Selection is sample-efficient & regret vs pilot budget & black-box racing & budget to near-optimality \\
 Surrogate is calibrated & residual of predicted log effort & empirical survival curves & accepted or rejected approximation \\
@@ -496,7 +603,7 @@ Surrogate is calibrated & residual of predicted log effort & empirical survival 
 \end{tabular}
 \end{table}
 
-Most supporting analyses are deferred to the appendix: full estimator definitions, horizon-specific hazards, threshold sensitivity, cost-metric sensitivity, sample-size calculations, negative controls, and additional plots for optional models.
+Most supporting analyses are deferred to the appendix: exact split sizes, full estimator definitions, horizon-specific hazards, threshold sensitivity, cost-metric sensitivity, sample-size calculations, negative controls, and additional plots for optional models.
 This keeps the main paper focused on the operational bridge from theorem to verifiable measurement.
 
 \section{Related work}
@@ -537,13 +644,13 @@ The final discussion should be short and tied to observed results, not a specula
   \item Whether mode-specific competence is large enough to justify routing after accounting for cost and uncertainty.
   \item Whether learned routers approach oracle-mode routing, or whether mismatch remains the dominant bottleneck.
   \item Whether long-horizon survival curves support the memoryless surrogate or require depth-dependent hazard models.
-  \item Whether naturalistic discovered modes reproduce the controlled-mode conclusions or mainly serve as a diagnostic failure case.
+  \item Whether the chosen AutoResearch task modes are sufficiently practitioner-legible and sufficiently informative for real routing decisions.
   \item How much cheaper decomposition-guided selection is than racing once the final design menu size is fixed.
 \end{itemize}
 
 \paragraph{Current limitations.}
 The packed-mode assumption is the main modeling limitation.
-Real agent trajectories are stateful, attempts are not always independent, and modes may be ambiguous or discovered rather than oracle-labeled.
+Real agent trajectories are stateful, attempts are not always independent, and practitioner-defined task modes may be fuzzy rather than perfectly separated.
 The campaign is therefore designed to report survival curves, hazards, residuals, bootstrap intervals, and Wilson audits rather than only point estimates.
 The present design menu is finite and mostly model-depth-router based.
 Continuous optimization over prompts, tools, memory, and context allocation is outside the main claim.
@@ -643,9 +750,9 @@ The repository's robustness script also reports Wilson intervals and a Bernstein
 \label{app:experiment-details}
 
 \paragraph{Trajectory record.}
-Each run stores a manifest with model alias, model identifier, task surface, split, instance seed, maximum horizon $H$, task-mode source, and cost convention.
-Each step stores the prompt-visible state, model output, selected action, verifier result, scalar loss, incremental wall time, token usage, API cost when available, and verifier overhead.
-If the harness evaluates counterfactual branches, the record also stores the branch-local edit, declared mode, inferred edit mode, branch loss, branch correctness, branch cost, and whether that branch was promoted.
+Each run stores a manifest with model alias, model identifier, split, instance seed, maximum horizon $H$, task-mode label retained by the evaluator, the router-visible signal summary $Z$, and the cost convention.
+Each step stores the prompt-visible state, the proposed \texttt{train.py} artifact, verifier result, scalar loss, incremental wall time, token usage, API cost when available, and verifier overhead.
+The routed deployment also stores the chosen model, the router posterior or score over task modes, and the induced oracle and learned model choices used in the holdout analysis.
 
 \paragraph{Success and time-to-verification.}
 For binary verifiers, success is direct.
@@ -678,8 +785,8 @@ All plots that support model recommendations must be reproducible under at least
 When a model fails before producing a parseable artifact, its cost is still counted and the run is marked unsuccessful.
 
 \paragraph{Routing information.}
-Let $Z_i^{(h)}$ be the router observation after $h$ steps: metadata only for pre-routing, metadata plus early trace for trace routing, or metadata plus verifier feedback for feedback routing.
-A router outputs $\hat\pi_\psi(s\mid Z_i^{(h)})$.
+Let $Z_i$ be the start-of-run router observation for task instance $i$: budget and regime metadata, static features of the initial \texttt{train.py}, and a cheap calibration probe from the unedited baseline program.
+A router outputs $\hat\pi_\psi(s\mid Z_i)$.
 On held-out data,
 \[
   \widehat{H}(S\mid Z)
@@ -688,10 +795,10 @@ On held-out data,
   \qquad
   \hat I(S;Z)=\hat H(S)-\widehat{H}(S\mid Z).
 \]
-For naturalistic tasks without oracle modes, $S$ is replaced by discovered clusters and the result is reported as a diagnostic rather than as theorem validation.
+This quantity answers the practitioner question ``do cheap pre-run signals tell us enough about the instance bottleneck to justify routing at all?''
 
 \paragraph{Routing mismatch.}
-For controlled and semi-synthetic modes, the oracle allocation is computed from held-out model-mode scores.
+For held-out AutoResearch modes, the oracle allocation is computed from held-out model-mode scores.
 If the router predicts mode posteriors, mismatch is
 \[
   \widehat{\mathrm{MM}}
@@ -699,7 +806,7 @@ If the router predicts mode posteriors, mismatch is
   \frac{1}{n}\sum_i \KL(\hat\pi_{\mathrm{oracle}}(\cdot\mid Z_i)\|
   \hat q_\psi(\cdot\mid Z_i)).
 \]
-If the router allocates directly over models or designs, we compute the induced oracle design distribution and use the same KL.
+We then map both the oracle posterior and the learned posterior through the pilot-estimated per-mode model scores to obtain an induced oracle model choice and an induced learned model choice.
 We also report regret in observed cost-adjusted effort, since a small KL can still be harmful if the confused modes have very different winners.
 
 \paragraph{Decomposition residual.}
@@ -709,7 +816,7 @@ The residual
   \widehat{\mathrm{Res}}(d)=\widehat{\mathrm{Obs}}_H(d)-\hat\J_H(d)
 \]
 is the main diagnostic for misspecification of Assumption~\ref{ass:packed}.
-Residuals are plotted by task surface, mode, model, and horizon.
+Residuals are plotted by task mode, model, routed policy, and horizon.
 
 \paragraph{Uncertainty.}
 Success probabilities use Wilson intervals.
@@ -727,12 +834,12 @@ The appendix should contain:
   \item horizon-ablation curves for $H\in\{1,3,8,16\}$;
   \item cost-sensitivity plots for wall-clock, token, and API cost;
   \item threshold-sensitivity plots for scalar verifier thresholds;
-  \item negative-control plots for corrupted modes and weak routers;
+  \item negative-control plots for corrupted modes, weak routers, and no-routing baselines;
   \item optional fifth-model comparisons.
 \end{itemize}
 
 \paragraph{Appendix tables.}
-The appendix should report the full model menu, task surfaces, split sizes, failure counts, parse-error counts, rerun policy, total compute, and per-cell confidence intervals.
+The appendix should report the full model menu, task-mode generation rules, split sizes, failure counts, parse-error counts, rerun policy, total compute, and per-cell confidence intervals.
 It should also include a frozen command block with exact config paths, commit hashes, and artifact directories after the final campaign is run.
 
 \section{Checklist notes for finalization}
