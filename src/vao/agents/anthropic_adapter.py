@@ -233,38 +233,39 @@ class ClaudeHaikuAdapter:
         prompt_hash = sha256_text(prompt)
         _write_step_prompt_snapshot(branch_dirs, prompt, prompt_hash, prompt_template)
 
+        benchmark_id = str(state.metadata.get("benchmark_id", "autoresearch_cifar10"))
+        source_validator = get_benchmark_spec(benchmark_id).validate_source
+
         raw = ""
         meta: dict[str, Any] = {}
         failures: list[str] = []
         payload: dict[str, Any] | None = None
+        parsed: dict[str, Any] | None = None
+        selected_mode = ""
         last_exc: Exception | None = None
         for attempt_index in range(max(self.retries, 1)):
             try:
                 raw, meta = self._complete(prompt, self._single_candidate_schema(), self.max_tokens_edit)
                 _write_step_batch_raw_output(branch_dirs, raw, meta)
                 payload = parse_json_object(raw)
+                selected_mode = str(payload.get("primary_mode") or payload.get("declared_mode") or "")
+                validate_mode(selected_mode)
+                if payload.get("declared_mode") != selected_mode:
+                    raise ModelOutputError(f"declared_mode_mismatch:{payload.get('declared_mode')!r}!={selected_mode!r}")
+                mode_raw = json.dumps(payload, sort_keys=True)
+                parsed = parse_structured_edit_payload(
+                    mode_raw,
+                    selected_mode,
+                    parent_source=parent_source,
+                    source_validator=source_validator,
+                )
                 break
             except (BackendUnavailable, ModelOutputError, RuntimeError) as exc:
                 last_exc = exc
                 failures.append(f"single_parse_failed:attempt_{attempt_index + 1}:{type(exc).__name__}:{exc}")
-        if payload is None:
+        if payload is None or parsed is None:
             assert last_exc is not None
             raise last_exc
-
-        selected_mode = str(payload.get("primary_mode") or payload.get("declared_mode") or "")
-        validate_mode(selected_mode)
-        if payload.get("declared_mode") != selected_mode:
-            raise ModelOutputError(f"declared_mode_mismatch:{payload.get('declared_mode')!r}!={selected_mode!r}")
-
-        mode_raw = json.dumps(payload, sort_keys=True)
-        benchmark_id = str(state.metadata.get("benchmark_id", "autoresearch_cifar10"))
-        source_validator = get_benchmark_spec(benchmark_id).validate_source
-        parsed = parse_structured_edit_payload(
-            mode_raw,
-            selected_mode,
-            parent_source=parent_source,
-            source_validator=source_validator,
-        )
         branch_dir = branch_dirs[selected_mode]
         parent_path = branch_dir / "parent_solution.py"
         proposed_path = branch_dir / "proposed_solution.py"
