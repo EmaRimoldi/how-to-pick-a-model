@@ -474,6 +474,13 @@ For theorem-facing binary success, we freeze a relative-improvement threshold $\
   V_{\mathrm{succ}}(x,y)=\mathbf{1}\!\left[\frac{L_{\mathrm{base}}(x)-L(x,y)}{L_{\mathrm{base}}(x)}\ge \delta\right],
 \]
 where $L_{\mathrm{base}}(x)$ is the loss of the unedited starting script and $L(x,y)$ is the loss achieved by artifact $y$ under the same evaluation protocol.
+For the first paper version, the four-term decomposition keeps this entry-style first-passage notion of success.
+Separately, the operational AutoResearch analysis also reports a persistence diagnostic,
+\[
+  O_i^{\delta}(H)=\frac{1}{H}\sum_{h=1}^{H}\mathbf{1}\!\left[\frac{L_{\mathrm{base}}(x_i)-L_{i,h}}{L_{\mathrm{base}}(x_i)}\ge \delta\right],
+\]
+where $L_{i,h}$ is the loss of the selected trajectory artifact at step $h$.
+This occupancy statistic records how often a run stays above threshold; it does not replace $\tau_i$ in the theorem-facing term definitions.
 The primary deployment cost is wall-clock time to $\tau\wedge H$; token and API cost are reported as sensitivity analyses.
 
 \paragraph{Estimator map.}
@@ -488,6 +495,8 @@ The reported long-horizon score is
   \hat \rho_H(M,s)= -\log \hat F_M(s,H)+\log \hat C_M(s,H),
 \]
 with Wilson intervals for success probabilities and bootstrap intervals for aggregate decomposition terms.
+Alongside this theorem-facing entry competence, the operational analysis reports threshold occupancy
+$\hat O_M(s,H;\delta)=n_{M,s}^{-1}\sum_i O_i^{\delta}(H)$ as a persistence diagnostic for cases where hit-once success saturates across models.
 The memoryless surrogate in Assumption~\ref{ass:packed} is not assumed in the analysis; it is tested by comparing $\hat F_M(s,h)$ against $1-(1-\hat p_M(s))^h$.
 
 \begin{table}[t]
@@ -501,7 +510,7 @@ The main paper reports the primary estimator and uncertainty; appendix tables re
 Term & Primary estimator & Main display \\
 \midrule
 Cost & $\log \hat C_M(s,H)$, with wall-clock primary and token/API cost as sensitivity & cost frontier \\
-Competence & $-\log \hat F_M(s,H)$ and one-step $\hat p_M(s)$ for theorem calibration & model-by-mode heatmap \\
+Competence & theorem-facing $-\log \hat F_M(s,H)$ with one-step $\hat p_M(s)$, plus operational threshold occupancy $\hat O_M(s,H;\delta)$ & paired entry/occupancy heatmaps \\
 Information & $\hat I(S;Z)=\hat H(S)-\widehat{H}(S\mid Z)$ from held-out router posteriors & information curve \\
 Mismatch & $\widehat{\E_Z\KL(\hat\pi_Z\|\hat q_Z)}$ or induced model-allocation KL & router gap plot \\
 Residual & observed log effort minus predicted $\hat \J_H$ & calibration scatter \\
@@ -593,6 +602,7 @@ Sample-efficient finalist confirmation & Proposition~\ref{prop:eval-cost} & pilo
 \paragraph{How the theorem terms are computed on this task.}
 Cost uses cumulative wall-clock time to $\tau\wedge H$ as the primary metric, with token and API cost as sensitivity analyses.
 Competence uses the mode-conditional verified success probability $\hat p_M(s)$ together with the long-horizon success curve $\hat F_M(s,H)$.
+The main empirical section also reports threshold occupancy $\hat O_M(s,H;\delta)$ as an operational persistence competence diagnostic, but the first theorem-facing decomposition continues to use first-passage competence.
 Routing information estimates $I(S;Z)$ from the held-out cross-entropy of the learned mode posterior $\hat q_\psi(s\mid Z)$.
 Routing mismatch estimates the KL between the oracle posterior on modes and the router posterior, and also reports the induced model-selection regret after mapping those posteriors through the pilot-estimated per-mode scores.
 The residual compares observed holdout log effort against the predicted objective from Definition~\ref{def:objective} and Theorem~\ref{thm:four-term}.
@@ -811,6 +821,13 @@ The empirical hazard is
        {\sum_i\mathbf{1}\{\tau_i\ge h\}} .
 \]
 The one-step theorem estimator is $\hat p_M(s)=\hat\lambda_M(s,1)=\hat F_M(s,1)$.
+For operational persistence, we also track the threshold occupancy of the selected trajectory,
+\[
+  O_i^{\delta}(H)=\frac{1}{H}\sum_{h=1}^{H}\mathbf{1}\!\left[\frac{L_{\mathrm{base}}(x_i)-L_{i,h}}{L_{\mathrm{base}}(x_i)}\ge \delta\right],
+  \qquad
+  \hat O_M(s,H;\delta)=\frac{1}{n_{M,s}}\sum_i O_i^{\delta}(H).
+\]
+This quantity is not substituted into the first-pass theorem term in the initial paper version; it is reported alongside $\hat F_M(s,h)$ to distinguish models whose hit-once success has saturated.
 The geometric approximation error is measured by
 \[
   \max_{h\le H}\left|
