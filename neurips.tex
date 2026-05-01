@@ -399,7 +399,8 @@ The primary stopping time is
   \tau=\min\{h\le H:V_{\mathrm{succ}}(x,y_h)=1\},
 \]
 with $\tau=\infty$ if no verified solution appears before $H$.
-The main campaign uses a frozen long-run horizon $H_{\mathrm{main}}$ and reports a horizon ablation over a small grid such as $H\in\{1,3,8,16\}$.
+The main campaign uses a frozen long-run horizon $H_{\mathrm{main}}=24$ and reports a horizon ablation over $H\in\{8,16,32\}$.
+This choice is motivated by CPU-side calibration runs: once the CIFAR data are cached, evaluation time is dominated by fixed per-run overhead rather than by the raw number of optimizer steps, so moving from very short inner runs to materially larger budgets is affordable and makes the verifier less noisy.
 
 \paragraph{Task and task-instance instantiation.}
 The underlying task is AutoResearch on fixed-budget CIFAR-10 training.
@@ -428,12 +429,12 @@ The final paper will freeze the exact generation rules and counts before pilot e
 \toprule
 Mode & Bottleneck intuition & Instance construction sketch & Live signal cues $Z$ \\
 \midrule
-lr-sensitive & Small local hyperparameter errors dominate early progress & Short-budget clean regime with clearly mis-scaled learning rate and otherwise reasonable defaults & initial loss slope, train/val gap, logged LR, cheap probe instability \\
-regularization-sensitive & Noise or overfitting dominates the next improvement & Label-noise or robustness regime with weak dropout / weight decay / augmentation defaults & noise metadata, early generalization gap, regularization flags \\
-optimizer-sensitive & Gradient dynamics and optimizer family dominate & Long-tail or stiff-optimization regime with a poor optimizer choice or momentum setting & optimizer family, momentum/beta settings, throughput and stability probe \\
-data-skew-sensitive & Sampling and coverage dominate progress & Imbalanced or skewed regime with weak class coverage behavior & imbalance metadata, class-count summary, early rare-class failures \\
-capacity-sensitive & The model class is too small or poorly structured & Architecture starts under-sized for the regime and budget & parameter-count proxy, depth/width features, plateau under cheap probe \\
-schedule-sensitive & Longer-horizon coordination matters more than local tweaks & Longer budget with missing or poor LR schedule / warmup / decay policy & budget metadata, scheduler flags, later-step probe response \\
+lr-sensitive & Small local hyperparameter errors dominate early progress & Clean regime with mis-scaled learning rate and a 128-step verifier budget & initial loss slope, train/val gap, logged LR, cheap probe instability \\
+regularization-sensitive & Noise or overfitting dominates the next improvement & Label-noise regime with weak dropout / weight decay under a 128-step budget & noise metadata, early generalization gap, regularization flags \\
+optimizer-sensitive & Gradient dynamics and optimizer family dominate & Stiff-optimization regime with a poor optimizer choice under a 128-step budget & optimizer family, momentum/beta settings, throughput and stability probe \\
+data-skew-sensitive & Sampling and coverage dominate progress & Imbalanced regime with weak skew handling under a 128-step budget & imbalance metadata, class-count summary, early rare-class failures \\
+capacity-sensitive & The model class is too small or poorly structured & Architecture starts under-sized for a longer 512-step budget & parameter-count proxy, depth/width features, plateau under cheap probe \\
+schedule-sensitive & Longer-horizon coordination matters more than local tweaks & Longer 512-step budget with missing or poor LR schedule / warmup / decay policy & budget metadata, scheduler flags, later-step probe response \\
 \bottomrule
 \end{tabular}
 \end{table}
