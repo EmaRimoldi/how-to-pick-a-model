@@ -14,7 +14,8 @@ models:
     model_id: autoresearch-local-stub-v1
     temperature: 0.0
     timeout_seconds: 30
-  claude_haiku_batch_strict:
+
+  claude_haiku: &claude_haiku
     adapter: claude_haiku
     model_id: haiku
     transport: cli
@@ -27,7 +28,9 @@ models:
     max_tokens_batch: 12000
     retries: 1
     allow_batch_repair: false
-  claude_sonnet_batch_strict:
+  claude_haiku_batch_strict: *claude_haiku
+
+  claude_sonnet: &claude_sonnet
     adapter: claude_haiku
     model_id: sonnet
     transport: cli
@@ -40,7 +43,9 @@ models:
     max_tokens_batch: 12000
     retries: 1
     allow_batch_repair: false
-  claude_opus_4_6_batch_strict:
+  claude_sonnet_batch_strict: *claude_sonnet
+
+  claude_opus_4_6: &claude_opus_4_6
     adapter: claude_haiku
     model_id: opus
     transport: cli
@@ -53,7 +58,9 @@ models:
     max_tokens_batch: 12000
     retries: 1
     allow_batch_repair: false
-  weak_qwen_batch_strict:
+  claude_opus_4_6_batch_strict: *claude_opus_4_6
+
+  weak_qwen: &weak_qwen
     adapter: openai_compatible
     model_id: Qwen/Qwen2.5-Coder-1.5B-Instruct
     base_url: http://localhost:8000/v1
@@ -67,7 +74,9 @@ models:
     use_response_format: true
     allow_response_format_retry: false
     allow_batch_repair: false
-  qwen_coder_batch_strict:
+  weak_qwen_batch_strict: *weak_qwen
+
+  qwen_coder: &qwen_coder
     adapter: openai_compatible
     model_id: Qwen/Qwen2.5-Coder-1.5B-Instruct
     base_url: http://localhost:8000/v1
@@ -81,7 +90,9 @@ models:
     use_response_format: true
     allow_response_format_retry: false
     allow_batch_repair: false
-  gpt_5_4_batch_strict:
+  qwen_coder_batch_strict: *qwen_coder
+
+  gpt_5_4: &gpt_5_4
     adapter: codex_cli
     model_id: gpt-5.4
     edit_protocol: structured_edits
@@ -94,7 +105,9 @@ models:
     include_temperature: false
     reasoning_effort: medium
     allow_batch_repair: false
-  gpt_5_4_mini_batch_strict:
+  gpt_5_4_batch_strict: *gpt_5_4
+
+  gpt_5_4_mini: &gpt_5_4_mini
     adapter: codex_cli
     model_id: gpt-5.4-mini
     edit_protocol: structured_edits
@@ -107,7 +120,9 @@ models:
     include_temperature: false
     reasoning_effort: medium
     allow_batch_repair: false
-  gpt_5_3_codex_batch_strict:
+  gpt_5_4_mini_batch_strict: *gpt_5_4_mini
+
+  gpt_5_3_codex: &gpt_5_3_codex
     adapter: codex_cli
     model_id: gpt-5.3-codex
     edit_protocol: structured_edits
@@ -120,7 +135,9 @@ models:
     include_temperature: false
     reasoning_effort: medium
     allow_batch_repair: false
-  gpt_5_3_codex_spark_batch_strict:
+  gpt_5_3_codex_batch_strict: *gpt_5_3_codex
+
+  gpt_5_3_codex_spark: &gpt_5_3_codex_spark
     adapter: codex_cli
     model_id: gpt-5.3-codex-spark
     edit_protocol: structured_edits
@@ -133,7 +150,9 @@ models:
     include_temperature: false
     reasoning_effort: medium
     allow_batch_repair: false
-  gpt_5_2_codex_batch_strict:
+  gpt_5_3_codex_spark_batch_strict: *gpt_5_3_codex_spark
+
+  gpt_5_2_codex: &gpt_5_2_codex
     adapter: codex_cli
     model_id: gpt-5.2-codex
     edit_protocol: structured_edits
@@ -146,3 +165,4 @@ models:
     include_temperature: false
     reasoning_effort: medium
     allow_batch_repair: false
+  gpt_5_2_codex_batch_strict: *gpt_5_2_codex

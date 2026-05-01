@@ -80,7 +80,7 @@ PYTHONPATH=src:. python -m vao.orchestrator \
 ```bash
 PYTHONPATH=src:. python -m vao.analysis.autoresearch_cifar10_pilot \
   --config configs/autoresearch_cifar10_pilot.yaml \
-  --models gpt_5_4_mini_batch_strict,gpt_5_3_codex_batch_strict,gpt_5_3_codex_spark_batch_strict,claude_sonnet_batch_strict \
+  --models gpt_5_4_mini,gpt_5_3_codex,gpt_5_3_codex_spark,claude_sonnet \
   --families lr-sensitive,regularization-sensitive,optimizer-sensitive,data-skew-sensitive,capacity-sensitive,schedule-sensitive \
   --seeds 7001:2 \
   --split pilot

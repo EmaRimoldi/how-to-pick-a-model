@@ -209,23 +209,23 @@ Use four primary models:
 
 | Role | Repo alias | Reason |
 | --- | --- | --- |
-| Cheap/fast generalist | `gpt_5_4_mini_batch_strict` | Provides the low-cost baseline needed to test whether cheap retries can beat stronger single attempts. |
-| Strong generalist | `gpt_5_4_batch_strict` | Provides a frontier general model with stronger reasoning and tool-use capability. |
-| Coding-specialized model | `gpt_5_3_codex_batch_strict` | Tests whether specialization for agentic coding changes the per-mode competence profile. |
-| Cross-provider balanced/strong model | `claude_sonnet_batch_strict` | Adds provider diversity with a serious non-OpenAI competitor, reducing the risk that the paper is only an OpenAI-internal ladder. |
+| Cheap/fast generalist | `gpt_5_4_mini` | Provides the low-cost baseline needed to test whether cheap retries can beat stronger single attempts. |
+| Strong generalist | `gpt_5_4` | Provides a frontier general model with stronger reasoning and tool-use capability. |
+| Coding-specialized model | `gpt_5_3_codex` | Tests whether specialization for agentic coding changes the per-mode competence profile. |
+| Cross-provider balanced/strong model | `claude_sonnet` | Adds provider diversity with a serious non-OpenAI competitor, reducing the risk that the paper is only an OpenAI-internal ladder. |
 
 Optional fifth model:
 
 | Role | Repo alias | When to include |
 | --- | --- | --- |
-| Cross-provider cheap model | `claude_haiku_batch_strict` | Include if we want a second cheap/fast point and stronger cost-scaling evidence. |
-| Upper-capability Anthropic model | `claude_opus_4_6_batch_strict` | Include only in appendix or focused subsets if budget permits. |
+| Cross-provider cheap model | `claude_haiku` | Include if we want a second cheap/fast point and stronger cost-scaling evidence. |
+| Upper-capability Anthropic model | `claude_opus_4_6` | Include only in appendix or focused subsets if budget permits. |
 
 Models not recommended for the main campaign:
 
-- `claude_opus_4_6_batch_strict`: useful as an upper-capability appendix point, but likely too expensive for the full campaign.
-- `gpt_5_2_codex_batch_strict`: useful for backward comparison, but less central than the current Codex-specialized model.
-- `qwen_coder_batch_strict`: useful as an open/local appendix baseline only if the local serving stack is stable and throughput is acceptable.
+- `claude_opus_4_6`: useful as an upper-capability appendix point, but likely too expensive for the full campaign.
+- `gpt_5_2_codex`: useful for backward comparison, but less central than the current Codex-specialized model.
+- `qwen_coder`: useful as an open/local appendix baseline only if the local serving stack is stable and throughput is acceptable.
 - local stubs: useful for infrastructure tests only, not publication evidence.
 
 ### Main Run Budget

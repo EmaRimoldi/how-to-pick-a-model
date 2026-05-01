@@ -59,16 +59,16 @@ You are allowed to create or modify configs, analysis scripts, small helpers, an
 
 Primary models for the publication-ready campaign:
 
-- `gpt_5_4_mini_batch_strict`
-- `gpt_5_4_batch_strict`
-- `gpt_5_3_codex_batch_strict`
-- `claude_sonnet_batch_strict`
+- `gpt_5_4_mini`
+- `gpt_5_4`
+- `gpt_5_3_codex`
+- `claude_sonnet`
 
 Optional appendix/fallback models:
 
-- `claude_haiku_batch_strict`
-- `claude_opus_4_6_batch_strict`
-- `qwen_coder_batch_strict` only if local serving is stable
+- `claude_haiku`
+- `claude_opus_4_6`
+- `qwen_coder` only if local serving is stable
 
 If one primary model is unavailable, keep the run matrix explicit and continue with available models. Do not silently substitute models without documenting it.
 

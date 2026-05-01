@@ -17,7 +17,7 @@ output:
   root: runs/autoresearch_cifar10/model_routing
 models:
   include:
-    - gpt_5_4_mini_batch_strict
-    - gpt_5_3_codex_batch_strict
-    - gpt_5_3_codex_spark_batch_strict
-    - claude_sonnet_batch_strict
+    - gpt_5_4_mini
+    - gpt_5_3_codex
+    - gpt_5_3_codex_spark
+    - claude_sonnet
