@@ -35,10 +35,12 @@
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator{\KL}{KL}
-\DeclareMathOperator{\MI}{I}
-\DeclareMathOperator{\Hent}{H}
+\DeclareMathOperator{\Occ}{Occ}
+\DeclareMathOperator{\Hit}{Hit}
+\DeclareMathOperator{\CVaR}{CVaR}
 
 \newcommand{\cA}{\mathcal{A}}
+\newcommand{\cB}{\mathcal{B}}
 \newcommand{\cD}{\mathcal{D}}
 \newcommand{\cS}{\mathcal{S}}
 \newcommand{\cT}{\mathcal{T}}
@@ -51,8 +53,7 @@
 \newcommand{\J}{\mathcal{J}}
 \newcommand{\Reg}{\mathcal{R}}
 \newcommand{\VOI}{\mathrm{VOI}}
-\newcommand{\Occ}{\mathrm{Occ}}
-\newcommand{\Hit}{\mathrm{Hit}}
+\newcommand{\one}{\mathbf{1}}
 \newcommand{\placeholder}[2]{%
   \begin{center}
   \fbox{\begin{minipage}{#1}
@@ -63,8 +64,8 @@
   \end{center}
 }
 
-\title{Beyond Benchmark Racing:\
-Decision-Theoretic Accounting for Verifier-Backed AutoResearch Workloads}
+\title{How to Pick the Model:\
+Minimal Diagnostic Interaction for Verifier-Backed Agentic Systems}
 
 \author{Anonymous Authors}
 
@@ -73,479 +74,590 @@ Decision-Theoretic Accounting for Verifier-Backed AutoResearch Workloads}
 \maketitle
 
 \begin{abstract}
-Agent builders typically compare models by end-to-end benchmark racing, but a scalar pass rate hides cost, persistence, workload heterogeneity, and routing failure.
-For verifier-backed iterative agents, the deployment question is not which model wins a leaderboard; it is which model or harness action minimizes verified effort on the current instance.
-We formulate model/harness choice as finite-action decision making under partial information for transductive, verifier-backed tasks.
-The central deployment object is workload-conditioned loss, not posterior accuracy: a learned router should be judged by gain over the best single action, incremental value of a cheap probe beyond the known workload, and regret to the per-instance oracle.
-This yields an exact accounting identity that decomposes the improvement of any learned router into workload opportunity, incremental signal value, and router regret.
-We instantiate the framework on AutoResearch-style CIFAR-10 optimization, treating AutoResearch itself as the task family and varying realistic workloads rather than synthetic bottleneck labels: the editable starting script may target a compact CNN, a flat MLP, or a tiny ResNet under the same verifier and metric.
-The resulting campaign is organized around five falsifiable questions: whether first-hit pass rate is too coarse for iterative deployment, whether comparative advantage is workload-dependent, whether cheap probe signals add decision value beyond workload identity, whether learned routers capture that value, and whether decomposition-guided evaluation reduces selection regret relative to black-box racing.
-The paper contributes a deployment-facing measurement language, a revised AutoResearch benchmark built from realistic workloads, and a concrete experimental program for deciding which model belongs inside a verifier-backed agent harness.
+For verifier-backed agent systems, the deployment question is not which model wins a scalar benchmark, but which model or harness action should be chosen for the current instance before committing a full expensive run.
+Many such tasks admit a small pre-run interaction with the task and verifier: one can run a smoke test, a short proof search, a baseline training evaluation, or a tiny repair attempt and then route the expensive solver.
+We formalize this idea as \emph{minimal diagnostic interaction}.
+A diagnostic interaction is a standardized cheap probe that produces a router-visible signal $Z_b$ before deployment, where $b$ indexes the interaction type and budget.
+For any deployment loss, we give an exact accounting identity that decomposes the performance of a routed policy into four decision quantities: the best fixed-action baseline, workload opportunity, diagnostic opportunity, and router regret.
+Under an optional finite latent-mode assumption, the instance-level problem reduces to posterior decision making on a reusable mode-conditioned loss matrix, linking the new formulation to earlier decompositions while keeping the operational object action-level rather than allocation-level.
+We then define the minimum useful diagnostic interaction: the cheapest admissible probe that recovers a target fraction of the routing value available in principle.
+The experimental program instantiates the framework on AutoResearch-style CIFAR-10 optimization, where an agent edits a training script, the verifier is validation loss under a fixed budget, and realistic workloads arise from distinct editable starting programs such as compact CNNs, flat MLPs, and tiny ResNets.
+The campaign is organized around five falsifiable questions: whether verified effort changes model rankings relative to pass rate, whether a baseline verifier probe reveals routing-relevant structure, how much of the oracle routing advantage that probe recovers, what minimum probe budget is economically sufficient, and whether reusable pilots reduce selection regret relative to black-box benchmark racing.
+The paper contributes a deployment-facing theory of routing from minimal verifier-backed interaction and a concrete benchmark protocol for testing it.
 \end{abstract}
 
 \section{Introduction}
 \label{sec:intro}
 
-A builder deploying an agent rarely asks only whether some sufficiently patient system can eventually solve a task.
-The real question is which model or harness should be used \emph{now}, on this concrete instance, under a verifier, a budget, and a cost convention.
-In repository repair, theorem proving, and AutoResearch-style training-loop optimization, multiple systems may eventually succeed if granted enough retries, enough context, or enough wall-clock time.
-The deployment question is therefore decision-theoretic: which action minimizes verified effort on this instance and how much is gained by collecting cheap information first?
+Suppose a builder has a verifier-backed task, a finite menu of candidate models or harnesses, and a concrete instance that must be solved under budget.
+The core deployment question is not merely whether some sufficiently large model can eventually solve the task.
+It is which solver should be chosen \emph{now}, on this instance, before paying the full cost of a long run.
+This question appears in repository repair against tests, theorem proving against a checker, data-pipeline or training-loop optimization against a validation metric, and AutoResearch-style program editing where an agent modifies \texttt{train.py}, runs a bounded experiment, and keeps the edit only when validation improves~\citep{jimenez2024swebench, karpathy2026autoresearch}.
+All of these are transductive and verifier-backed in the same sense: the system is given a concrete artifact-level problem, the environment provides an external success criterion, and capability is meaningful only relative to time, compute, and deployment budget.
+That framing is closely aligned with the time-centric view of agents in \citet{achille2025agents}.
 
-This paper argues that \emph{benchmark racing is the wrong object} for this regime.
-A scalar pass rate conflates several distinct effects.
-A model can win because it is intrinsically stronger, because it is cheaper to run, because it is better matched to one workload but not another, or because a router used a cheap signal effectively.
-These mechanisms call for different interventions.
-If the gain comes from cost, the right move may be cheaper retries.
-If the gain comes from workload-specific comparative advantage, a workload-conditioned deployment policy is appropriate.
-If the signal is informative but the learned router fails to exploit it, the problem is not the model menu but the routing rule.
+A scalar benchmark race is the wrong scientific object for this regime.
+Two models can have similar entry success and still differ sharply in verified effort, persistence of progress, dollar cost, wall-clock cost, or robustness across workload families.
+More importantly, the builder often has the option to interact \emph{a little} with the task before committing the full expensive run.
+In repository repair one can run smoke tests or inspect failing files; in theorem proving one can run a short bounded search; in AutoResearch one can execute a cheap baseline training evaluation.
+Because the task is verifier-backed, these interactions need not be vague heuristics.
+They can be standardized probes that expose solver-relevant structure before the full decision is made.
 
-The setting we care about is both \emph{transductive} and \emph{verifier-backed}.
-The system is handed a concrete task instance and must improve a concrete artifact rather than solve a generic supervised-learning problem first~\citep{vapnik1996structure}.
-Success is certified externally, whether by unit tests, a proof checker, or a thresholded validation-loss improvement.
-In this regime, the time-centric view of agents as task solvers in \citep{achille2025agents} is the right conceptual starting point.
-But the operational question is one level downstream: how should a builder choose between models, retry depths, and harness actions under that notion of time?
+This paper asks the following question: \emph{what is the minimum admissible interaction with a verifier-backed task that is sufficient to make routing worthwhile?}
+The key object is therefore not only the routed policy, but the cheap pre-run interaction that produces the signal used by the router.
+We call this object a \emph{diagnostic interaction}.
+A diagnostic interaction may be as simple as a no-edit baseline evaluation under a small verifier budget.
+It may also be richer, such as a bounded scout run or a short fallback attempt.
+Either way, it is completed before the expensive deployment run, is shared across candidate solvers, and yields a router-visible signal $Z$.
 
-Our answer is to reframe model choice as \emph{decision-theoretic performance accounting}.
-The paper's main object is not posterior calibration, mutual information, or a single leaderboard score.
-Those are diagnostics.
-The main object is workload-conditioned deployment loss, together with three decision quantities:
-(i) the gap between the best single action and the best workload-conditioned action,
-(ii) the incremental value of a cheap probe beyond the known workload identity, and
-(iii) the regret of the learned router relative to the per-instance oracle.
-This framing lets a practitioner distinguish four qualitatively different conclusions: deploy one model everywhere, condition on workload only, build a probe-aware router, or redesign the action menu.
+The new narrative of the paper is decision-theoretic rather than leaderboard-centric.
+We do not treat routing as a mysterious capability of an especially clever LLM.
+We treat it as a deployment decision problem under partial information.
+The right quantities are therefore: the loss of the best fixed action, the improvement available from known workload identity, the additional value of a diagnostic interaction, and the regret of the learned router relative to the signal oracle.
+Mutual information, posterior concentration, or mode-prediction accuracy are useful diagnostics, but they are secondary.
+The deployment-facing question is whether a cheap interaction changes the optimal action enough to justify its cost.
 
-\paragraph{Why AutoResearch?}
-Karpathy's AutoResearch loop is a particularly useful instantiation because it is already verifier-backed and iterative: an agent edits a training script, runs a bounded experiment, and keeps changes only when validation improves~\citep{karpathy2026autoresearch}.
-The task family is realistic enough to matter and structured enough to instrument.
-Instead of using synthetic mode labels as the main source of heterogeneity, we take AutoResearch itself as the meta-task and vary realistic workloads that share the same dataset and metric but begin from different trainable architectures.
-This preserves the deployment problem while making the benchmark more credible.
+\paragraph{Why AutoResearch is a good toy family.}
+AutoResearch is a particularly good experimental substrate because it isolates exactly the ingredients that matter here while staying reproducible enough for a controlled campaign.
+An instance consists of an editable training program, a fixed training and evaluation budget, a verifier based on validation loss, and a nuisance seed.
+The agent edits code, the environment runs the code, and success is externally certified by improved validation performance.
+This is already structurally analogous to software repair against unit tests, proof search against a checker, and tuning or configuration problems where short instrumented runs expose solver-relevant difficulty before a full expensive optimization is launched.
+At the same time, AutoResearch offers a disciplined toy model: the verifier is cheap enough to probe, the artifact is concrete, and realistic heterogeneity can be introduced by varying the starting program rather than inventing purely synthetic labels.
+In the active benchmark, the task family stays fixed while workloads differ through editable starting architectures such as a compact CNN, a flat MLP, and a tiny ResNet.
 
-\paragraph{Research questions and contributions.}
-We organize the paper around five falsifiable questions.
-
-\begin{enumerate}[leftmargin=1.4em,itemsep=0.2em]
-  \item \textbf{Is first-hit pass rate too coarse for iterative verifier-backed deployment?}
-  We define hit-based and occupancy-aware deployment losses and test whether occupancy continues to separate actions after entry success saturates.
-
-  \item \textbf{Is comparative advantage workload-dependent?}
-  We estimate workload-conditioned loss matrices over realistic AutoResearch workloads rather than synthetic bottleneck classes.
-
-  \item \textbf{Does a cheap probe carry incremental decision value beyond workload identity?}
-  We compare best-single, workload-only, workload-plus-probe, and oracle deployment policies.
-
-  \item \textbf{Does a learned router capture the available value?}
-  We measure gain over best single and regret to the per-instance oracle rather than only posterior accuracy.
-
-  \item \textbf{Can decomposition-guided evaluation reduce selection regret?}
-  We use reusable workload-conditioned pilots instead of treating every candidate design as a separate black-box race.
+\paragraph{Contributions.}
+The paper makes four contributions.
+\begin{enumerate}[leftmargin=1.35em,itemsep=0.2em]
+  \item \textbf{Minimal diagnostic interaction.} We define an admissible pre-run interaction family for verifier-backed tasks and formalize the minimum useful interaction as the cheapest probe that recovers a target fraction of the routing value available in principle.
+  \item \textbf{Action-level routing accounting.} We give an exact identity that decomposes routed deployment performance into the best fixed baseline, workload opportunity, diagnostic opportunity, and router regret.
+  \item \textbf{Finite-mode reduction.} Under an optional solver-relevant finite latent-mode assumption, the instance-level problem reduces to posterior decision making on a reusable mode-conditioned loss matrix, connecting the new formulation to earlier decompositions without forcing the main theorem into a mode-share allocation story.
+  \item \textbf{Experimental program.} We specify a coherent AutoResearch benchmark campaign that tests metric choice, diagnostic sufficiency, routing recovery, minimum useful probe budget, and selection regret using realistic workloads and verifier-backed probes.
 \end{enumerate}
 
-The immediate contribution of this draft is a complete paper-facing revision of the setup, mathematics, related work, and experimental campaign around those questions.
-
-\section{Deployment setup}
+\section{Verifier-backed deployment with diagnostic interaction}
 \label{sec:setup}
-
-We adapt the budgeted verifiable-task language of \citep{beneventano2026framework} to the concrete deployment problem faced by agent builders.
 
 \begin{definition}[Verifier-backed transductive task]
 A verifier-backed transductive task is a tuple
 $\cT=(\cX,\cY,V,B,\mu)$,
-where $\cX$ is an instance space, $\cY$ is an artifact space, $V:\cX\times\cY\to\mathbb{R}$ is an external verifier or scalar verifier surrogate, $B$ is a deployment budget, and $\mu$ is a deployment distribution over instances.
-A task is transductive when the system is evaluated on concrete instances $x\sim\mu$ and concrete artifacts $y\in\cY$, rather than by learning a global predictor first.
+where $\cX$ is an instance space, $\cY$ is an artifact space, $V$ is an external verifier or verifier-derived scalar evaluation procedure, $B$ is the full deployment budget, and $\mu$ is a deployment distribution over instances.
+The task is transductive because performance is measured on concrete instance-artifact pairs $(x,y)$ rather than by learning a task-independent predictor first.
 \end{definition}
 
-The verifier may be binary, as in tests or proof checking, or scalar, as in validation loss thresholded into a success event.
-The essential property is that correctness is assessed outside the model.
+The verifier may be binary, as in tests or proof checking, or scalar, as in validation loss that is later thresholded into success.
+The essential requirement is externality: success is not whatever the model claims, but whatever the task verifier certifies.
 
-\begin{definition}[Action menu]
-Let $\cA=\{a_1,\dots,a_K\}$ be a finite deployment menu.
-An action $a\in\cA$ can be a single base model, a model with a retry depth, a model plus fallback rule, or a fixed harness variant.
-In the AutoResearch instantiation of this paper, the primary action menu is
-\[
-\cA=\{\texttt{gpt\_5\_4\_mini},\ \texttt{gpt\_5\_3\_codex},\ \texttt{claude\_sonnet}\}.
-\]
+\begin{definition}[Deployment action menu]
+Let $\cA=\{a_1,\ldots,a_K\}$ be a finite menu of deployable actions.
+An action may be a base model, a model plus retry depth, a model plus fixed fallback rule, or any fixed harness variant that can be selected before the main run.
+For a task instance $X\sim\mu$, action $a\in\cA$ incurs deployment loss $\ell(a,X)$.
 \end{definition}
 
-\begin{definition}[Observed workload and cheap probe]
-Each task instance carries an observed workload label $W\in\cW$ and a cheap information state $Z$ available before the expensive deployment decision.
-The workload label is part of the task specification: for example, the editable starting script may target a compact CNN, a flat MLP, or a tiny ResNet.
-The cheap probe can include baseline verifier metrics, wall-clock hints, parameter counts, and other router-visible features collected before committing to a full run.
+The main theory requires only that $\ell(a,X)$ be integrable.
+In the experimental program we instantiate $\ell$ with cost-aware first-hit and occupancy losses derived from logged trajectories.
+
+\begin{definition}[Observed workload and admissible diagnostic interaction]
+Let $W=\omega(X)\in\cW$ denote observed coarse workload information available before any probe, such as the starting program family or repository type.
+Let $\cB$ be a finite family of admissible diagnostic interactions.
+Each $b\in\cB$ specifies both a standardized interaction type and its diagnostic budget.
+Running interaction $b$ on instance $X$ before the main run produces:
+(i) a diagnostic transcript $\Xi_b(X)$,
+(ii) a router-visible signal $Z_b=\phi_b(\Xi_b(X))$, and
+(iii) a diagnostic cost $c_b(X)$.
+Admissibility means that $b$ is completed before committing the expensive deployment action and is shared across candidate actions rather than tailored to a particular one.
 \end{definition}
 
-This separation matters.
-The workload label is not a learned posterior; it is already known to the builder.
-The question is therefore not whether the router can guess the workload class, but whether a cheap probe adds useful decision value \emph{beyond} that known workload identity.
+This definition intentionally includes both \emph{amount} and \emph{type} of interaction.
+For example, $b$ may mean ``no interaction,'' ``run the baseline verifier for 128 inner steps,'' or ``perform one standardized scout attempt and summarize the verifier trace.''
+The paper's mainline AutoResearch instantiation uses the simplest nontrivial member of this family: a no-edit baseline verifier probe whose summary statistics become the router-visible signal.
 
-\paragraph{AutoResearch workload family.}
-The active benchmark uses three realistic workloads on CIFAR-10 with the same verifier and metric:
-\begin{enumerate}[leftmargin=1.4em,itemsep=0.15em]
-  \item \texttt{cnn\_compact}: a shallow convolutional baseline,
-  \item \texttt{mlp\_flat}: a flattened-image multilayer perceptron,
-  \item \texttt{resnet\_tiny}: a small residual network.
-\end{enumerate}
-The task family is therefore fixed at the meta-level---AutoResearch-style iterative program editing---while heterogeneity enters through realistic editable starting workloads, not synthetic bottleneck labels.
-
-\section{Deployment losses and accounting}
-\label{sec:accounting}
-
-\begin{assumption}[Finite workload-action deployment setting]
-\label{ass:packed}
-The main paper studies a finite deployment menu $\cA$, a finite observed workload set $\cW$, a bounded trajectory horizon $H$, and a cheap probe $Z$ available before the expensive deployment choice.
-This is the submission-scale regime in which reusable workload-conditioned pilots can be estimated and compared cleanly.
-\end{assumption}
-
-\subsection{Hit and occupancy losses}
-
-An iterative verifier-backed agent produces a trajectory of verified improvements.
-Entry success and persistence are different operational objects, so we make both explicit.
-
-Fix a relative-improvement threshold $\delta>0$ and a trajectory horizon $H$.
-Let $\rho_t(a,x)$ denote the relative verifier improvement achieved by action $a$ after step $t$ on instance $x$.
+\paragraph{Concrete deployment losses.}
+The theory below is written for a generic $\ell$, but the experimental campaign uses two concrete loss families.
+Fix a relative-improvement threshold $\delta>0$ and horizon $H$.
+Let $\rho_t(a,x)$ denote relative verifier improvement at step $t$ of action $a$ on instance $x$.
 Define the first threshold-hit time
 \[
-\tau_\delta(a,x)=\inf\{t\in\{1,\dots,H\}:\rho_t(a,x)\ge \delta\},
+\tau_\delta(a,x)=\inf\{t\in\{1,\ldots,H\}:\rho_t(a,x)\ge \delta\},
 \]
-with the convention $\tau_\delta(a,x)=\infty$ if the threshold is never reached.
-Define the threshold occupancy
+with $\tau_\delta(a,x)=\infty$ if the threshold is never reached, and define threshold occupancy
 \[
-\Occ_{\delta,H}(a,x)=\frac{1}{H}\sum_{t=1}^H \mathbf 1\!\{\rho_t(a,x)\ge \delta\}.
+\Occ_{\delta,H}(a,x)=\frac{1}{H}\sum_{t=1}^H \one\{\rho_t(a,x)\ge \delta\}.
 \]
-
-We will evaluate at least two deployment losses:
+Let $C_{a,\tau\wedge H}(x)$ be the cost to first hit or horizon and $C_a^{\mathrm{full}}(x)$ the cost of the full trajectory.
+We use
 \begin{align}
 \ell_{\mathrm{hit}}(a,x)
-&= \mathbf 1\!\{\tau_\delta(a,x)=\infty\} + \lambda\,c(a,x), \\
+&= \one\{\tau_\delta(a,x)=\infty\}+\lambda\,C_{a,\tau\wedge H}(x),
+\\
 \ell_{\mathrm{occ}}(a,x)
-&= 1-\Occ_{\delta,H}(a,x) + \lambda\,c(a,x),
+&= 1-\Occ_{\delta,H}(a,x)+\lambda\,C_a^{\mathrm{full}}(x),
 \end{align}
-where $c(a,x)$ is a deployment cost proxy such as wall-clock time, token cost, or verified effort.
-The first loss asks whether the action ever crosses the threshold.
-The second asks how much of the trajectory stays above threshold.
+where $\lambda$ converts cost into the same deployment scale.
+The first loss measures verified entry under cost.
+The second measures persistence of verified progress under cost.
 
-\begin{remark}[Why occupancy matters]
-If two actions achieve similar first-hit success but one sustains useful progress for much larger fractions of the trajectory, then hit-based ranking is too coarse for deployment.
-The occupancy loss is designed to expose exactly that regime.
-\end{remark}
+\section{Decision-theoretic accounting for routing}
+\label{sec:accounting}
 
-\subsection{Workload-conditioned deployment objectives}
+The central deployment object is the loss achieved after a diagnostic interaction and a routing decision.
+We first define three oracles and then show that every learned router admits a simple exact decomposition.
 
-For a routing policy $r(a\mid W,Z)$ and loss $\ell$, define the deployment objective
-\[
-\J_\ell(r)=\E\big[\ell(A,X)\big],\qquad A\sim r(\cdot\mid W,Z),\ X\sim\mu.
-\]
-We distinguish four benchmark policies.
+\subsection{Best fixed action, workload oracle, and diagnostic oracle}
 
-\begin{definition}[Deployment baselines]
-Let $\ell$ be a fixed deployment loss.
-\begin{enumerate}[leftmargin=1.4em,itemsep=0.15em]
-  \item The \emph{best single action} is
-  \[
-  a_\emptyset^\star \in \argmin_{a\in\cA} \E[\ell(a,X)].
-  \]
-  \item The \emph{workload oracle} is
-  \[
-  a_W^\star(w) \in \argmin_{a\in\cA} \E[\ell(a,X)\mid W=w].
-  \]
-  \item The \emph{signal oracle} is
-  \[
-  a_{W,Z}^\star(w,z) \in \argmin_{a\in\cA} \E[\ell(a,X)\mid W=w,Z=z].
-  \]
-  \item A \emph{learned router} is any measurable policy $r(a\mid W,Z)$ estimated from pilot data.
-\end{enumerate}
+Define the best fixed-action loss
+\begin{equation}
+L_{\mathrm{fix}}
+:=
+\min_{a\in\cA} \E\big[\ell(a,X)\big].
+\label{eq:lfix}
+\end{equation}
+This is the strongest policy available to a practitioner who refuses all instance-dependent routing.
+
+Define the workload oracle
+\begin{equation}
+L_W
+:=
+\E\left[\min_{a\in\cA} \E\big[\ell(a,X)\mid W\big]\right].
+\label{eq:lwork}
+\end{equation}
+This is the Bayes-optimal policy if the builder may condition on coarse known workload identity but not on an additional probe.
+
+For a diagnostic interaction $b\in\cB$, define the raw signal oracle
+\begin{equation}
+\bar L_b
+:=
+\E\left[\min_{a\in\cA} \E\big[\ell(a,X)\mid W,Z_b\big]\right]
+\label{eq:rawlzb}
+\end{equation}
+and the net diagnostic oracle
+\begin{equation}
+L_b
+:=
+\E\big[c_b(X)\big]+\bar L_b.
+\label{eq:netlzb}
+\end{equation}
+The distinction is deliberate.
+$\bar L_b$ isolates the decision value of the signal itself.
+$L_b$ asks whether that value survives after paying for the interaction.
+
+A learned router after diagnostic interaction $b$ is a measurable policy $r_b(a\mid W,Z_b)$ over the finite action menu.
+Its deployment objective is
+\begin{equation}
+\J_b(r_b)
+:=
+\E\left[c_b(X)+\sum_{a\in\cA} r_b(a\mid W,Z_b)\,\ell(a,X)\right].
+\label{eq:routed-objective}
+\end{equation}
+
+\begin{definition}[Workload opportunity, diagnostic opportunity, and router regret]
+For each admissible diagnostic interaction $b\in\cB$, define
+\begin{align}
+\Delta_W
+&:= L_{\mathrm{fix}}-L_W,
+\\
+\bar\Delta_b
+&:= L_W-\bar L_b,
+\\
+\Delta_b
+&:= L_W-L_b = \bar\Delta_b-\E[c_b(X)],
+\\
+\Reg_b(r_b)
+&:= \J_b(r_b)-L_b.
+\end{align}
+Here $\Delta_W$ is workload opportunity, $\bar\Delta_b$ is raw diagnostic opportunity, $\Delta_b$ is net diagnostic opportunity, and $\Reg_b(r_b)$ is regret relative to the diagnostic oracle.
 \end{definition}
 
-The workload oracle measures how much is gained simply by respecting realistic workload heterogeneity.
-The signal oracle measures how much additional value can, in principle, be extracted from a cheap probe within workloads.
-The learned router measures how much of that value is actually captured.
-
-\begin{theorem}[Deployment accounting identity]
-\label{thm:accounting}
-\label{thm:four-term}
-For any loss $\ell$ and any learned router $r$, the gain over the best single action decomposes as
-\[
-\J_\ell(a_\emptyset^\star)-\J_\ell(r)
+\begin{theorem}[Exact action-level routing identity]
+\label{thm:main-identity}
+For every admissible diagnostic interaction $b\in\cB$ and every learned router $r_b$,
+\begin{equation}
+\J_b(r_b)
 =
-\underbrace{\J_\ell(a_\emptyset^\star)-\J_\ell(a_W^\star)}_{\text{workload opportunity}}
-+
-\underbrace{\J_\ell(a_W^\star)-\J_\ell(a_{W,Z}^\star)}_{\text{incremental signal value }\VOI_\ell(Z\mid W)}
--
-\underbrace{\big(\J_\ell(r)-\J_\ell(a_{W,Z}^\star)\big)}_{\text{router regret }\Reg_\ell(r)}.
-\]
+L_{\mathrm{fix}}-\Delta_W-\Delta_b+\Reg_b(r_b).
+\label{eq:main-identity}
+\end{equation}
+Equivalently,
+\begin{equation}
+\J_b(r_b)
+=
+L_W-\Delta_b+\Reg_b(r_b)
+=
+L_b+\Reg_b(r_b).
+\end{equation}
 \end{theorem}
 
 \begin{proof}
-Add and subtract $\J_\ell(a_W^\star)$ and $\J_\ell(a_{W,Z}^\star)$.
+The second equality is just the definition of regret.
+Substituting $L_b=L_W-\Delta_b$ gives $\J_b(r_b)=L_W-\Delta_b+\Reg_b(r_b)$.
+Substituting $L_W=L_{\mathrm{fix}}-\Delta_W$ yields~\eqref{eq:main-identity}.
 \end{proof}
 
-The importance of Theorem~\ref{thm:accounting} is not algebraic sophistication but operational clarity.
-A positive gap over the best single action can arise because workloads differ, because the cheap probe adds intra-workload decision value, or because both are true.
-Conversely, if the learned router underperforms the signal oracle, the gap is router regret rather than lack of information.
+The theorem gives the paper's main accounting language.
+A routed deployment can beat the best fixed action for only two reasons: coarse workload identity already matters ($\Delta_W>0$), or the diagnostic interaction adds enough value on top of workload identity ($\Delta_b>0$).
+A learned router then keeps or loses that value through $\Reg_b(r_b)$.
+This is the action-level analogue of the broader decomposition story in earlier drafts, but it is faithful to the operational protocol in which the router chooses a model or harness action rather than allocating a posterior mass directly across latent modes.
 
-\subsection{Selection regret}
+\subsection{Minimum useful diagnostic interaction}
 
-We also care about the cost of discovering a good deployment policy.
-Let $\widehat r_N$ be the policy chosen from a pilot of size $N$ under some evaluation protocol.
-Its selection regret is
+The theorem separates two practitioner questions.
+One is informational: how much routing value is in principle exposed by the signal?
+The other is economic: after paying for the interaction, was the probe worth it?
+
+\begin{definition}[Minimum sufficient and economically optimal interaction]
+Fix a target recovery fraction $\eta\in(0,1]$.
+The minimum sufficient diagnostic interaction is any solution of
+\begin{equation}
+ b^{\mathrm{suf}}_\eta
+ \in
+ \argmin_{b\in\cB}
+ \left\{\E[c_b(X)] : \bar\Delta_b \ge \eta\,\max_{b'\in\cB}\bar\Delta_{b'}\right\}.
+ \label{eq:min-sufficient}
+\end{equation}
+The economically optimal diagnostic interaction is any solution of
+\begin{equation}
+ b^{\mathrm{net}}_\star
+ \in
+ \argmax_{b\in\cB} \Delta_b.
+ \label{eq:net-optimal}
+\end{equation}
+\end{definition}
+
+The first quantity captures minimal interaction in the pure decision sense: what is the cheapest admissible probe that recovers most of the routing information that is available at all?
+The second captures the deployment sense: which probe actually maximizes net value after its own cost is counted?
+They need not coincide.
+A richer probe can reveal more but still be uneconomical.
+
+\begin{proposition}[More informative probes help before cost is counted]
+\label{prop:monotone}
+Suppose $b_1,b_2\in\cB$ satisfy that $Z_{b_1}$ is measurable with respect to $Z_{b_2}$, so $b_2$ is at least as informative as $b_1$.
+Then
+\begin{equation}
+\bar L_{b_2}\le \bar L_{b_1}
+\qquad\text{and}\qquad
+\bar\Delta_{b_2}\ge \bar\Delta_{b_1}.
+\end{equation}
+Thus richer pre-run interaction cannot hurt the signal oracle before probe cost is counted.
+\end{proposition}
+
+\begin{proof}
+Conditioning on a finer signal can only enlarge the class of measurable decision rules available to the oracle.
+Therefore the conditional Bayes risk under $Z_{b_2}$ is no larger than the conditional Bayes risk under $Z_{b_1}$ pointwise, and averaging proves the claim.
+\end{proof}
+
+Proposition~\ref{prop:monotone} is intentionally about raw diagnostic opportunity rather than net value.
+Once diagnostic cost is included, more interaction may or may not be worth paying for.
+That tradeoff is one of the main empirical targets of the paper.
+
+\subsection{Finite latent-mode reduction}
+
+The main theorem is instance-level and does not require latent modes.
+Modes enter only when they provide a reusable abstraction for pilots.
+
+\begin{assumption}[Finite solver-relevant mode sufficiency]
+\label{ass:finite-mode}
+There exists a finite latent variable $S\in\cS$ such that for every action $a\in\cA$,
+\begin{equation}
+\E\big[\ell(a,X)\mid X\big]
+=
+\E\big[\ell(a,X)\mid S\big]
+\qquad\text{almost surely.}
+\end{equation}
+Equivalently, there is a mode-conditioned loss matrix
 \[
-\Reg_{\mathrm{sel},\ell}(N)=\J_\ell(\widehat r_N)-\J_\ell(r^\star),
+\ell(a,s):=\E\big[\ell(a,X)\mid S=s\big]
 \]
-where $r^\star$ is the best policy in the candidate class under the chosen information set.
-The central methodological claim of the paper is that reusable workload-conditioned pilots should reduce $\Reg_{\mathrm{sel},\ell}(N)$ relative to treating every candidate design as a separate black-box race.
+that captures the action-level Bayes loss through the finite solver-relevant state $S$.
+\end{assumption}
+
+\begin{proposition}[Posterior decision on a mode-conditioned loss matrix]
+\label{prop:mode-reduction}
+Under Assumption~\ref{ass:finite-mode},
+\begin{equation}
+\bar L_b
+=
+\E\left[
+\min_{a\in\cA}
+\sum_{s\in\cS}
+\Prb[S=s\mid W,Z_b]\,\ell(a,s)
+\right].
+\label{eq:mode-reduction}
+\end{equation}
+Therefore reusable estimates of $\ell(a,s)$ and posterior summaries of $\Prb[S\mid W,Z_b]$ suffice to score many candidate routers analytically.
+\end{proposition}
+
+\begin{proof}
+By Assumption~\ref{ass:finite-mode},
+\[
+\E\big[\ell(a,X)\mid W,Z_b\big]
+=
+\sum_{s\in\cS}\Prb[S=s\mid W,Z_b] \ell(a,s),
+\]
+and substituting this expression into~\eqref{eq:rawlzb} yields~\eqref{eq:mode-reduction}.
+\end{proof}
+
+Proposition~\ref{prop:mode-reduction} is how the new paper absorbs the useful part of the earlier mode-based formalism.
+Latent modes remain valuable when they let us reuse structured pilots, but the primary deployment object is still the action-level decision after a small admissible interaction.
+
+\section{Reusable pilots and design selection}
+\label{sec:selection}
+
+The previous section defines the deployment objective for a fixed diagnostic interaction and a fixed router.
+A practitioner, however, must choose among many designs.
+We therefore define a deployment design to be a pair
+\[
+d=(b,r_b), \qquad b\in\cB,
+\]
+with objective $\J(d):=\J_b(r_b)$.
+Given a finite candidate menu $\cD$, the selected design from $N$ pilot instances is denoted $\hat d_N$ and its selection regret is
+\begin{equation}
+\Reg_{\mathrm{sel}}(N)
+:=
+\E\big[\J(\hat d_N)-\min_{d\in\cD}\J(d)\big].
+\label{eq:selection-regret}
+\end{equation}
+
+The experimental proposal of the paper is not to black-box race every element of $\cD$ from scratch.
+Instead, when a finite latent-mode abstraction is useful, one first estimates reusable mode-conditioned losses and signal posteriors and only then confirms a small finalist set end to end.
+
+\begin{algorithm}[Reusable pilot protocol for minimal-interaction routing]
+\label{alg:pilot}
+\normalfont\small
+\begin{tabular}{@{}r p{0.86\linewidth}@{}}
+\textit{Input:} & action menu $\cA$, admissible diagnostic family $\cB$, candidate router family, deployment loss $\ell$, pilot split, holdout split.\\[0.25em]
+1 & Choose a finite candidate design menu $\cD$ consisting of workload-only policies, probe-aware routers, and fixed-action baselines.\\
+2 & For each pilot instance and each admissible interaction $b$, execute the standardized pre-run interaction, log its signal $Z_b$, and record diagnostic cost $c_b$.\\
+3 & Execute the full action menu on the pilot split and estimate either instance-level losses directly or, under Assumption~\ref{ass:finite-mode}, the reusable mode-conditioned loss matrix $\ell(a,s)$ and posterior surrogates for $\Prb[S\mid W,Z_b]$.\\
+4 & Score every candidate design $d\in\cD$ under the accounting identities of Section~\ref{sec:accounting}; keep a small finalist set.\\
+5 & Evaluate finalists on holdout instances and report best fixed performance, workload opportunity, raw and net diagnostic opportunity, router regret, and selection regret.
+\end{tabular}
+\end{algorithm}
+
+The key point is amortization.
+If many candidate routers share the same action menu and the same admissible diagnostic family, the expensive quantities are the pilot losses and probe traces, not the combinatorial number of candidate policies built on top of them.
+That is why the experimental section measures selection regret under a fixed evaluation budget rather than only reporting the best observed routed policy.
 
 \section{Experimental campaign}
-\label{sec:campaign}
 \label{sec:experiments}
 
-The paper is designed around five experiments, all tied directly to the accounting quantities above.
+This section specifies the paper-facing campaign.
+Each subsection is organized around three questions: what is being tested, why the test matters, and how the test is carried out.
+The goal is not to hide the benchmark behind a single headline number, but to align each empirical claim with a specific quantity from Sections~\ref{sec:setup}--\ref{sec:selection}.
 
-\paragraph{Task family and verifier.}
-Every run is an AutoResearch instance: the agent edits a single \texttt{train.py}, the verifier runs bounded training on CIFAR-10, and improvement is measured by validation loss.
-The dataset and metric are fixed across workloads.
-What changes is the editable starting program: compact CNN, flat MLP, or tiny ResNet.
-This keeps the benchmark realistic while preserving a controlled verifier.
+\subsection{Benchmark family and operational instantiation}
+\label{subsec:benchmark}
 
-\paragraph{Action menu.}
-The main paper compares three full-run deployment actions:
-\texttt{gpt\_5\_4\_mini}, \texttt{gpt\_5\_3\_codex}, and \texttt{claude\_sonnet}.
-Each action sees the same workload specification and produces the whole visible AutoResearch trajectory.
-The benchmark does not rely on step-level model switching in the main claim.
+The experimental family is AutoResearch-style CIFAR-10 optimization.
+Each instance contains an editable starting program \texttt{train.py}, a fixed training and validation regime, a verifier based on validation loss, and a nuisance seed.
+The active mainline uses three realistic workload families that share the same dataset and verifier while differing in the editable starting architecture:
+\texttt{cnn\_compact}, \texttt{mlp\_flat}, and \texttt{resnet\_tiny}.
+This is why AutoResearch is a suitable toy family rather than a toy task.
+It preserves the structural ingredients of a verifier-backed agent problem---artifact editing, repeated evaluation, external certification, and workload heterogeneity---while remaining reproducible enough to instrument densely.
 
-\paragraph{Cheap signal $Z$.}
-The probe is restricted to pre-run information available before the expensive agent trajectory.
-In the current implementation this includes baseline verifier metrics from the unedited starting script, simple cost features such as training seconds and parameter count, and workload metadata already visible to the builder.
-The key experimental comparison is between conditioning on workload identity alone and conditioning on workload plus this cheap probe.
-
-\paragraph{Splits and sampling.}
-Each workload is instantiated over multiple nuisance seeds.
-Pilot seeds are used to estimate workload-conditioned action losses and to fit a probe-aware deployment rule.
-Holdout seeds are used only for final accounting: best single action, workload oracle, learned router, and per-instance oracle.
-This separation is critical because the same runs cannot simultaneously define and evaluate the routing rule.
-
-\subsection{Experiment A: pass rate versus deployment loss}
-
-\textbf{Question.}
-Does scalar pass rate measure the wrong object for iterative verifier-backed deployment?
-
-\textbf{Measurement.}
-For each action and workload we record first-hit success at threshold $\delta$, cost-to-threshold, and threshold occupancy.
-We compare rankings induced by hit-based and occupancy-based losses.
-
-\textbf{Claim gate.}
-We promote the claim if at least one of the following holds on holdout:
-(i) a serious rank reversal occurs between hit-based and occupancy-aware ranking, or
-(ii) first-hit success saturates while occupancy continues to separate actions.
-
-\subsection{Experiment B: comparative advantage across workloads}
-
-\textbf{Question.}
-Is the best deployment action workload-dependent?
-
-\textbf{Measurement.}
-We estimate the workload-conditioned loss matrix
+The paper-facing action menu is a small realistic solver set, for example
 \[
-L_{a,w}=\E[\ell(a,X)\mid W=w],
+\cA=\{\texttt{gpt\_5\_4\_mini},\ \texttt{gpt\_5\_3\_codex},\ \texttt{claude\_sonnet}\},
 \]
-and test whether the minimizing action changes across workloads.
+with optional appendix extensions to additional variants.
+The main admissible diagnostic interaction is a no-edit baseline verifier probe.
+Its router-visible signal is the summary already exposed by the harness: baseline validation loss, baseline validation accuracy, training seconds, total seconds, parameter count, and total baseline steps.
+Main-text routing experiments use this no-edit probe because it is the strictest and cheapest nontrivial interaction.
 
-\textbf{Claim gate.}
-The claim passes if no single action dominates across all three workloads and the workload oracle beats the best single action by a meaningful margin.
+\begin{figure}[t]
+\placeholder{0.96\linewidth}{
+Planned figure: overview of the benchmark family.
+Left panel: three AutoResearch workloads (compact CNN, flat MLP, tiny ResNet) as different editable starting programs under the same verifier.
+Middle panel: admissible diagnostic interaction, instantiated in the mainline as a no-edit baseline probe producing a small summary signal $Z_b$.
+Right panel: router chooses one solver from the action menu before the full expensive run.
+}
+\caption{Operational picture of minimal diagnostic interaction in the AutoResearch benchmark family.}
+\label{fig:overview}
+\end{figure}
 
-\subsection{Experiment C: incremental value of a cheap probe}
+\subsection{Experiment I: does verified effort change the ranking?}
+\label{subsec:exp1}
 
-\textbf{Question.}
-Does the cheap probe add decision value beyond the workload label already known to the builder?
+\paragraph{What is being tested.}
+We test whether action rankings induced by entry success or first-hit pass rate agree with rankings induced by deployment losses such as $\ell_{\mathrm{hit}}$ and $\ell_{\mathrm{occ}}$.
+Equivalently, we ask whether benchmark racing on a scalar success metric is already sufficient, or whether deployment-aware metrics expose important heterogeneity.
 
-\textbf{Measurement.}
-We compare:
-\begin{enumerate}[leftmargin=1.4em,itemsep=0.15em]
-  \item the best single action,
-  \item the workload-only policy $a_W^\star$,
-  \item a learned workload-plus-probe router,
-  \item the per-instance signal oracle.
-\end{enumerate}
-The central quantity is the incremental signal value
-\[
-\VOI_\ell(Z\mid W)=\J_\ell(a_W^\star)-\J_\ell(a_{W,Z}^\star).
-\]
+\paragraph{Why this test matters.}
+If rankings are stable across these objectives, then the rest of the routing story becomes less compelling.
+If instead a model that looks strong under pass rate is weak under verified effort or occupancy, then routing must be framed around deployment loss rather than aggregate success.
+This experiment therefore justifies the objective of the paper before any router is introduced.
 
-\textbf{Controls.}
-We include workload-only and corrupted-probe controls in the analysis code and report the gap to the leaky upper bound only as a diagnostic, not as a deployment object.
+\paragraph{How it is tested.}
+For every workload and every action in $\cA$, we run full no-stop trajectories up to a common horizon $H$ and log verifier improvement, first threshold-hit time, occupancy above threshold, wall-clock, and token cost.
+From these trajectories we reconstruct per-action losses under several metrics and report within-workload and overall rankings.
+The main comparison is between first-hit success, cost-aware first-hit loss, and occupancy-aware loss.
 
-\subsection{Experiment D: learned-router regret}
+\begin{figure}[t]
+\placeholder{0.96\linewidth}{
+Planned figure: rank comparison across metrics.
+Left: per-workload bar chart of first-hit success.
+Center: per-workload bar chart of occupancy-aware loss or cost-adjusted verified effort.
+Right: rank-flip summary showing where benchmark racing and deployment ranking disagree.
+}
+\caption{Experiment I asks whether pass rate is already enough or whether verified effort changes the ranking.}
+\label{fig:metric-ranks}
+\end{figure}
 
-\textbf{Question.}
-When routing helps, is the learned router capturing most of the available value?
+\subsection{Experiment II: can a minimal verifier-backed interaction reveal routing-relevant structure?}
+\label{subsec:exp2}
 
-\textbf{Measurement.}
-We evaluate a lightweight probe-aware router fit on the pilot split and report
-\[
-\Reg_\ell(r)=\J_\ell(r)-\J_\ell(a_{W,Z}^\star).
-\]
-The router is judged by decision quality, not by posterior calibration alone.
+\paragraph{What is being tested.}
+We test whether the mainline baseline probe produces a signal $Z_b$ that exposes solver-relevant structure beyond known workload identity $W$.
+The central objects are the raw diagnostic oracle $\bar L_b$ and the raw diagnostic opportunity $\bar\Delta_b$.
 
-\textbf{Claim gate.}
-The learned router should beat the best single action, beat or match the workload-only policy, and leave interpretable but non-dominant regret to the per-instance oracle.
+\paragraph{Why this test matters.}
+This is the heart of the minimal-interaction thesis.
+If a tiny admissible interaction already reveals enough structure to change the optimal action, then the verifier is not only a final judge but also a diagnostic instrument.
+If it does not, then routing should stay workload-only or disappear entirely.
 
-\subsection{Experiment E: selection regret under fixed evaluation budget}
+\paragraph{How it is tested.}
+We compare several admissible information states drawn from the existing harness: no interaction, workload-only information, and workload plus the baseline probe summary.
+The mainline experiment uses the no-edit baseline probe because it is extremely cheap and already implemented.
+The primary report is incremental: how much does the probe add beyond workload identity?
+We therefore center the analysis on $\bar L_b$ and $\bar\Delta_b$, while optionally reporting probe-only ablations in the appendix as an interpretability aid.
+A diagnostic sandbox based on finite mode labels may also be used in the appendix to visualize which parts of the signal separate which regimes, but the main claim is decision-theoretic, not classification-theoretic.
 
-\textbf{Question.}
-Can decomposition-guided evaluation identify good deployment rules with less pilot budget than black-box racing?
+\begin{figure}[t]
+\placeholder{0.96\linewidth}{
+Planned figure: diagnostic signal ablation.
+Bars compare best fixed, workload-only, and workload-plus-probe policies on the same holdout split.
+Primary y-axis: raw diagnostic opportunity $\bar\Delta_b$ beyond workload identity.
+Secondary appendix panel: optional probe-only or mode-confusion summaries to help interpret the signal, not to define the main claim.
+}
+\caption{Experiment II measures how much routing-relevant structure is exposed by a cheap admissible interaction.}
+\label{fig:signal-ablation}
+\end{figure}
 
-\textbf{Measurement.}
-For increasing pilot sizes $N$, we compare the deployment loss of the selected policy under:
-(i) end-to-end racing of candidate designs and
-(ii) reusable workload-conditioned accounting.
-The resulting curve is the empirical selection regret profile.
+\subsection{Experiment III: how much of the oracle routing value is recoverable?}
+\label{subsec:exp3}
 
-\textbf{Claim gate.}
-Accounting is worthwhile only if it reduces selection regret at practically relevant pilot sizes.
+\paragraph{What is being tested.}
+We compare four deployment policies on holdout instances: the best fixed action, the workload oracle, the diagnostic oracle, and learned routers fit from the pilot split.
+This directly estimates $\Delta_W$, $\Delta_b$, and $\Reg_b(r_b)$.
 
-\paragraph{Primary reporting objects.}
-The main tables and figures are therefore fixed by the theory:
-\begin{enumerate}[leftmargin=1.4em,itemsep=0.15em]
-  \item a hit-versus-occupancy comparison across actions and workloads,
-  \item a workload-conditioned loss matrix,
-  \item a best-single / workload-only / learned / oracle accounting table,
-  \item a router-regret summary, and
-  \item a selection-regret curve.
-\end{enumerate}
+\paragraph{Why this test matters.}
+It separates three qualitatively different stories.
+If $\Delta_W\approx 0$, even coarse workload-aware routing is unnecessary.
+If $\Delta_W>0$ but $\Delta_b\approx 0$, workload identity matters but the cheap probe does not.
+If $\Delta_b>0$ and the learned regret is small, then a minimal interaction genuinely changes the deployment decision.
+This is the main test of whether routing is worthwhile in practice.
+
+\paragraph{How it is tested.}
+We split instances into pilot and holdout partitions.
+The pilot split is used to estimate action losses and fit lightweight routers from $(W,Z_b)$ to actions; the holdout split evaluates deployment loss only.
+The mainline learned routers should start simple and interpretable---for example nearest-prototype, linear, or tree-based rules---because the question is whether the signal is usable, not whether a separate frontier model can be trained as a router.
+We then report gain over best fixed action and regret to the diagnostic oracle.
+
+\begin{figure}[t]
+\placeholder{0.96\linewidth}{
+Planned figure: routing recovery diagram.
+For each workload and overall, plot best fixed, workload oracle, diagnostic oracle, and learned router under the same deployment loss.
+Annotate the bars or connecting arrows with $\Delta_W$, $\Delta_b$, and $\Reg_b(r_b)$.
+}
+\caption{Experiment III measures the fraction of oracle routing value that is actually recovered by a learned router.}
+\label{fig:routing-recovery}
+\end{figure}
+
+\subsection{Experiment IV: what is the minimum useful diagnostic interaction?}
+\label{subsec:exp4}
+
+\paragraph{What is being tested.}
+We test how routing value changes as the admissible interaction becomes richer and identify both $b^{\mathrm{suf}}_\eta$ and $b^{\mathrm{net}}_\star$.
+In the mainline instantiation, the interaction family is the same baseline probe executed at several verifier budgets.
+
+\paragraph{Why this test matters.}
+The paper's central operational promise is not merely that probes can help, but that one can estimate how much probe is enough.
+A practitioner rarely wants the maximally informative interaction if a cheaper one already recovers most of the routing value.
+This experiment turns the theory into a recipe.
+
+\paragraph{How it is tested.}
+Within the baseline-probe family, we sweep admissible diagnostic budgets and compute both raw and net diagnostic opportunity.
+The raw curve estimates how quickly routing information saturates.
+The net curve discounts that value by probe cost and identifies when further interaction stops being worth paying for.
+The main report highlights the smallest probe that recovers a target fraction of the best raw value and the probe that maximizes net gain.
+
+\begin{figure}[t]
+\placeholder{0.96\linewidth}{
+Planned figure: minimum useful diagnostic interaction.
+Left: raw diagnostic opportunity as a function of probe budget.
+Right: net diagnostic opportunity after subtracting probe cost.
+Mark the minimum sufficient interaction $b^{\mathrm{suf}}_\eta$ and the economically optimal interaction $b^{\mathrm{net}}_\star$.
+}
+\caption{Experiment IV turns minimal diagnostic interaction into an estimable curve rather than a slogan.}
+\label{fig:minimal-interaction}
+\end{figure}
+
+\subsection{Experiment V: do reusable pilots reduce selection regret?}
+\label{subsec:exp5}
+
+\paragraph{What is being tested.}
+We test whether structured reusable pilots reduce selection regret relative to black-box benchmark racing under the same evaluation budget.
+The quantity of interest is $\Reg_{\mathrm{sel}}(N)$ from~\eqref{eq:selection-regret}.
+
+\paragraph{Why this test matters.}
+Even if routing is valuable, the experimental protocol is unattractive if it requires racing every candidate design end to end.
+The paper claims something stronger: because losses and probe signals are reusable, the builder can often explore a larger candidate menu for the same evaluation budget.
+This is the bridge from theory to methodology.
+
+\paragraph{How it is tested.}
+We construct a candidate menu over fixed actions, workload-only policies, and probe-aware routers.
+Under a fixed budget of pilot instances and holdout confirmations, we compare two strategies: black-box design racing and the reusable-pilot protocol of Algorithm~\ref{alg:pilot}.
+The outcome is not only the best observed design but the regret of the selected design relative to the best design in the menu.
+
+\begin{figure}[t]
+\placeholder{0.96\linewidth}{
+Planned figure: selection-regret comparison.
+X-axis: total evaluation budget.
+Y-axis: selection regret.
+Compare black-box racing against reusable-pilot selection, with separate traces for different candidate-menu sizes.
+}
+\caption{Experiment V evaluates whether the structured pilot protocol improves design selection efficiency.}
+\label{fig:selection-regret}
+\end{figure}
 
 \section{Related work}
 \label{sec:related}
 
-\paragraph{Compound systems and LLM routing.}
-FrugalGPT, RouteLLM, and subsequent model-routing work study how to reduce cost by dispatching queries across a menu of models~\citep{chen2023frugalgpt,ong2024routellm,chen2025optimizing}.
-Those papers are close in spirit, but their primary objective is to learn or benchmark a router.
-Our paper is one level more operational: it asks what quantity a builder should optimize in the first place for verifier-backed iterative agents, and how to separate workload opportunity, signal value, and router regret.
-We do not position the contribution as ``a better router''; we position it as a deployment-facing accounting scheme that tells a builder whether routing is worth doing at all.
+The paper sits at the intersection of four lines of work.
+First, it adopts the time-centric view of agents as task solvers emphasized by \citet{achille2025agents}, but it moves one level closer to deployment: once capability is understood as verified progress under budget, which model or harness should be selected for the current instance?
+Our contribution is not another ontology of agents, but an operational decision theory for routing from small admissible task interactions.
 
-\paragraph{Algorithm selection and configuration.}
-The closest classical lineage is per-instance algorithm selection and algorithm configuration, especially Rice's formulation, SATzilla, AutoFolio, and the associated survey literature~\citep{rice1976algorithm,xu2012satzilla,lindauer2015autofolio,kotthoff2016algorithm}.
-We embrace this connection rather than avoiding it.
-The difference is that our actions are model-plus-harness deployments inside verifier-backed agent systems, our cheap signal can come from a live pre-run probe, and our primary losses are iterative deployment losses rather than offline solver metrics.
-The selection-regret question also links naturally to racing, best-arm identification, successive halving, Hyperband, and related resource-allocation methods~\citep{maron1993hoeffding,maron1997racing,kaufmann2016bestarm,jamieson2016successive,li2017hyperband,hutter2011smac}.
+Second, our work is related to recent model-routing and compound-system papers.
+FrugalGPT and RouteLLM study cost-quality routing among LLMs on query workloads~\citep{chen2023frugalgpt, ong2024routellm}.
+LLMSelector studies model allocation inside compound AI systems with multiple modules~\citep{chen2025optimizing}, and MasRouter extends routing to multi-agent collaboration structure~\citep{yue2025masrouter}.
+These works show that heterogeneous model menus create real economic gains.
+Our setting differs in three ways.
+We focus on verifier-backed transductive tasks rather than prompt-response benchmarks; the central signal comes from a cheap interaction with the task and verifier rather than from the query alone; and the main evaluation objects are deployment loss, diagnostic opportunity, and router regret rather than only response quality or preference preservation.
 
-\paragraph{Test-time compute and iterative persistence.}
-Recent work on repeated sampling and test-time scaling shows that extra inference compute can substantially change rankings among models~\citep{snell2025testtime,wu2025inference,osca2024,brown2024monkeys}.
-That literature motivates our insistence that first-hit success is often too coarse for deployment.
-If additional attempts, schedule changes, or longer trajectories materially alter which action is best, then scalar pass rate obscures the operational geometry of the problem.
+Third, the paper is connected to classical algorithm selection and portfolio methods~\citep{rice1976algorithm, xu2012satzilla, lindauer2015autofolio, kotthoff2016algorithm}.
+That literature already asks which solver to run on which instance, often using cheaply computed instance features.
+Our contribution can be read as a verifier-backed agentic version of that question.
+The main differences are that our instances are themselves interactive artifact-editing problems, our admissible features may come from a short standardized verifier interaction rather than static instance descriptors alone, and our losses explicitly integrate verified progress, persistence, and modern API or wall-clock costs.
+Work on racing, Hyperband-style allocation, and best-arm identification is also relevant~\citep{maron1993hoeffding, maron1997racing, jamieson2016successive, li2017hyperband, kaufmann2016bestarm}, especially for the selection-regret side of the paper.
 
-\paragraph{Verifier-backed tasks, transductive framing, and agent time.}
-SWE-bench and related benchmarks exemplify externally verifiable agent tasks~\citep{jimenez2024swebench}.
-Karpathy's AutoResearch provides a concrete and practically relevant verifier-backed loop for model-and-harness design~\citep{karpathy2026autoresearch}.
-Vapnik's transductive perspective clarifies why the deployment question is instance-specific rather than purely statistical~\citep{vapnik1996structure}.
-Achille and Soatto provide the broader conceptual claim that time is the correct primitive for agents as task solvers~\citep{achille2025agents}; our contribution is to operationalize model/harness choice under that perspective for realistic verifier-backed workloads.
+Fourth, our experimental substrate belongs to the growing literature on verifier-backed coding and tool-using agents.
+SWE-bench evaluates repository repair under unit tests~\citep{jimenez2024swebench}, and AutoResearch provides a compact training-loop optimization setting with external validation feedback~\citep{karpathy2026autoresearch}.
+We use AutoResearch not because it is the only meaningful task family, but because it is a disciplined and instrumentable member of a larger family that also includes theorem checking, software repair, and configuration or tuning tasks with cheap verifier probes.
+In that sense, the paper is closer in spirit to a measurement paper about a family of verifier-backed deployments than to a benchmark paper about one dataset.
 
-\section{Discussion and limitations}
+Finally, our distinction between model scaling and solver selection is complementary to current work on test-time compute~\citep{snell2025testtime, brown2024monkeys, wu2025inference}.
+Scaling a single solver's inference budget and routing between solvers are different interventions.
+The present paper studies when a small verifier-backed interaction should change the solver choice before additional full-run compute is spent.
+
+\section{Discussion}
 \label{sec:discussion}
 
-The revised framing is deliberately narrower than a general theory of agents.
-This is a paper about deployment choice for verifier-backed iterative systems, not a paper about universal agent ontology.
-That narrowing is a feature.
-It lets the empirical section answer a practical question cleanly: whether a builder should deploy one model everywhere, a workload-conditioned policy, or a probe-aware router.
+% Intentionally left empty for the next revision cycle.
 
-Several limitations remain.
-First, AutoResearch on CIFAR-10 is still a simplified substrate; stronger external validation would come from repository repair or formal-proof workloads.
-Second, the current workload family varies architecture under a fixed dataset and metric; that is already more realistic than synthetic bottleneck labels, but still not the full space of research tasks.
-Third, the primary theory assumes a finite action menu, which is appropriate for a submission-scale experimental campaign but not the last word on continuous design spaces.
-Finally, cheap probes can create leakage if badly designed, so workload-only and corrupted-probe controls are mandatory rather than optional.
+\section{Conclusion}
+\label{sec:conclusion}
 
-\paragraph{Expected paper takeaway.}
-If the empirical claims pass, the final message of the paper should be simple:
-\begin{quote}
-For verifier-backed iterative agents, deployment should be driven by workload-conditioned decision accounting rather than scalar benchmark racing.
-First-hit pass rate can be too coarse, workload heterogeneity creates real comparative advantage, cheap probes can add decision value beyond known workload identity, and reusable pilots can lower the cost of selecting a good deployment policy.
-\end{quote}
+% Intentionally left empty for the next revision cycle.
 
-\bibliographystyle{abbrv}
+\bibliographystyle{plainnat}
 \bibliography{references}
-
-\appendix
-
-\section{Proof details}
-\label{app:proofs}
-
-\subsection{Accounting identity}
-
-For completeness, write
-\begin{align*}
-\J_\ell(a_\emptyset^\star)-\J_\ell(r)
-&= \J_\ell(a_\emptyset^\star)-\J_\ell(a_W^\star)
- + \J_\ell(a_W^\star)-\J_\ell(a_{W,Z}^\star)
- + \J_\ell(a_{W,Z}^\star)-\J_\ell(r) \\
-&= \big(\J_\ell(a_\emptyset^\star)-\J_\ell(a_W^\star)\big)
- + \big(\J_\ell(a_W^\star)-\J_\ell(a_{W,Z}^\star)\big)
- - \big(\J_\ell(r)-\J_\ell(a_{W,Z}^\star)\big).
-\end{align*}
-The first bracket is workload opportunity, the second is incremental signal value, and the third is learned-router regret.
-
-\subsection{Interpretation of hit and occupancy}
-
-Suppose two actions have similar probabilities of ever crossing the threshold $\delta$ by step $H$, but one action spends a much larger fraction of the trajectory above threshold.
-Then hit-based loss may treat them as essentially tied while occupancy-aware loss sharply distinguishes them.
-This is the exact empirical regime in which benchmark racing becomes too coarse for iterative deployment.
-
-\section{Operational estimator details}
-\label{app:estimators}
-\label{app:experiment-details}
-
-\paragraph{Pilot matrix.}
-For each workload $w$ and action $a$, the pilot campaign estimates
-\[
-\widehat L_{a,w}=\frac{1}{n_{a,w}}\sum_{i:W_i=w}\ell(a,X_i).
-\]
-These estimates define the workload-only policy
-\[
-\widehat a_W(w)\in\argmin_{a\in\cA}\widehat L_{a,w}.
-\]
-
-\paragraph{Learned router.}
-The current repository implementation supports a lightweight probe-aware router fit on pilot data using only router-visible features.
-The exact regression or nearest-neighbor choice is less important than the accounting outputs it feeds: gain over best single, regret to the oracle, and ablations with workload-only and corrupted-probe controls.
-
-\paragraph{Selection regret.}
-Let $\widehat r_N$ denote the deployment rule chosen from a pilot subsample of size $N$.
-The empirical selection-regret curve is estimated by repeatedly subsampling pilot seeds, fitting the selection rule, and scoring the resulting deployment loss on a fixed holdout split.
-The same holdout must be used for racing-based and accounting-based procedures.
-
-\section{Planned paper figures}
-\label{app:figures}
-
-\begin{figure*}[t]
-\centering
-\placeholder{0.92\linewidth}{Pass-rate versus occupancy comparison across the three AutoResearch workloads. Each panel reports one workload and compares the three deployment actions under the same threshold $\delta$. The figure should make it visually obvious when entry success saturates while occupancy still separates actions.}
-\caption{Primary diagnostic for Experiment A.}
-\label{fig:pass-vs-occ}
-\end{figure*}
-
-\begin{figure*}[t]
-\centering
-\placeholder{0.92\linewidth}{Heatmap of workload-conditioned deployment loss $L_{a,w}$ for the three actions and three workloads. The key visual is that no single action should dominate every workload if comparative advantage is real.}
-\caption{Workload-conditioned comparative advantage matrix for Experiment B.}
-\label{fig:workload-matrix}
-\end{figure*}
-
-\begin{figure*}[t]
-\centering
-\placeholder{0.92\linewidth}{Accounting table or bar chart for best single, workload-only, learned workload-plus-probe router, and per-instance oracle. The figure should explicitly annotate workload opportunity, incremental signal value, and learned-router regret.}
-\caption{Decision-theoretic accounting summary for Experiments C and D.}
-\label{fig:accounting-bars}
-\end{figure*}
-
-\begin{figure*}[t]
-\centering
-\placeholder{0.92\linewidth}{Selection-regret curves versus pilot budget for black-box racing and decomposition-guided evaluation. The emphasis is not asymptotic theory but practical savings at the pilot sizes affordable inside the full campaign.}
-\caption{Selection-regret profile for Experiment E.}
-\label{fig:selection-regret}
-\end{figure*}
-
-\section{Checklist notes for finalization}
-\label{app:checklist-notes}
-
-Before submission, the checklist should be updated with the final numerical claims, exact split sizes, compute totals, and the completed controls for workload-only and corrupted-probe baselines.
-The conceptual structure, however, should remain fixed: the checklist should point to the five experimental questions, the accounting identity, and the deployment-facing metrics used to evaluate them.
-
-\newpage
-\input{checklist}
 
 \end{document}
