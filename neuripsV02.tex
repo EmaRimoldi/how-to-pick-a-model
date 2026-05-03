@@ -81,7 +81,7 @@ We formalize this idea as \emph{minimal diagnostic interaction}.
 A diagnostic interaction is a standardized cheap model--verifier protocol that produces a router-visible signal $Z_b$ before deployment, where $b$ indexes the interaction type and budget.
 Because both the signal and the final loss are induced by the verifier, model choice is formalized as selection among verifier-indexed interaction kernels rather than as an intrinsic leaderboard property of a model alone.
 For any deployment loss, we give an exact accounting identity that decomposes the performance of a routed policy into four decision quantities: the best fixed-model baseline, workload opportunity, diagnostic opportunity, and router regret.
-Under an optional finite latent-mode assumption, the instance-level problem reduces to posterior decision making on a reusable mode-conditioned loss matrix, linking the new formulation to earlier decompositions while keeping the operational object action-level rather than allocation-level.
+Under an optional finite latent-mode assumption, the instance-level problem reduces to posterior decision making on a reusable mode-conditioned loss matrix while keeping the operational object action-level rather than allocation-level.
 We then define the minimum useful diagnostic interaction: the cheapest admissible probe that recovers a target fraction of the routing value available in principle.
 The experimental program instantiates the framework on AutoResearch-style CIFAR-10 optimization, where several interacting models edit the same fixed training script, the verifier is validation loss under a fixed budget, and nuisance draws create repeated deployment instances without changing the optimizable artifact.
 Architecture-shifted workloads are reserved as robustness stress tests rather than as the main source of routing signal.
@@ -122,7 +122,7 @@ A diagnostic interaction may be as simple as a no-edit baseline evaluation under
 It may also be richer, such as a bounded scout run or a short fallback attempt.
 Either way, it is completed before the expensive deployment run, is shared across candidate solvers, and yields a router-visible signal $Z$.
 
-The new narrative of the paper is decision-theoretic rather than leaderboard-centric.
+The paper's narrative is decision-theoretic rather than leaderboard-centric.
 We do not treat routing as a mysterious capability of an especially clever LLM.
 We treat it as a deployment decision problem under partial information.
 The right quantities are therefore: the loss of the best fixed model, the improvement available from any observed static context, the additional value of a diagnostic interaction, and the regret of the learned router relative to the signal oracle.
@@ -138,13 +138,37 @@ At the same time, AutoResearch offers a disciplined controlled family: the verif
 The mainline benchmark therefore fixes a single editable starting program and data regime, while architecture-shifted starts such as compact CNNs, flat MLPs, and tiny ResNets are used as robustness stress tests.
 
 \paragraph{Contributions.}
+This positioning leaves a concrete gap between algorithm selection, LLM routing, and verifier-backed agent evaluation: the field lacks an accounting language for deciding when a cheap verifier-derived signal is valuable enough to change the interacting model that receives the expensive run.
 The paper makes four contributions.
 \begin{enumerate}[leftmargin=1.35em,itemsep=0.2em]
   \item \textbf{Minimal diagnostic interaction.} We define an admissible pre-run interaction family for verifier-backed tasks and formalize the minimum useful interaction as the cheapest verifier-coupled probe that recovers a target fraction of the routing value available in principle.
   \item \textbf{Model--verifier routing accounting.} We give an exact identity that decomposes routed deployment performance into the best fixed interacting-model baseline, workload opportunity, diagnostic opportunity, and router regret.
-  \item \textbf{Finite-mode reduction.} Under an optional solver-relevant finite latent-mode assumption, the instance-level problem reduces to posterior decision making on a reusable mode-conditioned loss matrix, connecting the new formulation to earlier decompositions without forcing the main theorem into a mode-share allocation story.
+  \item \textbf{Finite-mode reduction.} Under an optional solver-relevant finite latent-mode assumption, the instance-level problem reduces to posterior decision making on a reusable mode-conditioned loss matrix, showing when reusable mode-conditioned pilot summaries suffice to evaluate many routing designs.
   \item \textbf{Experimental program.} We specify a coherent AutoResearch benchmark campaign that tests metric choice, diagnostic sufficiency, routing recovery, minimum useful probe budget, and selection regret under a fixed-artifact mainline with workload-shift stress tests.
 \end{enumerate}
+
+\section{Related work and positioning}
+\label{sec:related}
+
+The closest classical ancestor is algorithm selection.
+Since Rice's formulation, solver portfolios have treated performance as instance-dependent: SATzilla and AutoFolio, for example, learn to select solvers from instance features rather than report a single globally best solver~\citep{rice1976algorithm, xu2012satzilla, lindauer2015autofolio, kotthoff2016algorithm}.
+That literature supplies the right high-level question, but its features are usually static descriptors computed before solving.
+Our setting adds an active verifier-backed step: before selecting the full solver, the system may spend a small admissible budget to query the task and verifier, then decide whether that interaction changes the best model.
+
+A newer line of work studies LLM routing and cascades.
+FrugalGPT frames model cascades as a way to reduce cost across heterogeneous LLM APIs, while RouteLLM learns cost-quality routers from preference data~\citep{chen2023frugalgpt, ong2024routellm}.
+Recent compound-system routing work extends the same idea to module allocation and multi-agent structures~\citep{chen2025optimizing, yue2025masrouter}.
+These methods establish that heterogeneous model menus create economic gains, but they mostly operate on prompt-response workloads where routing signals are query features or learned response-quality predictors.
+They do not ask how much task-specific verifier interaction is enough before committing an expensive agentic run.
+
+Verifier-backed agent benchmarks provide the task substrate.
+SWE-bench evaluates repository repair against tests, AutoResearch evaluates training-loop edits against validation feedback, and theorem proving or configuration tasks use checkers and validators in analogous ways~\citep{jimenez2024swebench, karpathy2026autoresearch}.
+Test-time compute work asks how far a solver can be pushed with more inference, sampling, or search~\citep{snell2025testtime, brown2024monkeys, wu2025inference}.
+Our question is complementary: before spending that compute, should the deployment system change which interacting model receives the run, given a cheap verifier-derived signal?
+
+This leaves a gap between algorithm selection, LLM routing, and verifier-backed agent evaluation.
+What is missing is an accounting language that separates static context from diagnostic opportunity, probe cost, and learned-router regret.
+The contributions above target this gap: minimal diagnostic interaction defines the admissible signal, the model--verifier identity measures its deployment value, and the reusable-pilot protocol turns the idea into an experimental design.
 
 \section{Verifier-backed deployment with diagnostic interaction}
 \label{sec:setup}
@@ -319,7 +343,7 @@ Substituting $L_W=L_{\mathrm{fix}}-\Delta_W$ yields~\eqref{eq:main-identity}.
 The theorem gives the paper's main accounting language.
 A routed deployment can beat the best fixed model for only two reasons: coarse workload identity already matters ($\Delta_W>0$), or the diagnostic interaction adds enough verifier-backed value on top of workload identity ($\Delta_b>0$).
 A learned router then keeps or loses that value through $\Reg_b(r_b)$.
-This is the action-level analogue of the broader decomposition story in earlier drafts, but it is faithful to the operational protocol in which the router chooses an interacting model or fixed harness action rather than allocating a posterior mass directly across latent modes.
+This is an action-level accounting identity faithful to the operational protocol in which the router chooses an interacting model or fixed harness action rather than allocating a posterior mass directly across latent modes.
 
 \subsection{Minimum useful diagnostic interaction}
 
@@ -419,7 +443,7 @@ By Assumption~\ref{ass:finite-mode},
 and substituting this expression into~\eqref{eq:rawlzb} yields~\eqref{eq:mode-reduction}.
 \end{proof}
 
-Proposition~\ref{prop:mode-reduction} is how the new paper absorbs the useful part of the earlier mode-based formalism.
+Proposition~\ref{prop:mode-reduction} gives a compact sufficient condition under which reusable pilot summaries can score many routers analytically.
 Latent modes remain valuable when they let us reuse structured pilots, but the primary deployment object is still the action-level decision after a small admissible interaction.
 
 \section{Reusable pilots and design selection}
@@ -644,35 +668,6 @@ Compare black-box racing against reusable-pilot selection, with separate traces 
 \caption{Experiment V evaluates whether the structured pilot protocol improves design selection efficiency.}
 \label{fig:selection-regret}
 \end{figure}
-
-\section{Related work}
-\label{sec:related}
-
-The paper sits at the intersection of four lines of work.
-First, it adopts the time-centric view of agents as task solvers emphasized by \citet{achille2025agents}, but it moves one level closer to deployment: once capability is understood as verified progress under budget, which interacting model should be selected for the current verifier-backed instance?
-Our contribution is not another ontology of agents, but an operational decision theory for routing from small admissible task interactions.
-
-Second, our work is related to recent model-routing and compound-system papers.
-FrugalGPT and RouteLLM study cost-quality routing among LLMs on query workloads~\citep{chen2023frugalgpt, ong2024routellm}.
-LLMSelector studies model allocation inside compound AI systems with multiple modules~\citep{chen2025optimizing}, and MasRouter extends routing to multi-agent collaboration structure~\citep{yue2025masrouter}.
-These works show that heterogeneous model menus create real economic gains.
-Our setting differs in three ways.
-We focus on verifier-backed transductive tasks rather than prompt-response benchmarks; the central signal comes from a cheap interaction with the task and verifier rather than from the query alone; and the main evaluation objects are deployment loss, diagnostic opportunity, and router regret rather than only response quality or preference preservation.
-
-Third, the paper is connected to classical algorithm selection and portfolio methods~\citep{rice1976algorithm, xu2012satzilla, lindauer2015autofolio, kotthoff2016algorithm}.
-That literature already asks which solver to run on which instance, often using cheaply computed instance features.
-Our contribution can be read as a verifier-backed agentic version of that question.
-The main differences are that our instances are themselves interactive artifact-editing problems, our admissible features may come from a short standardized verifier interaction rather than static instance descriptors alone, and our losses explicitly integrate verified progress, persistence, and modern API or wall-clock costs.
-Work on racing, Hyperband-style allocation, and best-arm identification is also relevant~\citep{maron1993hoeffding, maron1997racing, jamieson2016successive, li2017hyperband, kaufmann2016bestarm}, especially for the selection-regret side of the paper.
-
-Fourth, our experimental substrate belongs to the growing literature on verifier-backed coding and tool-using agents.
-SWE-bench evaluates repository repair under unit tests~\citep{jimenez2024swebench}, and AutoResearch provides a compact training-loop optimization setting with external validation feedback~\citep{karpathy2026autoresearch}.
-We use AutoResearch not because it is the only meaningful task family, but because it is a disciplined and instrumentable member of a larger family that also includes theorem checking, software repair, and configuration or tuning tasks with cheap verifier probes.
-In that sense, the paper is closer in spirit to a measurement paper about a family of verifier-backed deployments than to a benchmark paper about one dataset.
-
-Finally, our distinction between model scaling and solver selection is complementary to current work on test-time compute~\citep{snell2025testtime, brown2024monkeys, wu2025inference}.
-Scaling a single solver's inference budget and routing between solvers are different interventions.
-The present paper studies when a small verifier-backed interaction should change the solver choice before additional full-run compute is spent.
 
 \section{Discussion}
 \label{sec:discussion}
