@@ -4,11 +4,11 @@ This repository contains the active benchmark harness and analysis code for
 **verifiable agentic optimization on AutoResearch-style CIFAR-10 training
 scripts**.
 
-The active experimental question is:
+The active experimental question is now:
 
-> given a concrete AutoResearch task instance, can a router choose the most
-> appropriate model for the full run using only cheap live signals available at
-> the start of the run?
+> given a concrete AutoResearch workload instance, can a deployment policy
+> choose the most appropriate model or harness action using only cheap signals
+> available before the expensive run?
 
 The old QueryState / Stateful Query Engine benchmark has been archived under
 `Archive/stateful_query_engine/` and is no longer part of the active mainline.
@@ -27,96 +27,100 @@ A task instance is a concrete AutoResearch run consisting of:
 - a fixed training/evaluation budget
 - a verifier based on validation loss
 - a data/training regime
-- a seed / nuisance draw
+- a nuisance seed
 
-Task modes are **latent classes of task instances** that share a
-solver-relevant bottleneck. The current mainline uses six practitioner-friendly
-modes:
+## Workload family
 
-- `lr-sensitive`
-- `regularization-sensitive`
-- `optimizer-sensitive`
-- `data-skew-sensitive`
-- `capacity-sensitive`
-- `schedule-sensitive`
+The active mainline no longer relies on hand-crafted bottleneck labels.  The
+benchmark treats **AutoResearch itself** as the task family and instantiates it
+on three realistic CIFAR-10 workloads that share the same verifier and metric
+but start from different architectures:
 
-These are properties of instances, not action labels.
+- `cnn_compact`
+- `mlp_flat`
+- `resnet_tiny`
 
-Current verifier budgets:
+These workload labels are properties of the editable starting program, not
+action labels.
 
-- short modes (`lr-sensitive`, `regularization-sensitive`, `optimizer-sensitive`, `data-skew-sensitive`): **128 training steps**
-- long modes (`capacity-sensitive`, `schedule-sensitive`): **512 training steps**
+Current verifier budget:
+
+- all three workloads default to **128 inner training steps** per verifier run
 
 ## Active protocol
 
 The paper-facing protocol is **task-level model routing**:
 
-1. a router observes a live signal `Z` at the start of the run
-2. it chooses one model from a small menu
-3. that chosen model runs the full AutoResearch trajectory
+1. a router observes cheap live signal `Z` before a full run
+2. it chooses one model or subagent from a small menu
+3. that chosen model performs the whole AutoResearch trajectory
 4. holdout analysis compares:
    - best single model
-   - learned router
-   - oracle router
+   - workload-only deployment policy
+   - workload + probe router
+   - per-instance oracle router
 
-The current main horizon is **H=24** full-run optimization steps, with planned
-ablations around smaller and larger horizons.
+The current default model menu is:
 
-The active model menu prioritizes Codex-family and Claude-family models.
+- `gpt_5_4_mini`
+- `gpt_5_3_codex`
+- `claude_sonnet`
 
 ## Quick start
 
 ### 1) Local deterministic smoke
 
 ```bash
-PYTHONPATH=src:. python -m vao.orchestrator \
-  --config configs/autoresearch_cifar10_local_smoke.yaml \
+PYTHONPATH=src:. ./.venv/bin/python -m vao.orchestrator \
+  --config configs/autoresearch_cifar10_workload_local_smoke.yaml \
   --steps 1 \
-  --run-id autoresearch_cifar10_smoke
+  --run-id autoresearch_workload_smoke
 ```
 
-### 2) Task-mode pilot campaign
+### 2) Workload pilot campaign
 
 ```bash
-PYTHONPATH=src:. python -m vao.analysis.autoresearch_cifar10_pilot \
-  --config configs/autoresearch_cifar10_pilot.yaml \
-  --models gpt_5_4_mini,gpt_5_3_codex,gpt_5_3_codex_spark,claude_sonnet \
-  --families lr-sensitive,regularization-sensitive,optimizer-sensitive,data-skew-sensitive,capacity-sensitive,schedule-sensitive \
+PYTHONPATH=src:. ./.venv/bin/python -m vao.analysis.autoresearch_cifar10_pilot \
+  --config configs/autoresearch_cifar10_workload_pilot.yaml \
+  --models gpt_5_4_mini,gpt_5_3_codex,claude_sonnet \
+  --workloads cnn_compact,mlp_flat,resnet_tiny \
   --seeds 7001:2 \
   --split pilot
 ```
 
-### 3) Task-level model-routing summary
+### 3) Workload holdout campaign
 
 ```bash
-PYTHONPATH=src:. python -m vao.analysis.autoresearch_cifar10_model_routing \
-  runs/autoresearch_cifar10/task_mode_pilot \
-  --output artifacts/autoresearch_cifar10/model_routing_report.json
+PYTHONPATH=src:. ./.venv/bin/python -m vao.analysis.autoresearch_cifar10_pilot \
+  --config configs/autoresearch_cifar10_workload_holdout.yaml \
+  --models gpt_5_4_mini,gpt_5_3_codex,claude_sonnet \
+  --workloads cnn_compact,mlp_flat,resnet_tiny \
+  --seeds 8001:2 \
+  --split holdout
 ```
 
-### 4) Smoke-test the declared model menu
+### 4) Threshold / occupancy analysis on completed runs
 
 ```bash
-PYTHONPATH=src:. python scripts/smoke_test_model_menu.py \
-  --config configs/autoresearch_cifar10_model_routing_smoke.yaml \
-  --output artifacts/autoresearch_cifar10/model_menu_smoke.json
+PYTHONPATH=src:. ./.venv/bin/python -m vao.analysis.autoresearch_cifar10_threshold_sweep \
+  runs/autoresearch_cifar10/workload_pilot runs/autoresearch_cifar10/workload_holdout \
+  --output artifacts/autoresearch_cifar10/workload_threshold_report.json
 ```
 
 ## Main entry points
 
-- `python -m vao.orchestrator --config configs/autoresearch_cifar10_local_smoke.yaml --steps 1 --run-id autoresearch_cifar10_smoke`
-- `python -m vao.analysis.autoresearch_cifar10_pilot --config configs/autoresearch_cifar10_pilot.yaml ...`
-- `python -m vao.analysis.autoresearch_cifar10_model_routing runs/... --output artifacts/.../model_routing_report.json`
-- `python scripts/smoke_test_model_menu.py --config configs/autoresearch_cifar10_model_routing_smoke.yaml --output artifacts/.../model_menu_smoke.json`
+- `python -m vao.orchestrator --config configs/autoresearch_cifar10_workload_local_smoke.yaml --steps 1 --run-id autoresearch_workload_smoke`
+- `python -m vao.analysis.autoresearch_cifar10_pilot --config configs/autoresearch_cifar10_workload_pilot.yaml ...`
+- `python -m vao.analysis.autoresearch_cifar10_single_trajectory_campaign --config configs/autoresearch_cifar10_single_trajectory_campaign.yaml ...`
+- `python -m vao.analysis.autoresearch_cifar10_threshold_sweep runs/... --output artifacts/.../workload_threshold_report.json`
 
 ## Configs
 
 Useful configs:
 
-- `configs/autoresearch_cifar10_local_smoke.yaml`
-- `configs/autoresearch_cifar10_pilot.yaml`
-- `configs/autoresearch_cifar10_model_routing.yaml`
-- `configs/autoresearch_cifar10_model_routing_smoke.yaml`
+- `configs/autoresearch_cifar10_workload_local_smoke.yaml`
+- `configs/autoresearch_cifar10_workload_pilot.yaml`
+- `configs/autoresearch_cifar10_workload_holdout.yaml`
 - `configs/autoresearch_cifar10_single_trajectory_campaign.yaml`
 
 ## Paper LaTeX submodule

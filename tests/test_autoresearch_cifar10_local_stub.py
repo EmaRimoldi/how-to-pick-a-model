@@ -27,7 +27,8 @@ def test_autoresearch_local_stub_emits_batch_candidates(tmp_path: Path) -> None:
         current_solution_source=parent_source,
         visible_history=[],
         profile_summary={
-            "task_mode_true": "lr_search_short_budget",
+            "task_mode_true": "cnn_compact",
+            "workload_id": "cnn_compact",
             "train_subset_size": 1024,
             "val_subset_size": 512,
             "label_noise_rate": 0.0,
@@ -69,7 +70,8 @@ def test_autoresearch_local_stub_emits_single_candidate(tmp_path: Path) -> None:
         current_solution_source=parent_source,
         visible_history=[],
         profile_summary={
-            "task_mode_true": "lr_search_short_budget",
+            "task_mode_true": "cnn_compact",
+            "workload_id": "cnn_compact",
             "train_subset_size": 50000,
             "val_subset_size": 10000,
             "label_noise_rate": 0.0,
@@ -84,7 +86,7 @@ def test_autoresearch_local_stub_emits_single_candidate(tmp_path: Path) -> None:
     )
 
     distribution, proposal = adapter.propose_step_single(state, branch_dirs)
-    assert distribution.top_mode == "topk"
+    assert distribution.top_mode == "summaries"
     assert sum(1 for value in distribution.mode_probs.values() if value > 0.0) == 1
-    assert proposal.declared_mode == "topk"
+    assert proposal.declared_mode == "summaries"
     assert proposal.parsed_output_json["candidate_generation"] == "single_autoresearch_local_stub"

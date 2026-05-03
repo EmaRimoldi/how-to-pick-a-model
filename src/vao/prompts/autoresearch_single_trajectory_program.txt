@@ -52,9 +52,12 @@ Required contract after the edit:
 
 Profile summary:
 
-- `task_mode_true` identifies the latent training regime when available.
+- `workload_id` identifies which AutoResearch workload this run instantiates
+  (for example a compact CNN, an MLP, or a tiny ResNet).
+- `task_mode_true` is kept as a backward-compatible alias and matches the
+  workload id in the current benchmark.
 - `label_noise_rate`, `imbalance_ratio`, and `max_train_steps` describe the
-  regime.
+  run regime.
 
 Output format:
 

@@ -5,18 +5,19 @@ from pathlib import Path
 from benchmarks.autoresearch_cifar10.task_spec import (
     classify_edit_mode,
     profile_summary,
-    single_family_instance_overrides,
+    single_workload_instance_overrides,
     validate_solution_source,
 )
 
 
-def test_profile_summary_exposes_latent_mode_features() -> None:
+def test_profile_summary_exposes_workload_features() -> None:
     summary = profile_summary(
         "autoresearch_cifar10",
-        single_family_instance_overrides("regularization_under_label_noise", seed=99, max_train_steps=7),
+        single_workload_instance_overrides("mlp_flat", seed=99, max_train_steps=7),
     )
-    assert summary["task_mode_true"] == "regularization_under_label_noise"
-    assert summary["label_noise_rate"] > 0.0
+    assert summary["workload_id"] == "mlp_flat"
+    assert summary["task_mode_true"] == "mlp_flat"
+    assert summary["architecture_name"] == "flat_mlp"
     assert summary["max_train_steps"] == 7
     assert "layout" in summary["action_mode_aliases"]
 

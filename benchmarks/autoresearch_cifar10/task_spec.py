@@ -1,4 +1,10 @@
-"""Task definitions for the AutoResearch-style CIFAR-10 benchmark."""
+"""Task definitions for the AutoResearch-style CIFAR-10 benchmark.
+
+The active benchmark treats AutoResearch as a single meta-task instantiated on a
+small family of realistic workloads.  Each workload is a full editable
+``train.py`` targeting a different architecture under the same verifier and
+metric.
+"""
 
 from __future__ import annotations
 
@@ -9,78 +15,53 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
-from benchmarks.autoresearch_cifar10.initial_templates import template_path_for_task_mode
+from benchmarks.autoresearch_cifar10.workload_templates import template_path_for_workload
 
 METADATA_PATH = Path(__file__).resolve().parent / "metadata" / "instance_config.json"
 
-TASK_MODE_DESCRIPTIONS = {
-    "lr-sensitive": "Instances where small learning-rate or local optimization-scale changes dominate the next gain.",
-    "regularization-sensitive": "Instances where robustness, overfitting control, or label-noise handling dominate.",
-    "optimizer-sensitive": "Instances where optimizer family or gradient-dynamics choices dominate.",
-    "data-skew-sensitive": "Instances where class imbalance, coverage, or skew-aware data handling dominate.",
-    "capacity-sensitive": "Instances where model depth, width, or architectural capacity dominate.",
-    "schedule-sensitive": "Instances where warmup, decay, or long-horizon budget allocation dominate.",
+WORKLOAD_DESCRIPTIONS = {
+    "cnn_compact": "A compact convolutional CIFAR-10 training script with shallow pooling blocks and a small MLP head.",
+    "mlp_flat": "A flattened-image MLP classifier on CIFAR-10; same verifier, but different architecture and optimization geometry.",
+    "resnet_tiny": "A tiny residual CNN on CIFAR-10 with skip connections and stage-wise downsampling.",
 }
 
-LATENT_MODE_REGISTRY: dict[str, dict[str, Any]] = {
-    "lr-sensitive": {
-        "description": "Clean balanced full-CIFAR regime with a tiny fixed-step budget where learning-rate scale dominates early progress.",
+WORKLOAD_REGISTRY: dict[str, dict[str, Any]] = {
+    "cnn_compact": {
+        "description": WORKLOAD_DESCRIPTIONS["cnn_compact"],
         "train_subset_size": 50000,
         "val_subset_size": 10000,
         "label_noise_rate": 0.0,
         "imbalance_ratio": 1.0,
         "max_train_steps": 128,
         "seed": 61,
+        "architecture_name": "compact_cnn",
     },
-    "regularization-sensitive": {
-        "description": "Short-horizon full-CIFAR training with synthetic label noise, making regularization choices the main lever.",
+    "mlp_flat": {
+        "description": WORKLOAD_DESCRIPTIONS["mlp_flat"],
         "train_subset_size": 50000,
         "val_subset_size": 10000,
-        "label_noise_rate": 0.25,
+        "label_noise_rate": 0.0,
         "imbalance_ratio": 1.0,
         "max_train_steps": 128,
         "seed": 67,
+        "architecture_name": "flat_mlp",
     },
-    "optimizer-sensitive": {
-        "description": "Balanced regime where optimizer family and gradient dynamics dominate more than local hyperparameter tweaks.",
+    "resnet_tiny": {
+        "description": WORKLOAD_DESCRIPTIONS["resnet_tiny"],
         "train_subset_size": 50000,
         "val_subset_size": 10000,
         "label_noise_rate": 0.0,
         "imbalance_ratio": 1.0,
         "max_train_steps": 128,
-        "seed": 69,
-    },
-    "data-skew-sensitive": {
-        "description": "Long-tail regime under the same compute budget, emphasizing class coverage and skew-aware training choices.",
-        "train_subset_size": 50000,
-        "val_subset_size": 10000,
-        "label_noise_rate": 0.0,
-        "imbalance_ratio": 0.12,
-        "max_train_steps": 128,
-        "seed": 71,
-    },
-    "capacity-sensitive": {
-        "description": "Clean regime with a longer horizon where architecture capacity is the main solver-relevant bottleneck.",
-        "train_subset_size": 50000,
-        "val_subset_size": 10000,
-        "label_noise_rate": 0.0,
-        "imbalance_ratio": 1.0,
-        "max_train_steps": 512,
         "seed": 73,
-    },
-    "schedule-sensitive": {
-        "description": "Clean regime with a longer horizon where scheduling and budget allocation dominate the next verified gains.",
-        "train_subset_size": 50000,
-        "val_subset_size": 10000,
-        "label_noise_rate": 0.0,
-        "imbalance_ratio": 1.0,
-        "max_train_steps": 512,
-        "seed": 79,
+        "architecture_name": "tiny_resnet",
     },
 }
 
-ALL_FAMILIES = list(LATENT_MODE_REGISTRY)
-TASK_MODE_SET = set(ALL_FAMILIES)
+ALL_WORKLOADS = list(WORKLOAD_REGISTRY)
+ALL_FAMILIES = list(ALL_WORKLOADS)  # compatibility alias for older scripts
+TASK_MODE_SET = set(ALL_WORKLOADS)
+TASK_MODE_DESCRIPTIONS = dict(WORKLOAD_DESCRIPTIONS)  # compatibility alias
 
 ACTION_MODE_ALIASES = {
     "layout": "architecture/capacity changes",
@@ -120,14 +101,18 @@ def load_instance_config() -> dict[str, Any]:
     return json.loads(METADATA_PATH.read_text(encoding="utf-8"))
 
 
+def validate_workload(workload_id: str) -> str:
+    if workload_id not in WORKLOAD_REGISTRY:
+        raise ValueError(f"Unknown AutoResearch workload {workload_id!r}; expected one of {sorted(WORKLOAD_REGISTRY)}")
+    return workload_id
+
+
 def validate_task_mode(mode: str) -> str:
-    if mode not in LATENT_MODE_REGISTRY:
-        raise ValueError(f"Unknown AutoResearch task mode {mode!r}; expected one of {sorted(LATENT_MODE_REGISTRY)}")
-    return mode
+    return validate_workload(mode)
 
 
-def single_family_instance_overrides(
-    family: str,
+def single_workload_instance_overrides(
+    workload_id: str,
     *,
     seed: int | None = None,
     train_subset_size: int | None = None,
@@ -136,8 +121,8 @@ def single_family_instance_overrides(
     imbalance_ratio: float | None = None,
     max_train_steps: int | None = None,
 ) -> dict[str, Any]:
-    validate_task_mode(family)
-    spec = deepcopy(LATENT_MODE_REGISTRY[family])
+    validate_workload(workload_id)
+    spec = deepcopy(WORKLOAD_REGISTRY[workload_id])
     if seed is not None:
         spec["seed"] = int(seed)
     if train_subset_size is not None:
@@ -150,11 +135,40 @@ def single_family_instance_overrides(
         spec["imbalance_ratio"] = float(imbalance_ratio)
     if max_train_steps is not None:
         spec["max_train_steps"] = int(max_train_steps)
-    return {"families": [family], **spec}
+    return {
+        "workloads": [workload_id],
+        "families": [workload_id],
+        **spec,
+    }
+
+
+def single_family_instance_overrides(
+    family: str,
+    *,
+    seed: int | None = None,
+    train_subset_size: int | None = None,
+    val_subset_size: int | None = None,
+    label_noise_rate: float | None = None,
+    imbalance_ratio: float | None = None,
+    max_train_steps: int | None = None,
+) -> dict[str, Any]:
+    return single_workload_instance_overrides(
+        family,
+        seed=seed,
+        train_subset_size=train_subset_size,
+        val_subset_size=val_subset_size,
+        label_noise_rate=label_noise_rate,
+        imbalance_ratio=imbalance_ratio,
+        max_train_steps=max_train_steps,
+    )
+
+
+def workload_template_path(workload_id: str) -> Path:
+    return template_path_for_workload(validate_workload(workload_id))
 
 
 def task_mode_template_path(mode: str) -> Path:
-    return template_path_for_task_mode(validate_task_mode(mode))
+    return workload_template_path(mode)
 
 
 def apply_instance_overrides(config: dict[str, Any], profile_id: str, instance_overrides: dict[str, Any] | None) -> dict[str, Any]:
@@ -164,38 +178,47 @@ def apply_instance_overrides(config: dict[str, Any], profile_id: str, instance_o
         return effective
     for key, value in instance_overrides.items():
         profile[key] = deepcopy(value)
-    if "families" in profile:
-        for family in profile["families"]:
-            validate_task_mode(str(family))
+    workloads = profile.get("workloads") or profile.get("families") or []
+    for workload in workloads:
+        validate_workload(str(workload))
     return effective
 
 
-def task_mode_from_instance_overrides(instance_overrides: dict[str, Any] | None) -> str | None:
+def workload_from_instance_overrides(instance_overrides: dict[str, Any] | None) -> str | None:
     if not instance_overrides:
         return None
-    families = instance_overrides.get("families")
-    if isinstance(families, list) and len(families) == 1:
-        return validate_task_mode(str(families[0]))
+    workloads = instance_overrides.get("workloads") or instance_overrides.get("families")
+    if isinstance(workloads, list) and len(workloads) == 1:
+        return validate_workload(str(workloads[0]))
     return None
+
+
+def task_mode_from_instance_overrides(instance_overrides: dict[str, Any] | None) -> str | None:
+    return workload_from_instance_overrides(instance_overrides)
 
 
 def profile_summary(profile_id: str, instance_overrides: dict[str, Any] | None = None) -> dict[str, Any]:
     config = load_instance_config()
     effective = apply_instance_overrides(config, profile_id, instance_overrides)
     profile = effective["profiles"][profile_id]
-    task_mode_true = task_mode_from_instance_overrides(instance_overrides)
-    template_path = str(task_mode_template_path(task_mode_true)) if task_mode_true else None
+    workload_id = workload_from_instance_overrides(instance_overrides) or workload_from_instance_overrides(profile)
+    template_path = str(workload_template_path(workload_id)) if workload_id else None
+    workload_spec = WORKLOAD_REGISTRY.get(workload_id, {}) if workload_id else {}
     return {
         "profile_id": profile_id,
-        "task_mode_true": task_mode_true,
-        "families": profile.get("families", []),
+        "workload_id": workload_id,
+        "task_mode_true": workload_id,
+        "workloads": profile.get("workloads") or profile.get("families", []),
+        "families": profile.get("families") or profile.get("workloads", []),
         "train_subset_size": int(profile.get("train_subset_size", 0)),
         "val_subset_size": int(profile.get("val_subset_size", 0)),
         "label_noise_rate": float(profile.get("label_noise_rate", 0.0)),
         "imbalance_ratio": float(profile.get("imbalance_ratio", 1.0)),
         "max_train_steps": int(profile.get("max_train_steps", 0)),
         "seed": int(profile.get("seed", 0)),
+        "architecture_name": workload_spec.get("architecture_name"),
         "task_mode_descriptions": TASK_MODE_DESCRIPTIONS,
+        "workload_descriptions": WORKLOAD_DESCRIPTIONS,
         "action_mode_aliases": ACTION_MODE_ALIASES,
         "initial_template_path": template_path,
     }
@@ -211,7 +234,8 @@ def runtime_env(profile_id: str, instance_overrides: dict[str, Any] | None = Non
         "AUTOSEARCH_LABEL_NOISE": str(summary["label_noise_rate"]),
         "AUTOSEARCH_IMBALANCE_RATIO": str(summary["imbalance_ratio"]),
         "AUTOSEARCH_MAX_STEPS": str(summary["max_train_steps"]),
-        "AUTOSEARCH_LATENT_MODE": str(summary["task_mode_true"] or "mixed"),
+        "AUTOSEARCH_WORKLOAD_ID": str(summary["workload_id"] or "mixed"),
+        "AUTOSEARCH_LATENT_MODE": str(summary["workload_id"] or "mixed"),  # compatibility alias
         "AUTOSEARCH_DATA_DIR": str(data_dir),
     }
 
