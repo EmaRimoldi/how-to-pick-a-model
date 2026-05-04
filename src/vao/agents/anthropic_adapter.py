@@ -87,7 +87,7 @@ class ClaudeHaikuAdapter:
         if any(source != parent_source for source in parent_sources.values()):
             raise ValueError("batched candidate generation requires identical parent sources across branches")
 
-        prompt_template = str(state.metadata.get("prompt_template", "single_step_program.txt"))
+        prompt_template = str(state.metadata.get("prompt_template", "autoresearch_program.txt"))
         prompt = render_template(
             prompt_template,
             profile_summary=json.dumps(state.profile_summary, sort_keys=True),
@@ -222,7 +222,7 @@ class ClaudeHaikuAdapter:
         if any(source != parent_source for source in parent_sources.values()):
             raise ValueError("single candidate generation requires identical parent sources across branches")
 
-        prompt_template = str(state.metadata.get("prompt_template", "autoresearch_single_trajectory_program.txt"))
+        prompt_template = str(state.metadata.get("prompt_template", "autoresearch_program.txt"))
         prompt = render_template(
             prompt_template,
             profile_summary=json.dumps(state.profile_summary, sort_keys=True),

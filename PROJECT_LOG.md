@@ -21,7 +21,7 @@
 ### Protocol Hardening
 
 - Added strict structured parsing, source validation, prompt snapshots, and prompt-control tests.
-- Consolidated the active model-generation surface onto `src/vao/prompts/single_step_program.txt`.
+- Consolidated the active AutoResearch model-generation surface onto `src/vao/prompts/autoresearch_program.txt`.
 - Kept `structured_edits` as the active edit protocol and retained `unified_diff` analysis tooling only for protocol comparison.
 - Added feedback-use diagnostics for C(b) with controlled branch promotion.
 - Added per-run diagnostics plots and summary generators for active experiment runs.

@@ -15,8 +15,7 @@ def test_only_single_program_prompt_file_is_active() -> None:
     }
     assert prompt_files == {
         "single_step_program.txt",
-        "autoresearch_single_step_program.txt",
-        "autoresearch_single_trajectory_program.txt",
+        "autoresearch_program.txt",
     }
 
 
@@ -39,29 +38,19 @@ def test_single_program_prompt_contains_full_protocol() -> None:
 def test_autoresearch_prompt_contains_task_specific_contract() -> None:
     source = "def main():\n    pass\n"
     rendered = render_template(
-        "autoresearch_single_step_program.txt",
+        "autoresearch_program.txt",
         profile_summary="{}",
         visible_history="[]",
         current_solution_source=source,
     )
-    assert "VAO_AUTORESEARCH_SINGLE_STEP_PROGRAM_V1" in rendered
-    assert "fixed-step training on CPU and\n  record validation loss" in rendered
+    assert "VAO_AUTORESEARCH_PROGRAM_V2" in rendered
+    assert "This is an experiment in autonomous research" in rendered
+    assert "the framework implements that loop for you" in rendered
+    assert "Lower val_loss is better" in rendered
     assert "layout: architecture and model-capacity changes" in rendered
     assert "`SEED`, `DEPTH`, `BASE_CHANNELS`" in rendered
-
-
-def test_autoresearch_single_trajectory_prompt_contains_single_candidate_contract() -> None:
-    source = "def main():\n    pass\n"
-    rendered = render_template(
-        "autoresearch_single_trajectory_program.txt",
-        profile_summary="{}",
-        visible_history="[]",
-        current_solution_source=source,
-    )
-    assert "VAO_AUTORESEARCH_SINGLE_TRAJECTORY_PROGRAM_V1" in rendered
-    assert "single-trajectory" in rendered
-    assert "You do NOT need to output a probability distribution over six branches." in rendered
-    assert "must choose exactly one dominant action family" in rendered
+    assert "If the\nschema asks for one candidate" in rendered
+    assert "required JSON schema asks for six candidates" in rendered
 
 
 @pytest.mark.parametrize(
@@ -109,51 +98,33 @@ def test_single_prompt_batch_prompt_is_explicit() -> None:
     assert "not a whitelist of functions or lines" in rendered
 
 
-def test_prompt_controlled_configs_are_single_prompt_batched() -> None:
-    haiku_config = yaml.safe_load(Path("configs/hard_haiku_prompt_controlled_10step.yaml").read_text(encoding="utf-8"))
-    qwen_config = yaml.safe_load(Path("configs/hard_qwen_prompt_controlled_10step.yaml").read_text(encoding="utf-8"))
+def test_active_autoresearch_configs_use_single_prompt() -> None:
+    config_paths = [
+        Path("configs/autoresearch_cifar10_model_routing.yaml"),
+        Path("configs/autoresearch_cifar10_model_routing_smoke.yaml"),
+        Path("configs/autoresearch_cifar10_pilot.yaml"),
+        Path("configs/autoresearch_cifar10_single_trajectory_campaign.yaml"),
+        Path("configs/autoresearch_cifar10_workload_pilot.yaml"),
+        Path("configs/autoresearch_cifar10_workload_holdout.yaml"),
+    ]
+    for path in config_paths:
+        config = yaml.safe_load(path.read_text(encoding="utf-8"))
+        assert config["experiment"]["prompt_template"] == "autoresearch_program.txt"
+        assert config["experiment"]["candidate_generation"] == "single"
+
+
+def test_model_routing_config_contains_existing_backends() -> None:
+    matrix = yaml.safe_load(Path("configs/autoresearch_cifar10_model_routing.yaml").read_text(encoding="utf-8"))
     models_config = yaml.safe_load(Path("configs/models.yaml").read_text(encoding="utf-8"))["models"]
+    requested = set(matrix["models"]["include"])
 
-    assert haiku_config["experiment"]["candidate_generation"] == "batched"
-    assert qwen_config["experiment"]["candidate_generation"] == "batched"
-    assert haiku_config["models"]["include"] == ["claude_haiku_batch_strict"]
-    assert qwen_config["models"]["include"] == ["weak_qwen_batch_strict"]
-    assert models_config["claude_haiku_batch_strict"]["allow_batch_repair"] is False
-    assert models_config["weak_qwen_batch_strict"]["allow_batch_repair"] is False
-    assert models_config["weak_qwen_batch_strict"]["allow_response_format_retry"] is False
-    assert "weak_qwen_direct" not in models_config
-    assert "weak_qwen" not in models_config
-    assert "claude_haiku_diff_legacy" not in models_config
-
-
-def test_model_matrix_config_contains_requested_backends() -> None:
-    matrix = yaml.safe_load(Path("configs/hard_single_prompt_model_matrix.yaml").read_text(encoding="utf-8"))
-    models_config = yaml.safe_load(Path("configs/models.yaml").read_text(encoding="utf-8"))["models"]
-    requested = {
-        "gpt_5_4_batch_strict",
-        "gpt_5_4_mini_batch_strict",
-        "gpt_5_3_codex_batch_strict",
-        "gpt_5_3_codex_spark_batch_strict",
-        "gpt_5_2_codex_batch_strict",
-        "qwen_coder_batch_strict",
-        "claude_haiku_batch_strict",
-        "claude_sonnet_batch_strict",
-        "claude_opus_4_6_batch_strict",
-    }
-
-    assert matrix["experiment"]["candidate_generation"] == "batched"
-    assert set(matrix["models"]["include"]) == requested
+    assert matrix["experiment"]["candidate_generation"] == "single"
+    assert matrix["experiment"]["prompt_template"] == "autoresearch_program.txt"
+    assert requested
     assert all(name in models_config for name in requested)
     for name in requested:
         assert models_config[name]["edit_protocol"] == "structured_edits"
-        assert models_config[name]["allow_batch_repair"] is False
-    for name in {
-        "gpt_5_4_batch_strict",
-        "gpt_5_4_mini_batch_strict",
-        "gpt_5_3_codex_batch_strict",
-        "gpt_5_3_codex_spark_batch_strict",
-        "gpt_5_2_codex_batch_strict",
-    }:
+    for name in {item for item in requested if item.startswith("gpt_")}:
         assert models_config[name]["adapter"] == "codex_cli"
 
 
@@ -161,6 +132,6 @@ def test_autoresearch_single_trajectory_campaign_config_is_single_candidate() ->
     config = yaml.safe_load(Path("configs/autoresearch_cifar10_single_trajectory_campaign.yaml").read_text(encoding="utf-8"))
 
     assert config["experiment"]["candidate_generation"] == "single"
-    assert config["experiment"]["steps"] == 20
-    assert config["experiment"]["prompt_template"] == "autoresearch_single_trajectory_program.txt"
+    assert config["experiment"]["steps"] == 32
+    assert config["experiment"]["prompt_template"] == "autoresearch_program.txt"
     assert config["benchmark"]["id"] == "autoresearch_cifar10"

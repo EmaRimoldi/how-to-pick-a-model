@@ -31,7 +31,7 @@ class FakeOpenAICompatibleAdapter(OpenAICompatibleAdapter):
 
 
 def test_openai_compatible_batched_structured_edits_materialize_candidates(tmp_path: Path) -> None:
-    parent_source = Path("benchmarks/stateful_query_engine/solution_template.py").read_text(encoding="utf-8")
+    parent_source = Path("benchmarks/autoresearch_cifar10/solution_template.py").read_text(encoding="utf-8")
     run_dir = tmp_path / "run"
     workspace = run_dir / "workspace" / "solution.py"
     workspace.parent.mkdir(parents=True)
@@ -43,26 +43,26 @@ def test_openai_compatible_batched_structured_edits_materialize_candidates(tmp_p
 
     assert distribution.top_mode == "indexing"
     assert distribution.parsed_json["transport"] == "openai_compatible"
-    assert distribution.parsed_json["prompt_template"] == "single_step_program.txt"
+    assert distribution.parsed_json["prompt_template"] == "autoresearch_program.txt"
     snapshot_path = run_dir / "steps" / "step_0000" / "prompt_snapshot.txt"
     snapshot_meta = run_dir / "steps" / "step_0000" / "prompt_snapshot.json"
     assert snapshot_path.exists()
     assert snapshot_meta.exists()
     snapshot = snapshot_path.read_text(encoding="utf-8")
-    assert "VAO_SINGLE_STEP_PROGRAM_V1" in snapshot
-    assert "The modes are experimental labels, not edit permissions" in snapshot
-    assert json.loads(snapshot_meta.read_text(encoding="utf-8"))["template"] == "single_step_program.txt"
+    assert "VAO_AUTORESEARCH_PROGRAM_V2" in snapshot
+    assert "This is an experiment in autonomous research" in snapshot
+    assert json.loads(snapshot_meta.read_text(encoding="utf-8"))["template"] == "autoresearch_program.txt"
     assert set(proposals) == set(MODES)
     for mode, proposal in proposals.items():
         assert proposal.declared_mode == mode
         assert proposal.parsed_output_json["edit_protocol"] == "structured_edits"
         assert proposal.parsed_output_json["candidate_generation"] == "batched_structured_edits"
-        assert proposal.parsed_output_json["prompt_template"] == "single_step_program.txt"
-        assert "Qwen smoke" in Path(proposal.file_path).read_text(encoding="utf-8")
+        assert proposal.parsed_output_json["prompt_template"] == "autoresearch_program.txt"
+        assert "LEARNING_RATE = 0.0006" in Path(proposal.file_path).read_text(encoding="utf-8")
 
 
 def test_openai_compatible_batched_invalid_candidate_becomes_logged_noop(tmp_path: Path) -> None:
-    parent_source = Path("benchmarks/stateful_query_engine/solution_template.py").read_text(encoding="utf-8")
+    parent_source = Path("benchmarks/autoresearch_cifar10/solution_template.py").read_text(encoding="utf-8")
     run_dir = tmp_path / "run"
     workspace = run_dir / "workspace" / "solution.py"
     workspace.parent.mkdir(parents=True)
@@ -89,7 +89,7 @@ def test_openai_compatible_batched_invalid_candidate_becomes_logged_noop(tmp_pat
 
 
 def test_strict_batched_adapter_does_not_repair_with_second_prompt(tmp_path: Path) -> None:
-    parent_source = Path("benchmarks/stateful_query_engine/solution_template.py").read_text(encoding="utf-8")
+    parent_source = Path("benchmarks/autoresearch_cifar10/solution_template.py").read_text(encoding="utf-8")
     run_dir = tmp_path / "run"
     workspace = run_dir / "workspace" / "solution.py"
     workspace.parent.mkdir(parents=True)
@@ -144,7 +144,7 @@ def test_openai_compatible_single_structured_edit_materializes_one_candidate(tmp
 
     assert distribution.top_mode == "topk"
     assert distribution.parsed_json["candidate_generation"] == "single_structured_edit"
-    assert distribution.parsed_json["prompt_template"] == "autoresearch_single_trajectory_program.txt"
+    assert distribution.parsed_json["prompt_template"] == "autoresearch_program.txt"
     assert proposal.declared_mode == "topk"
     assert proposal.parsed_output_json["candidate_generation"] == "single_structured_edit"
     assert "LEARNING_RATE = 0.0012" in Path(proposal.file_path).read_text(encoding="utf-8")
@@ -192,7 +192,7 @@ def _autoresearch_state(workspace: Path, parent_source: str) -> AgentState:
         visibility_regime="top1_only",
         metadata={
             "benchmark_id": "autoresearch_cifar10",
-            "prompt_template": "autoresearch_single_trajectory_program.txt",
+            "prompt_template": "autoresearch_program.txt",
         },
     )
 
@@ -220,12 +220,11 @@ def _candidate(mode: str) -> dict[str, Any]:
         "edit_format": "structured_edits",
         "secondary_modes": [],
         "rationale": f"Small {mode} smoke edit.",
-        "target_regions": ["CandidateQueryEngine docstring"],
         "edits": [
             {
                 "op": "replace_exact",
-                "old": '"""Correct list-backed baseline implementation."""',
-                "new": f'"""Correct list-backed baseline implementation. Qwen smoke {mode}."""',
+                "old": "LEARNING_RATE = 5e-4",
+                "new": "LEARNING_RATE = 0.0006",
             }
         ],
     }

@@ -62,7 +62,7 @@
 - [x] Add Codex CLI transport for GPT/Codex runs when `OPENAI_API_KEY` is unavailable.
 - [x] Run and validate one-step Codex CLI smokes for GPT-5.4, GPT-5.4-mini, GPT-5.3-Codex, and GPT-5.3-Codex-Spark.
 - [x] Clean active configs and artifact catalog, removing superseded phase/smoke outputs.
-- [x] Consolidate the active real-model C(a) path onto one prompt file, `single_step_program.txt`.
+- [x] Consolidate the active AutoResearch real-model path onto one prompt file, `autoresearch_program.txt`.
 - [x] Remove active Qwen direct-edit and old Haiku batch configs from the prompt-controlled experiment surface.
 - [x] Add prompt snapshot logging for future run-level prompt audits.
 - [x] Delete legacy prompt templates and direct-edit backend paths so active comparisons cannot fall back to per-mode prompts.
