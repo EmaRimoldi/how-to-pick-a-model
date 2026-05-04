@@ -1,0 +1,24 @@
+experiment:
+  name: autoresearch_cifar10_cnn4096_router_solver
+  steps: 6
+  visibility_regime: top1_only
+  feedback_condition: ca
+  candidate_generation: single
+  selection_policy: top1
+  prompt_template: autoresearch_single_trajectory_program.txt
+  branch_timeout_seconds: 1800
+  incorrect_penalty: -1.0
+  success_relative_improvement_threshold: 0.05
+  stop_on_success: true
+benchmark:
+  id: autoresearch_cifar10
+  template_path: benchmarks/autoresearch_cifar10/workloads/cnn_compact.py
+  profiles:
+    - autoresearch_cifar10
+output:
+  root: runs/autoresearch_cifar10/router_cnn4096_solver
+models:
+  include:
+    - claude_haiku
+    - claude_sonnet
+    - claude_opus_4_6

@@ -28,6 +28,7 @@ from vao.success_metrics import (
     success_on_relative_threshold,
     validate_relative_threshold,
 )
+from vao.taxonomy import MODES
 
 EPS = 1e-6
 
@@ -168,7 +169,87 @@ def _baseline_probe_features(run_dir: Path) -> dict[str, float]:
     }
 
 
-def _router_visible_features(manifest: dict[str, Any], run_dir: Path, *, feature_set: str) -> dict[str, float]:
+def _split_from_manifest(manifest: dict[str, Any]) -> str:
+    return str(manifest.get("task_mode_split") or manifest.get("workload_split") or "unspecified")
+
+
+def _workload_from_manifest(manifest: dict[str, Any]) -> str | None:
+    workload_id = manifest.get("task_mode_true")
+    if workload_id is None:
+        workload_id = task_mode_from_instance_overrides((((manifest.get("config") or {}).get("benchmark") or {}).get("instance_overrides")))
+    if workload_id not in TASK_MODE_SET:
+        return None
+    return str(workload_id)
+
+
+def _instance_key(*, split: str, workload_id: str, instance_seed: int | None) -> tuple[str, str, int | None]:
+    return (str(split), str(workload_id), instance_seed)
+
+
+def _safe_feature_token(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "_", value.lower()).strip("_") or "unknown"
+
+
+def _load_json(path: Path) -> dict[str, Any]:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def load_probe_feature_index(roots: list[Path]) -> dict[tuple[str, str, int | None], dict[str, float]]:
+    index: dict[tuple[str, str, int | None], dict[str, float]] = {}
+    for root in roots:
+        for summary_path in sorted(root.glob("**/run_summary.json")):
+            run_dir = summary_path.parent
+            manifest_path = run_dir / "run_manifest.json"
+            if not manifest_path.exists():
+                continue
+            manifest = _load_json(manifest_path)
+            workload_id = _workload_from_manifest(manifest)
+            if workload_id is None:
+                continue
+            summary = _load_json(summary_path)
+            split = _split_from_manifest(manifest)
+            instance_seed = _coerce_int(manifest.get("instance_seed"))
+            key = _instance_key(split=split, workload_id=workload_id, instance_seed=instance_seed)
+
+            model_alias = _safe_feature_token(_infer_model_alias(manifest, summary, run_dir))
+            steps_completed = int(summary.get("steps_completed") or 0)
+            prefix = f"probe_{model_alias}_s{steps_completed}"
+            feature_dict: dict[str, float] = {
+                f"{prefix}_baseline_loss": float(summary.get("baseline_loss") or 0.0),
+                f"{prefix}_best_visible_loss": float(summary.get("best_visible_loss") or 0.0),
+                f"{prefix}_best_visible_relative_improvement": float(summary.get("best_visible_relative_improvement") or 0.0),
+                f"{prefix}_elapsed_wall_seconds": float(summary.get("elapsed_wall_seconds") or 0.0),
+                f"{prefix}_branch_evaluations": float(summary.get("branch_evaluations") or 0.0),
+                f"{prefix}_success": 1.0 if summary.get("success") else 0.0,
+                f"{prefix}_tau_step": float(summary.get("tau_step") or 0.0),
+            }
+
+            step0_path = run_dir / "steps" / "step_0000" / "step_record.json"
+            if step0_path.exists():
+                step0 = _load_json(step0_path)
+                selected_mode = str(step0.get("selected_mode") or "unknown")
+                for mode in MODES:
+                    feature_dict[f"{prefix}_step0_selected_is_{mode}"] = 1.0 if selected_mode == mode else 0.0
+                mode_probs = step0.get("mode_probs") or {}
+                entropy = 0.0
+                for mode in MODES:
+                    prob = float(mode_probs.get(mode, 0.0))
+                    feature_dict[f"{prefix}_step0_prob_{mode}"] = prob
+                    if prob > 0:
+                        entropy -= prob * math.log(max(prob, EPS))
+                feature_dict[f"{prefix}_step0_entropy"] = entropy
+
+            index.setdefault(key, {}).update(feature_dict)
+    return index
+
+
+def _router_visible_features(
+    manifest: dict[str, Any],
+    run_dir: Path,
+    *,
+    feature_set: str,
+    external_probe_features: dict[str, float] | None = None,
+) -> dict[str, float]:
     config = manifest.get("config") or {}
     benchmark = config.get("benchmark") or {}
     instance_overrides = benchmark.get("instance_overrides") or {}
@@ -195,6 +276,16 @@ def _router_visible_features(manifest: dict[str, Any], run_dir: Path, *, feature
         features = _router_visible_features(manifest, run_dir, feature_set="workload_only")
         features.update(probe_features)
         return features
+    if feature_set == "shortprobe_only":
+        return dict(external_probe_features or {})
+    if feature_set == "workload_plus_shortprobe":
+        features = _router_visible_features(manifest, run_dir, feature_set="workload_only")
+        features.update(external_probe_features or {})
+        return features
+    if feature_set == "workload_plus_interactions":
+        features = _router_visible_features(manifest, run_dir, feature_set="workload_plus_probe")
+        features.update(external_probe_features or {})
+        return features
     if feature_set == "leaky_current":
         features = _router_visible_features(manifest, run_dir, feature_set="workload_plus_probe")
         return features
@@ -205,7 +296,13 @@ def _attempt_success(*, baseline_loss: float, best_loss: float, improvement_thre
     return success_on_relative_threshold(baseline_loss, best_loss, threshold=improvement_threshold)
 
 
-def load_attempt_records(roots: list[Path], *, improvement_threshold: float | None, router_feature_set: str) -> list[AttemptRecord]:
+def load_attempt_records(
+    roots: list[Path],
+    *,
+    improvement_threshold: float | None,
+    router_feature_set: str,
+    probe_feature_index: dict[tuple[str, str, int | None], dict[str, float]] | None = None,
+) -> list[AttemptRecord]:
     records: list[AttemptRecord] = []
     for root in roots:
         for summary_path in sorted(root.glob("**/run_summary.json")):
@@ -215,11 +312,17 @@ def load_attempt_records(roots: list[Path], *, improvement_threshold: float | No
                 continue
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
             summary = json.loads(summary_path.read_text(encoding="utf-8"))
-            workload_id = manifest.get("task_mode_true")
+            workload_id = _workload_from_manifest(manifest)
             if workload_id is None:
-                workload_id = task_mode_from_instance_overrides((((manifest.get("config") or {}).get("benchmark") or {}).get("instance_overrides")))
-            if workload_id not in TASK_MODE_SET:
                 continue
+            split = _split_from_manifest(manifest)
+            instance_seed = _coerce_int(manifest.get("instance_seed"))
+            extra_probe_features = {}
+            if probe_feature_index is not None:
+                extra_probe_features = probe_feature_index.get(
+                    _instance_key(split=split, workload_id=workload_id, instance_seed=instance_seed),
+                    {},
+                )
             baseline_loss = float(summary.get("baseline_loss") or math.inf)
             best_loss = float(summary.get("best_visible_loss") or math.inf)
             relative_improvement_value = relative_improvement(baseline_loss, best_loss)
@@ -231,10 +334,10 @@ def load_attempt_records(roots: list[Path], *, improvement_threshold: float | No
                 AttemptRecord(
                     run_dir=run_dir,
                     run_id=str(summary.get("run_id") or run_dir.name),
-                    split=str(manifest.get("task_mode_split") or manifest.get("workload_split") or "unspecified"),
+                    split=split,
                     model_alias=_infer_model_alias(manifest, summary, run_dir),
                     workload_id=str(workload_id),
-                    instance_seed=_coerce_int(manifest.get("instance_seed")),
+                    instance_seed=instance_seed,
                     baseline_loss=baseline_loss,
                     best_loss=best_loss,
                     relative_improvement=relative_improvement_value,
@@ -246,7 +349,12 @@ def load_attempt_records(roots: list[Path], *, improvement_threshold: float | No
                     wall_seconds=_coerce_float(summary.get("elapsed_wall_seconds")),
                     agent_cost_usd=run_cost["usd"],
                     total_tokens=_coerce_int(run_cost["tokens"]),
-                    feature_dict=_router_visible_features(manifest, run_dir, feature_set=router_feature_set),
+                    feature_dict=_router_visible_features(
+                        manifest,
+                        run_dir,
+                        feature_set=router_feature_set,
+                        external_probe_features=extra_probe_features,
+                    ),
                 )
             )
     return records
@@ -476,13 +584,29 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument(
         "--router-feature-set",
         default="workload_plus_probe",
-        choices=["probe_only", "workload_only", "workload_plus_probe", "leaky_current"],
+        choices=[
+            "probe_only",
+            "workload_only",
+            "workload_plus_probe",
+            "shortprobe_only",
+            "workload_plus_shortprobe",
+            "workload_plus_interactions",
+            "leaky_current",
+        ],
     )
     parser.add_argument("--knn-k", type=int, default=3)
+    parser.add_argument("--probe-roots", nargs="*", default=None, help="Optional short-probe run roots to merge into router-visible features")
     args = parser.parse_args(argv)
 
     roots = [Path(root) for root in args.roots]
-    records = load_attempt_records(roots, improvement_threshold=args.improvement_threshold, router_feature_set=args.router_feature_set)
+    probe_roots = [Path(root) for root in (args.probe_roots or [])]
+    probe_feature_index = load_probe_feature_index(probe_roots) if probe_roots else {}
+    records = load_attempt_records(
+        roots,
+        improvement_threshold=args.improvement_threshold,
+        router_feature_set=args.router_feature_set,
+        probe_feature_index=probe_feature_index,
+    )
     bundles = build_instance_bundles(records)
     report = evaluate_accounting(
         bundles,
@@ -492,6 +616,7 @@ def main(argv: list[str] | None = None) -> None:
         knn_k=args.knn_k,
     )
     report["attempt_records"] = len(records)
+    report["probe_instance_count"] = len(probe_feature_index)
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(report, indent=2, sort_keys=True, allow_nan=True), encoding="utf-8")
