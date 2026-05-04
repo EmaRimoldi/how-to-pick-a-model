@@ -38,6 +38,8 @@
 \DeclareMathOperator{\Occ}{Occ}
 \DeclareMathOperator{\Hit}{Hit}
 \DeclareMathOperator{\CVaR}{CVaR}
+\DeclareMathOperator{\MI}{I}
+\DeclareMathOperator{\Hent}{H}
 
 \newcommand{\cA}{\mathcal{A}}
 \newcommand{\cB}{\mathcal{B}}
@@ -75,18 +77,18 @@ Minimal Diagnostic Interaction for Verifier-Backed Agentic Systems}
 \maketitle
 
 \begin{abstract}
-For verifier-backed agent systems, the deployment question is not which model wins a scalar benchmark, but which interacting model should be allowed to spend a full expensive run on the current instance.
-Many such tasks admit a small pre-run interaction with the task and verifier: one can run a smoke test, a short proof search, a baseline training evaluation, or a fixed scout attempt and then route the expensive solver.
-We formalize this idea as \emph{minimal diagnostic interaction}.
-A diagnostic interaction is a standardized cheap model--verifier protocol that produces a router-visible signal $Z_b$ before deployment, where $b$ indexes the interaction type and budget.
-Because both the signal and the final loss are induced by the verifier, model choice is formalized as selection among verifier-indexed interaction kernels rather than as an intrinsic leaderboard property of a model alone.
-For any deployment loss, we give an exact accounting identity that decomposes the performance of a routed policy into four decision quantities: the best fixed-model baseline, workload opportunity, diagnostic opportunity, and router regret.
-Under an optional finite latent-mode assumption, the instance-level problem reduces to posterior decision making on a reusable mode-conditioned loss matrix while keeping the operational object action-level rather than allocation-level.
-We then define the minimum useful diagnostic interaction: the cheapest admissible probe that recovers a target fraction of the routing value available in principle.
-The experimental program instantiates the framework on AutoResearch-style CIFAR-10 optimization, where several interacting models edit the same fixed training script, the verifier is validation loss under a fixed budget, and nuisance draws create repeated deployment instances without changing the optimizable artifact.
-Architecture-shifted workloads are reserved as robustness stress tests rather than as the main source of routing signal.
-The campaign is organized around five falsifiable questions: whether verified effort changes interacting-model rankings relative to pass rate, whether a baseline verifier probe reveals routing-relevant structure beyond static controls, how much of the oracle routing advantage that probe recovers, what minimum probe budget is economically sufficient, and whether reusable pilots reduce selection regret relative to black-box benchmark racing.
-The paper contributes a deployment-facing theory of routing from minimal verifier-backed interaction and a concrete benchmark protocol for testing it.
+Verifier-backed agent systems are often evaluated by whether a model can eventually solve a task.
+For deployment, the sharper question is temporal: which interacting model should receive the full expensive run so that the system reaches a verified success fastest, cheapest, and robustly on the current instance?
+Following the time-centric view of verifiable transduction in Achille--Soatto, we treat useful task information as information that reduces search time to a verified solution rather than as an intrinsic model score.
+Many such tasks admit a small pre-run interaction with the task and verifier before the long run is launched.
+We formalize this interaction as a \emph{diagnostic measurement}: a standardized cheap model--verifier protocol that produces a router-visible transcript $Z_b$ while leaving the final deployment instance reset.
+The verifier is therefore both judge and measuring instrument: it converts a small scratch interaction into task-specific evidence about the model--task--verifier coupling.
+For any deployment loss, especially cost-aware first-hit time, we give an exact accounting identity that decomposes routed performance into the best fixed-model baseline, workload opportunity, diagnostic opportunity, and router regret.
+We then define the minimum useful diagnostic interaction as the cheapest admissible measurement that recovers a target fraction of the routing value, or equivalently yields positive value after its own cost is charged.
+The experimental program instantiates the framework on AutoResearch-style CIFAR-10 optimization.
+AutoResearch is used as a controlled member of a broader class of verifier-backed tasks: agents edit an executable artifact, receive external validation feedback, and are evaluated by time-to-verified-improvement under a fixed budget.
+The main diagnostic family includes no interaction, read-only bids, verifier-only baseline probes, and symmetric scratch scouts in which each candidate model receives the same micro-budget before the router chooses the full-run model.
+The paper contributes a deployment-facing theory of minimal verifier-backed measurement and a benchmark protocol for testing whether diagnostic routing reduces time-to-verified-success.
 \end{abstract}
 
 \section{Introduction}
@@ -94,7 +96,7 @@ The paper contributes a deployment-facing theory of routing from minimal verifie
 
 Suppose a builder has a verifier-backed task, a finite menu of candidate interacting models, and a concrete instance that must be solved under budget.
 The core deployment question is not merely whether some sufficiently large model can eventually solve the task.
-It is which solver should be chosen \emph{now}, on this instance, before paying the full cost of a long run.
+It is which solver should be chosen \emph{now}, on this instance, before paying the full cost of a long run, in order to minimize time or cost to a verified success.
 This question appears in repository repair against tests, theorem proving against a checker, data-pipeline or training-loop optimization against a validation metric, and AutoResearch-style program editing where an agent modifies \texttt{train.py}, runs a bounded experiment, and keeps the edit only when validation improves~\citep{jimenez2024swebench, karpathy2026autoresearch}.
 All of these are transductive and verifier-backed in the same sense: the system is given a concrete artifact-level problem, the environment provides an external success criterion, and capability is meaningful only relative to time, compute, and deployment budget.
 That framing is closely aligned with the time-centric view of agents in \citet{achille2025agents}.
@@ -102,49 +104,54 @@ That framing is closely aligned with the time-centric view of agents in \citet{a
 A scalar benchmark race is the wrong scientific object for this regime.
 Two models can have similar entry success and still differ sharply in verified effort, persistence of progress, dollar cost, wall-clock cost, or robustness across workload families.
 More importantly, the builder often has the option to interact \emph{a little} with the task before committing the full expensive run.
-In repository repair one can run smoke tests or inspect failing files; in theorem proving one can run a short bounded search; in AutoResearch one can execute a cheap baseline training evaluation.
-Because the task is verifier-backed, these interactions need not be vague heuristics.
-They can be standardized probes that expose solver-relevant structure before the full decision is made.
+In repository repair one can run smoke tests or allow a scratch patch attempt; in theorem proving one can run a bounded proof attempt against the checker; in AutoResearch one can allow a candidate model to make a single scratch edit and observe a short validation run.
+Because the task is verifier-backed, these interactions need not be vague heuristics or hand-written feature extractors.
+They can be standardized measurements that expose solver-relevant structure before the full decision is made.
 This pattern is not specific to AutoResearch.
-The same object appears whenever a cheap verifier interaction is available before the full run: unit-test smoke suites for software repair, bounded checker calls for theorem proving, dry-run validation for data pipelines, or short training/evaluation probes for tuning tasks.
-In each case the probe is admissible only because an external verifier can turn a small amount of interaction into a task-specific signal.
+The same object appears whenever a cheap verifier interaction is available before the full run: unit-test smoke suites and scratch repairs for software, bounded checker calls for theorem proving, dry-run validation for data pipelines, short leaderboard-style submissions for ML engineering, or short training/evaluation probes for tuning tasks.
+In each case the interaction is admissible only because an external verifier can turn a small amount of task contact into a router-visible signal.
 
 The verifier is not incidental to this claim.
 The same base language model can look different under different verifiers, budgets, stopping rules, and artifact interfaces.
 We therefore treat an interacting model as a stochastic procedure coupled to a verifier: it proposes artifact edits, observes verifier feedback allowed by the protocol, and incurs a verifier-indexed loss.
 Routing is a function of this model--verifier pair.
-In the main AutoResearch experiment we deliberately fix the optimizable training program so that routing gains cannot be explained by obvious architecture metadata; the final decision is which interacting model should spend the full budget on that same artifact.
+The verifier is both the judge of the final run and the measuring instrument that can produce task-specific information before deployment.
+The diagnostic transcript does not make a model intrinsically stronger.
+Rather, when it contains algorithmic information about a short path to success, it can make a non-dominant model competitive by reducing its search time on the current task.
 
 This paper asks the following question: \emph{what is the minimum admissible interaction with a verifier-backed task that is sufficient to make routing worthwhile?}
 The key object is therefore not only the routed policy, but the cheap pre-run interaction that produces the signal used by the router.
 We call this object a \emph{diagnostic interaction}.
 A diagnostic interaction may be as simple as a no-edit baseline evaluation under a small verifier budget.
-It may also be richer, such as a bounded scout run or a short fallback attempt.
-Either way, it is completed before the expensive deployment run, is shared across candidate solvers, and yields a router-visible signal $Z$.
+It may also be richer, such as a symmetric scratch scout in which every candidate model receives the same micro-budget on a resettable copy of the task.
+Either way, it is completed before the expensive deployment run, follows a protocol fixed in advance, and yields a router-visible signal $Z$.
+The full run then starts from the original instance.
+The scout is a measurement, not a partial solution.
 
 The paper's narrative is decision-theoretic rather than leaderboard-centric.
 We do not treat routing as a mysterious capability of an especially clever LLM.
 We treat it as a deployment decision problem under partial information.
 The right quantities are therefore: the loss of the best fixed model, the improvement available from any observed static context, the additional value of a diagnostic interaction, and the regret of the learned router relative to the signal oracle.
 Mutual information, posterior concentration, or mode-prediction accuracy are useful diagnostics, but they are secondary.
-The deployment-facing question is whether a cheap interaction changes the optimal action enough to justify its cost.
+The deployment-facing question is whether a cheap interaction reduces time-to-verified-success enough to justify its cost.
 
 \paragraph{Why AutoResearch is a good controlled family.}
 AutoResearch is a particularly good experimental substrate because it isolates exactly the ingredients that matter here while staying reproducible enough for a controlled campaign.
 An instance consists of an editable training program, a fixed training and evaluation budget, a verifier based on validation loss, and a nuisance seed.
 The agent edits code, the environment runs the code, and success is externally certified by improved validation performance.
 This is already structurally analogous to software repair against unit tests, proof search against a checker, and tuning or configuration problems where short instrumented runs expose solver-relevant difficulty before a full expensive optimization is launched.
-At the same time, AutoResearch offers a disciplined controlled family: the verifier is cheap enough to probe, the artifact is concrete, and repeated nuisance draws give multiple deployment instances without changing the artifact class.
-The mainline benchmark therefore fixes a single editable starting program and data regime, while architecture-shifted starts such as compact CNNs, flat MLPs, and tiny ResNets are used as robustness stress tests.
+At the same time, AutoResearch offers a disciplined controlled family: the verifier is cheap enough to probe, the artifact is concrete, counterfactual full runs can be collected for multiple models, and repeated nuisance draws give multiple deployment instances without changing the artifact class.
+We use AutoResearch not as the only domain where routing should work, but as a controlled testbed for the sharper claim that verifier-backed measurement can reduce time-to-verified-improvement.
+The mainline benchmark therefore fixes a single editable starting program and data regime when testing model-specific routing value, while architecture-shifted starts such as compact CNNs, flat MLPs, and tiny ResNets are used as robustness stress tests.
 
 \paragraph{Contributions.}
 This positioning leaves a concrete gap between algorithm selection, LLM routing, and verifier-backed agent evaluation: the field lacks an accounting language for deciding when a cheap verifier-derived signal is valuable enough to change the interacting model that receives the expensive run.
 The paper makes four contributions.
 \begin{enumerate}[leftmargin=1.35em,itemsep=0.2em]
-  \item \textbf{Minimal diagnostic interaction.} We define an admissible pre-run interaction family for verifier-backed tasks and formalize the minimum useful interaction as the cheapest verifier-coupled probe that recovers a target fraction of the routing value available in principle.
-  \item \textbf{Model--verifier routing accounting.} We give an exact identity that decomposes routed deployment performance into the best fixed interacting-model baseline, workload opportunity, diagnostic opportunity, and router regret.
-  \item \textbf{Finite-mode reduction.} Under an optional solver-relevant finite latent-mode assumption, the instance-level problem reduces to posterior decision making on a reusable mode-conditioned loss matrix, showing when reusable mode-conditioned pilot summaries suffice to evaluate many routing designs.
-  \item \textbf{Experimental program.} We specify a coherent AutoResearch benchmark campaign that tests metric choice, diagnostic sufficiency, routing recovery, minimum useful probe budget, and selection regret under a fixed-artifact mainline with workload-shift stress tests.
+  \item \textbf{Verifier-backed measurement.} We define diagnostic interaction as a task-independent measurement protocol: a cheap scratch interaction with the task and verifier that produces a transcript for routing while leaving the deployment instance reset.
+  \item \textbf{Time-to-success routing accounting.} We give an exact identity that decomposes cost-aware routed performance into the best fixed interacting-model baseline, workload opportunity, diagnostic opportunity, and router regret.
+  \item \textbf{Minimum useful interaction.} We formalize the minimum useful measurement as the cheapest admissible protocol that recovers a target fraction of available routing value, or equivalently yields positive net value after probe cost.
+  \item \textbf{Experimental program.} We specify an AutoResearch campaign that tests metric choice, model heterogeneity, scratch-scout diagnostic sufficiency, routing recovery, minimum useful interaction budget, and selection regret, with workload-shift stress tests for robustness.
 \end{enumerate}
 
 \section{Related work and positioning}
@@ -207,14 +214,59 @@ Running interaction $b$ on instance $X$ against verifier $V$ before the main run
 (i) a diagnostic transcript $\Xi_b^V(X)$,
 (ii) a router-visible signal $Z_b=\phi_b(\Xi_b^V(X))$, and
 (iii) a diagnostic cost $c_b^V(X)$.
-The transcript may be verifier-only, as in a no-edit baseline evaluation, or model-coupled, as in a fixed scout panel that runs a small budget for each candidate model.
-Admissibility means that the diagnostic protocol is fixed before the final routing decision and is not chosen adaptively to favor the model that will later be deployed.
+The transcript may be verifier-only, as in a no-edit baseline evaluation, or model-coupled, as in a fixed scratch-scout panel that gives each candidate model the same micro-budget.
+Admissibility means that the diagnostic protocol is fixed before the final routing decision, is run on resettable scratch state when it modifies artifacts, and is not chosen adaptively to favor the model that will later be deployed.
 \end{definition}
 
 This definition intentionally includes both \emph{amount} and \emph{type} of interaction.
-For example, $b$ may mean ``no interaction,'' ``run the baseline verifier for 128 inner steps,'' or ``give every candidate model one standardized scout attempt and summarize the verifier traces.''
-The paper's mainline AutoResearch instantiation uses the strictest nontrivial member of this family: a no-edit baseline verifier probe whose summary statistics become the router-visible signal.
-Richer model-coupled scout interactions are part of the same mathematical family, but they are treated as higher-cost probes.
+For example, $b$ may mean ``no interaction,'' ``ask for read-only bids,'' ``run the baseline verifier for a small budget,'' or ``give every candidate model one standardized scratch attempt and summarize the verifier traces.''
+The protocol specifies the interaction budget and logging rules, not the semantic content of the edit, proof, patch, or experiment.
+This is what makes the construction task-independent: AutoResearch scouts edit \texttt{train.py}, repository-repair scouts patch code and run tests, theorem-proving scouts propose tactics against a checker, and ML-engineering scouts make a small submission or local validation run.
+
+\begin{definition}[Symmetric scratch scout with calibrated bid]
+\label{def:scratch-scout}
+A symmetric scratch scout is an admissible diagnostic interaction $b_{\mathrm{scout}}(k,B_s)$ with scout depth $k$ and scout verifier budget $B_s$.
+For each model $m\in\cM$, the protocol creates an independent scratch copy of the task, asks $m$ for a pre-scout bid about expected success and cost, allows at most $k$ model actions with verifier feedback under budget $B_s$, records the verifier deltas and resource use, and then asks for a post-scout bid.
+The router-visible signal is
+\[
+Z_{b_{\mathrm{scout}}}
+=
+\left\{Z_m^{\mathrm{pre}},\Xi_{m,k}^{V,B_s},Z_m^{\mathrm{post}},C_m^{\mathrm{scout}}\right\}_{m\in\cM}.
+\]
+After this measurement, all scratch artifacts are discarded and the full deployment run starts from the original instance.
+\end{definition}
+
+The scratch-scout definition is the paper's preferred nontrivial measurement because it does not prescribe task-specific interventions such as changing a learning rate or toggling a scheduler.
+It measures early model--task--verifier behavior under a controlled budget.
+The cheaper verifier-only baseline probe remains an important ablation and a lower rung in the interaction ladder.
+
+\paragraph{Information target.}
+Let
+\[
+A^\star(X)\in\argmin_{a\in\cA}\E[\ell(a,X)\mid X]
+\]
+be the best full-run action for the instance under the chosen verifier, loss, and budget.
+Before measurement, the router can only use $W$ and has uncertainty about $A^\star$ through $\Prb[A^\star\mid W]$.
+After measurement, it can condition on $Z_b$.
+A diagnostic interaction has task-specific decision information when
+\[
+\MI(A^\star;Z_b\mid W)
+=
+\Hent(A^\star\mid W)-\Hent(A^\star\mid W,Z_b)
+>
+0,
+\]
+but this information criterion is secondary to deployment value.
+The central question is whether the measured transcript reduces cost-aware time-to-verified-success after its own cost is charged.
+
+\paragraph{Connection to Achille--Soatto.}
+The role of $Z_b$ is the paper's operational bridge to the Achille--Soatto view of agents as time-limited transductive solvers~\citep{achille2025agents}.
+In a verifiable task, eventual solvability is too weak: an exhaustive or lucky search may eventually find a certified solution without learning anything useful about how to solve the current instance efficiently.
+The relevant quantity is speed to verified success under a budget.
+The diagnostic transcript $Z_b$ is therefore not treated as an intrinsic increase in model capability.
+It is a finite-budget measurement channel between the current task, the candidate interacting models, and the verifier.
+When this channel carries algorithmic information about which action has a short path to success, routing can reduce search time.
+When it does not, or when the channel is too expensive, the best fixed interacting model remains the correct deployment choice.
 
 \paragraph{Concrete deployment losses.}
 The theory below is written for a generic $\ell$, but the experimental campaign uses two concrete loss families.
@@ -374,6 +426,15 @@ The first quantity captures minimal interaction in the pure decision sense: what
 The second captures the deployment sense: which probe actually maximizes net value after its own cost is counted?
 They need not coincide.
 A richer probe can reveal more but still be uneconomical.
+When the target is information rather than value, we also report the first measurably informative interaction,
+\[
+b^{\mathrm{info}}_{\min}
+\in
+\argmin_{b\in\cB}
+\left\{\E[c_b(X)] : \MI(A^\star;Z_b\mid W)>0\right\},
+\]
+with the inequality interpreted empirically through held-out log-loss or bootstrap intervals.
+This information target is useful for diagnosis, but it is not the main deployment criterion: an interaction can reduce uncertainty about the best model and still be too expensive to run.
 
 \begin{proposition}[More informative probes help before cost is counted]
 \label{prop:monotone}
@@ -395,6 +456,17 @@ Therefore the conditional Bayes risk under $Z_{b_2}$ is no larger than the condi
 Proposition~\ref{prop:monotone} is intentionally about raw diagnostic opportunity rather than net value.
 Once diagnostic cost is included, more interaction may or may not be worth paying for.
 That tradeoff is one of the main empirical targets of the paper.
+
+\paragraph{Interaction ladder.}
+The experimental family orders admissible measurements by cost and task contact:
+\begin{align*}
+b_0&:\text{no interaction},&
+b_1&:\text{read-only bids},\\
+b_2&:\text{verifier-only baseline probe},&
+b_3&:\text{one-step scratch scout},\\
+b_4&:\text{multi-step scratch scout with post-feedback bids}.&
+\end{align*}
+The ladder lets us ask whether the first nontrivial task contact already creates value, and whether model-coupled scratch interaction recovers more routing value than verifier-only measurement.
 
 \subsection{Finite latent-mode reduction}
 
@@ -465,18 +537,19 @@ Given a finite candidate menu $\cD$, the selected design from $N$ pilot instance
 \end{equation}
 
 The experimental proposal of the paper is not to black-box race every element of $\cD$ from scratch.
-Instead, when a finite latent-mode abstraction is useful, one first estimates reusable mode-conditioned losses and signal posteriors and only then confirms a small finalist set end to end.
+Instead, the pilot logs reusable measurement transcripts and full-run counterfactual losses.
+When a finite latent-mode abstraction is useful, those pilots can be compressed into mode-conditioned losses and signal posteriors; when it is not, the same records still support direct instance-level router evaluation.
 
 \begin{algorithm}[Reusable pilot protocol for minimal-interaction routing]
 \label{alg:pilot}
 \normalfont\small
 \begin{tabular}{@{}r p{0.86\linewidth}@{}}
-\textit{Input:} & interacting-model menu $\cM$, admissible diagnostic family $\cB$, candidate router family, verifier-indexed deployment loss $\ell_V$, pilot split, holdout split.\\[0.25em]
-1 & Choose a finite candidate design menu $\cD$ consisting of fixed-model baselines, static-context policies, and probe-aware routers.\\
-2 & For each pilot instance and each admissible interaction $b$, execute the standardized pre-run interaction against the same verifier $V$, log its signal $Z_b$, and record diagnostic cost $c_b$.\\
-3 & Execute the full model menu on the pilot split and estimate either instance-level losses directly or, under Assumption~\ref{ass:finite-mode}, the reusable mode-conditioned loss matrix $\ell(a,s)$ and posterior surrogates for $\Prb[S\mid W,Z_b]$.\\
-4 & Score every candidate design $d\in\cD$ under the accounting identities of Section~\ref{sec:accounting}; keep a small finalist set.\\
-5 & Evaluate finalists on holdout instances and report best fixed performance, workload opportunity, raw and net diagnostic opportunity, router regret, and selection regret.
+\textit{Input:} & interacting-model menu $\cM$, diagnostic ladder $\cB$, candidate router family, verifier-indexed deployment loss $\ell_V$, pilot split, holdout split.\\[0.25em]
+1 & Choose a finite candidate design menu $\cD$ consisting of fixed-model baselines, static-context policies, verifier-only routers, and scratch-scout routers.\\
+2 & For each pilot instance and each admissible interaction $b$, execute the standardized pre-run measurement against the same verifier $V$, log $Z_b$, and record diagnostic cost $c_b$. Scratch artifacts are discarded after measurement.\\
+3 & Execute the full model menu on the pilot split from the original instance state and estimate either instance-level losses directly or, under Assumption~\ref{ass:finite-mode}, the reusable mode-conditioned loss matrix $\ell(a,s)$ and posterior surrogates for $\Prb[S\mid W,Z_b]$.\\
+4 & Score every candidate design $d\in\cD$ under the accounting identities of Section~\ref{sec:accounting}; keep a small finalist set and include negative controls such as shuffled transcripts.\\
+5 & Evaluate finalists on holdout instances and report best fixed performance, workload opportunity, raw and net diagnostic opportunity, router regret, selection regret, and first-hit time reduction.
 \end{tabular}
 \end{algorithm}
 
@@ -497,7 +570,7 @@ The goal is not to hide the benchmark behind a single headline number, but to al
 The experimental family is AutoResearch-style CIFAR-10 optimization.
 Each instance contains an editable starting program \texttt{train.py}, a fixed training and validation regime, a verifier based on validation loss, and a nuisance seed.
 The mainline experiment fixes the editable starting program, data regime, verifier, and full-run budget.
-Only the interacting model varies.
+Only the interacting model varies in the full run, and the full run always starts from the original artifact after any diagnostic scout has been discarded.
 This deliberately makes the deployment question model-related: the router cannot win by recognizing that one starting architecture is a flat MLP and another is a residual CNN.
 Architecture-shifted starts such as \texttt{cnn\_compact}, \texttt{mlp\_flat}, and \texttt{resnet\_tiny} remain useful, but they are reported as robustness stress tests after the fixed-artifact claim is established.
 
@@ -506,39 +579,40 @@ The paper-facing model menu is a small realistic solver set, for example
 \cM=\{\texttt{gpt\_5\_4\_mini},\ \texttt{gpt\_5\_3\_codex},\ \texttt{claude\_sonnet}\},
 \]
 with optional appendix extensions to additional variants.
-The main admissible diagnostic interaction is a no-edit baseline verifier probe.
-Its router-visible signal is the verifier summary already exposed by the harness: baseline validation loss, baseline validation accuracy, training seconds, total seconds, and total baseline steps.
-Quantities that are constant under the fixed-artifact mainline, such as parameter count, are logged for audit but excluded from the router feature set.
-Main-text routing experiments use this no-edit probe because it is the strictest and cheapest nontrivial interaction.
+The diagnostic ladder has four main rungs.
+The no-interaction and read-only-bid rungs test what can be inferred from static task presentation and model self-assessment alone.
+The verifier-only rung runs the unedited script for a small budget and records baseline validation loss, validation accuracy, training seconds, total seconds, and total steps.
+The scratch-scout rung gives every candidate model the same one-step or few-step AutoResearch micro-budget on a scratch copy of \texttt{train.py}, logs verifier deltas, edit validity, runtime, and pre/post bids, then resets the instance.
+Quantities that are constant under the fixed-artifact mainline, such as parameter count, are logged for audit but excluded from the default router feature set.
 
 \begin{figure}[t]
 \placeholder{0.96\linewidth}{
 Planned figure: overview of the benchmark family.
 Left panel: one fixed editable AutoResearch starting program with repeated nuisance draws.
-Middle panel: admissible verifier interaction, instantiated in the mainline as a no-edit baseline probe producing a small summary signal $Z_b$.
-Right panel: router chooses one interacting model from $\cM$ before the full expensive run.
+Middle panel: diagnostic measurement ladder, from no interaction to verifier-only probe to symmetric scratch scout, all producing $Z_b$ before reset.
+Right panel: router chooses one interacting model from $\cM$ before the full expensive run and is scored by time-to-verified-improvement.
 }
 \caption{Operational picture of minimal diagnostic interaction in the AutoResearch benchmark family.}
 \label{fig:overview}
 \end{figure}
 
-\subsection{Experiment I: does verified effort change the ranking?}
+\subsection{Experiment I: does time-to-verified-success change the ranking?}
 \label{subsec:exp1}
 
 \paragraph{What is being tested.}
-We test whether interacting-model rankings induced by entry success or first-hit pass rate agree with rankings induced by deployment losses such as $\ell_{\mathrm{hit}}$ and $\ell_{\mathrm{occ}}$.
+We test whether interacting-model rankings induced by final improvement or hit-once pass rate agree with rankings induced by time-aware deployment losses such as $\ell_{\mathrm{hit}}$ and $\ell_{\mathrm{occ}}$.
 Equivalently, we ask whether benchmark racing on a scalar success metric is already sufficient, or whether deployment-aware metrics expose important heterogeneity.
 
 \paragraph{Why this test matters.}
 If rankings are stable across these objectives, then the rest of the routing story becomes less compelling.
-If instead a model that looks strong under pass rate is weak under verified effort or occupancy, then routing must be framed around deployment loss rather than aggregate success.
+If instead a model that looks strong under pass rate is weak under first-hit cost, wall-clock effort, token cost, or occupancy, then routing must be framed around deployment loss rather than aggregate success.
 This experiment therefore justifies the objective of the paper before any router is introduced.
 
 \paragraph{How it is tested.}
 For the fixed mainline artifact and every model in $\cM$, we run full no-stop trajectories up to a common horizon $H$ and log verifier improvement, first threshold-hit time, occupancy above threshold, wall-clock, and token cost.
 From these trajectories we reconstruct per-model losses under several metrics and report rankings over nuisance draws.
 The appendix repeats the same analysis under architecture-shifted stress workloads.
-The main comparison is between first-hit success, cost-aware first-hit loss, and occupancy-aware loss.
+The main comparison is between final improvement, first-hit success, cost-aware first-hit loss, and occupancy-aware loss.
 
 \begin{figure}[t]
 \placeholder{0.96\linewidth}{
@@ -547,7 +621,7 @@ Left: per-model bar chart of first-hit success on the fixed artifact.
 Center: per-model bar chart of occupancy-aware loss or cost-adjusted verified effort.
 Right: rank-flip summary showing where benchmark racing and deployment ranking disagree.
 }
-\caption{Experiment I asks whether pass rate is already enough or whether verified effort changes the ranking.}
+\caption{Experiment I asks whether pass rate is already enough or whether time-to-verified-success changes the ranking.}
 \label{fig:metric-ranks}
 \end{figure}
 
@@ -555,25 +629,24 @@ Right: rank-flip summary showing where benchmark racing and deployment ranking d
 \label{subsec:exp2}
 
 \paragraph{What is being tested.}
-We test whether the mainline baseline verifier probe produces a signal $Z_b$ that exposes model-relevant structure beyond static controls.
+We test whether a cheap diagnostic measurement produces a signal $Z_b$ that exposes model-relevant structure beyond static controls.
 The central objects are the raw diagnostic oracle $\bar L_b$ and the raw diagnostic opportunity $\bar\Delta_b$.
 
 \paragraph{Why this test matters.}
 This is the heart of the minimal-interaction thesis.
-If a tiny admissible interaction already reveals enough structure to change the optimal interacting model, then the verifier is not only a final judge but also a diagnostic instrument.
+If a tiny admissible interaction already reveals enough structure to change the optimal interacting model or reduce first-hit time, then the verifier is not only a final judge but also a diagnostic instrument.
 If it does not, then routing should stay with the best fixed model or with static-control routing.
 
 \paragraph{How it is tested.}
-We compare several admissible information states drawn from the existing harness: no interaction, static metadata only, verifier-only baseline probe, and shuffled-probe negative controls.
-The mainline experiment uses the no-edit baseline probe because it is extremely cheap and already implemented.
-The primary report is incremental: how much does the verifier probe add beyond information that was available without interacting with the verifier?
-Because the fixed-artifact mainline makes $W$ constant, any positive diagnostic opportunity must come from verifier-backed signal rather than known workload identity.
-A diagnostic sandbox based on architecture-shifted workloads may also be used in the appendix to visualize which parts of the signal separate regimes, but the main claim is decision-theoretic, not classification-theoretic.
+We compare several admissible information states drawn from the same harness: no interaction, read-only bids, verifier-only baseline probe, symmetric scratch scout, and shuffled-transcript negative controls.
+The primary report is incremental: how much does each measurement add beyond information available without interacting with the verifier?
+Because the fixed-artifact mainline makes $W$ constant, any positive diagnostic opportunity must come from verifier-backed task contact rather than known workload identity.
+A diagnostic sandbox based on architecture-shifted workloads may also be used in the appendix to visualize which parts of the transcript separate regimes, but the main claim is decision-theoretic, not classification-theoretic.
 
 \begin{figure}[t]
 \placeholder{0.96\linewidth}{
 Planned figure: diagnostic signal ablation.
-Bars compare best fixed, static-control, verifier-probe, and shuffled-probe policies on the same holdout split.
+Bars compare best fixed, read-only, verifier-only, scratch-scout, and shuffled-transcript policies on the same holdout split.
 Primary y-axis: raw diagnostic opportunity $\bar\Delta_b$ beyond static controls.
 Secondary appendix panel: optional workload-shift or mode-confusion summaries to help interpret the signal, not to define the main claim.
 }
@@ -592,14 +665,14 @@ This directly estimates $\Delta_W$, $\Delta_b$, and $\Reg_b(r_b)$.
 It separates three qualitatively different stories.
 In the fixed-artifact mainline, $\Delta_W$ should be approximately zero by construction and serves as a negative control.
 If $\Delta_b\approx 0$, then even verifier-backed pre-runs do not justify routing.
-If $\Delta_b>0$ and the learned regret is small, then a minimal interaction genuinely changes the deployment decision.
+If $\Delta_b>0$ and the learned regret is small, then a minimal interaction genuinely changes the deployment decision and reduces time-to-verified-success.
 This is the main test of whether routing is worthwhile in practice.
 
 \paragraph{How it is tested.}
 We split nuisance draws into pilot and holdout partitions.
-The pilot split is used to estimate action losses and fit lightweight routers from $(W,Z_b)$ to actions; the holdout split evaluates deployment loss only.
+The pilot split is used to estimate action losses and fit lightweight routers from $(W,Z_b)$ to actions; the holdout split evaluates deployment loss, first-hit time, and cost-to-hit only.
 The mainline learned routers should start simple and interpretable---for example nearest-prototype, linear, or tree-based rules---because the question is whether the signal is usable, not whether a separate frontier model can be trained as a router.
-We then report gain over best fixed model and regret to the diagnostic oracle.
+We then report gain over best fixed model, first-hit time reduction, and regret to the diagnostic oracle.
 
 \begin{figure}[t]
 \placeholder{0.96\linewidth}{
@@ -616,24 +689,24 @@ Annotate the bars or connecting arrows with $\Delta_b$ and $\Reg_b(r_b)$; report
 
 \paragraph{What is being tested.}
 We test how routing value changes as the admissible interaction becomes richer and identify both $b^{\mathrm{suf}}_\eta$ and $b^{\mathrm{net}}_\star$.
-In the mainline instantiation, the interaction family is the same baseline verifier probe executed at several verifier budgets.
+In the mainline instantiation, the interaction family is the ordered measurement ladder from no interaction to read-only bids, verifier-only probes, one-step scratch scouts, and multi-step scratch scouts.
 
 \paragraph{Why this test matters.}
 The paper's central operational promise is not merely that probes can help, but that one can estimate how much probe is enough.
 A practitioner rarely wants the maximally informative interaction if a cheaper one already recovers most of the routing value.
-This experiment turns the theory into a recipe.
+This experiment turns the theory into an estimable protocol rather than a fixed hand-coded intervention.
 
 \paragraph{How it is tested.}
-Within the baseline-probe family, we sweep admissible diagnostic budgets and compute both raw and net diagnostic opportunity.
+Within the measurement ladder, we sweep admissible diagnostic budgets and compute both raw and net diagnostic opportunity.
 The raw curve estimates how quickly routing information saturates.
 The net curve discounts that value by probe cost and identifies when further interaction stops being worth paying for.
 The main report highlights the smallest probe that recovers a target fraction of the best raw value and the probe that maximizes net gain.
-As an appendix extension, the same sweep can include model-coupled scout probes; these should dominate verifier-only probes only if their extra model-verifier information pays for their higher cost.
+The key comparison is whether model-coupled scratch scouts dominate verifier-only probes after their extra model-verifier information is charged for its higher cost.
 
 \begin{figure}[t]
 \placeholder{0.96\linewidth}{
 Planned figure: minimum useful diagnostic interaction.
-Left: raw diagnostic opportunity as a function of probe budget.
+Left: raw diagnostic opportunity as a function of measurement protocol and scout budget.
 Right: net diagnostic opportunity after subtracting probe cost.
 Mark the minimum sufficient interaction $b^{\mathrm{suf}}_\eta$ and the economically optimal interaction $b^{\mathrm{net}}_\star$.
 }
@@ -674,7 +747,7 @@ Compare black-box racing against reusable-pilot selection, with separate traces 
 
 The fixed-artifact mainline is intentionally conservative.
 It removes a simple alternative explanation for positive routing results: the router is not allowed to infer that a different starting architecture calls for a different solver.
-If the verifier-only probe still changes the best interacting model on held-out nuisance draws, then the signal is genuinely diagnostic for model--verifier behavior.
+If a cheap diagnostic measurement still changes the best interacting model on held-out nuisance draws, then the signal is genuinely diagnostic for model--verifier behavior.
 If it does not, the framework still gives a useful negative result: in that deployment, model routing is not worth engineering under the admitted probe family.
 
 \paragraph{Beyond AutoResearch.}
@@ -692,6 +765,7 @@ The framework also assumes that pilot and holdout instances are drawn from the s
 Minimal diagnostic interaction reframes model choice for verifier-backed agents as a measurable deployment decision.
 Given a verifier, a budget, and a finite menu of interacting models, the paper asks how much cheap interaction is enough to select the model for the current instance.
 The answer is not a universal model ranking, but an accounting of fixed-model performance, diagnostic opportunity, probe cost, and router regret.
+This makes AutoResearch a controlled testbed for a broader claim: in verifiable transductive tasks, useful routing information is the information that reduces time to a certified success after the cost of measuring it has been paid.
 
 \bibliographystyle{plainnat}
 \bibliography{references}
