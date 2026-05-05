@@ -60,7 +60,7 @@ IMPORTANT, please:
 \item {\bf Theory assumptions and proofs}
     \item[] Question: For each theoretical result, does the paper provide the full set of assumptions and a complete (and correct) proof?
     \item[] Answer: \answerYes{}
-    \item[] Justification: Assumption~\ref{ass:packed} states the assumptions for the main theoretical result, Theorem~\ref{thm:four-term} includes a proof sketch, and Appendix~\ref{app:proofs} gives the algebraic proof and the near-optimality proof.
+    \item[] Justification: Assumption~\ref{ass:packed} states the assumptions for the main theoretical result, Theorem~\ref{thm:four-term} includes a proof sketch, and Appendix~\ref{app:proofs} gives the algebraic proof and estimator details.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer \answerNA{} means that the paper does not include theoretical results. 
@@ -241,7 +241,7 @@ IMPORTANT, please:
     \item[] Question: Does the paper describe the usage of LLMs if it is an important, original, or non-standard component of the core methods in this research? Note that if the LLM is used only for writing, editing, or formatting purposes and does \emph{not} impact the core methodology, scientific rigor, or originality of the research, declaration is not required.
     %this research? 
     \item[] Answer: \answerYes{}
-    \item[] Justification: LLMs are central to the evaluated agent designs. Section~\ref{sec:experiments} describes the model menu and the six-branch LLM editing protocol; the final submission should add exact model versions and API dates for all live runs.
+    \item[] Justification: LLMs are central to the evaluated agent designs. Section~\ref{sec:experiments} describes the worker menu, prompt-only router, structured edit--verify protocol, and required logging; the final submission should add exact model versions and API dates for all live runs.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer \answerNA{} means that the core method development in this research does not involve LLMs as any important, original, or non-standard components.

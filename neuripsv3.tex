@@ -1,0 +1,1077 @@
+\documentclass{article}
+
+\usepackage{neurips_2026}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{xcolor}
+
+\newtheorem{assumption}{Assumption}
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{remark}{Remark}
+
+\newcounter{algorithm}
+\newenvironment{algorithm}[1][]{%
+  \refstepcounter{algorithm}%
+  \par\medskip
+  \noindent\textbf{Algorithm~\thealgorithm}%
+  \if\relax\detokenize{#1}\relax\else\ \normalfont(#1).\fi%
+  \par\vspace{0.45em}%
+  \normalfont\small
+}{%
+  \par\medskip
+}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator{\KL}{KL}
+\DeclareMathOperator{\MI}{I}
+\DeclareMathOperator{\Hent}{H}
+\DeclareMathOperator{\Occ}{Occ}
+
+\newcommand{\cA}{\mathcal{A}}
+\newcommand{\cBdiag}{\mathcal{B}_{\mathrm{diag}}}
+\newcommand{\cD}{\mathcal{D}}
+\newcommand{\cM}{\mathcal{M}}
+\newcommand{\cS}{\mathcal{S}}
+\newcommand{\cT}{\mathcal{T}}
+\newcommand{\cW}{\mathcal{W}}
+\newcommand{\cX}{\mathcal{X}}
+\newcommand{\cY}{\mathcal{Y}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prb}{\mathbb{P}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\pmin}{p_{\min}}
+\newcommand{\dconf}{\delta_{\mathrm{conf}}}
+\newcommand{\dacc}{\delta_{\mathrm{acc}}}
+\newcommand{\Dcross}{D_{\mathrm{cross}}}
+\newcommand{\J}{\mathcal{J}}
+\newcommand{\reg}{\mathrm{reg}}
+\newcommand{\one}{\mathbf{1}}
+\newcommand{\placeholder}[2]{%
+  \begin{center}
+  \fbox{\begin{minipage}{#1}
+  \vspace{0.4em}
+  \textbf{Figure placeholder.} #2
+  \vspace{0.4em}
+  \end{minipage}}
+  \end{center}
+}
+
+\title{How to Pick the Model:\\
+Deployment-Aware Model Selection for Externally Checked Agents}
+
+\author{Anonymous Authors}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Agents whose outputs can be externally checked are often compared by final success, validation accuracy, or eventual task completion.
+For deployment, this is insufficient: a system must choose a model or harness action that reaches an acceptable checked outcome under finite worker wall-clock and token budgets.
+We formulate agentic model selection as a finite-action decision problem under a predeclared deployment loss combining checked progress, failure, persistence, latency, worker-side cost, router overhead, and optional measurement cost.
+A fixed router observes an admissible pre-deployment signal and selects a worker or harness action; its value is measured by paired deployment loss on the same task instances, not by standalone routing accuracy.
+Within this framework, pre-deployment records are optional measurements.
+They are useful only when they change routing in a way that lowers net deployment loss after their own cost and router-context overhead are charged.
+We instantiate the framework on an AutoResearch-inspired CIFAR-10 executable-artifact benchmark, where a prompt-only router selects among \texttt{gpt\_5\_3\_codex\_spark}, \texttt{gpt\_5\_3\_codex}, and \texttt{gpt\_5\_4} workers before costly edit--verify deployment runs.
+Like AutoResearch, agents edit a single training program and receive external validation feedback; unlike the original nanochat setting, the checker reports CIFAR-10 validation loss and accuracy.
+The resulting protocol tests rank changes between checker scores and deployment losses, router allocation shifts under richer progressive signals, net paired deployment gains, and matched negative controls for measurement specificity.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+
+A team building an agent system faces a practical question: for a concrete externally checked task instance, a finite menu of deployable actions, and deployment budgets, which action should be launched?
+The common answer is benchmark racing.
+Run a lower-cost worker and a higher-capability worker on held-out instances; choose the one with the best average score.
+For externally checked agentic tasks, this can be the wrong unit of comparison.
+A model that eventually succeeds after a long expensive search may be dominated by a lower-cost action that reaches a sufficient checked outcome earlier, or by a router that sends different instances to different workers.
+
+This paper studies model and harness choice through \emph{performance accounting}.
+The motivating regime includes code editing against unit tests, repository repair against continuous-integration checks, theorem search against a formal checker, and AutoResearch-style loops in which an agent edits a training program and receives external validation feedback~\citep{jimenez2024swebench,yang2024sweagent,karpathy2026autoresearch,huang2024mlagentbench}.
+In each case, the system is handed a concrete instance and must produce a concrete artifact.
+They are also externally checked: progress is determined by a verifier or scoring procedure outside the model.
+In this regime, the deployment object is not standalone accuracy.
+It is the resource needed to reach, evaluate, and maintain checked progress, matching the time-centric view of agents as task solvers in \citet{achille2025agents}.
+
+The central difficulty is that one benchmark score conflates mechanisms that imply different engineering decisions.
+A system can win because its worker has lower per-step cost.
+It can win because the selected worker is more competent on a solver-relevant task mode.
+It can win because a pre-deployment signal reveals which mode the instance belongs to.
+Finally, a router may either exploit that information or waste it through mismatched allocation.
+The theory in this paper isolates these four mechanisms in an exact log-effort identity.
+The experimental protocol then asks whether the same mechanisms survive contact with measurable deployment losses, checker costs, router costs, and repeated stochastic runs.
+
+The draft is organized around four contributions.
+\begin{enumerate}[leftmargin=1.35em,itemsep=0.15em]
+  \item \textbf{Four-term performance accounting.}
+  Under a packed latent-mode abstraction, Theorem~\ref{thm:four-term} decomposes improvement in expected certified log-effort into cost, competence, routing information, and routing mismatch.
+  \item \textbf{Operational diagnostics.}
+  We show how the four theorem terms are tied to checked trajectories: competence from first threshold crossing, mode-conditional cost from the same routed trajectory, information from finite router-visible summaries, and mismatch from a predeclared allocation summary induced by the selected worker.
+  \item \textbf{Paired router evaluation.}
+  For a fixed router and action menu, richer information is valuable only when it changes selected actions in a way that lowers paired deployment loss after measurement and context costs are charged.
+  \item \textbf{Executable-artifact benchmark protocol.}
+  We instantiate the framework on a CIFAR-10 AutoResearch-style edit--verify benchmark with finite diagnostic states, a prompt-only router, a finite worker menu, admissible pre-deployment measurements, negative controls, and residual diagnostics for the theorem.
+\end{enumerate}
+
+An externally checked task specifies the problem class and checker.
+Task modes are the finite types of that task: subpopulations that differ in solver-relevant structure, cost profile, or likely intervention.
+Task instances are concrete realizations within those modes, such as a particular starting artifact, data/regime specification, seed, budget, and checker configuration.
+In the operational benchmark, modes can be implemented as task-family, dataset-regime, architecture, seed-bin, baseline-probe bin, or crossed diagnostic states.
+Workers such as \texttt{gpt\_5\_3\_codex\_spark}, \texttt{gpt\_5\_3\_codex}, \texttt{gpt\_5\_4}, or fixed agent policies are deployable actions that attempt those instances.
+This separation makes the four-factor identity testable: $p(a,s)$ measures how an action performs on a type of task instance, rather than reusing the action label as the state.
+
+\section{Verifiable agent design}
+\label{sec:setup}
+
+We first state the theory-facing objects.
+The notation follows the original performance-accounting setup, but we use the deployment language needed for the operational protocol.
+
+\begin{definition}[Budgeted externally checked task]
+\label{def:task}
+A budgeted externally checked task is a tuple
+\[
+\cT=(\cX,\cY,V,B_{\mathrm{dep}},\mu).
+\]
+Here $\cX$ is an instance space, $\cY$ is an artifact or solution space, $V:\cX\times\cY\to\{0,1\}$ is an external verifier, $B_{\mathrm{dep}}$ is a deployment budget, and $\mu$ is the deployment distribution over instances.
+An agent succeeds on $x\sim\mu$ if it produces $y$ with $V(x,y)=1$ before exhausting $B_{\mathrm{dep}}$.
+\end{definition}
+
+The verifier may be binary, as in tests or proof checking, or scalar, as in validation loss or reward after thresholding.
+The key requirement is that success is evaluated outside the model.
+Performance is instance-conditioned because it is measured on concrete pairs $(x,y)$ rather than on a learned population predictor.
+
+\begin{definition}[Workers, actions, and routed designs]
+\label{def:design}
+Let $\cM=\{M_1,\ldots,M_K\}$ be a finite menu of workers.
+A worker is any deployable solver that can operationally attempt the task instance and return an artifact for verification: a single model, or a fixed model-based agent policy that may call tools or other models according to a predeclared protocol.
+Let $\cA$ be a finite menu of deployable actions.
+In the simplest worker-selection setting, $\cA=\cM$; more generally, an action includes the worker together with fixed stopping, retry, tool-use, submodel-call, and carryover rules.
+A routed design is a tuple
+\[
+d=(\cA,h,R,\kappa),
+\]
+where $h$ is the harness protocol, $R$ is a start-of-run router that selects an action after observing permitted information, and $\kappa(a,s)>0$ is the expected normalized worker-side cost of action $a\in\cA$ on mode $s$ under the declared stopping convention.
+The action-only case $\kappa(a,s)=\kappa(a)$ is a special case, but the agentic experiments use the mode-conditional convention because different starting artifacts can require different amounts of work before first verified progress.
+When no confusion is possible, we write $M$ for the deployed worker or fixed action selected by the design.
+In the main V3 experiment, the orchestrator $R$ and menu $\cA$ are fixed.
+A routing policy is therefore the signal-conditioned map induced by a progressive signal protocol,
+\[
+\rho_j:x\mapsto \hat a_R^j(x)=R(Z_j(x))\in\cA .
+\]
+Future variants may also compare different orchestrators $R$, but the present protocol isolates the value of changing what the same orchestrator is allowed to observe before choosing a worker.
+\end{definition}
+
+The router is part of the deployed system, but it is evaluated through the action it selects.
+In the main protocol, the router observes information before deployment, chooses one worker, and then the chosen worker performs the full edit--verify trajectory from the original task state.
+The selected worker does not see measurement records unless that carryover is explicitly declared as part of the deployable action.
+
+\begin{definition}[Task instances and task modes]
+\label{def:modes}
+Given $\cT=(\cX,\cY,V,B_{\mathrm{dep}},\mu)$, a task instance is a concrete realization $X=x\in\cX$ of that same task.
+It is the measurable object supplied to the deployed system, such as a starting artifact, data/regime specification, seed, budget, and checker configuration; the model and router may access only the fields made available by the protocol.
+A task mode is a latent variable
+\[
+S=\sigma(X)\in\cS=\{1,\ldots,m_S\}
+\]
+induced by a measurable map $\sigma:\cX\to\cS$ that assigns each concrete instance to one of finitely many solver-relevant variants of the task.
+It defines a prior $\pi_s=\Prb_\mu[S=s]$ and mode-conditional instance distributions $\mu_s=\mu(\cdot\mid S=s)$.
+Modes are therefore not different tasks and not worker labels.
+They are variants of the same task: finite subpopulations of instances that share solver-relevant structure and may favor different workers or interventions.
+\end{definition}
+
+The mode variable is retained by the evaluator for accounting and diagnostic comparisons.
+It need not be observed by the worker, and in the main router experiment the router only sees permitted pre-deployment information.
+This lets the same theory cover both expert-defined task types and measurable diagnostic states used in the current benchmark.
+
+\begin{assumption}[Packed latent-mode family]
+\label{ass:packed}
+Each instance $X\sim\mu$ is associated with a mode $S=\sigma(X)$ in a finite mode set $\cS$, with positive prior $\pi$ on all reported modes.
+In the main protocol, the unit of deployment is a full routed trajectory: the router chooses one worker before deployment, and that worker runs the edit--verify process up to horizon $H$.
+Conditional on mode $s$, worker or action $M$ has certified first-success probability $p_M(s)>0$ under the declared checker, budget, horizon, and success threshold.
+This probability is trajectory-level, but it is estimated from the step-wise checker trace by asking whether the threshold is reached at least once before the horizon.
+The same mode-conditioned trajectory convention defines a positive expected worker-side first-passage cost $\kappa(M,s)>0$.
+At the start of a run, the router observes a signal $Z=z$ and selects one action for the whole trajectory.
+The evaluator defines the mode distribution induced by that signal,
+\[
+\pi_z(s)=\Prb[S=s\mid Z=z].
+\]
+The router is not required to output $\pi_z$ or any diagnostic-state distribution.
+Instead, the evaluator fixes a mode-facing allocation map before the confirmation evaluation.
+Let
+\[
+e(M,s)=\log\kappa(M,s)-\log p_M(s),
+\qquad
+e^\star(s)=\min_{M'\in\cA} e(M',s).
+\]
+For a temperature $\beta>0$ fixed on a calibration split, define the coverage distribution of action $M$ by
+\[
+q_M^\beta(s)
+=
+\frac{\pi_s\exp[-\beta(e(M,s)-e^\star(s))]}
+{\sum_{u\in\cS}\pi_u\exp[-\beta(e(M,u)-e^\star(u))]} .
+\]
+The allocation summary under signal $z$ is then $q_z=q_{M_z}^\beta$.
+It is not optimized, fit, or chosen after observing confirmation outcomes.
+Write $M_z$ for the worker or fixed action selected by the routing policy after observing $z$.
+For an instance whose true mode is $s$, the certified effort surrogate is proportional to
+\begin{equation}
+  T_{\rho,q}(s,z) \propto \frac{\kappa(M_z,s)}{p_{M_z}(s)\,q_z(s)} .
+  \label{eq:effort-surrogate}
+\end{equation}
+\end{assumption}
+
+Assumption~\ref{ass:packed} is deliberately restrictive.
+Real task instances can vary in infinitely many ways, but an empirical deployment campaign can only estimate and reuse finitely many state-conditioned quantities.
+The assumption says that, for the purposes of model selection, those concrete instances can be packed into a finite set of modes with stable worker success probabilities.
+The purpose is to isolate the regime in which cost, competence, information, and mismatch are algebraically separable and empirically testable.
+The operational campaign therefore reports residuals, hazard curves, and occupancy diagnostics to measure when this finite packing is too coarse.
+
+\begin{definition}[Cost-adjusted certified log-effort objective]
+\label{def:objective}
+For a fixed routed policy $\rho:Z\mapsto M_Z$ satisfying Assumption~\ref{ass:packed}, define
+\begin{equation}
+  \J(\rho,q)
+  =
+  \E_Z\E_{S\sim\pi_Z}\!\left[\log \kappa(M_Z,S)-\log p_{M_Z}(S)\right]
+  + \E_{Z}\!\left[
+      \Hent(\pi_{Z})
+      + \KL(\pi_{Z}\|q_{Z})
+    \right].
+  \label{eq:objective}
+\end{equation}
+The design-selection problem is
+\begin{equation}
+  d^\star\in\argmin_{d\in\cD}\J(\rho_d,q_d),
+  \label{eq:design-selection}
+\end{equation}
+where each design $d$ induces a routed policy $\rho_d$ and allocation summary $q_d$, and lower $\J$ means lower expected certified log-effort.
+When the same orchestrator is evaluated under several progressive signals, $\J$ is applied to the signal-conditioned policy summaries; Appendix~\ref{app:operational-decomp} writes this comparison explicitly for $Z_j$ versus $Z_0$.
+\end{definition}
+
+The worker/action quantities in~\eqref{eq:objective} are $\kappa(M_Z,s)$ and $p_{M_Z}(s)$: how costly the selected worker is on mode $s$ and how often it succeeds on that mode.
+The router and information quantities are $Z$, $\pi_z$, and the predeclared $q_z$: what the router is allowed to observe, what that signal reveals about the task mode, and whether the worker chosen by the router is empirically appropriate for those modes.
+
+\begin{remark}[Meaning of the effort surrogate]
+\label{rem:effort-surrogate}
+Equation~\eqref{eq:effort-surrogate} says that, on a true mode $s$ after signal $z$, certified effort increases with mode-conditioned worker cost, decreases with worker success probability on that mode, and increases when the induced allocation summary gives too little diagnostic mass to that mode.
+The router is not literally routing jobs to modes; modes are evaluator-defined task types.
+The quantity $q_z(s)$ is a frozen coverage distribution derived from the selected worker's calibration frontier; the KL term below charges the mismatch between signal-exposed mode structure and the induced worker allocation.
+\end{remark}
+
+\section{Performance accounting}
+\label{sec:accounting}
+
+For a fixed signal value $z$, the routing part of the objective is the cross-entropy between the signal-induced mode distribution and the induced worker-allocation summary:
+\begin{equation}
+  \mathrm{CE}(\pi_z,q_z)
+  =
+  -\sum_{s\in\cS}\pi_z(s)\log q_z(s)
+  =
+  \Hent(\pi_z)+\KL(\pi_z\|q_z).
+  \label{eq:cross-entropy-routing}
+\end{equation}
+The KL term is a divergence over finite task-mode distributions.
+It is not a token-level language-model divergence.
+
+\begin{theorem}[Four-term routed-policy decomposition]
+\label{thm:four-term}
+Under Assumption~\ref{ass:packed}, compare a prior-matched baseline policy $\rho_0$ that deploys $M_0$ without using $Z$ and has allocation summary $q_z=\pi$, with a deployed routed policy summarized by $(\rho,q)$.
+The improvement in expected certified first-passage log-effort,
+$\Delta=\J(\rho_0,\pi)-\J(\rho,q)$, decomposes as
+\begin{equation}
+\label{eq:four-term}
+  \Delta
+  =
+  \underbrace{\E_Z\E_{S\sim\pi_Z}\!\left[\log\frac{\kappa(M_0,S)}{\kappa(M_Z,S)}\right]}_{\text{cost}}
+  +
+  \underbrace{\E_Z\E_{S\sim\pi_Z}\!\left[\log\frac{p_{M_Z}(S)}{p_{M_0}(S)}\right]}_{\text{competence}}
+  +
+  \underbrace{\MI_\pi(S;Z)}_{\text{routing information}}
+  -
+  \underbrace{\E_{Z}\!\left[\KL(\pi_{Z}\|q_{Z})\right]}_{\text{routing mismatch}} .
+\end{equation}
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Taking logs in~\eqref{eq:effort-surrogate} gives
+$\log T_{\rho,q}(s,z)=C+\log\kappa(M_z,s)-\log p_{M_z}(s)-\log q_z(s)$.
+Conditioning on $Z=z$ and averaging over $S\sim\pi_z$ converts
+$-\E\log q_z(S)$ into the cross-entropy in~\eqref{eq:cross-entropy-routing}.
+Subtracting the prior-matched baseline cancels constants and uses
+$\Hent(\pi)-\E_Z\Hent(\pi_Z)=\MI_\pi(S;Z)$.
+The full algebra is given in Appendix~\ref{app:proofs}.
+\end{proof}
+
+The four terms have different operational meanings.
+If the cost term is large and positive, a lower-cost worker may be preferable even when it reaches the first success later in step count.
+If the competence term varies by mode, a global worker ranking is likely to hide comparative advantage.
+If information gain is high, the pre-deployment state exposes solver-relevant structure.
+If mismatch is high, the router sees useful structure but fails to allocate computation according to it.
+In the V3 experiment, this is read as a comparison between signal-conditioned routing policies for the same orchestrator.
+Changing from $Z_0$ to $Z_j$ is useful only if it changes the selected worker toward a better mode-conditional cost--success tradeoff, and that improvement survives the measured cost of obtaining the richer signal.
+The identity is a diagnostic model for first-passage log-effort.
+It is not the deployment loss in~\eqref{eq:deployment-loss}; a routed policy is promoted only when the diagnostic ranking is supported by paired deployment loss.
+
+\paragraph{Operational reading.}
+The diagnostic state $S$ is not an oracle label for the best worker.
+The evaluator fixes a candidate mode schema before the campaign, then tests whether that schema is useful by running workers and estimating the mode-conditional quantities $p(a,s)$ and $\kappa(a,s)$.
+Routing information asks whether finite predeclared summaries of a progressive signal make those modes more identifiable; the raw prompt record is not treated as a density-estimated random variable.
+Routing shift asks whether the same orchestrator actually changes its worker choice when the signal is enriched.
+Routing mismatch is then evaluated retrospectively: after worker outcomes are logged on a diagnostic split, we ask whether the signal-induced choice was closer to the empirical mode-conditional cost--success frontier.
+The final decision is not made by the information term alone; it is made by paired deployment gain on held-out instances after measurement and context costs are charged.
+Appendix~\ref{subsec:bridge} gives the full operationalization of these diagnostics.
+
+\subsection{When lower-cost retries win}
+\label{sec:crossover}
+
+\begin{theorem}[Single-mode retry crossover]
+\label{thm:crossover}
+On a single-mode task with a binary thresholded checker, fix the success threshold $\delta$ and horizon $H$.
+In this theorem, one attempt means one fresh deployment trajectory from the original task state, not one edit step inside a trajectory.
+Attempts are independent and identically distributed conditional on the action, use the same starting state, checker, threshold, and horizon, and have no carryover memory, cache, prompt adaptation, or learning across attempts.
+Let a strong action have one-attempt first-passage success probability $p_h=\Prb[\tau_\delta(h,X)\le H]$ and expected worker-side first-passage cost $\kappa_h=\E[C_h(\tau_\delta(h,X)\wedge H)]$.
+Let a lower-cost action have success probability $p_l<p_h$ and cost $\kappa_l<\kappa_h$, with $0<p_l<p_h<1$.
+The number of lower-cost attempts needed to match the strong action's one-attempt first-passage success probability is
+\[
+\Dcross=\frac{\log(1-p_h)}{\log(1-p_l)}.
+\]
+The corresponding integer fixed-depth retry block is cost-favorable whenever
+\[
+\left\lceil \Dcross \right\rceil \kappa_l < \kappa_h .
+\]
+If deployment stops after the first lower-cost successful trajectory, the expected cost of the lower-cost action at depth $D$ is instead
+\[
+\kappa_l\sum_{d=1}^{D}(1-p_l)^{d-1}
+=
+\kappa_l\frac{1-(1-p_l)^D}{p_l},
+\]
+and the comparison must include both expected worker-side cost and remaining first-passage failure probability under~\eqref{eq:deployment-loss}.
+Within each attempt, the lower-cost worker may take more edit steps to reach first success; that slower first-passage time is already reflected in $\kappa_l$.
+\end{theorem}
+
+The multi-mode case is where the four-term identity matters.
+A lower-cost worker can be rational on one diagnostic state and irrational on another.
+A router is useful only when different actions win the cost--success tradeoff on different states and the pre-deployment information helps identify which state applies.
+
+\begin{figure}[t]
+\placeholder{0.93\linewidth}{
+Final figure: left-to-right accounting pipeline.
+Inputs are checked task instances, finite diagnostic states, worker or harness actions, admissible pre-deployment information, and cost logs.
+The center computes the four log-effort terms.
+The right panel reports deployment-loss validation: rank flips, paired router gain, negative controls, and residuals.
+}
+\caption{The V3 framing keeps the four-term identity as the theory-facing diagnostic and tests it with deployment-loss outcomes.}
+\label{fig:pipeline}
+\end{figure}
+
+\section{Decomposition-guided selection}
+\label{sec:selection}
+
+The decomposition suggests a practical protocol.
+Rather than evaluate every complete design as an independent arm, the builder first estimates shared quantities: state-conditional success, cost, signal information, and router mismatch.
+Then a larger finite design menu can be scored analytically, with expensive deployment evaluations reserved for finalists and for paired validation.
+
+\begin{algorithm}[Theory-to-deployment selection protocol]
+\label{alg:decomp-selection}
+\begin{tabular}{@{}r p{0.86\linewidth}@{}}
+\textit{Input:} &
+Task family, checker, finite diagnostic state schema $\cS$, action menu $\cA$, admissible progressive signals $\{Z_j\}$, pilot size $n_0$, selected-run repeats $Q$, confirmation budget.\\[0.25em]
+\textit{Output:} &
+Confirmed deployment policy, four accounting terms, paired deployment gain, and residual diagnostics.\\[0.35em]
+1 &
+\textit{Freeze the state and loss.} Declare $\cS$, success threshold $\delta$, horizon $H$, cost normalizers, deployment loss~\eqref{eq:deployment-loss}, measurement costs, and router output contract.\\
+2 &
+\textit{Structured pilot.} For each action $a\in\cA$ and state $s\in\cS$, run verified trajectories and estimate $\hat p(a,s)$, $\hat\kappa(a,s)$, first-hit curves, occupancy, and uncertainty intervals.\\
+3 &
+\textit{Signal diagnostics.} For each progressive signal $Z_j$, estimate how much it separates the predeclared modes and log the worker allocation induced by the router.\\
+4 &
+\textit{Accounting score.} Compute the four first-passage log-effort terms from Theorem~\ref{thm:four-term}, or the progressive-signal analogue in Appendix~\ref{app:operational-decomp}, using the frozen allocation map $q^\beta$.\\
+5 &
+\textit{Paired deployment validation.} On the same holdout instances, run the selected action under $Z_0$ and richer $Z_j$ conditions, score repeated selected-worker trajectories by~\eqref{eq:deployment-loss}, and subtract measurement cost.\\
+6 &
+\textit{Decision.} Promote a deployment claim only if the recommended policy is stable under uncertainty checks, beats negative controls, and has acceptable residuals against the log-effort prediction.
+\end{tabular}
+\end{algorithm}
+
+\subsection{Progressive signals and paired router value}
+\label{subsec:paired}
+
+Let $Z_0$ be the static signal observed before choosing a deployment action.
+For any admissible richer condition $j$, the router observes $Z_j$, pays the corresponding measurement and router-context cost, and selects an action
+\[
+\hat a_R^j(X)=R(Z_j(X);U_R)\in\cA .
+\]
+Thus the experimental comparison is between routing policies $\rho_0,\rho_j$ induced by different signals for the same orchestrator $R$, not between different orchestrators.
+The normalized measurement loss is
+\[
+\ell_{\mathrm{meas}}(j,x;\zeta_j)
+=
+\lambda_{\mathrm{meas}}^\top d_j(x;\zeta_j),
+\]
+where $d_j$ contains measurement wall-clock, tokens, checker calls, context expansion, parsing, retry, and latency costs.
+Set $\ell_{\mathrm{meas}}(0,x)=0$.
+
+The selected-action deployment objective is
+\begin{equation}
+\J_R(j)
+:=
+\E\left[
+\ell_{\mathrm{meas}}(j,X;\zeta_j)
++\ell_{\mathrm{dep}}(\hat a_R^j(X),X;\xi)
+\right].
+\label{eq:router-objective}
+\end{equation}
+The router-facing value of signal condition $j$ is the paired gain
+\begin{equation}
+\Delta_R(j)
+:=
+\J_R(0)-\J_R(j)
+=
+\E\!\left[
+\ell_{\mathrm{dep}}(\hat a_R^0(X),X)
+-
+\ell_{\mathrm{dep}}(\hat a_R^j(X),X)
+-
+\ell_{\mathrm{meas}}(j,X)
+\right].
+\label{eq:router-gain}
+\end{equation}
+Positive $\Delta_R(j)$ means that the richer signal improves net deployment loss for the same router on the same task distribution.
+Allocation shift alone is insufficient:
+\[
+\mathrm{Shift}_R(j)=\Pr[\hat a_R^j(X)\neq \hat a_R^0(X)]
+\]
+measures decision relevance, not benefit.
+
+\begin{proposition}[Unbiased paired router-gain estimator]
+\label{prop:paired-unbiased}
+Assume either task instances are sampled i.i.d.\ from $\mu$ or a finite confirmation panel is fixed before evaluation.
+The orchestrator, action menu, and signal protocols are fixed before evaluation, measurement costs are recorded without bias, and deployment seeds are independent conditional on selected action and instance.
+For condition $j$, estimate
+\[
+\widehat{\Delta}_R(j)
+=
+\frac{1}{N}\sum_{i=1}^N
+\left[
+\frac{1}{Q}\sum_{q=1}^{Q}
+\ell_{\mathrm{dep}}(\hat a_{R,i}^0,x_i;\xi_{i,q}^{0})
+-
+\frac{1}{Q}\sum_{q=1}^{Q}
+\ell_{\mathrm{dep}}(\hat a_{R,i}^j,x_i;\xi_{i,q}^{j})
+-
+\widehat{\ell}_{\mathrm{meas}}(j,x_i)
+\right].
+\]
+If instances are sampled i.i.d.\ and the repeated-run averages are unbiased for the expected deployment losses of the selected actions, then
+$\E[\widehat{\Delta}_R(j)]=\Delta_R(j)$.
+For a fixed confirmation panel, the same estimator is unbiased for the panel-conditional paired gain, with expectation only over router and deployment randomness.
+\end{proposition}
+
+When the same worker is selected under $Z_0$ and $Z_j$, using common deployment seeds preserves unbiasedness and reduces paired variance.
+When counterfactual outcomes for all actions are logged on the same instance, hindsight action regret can be reported as a diagnostic, but it is not the primary estimand.
+
+\section{Operational experimental campaign}
+\label{sec:experiments}
+
+This section specifies the campaign used to test the routed-policy diagnostics.
+The aim is not to estimate population performance over many unrelated CIFAR-10 programs.
+Instead, we use a controlled core of canonical AutoResearch artifacts for calibration and an expanded confirmation panel of nearby executable subinstances to test whether worker choice, signal exposure, and routing affect first-passage success and cost beyond a single seed.
+
+\paragraph{Canonical task modes.}
+The task is AutoResearch-style executable-artifact optimization on CIFAR-10.
+Each task instance contains an editable \texttt{train.py}, a read-only data/checker module \texttt{prepare.py}, and an external verifier that executes \texttt{train.py} and reports validation loss, validation accuracy, runtime, optimizer steps, and parameter count.
+In this campaign, a task mode is a predeclared executable optimization family, not merely an architecture label.
+Concretely, a mode family is specified by the tuple
+\[
+\chi_s=(A_s,D,\eta_s,V,B_V,H,\delta),
+\]
+where $A_s$ is the starting model class and editable \texttt{train.py} template, $D$ is CIFAR-10, $\eta_s$ denotes starting optimization and architecture hyperparameters, $V$ is the checker, $B_V$ is the checker budget, $H$ is the agent horizon, and $\delta$ is the success threshold.
+The main campaign instantiates three such mode families:
+\[
+\cS=\{\texttt{mlp\_flat},\texttt{cnn\_compact},\texttt{resnet\_tiny}\}.
+\]
+A concrete executable subinstance $x_{s,b}$ additionally fixes the train/validation split, the model-initialization seed, and the exact starting artifact inside mode family $s$.
+The calibration core uses one canonical subinstance per mode, while the confirmation panel uses $B_{\mathrm{sub}}=3$ predeclared subinstances per mode.
+The mode is not a worker label and is not an oracle for the best worker; it is a predeclared partition of the same AutoResearch task.
+It is useful only if the resulting trajectories show mode-conditional differences in first-pass competence, cost, or allocation regret that are stable across the confirmation subinstances.
+
+\paragraph{Frozen executable configuration.}
+Table~\ref{tab:train-config} reports the executable configuration read from the current \texttt{train.py} templates and the CIFAR-10 checker.
+Within each executable subinstance, the data split, starting artifact, training initialization seed, checker budget, success threshold, and horizon are frozen.
+This isolates the stochasticity of the agentic edit trajectory inside a subinstance while allowing the confirmation panel to test whether estimates are stable across nearby subinstances.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Operational configuration for the main campaign.
+All values are fixed within an executable subinstance; repeated runs vary only the agentic trajectory.}
+\label{tab:train-config}
+\begin{tabular}{@{}p{0.30\linewidth}p{0.60\linewidth}@{}}
+\toprule
+Component & Fixed value \\
+\midrule
+Dataset and split & CIFAR-10, $50{,}000$ training examples and $10{,}000$ validation examples; balanced subset, label noise $0.0$, imbalance ratio $1.0$; each executable subinstance has a predeclared train/validation split \\
+Data seed & Canonical calibration seed plus two predeclared confirmation seeds per mode; all split seeds are logged and held fixed within subinstance \\
+\texttt{train.py} initialization seed & \texttt{SEED=42} for the canonical calibration subinstance; confirmation subinstances use predeclared alternative initialization seeds, each fixed for all repeated trajectories in that subinstance \\
+Training transforms & random crop with padding $4$, random horizontal flip, CIFAR-10 normalization; validation uses normalization only \\
+Training budget per checker call & fixed-step mode with \texttt{AUTOSEARCH\_MAX\_STEPS=128}; time budget \texttt{120s} is a fallback, not the primary scoring convention \\
+Common hyperparameters & \texttt{BATCH\_SIZE=64}, \texttt{NUM\_WORKERS=0}, Adam, learning rate $5\cdot 10^{-4}$, weight decay $10^{-4}$, betas $(0.9,0.999)$, no LR schedule \\
+Starting workload family & \texttt{mlp\_flat}, \texttt{cnn\_compact}, or \texttt{resnet\_tiny} \\
+Shared template parameters & depth $2$, base channels $12$, channel multiplier $2$, batch norm enabled, dropout $0.0$, and hidden width $48$ \\
+Agent horizon & $H=24$ edit--verify steps; trajectories continue to $H$ after first success to measure persistence and final quality \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Checker integrity and leakage guards.}
+The checker module \texttt{prepare.py}, validation labels, and final confirmation split are not editable by the worker.
+Each run records hashes of the checker files and the starting artifact, audits the final \texttt{train.py} diff, and marks direct data access, hard-coded outputs, parse/runtime shortcuts, or checker tampering as invalid failures.
+The same candidate artifact can be rerun under an independent confirmation checker seed before being used in paired deployment comparisons.
+
+\paragraph{Workers and repeated runs.}
+The paper-facing worker menu is
+\[
+\cM=\{\texttt{gpt\_5\_3\_codex\_spark},\ \texttt{gpt\_5\_3\_codex},\ \texttt{gpt\_5\_4}\}.
+\]
+Each worker uses the same prompt program, structured-edit protocol, JSON schema, tool policy, retry rule, and resource-accounting convention; the resolved model ID, CLI/API version, date, prompt hash, timeout, and token limits are logged.
+For every executable-subinstance--worker cell we run at least
+\[
+Q_{\min}=10
+\]
+independent trajectories from the same frozen \texttt{train.py}.
+Cells on or near the empirical frontier, and cells used in the final paired deployment comparison, are adaptively expanded up to $Q_{\max}=30$ trajectories before confirmation statistics are frozen.
+The repeated-run index changes only the agentic trajectory: LLM sampling, transport nondeterminism, edit proposals, and any tool-level nondeterminism.
+It does not change the CIFAR-10 split, the unmodified artifact, the \texttt{train.py} initialization seed, the checker budget, or the horizon within a subinstance.
+If a backend exposes an explicit sampling seed, the seed is recorded; otherwise repeated calls under the same frozen configuration are treated as independent deployment attempts and logged by run identifier.
+
+\paragraph{Progressive router signals.}
+The router is a fixed prompt-only orchestrator that chooses one worker from $\cM$ before deployment.
+It never edits \texttt{train.py}.
+We evaluate a nested signal sequence
+\[
+Z_0 \preceq Z_1 \preceq Z_2 \preceq Z_3 .
+\]
+\(Z_0\) contains only the task name, checker objective, worker menu, and budget.
+\(Z_1\) adds the initial \texttt{train.py} and a static workload summary.
+\(Z_2\) adds a low-cost checker probe of the unmodified artifact at a predeclared probe budget.
+\(Z_3\) adds the full unmodified-artifact baseline under the deployment checker budget.
+Probe records contain validation loss, validation accuracy, training seconds, total seconds, optimizer steps, parameter count, parse/runtime status, and the probe budget.
+The selected worker always starts from the original artifact; probe information is router context, not a warm start for the worker.
+Probe and router-context costs are charged when computing net deployment gain.
+For theorem-facing information diagnostics, raw records are mapped to finite summaries $B_j=b_j(Z_j)$ before estimating entropy or mutual information.
+The router may still observe the full permitted $Z_j$; the finite summaries are only for diagnostic accounting.
+
+\paragraph{Success, cost, and deployment loss.}
+Let $L_{\mathrm{base}}(s,b)$ be the validation loss of the unmodified artifact for executable subinstance $x_{s,b}$ under the fixed deployment checker.
+At edit step $t$, a worker produces a candidate \texttt{train.py}, the checker returns loss $L_t$, and checked progress is
+\[
+G_t=\operatorname{clip}_{[0,1]}\!\left(
+\frac{L_{\mathrm{base}}(s,b)-L_t}{|L_{\mathrm{base}}(s,b)|+\eps_L}
+\right).
+\]
+The primary success event is first passage above the relative-improvement threshold
+\[
+\tau_\delta=\inf\{t\le H:G_t\ge \delta\},
+\qquad
+\delta=0.05 .
+\]
+Let $k_{a,s}$ be the number of first-passage successes and $n_{a,s}$ the number of trajectories in an action--mode cell, aggregated over the predeclared subinstances for that mode.
+The raw competence estimator is $\hat p(a,s)=k_{a,s}/n_{a,s}$, but all log-effort and frontier calculations use the Jeffreys-smoothed estimate
+\[
+\tilde p(a,s)=\frac{k_{a,s}+1/2}{n_{a,s}+1}.
+\]
+The primary cost $\hat\kappa(a,s)$ is worker wall-clock accumulated to $\tau_\delta\wedge H$; token count is reported as a sensitivity analysis.
+Deployment loss is the predeclared combination in~\eqref{eq:deployment-loss}, using first-passage failure, threshold occupancy, final checked quality, and worker-side cost.
+
+\paragraph{Theory-to-experiment map.}
+The mathematical results are not proved by the experiments; their proofs hold under the stated assumptions.
+The campaign tests whether those assumptions are operationally meaningful in the AutoResearch setting, whether the terms in the theory are measurable after smoothing and calibration, and whether their measured changes predict deployment outcomes.
+Experiments~1--4 operationalize Theorem~\ref{thm:four-term}: Experiment~1 estimates the worker-side cost and competence terms, Experiment~2 audits the routing-information channel induced by progressive signals, Experiment~3 diagnoses routing mismatch through allocation regret, and Experiment~4 validates the resulting routed policy by paired deployment loss.
+Theorem~\ref{thm:crossover} is tested as a single-mode subanalysis of Experiment~1, using the estimated first-passage probabilities and costs to ask when repeated deployments of a lower-cost worker match or beat one deployment of a stronger worker.
+Proposition~\ref{prop:paired-unbiased} supplies the estimator used in Experiment~4 for the net signal-conditioned routing gain $\Delta_R(j)$.
+Experiments~5--6 are falsification and robustness checks: the negative controls break the relationship between $Z$ and the task mode, while the expanded subinstance panel probes whether Assumption~\ref{ass:packed} remains credible beyond the canonical executable artifacts.
+
+\paragraph{Experiment 1: worker frontier.}
+Run all workers on all mode--subinstance cells without a router:
+\[
+3\ \text{modes}\times 3\ \text{subinstances/mode}\times 3\ \text{workers}\times Q_{\min}
+\]
+full trajectories before adaptive expansion of near-frontier cells.
+Estimate raw $\hat p(a,s)$, smoothed $\tilde p(a,s)$, $\hat\kappa(a,s)$, mean first-hit step, occupancy, final quality, and uncertainty intervals clustered by executable subinstance.
+For each mode, construct the empirical cost--success frontier
+\[
+a^\star(s)\in
+\argmin_{a\in\cM}\{\log \hat\kappa(a,s)-\log \tilde p(a,s)\}.
+\]
+This experiment is the worker-side calibration for Theorem~\ref{thm:four-term}.
+It estimates the quantities that enter the cost and competence terms, namely $\log\kappa(M_Z,S)$ and $-\log p_{M_Z}(S)$, before any router is allowed to choose.
+The task-mode schema is useful only if different mode families induce different cost--success frontiers that remain reasonably stable across their executable subinstances; otherwise the competence term collapses to a global worker ranking.
+The same estimates also instantiate Theorem~\ref{thm:crossover}, because the first-passage success probabilities and first-passage costs determine when repeated deployments of a lower-cost worker can match the one-attempt success probability of a stronger worker.
+
+\paragraph{Experiment 2: router-facing signal audit.}
+For each confirmation subinstance and each signal $Z_j$, query the same orchestrator under the same worker menu.
+The router returns a structured decision record containing selected worker, confidence, short task diagnosis, evidence used, expected failure mode, and expected cost risk.
+No external classifier is introduced.
+The diagnostic question is whether progressive signals change the router's own decision record:
+selected-worker distribution, confidence, diagnosis consistency with the predeclared mode, and cited evidence.
+This experiment audits the operational channel behind the routing-information term in Theorem~\ref{thm:four-term}.
+In the benchmark we do not give the orchestrator an oracle mode label, and we do not estimate Shannon mutual information on raw prompt text or full \texttt{train.py} contents.
+Instead, the report uses predeclared finite summaries $B_j=b_j(Z_j)$ for any entropy diagnostic, and uses router shift, diagnosis changes, and cited evidence as the decision-relevance audit for the full signal.
+By itself this is not a deployment claim: it only tests whether richer information has a channel through which it could affect routing.
+
+\paragraph{Experiment 3: routing shift and allocation regret.}
+Using the decisions from Experiment 2, compute shift rates
+\[
+\Pr[\rho_j(X)\ne \rho_0(X)]
+\]
+across modes, confirmation subinstances, and router repetitions.
+Then use the frontier from Experiment 1 to score each selected action on subinstance $x_{s,b}$ by allocation regret
+\[
+r_j(x_{s,b})
+=
+\bigl[\log \hat\kappa(\rho_j(x_{s,b}),s)-\log \tilde p(\rho_j(x_{s,b}),s)\bigr]
+-
+\min_{a\in\cM}\bigl[\log \hat\kappa(a,s)-\log \tilde p(a,s)\bigr].
+\]
+This is the finite-benchmark allocation-regret companion to the routing-mismatch term $\E_Z\KL(\pi_Z\|q_Z)$ in Theorem~\ref{thm:four-term} and to the progressive-signal comparison in Appendix~\ref{app:operational-decomp}.
+The KL mismatch itself is computed only through the frozen coverage map $q^\beta$ from the calibration frontier.
+Shift rate measures whether $Z_j$ changes the routing policy, while allocation regret asks whether the changed policy moves toward the empirical mode-conditional frontier from Experiment~1.
+A signal can be informative in the sense of Experiment~2 and still have high mismatch if it makes the orchestrator change worker in the wrong direction.
+Conversely, low regret is the operational evidence that the richer signal improved the allocation summary $q_Z$ rather than merely increasing decision variability.
+
+\paragraph{Experiment 4: paired selected-worker deployment gain.}
+Choose the best-performing non-static signal condition from the diagnostic split, or report all $j\in\{1,2,3\}$ with multiplicity control.
+For each confirmation subinstance and paired run index $r$, compare the worker selected under $Z_0$ with the worker selected under $Z_j$ from the same original artifact and horizon.
+Estimate
+\[
+\widehat{\Delta}_R(j)
+=
+\widehat{\ell}_{\mathrm{dep}}(\rho_0)
+-
+\widehat{\ell}_{\mathrm{dep}}(\rho_j)
+-
+\widehat{\ell}_{\mathrm{meas}}(j).
+\]
+Report paired confidence intervals clustered by executable subinstance, first-pass success changes, cost-to-success changes, gross loss reduction, measurement cost, and the subset where the signal changed the worker but increased loss.
+This experiment is the deployment validation of the theory-facing diagnostics.
+Proposition~\ref{prop:paired-unbiased} gives the estimand and estimator for the same-orchestrator comparison, while~\eqref{eq:deployment-loss} defines the loss used to decide whether a signal-conditioned policy is actually better after measurement cost is charged.
+Positive routing information and lower mismatch are not sufficient by themselves; the routed-policy claim is supported only when the paired gain $\widehat{\Delta}_R(j)$ is positive on held-out trajectories.
+The report also compares subinstance-level $\widehat{\Delta}_R(j)$ against the corresponding diagnostic log-effort gain $\widehat{\Delta}_R^{\log}(j)$ by rank correlation and signed residuals; large residuals mean the surrogate did not explain deployment loss.
+
+\paragraph{Experiment 5: negative controls.}
+Repeat Experiments 2--4 with schema-preserving controls:
+shuffled probe records, probes from the wrong mode or subinstance, and synthetic noise records with the same field names and token length.
+The same router, prompt, worker menu, and scoring rule are used.
+These controls test whether the measured routing-information and mismatch effects are specific to task-relevant signal content.
+They preserve the format and approximate context burden of $Z_j$ while breaking its relationship to the task mode and worker frontier.
+A credible interpretation of Theorem~\ref{thm:four-term} requires the real signal to reduce allocation regret and improve paired deployment gain more than these controls after measurement cost is charged.
+
+\paragraph{Experiment 6: subinstance and state-schema stress tests.}
+The confirmation panel deliberately varies initialization and split seeds inside each mode family while keeping the checker, horizon, threshold, and starting workload family controlled.
+These runs are part of the main falsification plan, not an afterthought: they test whether Assumption~\ref{ass:packed} has stable worker success probabilities and costs within each mode family.
+The report also repeats the diagnostics under alternative finite state schemas, including architecture-only, probe-bin-only, and crossed architecture--probe states.
+If competence frontiers, allocation regret, paired gains, or decomposition residuals change qualitatively under these perturbations, the packed-mode abstraction is too coarse for the claimed theory-facing explanation.
+
+\paragraph{Claim promotion gates.}
+The final paper should promote a routing recommendation only if all of the following are reported: state-conditional competence with uncertainty, worker-side cost sensitivity, router shift, allocation regret, paired deployment gain with measurement cost charged, negative controls, and residual diagnostics for Theorem~\ref{thm:four-term}.
+If routing diagnostics improve but paired deployment gain does not, the conclusion is diagnostic rather than prescriptive.
+If paired deployment gain improves but decomposition residuals are large, the protocol found a useful router but did not validate the packed-mode explanation.
+
+\section{Related work}
+\label{sec:related}
+
+The closest classical ancestor is algorithm selection.
+Since Rice's formulation, solver portfolios have treated performance as instance-dependent: SATzilla and AutoFolio learn to select solvers from instance features rather than report one globally best solver~\citep{rice1976algorithm,xu2012satzilla,lindauer2015autofolio,kotthoff2016algorithm}.
+ASlib standardizes algorithm-selection scenarios with feature costs and performance data, making clear that per-instance solver selection is a mature baseline rather than the novelty claimed here~\citep{bischl2016aslib}.
+That literature also includes feature-computation costs, pre-solving, and probing.
+Our contribution is the specialization to externally checked LLM agents, where a router observes a controlled pre-deployment record, selects a worker or harness action, and is scored by paired deployment loss rather than by standalone routing accuracy.
+
+LLM routing and cascades provide the model-menu context.
+FrugalGPT frames model cascades as cost reduction across heterogeneous APIs, RouteLLM learns cost-quality routing from preference data, LLM-Blender shows that the best model can vary by example, and recent compound-system routing work extends the idea to multi-module systems~\citep{chen2023frugalgpt,ong2024routellm,jiang2023llmblender,chen2025optimizing,yue2025masrouter,zaharia2024compound}.
+These methods establish that heterogeneous model menus can create economic gains.
+The present paper asks how much checked, task-specific information is worth before committing to an expensive agentic deployment.
+
+Checked agent benchmarks provide the task substrate.
+SWE-bench evaluates repository repair against tests, SWE-agent studies agent-computer interfaces for software repair, MLAgentBench evaluates language agents on machine-learning experimentation, AutoResearch evaluates training-loop edits against validation feedback, and theorem-proving systems use analogous external validators~\citep{jimenez2024swebench,yang2024sweagent,huang2024mlagentbench,karpathy2026autoresearch}.
+Most benchmarks ask how well a worker performs after it is launched.
+Our question is upstream: which worker should be launched, what should the router be allowed to observe, and how should the cost of that observation be charged?
+
+Finally, repeated sampling and inference-time scaling show that lower-cost or smaller models can become competitive when verification is available~\citep{brown2024monkeys,snell2025testtime,wu2025inference,osca2024}.
+The first-passage retry crossover in Theorem~\ref{thm:crossover} is the simplest version of that tradeoff.
+The four-term identity embeds the same idea in a mode-aware routing and measurement account.
+
+\section{Discussion targets and limitations}
+\label{sec:discussion}
+
+The draft has two levels of claim.
+The theory-facing claim is an accounting identity under Assumption~\ref{ass:packed}.
+It is exact, but only for the certified log-effort surrogate.
+The deployment-facing claim is empirical: the accounting should predict or explain useful action selection under a richer deployment loss.
+These two claims should not be collapsed.
+
+The packed-mode assumption is the main modeling limitation.
+Real agent trajectories are stateful, attempts are not independent, and diagnostic states may be fuzzy.
+The paper therefore reports first-passage curves, occupancy, hazard diagnostics, and residuals instead of assuming that the finite-mode surrogate is correct.
+If residuals dominate, the decomposition remains a useful diagnostic language but not a reliable selection rule.
+
+The operational state schema is also a limitation.
+If $S$ is too coarse, state-conditional competence is washed out and the router appears useless.
+If $S$ is too fine, sample sizes per cell collapse and the signal--mode estimates become unstable.
+The final campaign should therefore include an ablation over state schemas, including task-family-only, probe-bin-only, and crossed schemas.
+
+Finally, measurement value is router-specific.
+A baseline probe can contain information about the best action and still fail to improve deployment loss if the actual router does not use it well or if the measurement is too expensive.
+For this reason, the paired gain $\Delta_R(j)$ is the main deployment estimand, while finite-summary information, frozen-map mismatch, and allocation regret explain why that gain appears or fails to appear.
+
+\paragraph{Expected final takeaway.}
+If the final campaign passes the claim-promotion gates, the paper's message is that model choice inside an agent harness is not a scalar leaderboard problem.
+It is a measurable decomposition problem validated by paired deployment outcomes.
+The right worker depends on task state, checked competence, routing information, routing mismatch, first-passage time, retry depth, and worker-side cost.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\appendix
+
+\section{Proof details}
+\label{app:proofs}
+
+\subsection{Four-term identity}
+
+Under Assumption~\ref{ass:packed},
+\[
+  \log T_{\rho,q}(S,Z)
+  =
+  C+\log\kappa(M_Z,S)-\log p_{M_Z}(S)-\log q_Z(S).
+\]
+Conditioning on $Z=z$,
+\[
+  \E[-\log q_z(S)\mid Z=z]
+  =
+  \sum_s \pi_z(s)\log\frac{1}{q_z(s)}
+  =
+  \Hent(\pi_z)+\KL(\pi_z\|q_z).
+\]
+Therefore
+\[
+  \E[\log T_{\rho,q}]
+  =
+  C+\E_Z\E_{S\sim\pi_Z}\!\left[\log\kappa(M_Z,S)-\log p_{M_Z}(S)\right]
+  +\E_Z[\Hent(\pi_Z)]
+  +\E_Z[\KL(\pi_Z\|q_Z)].
+\]
+For the prior-matched baseline $\rho_0$ that deploys $M_0$ and uses $q_z=\pi$,
+\[
+  \E[\log T_{\rho_0,\pi}]
+  =
+  C+\E_{S\sim\pi}\!\left[\log\kappa(M_0,S)-\log p_{M_0}(S)\right]
+  +\Hent(\pi).
+\]
+Subtracting the deployed effort from the baseline effort yields
+\begin{align*}
+  \Delta
+  &=
+  \E_Z\E_{S\sim\pi_Z}\!\left[\log\frac{\kappa(M_0,S)}{\kappa(M_Z,S)}\right]
+  + \E_Z\E_{S\sim\pi_Z}\!\left[\log\frac{p_{M_Z}(S)}{p_{M_0}(S)}\right]
+  \\
+  &\quad
+  + \Hent(\pi)-\E_Z[\Hent(\pi_Z)]
+  - \E_Z[\KL(\pi_Z\|q_Z)] .
+\end{align*}
+The entropy difference is $\MI_\pi(S;Z)$, giving~\eqref{eq:four-term}.
+
+\subsection{Pilot concentration}
+
+For binary success observations in an action-state cell, Hoeffding gives
+\[
+  \Prb(|\hat p(a,s)-p(a,s)|>\alpha)\le 2\exp(-2n_0\alpha^2).
+\]
+If all true probabilities are at least $\pmin$, then the log-probability error obeys
+$|\log \hat p-\log p|\le \alpha/\pmin+O(\alpha^2/\pmin^2)$ on the good event.
+A union bound over $|\cA|\,|\cS|$ cells yields the conservative pilot rule
+\[
+  n_0
+  =
+  O\!\left(
+  \frac{\log(|\cA|\,|\cS|/\dconf)}{\dacc^2\pmin^2}
+  \right).
+\]
+Wilson intervals, Beta-smoothed log scores, and bootstrap intervals are reported in practice because pilot cell counts are small and zero-success cells are expected in difficult action--state combinations.
+
+\section{Operational diagnostics for the four terms}
+\label{subsec:bridge}
+
+The identity above becomes useful only after each term is tied to quantities logged by the deployment protocol.
+The checker-facing progress process is the common object used to operationalize competence, cost, information, and mismatch.
+Fix a horizon $H$ and a task-normalized checked progress process $G_t(a,x)\in[0,1]$ for action $a$ on instance $x$.
+In the main experiment, the router acts once before deployment: after observing $Z$, it selects a worker $M$, and the same worker is used for the whole trajectory.
+The success and cost diagnostics below are therefore trajectory-level quantities computed from the step-wise verifier trace.
+For lower-is-better checker losses, one admissible normalization is
+\[
+G_t(a,x)
+=
+\operatorname{clip}_{[0,1]}\!\left(
+\frac{L_0(x)-L_t(a,x)}{|L_0(x)|+\eps_L}
+\right),
+\]
+where $L_0(x)$ is the starting-artifact loss and $L_t(a,x)$ is the checked loss convention at step $t$.
+Given a success threshold $\delta>0$,
+\[
+\tau_\delta(a,x)=\inf\{t\le H:G_t(a,x)\ge \delta\},
+\qquad
+F_\delta(a,x)=\one\{\tau_\delta(a,x)=\infty\}.
+\]
+We also log persistence through
+\[
+\Occ_{\delta,H}(a,x)=\frac{1}{H}\sum_{t=1}^H \one\{G_t(a,x)\ge \delta\}.
+\]
+
+\paragraph{Competence.}
+The worker-level competence component $p_M(s)$ is the first-success probability of worker or action $M$ on task mode $s$:
+\[
+p_M(s)=\Prb[\tau_\delta(M,X)\le H\mid S=s].
+\]
+Thus $G_t$ is step-wise, but the policy competence term uses the probability that the worker selected by the router reaches the success threshold at least once before the horizon.
+Cumulative progress and persistence are not substituted for $p_M(s)$ in the identity.
+We log
+\[
+\bar G_M(s)=\E\!\left[\frac{1}{H}\sum_{t=1}^H G_t(M,X)\mid S=s\right]
+\]
+and $\Occ_{\delta,H}$ as secondary diagnostics, especially when first-hit success saturates or when partial progress is scientifically relevant.
+
+\paragraph{Cost.}
+The worker-level cost component is mode-conditional: $\kappa(M,s)$ is kept separate from competence but is estimated on the same routed trajectories used to define $p_M(s)$.
+The routed-policy cost term averages this quantity over both the signal-conditioned selected worker and the signal-induced mode distribution.
+The primary convention is cost accumulated until the first certified success or the horizon, $\tau_\delta\wedge H$.
+We log
+\[
+c_\delta(a,x;\xi)
+=
+\bigl(
+\widetilde T^{\mathrm{worker}}_{\tau_\delta\wedge H},
+\widetilde C^{\mathrm{tok}}_{\tau_\delta\wedge H}
+\bigr)(a,x;\xi),
+\]
+and report worker wall-clock cost as primary, with token count as a sensitivity analysis.
+Checker runtime is logged for audit, but it is not part of $\kappa(M,s)$ unless the checker protocol or checker-call frequency differs across workers.
+
+\paragraph{Routing information.}
+The theorem term $\MI(S;Z)$ measures how much a finite router-visible signal separates the predeclared task modes before deployment; operationally, raw records are first mapped to finite summaries $B_j$.
+This does not mean that the evaluator already knows the best worker for each instance.
+In the raw benchmark, $Z_j$ may include a \texttt{train.py} file or probe record, which is not a tractable object for density estimation.
+For information reporting, the evaluator therefore declares a finite summary $B_j=b_j(Z_j)$, such as architecture family, baseline-loss bin, runtime bin, parse/runtime status, or their crossed state, and estimates
+\[
+\MI(S;B_j\mid B_0)=\Hent(S\mid B_0)-\Hent(S\mid B_j).
+\]
+If the finite summary is too coarse or too close to the mode definition, the paper reports it as a descriptive audit rather than as an estimated Shannon information term.
+The decision value of the signal is established only after worker outcomes show that the summary predicts different cost--success profiles and the paired router experiment shows that richer signals actually improve deployment outcomes.
+
+\paragraph{Routing mismatch and allocation regret.}
+The theorem term $\E_Z\KL(\pi_Z\|q_Z)$ measures whether the router uses the mode-relevant information made available by $Z$.
+Operationally, the router returns a worker, not a mode label or distribution.
+Thus $q_Z$ is not a free post-hoc distribution.
+It is produced by the predeclared coverage map in Assumption~\ref{ass:packed}, using calibration estimates of the mode-conditional frontier:
+\[
+e(a,s)=\log\kappa(a,s)-\log p(a,s),
+\qquad
+a^\star(s)\in\argmin_{a\in\cA} e(a,s),
+\]
+or the statistically indistinguishable set of frontier workers.
+For a selected action $a=\rho_j(x)$ and mode $s=\sigma(x)$, the corresponding allocation regret diagnostic is
+\[
+r_j(x)
+=
+\bigl[\log\kappa(a,s)-\log p(a,s)\bigr]
+-
+\min_{a'\in\cA}\bigl[\log\kappa(a',s)-\log p(a',s)\bigr].
+\]
+This regret is computed from calibration or diagnostic outcomes and validated on holdout instances; it is not an oracle input to the router.
+High information with high mismatch means that the progressive signal exposed useful mode structure, but the induced worker allocation did not exploit the empirical cost--success frontier.
+
+After these four terms are estimated, the experiment still reports a decision-facing deployment loss as final validation.
+This loss is not a replacement for the theorem; it tests whether designs favored or explained by the four diagnostics improve the practical deployment objective.
+We predeclare
+\begin{align}
+\ell_{\mathrm{dep}}(a,x;\xi)
+&=
+\alpha_{\mathrm{occ}}\bigl(1-\Occ_{\delta,H}^{\mathrm{cur}}(a,x;\xi)\bigr)
++\alpha_{\mathrm{fail}}F_\delta(a,x;\xi)
+\nonumber\\
+&\quad
++\alpha_{\mathrm{qual}}\psi(G_H^{\mathrm{cur}}(a,x;\xi))
++\lambda^\top c_\delta(a,x;\xi),
+\label{eq:deployment-loss}
+\end{align}
+which combines persistence, failure, final checked quality, and resource cost.
+Here ``cur'' denotes the current full trajectory produced by the deployed action, $\psi(g)=1-g$ unless otherwise predeclared, and $c_\delta$ is the worker-side cost accumulated to first passage or horizon.
+The deployment run still records the full horizon, so $\Occ_{\delta,H}^{\mathrm{cur}}$ and $G_H^{\mathrm{cur}}$ test persistence and final quality even when the first-passage diagnostic has already fired.
+The weights $\alpha_{\mathrm{occ}},\alpha_{\mathrm{fail}},\alpha_{\mathrm{qual}}$ and cost normalizer $\lambda$ are fixed before confirmation and reported with sensitivity curves.
+
+\section{Operational decomposition under progressive signals}
+\label{app:operational-decomp}
+
+The main four-term identity compares a deployed design to a prior-matched baseline.
+For the V3 router experiment, it is often useful to compare two progressive signal conditions for the same router.
+Assume a finite diagnostic state $S\in\cS$ and, for each raw progressive record $Z_j$, a predeclared finite summary $B_j=b_j(Z_j)$.
+The empirical mode distribution used in the information term is
+\[
+\pi_j(s)=\Prb[S=s\mid B_j].
+\]
+The fixed orchestrator $R$ can still observe the full permitted record $Z_j$ and induces the routing policy $\rho_j:Z_j\mapsto \hat a_R^j(Z_j)$.
+The evaluator constructs the mode-facing allocation summary $q_R^j(\cdot\mid Z_j)\in\Delta(\cS)$ from the selected action using the frozen coverage map.
+Define
+\[
+\mathcal E_R^j(s,Z_j)
+=
+\frac{\kappa(\hat a_R^j(Z_j),s)}
+{p(\hat a_R^j(Z_j),s)\,q_R^j(s\mid Z_j)} .
+\]
+The log-effort gain of signal condition $Z_j$ over $Z_0$ is
+\[
+\Delta_R^{\log}(j)
+:=
+\E[
+\log \mathcal E_R^0(S,Z_0)-\log \mathcal E_R^j(S,Z_j)
+].
+\]
+Expanding the cross-entropy terms gives
+\[
+\Delta_R^{\log}(j)
+=
+C_R(j)+\Phi_R(j)+G(j)+M_R(j),
+\]
+where
+\begin{align*}
+C_R(j)
+&=
+\E\!\left[
+\log\frac{\kappa(\hat a_R^0(Z_0),S)}{\kappa(\hat a_R^j(Z_j),S)}
+\right],
+\\
+\Phi_R(j)
+&=
+\E\!\left[
+\log\frac{p(\hat a_R^j(Z_j),S)}{p(\hat a_R^0(Z_0),S)}
+\right],
+\\
+G(j)
+&=
+\E[\Hent(\pi_0)-\Hent(\pi_j)],
+\\
+M_R(j)
+&=
+\E\!\left[
+\KL(\pi_0\|q_R^0(\cdot\mid Z_0))
+-
+\KL(\pi_j\|q_R^j(\cdot\mid Z_j))
+\right].
+\end{align*}
+When $B_j$ refines $B_0$, $G(j)=\MI(S;B_j\mid B_0)$.
+This signal-state decomposition is a diagnostic companion to the deployment-gain estimand~\eqref{eq:router-gain}, not a replacement for it.
+For validation, the report computes the subinstance-level residual
+\[
+\mathrm{Res}_{i,j}
+=
+\widehat{\Delta}_{R,i}(j)
+-
+\mathcal A_{\mathrm{cal}}\!\left(\widehat{\Delta}_{R,i}^{\log}(j)\right),
+\]
+where $\mathcal A_{\mathrm{cal}}$ is an affine calibration fit only on the diagnostic split.
+Residuals and rank correlations are reported on the confirmation panel to test whether the first-passage surrogate explains the deployment loss.
+
+\section{Operational estimator details}
+\label{app:experiment-details}
+
+\paragraph{Trajectory record.}
+Each run stores the worker alias, resolved model identifier, split, task family, diagnostic state, seed, maximum horizon $H$, signal condition, prompt hash, router output, selected worker, and cost convention.
+Each step stores the prompt-visible state, proposed \texttt{train.py} artifact, parse status, checker result, validation loss, validation accuracy, relative improvement, incremental worker wall time, token usage, and checker runtime for audit.
+
+\paragraph{Success and time-to-verification.}
+For trajectory $i$, $\tau_i$ is the first step at which the relative improvement threshold is crossed; censored failures have $\tau_i=\infty$.
+For each action-state cell,
+\[
+  \hat F_a(s,h)=\frac{1}{n_{a,s}}\sum_i\one\{\tau_i\le h\},
+  \qquad
+  \hat S_a(s,h)=1-\hat F_a(s,h).
+\]
+The empirical hazard is
+\[
+  \hat\lambda_a(s,h)=
+  \frac{\sum_i\one\{\tau_i=h\}}
+       {\sum_i\one\{\tau_i\ge h\}} .
+\]
+The theorem-facing estimator used in the main protocol is the first-success probability at horizon $H$.
+To avoid undefined log terms in cells with no observed successes, all log-effort scores use the predeclared Beta-smoothed estimate
+\[
+  \tilde p(a,s)=\frac{k_{a,s}+\alpha_0}{n_{a,s}+\alpha_0+\beta_0},
+  \qquad
+  \alpha_0=\beta_0=\frac{1}{2},
+\]
+where $k_{a,s}$ is the number of trajectories that reach first passage by $H$.
+Raw $\hat p(a,s)=k_{a,s}/n_{a,s}$ and Wilson intervals are reported alongside the smoothed scores.
+
+\paragraph{Cost.}
+The primary cost estimate $\hat\kappa(a,s)$ is cumulative worker wall-clock time to $\tau\wedge H$, averaged within each action--mode cell.
+Secondary worker-side cost is cumulative token count.
+Checker runtime is logged as a protocol audit field and excluded from worker-cost comparisons unless the checker protocol differs across workers.
+All plots that support model recommendations must be reproducible under at least worker wall-clock and token-count conventions.
+When a worker fails before producing a parseable artifact, its cost is still counted and the step is marked unsuccessful.
+
+\paragraph{Information and mismatch.}
+For each progressive signal $Z_j$, map the raw record to the finite summary $B_j=b_j(Z_j)$ declared before evaluation and estimate $\pi_j(s)=\Prb[S=s\mid B_j]$ from the predeclared mode labels on held-out instances.
+The paper does not estimate Shannon mutual information over raw prompt text or raw \texttt{train.py} contents.
+Using the smoothed $\tilde p$ and $\hat\kappa$, compute calibration scores
+\[
+\hat e(a,s)=\log\hat\kappa(a,s)-\log\tilde p(a,s),
+\qquad
+\hat e^\star(s)=\min_{a'}\hat e(a',s),
+\]
+and the frozen coverage map
+\[
+\hat q_a^\beta(s)
+=
+\frac{\hat\pi_s\exp[-\beta(\hat e(a,s)-\hat e^\star(s))]}
+{\sum_u\hat\pi_u\exp[-\beta(\hat e(a,u)-\hat e^\star(u))]} .
+\]
+Here $\hat\pi_s$ is the empirical prior over reported modes.
+The temperature $\beta$ is selected on the calibration split and then held fixed.
+Mismatch is
+\[
+\widehat{\mathrm{MM}}(j)
+=
+\frac{1}{n}\sum_i
+\KL\!\left(
+ \hat\pi_j(\cdot\mid B_{j,i})
+\middle\|
+ \hat q_{\rho_j(Z_{j,i})}^{\beta}
+\right).
+\]
+The report should also map selected actions through state-action scores to obtain induced allocation regret, since a small KL mismatch can still matter when the confused states have different best workers.
+
+\paragraph{Uncertainty.}
+Raw success probabilities use Wilson intervals and smoothed log-effort scores use posterior sensitivity to $(\alpha_0,\beta_0)$.
+Aggregated objectives, information, mismatch, paired gains, and residuals use bootstrap or randomization tests clustered at the executable-subinstance level.
+Paired randomization tests are primary for $\Delta_R(j)$; bootstrap intervals are descriptive unless the expanded campaign has enough independent subinstance clusters.
+
+\section{Checklist notes for finalization}
+\label{app:checklist-notes}
+
+Before submission, the checklist should be updated to reflect the final state of the experiments.
+The current draft contains the theory, operational protocol, statistical plan, and falsification criteria needed for a full NeurIPS-style writeup, but claims should cite exact frozen results only after the final campaign is complete.
+
+\newpage
+\input{checklist}
+
+\end{document}
