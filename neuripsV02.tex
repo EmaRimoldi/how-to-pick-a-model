@@ -88,7 +88,7 @@ We formalize the router--verifier interaction as a \emph{diagnostic interface}: 
 The router may itself be an LLM orchestrator that controls a menu of worker policies, and the chosen worker carries out the costly deployment attempt from the declared initial state.
 For any deployment loss, especially the cost-aware persistence losses used below, we give an exact accounting identity that can diagnose how much value is available from static context, diagnostic interaction, and router use of the resulting signal.
 We then define the minimum useful diagnostic interaction as the cheapest admissible measurement that recovers a target fraction of the routing value, or equivalently yields positive value after its own cost is charged.
-The experimental program instantiates the framework on AutoResearch-style CIFAR-10 optimization with prompt-only Opus routing over a Haiku/Sonnet/Opus worker menu.
+The experimental program instantiates the formalism on AutoResearch-style CIFAR-10 optimization with prompt-only Opus routing over a Haiku/Sonnet/Opus worker menu.
 AutoResearch is used as a controlled member of a broader class of verifier-backed tasks: agents edit an executable artifact, receive external validation feedback, and are evaluated by verified improvement, persistence, and resource cost under a fixed budget.
 The main diagnostic family includes no interaction, read-only task views, and one or two cheap verifier-only baseline probes before routing.
 The paper contributes a deployment-facing theory of minimal verifier-backed measurement and a benchmark protocol for testing whether diagnostic information changes LLM router allocations and lowers selected-worker deployment loss.
@@ -130,18 +130,10 @@ The \emph{router} is an LLM orchestrator: a meta-level model that observes a pre
 In the simplest AutoResearch protocol, one reasoning step is one proposed edit to \texttt{train.py} followed by a verifier run; the router does not optimize the training model itself, but chooses the worker policy that will act on the current program.
 The router and workers may come from the same model family---for example Opus, Sonnet, and Haiku can all be both candidate routers and candidate workers---but their roles are distinct.
 
-\begin{definition}[Router--verifier diagnostic interface]
-\label{def:intro-router-verifier-interface}
-Fix a verifier-backed task instance $X$, verifier $V$, deployable action menu $\cA$, router model $R$, and coarse context $W$.
-A router--verifier diagnostic interface is an admissible measurement protocol $b$ that interacts with the task only through verifier-mediated observations, produces a diagnostic record $O_b^V(X)$, exposes a router-visible signal $Z_b=\phi_b(O_b^V(X))$, and incurs diagnostic cost $c_b^V(X)$.
-A router model $R$ induces a decision rule $r_{R,b}(a\mid W,Z_b)$ over actions $a\in\cA$ for deployment.
-The verifier acts as a measuring instrument during $b$ and as the final judge during deployment; scratch artifacts created by $b$ are discarded unless the protocol explicitly defines them as part of the deployable action.
-\end{definition}
-
-This definition abstracts the interaction we want to measure.
+The router--verifier diagnostic interface abstracts the interaction we want to measure.
+Before choosing the deployment action, the router may receive a bounded verifier-mediated signal $Z_b$ produced by an admissible measurement protocol $b$ with recorded cost $c_b$.
 The router does not need private access to the true task mode or to a hand-written recipe such as ``change the learning rate.''
-It is allowed a bounded interface to the task through the verifier.
-A no-edit baseline evaluation, a smoke-test suite, a bounded proof attempt, a short validation probe, and a symmetric scratch scout are all members of the same family when they are fixed in advance, logged, costed, and separated from the deployment attempt.
+A no-edit baseline evaluation, a smoke-test suite, a bounded proof attempt, and a short validation probe are all members of the same family when they are fixed in advance, logged, costed, and separated from the deployment attempt.
 The central object is therefore the deployment value of the signal produced by this interface, not the semantic label of the probe itself.
 
 This paper asks the following question: \emph{can model or harness choice for verifier-backed agents be turned from benchmark racing into controlled router decisions under a predeclared deployment loss?}
@@ -158,12 +150,12 @@ The deployment-facing question is whether a cheap interaction changes the deploy
 
 \paragraph{Why AutoResearch is a good controlled family.}
 AutoResearch is a particularly good experimental substrate because it isolates exactly the ingredients that matter here while staying reproducible enough for a controlled campaign.
-An instance consists of an editable training program, a fixed training and evaluation budget, a verifier based on validation loss, and a nuisance seed.
+An instance consists of an editable training program, a fixed training and evaluation budget, an external verifier based on validation loss, and a replicate seed.
 The agent edits code, the environment runs the code, and success is externally certified by improved validation performance.
 This is already structurally analogous to software repair against unit tests, proof search against a checker, and tuning or configuration problems where short instrumented measurements expose solver-relevant difficulty before a costly optimization attempt is launched.
-At the same time, AutoResearch offers a disciplined controlled family: the verifier is cheap enough to probe, the artifact is concrete, counterfactual deployment attempts can be collected for multiple models, and repeated nuisance draws give multiple deployment instances without changing the artifact class.
+At the same time, AutoResearch offers a disciplined controlled family: the verifier is cheap enough to probe, the artifact is concrete, counterfactual deployment attempts can be collected for multiple models, and repeated seeds give multiple deployment instances without changing the artifact class.
 We use AutoResearch not as the only domain where routing should work, but as a controlled testbed for the sharper claim that verifier-backed measurement can improve cost-aware verified performance.
-The mainline benchmark therefore uses a small family of editable starts---compact CNNs, flat MLPs, and tiny ResNets---with repeated nuisance seeds, so that every worker can be evaluated counterfactually on the same task instances.
+The mainline benchmark therefore uses a small family of editable starts---\emph{compact convolutional networks}, \emph{flat multilayer perceptrons}, and \emph{tiny residual networks}---with repeated seeds, so that every worker can be evaluated counterfactually on the same task instances.
 Known family identity is treated as coarse context $W$; the main diagnostic question is whether verifier-backed measurement adds value beyond that static context.
 
 \paragraph{Contributions.}
@@ -218,12 +210,8 @@ The essential requirement is externality: the deployment loss is a function of w
 
 \begin{definition}[Candidate solvers, routers, and verifier-indexed loss]
 Let $\cM=\{m_1,\ldots,m_K\}$ be a finite menu of candidate worker policies.
-Given instance $X$, verifier $V$, and budget $B$, a worker $m\in\cM$ induces a stochastic interaction kernel
-\[
-P_m^V(dY,dO,dC\mid X,B),
-\]
-where $Y\in\cY$ is the produced artifact or solution, $O$ is any recorded observation from the deployment attempt, and $C$ is resource cost.
-The worker is the solver policy that carries out the attempt; the object being optimized, repaired, proved, or configured is part of the task state or final artifact, not the worker itself.
+Given instance $X$, verifier $V$, and budget $B$, a worker $m\in\cM$ is the stochastic solver policy that carries out the attempt and produces an artifact, observations, and resource costs.
+The object being optimized, repaired, proved, or configured is part of the task state or final artifact, not the worker itself.
 Let $\cA$ be a finite menu of deployable actions.
 In the simplest worker-selection setting, $\cA=\cM$.
 More generally, an action $a\in\cA$ is any predeclared deployment policy that can be executed after routing, such as a particular worker together with fixed stopping, retry, or tool-use rules.
@@ -251,20 +239,6 @@ This definition intentionally includes both the \emph{amount} and the \emph{type
 Depending on the task, $b$ may be no measurement, a read-only view of the instance, a verifier-only baseline evaluation, a bounded checker call, a smoke-test suite, a short validation probe, or a model-coupled measurement that gives each candidate solver the same small budget on isolated state.
 The protocol specifies the information channel, budget, cost accounting, and reset or carryover rule; it does not prescribe the semantic content of an edit, proof, patch, configuration change, or experiment.
 This is what makes the construction task-independent.
-
-In richer AutoResearch variants, one possible model-coupled measurement is a symmetric scratch scout: each candidate worker receives the same small budget on an independent scratch copy, the router sees standardized summaries of verifier outcomes and resource use, and all scratch state is discarded before the deployment action is chosen.
-The main campaign below uses the simpler verifier-only ladder; scratch scouts are an admissible extension, not a primitive required by the theory.
-
-\begin{definition}[Adaptive diagnostic policy]
-\label{def:adaptive-diagnostic}
-Let $\cQ$ be a finite set of admissible diagnostic measurements.
-An adaptive diagnostic policy is a rule
-\[
-\pi_{\mathrm{diag}}(q_t\mid W,O_{<t})
-\]
-that selects the next diagnostic measurement $q_t\in\cQ$ from the observed context and previous diagnostic records, stops under a predeclared diagnostic horizon or cost budget, and then emits $Z_b$ to the router.
-The cost of all measurements chosen by the policy is included in $c_b(X)$ and charged in the net objective.
-\end{definition}
 
 \paragraph{Information target.}
 Let
@@ -385,7 +359,7 @@ The distinction is deliberate.
 $\bar L_b$ isolates the decision value of the signal itself.
 $L_b$ asks whether that value survives after paying for the interaction.
 Both quantities are verifier-specific: changing $V$, the budget, or the protocol changes the diagnostic observation distribution, the induced signal, and the loss surface over actions.
-This is exactly the point of the framework.
+This is exactly the point of the accounting.
 The paper is not asking for an intrinsic ranking of models; it asks which deployable action is best for a concrete verifier-backed deployment.
 
 A learned router after diagnostic interaction $b$ is a measurable policy $r_b(a\mid W,Z_b)$ over the finite action menu.
@@ -704,15 +678,16 @@ Oracle quantities are useful sanity checks, but they are not the main experiment
 \label{subsec:benchmark}
 
 The experimental family is AutoResearch-style CIFAR-10 optimization.
-Each instance contains an editable starting program \texttt{train.py}, a fixed training and validation regime, a verifier based on validation loss, and a nuisance seed.
+Each instance contains an editable starting program \texttt{train.py}, a fixed training and validation regime, an external verifier based on validation loss, and a replicate seed.
+The verifier is the evaluation harness that runs the program and returns validation metrics; it is not contained in \texttt{train.py}.
 The mainline task instances are indexed as
 \[
-X_{f,s}=(\texttt{train.py}_{f,0},D_f,V,B_{\mathrm{full}},s),
+X_{f,s}=(\texttt{train.py}_{f,0},D_f,V,B_V,s),
 \]
-where $f$ is the task family, $s$ is the instance seed, $D_f$ is the data/regime specification, $V$ is the verifier, and $B_{\mathrm{full}}$ is the full verifier training budget.
-We use three compact families that already exist in the benchmark substrate: \texttt{mlp\_flat}, \texttt{cnn\_compact}, and \texttt{resnet\_tiny}.
+where $f$ is the task family, $s$ is the replicate seed, $D_f$ is the data/regime specification, $V$ is the verifier, and $B_V$ is the fixed verifier training budget.
+We use three compact network families: \emph{flat multilayer perceptron}, \emph{compact convolutional network}, and \emph{tiny residual network}.
 They intentionally vary the starting model class while keeping the artifact interface and verifier fixed.
-The seed $s$ is treated as a task-instance nuisance variable and should control data subset realization, shuffle, augmentation, label noise or imbalance when used, and model initialization whenever the implementation permits a unified seed.
+The seed $s$ controls data subset realization, shuffle, augmentation, label noise or imbalance when used, and model initialization whenever the implementation permits a unified seed.
 For the main pilot we use five seeds per family, so the full worker matrix contains $3$ families $\times$ $5$ seeds $\times$ $3$ workers $=45$ no-stop full trajectories before router evaluations.
 Additional repeated LLM trajectories on a smaller subset estimate stochasticity of the agent optimization path.
 
@@ -720,17 +695,9 @@ The paper-facing worker menu is the Claude-family depth menu
 \[
 \cM=\{\texttt{haiku},\ \texttt{sonnet},\ \texttt{opus}\}.
 \]
-The main router is an \texttt{opus} prompt-only orchestrator controlled by the framework.
+The main router is an \texttt{opus} prompt-only orchestrator implemented in the evaluation harness.
 It observes a diagnostic signal, returns a JSON decision over the worker menu, and does not edit \texttt{train.py} itself.
-This is scientifically cleaner than using a fully autonomous multi-agent IDE as the main router because the framework controls spawning, reset state, logging, worker prompts, and counterfactual worker trajectories.
-Claude Code-style subagents or Codex subagents are natural ecological ablations, but the main result uses prompt-only routing to avoid confounding routing ability with hidden tool policy.
-
-If the same protocol is repeated with OpenAI/Codex workers, the model menu can be swapped for a small realistic solver set such as
-\[
-\cM=\{\texttt{gpt\_5\_4\_mini},\ \texttt{gpt\_5\_3\_codex},\ \texttt{claude\_sonnet}\},
-\]
-with optional appendix extensions to additional variants.
-The definitions do not depend on the vendor menu; only the worker costs and empirical losses change.
+This keeps routing ability separate from hidden tool policy: the harness controls reset state, logging, worker prompts, and counterfactual worker trajectories.
 
 We evaluate a nested family of router-visible diagnostic signals.
 The fixed ladder is
@@ -744,7 +711,7 @@ After observing $Z_b$, the router selects the worker that carries out deployment
 \begin{figure}[t]
 \placeholder{0.96\linewidth}{
 Planned figure: overview of the benchmark family.
-Left panel: three compact AutoResearch families with five nuisance seeds each.
+Left panel: three compact AutoResearch network families with five replicate seeds each.
 Middle panel: the three router-visible diagnostic states, from read-only \texttt{train.py} to one and two baseline verifier probes, all producing $Z_b$ before reset.
 Right panel: prompt-only Opus router chooses one worker from $\{\texttt{haiku},\texttt{sonnet},\texttt{opus}\}$ before the costly deployment attempt and is scored by cost-aware deployment loss.
 }
@@ -755,17 +722,16 @@ Right panel: prompt-only Opus router chooses one worker from $\{\texttt{haiku},\
 \subsection{Operational budgets, utilities, and logging}
 \label{subsec:ops}
 
-The worker horizon is fixed at $H=20$ edit steps.
+The worker horizon is fixed at $H=20$ edit steps, long enough to observe first hits and persistence while keeping the full counterfactual worker matrix feasible; the appendix reports the calibration behind this choice.
 Each edit step consists of one worker reasoning/code-generation call, materialization of the proposed structured edit, and one verifier run on the resulting \texttt{train.py}.
-The diagnostic verifier budget $B_{\mathrm{diag}}$ is separated from the deployment verifier training budget $B_{\mathrm{full}}$.
-This separation is essential: changing the diagnostic budget should change only the information available to the router, not the verifier used to score deployment worker performance.
+The main campaign fixes a single verifier training budget $B_V$ for all verifier calls.
+Varying $B_V$ would test verifier-budget sensitivity, but it is held fixed here so the experimental conditions differ in router-visible information rather than in the scoring rule itself.
 Before the final campaign, we run a calibration sweep over
 \[
-B_{\mathrm{full}}\in\{32,128,256,512\}
+B_V\in\{32,128,256,512\}
 \]
-and choose the smallest full verifier budget for which baseline measurements are stable, worker edit rankings are not dominated by noise, and runtime remains feasible.
-The same sweep chooses the diagnostic budgets used by $Z_{\mathrm{base},1}$ and $Z_{\mathrm{base},2}$.
-A preliminary runtime check on the existing families with $4096$ training examples and $1024$ validation examples found that at $128$ optimizer steps, \texttt{mlp\_flat}, \texttt{cnn\_compact}, and \texttt{resnet\_tiny} took approximately $0.6$, $3.0$, and $16.4$ seconds of training time respectively; the residual architecture is therefore retained as a useful slower stress family but can be lightened if the full matrix becomes infeasible.
+and choose the smallest budget for which baseline measurements are stable, worker edit rankings are not dominated by verifier noise, and runtime remains feasible.
+We also measure verifier runtime across the three network families before the final campaign to ensure that one architecture does not dominate the deployment loss purely through an uncontrolled evaluation-time effect.
 
 The primary success thresholds are relative improvements
 \[
@@ -789,7 +755,7 @@ where $\widetilde T$ and $\widetilde K$ are predeclared normalized wall-clock an
 The primary report fixes $(\alpha,\beta,\lambda_T,\lambda_K)$ before evaluation and reports sensitivity to wall-clock-only, token-only, and censored log-effort variants.
 For each router decision, the selected worker is scored by $\ell_{\mathrm{deploy}}$ from its deployment trajectory on the same instance; counterfactual worker trajectories are logged to avoid rerunning the worker matrix for every router-information condition.
 
-Every router decision record stores task family, instance seed, diagnostic policy, diagnostic budgets, diagnostic verifier calls, diagnostic wall time, router model, router input and output tokens, router dollar cost, router wall time, selected worker, worker ranking, confidence, success-probability estimates, expected cost-to-success estimates, and diagnostic features used.
+Every router decision record stores task family, replicate seed, diagnostic condition, diagnostic verifier calls, diagnostic wall time, router model, router input and output tokens, router dollar cost, router wall time, selected worker, worker ranking, confidence, success-probability estimates, expected cost-to-success estimates, and diagnostic features used.
 Every worker-step record stores step index, worker model, input and output tokens, reasoning wall time, API cost, verifier training steps, verifier training seconds, verifier wall time, validation loss, validation accuracy, relative improvement, success indicators for all thresholds, parse failures, runtime failures, and whether the artifact was promoted as the visible parent.
 Every run summary stores baseline loss, best loss, final loss, first-hit step for each threshold, hit indicators, threshold occupancy, total reasoning time, total verifier time, total wall-clock time, total tokens, total cost, total verifier calls, and $\ell_{\mathrm{deploy}}$ under the frozen cost convention.
 Uncertainty intervals are computed by nonparametric bootstrap resampling at the task-family level with seeds nested inside families; when worker-run stochasticity is explicitly replicated, the bootstrap resamples task instances first and agent-run replicates second.
@@ -805,7 +771,7 @@ The first experiment establishes the decision objective before any router is int
 For each family--seed instance $X_{f,s}$ and every worker $m\in\cM$, we run a full no-stop trajectory up to horizon $H$ from the same initial artifact state.
 We then rank workers under verifier-facing criteria such as final validation loss or bits-per-byte, relative improvement, and hit rate, and compare those rankings with the deployment loss $\ell_{\mathrm{deploy}}$ from Section~\ref{subsec:ops}.
 This experiment asks whether the worker that looks best under the scalar verifier metric is still best once persistence above threshold, no-hit penalty, wall-clock time, and token cost are charged.
-The output is a rank-flip analysis over task families and nuisance seeds, together with confidence intervals obtained by the bootstrap scheme described above.
+The output is a rank-flip analysis over task families and replicate seeds, together with confidence intervals obtained by the bootstrap scheme described above.
 
 \begin{figure}[t]
 \placeholder{0.96\linewidth}{
@@ -922,13 +888,13 @@ If a cheap diagnostic measurement changes allocation and lowers net deployment l
 If it changes allocation but not loss, the router is sensitive to the signal but uses it poorly; if it does not change allocation, the admitted diagnostic family is not decision-relevant for that router.
 
 \paragraph{Beyond AutoResearch.}
-AutoResearch is the controlled empirical substrate, not the scope of the framework.
+AutoResearch is the controlled empirical substrate, not the scope of the formalism.
 The same formal objects apply to other verifier-backed tasks by changing the verifier and the admissible probe family: in repository repair, $V$ is the test suite and $b$ may be a smoke-test or failing-test probe; in theorem proving, $V$ is a proof checker and $b$ may be a bounded search or tactic replay; in data-pipeline construction, $V$ is schema, unit, or validation-data compliance and $b$ may be a dry run on a small shard.
 The empirical claim of this paper is established on AutoResearch because it is cheap enough to instrument densely; the broader claim is methodological: once a verifier can produce a cheap diagnostic signal, the same accounting estimates whether routing on that signal is worth paying for.
 
 The main limitation is that all value estimates are conditional on the verifier, budget, and diagnostic family.
 A probe can be too weak to expose useful structure, or too expensive to be worth running even when it is informative.
-The framework also assumes that pilot and holdout instances are drawn from the same deployment distribution; robustness workloads should therefore be reported as distribution-shift stress tests rather than as the primary evidence for the main claim.
+The analysis also assumes that pilot and holdout instances are drawn from the same deployment distribution; robustness workloads should therefore be reported as distribution-shift stress tests rather than as the primary evidence for the main claim.
 
 \paragraph{Future experimental extensions.}
 The main campaign can be extended with shuffled or mismatched diagnostic records as negative controls, repeated router queries to separate diagnostic effects from router stochasticity, sensitivity sweeps over $(\alpha,\beta,\lambda_T,\lambda_K)$, diagnostic-cost breakeven curves, family-held-out generalization tests, and router-model ablations that compare stronger and cheaper orchestrators under the same worker menu.
