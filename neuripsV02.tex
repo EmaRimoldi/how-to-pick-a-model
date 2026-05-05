@@ -228,7 +228,8 @@ Achille--Soatto's proper-time view says that, in a verifiable task, a solver sho
 Our finite-deployment analogue fixes a horizon $H$ and a task-normalized verified progress process $G_t(a,x)\in[0,1]$, where larger is better and $t$ indexes a predeclared resource unit such as verifier calls, wall-clock time, or model steps.
 For a binary verifier, $G_t$ may be the indicator that a certificate has appeared by time $t$; for a scalar verifier, it may be a predeclared normalization of verified improvement relative to the instance baseline.
 
-For success threshold $\delta>0$, define
+Fix a predeclared success threshold $\delta>0$; action $a$ is certified successful at step $t$ on instance $x$ when $G_t(a,x)\ge\delta$.
+Define
 \[
 \tau_\delta(a,x)=\inf\{t\in\{1,\ldots,H\}:G_t(a,x)\ge \delta\},
 \]
@@ -383,13 +384,6 @@ The second asks which measurement maximizes deployment value after cost.
 They need not coincide: a richer diagnostic record can be more informative and still not worth buying.
 If $Z_{b_1}$ is measurable with respect to $Z_{b_2}$, then $b_2$ cannot increase the raw Bayes loss $\bar L_b$, because conditioning on a finer signal can only enlarge the class of measurable decision rules.
 After cost is charged, however, the richer measurement may be worse.
-
-\subsection{Connection to Achille--Soatto}
-
-The framework above is the finite-action version of the Achille--Soatto view of verifiable agents as time-limited transductive solvers.
-The deployment loss $\ell$ operationalizes ``time to verified success'' under a fixed verifier, budget, and cost convention.
-The diagnostic signal $Z_b$ is therefore not an intrinsic model score and not a latent task label.
-It is useful only when it moves the selected action toward a shorter or cheaper verified path on the current instance.
 
 \section{Reusable Evaluation Records}
 \label{sec:selection}
