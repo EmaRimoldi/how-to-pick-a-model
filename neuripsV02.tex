@@ -97,68 +97,41 @@ The paper contributes a deployment-facing theory of minimal verifier-backed meas
 \section{Introduction}
 \label{sec:intro}
 
-Suppose a builder has a verifier-backed task, a finite menu of deployable actions, and a concrete instance that must be solved under budget.
-The core deployment question is not merely whether some sufficiently large model can eventually solve the task.
-It is which model or harness action should be chosen \emph{now}, on this instance, before paying the full cost of deployment, in order to minimize deployment loss such as time, cost, or risk to a verified success.
-This question appears in repository repair against tests, theorem proving against a checker, data-pipeline or training-loop optimization against a validation metric, and AutoResearch-style program editing where an agent modifies \texttt{train.py}, runs a bounded experiment, and keeps the edit only when validation improves~\citep{jimenez2024swebench, karpathy2026autoresearch}.
-All of these are transductive and verifier-backed in the same sense: the system is given a concrete artifact-level problem, the environment provides an external success criterion, and capability is meaningful only relative to time, compute, and deployment budget.
-That framing is closely aligned with the time-centric view of agents in \citet{achille2025agents}.
+Modern agentic systems are increasingly deployed on tasks whose success is externally checkable: a patch passes tests, a proof checks, a data pipeline satisfies validation constraints, or a training program improves held-out performance.
+In these settings, the practitioner rarely faces a single-model question.
+They face a portfolio decision under time and cost pressure.
+A stronger model may be more competent but slower and more expensive; a smaller model may be cheaper but unreliable; a harness may trade additional retries or tool calls for better success probability.
+The operational question is therefore not which model has the highest aggregate benchmark score, but which deployable action should be launched on this particular instance, under this verifier and budget.
 
-A scalar benchmark race is the wrong scientific object for this regime.
-Two models can have similar entry success and still differ sharply in verified effort, persistence of progress, dollar cost, wall-clock cost, or robustness across workload families.
-More importantly, the builder often has the option to interact \emph{a little} with the task before committing to the costly deployment attempt.
-In repository repair one can run smoke tests or allow a scratch patch attempt; in theorem proving one can run a bounded proof attempt against the checker; in AutoResearch one can allow a candidate worker to make a single scratch edit and observe a short validation run.
-Because the task is verifier-backed, these interactions need not be vague heuristics or hand-written feature extractors.
-They can be standardized measurements that expose solver-relevant structure before the deployment decision is made.
-This pattern is not specific to AutoResearch.
-The same object appears whenever a cheap verifier interaction is available before the costly deployment attempt: unit-test smoke suites and scratch repairs for software, bounded checker calls for theorem proving, dry-run validation for data pipelines, short leaderboard-style submissions for ML engineering, or short training/evaluation probes for tuning tasks.
-In each case the interaction is admissible only because an external verifier can turn a small amount of task contact into a router-visible signal.
+This view aligns with the time-centric formulation of agents in \citet{achille2025agents}: for verifiable transductive tasks, eventual solvability is too weak a notion of capability.
+What matters is the path to a verifier-accepted output and the resources spent along that path.
+A model that eventually succeeds after a long search can be inferior, in deployment, to a cheaper model that reaches a slightly weaker but sufficient certified outcome quickly and reliably.
+Conversely, a model with the best final validation score may be the wrong choice if its cost or latency dominates the value of that improvement.
 
-The verifier is not incidental to this claim.
-The same base language model can look different under different verifiers, budgets, stopping rules, and artifact interfaces.
-We therefore treat an interacting model as a stochastic procedure coupled to a verifier: it proposes artifact edits, observes verifier feedback allowed by the protocol, and incurs a verifier-indexed loss.
-Routing is a function of this model--verifier pair.
-The verifier is both the final judge and the measuring instrument that can produce task-specific information before deployment.
-The diagnostic signal does not make a model intrinsically stronger.
-Rather, when it contains algorithmic information about which available action has a short path to success, it can reduce the deployment system's expected search time on the current task.
+The verifier changes the nature of the routing problem.
+It is not only the final judge of success; it can also be used as a measuring instrument before the costly deployment attempt.
+Before committing to a full run, a system may inspect the artifact, run a smoke test, call a checker on a bounded attempt, or evaluate an unmodified training program under a small validation budget.
+Such interactions are not generic prompt features.
+They are task-specific measurements produced by the same external mechanism that will later certify success.
+When they reveal which available action has a short path to success, they can change the economically correct model choice; when they are uninformative or too expensive, the best static choice should remain unchanged.
 
-\paragraph{Router, verifier, and worker models.}
-We distinguish three roles.
-The \emph{verifier} is the external measurement procedure that evaluates candidate artifacts, such as validation loss, validation accuracy, unit tests, or proof checking.
-The \emph{worker models} are the solver policies that act on the task instance, for example by editing \texttt{train.py} over multiple reasoning or code-editing steps.
-The \emph{router} is an LLM orchestrator: a meta-level model that observes a pre-decision information state and chooses which worker model or deployable action should carry out the costly attempt.
-In the simplest AutoResearch protocol, one reasoning step is one proposed edit to \texttt{train.py} followed by a verifier run; the router does not optimize the training model itself, but chooses the worker policy that will act on the current program.
-The router and workers may come from the same model family---for example Opus, Sonnet, and Haiku can all be both candidate routers and candidate workers---but their roles are distinct.
+This paper studies that pre-deployment measurement problem for verifier-backed LLM agents.
+We separate three roles that are often conflated.
+The verifier evaluates candidate artifacts.
+The worker is the solver policy that acts on the task instance.
+The router is a meta-level LLM orchestrator that observes a pre-decision information state and chooses the worker or harness action to deploy.
+The diagnostic signal does not make any worker intrinsically stronger.
+It can only help by changing the router's allocation toward an action with lower verifier-indexed deployment loss.
 
-The router--verifier diagnostic interface abstracts the interaction we want to measure.
-Before choosing the deployment action, the router may receive a bounded verifier-mediated signal $Z_b$ produced by an admissible measurement protocol $b$ with recorded cost $c_b$.
-The router does not need private access to the true task mode or to a hand-written recipe such as ``change the learning rate.''
-A no-edit baseline evaluation, a smoke-test suite, a bounded proof attempt, and a short validation probe are all members of the same family when they are fixed in advance, logged, costed, and separated from the deployment attempt.
-The central object is therefore the deployment value of the signal produced by this interface, not the semantic label of the probe itself.
+We ask whether model or harness choice for verifier-backed agents can be turned from benchmark racing into controlled router decisions under a predeclared deployment loss.
+Given a finite worker/action menu, we compare the same LLM router under static context alone and under additional verifier-derived diagnostic records.
+The main empirical quantities are the router's allocation shift, the paired change in selected-worker deployment loss, and the diagnostic cost paid to obtain the signal.
+Oracle decompositions are useful for interpreting headroom, but the central claim is tested by relative router runs: does the diagnostic record change the actual router's choice, and does that change improve cost-aware verified performance?
 
-This paper asks the following question: \emph{can model or harness choice for verifier-backed agents be turned from benchmark racing into controlled router decisions under a predeclared deployment loss?}
-Concretely, given a finite worker/action menu and a router--verifier diagnostic interface, we compare the same LLM router under static context $W$ alone and under $W+Z_b$ diagnostic records.
-The minimum-interaction question is a subproblem of this objective: what is the cheapest admissible verifier-mediated interaction whose signal changes the action decision enough to improve net verified effort?
+We instantiate these claims on AutoResearch-style CIFAR-10 optimization, where an agent edits an executable training program and an external verifier returns validation metrics.
+This task is a controlled substrate for the broader phenomenon: the artifact is concrete, the verifier is cheap enough to query before deployment, and counterfactual worker trajectories can be collected on the same instances.
+The benchmark uses compact convolutional networks, flat multilayer perceptrons, and tiny residual networks with repeated seeds, allowing us to measure whether verifier-backed diagnostic information adds value beyond static family identity.
 
-The paper's narrative is decision-theoretic rather than leaderboard-centric.
-We do not treat routing as a mysterious capability of an especially clever LLM.
-We treat it as a deployment decision problem under partial information.
-The right empirical quantities are therefore the router's allocation shift when $Z_b$ is added, the paired change in selected-worker deployment loss, and the diagnostic cost paid to obtain the signal.
-Oracle decompositions are useful accounting diagnostics, but the main claim is tested by relative router runs.
-Mutual information, posterior concentration, or mode-prediction accuracy are useful diagnostics, but they are secondary.
-The deployment-facing question is whether a cheap interaction changes the deployment decision in a way that improves cost-aware verified performance enough to justify its cost.
-
-\paragraph{Why AutoResearch is a good controlled family.}
-AutoResearch is a particularly good experimental substrate because it isolates exactly the ingredients that matter here while staying reproducible enough for a controlled campaign.
-An instance consists of an editable training program, a fixed training and evaluation budget, an external verifier based on validation loss, and a replicate seed.
-The agent edits code, the environment runs the code, and success is externally certified by improved validation performance.
-This is already structurally analogous to software repair against unit tests, proof search against a checker, and tuning or configuration problems where short instrumented measurements expose solver-relevant difficulty before a costly optimization attempt is launched.
-At the same time, AutoResearch offers a disciplined controlled family: the verifier is cheap enough to probe, the artifact is concrete, counterfactual deployment attempts can be collected for multiple models, and repeated seeds give multiple deployment instances without changing the artifact class.
-We use AutoResearch not as the only domain where routing should work, but as a controlled testbed for the sharper claim that verifier-backed measurement can improve cost-aware verified performance.
-The mainline benchmark therefore uses a small family of editable starts---\emph{compact convolutional networks}, \emph{flat multilayer perceptrons}, and \emph{tiny residual networks}---with repeated seeds, so that every worker can be evaluated counterfactually on the same task instances.
-Known family identity is treated as coarse context $W$; the main diagnostic question is whether verifier-backed measurement adds value beyond that static context.
-
-\paragraph{Contributions.}
 This positioning leaves a concrete gap between algorithm selection, LLM routing, and verifier-backed agent evaluation: the field lacks an accounting language for deciding when a cheap verifier-derived signal is valuable enough to change the worker or harness action selected for deployment.
 The paper makes four contributions.
 \begin{enumerate}[leftmargin=1.35em,itemsep=0.2em]
@@ -194,8 +167,8 @@ The contributions above target this gap: the router--verifier diagnostic interfa
 \section{Verifier-backed deployment with diagnostic interaction}
 \label{sec:setup}
 
-\citet{achille2025agents} frame an agent for a verifiable task as a stochastic dynamical system whose value is measured by the time needed to reach a verifier-accepted output, not by eventual solvability alone.
-We use the same transductive viewpoint, but restrict attention to a finite deployment menu: the system has already been given a concrete task instance, and the remaining question is which available solver policy should act on it under budget.
+We now formalize the transductive deployment problem suggested above.
+The system has already been given a concrete task instance and a finite deployment menu; the remaining question is which available solver policy should act under budget.
 
 \begin{definition}[Verifier-backed transductive deployment task]
 A verifier-backed transductive deployment task is a tuple
