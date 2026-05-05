@@ -85,7 +85,7 @@ For deployment, the sharper question is temporal and decision-theoretic: given a
 Following the time-centric view of verifiable transduction in Achille--Soatto, we treat useful task information as information that reduces search time to a verified solution rather than as an intrinsic model score.
 Many such tasks admit a small diagnostic interaction with the task and verifier before the deployment action is chosen.
 We formalize the router--verifier interaction as a \emph{diagnostic interface}: a standardized cheap protocol in which the verifier acts as the measuring instrument that converts limited task contact into a router-visible signal $Z_b$.
-The router may itself be an LLM orchestrator that controls a menu of worker policies, and the chosen worker carries out the costly deployment attempt from the declared initial state.
+The router may itself be an LLM orchestrator that controls a menu of candidate workers, and the chosen worker carries out the costly deployment attempt from the declared initial state.
 For any deployment loss, especially the cost-aware persistence losses used below, we give an exact accounting identity that can diagnose how much value is available from static context, diagnostic interaction, and router use of the resulting signal.
 We then define the minimum useful diagnostic interaction as the cheapest admissible measurement that recovers a target fraction of the routing value, or equivalently yields positive value after its own cost is charged.
 The experimental program instantiates the formalism on AutoResearch-style CIFAR-10 optimization with prompt-only Opus routing over a Haiku/Sonnet/Opus worker menu.
@@ -137,8 +137,8 @@ The paper makes four contributions.
 \begin{enumerate}[leftmargin=1.35em,itemsep=0.2em]
   \item \textbf{Deployment-loss formulation.} We formulate finite-action model/harness selection under verifier-backed deployment losses, including first-hit, occupancy, and cost-aware variants.
   \item \textbf{Router--verifier diagnostic interface.} We define the verifier-mediated interaction that lets a router obtain a bounded, measurable signal about the current task before selecting the deployment action.
-  \item \textbf{Routing accounting diagnostics.} We give an exact identity that separates best fixed performance, workload opportunity, diagnostic signal value, probe cost, and learned-router regret for interpreting headroom and failure modes.
-  \item \textbf{Experimental program.} We specify an AutoResearch campaign that tests metric choice, diagnostic allocation shift, paired selected-worker deployment loss, and minimum useful interaction budget, with reusable-pilot and oracle analyses moved to supporting diagnostics.
+  \item \textbf{Diagnostic value accounting.} We give an exact identity that separates best fixed performance, static-context value, diagnostic signal value, measurement cost, and learned-router gap for interpreting headroom and failure modes.
+  \item \textbf{Experimental program.} We specify an AutoResearch campaign that tests metric choice, diagnostic allocation shift, paired selected-worker deployment loss, and minimum useful interaction budget, with reusable-evaluation and oracle analyses moved to supporting diagnostics.
 \end{enumerate}
 
 \section{Related work and positioning}
@@ -162,99 +162,73 @@ Our question is complementary: before spending that compute, should the deployme
 
 This leaves a gap between algorithm selection, LLM routing, and verifier-backed agent evaluation.
 What is missing is an accounting language that separates static context, verifier-derived diagnostic records, measurement cost, and router decision quality.
-The contributions above target this gap: the router--verifier diagnostic interface defines the admissible measurement, the action menu and verifier-indexed loss measure its deployment value, and the reusable-pilot protocol turns the idea into an experimental design.
+The contributions above target this gap: the router--verifier diagnostic interface defines the admissible measurement, the action menu and verifier-indexed loss measure its deployment value, and reusable evaluation records turn the idea into an experimental design.
 
-\section{Verifier-backed deployment with diagnostic interaction}
+
+\section{Verifier-backed Model Choice}
 \label{sec:setup}
 
-We now formalize the transductive deployment problem suggested above.
-The system has already been given a concrete task instance and a finite deployment menu; the remaining question is which available solver policy should act under budget.
+We formalize model choice as a verifier-backed deployment problem.
+The system has a concrete task instance, a finite menu of deployable actions, and a fixed budget.
+The question is which action should be launched after observing only the permitted pre-deployment information.
+
+\subsection{Tasks, workers, and deployment loss}
 
 \begin{definition}[Verifier-backed transductive deployment task]
 A verifier-backed transductive deployment task is a tuple
 $\cT=(\cX,\cY,V,B,\mu)$,
 where $\cX$ is an instance space, $\cY$ is a space of candidate artifacts or solutions, $V$ is an external verifier or verifier-derived scoring procedure on instance--artifact pairs, $B$ is a deployment budget, and $\mu$ is a deployment distribution over instances.
-The task is transductive because performance is measured on concrete pairs $(x,y)$.
-It is verifier-backed because success and progress are determined by $V$, not by a model's self-report.
+The task is transductive because performance is measured on concrete pairs $(x,y)$, and verifier-backed because success and progress are determined by $V$ rather than by a model's self-report.
 \end{definition}
 
 The verifier may be binary, as in tests or proof checking, or scalar, as in validation loss, reward, energy, or score.
-The essential requirement is externality: the deployment loss is a function of what the verifier certifies and how many resources were spent to obtain that certification.
+The essential requirement is externality: deployment performance is a function of what the verifier certifies and of the resources spent to obtain that certification.
 
-\begin{definition}[Candidate solvers, routers, and verifier-indexed loss]
-Let $\cM=\{m_1,\ldots,m_K\}$ be a finite menu of candidate worker policies.
-Given instance $X$, verifier $V$, and budget $B$, a worker $m\in\cM$ is the stochastic solver policy that carries out the attempt and produces an artifact, observations, and resource costs.
-The object being optimized, repaired, proved, or configured is part of the task state or final artifact, not the worker itself.
+\begin{definition}[Workers, deployable actions, and router]
+Let $\cM=\{m_1,\ldots,m_K\}$ be a finite menu of candidate workers, i.e. models or fixed model harnesses that can attempt the task instance.
+A worker acts on the task state and produces an artifact or solution; the object being optimized, repaired, proved, or configured is part of the task state, not the worker itself.
 Let $\cA$ be a finite menu of deployable actions.
-In the simplest worker-selection setting, $\cA=\cM$.
-More generally, an action $a\in\cA$ is any predeclared deployment policy that can be executed after routing, such as a particular worker together with fixed stopping, retry, or tool-use rules.
-The action incurs an integrable verifier-indexed deployment loss $\ell_V(a,X)$ derived from the verified outcome and resource cost.
-Let $\mathcal R$ denote a finite menu of router models.
-A router $R\in\mathcal R$ observes the permitted decision information $(W,Z_b)$ and selects an action from $\cA$.
+In the simplest worker-selection setting, $\cA=\cM$; more generally, an action $a\in\cA$ is a predeclared deployment policy, such as a worker together with fixed stopping, retry, or tool-use rules.
+Each action incurs an integrable verifier-indexed deployment loss $\ell_V(a,X)$ derived from verified outcome and resource cost.
+A router $R$ observes permitted pre-deployment information and selects an action from $\cA$.
 \end{definition}
 
-The main theory requires only that the losses be integrable.
-For readability we write $\ell(a,X)$ below, but the loss, observation distribution, and diagnostic cost are always indexed by the verifier and the admissible protocol.
+For readability we write $\ell(a,X)$ below, but the loss, observation distribution, and measurement cost are always indexed by the verifier, budget, and admissible protocol.
+The conditional Bayes action under information $I$ is
+\[
+\argmin_{a\in\cA}\E[\ell(a,X)\mid I].
+\]
+A learned router is useful only insofar as its selected action approaches this loss-minimizing decision under the information it is allowed to see.
 
-\begin{definition}[Observed context and admissible diagnostic measurement]
-Let $W=\omega(X)\in\cW$ denote coarse context observed before choosing the deployment action, such as problem family, repository type, theorem domain, artifact class, or benchmark split.
+\subsection{Diagnostic measurements before deployment}
+
+\begin{definition}[Observed context and diagnostic measurement]
+Let $W=\omega(X)\in\cW$ be the coarse context observed before choosing the deployment action, such as problem family, repository type, theorem domain, artifact class, or benchmark split.
 Let $\cB$ be a finite family of admissible diagnostic measurements.
-Each $b\in\cB$ is a budgeted procedure, executed before the final action choice, that may inspect the instance and query the verifier only through predeclared channels.
-Running $b$ on instance $X$ against verifier $V$ produces:
-(i) a diagnostic record $O_b^V(X)$,
-(ii) a router-visible signal $Z_b=\phi_b(O_b^V(X))$, and
-(iii) a diagnostic cost $c_b^V(X)$.
-Admissibility means that the diagnostic action set, budget limit, stopping rule, recorded fields, and carryover rule are fixed before evaluation.
-If a measurement modifies mutable task state, either the modified state is discarded before deployment or the carryover is explicitly included in the deployable action being evaluated.
+Each $b\in\cB$ is a budgeted procedure, executed before the deployment action is chosen, that may inspect the instance and query the verifier only through predeclared channels.
+Running $b$ on instance $X$ against verifier $V$ produces a diagnostic record $O_b^V(X)$, a router-visible signal $Z_b=\phi_b(O_b^V(X))$, and a diagnostic cost $c_b^V(X)$.
+Admissibility means that the measurement action set, budget, stopping rule, recorded fields, and carryover rule are fixed before evaluation.
+If a measurement modifies mutable task state, the modified state is discarded before deployment unless the carryover is explicitly included in the deployable action being evaluated.
 \end{definition}
 
-This definition intentionally includes both the \emph{amount} and the \emph{type} of diagnostic contact.
-Depending on the task, $b$ may be no measurement, a read-only view of the instance, a verifier-only baseline evaluation, a bounded checker call, a smoke-test suite, a short validation probe, or a model-coupled measurement that gives each candidate solver the same small budget on isolated state.
-The protocol specifies the information channel, budget, cost accounting, and reset or carryover rule; it does not prescribe the semantic content of an edit, proof, patch, configuration change, or experiment.
-This is what makes the construction task-independent.
+The diagnostic signal is not a capability increase for any worker.
+It is a finite-budget measurement channel between the current task, verifier, and action menu.
+It is decision-relevant when it changes the action that should be selected under the deployment loss, and useful only when the resulting loss reduction exceeds the measurement cost.
+One information-only diagnostic is
+\[
+\MI(A^\star_\ell;Z_b\mid W)>0,
+\qquad
+A^\star_\ell(X)\in\argmin_{a\in\cA}\E[\ell(a,X)\mid X],
+\]
+but this is secondary to deployment value: a signal can reduce uncertainty about the best action and still be too expensive to use.
 
-\paragraph{Information target.}
-Let
-\[
-A^\star_\ell(X)\in\argmin_{a\in\cA}\E[\ell(a,X)\mid X]
-\]
-be the best deployment action for the instance under the chosen verifier, loss, and budget.
-Before diagnostic measurement, the router can only use $W$ and has uncertainty about $A^\star_\ell$ through $\Prb[A^\star_\ell\mid W]$.
-After measurement, it can condition on $Z_b$.
-A diagnostic measurement has task-specific decision information when
-\[
-\MI(A^\star_\ell;Z_b\mid W)
-=
-\Hent(A^\star_\ell\mid W)-\Hent(A^\star_\ell\mid W,Z_b)
->
-0,
-\]
-but this information criterion is secondary to deployment value.
-The central question is whether $Z_b$ reduces verified deployment loss after its own cost is charged.
+\subsection{Finite-budget deployment losses}
 
-\paragraph{Hindsight-best action and empirical routing capability.}
-When counterfactual outcomes for all candidate actions are logged on the same held-out instance, we can define the hindsight-best action for deployment loss $\ell$ as
-\[
-a^\star_\ell(X)
-\in
-\argmin_{a\in\cA}\ell(a,X).
-\]
-If router $R$ observes diagnostic signal $Z_b$ and selects $\hat a_R(W,Z_b)$, its instance-level routing regret is
-\[
-\reg_\ell(R,b;X)
-=
-\ell(\hat a_R(W,Z_b),X)-\min_{a\in\cA}\ell(a,X).
-\]
-Aggregating this regret across held-out deployment instances measures the empirical routing capability of the LLM orchestrator under signal $Z_b$.
-An ideal router need not predict an abstract task label; it only needs to choose an action whose verified effort is close to the hindsight-best action for the current instance and loss.
+Achille--Soatto's proper-time view says that, in a verifiable task, a solver should be judged by the resource needed to reach a verifier-accepted output rather than by eventual solvability alone.
+Our finite-deployment analogue fixes a horizon $H$ and a task-normalized verified progress process $G_t(a,x)\in[0,1]$, where larger is better and $t$ indexes a predeclared resource unit such as verifier calls, wall-clock time, or model steps.
+For a binary verifier, $G_t$ may be the indicator that a certificate has appeared by time $t$; for a scalar verifier, it may be a predeclared normalization of verified improvement relative to the instance baseline.
 
-\paragraph{Finite-budget verifier-time losses.}
-Achille--Soatto's proper-time view says that, in a verifiable task, a solver should be judged by the resource needed to reach a certified solution.
-Our finite-deployment analogue fixes a resource horizon $H$ and a task-normalized verified progress process $G_t(a,x)\in[0,1]$, where larger is better and $t$ indexes a predeclared resource unit such as verifier calls, wall-clock time, or model steps.
-For a binary verifier, $G_t$ can be the indicator that a certificate has appeared by time $t$.
-For a scalar verifier, $G_t$ can be any predeclared normalization of verified improvement relative to the instance baseline.
-Fix a success threshold $\delta>0$.
-Define the first certification time
+For success threshold $\delta>0$, define
 \[
 \tau_\delta(a,x)=\inf\{t\in\{1,\ldots,H\}:G_t(a,x)\ge \delta\},
 \]
@@ -271,81 +245,78 @@ We use
 \\
 \ell_{\mathrm{occ}}(a,x)
 &= 1-\Occ_{\delta,H}(a,x)+\lambda\,C_a^{H}(x),
-\end{align}
-where $\lambda$ converts cost into the same deployment scale.
-The first loss measures cost-aware entry into verified success.
-The second measures persistence of verified progress under cost.
-We also use the censored certified log-effort loss
-\begin{equation}
+\\
 \ell_{\log,\delta,\rho}(a,x)
-=
+&=
 \log C_{a,\tau_\delta\wedge H}(x)
-\;+\;
++
 \rho\,\one\{\tau_\delta(a,x)=\infty\},
 \label{eq:log-effort-loss}
-\end{equation}
-where $\rho>0$ is a failure penalty.
-Among successful actions this prefers lower cost-to-certification; among failures it records horizon cost and adds a fixed penalty.
+\end{align}
+where $\lambda$ converts cost into the same deployment scale and $\rho>0$ is a failure penalty.
+These losses make explicit why final verifier score alone can rank workers differently from deployment value: first certification, persistence, latency, and token cost are all part of the decision criterion.
 
-\section{Decision-theoretic accounting for routing}
+\section{Value of Diagnostic Information}
 \label{sec:accounting}
 
-The central deployment object is the loss achieved after a diagnostic interaction and a routing decision.
-We first define three oracles and then show that every learned router admits a simple exact decomposition.
+The central theoretical object is the deployment loss achieved after buying a diagnostic measurement and selecting an action.
+The following quantities compare static choice, diagnostic information, and the learned router that uses that information.
 
-\subsection{Best fixed action, workload oracle, and diagnostic oracle}
+\subsection{Static context, diagnostic signal, and learned router}
 
-Define the best fixed-action loss
+The best fixed-action loss is
 \begin{equation}
 L_{\mathrm{fix}}
 :=
-\min_{a\in\cA} \E\big[\ell(a,X)\big].
+\min_{a\in\cA} \E[\ell(a,X)].
 \label{eq:lfix}
 \end{equation}
-This is the strongest policy available to a practitioner who must choose one deployment action for the entire deployment distribution before seeing any instance-specific context.
+This is the strongest policy available to a practitioner who must choose one action for the entire deployment distribution before seeing instance-specific context.
 
-Define the workload oracle
+The static-context Bayes loss is
 \begin{equation}
 L_W
 :=
-\E\left[\min_{a\in\cA} \E\big[\ell(a,X)\mid W\big]\right].
+\E\left[\min_{a\in\cA}\E[\ell(a,X)\mid W]\right].
 \label{eq:lwork}
 \end{equation}
-This is the Bayes-optimal policy if the builder may choose a different action for each observed coarse context value $W$ but does not buy an additional diagnostic measurement.
-Thus $L_{\mathrm{fix}}$ measures the best single global action, while $L_W$ measures the value of static, already-available context.
+This is the value of already-available context, before any additional verifier-backed measurement is purchased.
 
-For a diagnostic interaction $b\in\cB$, define the raw signal oracle
+For diagnostic measurement $b\in\cB$, define the raw diagnostic Bayes loss
 \begin{equation}
 \bar L_b
 :=
-\E\left[\min_{a\in\cA} \E\big[\ell(a,X)\mid W,Z_b\big]\right]
+\E\left[\min_{a\in\cA}\E[\ell(a,X)\mid W,Z_b]\right]
 \label{eq:rawlzb}
 \end{equation}
-and the net diagnostic oracle
+and the net diagnostic Bayes loss
 \begin{equation}
 L_b
 :=
-\E\big[c_b(X)\big]+\bar L_b.
+\E[c_b(X)]+\bar L_b.
 \label{eq:netlzb}
 \end{equation}
-The distinction is deliberate.
-$\bar L_b$ isolates the decision value of the signal itself.
-$L_b$ asks whether that value survives after paying for the interaction.
-Both quantities are verifier-specific: changing $V$, the budget, or the protocol changes the diagnostic observation distribution, the induced signal, and the loss surface over actions.
-This is exactly the point of the accounting.
-The paper is not asking for an intrinsic ranking of models; it asks which deployable action is best for a concrete verifier-backed deployment.
+The raw quantity isolates the decision value of the signal; the net quantity asks whether that value survives after paying for the measurement.
 
-A learned router after diagnostic interaction $b$ is a measurable policy $r_b(a\mid W,Z_b)$ over the finite action menu.
-Its deployment objective is
+A learned router after diagnostic measurement $b$ is a measurable policy $r_b(a\mid W,Z_b)$ over the finite action menu, with deployment objective
 \begin{equation}
 \J_b(r_b)
 :=
 \E\left[c_b(X)+\sum_{a\in\cA} r_b(a\mid W,Z_b)\,\ell(a,X)\right].
 \label{eq:routed-objective}
 \end{equation}
+When counterfactual outcomes for all actions are logged on the same held-out instance, we also report instance-level action regret
+\[
+\reg_\ell(R,b;X)
+=
+\ell(\hat a_R(W,Z_b),X)-\min_{a\in\cA}\ell(a,X),
+\]
+where $\hat a_R(W,Z_b)$ is the action selected by router $R$.
 
-\begin{definition}[Workload opportunity, diagnostic opportunity, and router regret]
-For each admissible diagnostic interaction $b\in\cB$, define
+\subsection{Diagnostic value accounting}
+
+\begin{definition}[Static opportunity, diagnostic value, and router gap]
+For each admissible diagnostic measurement $b\in\cB$, define
 \begin{align}
 \Delta_W
 &:= L_{\mathrm{fix}}-L_W,
@@ -359,48 +330,37 @@ For each admissible diagnostic interaction $b\in\cB$, define
 \Reg_b(r_b)
 &:= \J_b(r_b)-L_b.
 \end{align}
-Here $\Delta_W$ is workload opportunity, $\bar\Delta_b$ is raw diagnostic opportunity, $\Delta_b$ is net diagnostic opportunity, and $\Reg_b(r_b)$ is regret relative to the diagnostic oracle.
+Here $\Delta_W$ is the value of static context, $\bar\Delta_b$ is the raw value of the diagnostic signal, $\Delta_b$ is its net value after measurement cost, and $\Reg_b(r_b)$ is the learned router's gap to the diagnostic Bayes decision.
 \end{definition}
 
-\begin{theorem}[Exact model--verifier routing identity]
+\begin{theorem}[Diagnostic value accounting identity]
 \label{thm:main-identity}
-For every admissible diagnostic interaction $b\in\cB$ and every learned router $r_b$,
+For every admissible diagnostic measurement $b\in\cB$ and learned router $r_b$,
 \begin{equation}
 \J_b(r_b)
 =
 L_{\mathrm{fix}}-\Delta_W-\Delta_b+\Reg_b(r_b).
 \label{eq:main-identity}
 \end{equation}
-Equivalently,
-\begin{equation}
-\J_b(r_b)
-=
-L_W-\Delta_b+\Reg_b(r_b)
-=
-L_b+\Reg_b(r_b).
-\end{equation}
+Equivalently, $\J_b(r_b)=L_W-\Delta_b+\Reg_b(r_b)=L_b+\Reg_b(r_b)$.
 \end{theorem}
 
 \begin{proof}
-The second equality is just the definition of regret.
+By definition, $\Reg_b(r_b)=\J_b(r_b)-L_b$.
 Substituting $L_b=L_W-\Delta_b$ gives $\J_b(r_b)=L_W-\Delta_b+\Reg_b(r_b)$.
 Substituting $L_W=L_{\mathrm{fix}}-\Delta_W$ yields~\eqref{eq:main-identity}.
 \end{proof}
 
-The theorem gives the paper's main accounting language.
-A routed deployment can beat the best fixed action for only two reasons: coarse workload identity already matters ($\Delta_W>0$), or the diagnostic interaction adds enough verifier-backed value on top of workload identity ($\Delta_b>0$).
-A learned router then keeps or loses that value through $\Reg_b(r_b)$.
-This is an action-level accounting identity: the router chooses a deployable action, not a latent task label.
+The identity is not the router's deployment rule.
+It is an accounting language for interpretation.
+A deployment can improve on the best fixed action because static context matters, because verifier-derived diagnostics add net value beyond static context, or because the learned router loses less value relative to the diagnostic Bayes action.
+This keeps the paper's empirical question concrete: does $Z_b$ change the actual router's action, and does that action reduce deployment loss after the measurement cost is charged?
 
 \subsection{Minimum useful diagnostic interaction}
 
-The theorem separates two practitioner questions.
-One is informational: how much routing value is in principle exposed by the signal?
-The other is economic: after paying for the interaction, was the probe worth it?
-
-\begin{definition}[Minimum sufficient and economically optimal interaction]
+\begin{definition}[Minimum useful diagnostic interaction]
 \label{def:minimal-useful}
-Fix a target recovery fraction $\eta\in(0,1]$.
+Fix a recovery fraction $\eta\in(0,1]$.
 The minimum sufficient diagnostic interaction is any solution of
 \begin{equation}
  b^{\mathrm{suf}}_\eta
@@ -418,227 +378,47 @@ The economically optimal diagnostic interaction is any solution of
 \end{equation}
 \end{definition}
 
-The first quantity captures minimal interaction in the pure decision sense: what is the cheapest admissible probe that recovers most of the routing information that is available at all?
-The second captures the deployment sense: which probe actually maximizes net value after its own cost is counted?
-They need not coincide.
-A richer probe can reveal more but still be uneconomical.
-When the target is information rather than value, we also report the first measurably informative interaction,
-\[
-b^{\mathrm{info}}_{\min}
-\in
-\argmin_{b\in\cB}
-\left\{\E[c_b(X)] : \MI(A^\star_\ell;Z_b\mid W)>0\right\},
-\]
-with the inequality interpreted empirically through held-out log-loss or bootstrap intervals.
-This information target is useful for diagnosis, but it is not the main deployment criterion: an interaction can reduce uncertainty about the best action and still be too expensive to run.
+The first quantity asks for the cheapest admissible measurement that recovers most of the available diagnostic value.
+The second asks which measurement maximizes deployment value after cost.
+They need not coincide: a richer diagnostic record can be more informative and still not worth buying.
+If $Z_{b_1}$ is measurable with respect to $Z_{b_2}$, then $b_2$ cannot increase the raw Bayes loss $\bar L_b$, because conditioning on a finer signal can only enlarge the class of measurable decision rules.
+After cost is charged, however, the richer measurement may be worse.
 
-\begin{proposition}[More informative probes help before cost is counted]
-\label{prop:monotone}
-Suppose $b_1,b_2\in\cB$ satisfy that $Z_{b_1}$ is measurable with respect to $Z_{b_2}$, so $b_2$ is at least as informative as $b_1$.
-Then
-\begin{equation}
-\bar L_{b_2}\le \bar L_{b_1}
-\qquad\text{and}\qquad
-\bar\Delta_{b_2}\ge \bar\Delta_{b_1}.
-\end{equation}
-Thus richer diagnostic information cannot hurt the signal oracle before measurement cost is counted.
-\end{proposition}
+\subsection{Connection to Achille--Soatto}
 
-\begin{proof}
-Conditioning on a finer signal can only enlarge the class of measurable decision rules available to the oracle.
-Therefore the conditional Bayes risk under $Z_{b_2}$ is no larger than the conditional Bayes risk under $Z_{b_1}$ pointwise, and averaging proves the claim.
-\end{proof}
+The framework above is the finite-action version of the Achille--Soatto view of verifiable agents as time-limited transductive solvers.
+The deployment loss $\ell$ operationalizes ``time to verified success'' under a fixed verifier, budget, and cost convention.
+The diagnostic signal $Z_b$ is therefore not an intrinsic model score and not a latent task label.
+It is useful only when it moves the selected action toward a shorter or cheaper verified path on the current instance.
 
-Proposition~\ref{prop:monotone} is intentionally about raw diagnostic opportunity rather than net value.
-Once diagnostic cost is included, more interaction may or may not be worth paying for.
-That tradeoff is one of the main empirical targets of the paper.
-
-\paragraph{Interaction ladder.}
-The experimental family orders admissible measurements by cost and task contact:
-\begin{align*}
-b_0&:\text{no interaction},&
-b_1&:\text{read-only task view},\\
-b_2&:\text{one verifier-only baseline probe},&
-b_3&:\text{two verifier-only baseline probes}.&
-\end{align*}
-The ladder is an experimental design choice, not a theoretical requirement.
-It lets us ask whether reading the task and adding one or two cheap verifier measurements already creates enough decision value for routing.
-
-\subsection{Finite solver-state reduction}
-
-The accounting above is instance-level: it can be estimated directly from held-out instances and counterfactual action losses, without introducing latent task labels.
-A finite solver state is an optional compression.
-It is useful only when many instances share the same action-loss structure, so that pilots can estimate a reusable loss table rather than treating every instance as unrelated.
-
-\begin{assumption}[Finite solver-state sufficiency]
-\label{ass:finite-mode}
-There exists a finite latent variable $S\in\cS$ such that, for every action $a\in\cA$, the conditional Bayes loss of $a$ depends on the full instance only through $S$:
-\begin{equation}
-\E\big[\ell(a,X)\mid X\big]
-=
-\ell(a,S)
-\qquad\text{almost surely.}
-\end{equation}
-The matrix $\ell(a,s)$ is the solver-state loss table.
-\end{assumption}
-
-\begin{proposition}[Posterior decision on a solver-state loss table]
-\label{prop:mode-reduction}
-Under Assumption~\ref{ass:finite-mode},
-\begin{equation}
-\bar L_b
-=
-\E\left[
-\min_{a\in\cA}
-\sum_{s\in\cS}
-\Prb[S=s\mid W,Z_b]\,\ell(a,s)
-\right].
-\label{eq:mode-reduction}
-\end{equation}
-\end{proposition}
-
-\begin{proof}
-By the tower property and Assumption~\ref{ass:finite-mode},
-\[
-\E\big[\ell(a,X)\mid W,Z_b\big]
-=
-\E\big[\ell(a,S)\mid W,Z_b\big]
-=
-\sum_{s\in\cS}\Prb[S=s\mid W,Z_b]\,\ell(a,s).
-\]
-Substituting this expression into~\eqref{eq:rawlzb} yields~\eqref{eq:mode-reduction}.
-\end{proof}
-
-The proposition says exactly what the finite-state abstraction buys.
-If pilots estimate $\ell(a,s)$, then a diagnostic signal need only update the posterior over solver states; the best action is obtained by multiplying that posterior by the loss table and choosing the smallest expected loss.
-This is a reusable scoring device for many routers, not a requirement that the router predict a semantic task label.
-
-\subsection{Optional certified-effort specialization}
-
-The finite-state reduction can be connected directly to the Achille--Soatto claim that information matters when it reduces time to a verified solution.
-The following specialization is stronger than the action-level identity in Theorem~\ref{thm:main-identity}; it is included only to interpret cost, competence, diagnostic information, and routing mismatch in a simple finite-state setting.
-
-\begin{assumption}[Finite-state certified-effort surrogate]
-\label{ass:cert-effort}
-Suppose the finite state $S\in\cS$ is sufficient in the sense of Assumption~\ref{ass:finite-mode}.
-For each worker model $m\in\cM$ and state $s$, let $p_m(s)>0$ be the certified per-attempt success probability under the fixed verifier and let $\kappa(m)>0$ be the per-attempt deployment cost.
-For a router that observes signal $Z$ and allocates probability mass $q_Z(s)$ to state-specific computation, assume the certified effort surrogate in state $s$ is proportional to
-\begin{equation}
-T_{m,q}(s,Z)\propto \frac{\kappa(m)}{p_m(s)\,q_Z(s)} .
-\label{eq:cert-effort}
-\end{equation}
-\end{assumption}
-
-\begin{definition}[Cost-adjusted certified log-effort]
-\label{def:log-effort}
-Under Assumption~\ref{ass:cert-effort}, define
-\begin{equation}
-\J_{\mathrm{cert}}(m,q)
-=
-\log\kappa(m)
-+\E_{S\sim\pi}[-\log p_m(S)]
-+\E_Z\!\left[
-  \Hent(\pi_Z)+\KL(\pi_Z\|q_Z)
-\right],
-\label{eq:cert-objective}
-\end{equation}
-where $\pi_Z(s)=\Prb[S=s\mid Z]$.
-Lower $\J_{\mathrm{cert}}$ means lower expected certified log-effort up to constants that do not affect design choice.
-\end{definition}
-
-\begin{theorem}[Finite-state certified-effort decomposition]
-\label{thm:cert-four-term}
-Under Assumption~\ref{ass:cert-effort}, compare a prior-matched baseline design $(m_0,\pi)$ with a deployed design $(m,q)$.
-The improvement in expected certified log-effort,
-$\Delta=\J_{\mathrm{cert}}(m_0,\pi)-\J_{\mathrm{cert}}(m,q)$, decomposes as
-\begin{equation}
-\Delta
-=
-\underbrace{\log\frac{\kappa(m_0)}{\kappa(m)}}_{\mathrm{cost}}
-+
-\underbrace{\sum_{s\in\cS}\pi_s\log\frac{p_m(s)}{p_{m_0}(s)}}_{\mathrm{competence}}
-+
-\underbrace{\MI_\pi(S;Z)}_{\mathrm{diagnostic\ information}}
--
-\underbrace{\E_Z\!\left[\KL(\pi_Z\|q_Z)\right]}_{\mathrm{routing\ mismatch}} .
-\label{eq:cert-four-term}
-\end{equation}
-\end{theorem}
-
-\begin{proof}
-Taking logarithms in~\eqref{eq:cert-effort} yields
-$\log T_{m,q}(s,Z)=C+\log\kappa(m)-\log p_m(s)-\log q_Z(s)$.
-Averaging over $S\mid Z$ turns the final term into the cross-entropy
-$-\E_{S\mid Z}\log q_Z(S)=\Hent(\pi_Z)+\KL(\pi_Z\|q_Z)$.
-Subtracting the prior-matched baseline cancels constants and uses
-$\Hent(\pi)-\E_Z\Hent(\pi_Z)=\MI_\pi(S;Z)$.
-\end{proof}
-
-This decomposition is explanatory.
-It is not the deployment rule used by the router.
-The operational rule remains the conditional Bayes action
-\[
-\argmin_{a\in\cA}\E[\ell(a,X)\mid W,Z_b],
-\]
-for a predeclared verifier-indexed deployment loss $\ell$.
-The certified-effort specialization explains, after choosing such a loss and estimating the relevant quantities on pilots, why a diagnostic signal can improve cost-aware deployment decisions: it separates cheaper attempts, higher state-conditional competence, information gained from $Z$, and mismatch in how the router uses that information.
-Per-attempt price and latency enter through $\kappa$.
-State-conditional certified success enters through $p_m(s)$.
-The diagnostic signal helps, in this surrogate, by reducing posterior entropy before action choice.
-The learned router loses the remaining opportunity through mismatch or, in the instance-level analysis, through the action regret in~\eqref{eq:routed-objective}.
-
-\begin{proposition}[Single-mode retry crossover]
-\label{prop:single-mode-crossover}
-On a single-mode task, let a large worker have one-shot success probability $p_l$ and cost $\kappa_l$.
-Let a cheaper worker have success probability $p_s<p_l$ and cost $\kappa_s<\kappa_l$.
-The number of cheap-worker retries required to match the large worker's success probability is
-\begin{equation}
-d_\times=\frac{\log(1-p_l)}{\log(1-p_s)} .
-\end{equation}
-The cheap worker is cost-favorable at this crossover whenever $d_\times\kappa_s<\kappa_l$.
-\end{proposition}
-
-This proposition is not the main experimental protocol---we route whole workers rather than only choosing retry depth---but it explains why cost-to-success, not final loss alone, is the natural objective.
-A weaker worker can be a rational deployment choice if verifier-backed interaction and lower per-step cost compensate for lower one-shot competence.
-
-\section{Reusable pilots and design selection}
+\section{Reusable Evaluation Records}
 \label{sec:selection}
 
-The previous section defines the deployment objective for a fixed diagnostic interaction and a fixed router.
-A practitioner, however, must choose among many designs.
-We therefore define a deployment design to be a pair
-\[
-d=(b,r_b), \qquad b\in\cB,
-\]
-with objective $\J(d):=\J_b(r_b)$.
-Given a finite candidate menu $\cD$, the selected design from $N$ pilot instances is denoted $\hat d_N$ and its selection regret is
+The experiments avoid black-box racing every router-information condition from scratch.
+Instead, the pilot logs reusable diagnostic records and counterfactual worker trajectories.
+Given a candidate design $d=(b,r_b)$ with objective $\J(d):=\J_b(r_b)$, the selected design from $N$ pilot instances is denoted $\hat d_N$ and its selection regret is
 \begin{equation}
 \Reg_{\mathrm{sel}}(N)
 :=
 \E\big[\J(\hat d_N)-\min_{d\in\cD}\J(d)\big].
 \label{eq:selection-regret}
 \end{equation}
+This is a supporting diagnostic for evaluation efficiency, not the main claim.
 
-The experimental proposal of the paper is not to black-box race every element of $\cD$ from scratch.
-Instead, the pilot logs reusable measurement records and counterfactual deployment losses.
-When a finite solver-state abstraction is useful, those pilots can be compressed into solver-state losses and signal posteriors; when it is not, the same records still support direct instance-level router evaluation.
-
-\begin{algorithm}[Reusable pilot protocol for minimal-interaction routing]
+\begin{algorithm}[Reusable pilot protocol for diagnostic model choice]
 \label{alg:pilot}
 \normalfont\small
 \begin{tabular}{@{}r p{0.86\linewidth}@{}}
-\textit{Input:} & worker-policy menu $\cM$, diagnostic ladder $\cB$, candidate router family, verifier-indexed deployment loss $\ell_V$, pilot split, holdout split.\\[0.25em]
-1 & Choose a finite candidate design menu $\cD$ consisting of fixed-model baselines, static-context policies, and verifier-probe routers.\\
-2 & For each pilot instance and each admissible interaction $b$, execute the standardized diagnostic measurement against the same verifier $V$, log $Z_b$, and record diagnostic cost $c_b$. Scratch artifacts are discarded after measurement.\\
-3 & Execute the complete worker menu on the pilot split from the original instance state and estimate either instance-level losses directly or, under Assumption~\ref{ass:finite-mode}, the reusable solver-state loss matrix $\ell(a,s)$ and posterior surrogates for $\Prb[S\mid W,Z_b]$.\\
-4 & Query the same router under each information state, including $W$ only and $W+Z_b$, and score the selected worker by the predeclared deployment loss.\\
-5 & Evaluate holdout instances by reporting allocation shifts, paired selected-worker deployment-loss changes, diagnostic cost, and supporting oracle or selection-regret diagnostics when useful.
+\textit{Input:} & worker menu $\cM$, diagnostic ladder $\cB$, router family, verifier-indexed deployment loss $\ell_V$, pilot split, holdout split.\\[0.25em]
+1 & For each pilot instance and admissible measurement $b$, execute the standardized diagnostic measurement against verifier $V$, log $Z_b$, and record cost $c_b$.\\
+2 & Execute the complete worker menu from the original instance state and log no-stop deployment trajectories and losses.\\
+3 & Query the same router under each information state, including $W$ only and $W+Z_b$, and score the selected worker by the predeclared deployment loss.\\
+4 & Evaluate holdout instances by reporting allocation shifts, paired selected-worker deployment-loss changes, diagnostic cost, and supporting oracle or selection-regret diagnostics when useful.
 \end{tabular}
 \end{algorithm}
 
-The key point is amortization.
-If many router prompts or diagnostic states share the same worker menu, the expensive quantities are the worker trajectories and diagnostic records, not the number of router comparisons built on top of them.
-The main empirical section therefore scores router decisions under a fixed deployment loss, while oracle and selection-regret analyses are treated as supporting diagnostics.
+The expensive objects are the worker trajectories and diagnostic measurements, not the number of router prompts evaluated on top of them.
+This amortization lets the empirical section compare router information states under a fixed deployment loss while keeping oracle and selection-regret analyses as supporting diagnostics.
 
 \section{Experimental campaign}
 \label{sec:experiments}
@@ -818,7 +598,7 @@ Companion markers show choice-shift rate and diagnostic cost.
 The fourth experiment turns the diagnostic ladder into a cost-value curve.
 Using the same paired scoring rule as Experiment~III, we compute $\Delta_{\mathrm{router}}(b)$ for every fixed information state in the ladder.
 The reported quantities are the choice-shift rate, the gross selected-worker deployment-loss reduction, diagnostic cost, and net $\Delta_{\mathrm{router}}(b)$.
-The minimum useful diagnostic interaction is the cheapest admissible $b$ with positive net paired gain, or, in the target-fraction version of Definition~\ref{def:minimal-useful}, the cheapest $b$ that recovers a predeclared fraction of the best observed router-facing gain.
+The minimum useful diagnostic interaction is the cheapest admissible $b$ with positive net paired gain, or the router-facing analogue of Definition~\ref{def:minimal-useful}: the cheapest $b$ that recovers a predeclared fraction of the best observed paired gain.
 
 \begin{figure}[t]
 \placeholder{0.96\linewidth}{
@@ -831,12 +611,12 @@ Mark the first positive-gain diagnostic state and the economically best state.
 \label{fig:minimal-interaction}
 \end{figure}
 
-\subsection{Supporting analysis: reusable pilots and oracle diagnostics}
+\subsection{Supporting analysis: reusable records and oracle diagnostics}
 \label{subsec:exp5}
 
 Because the full worker matrix gives counterfactual outcomes for every worker on every pilot instance, we also report oracle-style diagnostics in the appendix.
-These include the best fixed worker, the best worker conditioned on $W$, the diagnostic oracle values from Section~\ref{sec:accounting}, and the learned router's regret relative to those accounting baselines.
-We additionally use Algorithm~\ref{alg:pilot} to compare reusable-pilot selection against black-box design racing under the same evaluation budget.
+These include the best fixed worker, the best worker conditioned on $W$, the diagnostic Bayes values from Section~\ref{sec:accounting}, and the learned router's gap relative to those accounting baselines.
+We additionally use Algorithm~\ref{alg:pilot} to compare reusable-record design selection against black-box design racing under the same evaluation budget.
 These analyses quantify headroom and evaluation efficiency, but they are not required for the main claim, which is the paired router comparison in Experiments~II--IV.
 
 \begin{figure}[t]
@@ -844,9 +624,9 @@ These analyses quantify headroom and evaluation efficiency, but they are not req
 Planned figure: selection-regret comparison.
 X-axis: total evaluation budget.
 Y-axis: selection regret.
-Compare black-box racing against reusable-pilot selection, with separate curves for different candidate-menu sizes.
+Compare black-box racing against reusable-record selection, with separate curves for different candidate-menu sizes.
 }
-\caption{Supporting oracle and reusable-pilot analyses estimate headroom and design-selection efficiency.}
+\caption{Supporting oracle and reusable-record analyses estimate headroom and design-selection efficiency.}
 \label{fig:selection-regret}
 \end{figure}
 
