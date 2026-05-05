@@ -1,19 +1,19 @@
 # Prompt Catalog
 
-The only active C(a) model-generation prompt is:
+The active AutoResearch model-generation prompt is:
 
-- `single_step_program.txt`
+- `autoresearch_program.txt`
 
-It is the only model-generation prompt used by batched real-model experiment
-configs. It asks for mode probabilities, mode ranking, and all six branch edits
-in one JSON response.
+It is the only prompt used by active AutoResearch real-model configs. It adapts
+the original AutoResearch autonomous-experiment instructions to the verifier
+orchestrator used in this repository: the model proposes structured edits, while
+the framework runs the verifier, promotes/discards candidates, and records
+results.
 
-Legacy per-mode edit, direct-edit, repair, diff, replacement, and shared-block
-prompt files have been removed from the active repository. Model
-comparisons should differ only in the backend/model transport and model weights,
-not in prompt shape or prompt count.
+The legacy `single_step_program.txt` prompt remains only for archived
+stateful-query experiments and should not be used for new AutoResearch runs.
 
-Every new batched run writes the exact rendered prompt to:
+Every new real-model run writes the exact rendered prompt to:
 
 - `runs/.../steps/step_XXXX/prompt_snapshot.txt`
 - `runs/.../steps/step_XXXX/prompt_snapshot.json`

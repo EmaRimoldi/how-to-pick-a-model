@@ -13,17 +13,17 @@ This directory intentionally keeps only active or reproducible experiment config
 
 ## Current Real-Model Experiments
 
-- `hard_haiku_prompt_controlled_10step.yaml`: legacy single-profile Haiku C(a) run using the single active prompt, `single_step_program.txt`.
-- `hard_qwen_prompt_controlled_10step.yaml`: legacy single-profile Qwen Coder C(a) run using the same single active prompt.
-- `hard_single_prompt_model_matrix.yaml`: legacy single-profile one-step model matrix over GPT/Codex, Qwen Coder, Haiku, Sonnet, and Opus aliases using the same single active prompt.
+- `autoresearch_cifar10_model_routing.yaml`: main AutoResearch model-routing run using the canonical prompt, `autoresearch_program.txt`.
+- `autoresearch_cifar10_workload_pilot.yaml`: workload pilot using the same canonical prompt.
+- `autoresearch_cifar10_workload_holdout.yaml`: holdout workload evaluation using the same canonical prompt.
 
 Historical Haiku batch and Qwen direct-edit configs were removed from the active
 catalog because they are not prompt-identical experiment entrypoints. Their
 validated outputs remain in `runs/` and the retained analysis artifacts.
 
-All active experiment configs that call the orchestrator use
-`candidate_generation: batched`; non-batched generation is now rejected by the
-orchestrator.
+Active AutoResearch real-model configs use one prompt shape. Some runs use
+`candidate_generation: single` and some smoke/local configs use `batched`; both
+are driven by `autoresearch_program.txt`.
 
 ## Diagnostics
 

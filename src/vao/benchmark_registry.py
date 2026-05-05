@@ -46,7 +46,7 @@ def _autoresearch_cifar10_spec() -> BenchmarkSpec:
 
     return BenchmarkSpec(
         benchmark_id="autoresearch_cifar10",
-        prompt_template="autoresearch_single_step_program.txt",
+        prompt_template="autoresearch_program.txt",
         profile_summary=autoresearch_profile_summary,
         task_mode_from_instance_overrides=autoresearch_task_mode_from_instance_overrides,
         validate_source=autoresearch_validate_source,

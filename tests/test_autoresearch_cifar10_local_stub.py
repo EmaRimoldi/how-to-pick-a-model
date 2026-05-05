@@ -39,7 +39,7 @@ def test_autoresearch_local_stub_emits_batch_candidates(tmp_path: Path) -> None:
         residual_steps=2,
         residual_wall_seconds=None,
         visibility_regime="top1_only",
-        metadata={"prompt_template": "autoresearch_single_step_program.txt"},
+        metadata={"prompt_template": "autoresearch_program.txt"},
     )
 
     distribution, proposals = adapter.propose_step_batch(state, branch_dirs)
@@ -82,7 +82,7 @@ def test_autoresearch_local_stub_emits_single_candidate(tmp_path: Path) -> None:
         residual_steps=20,
         residual_wall_seconds=None,
         visibility_regime="top1_only",
-        metadata={"prompt_template": "autoresearch_single_trajectory_program.txt"},
+        metadata={"prompt_template": "autoresearch_program.txt"},
     )
 
     distribution, proposal = adapter.propose_step_single(state, branch_dirs)
