@@ -54,8 +54,8 @@
   \end{center}
 }
 
-\title{How to Pick the Model:\
-Deployment-Aware Model Selection for Externally Checked Agents}
+\title{How to Pick the Model:\\
+A Framework for Budget-Aware Orchestration}
 
 \author{Anonymous Authors}
 
@@ -64,15 +64,14 @@ Deployment-Aware Model Selection for Externally Checked Agents}
 \maketitle
 
 \begin{abstract}
-Agents whose outputs can be externally checked are often compared by final success, validation accuracy, or eventual task completion.
-For deployment, this is insufficient: a system must choose a model or harness action that reaches an acceptable checked outcome under finite wall-clock, token, API, and evaluation budgets.
-We formulate agentic model selection as a finite-action decision problem under a predeclared deployment loss combining checked progress, failure, persistence, latency, token/API cost, evaluation cost, router overhead, and optional measurement cost.
-A fixed router observes an admissible pre-deployment information state and selects a worker or harness action; its value is measured by paired deployment loss on the same task instances, not by standalone routing accuracy.
-Within this framework, pre-deployment records are optional measurements.
-They are useful only when they change routing in a way that lowers net deployment loss after their own cost and router-context overhead are charged.
-We instantiate the framework on an AutoResearch-inspired CIFAR-10 executable-artifact benchmark, where a prompt-only router selects among Haiku, Sonnet, and Opus workers before costly edit--verify deployment runs.
-Like AutoResearch, agents edit a single training program and receive external validation feedback; unlike the original nanochat setting, the checker reports CIFAR-10 validation loss and accuracy.
-The resulting protocol tests rank changes between checker scores and deployment losses, router allocation shifts under richer information states, net paired deployment gains, and matched negative controls for measurement specificity.
+Agent systems on verified tasks invite a deceptively simple question: which backbone model should be run? 
+The strongest model is not always the best deployment choice, because verified progress must be bought under finite wall-clock, token, API, and evaluation budgets. 
+We formulate this problem as deployment-aware model selection. 
+A fixed router observes a pre-deployment information state and chooses a worker or harness action; the decision is scored by a checker-indexed deployment loss rather than by routing accuracy or final checker score alone. 
+The key estimand is paired: on the same task instances, with the same router and action menu, does richer information change the selected action and reduce net deployment loss after its own measurement and context costs are charged? 
+We instantiate the framework on an Karpathy's AutoResearch-inspired CIFAR-10 edit--verify benchmark, where a prompt-only router chooses among heterogeneous workers before costly deployment runs. 
+The protocol reports when checker-score rankings disagree with deployment-loss rankings, when pre-deployment information changes routing, and whether those changes pay for themselves. 
+The resulting protocol evaluates not which agent is best in isolation, but when information is worth buying before deploying one.
 \end{abstract}
 
 \section{Introduction}
