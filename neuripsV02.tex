@@ -20,18 +20,6 @@
 \newtheorem{corollary}{Corollary}
 \newtheorem{remark}{Remark}
 
-\newcounter{algorithm}
-\newenvironment{algorithm}[1][]{%
-  \refstepcounter{algorithm}%
-  \par\medskip
-  \noindent\textbf{Algorithm~\thealgorithm}%
-  \if\relax\detokenize{#1}\relax\else\ \normalfont(#1).\fi%
-  \par\vspace{0.45em}%
-  \normalfont\small
-}{%
-  \par\medskip
-}
-
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator{\KL}{KL}
@@ -43,20 +31,16 @@
 
 \newcommand{\cA}{\mathcal{A}}
 \newcommand{\cB}{\mathcal{B}}
-\newcommand{\cD}{\mathcal{D}}
 \newcommand{\cM}{\mathcal{M}}
-\newcommand{\cQ}{\mathcal{Q}}
 \newcommand{\cS}{\mathcal{S}}
 \newcommand{\cT}{\mathcal{T}}
 \newcommand{\cW}{\mathcal{W}}
 \newcommand{\cX}{\mathcal{X}}
 \newcommand{\cY}{\mathcal{Y}}
-\newcommand{\cZ}{\mathcal{Z}}
 \newcommand{\E}{\mathbb{E}}
 \newcommand{\Prb}{\mathbb{P}}
 \newcommand{\eps}{\varepsilon}
 \newcommand{\J}{\mathcal{J}}
-\newcommand{\Reg}{\mathcal{R}}
 \newcommand{\reg}{\mathrm{reg}}
 \newcommand{\VOI}{\mathrm{VOI}}
 \newcommand{\one}{\mathbf{1}}
@@ -91,7 +75,7 @@ We then define the minimum useful diagnostic interaction as the cheapest admissi
 The experimental program instantiates the formalism on AutoResearch-style CIFAR-10 optimization with prompt-only Opus routing over a Haiku/Sonnet/Opus worker menu.
 AutoResearch is used as a controlled member of a broader class of verifier-backed tasks: agents edit an executable artifact, receive external validation feedback, and are evaluated by verified improvement, persistence, and resource cost under a fixed budget.
 The main diagnostic sequence includes no interaction, read-only task views, and one or two cheap verifier-only baseline probes before routing.
-The paper contributes a deployment-facing theory of minimal verifier-backed measurement and a benchmark protocol for testing whether diagnostic information changes LLM router allocations and lowers selected-worker deployment loss.
+The paper contributes a deployment-facing theory of minimal verifier-backed measurement, a router--worker log-effort decomposition, and a benchmark protocol for testing whether diagnostic information changes LLM router allocations and lowers selected-worker deployment loss.
 \end{abstract}
 
 \section{Introduction}
@@ -137,7 +121,7 @@ The paper makes four contributions.
 \begin{enumerate}[leftmargin=1.35em,itemsep=0.2em]
   \item \textbf{Deployment-loss formulation.} We formulate finite-action model/harness selection under verifier-backed deployment losses, including first-hit, occupancy, and cost-aware variants.
   \item \textbf{Router--verifier diagnostic interface.} We define the verifier-mediated interaction that lets a router obtain a bounded, measurable signal about the current task before selecting the deployment action.
-  \item \textbf{Router-facing diagnostic value.} We define the paired gain $\Delta_R(b)$ of a diagnostic interaction for a fixed router, separating allocation shift from actual improvement in selected-worker deployment loss.
+  \item \textbf{Router-facing diagnostic value.} We define the paired gain $\Delta_R(b)$ of a diagnostic interaction for a fixed router, separating allocation shift from actual improvement in selected-worker deployment loss; in a packed log-effort regime, this gain decomposes into selected-worker cost, selected-worker verified success, router information, and router mismatch.
   \item \textbf{Experimental program.} We specify an AutoResearch campaign that tests metric choice, diagnostic allocation shift, paired selected-worker deployment loss, and minimum useful interaction budget under repeated selected-worker runs.
 \end{enumerate}
 
@@ -275,6 +259,11 @@ A fixed router $R$ induces a routing policy
 \hat a_R^b(X)=R(W_b(X);U_R)\in\cA,
 \]
 where $U_R$ denotes any router randomness and is included in expectations.
+The routed deployment system under information state $W_b$ is the pair
+\[
+\mathcal{H}_R^b := (R,\hat a_R^b),
+\]
+i.e. the router together with the worker or harness action that it sends into the full deployment run.
 The selected-action deployment objective is
 \begin{equation}
 \J_R(b)
@@ -343,6 +332,129 @@ When counterfactual outcomes for all actions are also logged on the same instanc
 This is useful for error analysis, but it is not the main experimental estimand.
 The main estimand is the relative paired value in~\eqref{eq:router-gain}.
 
+\subsection{Packed log-effort decomposition}
+
+The paired gain above is the empirical quantity used in the experiments.
+For interpretation, it is useful to keep the packed-mode log-effort identity from the earlier theory spine, but with the objects aligned to the present framework.
+The deployed system is the router together with the worker or harness action it selects.
+Worker cost and verified success are properties of the selected action; information and mismatch are properties of the router and the information state.
+
+\begin{assumption}[Packed router--worker log-effort model]
+\label{ass:router-packed}
+There is a finite solver-relevant state $S\in\cS$.
+For each information state $W_j$, let
+\[
+\pi_j(s)=\Prb[S=s\mid W_j]
+\]
+be the posterior over solver-relevant states.
+Router $R$ induces both a deployed action $\hat a_R^j(W_j)\in\cA$ and an implicit allocation
+$q_R^j(\cdot\mid W_j)\in\Delta(\cS)$, with
+$\pi_j(s)>0\Rightarrow q_R^j(s\mid W_j)>0$.
+Each action $a$ has per-unit cost $\kappa(a)>0$ and within-state verified success probability $p(a,s)>0$ under the declared verifier, horizon, and success threshold.
+The packed log-effort proxy is
+\[
+\overline T_R^j(s,W_j)
+=
+\frac{\kappa(\hat a_R^j(W_j))}
+{p(\hat a_R^j(W_j),s)\,q_R^j(s\mid W_j)}.
+\]
+\end{assumption}
+
+\begin{theorem}[Router--worker log-effort decomposition]
+\label{thm:router-worker-decomp}
+Under Assumption~\ref{ass:router-packed}, define the log-effort gain of information state $W_j$ over $W_0$ as
+\[
+\Delta_R^{\log}(j)
+:=
+\E\!\left[
+\log \overline T_R^0(S,W_0)-\log \overline T_R^j(S,W_j)
+\right].
+\]
+Then
+\begin{equation}
+\Delta_R^{\log}(j)
+=
+\underbrace{C_R(j)}_{\text{selected-worker cost}}
++
+\underbrace{\Phi_R(j)}_{\text{selected-worker success}}
++
+\underbrace{G(j)}_{\text{router information}}
+-
+\underbrace{E_R(j)}_{\text{router mismatch change}},
+\label{eq:router-worker-decomp}
+\end{equation}
+where
+\begin{align}
+C_R(j)
+&:=
+\E\!\left[
+\log\frac{\kappa(\hat a_R^0(W_0))}{\kappa(\hat a_R^j(W_j))}
+\right],
+\\
+\Phi_R(j)
+&:=
+\E\!\left[
+\log\frac{p(\hat a_R^j(W_j),S)}{p(\hat a_R^0(W_0),S)}
+\right],
+\\
+G(j)
+&:=
+\E\!\left[\Hent(\pi_0)-\Hent(\pi_j)\right],
+\\
+E_R(j)
+&:=
+\E\!\left[
+\KL(\pi_j\|q_R^j)-\KL(\pi_0\|q_R^0)
+\right].
+\end{align}
+When $W_j$ refines $W_0$, $G(j)=\MI(S;W_j\mid W_0)$.
+\end{theorem}
+
+\begin{proof}
+For fixed $W_j$, the packed proxy gives
+\[
+\E_{S\sim\pi_j}[\log \overline T_R^j(S,W_j)]
+=
+\E_{S\sim\pi_j}[
+\log\kappa(\hat a_R^j(W_j))
+-\log p(\hat a_R^j(W_j),S)]
++\Hent(\pi_j)+\KL(\pi_j\|q_R^j),
+\]
+using the cross-entropy identity
+$\sum_s \pi_j(s)\log(1/q_R^j(s))=\Hent(\pi_j)+\KL(\pi_j\|q_R^j)$.
+Writing the same expression for $W_0$, subtracting the $W_j$ expression, and averaging over the joint draw of $(S,W_0,W_j)$ gives~\eqref{eq:router-worker-decomp}.
+\end{proof}
+
+The theorem should not be read as a comparison between two raw model labels.
+It decomposes the gain of one router-information condition over another.
+The first two terms change because the router selects a worker or harness with different cost and verified success behavior.
+The last two terms change because the information state reveals solver-relevant structure and because the router may or may not use that structure well.
+
+\subsection{Cheap-retry crossover}
+
+The same accounting also explains the simplest case in which a cheaper worker can rationally beat a stronger one.
+This result is not the main router experiment, but it fixes the cost--success tradeoff used by the deployment loss.
+
+\begin{theorem}[Single-state retry crossover]
+\label{thm:crossover}
+Consider a single solver-relevant state with a binary verifier.
+Let a strong action $a_h$ have one-attempt success probability $p_h$ and per-attempt cost $\kappa_h$.
+Let a cheap action $a_l$ have success probability $p_l<p_h$ and cost $\kappa_l<\kappa_h$.
+The number of cheap attempts needed to match the strong action's one-attempt success probability is
+\[
+D_{\mathrm{cross}}
+=
+\frac{\log(1-p_h)}{\log(1-p_l)}.
+\]
+The cheap action is cost-favorable at this crossover whenever
+\[
+D_{\mathrm{cross}}\kappa_l < \kappa_h.
+\]
+\end{theorem}
+
+In the multi-state setting, the same comparison is state-dependent.
+A router is useful when different actions win this cost--success tradeoff on different solver-relevant states and the information state helps identify which tradeoff applies.
+
 \subsection{Minimum useful diagnostic interaction}
 
 \begin{definition}[Minimum useful diagnostic interaction for a fixed router]
@@ -369,35 +481,6 @@ The first quantity asks for the cheapest probe that recovers most of the best ob
 The second asks which probe gives the largest net paired gain.
 If $G_R^\star\le 0$, the diagnostic sequence contains no useful interaction for this router under the chosen deployment loss.
 They need not coincide: a richer diagnostic record can change routing more often and still be worse after diagnostic cost is charged.
-
-\section{Reusable Evaluation Records}
-\label{sec:selection}
-
-The experiments avoid black-box racing every router-information condition from scratch.
-Instead, the pilot logs reusable diagnostic records, router decisions, and repeated runs of the workers selected by those decisions.
-Given a candidate router-information design $d=(R,b)$ with objective $\J(d):=\J_R(b)$, the selected design from $N$ pilot instances is denoted $\hat d_N$ and its selection regret is
-\begin{equation}
-\Reg_{\mathrm{sel}}(N)
-:=
-\E\big[\J(\hat d_N)-\min_{d\in\cD}\J(d)\big].
-\label{eq:selection-regret}
-\end{equation}
-This is a supporting diagnostic for evaluation efficiency, not the main claim.
-
-\begin{algorithm}[Reusable pilot protocol for diagnostic model choice]
-\label{alg:pilot}
-\normalfont\small
-\begin{tabular}{@{}r p{0.86\linewidth}@{}}
-\textit{Input:} & worker menu $\cM$, diagnostic sequence $\cB$, router family, verifier-indexed deployment loss $\ell_V$, pilot split, holdout split.\\[0.25em]
-1 & For each pilot instance and admissible measurement $b$, execute the standardized diagnostic measurement against verifier $V$, log $W_b$, and record cost $c_b$.\\
-2 & Query the same router under each information state, including $W_0$ and richer $W_b$, and record the selected action.\\
-3 & Execute the selected action from the original instance state for $Q$ repeated deployment runs and score it by the predeclared deployment loss.\\
-4 & Evaluate holdout instances by reporting allocation shifts, paired selected-worker deployment-loss changes, diagnostic cost, and supporting selection-regret diagnostics when useful.
-\end{tabular}
-\end{algorithm}
-
-The expensive objects are the worker trajectories and diagnostic measurements, not the number of router prompts evaluated on top of them.
-This amortization lets the empirical section compare router information states under a fixed deployment loss while keeping selection-regret analyses as supporting diagnostics.
 
 \section{Experimental campaign}
 \label{sec:experiments}
@@ -591,32 +674,13 @@ Mark the first positive-gain diagnostic state and the economically best state.
 \label{fig:minimal-interaction}
 \end{figure}
 
-\subsection{Supporting analysis: reusable records and hindsight diagnostics}
-\label{subsec:exp5}
-
-When the evaluation budget permits extra counterfactual worker runs, we also report hindsight diagnostics in the appendix.
-These include the best fixed worker, the best worker conditioned on $W$, and the gap between the router-selected worker and the best logged worker under the same deployment loss.
-We additionally use Algorithm~\ref{alg:pilot} to compare reusable-record design selection against black-box design racing under the same evaluation budget.
-These analyses quantify evaluation efficiency and failure modes, but they are not required for the main claim, which is the paired router comparison in Experiments~II--IV.
-
-\begin{figure}[t]
-\placeholder{0.96\linewidth}{
-Planned figure: selection-regret and hindsight comparison.
-X-axis: total evaluation budget.
-Y-axis: selection regret.
-Compare black-box racing against reusable-record selection, with separate curves for different candidate-menu sizes.
-}
-\caption{Supporting reusable-record analyses estimate design-selection efficiency and, when available, hindsight routing gaps.}
-\label{fig:selection-regret}
-\end{figure}
-
 \section{Discussion}
 \label{sec:discussion}
 
 The three-family mainline is intentionally small.
 It trades breadth for paired, controlled routing comparisons: for each family--seed instance, the same router is queried under $W_0$ and richer $W_j$, and the selected workers are scored under the same deployment loss.
 The main interpretive risk is that a router could exploit static family identity rather than live verifier feedback.
-We address this by making the $W$-only condition the baseline, then reporting allocation shifts and paired deployment-loss changes under the same task instances and worker trajectories.
+We address this by making $W_0$ the baseline, then reporting allocation shifts and paired deployment-loss changes under the same task instances and worker trajectories.
 If a cheap diagnostic measurement changes allocation and lowers net deployment loss, then the signal is operationally useful.
 If it changes allocation but not loss, the router is sensitive to the added information but uses it poorly; if it does not change allocation, the admitted diagnostic family is not decision-relevant for that router.
 
