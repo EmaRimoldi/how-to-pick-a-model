@@ -736,6 +736,16 @@ The fact that this speed advantage does not automatically imply lower deployment
 \label{fig:twomodel-threshold}
 \end{figure}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/autoresearch/twomodel_crossover_applicability.png}
+\caption{Applicability check for the retry-crossover theorem on the frozen two-worker confirmation split.
+The theorem requires a lower-cost action with lower one-attempt success probability and a stronger but more expensive action.
+The two mature workers do not cleanly enter this regime: \texttt{gpt\_5\_4} has both higher success and lower first-passage cost on \texttt{mlp\_flat}, while both workers succeed on every frozen \texttt{resnet\_micro} run and \texttt{gpt\_5\_3\_codex} is cheaper there.
+The crossover result is therefore a design rule for adding a genuinely lower-cost worker, not a promoted empirical claim of the present two-worker menu.}
+\label{fig:twomodel-crossover}
+\end{figure}
+
 \paragraph{Experiment 2: router-response audit.}
 For each task mode and each signal $Z_j$, query the same orchestrator under the same worker menu.
 The router returns a structured decision record containing selected worker, confidence, short task diagnosis, evidence used, expected failure mode, and expected cost risk.
@@ -793,9 +803,21 @@ A signal can induce a router response and still increase allocation regret if it
 Conversely, low regret indicates that the selected action moved closer to the empirical mode-conditional frontier rather than merely increasing decision variability.
 
 \paragraph{Current routing-regret status.}
-The snapshot has enough signal records to show that probes expose the predeclared mode structure, but the allocation-regret claim remains conditional on the frozen worker frontier and the final prompt-only router decisions under the Spark-free worker menu.
-For this draft we therefore report the router plots as diagnostics rather than as promoted deployment evidence.
-The intended reading is conservative: mode information is available; whether it is useful depends on whether the router maps that information to the cost-adjusted worker frontier in Figure~\ref{fig:twomodel-frontier}.
+The final two-worker router audit contains 480 prompt-only decisions: 30 instances, four signal levels, and four control conditions.
+On the real signal records, the router remains strongly biased toward \texttt{gpt\_5\_4}: it selects \texttt{gpt\_5\_4} on 27/30 budget-only records, 29/30 static-workload records, 30/30 probe records, and 28/30 full-scout records.
+Mean log-effort regret does not decrease with richer information: it is 0.166 for \(Z_0\), 0.194 for \(Z_1\), 0.158 for \(Z_2\), and 0.197 for \(Z_3\).
+Thus the router-response audit separates information availability from useful allocation.
+The probe signals expose the predeclared task modes, but the prompt-only router mostly maps them to the same worker and does not reliably move toward the cost-adjusted frontier in Figure~\ref{fig:twomodel-confirmation}.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/autoresearch/twomodel_router_selection_regret.png}
+\caption{Final two-worker router-response audit.
+Left: selected-worker distribution under real signal records.
+Right: allocation regret against the frozen log-effort frontier.
+Richer records change the router only weakly and do not monotonically reduce regret, even though the signal audit shows that probes contain mode information.}
+\label{fig:twomodel-router-regret}
+\end{figure}
 
 \paragraph{Experiment 4: paired selected-worker deployment gain.}
 Report all $j\in\{1,2,3\}$ with multiplicity control as the primary analysis.
@@ -819,11 +841,78 @@ Proposition~\ref{prop:paired-unbiased} gives the estimand and estimator for the 
 Positive routing information and lower allocation regret are not sufficient by themselves; the routed-policy claim is supported only when the paired gain $\widehat{\Delta}_R(j)$ is positive on held-out trajectories.
 
 \paragraph{Current validation status.}
-The non-Spark confirmation block is nearly complete in the current campaign snapshot:
-\texttt{gpt\_5\_3\_codex} has 90/90 materialized holdout summaries and \texttt{gpt\_5\_4} has 78/90, with the remaining missing summaries concentrated in \texttt{resnet\_micro}.
-The \texttt{gpt\_5\_4\_mini} validation block is left blank until its pilot cell reaches the same support and the final lower-cost comparison is frozen.
-We therefore do not yet claim a positive paired router gain.
-The current result is a stronger calibration claim: the mature-worker pilot already produces rank disagreements that the holdout split is designed to validate or falsify.
+For the two mature workers, we freeze the confirmation analysis at 25 runs per task-mode--worker cell:
+\[
+3\ \text{task modes}\times 2\ \text{workers}\times 25=150
+\]
+holdout trajectories.
+The frozen comparison uses \texttt{gpt\_5\_3\_codex} and \texttt{gpt\_5\_4}; Spark is excluded because the endpoint hit rate limits, and \texttt{gpt\_5\_4\_mini} is reserved for a later lower-cost extension once its cells reach comparable support.
+The paired-gain analysis therefore evaluates whether router-visible information improves deployment loss within this two-worker action menu.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/autoresearch/twomodel_frozen_confirmation_frontier.png}
+\caption{Frozen two-worker confirmation frontier with 25 holdout trajectories per task-mode--worker cell.
+The left panel reports deployment loss with bootstrap intervals; the right panel reports the certified log-effort surrogate.
+The confirmation split preserves the qualitative rank disagreement from the pilot: \texttt{gpt\_5\_4} has lower first-hit time, but deployment loss favors \texttt{gpt\_5\_3\_codex} on \texttt{cnn\_compact} and \texttt{resnet\_micro}, while \texttt{mlp\_flat} is nearly tied.}
+\label{fig:twomodel-confirmation}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Frozen confirmation summary for the two mature workers.
+Each cell uses the first 25 materialized holdout seeds under the frozen deterministic seed order.
+Deployment-loss intervals are bootstrap intervals over the 25 trajectories.}
+\label{tab:twomodel-confirmation}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}llrrrrr@{}}
+\toprule
+Mode & Worker & Success & Mean $\tau$ & Dep. loss & 95\% CI & Log-effort \\
+\midrule
+\texttt{cnn\_compact} & \texttt{gpt\_5\_3\_codex} & 24/25 & 5.83 & 1.011 & [0.843, 1.231] & 5.577 \\
+\texttt{cnn\_compact} & \texttt{gpt\_5\_4} & 25/25 & 2.96 & 1.438 & [1.170, 1.770] & 5.498 \\
+\texttt{mlp\_flat} & \texttt{gpt\_5\_3\_codex} & 23/25 & 7.13 & 1.065 & [0.867, 1.283] & 6.028 \\
+\texttt{mlp\_flat} & \texttt{gpt\_5\_4} & 25/25 & 2.44 & 1.053 & [0.901, 1.238] & 4.955 \\
+\texttt{resnet\_micro} & \texttt{gpt\_5\_3\_codex} & 25/25 & 2.36 & 0.997 & [0.894, 1.105] & 4.981 \\
+\texttt{resnet\_micro} & \texttt{gpt\_5\_4} & 25/25 & 1.84 & 2.193 & [1.593, 2.996] & 5.456 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\paragraph{Paired-gain result.}
+The paired deployment validation is negative for the current prompt-only router.
+Against \(Z_0\), richer real signals produce small shift rates and negative net gain after measurement cost:
+\(Z_1\) shifts 13.3\% of decisions with net gain \(-0.043\) and bootstrap interval \([-0.100,-0.000]\);
+\(Z_2\) shifts 10.0\% with net gain \(-0.050\), interval \([-0.107,-0.007]\);
+and \(Z_3\) shifts 10.0\% with net gain \(-0.057\), interval \([-0.100,-0.028]\).
+The gross gains are already non-positive, and measurement cost makes the probe/scout conditions worse.
+This is the critical falsification result for the deployment-facing claim: informative signals are not sufficient; the deployed router must use them in a way that improves the selected action's checked cost--success tradeoff.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.62\linewidth]{figures/autoresearch/twomodel_router_paired_gain.png}
+\caption{Paired deployment gain for real signal records relative to \(Z_0\), using the frozen two-worker holdout frontier.
+All richer signal levels have negative net gain after measurement cost, so the current prompt-only router fails the deployment claim gate.}
+\label{fig:twomodel-router-gain}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Paired router validation on the final two-worker menu.
+Net gain is \(\widehat{\ell}_{\mathrm{dep}}(\rho_0)-\widehat{\ell}_{\mathrm{dep}}(\rho_j)-\widehat{\ell}_{\mathrm{meas}}(j)\); positive is better.}
+\label{tab:twomodel-router-gain}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Signal & Pairs & Shift & Gross gain & Meas. loss & Net gain \\
+\midrule
+\(Z_1\) & 30 & 0.133 & -0.043 & 0.000 & -0.043 \\
+\(Z_2\) & 30 & 0.100 & -0.043 & 0.007 & -0.050 \\
+\(Z_3\) & 30 & 0.100 & -0.029 & 0.028 & -0.057 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \paragraph{Experiment 5: negative controls.}
 Repeat Experiments 2--4 with schema-preserving controls:
@@ -834,25 +923,31 @@ They preserve the format, approximate context burden, and measurement/context co
 A credible deployment claim requires the real signal to reduce allocation regret and improve paired deployment gain more than these controls after measurement cost is charged.
 
 \paragraph{Current negative-control status.}
-Negative controls are not yet promoted to the main result.
-They should remain a claim gate: if shuffled or wrong-mode probe records produce the same router shifts as true probe records, then the router is responding to format or context length rather than task-relevant signal content.
-In that case the paper should retain the worker-frontier result but weaken the routing-information claim.
+The negative controls are also complete on the final two-worker menu.
+They do not show a clean separation between real task-relevant signals and corrupted signals.
+For example, wrong-mode \(Z_2\) has a small positive mean net gain (0.017) with an interval crossing zero, while several shuffled or synthetic controls are negative with intervals similar to the real signals.
+The right interpretation is not that the controls discover a useful policy; it is that the prompt-only router has weak, noisy response to the records and the real signal does not dominate the controls.
+Accordingly, Experiment~5 blocks promotion of a strong routing-information claim.
+The paper should promote the worker-frontier and decomposition diagnostics, and report the router experiment as a falsification-style result for this particular router.
 
-\paragraph{Experiment 6: robustness to task-instance variation.}
-The main protocol deliberately fixes \texttt{train.py} initialization and data split to isolate agentic trajectory variance.
-As a robustness appendix, repeat the worker-frontier and paired-routing comparisons with a small grid of additional initialization/data seeds, e.g. three seeds and five trajectories per task-mode--worker cell.
-These runs are not pooled with the main estimates.
-They stress-test Assumption~\ref{ass:packed}, which requires the finite mode abstraction to have stable worker success probabilities and costs within each task mode.
-The additional seeds define nearby executable task instances, not new pooled evidence for the main estimates.
-If competence frontiers, allocation regret, or paired gains change qualitatively under these modest perturbations, the experiment has found a useful warning: the packed-mode abstraction is too coarse for the claimed theory-facing explanation.
-Accordingly, the main protocol is a fixed-prototype repeated-run study unless these additional instances are promoted into the main sampling design.
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/autoresearch/twomodel_negative_controls.png}
+\caption{Negative-control paired gains for shuffled probes, wrong-mode probes, and synthetic noise records.
+The real records do not cleanly outperform the controls, which indicates that the current prompt-only router is not reliably exploiting task-relevant measurement content.}
+\label{fig:twomodel-negative-controls}
+\end{figure}
 
-\paragraph{Current robustness status.}
-The main tables in this draft are fixed-mode, fixed-template estimates.
-Additional seed and split perturbations are reserved for the appendix and should be interpreted as stress tests of Assumption~\ref{ass:packed}, not as extra pooled evidence for the main worker ranking.
+\paragraph{Interpretation through the two theorems.}
+The four-term identity is empirically useful as a diagnostic accounting language.
+The worker-side terms show nontrivial cost and competence structure by mode; the signal audit shows that \(Z\) can expose task-mode information; the router audit then shows that information value is lost through allocation behavior.
+In the theorem's terms, positive routing information is not enough: allocation mismatch and worker-side costs can erase it, and the final deployment loss confirms that erasure.
+The retry-crossover theorem gives a complementary design rule, but the two mature workers do not instantiate its assumptions.
+There is no stable ``cheap but weaker'' action in the final two-worker menu: \texttt{gpt\_5\_4} is both stronger and cheaper to first passage on \texttt{mlp\_flat}, while \texttt{gpt\_5\_3\_codex} is cheaper on \texttt{resnet\_micro} with no success-rate penalty.
+This is why \texttt{gpt\_5\_4\_mini} is scientifically useful as a later extension: it would test the retry-crossover regime directly rather than merely adding another strong-worker comparison.
 
 \paragraph{Claim promotion gates.}
-We promote a routing recommendation only when the following are reported: mode-conditional competence with uncertainty, worker-side cost sensitivity, router shift, allocation regret, paired deployment gain with measurement cost charged, negative controls, frontier stability, calibration of $\tilde p$, and surrogate-versus-loss ranking agreement.
+We promote a routing recommendation only when the following are reported: mode-conditional competence with uncertainty, worker-side cost sensitivity, router shift, allocation regret, paired deployment gain with measurement cost charged, negative controls, calibration of $\tilde p$, and surrogate-versus-loss ranking agreement.
 If routing diagnostics improve but paired deployment gain does not, the conclusion is diagnostic rather than prescriptive.
 If paired deployment gain improves but surrogate-versus-loss agreement is poor, the protocol found a useful router but did not validate the packed-mode explanation.
 
@@ -886,28 +981,32 @@ The theory-facing claim is an accounting identity under Assumption~\ref{ass:pack
 It is exact, but only for the certified log-effort surrogate.
 The deployment-facing claim is empirical: the accounting should predict or explain useful action selection under a richer deployment loss.
 These two claims should not be collapsed.
-The current experiments already support the weaker but central diagnostic claim: raw worker rankings, first-passage rankings, log-effort rankings, and deployment-loss rankings can disagree on the same checked task family.
+The current experiments support the central diagnostic claim: raw worker rankings, first-passage rankings, log-effort rankings, and deployment-loss rankings can disagree on the same checked task family.
 That disagreement is precisely the regime in which a budget-aware orchestration framework is needed.
+They do not support the stronger claim that the current prompt-only router improves deployment loss.
+Instead, the router validation is a useful negative result: task-relevant information is measurable, but a router that mostly defaults to the stronger model can still lose after measurement cost and worker-side costs are charged.
 
 The packed-mode assumption is the main modeling limitation.
 Real agent trajectories are stateful, attempts are not independent, and task modes may be fuzzy.
-The paper therefore reports first-passage curves, occupancy, hazard diagnostics, frontier stability, cost sensitivity, and surrogate-versus-loss ranking agreement instead of assuming that the finite-mode surrogate is correct.
+The paper therefore reports first-passage curves, occupancy, hazard diagnostics, cost sensitivity, and surrogate-versus-loss ranking agreement instead of assuming that the finite-mode surrogate is correct.
 If these diagnostics are unstable, the decomposition remains a useful diagnostic language but not a reliable selection rule.
 
 The operational task-mode schema is also a limitation.
 If $S$ is too coarse, mode-conditional competence is washed out and the router appears useless.
 If $S$ is too fine, sample sizes per cell collapse and the signal--mode estimates become unstable.
-A full evaluation therefore includes an ablation over task-mode schemas, including task-family-only, probe-bin-only, and crossed schemas.
+The present evaluation fixes the executable prototypes and mode schema to isolate agentic trajectory variance; task-instance and schema perturbations are left as robustness extensions rather than promoted experiments.
 
 Finally, measurement value is router-specific.
 A baseline probe can contain information about the best action and still fail to improve deployment loss if the actual router does not use it well or if the measurement is too expensive.
 For this reason, the paired gain $\Delta_R(j)$ is the main deployment estimand, while mutual-information diagnostics, allocation-summary mismatch, and allocation regret help explain why that gain appears or fails to appear.
+This distinction is the main empirical lesson of the final two-worker study.
+The \(Z_2\) and \(Z_3\) records contain task-mode information, but the induced policies have negative paired gain.
+The decomposition therefore functions as a claim discipline: it prevents us from promoting information availability as deployment value.
 
 \paragraph{Future directions.}
-The immediate experimental next step is to finish the \texttt{gpt\_5\_4\_mini} pilot and holdout cells, replacing the unavailable Spark worker with a stable lower-cost action.
-That will make the worker menu span a genuine cost--capability frontier rather than only two strong models.
-The second next step is to freeze the Spark-free router prompt and rerun the $Z_0$--$Z_3$ routing audit against the final three-worker menu.
-Only then should the paired deployment-gain claim be promoted.
+The immediate experimental extension is to finish the \texttt{gpt\_5\_4\_mini} pilot and holdout cells, replacing the unavailable Spark worker with a stable lower-cost action.
+That would make the worker menu span a broader cost--capability frontier than the two-worker mature comparison reported here.
+It would also test the retry-crossover theorem in its intended regime, where a lower-cost worker may compensate for lower one-attempt success through repeated checked attempts.
 Beyond this benchmark, the same protocol should be tested on repository repair, theorem checking, and multi-file research-code editing, where the mode schema is less artificial and measurement costs are more heterogeneous.
 
 \paragraph{Conclusion.}
@@ -915,7 +1014,8 @@ Model choice inside an agent harness is not a scalar leaderboard problem.
 It is a measurable decomposition problem validated by paired deployment outcomes.
 The right worker depends on task state, checked competence, routing information, routing mismatch, first-passage time, retry depth, and worker-side cost.
 Our CIFAR-10 edit--verify campaign provides the first empirical slice of that argument: the same two mature workers can trade off speed, final improvement, log-effort, and deployment loss in different ways.
-The final claim will be strongest if the lower-cost \texttt{gpt\_5\_4\_mini} cells and the paired router validation preserve this rank-disagreement pattern while showing that pre-deployment information can move allocation toward the cost-adjusted frontier.
+The two-worker routing analysis asks the deployment-facing question directly and answers it negatively for the current prompt-only router: pre-deployment information does not move allocation reliably enough to improve paired deployment loss after its measurement cost is charged.
+That negative result is not a failure of the framework; it is the framework doing its job, distinguishing worker-frontier structure from a validated routing recommendation.
 
 \bibliographystyle{unsrt}
 \bibliography{references}
