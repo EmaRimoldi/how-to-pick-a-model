@@ -82,6 +82,7 @@ Performance Accounting for Agentic Systems}
 
 \begin{abstract}
 Agent builders rarely need to know whether a sufficiently well-prompted model can eventually solve a verifiable task; they need to know which model and harness will reach a verified solution fastest, cheapest, and robustly under repeated deployment.
+
 We formalize this question as design selection for verifiable agentic systems.
 Under a packed latent-mode model of tasks, the expected log certified effort of a model-routing design decomposes into four separately measurable terms: per-step cost, within-mode competence, routing information, and routing mismatch.
 This accounting identity turns model choice from an opaque benchmark race into a diagnostic procedure: it predicts when a cheap model with retries beats an expensive model, when routing is worth engineering, and how many pilot evaluations are needed before committing to a design.
@@ -152,7 +153,7 @@ $d=(\mathcal M,h,q,\kappa)$, where $\mathcal M$ is either a single base model or
 The design menu $\cD=\{d_1,\ldots,d_k\}$ is the finite set of candidates considered by the builder.
 \end{definition}
 
-The harness can include a single model call, a repeated-sampling loop, a tool-using code agent, or a fixed AutoResearch run script.
+The harness can include, e.g., a single model call, a repeated-sampling loop, a tool-using code agent, or a fixed SKILL.md script.
 In the main experimental setting, the router observes live signals before the run begins, chooses one model or subagent from the menu, and that chosen model performs the whole run; we do not use step-level model routing in the main paper.
 When the menu has one element, the notation collapses to a single base model.
 To keep the theorem algebra light, we write $M$ for the deployed model chosen by the routed design whenever the dependence on $(\mathcal M,q)$ is clear from context.

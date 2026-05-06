@@ -1,5 +1,6 @@
 \documentclass{article}
 
+\PassOptionsToPackage{numbers,sort&compress}{natbib}
 \usepackage{neurips_2026}
 
 \usepackage[utf8]{inputenc}
@@ -91,51 +92,132 @@ The resulting protocol evaluates not which agent is best in isolation, but when 
 \section{Introduction}
 \label{sec:intro}
 
-A team building an agent system faces a practical question: for a concrete externally checked task instance, a finite menu of deployable actions, and deployment budgets, which action should be launched?
-The common answer is benchmark racing.
-Run a lower-cost worker and a higher-capability worker on held-out instances; choose the one with the best average score.
-For externally checked agentic tasks, this can be the wrong unit of comparison.
-A model that eventually succeeds after a long expensive search may be dominated by a lower-cost action that reaches a sufficient checked outcome earlier, or by a router that sends different instances to different workers.
+Practitioners building agent systems face multiple practical challenges:
+what model (backbone) to use, how to route between models, when to spawn sub-agents, how to engineer context between them, and so on.
+All these possible choices often affect performance (quality of the solution), speed (time to solution), and the mere token cost.
+The question is how to pick between the different possible designs.
+The common way to answer this question is benchmark racing:
+take a benchmark as SWE-bench \citep{jimenez2024swebench} or MLE-bench \citep{xxx} and pick the agent system with best average end-to-end performance.
+An increasingly long line of work, based on this "recipe", is proposing better and better agentic system architecture to achieve SOTA at these tasks.
+This article investigates:
+\begin{center}
+    \textit{whether there exist other ways 
+    to answer the question of what the most suited agent system is.}
+\end{center}
+Indeed, \textbf{(i)} a large number of tasks for which such benchmark does not exist (as developing academic research \citep{beneventano_neurmaker}). And \textbf{(ii)} very often, the task presents instances of varied difficulty and the practitioner may want to understand whether on the single instance a cheap---fast---model is enough or better; more tools should be given to the systems; or a more convoluted orchestration is required to solve the instance.
+As a running example for the rest of the paper, the question whether the user should use on their own task Haiku \textit{vs} Sonnet \textit{vs} Opus in Claude Code, or Claude Code \textit{vs} Codex, is not fully addressed by benchmark racing.
 
-This paper studies model and harness choice through \emph{performance accounting}.
-The motivating regime includes code editing against unit tests, repository repair against continuous-integration checks, theorem search against a formal checker, and AutoResearch-style loops in which an agent edits a training program and receives external validation feedback~\citep{jimenez2024swebench,karpathy2026autoresearch}.
-These tasks are transductive in Vapnik's sense~\citep{vapnik1996structure}: the system is handed a concrete instance and must produce a concrete artifact.
-They are also externally checked: progress is determined by a verifier or scoring procedure outside the model.
-In this regime, the deployment object is not standalone accuracy.
-It is the resource needed to reach, evaluate, and maintain checked progress, matching the time-centric view of agents as task solvers in \citet{achille2025agents}.
+The central issue is that one benchmark score may conflates mechanisms that imply different engineering decisions. A system can win because its worker takes lower per-step time or token-count.
+Because the selected worker is more competent on a solver-relevant task mode.
+Analogously, imagine some sort of pre-deployment signal (problem definition, the context, or an initial test) reveals information about the instance which can be used to better orchestrate or to choose what backbone to pick. A system can win if it \textit{can} orchestrate or choose the model optimally exploiting that information or not---as humans implicitly do when they decide to use lower or higher reasoning or different models on their tasks.
 
-The central difficulty is that one benchmark score conflates mechanisms that imply different engineering decisions.
-A system can win because its worker has lower per-step cost.
-It can win because the selected worker is more competent on a solver-relevant task mode.
-It can win because a pre-deployment signal reveals which mode the instance belongs to.
-Finally, a router may either exploit that information or waste it through mismatched allocation.
-The theory in this paper isolates these four mechanisms in an exact log-effort identity.
-The experimental protocol then asks whether the same mechanisms survive contact with measurable deployment losses, checker costs, router costs, and repeated stochastic runs.
+More practically, in this article
+\textit{we study the deployment problem of choosing which model or harness to run on a verifiable task.}
+The objective is time to a required verified result: among actions that may eventually succeed, the useful one is the one expected to reach the verifier threshold fastest, after charging any pre-deployment measurement used to make the choice.
+Achille and Soatto \citep{achille2025agents}, indeed, recently showed that for verifiable tasks the time to solution, as in their \textit{Proper Time}  \citep[Definition ?]{achille2025agents} is the performance measure to compare them. 
+Building on this intuition we operationalize the difference in time-to-solution of two possible designs. We show it \textit{mathematically} decomposes in 4 components which isolates the mechanisms of choice mentioned above.
+The experimental protocol then shows these can be estimated and lead to improvements in speed on Karpathy's AutoResearch tasks.
 
-The draft is organized around four contributions.
-\begin{enumerate}[leftmargin=1.35em,itemsep=0.15em]
-  \item \textbf{Four-term performance accounting.}
-  Under a packed latent-mode abstraction, Theorem~\ref{thm:four-term} decomposes improvement in expected certified log-effort into cost, competence, routing information, and routing mismatch.
-  \item \textbf{Operational diagnostics.}
-  We show how the four theorem terms are estimated from checked trajectories: competence from first threshold crossing, cost from the same routed trajectory, information from the router-visible signal, and mismatch between the mode structure exposed by that signal and the worker allocation induced by the router.
-  \item \textbf{Paired router evaluation.}
-  For a fixed router and action menu, richer information is valuable only when it changes selected actions in a way that lowers paired deployment loss after measurement and context costs are charged.
-  \item \textbf{Executable-artifact benchmark protocol.}
-  We instantiate the framework on a CIFAR-10 AutoResearch-style edit--verify benchmark with finite diagnostic states, a prompt-only router, a finite worker menu, admissible pre-deployment measurements, negative controls, and residual diagnostics for the theorem.
+% Run a lower-cost worker and a higher-capability worker on held-out instances; choose the one with the best average score.
+% For externally checked agentic tasks, this can be the wrong unit of comparison.
+% A model that eventually succeeds after a long expensive search may be dominated by a lower-cost action that reaches a sufficient checked outcome earlier, or by a router that sends different instances to different workers.
+
+% This paper studies model and harness choice through \emph{performance accounting}.
+% The motivating regime includes code editing against unit tests, repository repair against continuous-integration checks, theorem search against a formal checker, and AutoResearch-style loops in which an agent edits a training program and receives external validation feedback~\citep{jimenez2024swebench,karpathy2026autoresearch}.
+% These tasks are transductive in Vapnik's sense~\citep{vapnik1996structure}: the system is handed a concrete instance and must produce a concrete artifact.
+% They are also externally checked: progress is determined by a verifier or scoring procedure outside the model.
+% In this regime, the deployment object is not standalone accuracy.
+% It is the resource needed to reach, evaluate, and maintain checked progress, matching the time-centric view of agents as task solvers in \citet{achille2025agents}.
+
+% The central difficulty is that one benchmark score conflates mechanisms that imply different engineering decisions.
+% A system can win because its worker has lower per-step cost.
+% It can win because the selected worker is more competent on a solver-relevant task mode.
+% It can win because a pre-deployment signal reveals which mode the instance belongs to.
+% Finally, a router may either exploit that information or waste it through mismatched allocation.
+% The theory in this paper isolates these four mechanisms in an exact log-effort identity.
+% The experimental protocol then asks whether the same mechanisms survive contact with measurable deployment losses, checker costs, router costs, and repeated stochastic runs.
+\paragraph{Research questions and contributions.}
+We organize the paper around three questions, each paired with the contribution that answers it.
+
+\begin{enumerate}[leftmargin=1.4em,itemsep=0.15em]
+  \item \textbf{Can the time-to-solution gap between agent designs be decomposed into meaningful terms?}
+  Theorem~\ref{thm:four-term} gives an exact four-term identity under a packed latent-mode assumption: cost, within-mode competence, routing information, and routing mismatch additively explain the improvement in expected certified log-effort.
+  \item \textbf{Can the decomposition replace end-to-end racing for model selection?}
+  Algorithm~\ref{alg:decomp-selection} and Proposition~\ref{prop:eval-cost} turn the identity into a structured pilot protocol whose evaluation cost depends on the number of models and task modes.
+  \item \textbf{When does a cheaper model with retries beat a stronger model?}
+  Theorem~\ref{thm:crossover} gives the single-mode crossover rule, and the multi-mode accounting shows why the answer changes across task modes.
 \end{enumerate}
 
-An externally checked task specifies the problem class and checker.
-Task modes are the finite types of that task: subpopulations that differ in solver-relevant structure, cost profile, or likely intervention.
-Task instances are concrete realizations within those modes, such as a particular starting artifact, data/regime specification, seed, budget, and checker configuration.
-In the operational benchmark, modes can be implemented as task-family, dataset-regime, architecture, seed-bin, baseline-probe bin, or crossed diagnostic states.
-Workers such as \texttt{gpt\_5\_3\_codex\_spark}, \texttt{gpt\_5\_3\_codex}, \texttt{gpt\_5\_4}, or fixed agent policies are deployable actions that attempt those instances.
-This separation makes the four-factor identity testable: $p(a,s)$ measures how an action performs on a type of task instance, rather than reusing the action label as the state.
+\pier{Here a plot/figure.}
+
+% The draft is organized around four contributions.
+% \begin{enumerate}[leftmargin=1.35em,itemsep=0.15em]
+%   \item \textbf{Four-term performance accounting.}
+%   Under a packed latent-mode abstraction, Theorem~\ref{thm:four-term} decomposes improvement in expected certified log-effort into cost, competence, routing information, and routing mismatch.
+%   \item \textbf{Operational diagnostics.}
+%   We show how the four theorem terms are estimated from checked trajectories: competence from first threshold crossing, cost from the same routed trajectory, information from the router-visible signal, and mismatch between the mode structure exposed by that signal and the worker allocation induced by the router.
+%   \item \textbf{Paired router evaluation.}
+%   For a fixed router and action menu, richer information is valuable only when it changes selected actions in a way that lowers paired deployment loss after measurement and context costs are charged.
+%   \item \textbf{Executable-artifact benchmark protocol.}
+%   We instantiate the framework on a CIFAR-10 AutoResearch-style edit--verify benchmark with finite diagnostic states, a prompt-only router, a finite worker menu, admissible pre-deployment measurements, negative controls, and residual diagnostics for the theorem.
+% \end{enumerate}
+
+% An externally checked task specifies the problem class and checker.
+% Task modes are the finite types of that task: subpopulations that differ in solver-relevant structure, cost profile, or likely intervention.
+% Task instances are concrete realizations within those modes, such as a particular starting artifact, data/regime specification, seed, budget, and checker configuration.
+% In the operational benchmark, modes can be implemented as task-family, dataset-regime, architecture, seed-bin, baseline-probe bin, or crossed diagnostic states.
+% Workers such as \texttt{gpt\_5\_3\_codex\_spark}, \texttt{gpt\_5\_3\_codex}, \texttt{gpt\_5\_4}, or fixed agent policies are deployable actions that attempt those instances.
+% This separation makes the four-factor identity testable: $p(a,s)$ measures how an action performs on a type of task instance, rather than reusing the action label as the state.
+
+\section{Mathematical Framework for Agent Designs on Verifiable Tasks}
+\label{sec:setup}
+
+We study the problem faced by a deployment system before launching an agentic run:
+given a task instance and a finite menu of possible workers or harnesses, which one should be run?
+The answer is not necessarily the model with the best final score.
+A deployment action must produce checked progress under finite time, token, API, and evaluation budgets.
+
+\begin{definition}[Checked deployment task]
+\label{def:checked-task}
+A checked deployment task is a tuple
+\[
+\mathcal T=(\mathcal X,\mathcal Y,V,\mu),
+\]
+where $\mathcal X$ is an instance space, $\mathcal Y$ is an artifact or solution space,
+$V$ is an external checker or scoring procedure on instance--artifact pairs, and
+$\mu$ is the deployment distribution over instances.
+For a realized instance $x\in\mathcal X$, an agent produces artifacts $y\in\mathcal Y$ that are scored by $V(x,y)$.
+\end{definition}
+
+The checker may be binary, as in unit tests or proof checking, or scalar, as in validation loss or reward.
+The key point is externality: progress is determined by the checker, not by the model's self-report.
+
+\begin{definition}[Actions and routers]
+\label{def:actions-router}
+Let $\mathcal A$ be a finite menu of deployable actions.
+An action may be a single model, a fixed model harness, a retry policy, or a tool-using agent protocol.
+For action $a\in\mathcal A$ and instance $x$, let
+\[
+\ell_{\mathrm{dep}}(a,x;\xi)
+\]
+be the predeclared deployment loss of running action $a$ on $x$, where $\xi$ denotes deployment randomness such as sampling, system latency, or data-order randomness.
+The loss may include checked progress, failure, persistence above threshold, wall-clock time, token/API cost, dollar cost, and checker/evaluation cost.
+
+A router $R$ observes a permitted pre-deployment information state $W(x)$ and selects an action
+\[
+\hat a_R(x)=R(W(x))\in\mathcal A.
+\]
+The selected action then performs the deployment run from the original task state.
+\end{definition}
+
+This separates routing from deployment.
+The router chooses what to run; the selected action performs the actual checked run.
+Unless explicitly declared otherwise, pre-deployment records are shown only to the router and are not passed to the selected worker.
 
 \section{Verifiable agent design}
 \label{sec:setup}
 
-We first state the theory-facing objects.
-The notation follows the original performance-accounting setup, but we use the deployment language needed for the operational protocol.
+In this section we set the notations and introduce the mathematical framework to be able to deal with agent systems on verifiable tasks.
 
 \begin{definition}[Budgeted externally checked task]
 \label{def:task}
@@ -147,9 +229,9 @@ Here $\cX$ is an instance space, $\cY$ is an artifact or solution space, $V:\cX\
 An agent succeeds on $x\sim\mu$ if it produces $y$ with $V(x,y)=1$ before exhausting $B_{\mathrm{dep}}$.
 \end{definition}
 
-The verifier may be binary, as in tests or proof checking, or scalar, as in validation loss or reward after thresholding.
+The verifier may be binary, as in tests or proof checking, or scalar, as in validation loss or reward. For simplicity we consider it binary here but in Appendix \ref{app:xxx} we generalize the results to continuous rewards.
 The key requirement is that success is evaluated outside the model.
-The task is transductive because performance is measured on concrete pairs $(x,y)$ rather than on a learned population predictor.
+\pier{Really?} The task is transductive because performance is measured on concrete pairs $(x,y)$ rather than on a learned population predictor.
 
 \begin{definition}[Workers, actions, and routed designs]
 \label{def:design}
@@ -706,7 +788,7 @@ If the final campaign passes the claim-promotion gates, the paper's message is t
 It is a measurable decomposition problem validated by paired deployment outcomes.
 The right worker depends on task state, checked competence, routing information, routing mismatch, first-passage time, retry depth, and worker-side cost.
 
-\bibliographystyle{plainnat}
+\bibliographystyle{unsrt}
 \bibliography{references}
 
 \appendix
