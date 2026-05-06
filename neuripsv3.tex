@@ -402,27 +402,31 @@ Appendix~\ref{subsec:bridge} gives the full operationalization of these diagnost
 
 \begin{theorem}[Single-mode retry crossover]
 \label{thm:crossover}
-On a single-mode task with a binary thresholded checker, fix the success threshold $\delta$ and horizon $H$.
-In this theorem, one attempt means one fresh deployment trajectory from the original task state, not one edit step inside a trajectory.
-Let a strong action have one-attempt first-passage success probability $p_h=\Prb[\tau_\delta(h,X)\le H]$ and expected worker-side first-passage cost $\kappa_h=\E[C_h(\tau_\delta(h,X)\wedge H)]$.
-Let a lower-cost action have success probability $p_l<p_h$ and cost $\kappa_l<\kappa_h$, with $0<p_l<p_h<1$.
-The number of lower-cost attempts needed to match the strong action's one-attempt first-passage success probability is
+Fix a single mode, success threshold $\delta$, and horizon $H$.
+Let actions $h$ and $\ell$ have one-attempt first-passage success probabilities
+$p_h=\Prb[\tau_\delta(h,X)\le H]$ and $p_\ell=\Prb[\tau_\delta(\ell,X)\le H]$,
+with expected first-passage costs $\kappa_h$ and $\kappa_\ell$.
+Assume $0<p_\ell<p_h<1$ and $\kappa_\ell<\kappa_h$.
+The lower-cost retry depth that matches the strong action's one-attempt success probability is
 \[
-\Dcross=\frac{\log(1-p_h)}{\log(1-p_l)}.
+\Dcross=\frac{\log(1-p_h)}{\log(1-p_\ell)}.
 \]
 The corresponding integer fixed-depth retry block is cost-favorable whenever
 \[
-\left\lceil \Dcross \right\rceil \kappa_l < \kappa_h .
+\left\lceil \Dcross \right\rceil \kappa_\ell < \kappa_h .
 \]
-If deployment stops after the first lower-cost successful trajectory, the expected cost of the lower-cost action at depth $D$ is instead
-\[
-\kappa_l\sum_{d=1}^{D}(1-p_l)^{d-1}
-=
-\kappa_l\frac{1-(1-p_l)^D}{p_l},
-\]
-and the comparison must include both expected worker-side cost and remaining first-passage failure probability under~\eqref{eq:deployment-loss}.
-Within each attempt, the lower-cost worker may take more edit steps to reach first success; that slower first-passage time is already reflected in $\kappa_l$.
 \end{theorem}
+
+\begin{remark}[Stopping after first retry success]
+If retries of the lower-cost action stop after the first success, the expected cost at depth $D$ is
+\[
+\kappa_\ell\sum_{d=1}^{D}(1-p_\ell)^{d-1}
+=
+\kappa_\ell\frac{1-(1-p_\ell)^D}{p_\ell},
+\]
+and the decision should also account for the residual failure probability under the deployment loss.
+Any difference in within-attempt time-to-success is already absorbed into $\kappa_h$ and $\kappa_\ell$.
+\end{remark}
 
 The multi-mode case is where the four-term identity matters.
 A lower-cost worker can be rational on one diagnostic state and irrational on another.
@@ -563,25 +567,18 @@ The protocol uses three task modes:
 \cS=\{\texttt{mlp\_flat},\texttt{cnn\_compact},\texttt{resnet\_micro}\}.
 \]
 
-\paragraph{Frozen executable configuration.}
+\paragraph{Execution protocol.}
 Appendix~\ref{app:experiment-details} reports the full fixed configuration read from the current \texttt{train.py} templates and the CIFAR-10 checker in Table~\ref{tab:train-config}.
-The main protocol freezes the data split, starting artifact, training initialization seed, checker budget, success threshold, and horizon inside each task mode.
-This isolates the stochasticity of the agentic edit trajectory.
-
-\paragraph{Workers and repeated runs.}
 The paper-facing worker menu is
 \[
 \cM=\{\texttt{gpt\_5\_3\_codex\_spark},\ \texttt{gpt\_5\_3\_codex},\ \texttt{gpt\_5\_4}\}.
 \]
 Each worker uses the same prompt.
-For every task-mode--worker cell we run
+For every task-mode--worker cell, we run
 \[
 Q=10
 \]
-independent trajectories from the same fixed \texttt{train.py}.
-The repeated-run index changes only the agentic trajectory: LLM sampling, transport nondeterminism, edit proposals, and any tool-level nondeterminism.
-
-\paragraph{Progressive router signals.}
+independent trajectories from the same fixed \texttt{train.py}; the repeated-run index changes only the agentic trajectory.
 The router is a fixed prompt-only orchestrator that chooses one worker from $\cM$ before deployment.
 We evaluate a sequential signal protocol
 \[
@@ -592,8 +589,6 @@ Z_0,\ Z_1,\ Z_2,\ Z_3 .
 \(Z_2\) adds a low-cost checker probe of the unmodified artifact at a predeclared probe budget.
 \(Z_3\) adds the full unmodified-artifact baseline under the deployment checker budget.
 Probe records contain validation loss, validation accuracy, training seconds, total seconds, optimizer steps, parameter count, parse/runtime status, and the probe budget.
-
-\paragraph{Success, cost, and deployment loss.}
 Let $L_{\mathrm{base}}(s)$ be the validation loss of the unmodified starting artifact for task mode $s$ under the fixed deployment checker.
 At edit step $t$, a worker produces a candidate \texttt{train.py}, the checker returns loss $L_t$, and checked progress is
 \[
@@ -625,19 +620,15 @@ a^\star(s)\in
 \]
 This experiment is the worker-side calibration for Theorem~\ref{thm:four-term}.
 It estimates the quantities that enter the cost and competence terms, namely $\log\kappa(M_Z)$ and $-\log p_{M_Z}(S)$, before any router is allowed to choose.
-The task-mode schema is useful only if different task modes induce different mode-conditional frontiers; otherwise the competence term collapses to a global worker ranking.
 The same estimates also instantiate Theorem~\ref{thm:crossover}, because the first-passage success probabilities and first-passage costs determine when repeated deployments of a lower-cost worker can match the one-attempt success probability of a stronger worker.
 
 \paragraph{Experiment 2: router-facing signal audit.}
 For each task mode and each signal $Z_j$, query the same orchestrator under the same worker menu.
 The router returns a structured decision record containing selected worker, confidence, short task diagnosis, evidence used, expected failure mode, and expected cost risk.
-No external classifier is introduced.
 The diagnostic question is whether progressive signals change the router's own decision record:
 selected-worker distribution, confidence, diagnosis consistency with the declared task mode, and cited evidence.
 This experiment targets the routing-information term $\MI_\pi(S;Z)$ in Theorem~\ref{thm:four-term}.
-In the benchmark we do not give the orchestrator an oracle mode label or train a separate diagnostic classifier; instead, $Z_j$ is the progressively richer pre-deployment record actually available to the router.
 Thus the audit asks whether additional signals expose solver-relevant structure of the task instance strongly enough to alter the router-facing state and selected-worker distribution.
-By itself this is not a deployment claim: it only tests whether the information term has an operational channel through which it could affect routing.
 
 \paragraph{Experiment 3: routing shift and allocation regret.}
 Using the decisions from Experiment 2, compute shift rates
