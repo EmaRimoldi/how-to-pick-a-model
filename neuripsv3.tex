@@ -13,6 +13,7 @@
 \usepackage{enumitem}
 \usepackage{microtype}
 \usepackage{xcolor}
+\usepackage[normalem]{ulem}
 
 \newtheorem{assumption}{Assumption}
 \newtheorem{definition}{Definition}
@@ -60,15 +61,8 @@
 \newcommand{\J}{\mathcal{J}}
 \newcommand{\reg}{\mathrm{reg}}
 \newcommand{\one}{\mathbf{1}}
-\newcommand{\placeholder}[2]{%
-  \begin{center}
-  \fbox{\begin{minipage}{#1}
-  \vspace{0.4em}
-  \textbf{Figure placeholder.} #2
-  \vspace{0.4em}
-  \end{minipage}}
-  \end{center}
-}
+\newcommand{\revdel}[1]{\textcolor{red!65!black}{\sout{#1}}}
+\newcommand{\revadd}[1]{\textcolor{green!45!black}{#1}}
 
 \title{How to Pick the Model:\\
 A Framework for Budget-Aware Orchestration}
@@ -80,13 +74,13 @@ A Framework for Budget-Aware Orchestration}
 \maketitle
 
 \begin{abstract}
-Agent systems on verified tasks invite a deceptively simple question: which backbone model should be run? 
-The strongest model is not always the best deployment choice, because verified progress must be bought under finite wall-clock, token, API, and evaluation budgets. 
-We formulate this problem as deployment-aware model selection. 
-A fixed router observes a pre-deployment information state and chooses a worker or harness action; the decision is scored by a checker-indexed deployment loss rather than by routing accuracy or final checker score alone. 
-The key estimand is paired: on the same task instances, with the same router and action menu, does richer information change the selected action and reduce net deployment loss after its own measurement and context costs are charged? 
-We instantiate the framework on an Karpathy's AutoResearch-inspired CIFAR-10 edit--verify benchmark, where a prompt-only router chooses among heterogeneous workers before costly deployment runs. 
-The protocol reports when checker-score rankings disagree with deployment-loss rankings, when pre-deployment information changes routing, and whether those changes pay for themselves. 
+Agent systems on verified tasks invite a deceptively simple question: which backbone model should be run?
+The strongest model is not always the best deployment choice, because verified progress must be bought under finite wall-clock, token, API, and evaluation budgets.
+We formulate this problem as deployment-aware model selection.
+A fixed router observes a pre-deployment information state and chooses a worker or harness action; the decision is scored by a checker-indexed deployment loss rather than by routing accuracy or final checker score alone.
+The key estimand is paired: on the same task instances, with the same router and action menu, does richer information change the selected action and reduce net deployment loss after its own measurement and context costs are charged?
+We instantiate the framework on a Karpathy AutoResearch-inspired CIFAR-10 edit--verify benchmark, where a prompt-only router chooses among heterogeneous workers before costly deployment runs.
+The protocol reports when checker-score rankings disagree with deployment-loss rankings, when pre-deployment information changes routing, and whether those changes pay for themselves.
 The resulting protocol evaluates not which agent is best in isolation, but when information is worth buying before deploying one.
 \end{abstract}
 
@@ -94,30 +88,34 @@ The resulting protocol evaluates not which agent is best in isolation, but when 
 \label{sec:intro}
 
 Practitioners building agent systems face multiple practical challenges:
-what model (backbone) to use, how to route between models, when to spawn sub-agents, how to engineer context between them, and so on.
-All these possible choices often affect performance (quality of the solution), speed (time to solution), and the mere token cost.
-The question is how to pick between the different possible designs.
+\revdel{what model}\revadd{which model} (backbone) to use, how to route between models, when to spawn sub-agents, how to engineer context between them, and so on.
+All these possible choices often affect performance (quality of the solution), speed (time to solution), and \revdel{the mere token cost}\revadd{token/API cost}.
+The question is how to \revdel{pick between the different possible designs}\revadd{choose among the possible designs}.
 The common way to answer this question is benchmark racing:
-take a benchmark as SWE-bench \citep{jimenez2024swebench} or MLE-bench \citep{xxx} and pick the agent system with best average end-to-end performance.
-An increasingly long line of work, based on this "recipe", is proposing better and better agentic system architecture to achieve SOTA at these tasks.
-This article investigates:
+take a benchmark \revdel{as}\revadd{such as} SWE-bench \citep{jimenez2024swebench} or MLE-bench \revdel{[?]}\revadd{\citep{chan2024mlebench}} and pick the agent system with \revadd{the} best average end-to-end performance.
+An increasingly long line of work \revdel{, based on this ``recipe'',}\revadd{ based on this recipe} is proposing better and better \revdel{agentic system architecture}\revadd{agentic system architectures} to achieve \revdel{SOTA at}\revadd{state-of-the-art performance on} these tasks.
+\revdel{This article investigates:}\revadd{This article investigates}
 \begin{center}
-    \textit{whether there exist other ways 
-    to answer the question of what the most suited agent system is.}
+    \textit{\revdel{whether there exist other ways to answer the question of what the most suited agent system is.}
+    \revadd{whether there are other ways to answer the question of which agent system is most suitable.}}
 \end{center}
-Indeed, \textbf{(i)} a large number of tasks for which such benchmark does not exist (as developing academic research \citep{beneventano_neurmaker}). And \textbf{(ii)} very often, the task presents instances of varied difficulty and the practitioner may want to understand whether on the single instance a lower-cost, faster model is sufficient; more tools should be given to the systems; or a more involved orchestration is required to solve the instance.
-As a running example for the rest of the paper, the question whether the user should use on their own task Haiku \textit{vs} Sonnet \textit{vs} Opus in Claude Code, or Claude Code \textit{vs} Codex, is not fully addressed by benchmark racing.
+Indeed, \revdel{(i) a large number of tasks for which such benchmark does not exist (as developing academic research [?]). And (ii) very often, the task presents instances of varied difficulty}\revadd{there are many tasks for which such benchmarks do not exist, such as developing academic research \citep{PoggioAIMSc_2026}. Moreover, tasks often contain instances of varied difficulty} and the practitioner may want to understand whether, \revdel{on the single instance}\revadd{on a single instance}, a lower-cost, faster model is sufficient; \revdel{more tools should be given to the systems}\revadd{the system should be given more tools}; or a more involved orchestration is required.
+As a running example for the rest of the paper, \revdel{the question whether the user should use on their own task Haiku \textit{vs} Sonnet \textit{vs} Opus in Claude Code, or Claude Code \textit{vs} Codex,}\revadd{the question of whether a user should use Haiku, Sonnet, or Opus in Claude Code, or Claude Code rather than Codex, for their own task} is not fully addressed by benchmark racing.
 
-The central issue is that one benchmark score may conflates mechanisms that imply different engineering decisions. A system can win because its worker takes lower per-step time or token-count.
-Because the selected worker is more competent on a solver-relevant task mode.
-Analogously, imagine some sort of pre-deployment signal (problem definition, the context, or an initial test) reveals information about the instance which can be used to better orchestrate or to choose what backbone to pick. A system can win if it \textit{can} orchestrate or choose the model optimally exploiting that information or not---as humans implicitly do when they decide to use lower or higher reasoning or different models on their tasks.
+The central issue is that one benchmark score may \revdel{conflates}\revadd{conflate} mechanisms that imply different engineering decisions.
+A system can win because its worker \revdel{takes}\revadd{has} lower per-step time or \revdel{token-count. Because the selected worker is}\revadd{token cost, or because the selected worker is} more competent on a solver-relevant task mode.
+Analogously, imagine \revdel{some sort of pre-deployment signal}\revadd{a pre-deployment signal} (\revdel{problem definition, the context, or an initial test}\revadd{the problem definition, context, or an initial test}) reveals information about the instance \revdel{which}\revadd{that} can be used \revdel{to better orchestrate or to choose what backbone to pick}\revadd{to choose a better backbone or orchestration}.
+A system can win \revdel{if it can orchestrate or choose the model optimally exploiting that information or not}\revadd{by exploiting that information when choosing a model or orchestration, or it can lose by failing to exploit it}---as humans implicitly do when they decide to use lower or higher \revadd{reasoning effort} \revdel{reasoning} or different models on their tasks.
 
 More practically, in this article
 \textit{we study the deployment problem of choosing which model or harness to run on a verifiable task.}
-The objective is time to a required verified result: among actions that may eventually succeed, the useful one is the one expected to reach the verifier threshold fastest, after charging any pre-deployment measurement used to make the choice.
-Achille and Soatto \citep{achille2025agents}, indeed, recently showed that for verifiable tasks the time to solution, as in their \textit{Proper Time}  \citep[Definition ?]{achille2025agents} is the performance measure to compare them. 
-Building on this intuition we operationalize the difference in time-to-solution of two possible designs. We show it \textit{mathematically} decomposes in 4 components which isolates the mechanisms of choice mentioned above.
-The experimental protocol then shows these can be estimated and lead to improvements in speed on Karpathy's AutoResearch tasks.
+The objective is \revdel{time to a required verified result}\revadd{time to reach a required verified result}: among actions that may eventually succeed, the useful one is the one expected to reach the verifier threshold fastest, after charging any pre-deployment measurement used to make the choice.
+\revdel{Achille and Soatto, indeed, recently showed that for verifiable tasks the time to solution, as in their Proper Time, is the performance measure to compare them.}
+\revadd{Indeed, Achille and Soatto \citep{achille2025agents} recently argued that time to solution, as formalized by their Proper Time, is a performance measure for comparing agents on verifiable tasks.}
+\revdel{Building on this intuition we operationalize the difference in time-to-solution of two possible designs. We show it mathematically decomposes in 4 components which isolates the mechanisms of choice mentioned above.}
+\revadd{Building on this intuition, we operationalize a certified log-effort surrogate gap between two possible designs. We show that it mathematically decomposes into four components that isolate the mechanisms of choice mentioned above.}
+\revdel{The experimental protocol then shows these can be estimated and lead to improvements in speed on Karpathy's AutoResearch tasks.}
+\revadd{The experimental protocol estimates the operational quantities that are directly measurable and tests, by paired selected-worker deployment, whether richer pre-deployment information improves net deployment loss after measurement costs are charged.}
 
 % Run a lower-cost worker and a higher-capability worker on held-out instances; choose the one with the best average score.
 % For externally checked agentic tasks, this can be the wrong unit of comparison.
@@ -138,9 +136,9 @@ The experimental protocol then shows these can be estimated and lead to improvem
 We organize the paper around three questions, each paired with the contribution that answers it.
 
 \begin{enumerate}[leftmargin=1.4em,itemsep=0.15em]
-  \item \textbf{Can the time-to-solution gap between agent designs be decomposed into meaningful terms?}
-  Theorem~\ref{thm:four-term} gives an exact four-term identity under a packed latent-mode assumption: cost, within-mode competence, routing information, and allocation-summary mismatch additively explain the improvement in expected certified log-effort.
-  \item \textbf{Can the decomposition replace end-to-end racing for model selection?}
+  \item \textbf{Can the \revdel{time-to-solution}\revadd{certified log-effort surrogate} gap between agent designs be decomposed into meaningful terms?}
+  Theorem~\ref{thm:four-term} gives an exact four-term identity under a packed latent-mode assumption: cost, within-mode competence, routing information, and a predeclared mode-summary divergence additively explain the improvement in expected certified log-effort.
+  \item \textbf{Can the decomposition \revdel{replace}\revadd{structure or reduce} end-to-end racing for model selection?}
   Algorithm~\ref{alg:decomp-selection} and the pilot concentration bound in Appendix~\ref{app:proofs} turn the identity into a structured pilot protocol whose evaluation cost depends on the number of models and task modes.
   \item \textbf{When does a lower-cost model with retries beat a stronger model?}
   Theorem~\ref{thm:crossover} gives the single-mode crossover rule, and the multi-mode accounting shows why the answer changes across task modes.
@@ -148,26 +146,7 @@ We organize the paper around three questions, each paired with the contribution 
 
 The experiments below instantiate these claims with checked trajectories and deployment accounting.
 
-% The draft is organized around four contributions.
-% \begin{enumerate}[leftmargin=1.35em,itemsep=0.15em]
-%   \item \textbf{Four-term performance accounting.}
-%   Under a packed latent-mode abstraction, Theorem~\ref{thm:four-term} decomposes improvement in expected certified log-effort into cost, competence, routing information, and routing mismatch.
-%   \item \textbf{Operational diagnostics.}
-%   We show how the four theorem terms are estimated from checked trajectories: competence from first threshold crossing, cost from the same routed trajectory, information from the router-visible signal, and mismatch between the mode structure exposed by that signal and the worker allocation induced by the router.
-%   \item \textbf{Paired router evaluation.}
-%   For a fixed router and action menu, richer information is valuable only when it changes selected actions in a way that lowers paired deployment loss after measurement and context costs are charged.
-%   \item \textbf{Executable-artifact benchmark protocol.}
-%   We instantiate the framework on a CIFAR-10 AutoResearch-style edit--verify benchmark with finite diagnostic states, a prompt-only router, a finite worker menu, admissible pre-deployment measurements, negative controls, and residual diagnostics for the theorem.
-% \end{enumerate}
-
-% An externally checked task specifies the problem class and checker.
-% Task modes are the finite types of that task: subpopulations that differ in solver-relevant structure, cost profile, or likely intervention.
-% Task instances are concrete realizations within those modes, such as a particular starting artifact, data/regime specification, seed, budget, and checker configuration.
-% In the operational benchmark, modes can be implemented as task-family, dataset-regime, architecture, seed-bin, baseline-probe bin, or crossed diagnostic states.
-% Workers such as \texttt{gpt\_5\_3\_codex\_spark}, \texttt{gpt\_5\_3\_codex}, \texttt{gpt\_5\_4}, or fixed agent policies are deployable actions that attempt those instances.
-% This separation makes the four-factor identity testable: $p(a,s)$ measures how an action performs on a type of task instance, rather than reusing the action label as the state.
-
-\section{Mathematical Framework for Agent Designs on Verifiable Tasks}
+\section{Problem setup and deployment estimands}
 \label{sec:framework}
 
 We study the problem faced by a deployment system before launching an agentic run:
@@ -175,79 +154,51 @@ given a task instance and a finite menu of possible workers or harnesses, which 
 The answer is not necessarily the model with the best final score.
 A deployment action must produce checked progress under finite time, token, API, and evaluation budgets.
 
-\begin{definition}[Checked deployment task]
+\begin{definition}[Budgeted externally checked task]
 \label{def:checked-task}
-A checked deployment task is a tuple
+\label{def:task}
+A \revdel{checked deployment task}\revadd{budgeted externally checked task} is a tuple
 \[
-\mathcal T=(\mathcal X,\mathcal Y,V,\mu),
+\cT=(\cX,\cY,V,B_{\mathrm{dep}},\mu).
 \]
-where $\mathcal X$ is an instance space, $\mathcal Y$ is an artifact or solution space,
-$V$ is an external checker or scoring procedure on instance--artifact pairs, and
-$\mu$ is the deployment distribution over instances.
-For a realized instance $x\in\mathcal X$, an agent produces artifacts $y\in\mathcal Y$ that are scored by $V(x,y)$.
+Here $\cX$ is an instance space, $\cY$ is a \revdel{artifact or solution space}\revadd{solution space},
+$V:\cX\times\cY\to\mathcal R$ is an external checker or scoring procedure on instance--artifact pairs,
+\revadd{$B_{\mathrm{dep}}$ is the full deployment budget and acceptance object,}
+and $\mu$ is the deployment distribution over instances.
+\revadd{The object $B_{\mathrm{dep}}$ may include a horizon, verifier budget, token/time/cost caps, and a thresholding rule that induces a binary success event from the checker score.}
+For a realized instance $x\in\cX$, an agent produces artifacts $y\in\cY$ that are scored by $V(x,y)$.
+\revadd{An agent succeeds on $x\sim\mu$ if it produces an accepted $y$ before exhausting $B_{\mathrm{dep}}$.}
 \end{definition}
 
 The checker may be binary, as in unit tests or proof checking, or scalar, as in validation loss or reward.
 The key point is externality: progress is determined by the checker, not by the model's self-report.
 
-\begin{definition}[Actions and routers]
+\begin{definition}[Workers, actions, and routers]
 \label{def:actions-router}
+\label{def:design}
+\revadd{Let $\cM=\{M_1,\ldots,M_K\}$ be a finite menu of workers, where a worker is any deployable solver or fixed agent policy that can produce a candidate solution for verification.}
 Let $\mathcal A$ be a finite menu of deployable actions.
 An action may be a single model, a fixed model harness, a retry policy, or a tool-using agent protocol.
-For action $a\in\mathcal A$ and instance $x$, let
-\[
-\ell_{\mathrm{dep}}(a,x;\xi)
-\]
-be the predeclared deployment loss of running action $a$ on $x$, where $\xi$ denotes deployment randomness such as sampling, system latency, or data-order randomness.
-The loss may include checked progress, failure, persistence above threshold, wall-clock time, token/API cost, and checker/evaluation cost.
-
-A router $R$ observes a permitted pre-deployment information state $W(x)$ and selects an action
-\[
-a_R(x)=R(W(x))\in\mathcal A.
-\]
-The selected action then performs the deployment run from the original task state.
-\end{definition}
-
-This separates routing from deployment.
-The router chooses what to run; the selected action performs the actual checked run.
-Unless explicitly declared otherwise, pre-deployment records are shown only to the router and are not passed to the selected worker.
-
-\section{Verifiable agent design}
-\label{sec:setup}
-
-In this section we set the notations and introduce the mathematical framework to be able to deal with agent systems on verifiable tasks.
-
-\begin{definition}[Budgeted externally checked task]
-\label{def:task}
-A budgeted externally checked task is a tuple
-\[
-\cT=(\cX,\cY,V,B_{\mathrm{dep}},\mu).
-\]
-Here $\cX$ is an instance space, $\cY$ is a solution space, $V:\cX\times\cY\to\mathcal R$ is an external verifier or scoring procedure, $B_{\mathrm{dep}}$ is the full deployment budget and acceptance object, and $\mu$ is the deployment distribution over instances.
-The object $B_{\mathrm{dep}}$ may include a horizon, verifier budget, token/time/cost caps, and a thresholding rule that induces a binary success event from $V(x,y)$.
-An agent succeeds on $x\sim\mu$ if it produces an accepted $y$ before exhausting $B_{\mathrm{dep}}$.
-\end{definition}
-
-\begin{definition}[Workers, actions, and routed designs]
-\label{def:design}
-Let $\cM=\{M_1,\ldots,M_K\}$ be a finite menu of workers.
-A worker is any deployable solver or fixed agent policy that can produce a candidate solution for verification.
-Let $\cA$ be a finite menu of deployable actions.
-In the simplest setting, $\cA=\cM$; more generally, an action bundles a worker with fixed stopping, retry, tool-use, and carryover rules.
+\revadd{In the simplest setting, $\cA=\cM$; more generally, an action bundles a worker with fixed stopping, retry, tool-use, and carryover rules.}
+\revdel{The deployment loss is defined locally in this action definition.}
+\revadd{The deployment loss is defined in Section~\ref{sec:selection}, where it is tied to first-passage cost, audit loss, and measurement loss.}
 A routed design is a tuple
 \[
 d=(\cA,R,\kappa),
 \]
 where $R$ is a router that selects an action after observing permitted information and $\kappa$ is the declared scalar action-cost convention used in the log-effort diagnostic.
 When costs are logged as resource vectors, the protocol must fix the scalar reduction before evaluation.
-A signal condition induces the routing policy
+A router $R$ observes a permitted pre-deployment information state \revdel{$W(x)$}\revadd{$Z_j(x)$} and selects an action
 \[
-\rho_j:x\mapsto a_j(x)=R(Z_j(x))\in\cA .
+a_j(x)=R(Z_j(x))\in\mathcal A.
 \]
+\revadd{Equivalently, a signal condition induces the routing policy $\rho_j:x\mapsto a_j(x)$.}
+The selected action then performs the deployment run from the original task state.
 \end{definition}
 
-The router is part of the deployed system, but it is evaluated through the action it selects.
-Pre-deployment records are passed to the selected action only if this is declared as part of that action.
+This separates routing from deployment.
+The router chooses what to run; the selected action performs the actual checked run.
+Unless explicitly declared otherwise, pre-deployment records are shown only to the router and are not passed to the selected worker.
 
 \begin{definition}[Task instances and task modes]
 \label{def:modes}
@@ -282,7 +233,7 @@ The evaluator defines the mode distribution induced by that signal,
 \pi_z(s)=\Prb[S=s\mid Z=z].
 \]
 The router is not required to output $\pi_z$ or any mode distribution.
-Instead, the theory uses a fixed evaluator-side allocation summary $q_z\in\Delta(\cS)$, with $q_z(s)>0$ whenever $\pi_z(s)>0$.
+Instead, the theory uses a fixed evaluator-side mode-summary distribution $q_z\in\Delta(\cS)$, with $q_z(s)>0$ whenever $\pi_z(s)>0$.
 This summary is not a router output; it is a theory-facing diagnostic distribution specified before evaluation.
 Write $a_z=\rho(z)$ for the action selected after observing $z$.
 For an instance whose true mode is $s$, the certified effort surrogate is proportional to
@@ -295,7 +246,7 @@ For an instance whose true mode is $s$, the certified effort surrogate is propor
 Assumption~\ref{ass:packed} is deliberately restrictive.
 Real task instances can vary in infinitely many ways, while the theory uses a finite state abstraction.
 The assumption says that, for model selection, instances can be packed into modes with stable action success probabilities.
-The purpose is to isolate the regime in which cost, competence, information, and allocation-summary mismatch are algebraically separable and empirically testable.
+The purpose is to isolate the regime in which cost, competence, information, and the predeclared mode-summary divergence are algebraically separable.
 Residual and calibration diagnostics measure when this finite packing is too coarse.
 
 \begin{definition}[Cost-adjusted certified log-effort diagnostic objective]
@@ -319,21 +270,21 @@ When several signal conditions are compared, $\J$ is applied to the correspondin
 \end{definition}
 
 The action quantities in~\eqref{eq:objective} are $\kappa(a_Z,s)$ and $p(a_Z,s)$: how costly the selected action is on mode $s$ and how often it succeeds there.
-The router and information quantities are $Z$, $\pi_z$, and $q_z$: what the router is allowed to observe, what that signal reveals about the task mode, and the theory-facing allocation summary used in the KL term.
+The router and information quantities are $Z$, $\pi_z$, and $q_z$: what the router is allowed to observe, what that signal reveals about the task mode, and the evaluator-side mode-summary distribution used in the KL term.
 
 \begin{remark}[Meaning of the effort surrogate]
 \label{rem:effort-surrogate}
-Equation~\eqref{eq:effort-surrogate} says that, on a true mode $s$ after signal $z$, certified effort increases with action cost, decreases with action success probability on that mode, and increases when the allocation summary gives too little diagnostic mass to that mode.
+Equation~\eqref{eq:effort-surrogate} says that, on a true mode $s$ after signal $z$, certified effort increases with action cost, decreases with action success probability on that mode, and increases when the evaluator-side mode summary gives too little diagnostic mass to that mode.
 The router is not literally routing jobs to modes; modes are evaluator-defined task variants.
 The quantity $q_z(s)$ is a diagnostic summary, not a deployment probability.
-The KL term below is therefore an allocation-summary mismatch under the chosen diagnostic convention.
-It should be interpreted as router mismatch only if the experiment predefines a reproducible construction of $q_z$ from router allocation behavior.
+The KL term below is therefore a mode-summary divergence under the chosen diagnostic convention.
+It should be interpreted as a router failure only if the experiment predefines a reproducible construction of $q_z$ from router behavior.
 \end{remark}
 
 \section{Performance accounting}
 \label{sec:accounting}
 
-For a fixed signal value $z$, the routing part of the objective is the cross-entropy between the signal-induced mode distribution and the fixed allocation summary:
+For a fixed signal value $z$, the routing part of the objective is the cross-entropy between the signal-induced mode distribution and the fixed evaluator-side mode-summary distribution:
 \begin{equation}
   \mathrm{CE}(\pi_z,q_z)
   =
@@ -360,7 +311,7 @@ $\Delta=\J(\rho_0,q_0)-\J(\rho,q)$, decomposes as
   +
   \underbrace{\MI_\pi(S;Z)}_{\text{routing information}}
   -
-  \underbrace{\E_{Z}\!\left[\KL(\pi_{Z}\|q_{Z})\right]}_{\text{allocation-summary mismatch}} .
+  \underbrace{\E_{Z}\!\left[\KL(\pi_{Z}\|q_{Z})\right]}_{\text{mode-summary divergence}} .
 \end{equation}
 \end{theorem}
 
@@ -378,7 +329,7 @@ The four terms have different operational meanings.
 If the cost term is large and positive, a lower-cost action may be preferable even when it reaches success later in step count.
 If the competence term varies by mode, a global worker ranking is likely to hide comparative advantage.
 If information gain is high, the pre-deployment signal exposes solver-relevant structure.
-If allocation-summary mismatch is high, the signal-induced mode distribution is poorly matched to the evaluator's predeclared allocation summary.
+If the mode-summary divergence is high, the signal-induced mode distribution is poorly matched to the evaluator's predeclared mode summary.
 For two signal conditions, the identity compares the routed policies induced by those signals.
 A richer signal is useful only if its induced action change improves the cost--success tradeoff after the cost of obtaining the signal is charged.
 
@@ -387,7 +338,7 @@ The task mode $S$ is not an oracle label for the best worker.
 The evaluator fixes a mode schema before evaluation, then estimates the mode-conditional quantities $p(a,s)$ and $\kappa(a,s)$.
 Routing information asks whether a signal makes those modes more identifiable.
 Routing shift asks whether the selected action changes when the signal is enriched.
-Allocation-summary mismatch is the KL term defined by the fixed allocation summary $q$.
+Mode-summary divergence is the KL term defined by the fixed evaluator-side mode summary $q$.
 Allocation regret, used later in the empirical protocol, is a separate action-frontier diagnostic rather than an estimator of this KL term.
 The final decision is not made by the information term alone; it is made by paired deployment gain on held-out instances after measurement and context costs are charged.
 Appendix~\ref{subsec:bridge} gives the full operationalization of these diagnostics.
@@ -428,22 +379,11 @@ The multi-mode case is where the four-term identity matters.
 A lower-cost worker can be rational on one task mode and irrational on another.
 A router is useful only when different actions win the cost--success tradeoff on different modes and the pre-deployment information helps identify which mode applies.
 
-\begin{figure}[t]
-\placeholder{0.93\linewidth}{
-Final figure: left-to-right accounting pipeline.
-Inputs are checked task instances, finite task modes, worker or harness actions, admissible pre-deployment information, and cost logs.
-The center computes the four log-effort terms.
-The right panel reports deployment-loss validation: rank flips, paired router gain, negative controls, and calibration diagnostics.
-}
-\caption{The V3 framing keeps the four-term identity as the theory-facing diagnostic and tests it with deployment-loss outcomes.}
-\label{fig:pipeline}
-\end{figure}
-
 \section{Decomposition-guided selection}
 \label{sec:selection}
 
 The decomposition suggests a practical protocol.
-Rather than evaluate every complete design as an independent arm, the builder first estimates shared quantities: mode-conditional success, cost, signal information, and allocation diagnostics.
+Rather than evaluate every complete design as an independent arm, the builder first estimates shared quantities: mode-conditional success, cost, predeclared signal diagnostics, and action-allocation diagnostics.
 Then a larger finite design menu can be scored analytically, with expensive deployment evaluations reserved for finalists and for paired validation.
 
 The log-effort objective $\J$ is a diagnostic surrogate, not the deployment loss.
@@ -796,7 +736,7 @@ Then use the frontier from Experiment 1 to score each selected action by allocat
 -
 \min_{a\in\cA}\bigl[\log \hat\kappa_{\chi_s}(a)-\log \tilde p_{\chi_s}(a)\bigr].
 \]
-This is an operational action-frontier diagnostic, not an estimator of the KL allocation-summary mismatch term $\E_Z\KL(\pi_Z\|q_Z)$ unless a separate construction of $q_Z$ has been predeclared.
+This is an operational action-frontier diagnostic, not an estimator of the KL mode-summary divergence $\E_Z\KL(\pi_Z\|q_Z)$ unless a separate construction of $q_Z$ has been predeclared.
 When the same pilot runs define the frontier and score regret, regret is reported as an in-sample diagnostic; cross-fitted regret is used whenever enough pilot trajectories are available.
 Shift rate measures whether $Z_j$ changes the routing policy, while allocation regret asks whether the changed policy moves toward the empirical mode-conditional frontier from Experiment~1.
 A signal can induce a router response and still increase allocation regret if it makes the orchestrator change worker in the wrong direction.
@@ -958,9 +898,11 @@ The closest classical ancestor is algorithm selection.
 Since Rice's formulation, solver portfolios have treated performance as instance-dependent: SATzilla and AutoFolio learn to select solvers from instance features rather than report one globally best solver~\citep{rice1976algorithm,xu2012satzilla,lindauer2015autofolio,kotthoff2016algorithm}.
 That literature also includes feature-computation costs, pre-solving, and probing.
 Our contribution is the specialization to externally checked LLM agents, where a router observes a controlled pre-deployment record, selects a worker or harness action, and is scored by paired deployment loss rather than by standalone routing accuracy.
+This differs from AutoML systems such as auto-sklearn, which select and tune learning pipelines offline for a dataset; here the unit is a deployable action for a concrete verifier-backed instance~\citep{feurer2015autosklearn}.
 
 LLM routing and cascades provide the model-menu context.
 FrugalGPT frames model cascades as cost reduction across heterogeneous APIs, RouteLLM learns cost-quality routing from preference data, and recent compound-system routing work extends the idea to multi-module systems~\citep{chen2023frugalgpt,ong2024routellm,chen2025optimizing,yue2025masrouter,zaharia2024compound}.
+RouterBench and LLMRouterBench make this evaluation problem explicit at benchmark scale, with cost-, latency-, and quality-aware routing outcomes over large multi-model pools~\citep{hu2024routerbench,anonymous2026llmrouterbench}.
 These methods establish that heterogeneous model menus can create economic gains.
 The present paper asks how much checked, task-specific information is worth before committing to an expensive agentic deployment.
 
@@ -976,7 +918,7 @@ The four-term identity embeds the same idea in a mode-aware routing and measurem
 \section{Discussion, future directions, and conclusion}
 \label{sec:discussion}
 
-The paper has two levels of claim.
+There are two levels of claim.
 The theory-facing claim is an accounting identity under Assumption~\ref{ass:packed}.
 It is exact, but only for the certified log-effort surrogate.
 The deployment-facing claim is empirical: the accounting should predict or explain useful action selection under a richer deployment loss.
@@ -998,7 +940,7 @@ The present evaluation fixes the executable prototypes and mode schema to isolat
 
 Finally, measurement value is router-specific.
 A baseline probe can contain information about the best action and still fail to improve deployment loss if the actual router does not use it well or if the measurement is too expensive.
-For this reason, the paired gain $\Delta_R(j)$ is the main deployment estimand, while mutual-information diagnostics, allocation-summary mismatch, and allocation regret help explain why that gain appears or fails to appear.
+For this reason, the paired gain $\Delta_R(j)$ is the main deployment estimand, while mutual-information diagnostics, mode-summary divergence, and allocation regret help explain why that gain appears or fails to appear.
 This distinction is the main empirical lesson of the final two-worker study.
 The \(Z_2\) and \(Z_3\) records contain task-mode information, but the induced policies have negative paired gain.
 The decomposition therefore functions as a claim discipline: it prevents us from promoting information availability as deployment value.
@@ -1012,7 +954,7 @@ Beyond this benchmark, the same protocol should be tested on repository repair, 
 \paragraph{Conclusion.}
 Model choice inside an agent harness is not a scalar leaderboard problem.
 It is a measurable decomposition problem validated by paired deployment outcomes.
-The right worker depends on task state, checked competence, routing information, routing mismatch, first-passage time, retry depth, and worker-side cost.
+The right worker depends on task state, checked competence, routing information, allocation quality, first-passage time, retry depth, and worker-side cost.
 Our CIFAR-10 edit--verify campaign provides the first empirical slice of that argument: the same two mature workers can trade off speed, final improvement, log-effort, and deployment loss in different ways.
 The two-worker routing analysis asks the deployment-facing question directly and answers it negatively for the current prompt-only router: pre-deployment information does not move allocation reliably enough to improve paired deployment loss after its measurement cost is charged.
 That negative result is not a failure of the framework; it is the framework doing its job, distinguishing worker-frontier structure from a validated routing recommendation.
@@ -1157,7 +1099,7 @@ It is a descriptive information diagnostic; its decision value is established on
 The paired router experiment then checks whether higher-information signals actually change the selected action and improve first-passage deployment outcomes.
 
 \paragraph{Allocation-summary mismatch and allocation regret.}
-The theorem term $\E_Z\KL(\pi_Z\|q_Z)$ is defined only after the evaluator predeclares a reproducible construction of the allocation summary $q_Z$.
+The theorem term $\E_Z\KL(\pi_Z\|q_Z)$ is defined only after the evaluator predeclares a reproducible construction of the evaluator-side mode summary $q_Z$.
 Operationally, the router returns an action, not a mode label or distribution.
 When no such $q_Z$ construction is frozen, the experiment reports allocation regret as a separate action-frontier diagnostic.
 After deployment runs, the evaluator estimates the mode-conditional frontier
@@ -1190,7 +1132,7 @@ Assume a finite task mode $S\in\cS$ and, for each signal condition $j$, the cond
 \pi_j(s\mid Z_j)=\Prb[S=s\mid Z_j].
 \]
 The fixed orchestrator $R$ induces the routing policy $a_R^j(Z_j)=R(Z_j)$.
-If a mode-facing allocation summary $q_R^j(\cdot\mid Z_j)\in\Delta(\cS)$ has been predeclared, define
+If an evaluator-side mode summary $q_R^j(\cdot\mid Z_j)\in\Delta(\cS)$ has been predeclared, define
 \[
 \mathcal E_R^j(s,Z_j)
 =
@@ -1314,7 +1256,7 @@ or its fixed-prototype analogue $\hat\kappa_{\chi_s}(a)$ in Section~\ref{sec:exp
 \paragraph{Information, allocation summaries, and regret.}
 For each progressive signal $Z_j$, a Shannon information estimate is reported only if the protocol predeclares a finite signal representation or calibrated predictive model for estimating $\pi_j(\cdot\mid Z_j)$ on held-out instances.
 Otherwise the report uses qualitative signal summaries and router-response diagnostics without calling them estimates of $\MI(S;Z_j)$.
-The KL allocation-summary mismatch term is reported only if the evaluator also freezes a reproducible construction of $\hat q_R^j(\cdot\mid Z_{j,i})$ before seeing evaluation outcomes.
+The KL mode-summary divergence term is reported only if the evaluator also freezes a reproducible construction of $\hat q_R^j(\cdot\mid Z_{j,i})$ before seeing evaluation outcomes.
 In the main fixed-prototype protocol, the primary operational diagnostic is allocation regret,
 \[
 \hat r_j(x_i)
@@ -1335,8 +1277,8 @@ If independent task instances are added, uncertainty is reported at the task-ins
 \section{Additional diagnostic plots}
 \label{app:diagnostic-plots}
 
-This appendix collects diagnostics generated from the current campaign snapshot.
-Some plots still include partial or legacy cells from the campaign logs; the main text uses the Spark-free mature-worker figures in Figures~\ref{fig:twomodel-frontier} and~\ref{fig:twomodel-threshold} for the promoted comparison.
+This appendix collects auxiliary diagnostics generated from the experimental logs.
+Some plots include exploratory cells outside the promoted two-worker comparison; the main text uses the Spark-free mature-worker figures in Figures~\ref{fig:twomodel-frontier} and~\ref{fig:twomodel-threshold} for the primary comparison.
 
 \begin{figure}[t]
 \centering
@@ -1371,16 +1313,10 @@ The signal ablation tests whether progressively richer records expose task-mode 
 \centering
 \includegraphics[width=0.49\linewidth]{figures/autoresearch/diag_router_record_completion.png}
 \includegraphics[width=0.49\linewidth]{figures/autoresearch/diag_confirmation_progress.png}
-\caption{Campaign-completion diagnostics for router records and holdout confirmation runs.
-These plots are included to make clear which claims are mature and which remain gated by missing cells.}
+\caption{Run-coverage diagnostics for router records and holdout confirmation runs.
+These plots document which analyses are part of the promoted two-worker comparison and which are exploratory.}
 \label{fig:app-progress}
 \end{figure}
-
-\section{Checklist notes for finalization}
-\label{app:checklist-notes}
-
-Before submission, the checklist should be updated to reflect the final state of the experiments.
-The current draft contains the theory, operational protocol, statistical plan, and falsification criteria needed for a full NeurIPS-style writeup, but claims should cite exact frozen results only after the final campaign is complete.
 
 \newpage
 \input{checklist}
