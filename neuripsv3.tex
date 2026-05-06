@@ -13,7 +13,7 @@
 \usepackage{enumitem}
 \usepackage{microtype}
 \usepackage{xcolor}
-\usepackage[normalem]{ulem}
+\IfFileExists{ulem.sty}{\usepackage[normalem]{ulem}}{\newcommand{\sout}[1]{##1}}
 
 \newtheorem{assumption}{Assumption}
 \newtheorem{definition}{Definition}
@@ -1279,6 +1279,87 @@ If independent task instances are added, uncertainty is reported at the task-ins
 
 This appendix collects auxiliary diagnostics generated from the experimental logs.
 Some plots include exploratory cells outside the promoted two-worker comparison; the main text uses the Spark-free mature-worker figures in Figures~\ref{fig:twomodel-frontier} and~\ref{fig:twomodel-threshold} for the primary comparison.
+
+\subsection{Pilot threshold and trajectory diagnostics}
+\label{app:pilot-threshold-diagnostics}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth]{figures/autoresearch/diag_threshold_sensitivity_current_pilot.png}
+\caption{Zoomed pilot threshold sensitivity.
+The red line marks the operating threshold \(\delta=0.05\).
+At this threshold, entry success is near saturated while mean first-hit time remains low, which makes \(\delta=0.05\) a pragmatic operating point for studying time-to-certified-solution.
+The sharp drop at larger thresholds shows why the exact threshold is not an innocuous plotting choice.}
+\label{fig:app-threshold-sensitivity-zoom}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth]{figures/autoresearch/diag_threshold_sensitivity_by_worker.png}
+\caption{Threshold sensitivity by worker on the exploratory pilot snapshot.
+The promoted paper comparison excludes the rate-limited Spark condition, but the diagnostic is useful because it shows the worker-dependent shape of the success frontier.
+\texttt{gpt\_5\_4} remains stronger at higher thresholds, while \texttt{gpt\_5\_3\_codex} degrades earlier; this supports the competence term in Theorem~\ref{thm:four-term}.}
+\label{fig:app-threshold-by-worker}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth]{figures/autoresearch/diag_threshold_sensitivity_extended_current_pilot.png}
+\caption{Extended threshold sensitivity.
+The full threshold range shows that high-threshold success is rare even when \(\delta=0.05\) is nearly saturated.
+This is why the paper reports first-passage curves, occupancy, and final quality rather than relying on a single binary success rate.}
+\label{fig:app-threshold-extended}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth]{figures/autoresearch/diag_improvement_distribution_by_worker.png}
+\caption{Run-level improvement distribution.
+Dots show final best-visible relative improvement and thick ticks mark worker medians.
+The survival plot makes the threshold choice explicit: near \(\delta=0.05\), most runs succeed, but the ordering and separation change at higher thresholds.
+This diagnostic supports the paper's claim that final quality, first-passage success, and deployment loss are distinct empirical objects.}
+\label{fig:app-improvement-distribution}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth]{figures/autoresearch/diag_tau_distribution_pilot.png}
+\caption{Pilot time-to-success distribution by task mode and worker.
+The violin plots expose mode-conditional heterogeneity: \texttt{gpt\_5\_4} typically hits the threshold quickly, while \texttt{gpt\_5\_3\_codex} has broader first-hit times, especially on MLP.
+This is the empirical object behind the cost and competence terms of the four-term decomposition.}
+\label{fig:app-tau-distribution}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth]{figures/autoresearch/diag_relative_improvement_spaghetti.png}
+\caption{Best-so-far improvement trajectories.
+The mean trajectories show that \texttt{gpt\_5\_4} improves earlier and reaches higher final relative improvement in the pilot, but the holdout deployment accounting later shows that this does not automatically imply lower deployment loss after cost is charged.
+This contrast is the main empirical reason to separate worker competence from deployment value.}
+\label{fig:app-improvement-trajectories}
+\end{figure}
+
+\subsection{Pilot cost diagnostics}
+\label{app:pilot-cost-diagnostics}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth]{figures/autoresearch/diag_worker_cost_quality_diagnostics.png}
+\caption{Worker cost--quality diagnostics.
+Each point is a pilot run, and diamonds mark worker medians.
+The plots show that better final improvement is accompanied by substantial variation in wall-clock time, total token accounting, and generated-token volume.
+This supports the paper's budget-aware framing: worker choice cannot be reduced to final improvement alone.}
+\label{fig:app-worker-cost-quality-full}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth]{figures/autoresearch/diag_cost_to_tau_by_mode_worker_full.png}
+\caption{Resource cost accumulated to first hit or horizon.
+The top row reports wall-clock minutes and the bottom row reports token accounting on a log scale.
+Mode-conditional cost spreads are large, which is why the retry-crossover theorem is treated as a cost-sensitive design rule rather than a generic endorsement of weaker workers.}
+\label{fig:app-cost-to-tau-full}
+\end{figure}
 
 \begin{figure}[t]
 \centering
