@@ -146,6 +146,27 @@ We organize the paper around three questions, each paired with the contribution 
   Theorem~\ref{thm:crossover} gives the single-mode crossover rule, and the multi-mode accounting shows why the answer changes across task modes.
 \end{enumerate}
 
+The experiments below instantiate these claims with checked trajectories and deployment accounting.
+
+% The draft is organized around four contributions.
+% \begin{enumerate}[leftmargin=1.35em,itemsep=0.15em]
+%   \item \textbf{Four-term performance accounting.}
+%   Under a packed latent-mode abstraction, Theorem~\ref{thm:four-term} decomposes improvement in expected certified log-effort into cost, competence, routing information, and routing mismatch.
+%   \item \textbf{Operational diagnostics.}
+%   We show how the four theorem terms are estimated from checked trajectories: competence from first threshold crossing, cost from the same routed trajectory, information from the router-visible signal, and mismatch between the mode structure exposed by that signal and the worker allocation induced by the router.
+%   \item \textbf{Paired router evaluation.}
+%   For a fixed router and action menu, richer information is valuable only when it changes selected actions in a way that lowers paired deployment loss after measurement and context costs are charged.
+%   \item \textbf{Executable-artifact benchmark protocol.}
+%   We instantiate the framework on a CIFAR-10 AutoResearch-style edit--verify benchmark with finite diagnostic states, a prompt-only router, a finite worker menu, admissible pre-deployment measurements, negative controls, and residual diagnostics for the theorem.
+% \end{enumerate}
+
+% An externally checked task specifies the problem class and checker.
+% Task modes are the finite types of that task: subpopulations that differ in solver-relevant structure, cost profile, or likely intervention.
+% Task instances are concrete realizations within those modes, such as a particular starting artifact, data/regime specification, seed, budget, and checker configuration.
+% In the operational benchmark, modes can be implemented as task-family, dataset-regime, architecture, seed-bin, baseline-probe bin, or crossed diagnostic states.
+% Workers such as \texttt{gpt\_5\_3\_codex\_spark}, \texttt{gpt\_5\_3\_codex}, \texttt{gpt\_5\_4}, or fixed agent policies are deployable actions that attempt those instances.
+% This separation makes the four-factor identity testable: $p(a,s)$ measures how an action performs on a type of task instance, rather than reusing the action label as the state.
+
 \section{Mathematical Framework for Agent Designs on Verifiable Tasks}
 \label{sec:framework}
 
@@ -594,9 +615,11 @@ The protocol uses three task modes:
 Appendix~\ref{app:experiment-details} reports the full fixed configuration read from the current \texttt{train.py} templates and the CIFAR-10 checker in Table~\ref{tab:train-config}.
 The paper-facing worker menu is
 \[
-\cM=\{\texttt{gpt\_5\_3\_codex\_spark},\ \texttt{gpt\_5\_3\_codex},\ \texttt{gpt\_5\_4}\}.
+\cM_{\mathrm{main}}=\{\texttt{gpt\_5\_4\_mini},\ \texttt{gpt\_5\_3\_codex},\ \texttt{gpt\_5\_4}\}.
 \]
 In the main experiment, each deployable action is one worker under the common fixed prompt and harness, so $\cA=\cM$.
+In the current snapshot, \texttt{gpt\_5\_3\_codex} and \texttt{gpt\_5\_4} are the mature comparison pair.
+\texttt{gpt\_5\_4\_mini} is being filled in as the lower-cost replacement for the unavailable \texttt{gpt\_5\_3\_codex\_spark} condition.
 Each worker uses the same prompt.
 For every task-mode--worker cell, we run
 \[
@@ -659,6 +682,60 @@ This experiment is the worker-side calibration for Theorem~\ref{thm:four-term}.
 It estimates fixed-prototype analogues of $\kappa(a,s)$ and $p(a,s)$ for every candidate action before any router is allowed to choose.
 The same estimates can be plugged into Theorem~\ref{thm:crossover}, because the first-passage success probabilities and first-passage costs determine when repeated deployments of a lower-cost worker can match the one-attempt success probability of a stronger worker.
 
+\paragraph{Current worker-frontier results.}
+Because the Spark condition hit rate limits, the main snapshot below compares the two mature workers only:
+\texttt{gpt\_5\_3\_codex} and \texttt{gpt\_5\_4}.
+For each mode, we use the maximum common support available to both workers: ten pilot trajectories for \texttt{cnn\_compact}, ten for \texttt{mlp\_flat}, and nine for \texttt{resnet\_micro}.
+The provisional \texttt{gpt\_5\_4\_mini} pilot is intentionally not pooled into these estimates; it is reserved for the final lower-cost comparison once the cell reaches the same support.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/autoresearch/twomodel_deployment_frontier.png}
+\caption{Mature-worker snapshot on common pilot support, excluding the rate-limited Spark condition.
+Left: deployment loss, where lower is better and intervals are the bootstrap intervals produced by the accounting script.
+Right: the certified log-effort surrogate used by the decomposition.
+The key qualitative result is a rank disagreement: \texttt{gpt\_5\_4} reaches the threshold faster and achieves higher final improvement, but the deployment-loss accounting currently favors \texttt{gpt\_5\_3\_codex} in all three modes, and the log-effort surrogate favors different workers by mode.}
+\label{fig:twomodel-frontier}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Pilot worker-frontier summary on common support.
+$n_{\mathrm{common}}$ is the number of paired trial indices retained for the two mature workers in that mode.
+The table reports first-hit success at $\delta=0.05$, mean first-hit step among successful runs, mean threshold occupancy, mean final relative improvement, the log-effort surrogate, and deployment loss.
+Lower is better for the last two columns.}
+\label{tab:twomodel-frontier}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}llrrrrrrr@{}}
+\toprule
+Mode & Worker & $n_{\mathrm{common}}$ & Success & Mean $\tau$ & Occupancy & Final improv. & Log-effort & Dep. loss \\
+\midrule
+\texttt{cnn\_compact} & \texttt{gpt\_5\_3\_codex} & 10 & 10/10 & 6.50 & 0.725 & 0.232 & 5.814 & 0.848 \\
+\texttt{cnn\_compact} & \texttt{gpt\_5\_4} & 10 & 10/10 & 3.30 & 0.885 & 0.373 & 5.503 & 1.580 \\
+\texttt{mlp\_flat} & \texttt{gpt\_5\_3\_codex} & 10 & 9/10 & 8.11 & 0.580 & 0.171 & 6.045 & 0.890 \\
+\texttt{mlp\_flat} & \texttt{gpt\_5\_4} & 10 & 10/10 & 2.60 & 0.920 & 0.267 & 5.358 & 1.158 \\
+\texttt{resnet\_micro} & \texttt{gpt\_5\_3\_codex} & 9 & 10/10 & 3.20 & 0.890 & 0.194 & 5.102 & 0.962 \\
+\texttt{resnet\_micro} & \texttt{gpt\_5\_4} & 9 & 9/9 & 1.67 & 0.967 & 0.282 & 5.626 & 1.934 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+This is the first empirical support for the paper's main claim.
+If one ranks workers by raw final improvement or by first-hit speed, \texttt{gpt\_5\_4} looks dominant.
+If one ranks by the deployment loss currently charged by the protocol, the recommendation changes.
+The experiment therefore already exhibits the failure mode of scalar leaderboard racing: different components of time-to-certified-solution point to different engineering choices.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/autoresearch/twomodel_threshold_sensitivity.png}
+\caption{Threshold sensitivity for the same mature-worker comparison.
+The left panel shows first-passage success probability as the required relative-improvement threshold varies; the right panel shows the median first-hit step.
+At the paper's operating point $\delta=0.05$, \texttt{gpt\_5\_4} has higher success probability and lower median first-hit time than \texttt{gpt\_5\_3\_codex}.
+The fact that this speed advantage does not automatically imply lower deployment loss is the operational distinction the decomposition is meant to expose.}
+\label{fig:twomodel-threshold}
+\end{figure}
+
 \paragraph{Experiment 2: router-response audit.}
 For each task mode and each signal $Z_j$, query the same orchestrator under the same worker menu.
 The router returns a structured decision record containing selected worker, confidence, short task diagnosis, evidence used, expected failure mode, and expected cost risk.
@@ -666,6 +743,32 @@ The diagnostic question is whether progressive signals change the router's own d
 selected-worker distribution, confidence, diagnosis consistency with the declared task mode, and cited evidence.
 This is a router-response diagnostic, not an estimator of $\MI_\pi(S;Z)$.
 An information estimator would require a predeclared finite representation or predictive model for the signal records.
+
+\paragraph{Current signal-audit results.}
+The current router-facing diagnostic is not yet a deployment claim.
+It asks the narrower question required by the information term: whether admissible pre-deployment records distinguish the task modes that have different empirical frontiers.
+On the current snapshot, budget-only records collapse the three modes to the same predicted class, while probe-containing records perfectly recover the predeclared mode labels.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Router-facing mode-diagnosis audit on the current signal records.
+Accuracy is reported only as a diagnostic for whether the signal exposes the finite task-mode structure; it is not the deployment objective.}
+\label{tab:signal-audit}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Signal record & Records & Accuracy & Macro accuracy \\
+\midrule
+Budget only & 63 & 0.349 & 0.333 \\
+Probe only & 63 & 1.000 & 1.000 \\
+Probe + budget & 63 & 1.000 & 1.000 \\
+Leaky current-state control & 63 & 1.000 & 1.000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+This supports the premise that low-cost probes can reveal mode information, but it does not yet prove that the router uses that information correctly.
+The deployment-facing question is deferred to Experiments~3 and~4: whether the induced worker choice moves toward the empirical frontier and pays for the measurement cost.
 
 \paragraph{Experiment 3: routing shift and allocation regret.}
 Using the decisions from Experiment 2, compute the empirical panel shift rate
@@ -689,6 +792,11 @@ Shift rate measures whether $Z_j$ changes the routing policy, while allocation r
 A signal can induce a router response and still increase allocation regret if it makes the orchestrator change worker in the wrong direction.
 Conversely, low regret indicates that the selected action moved closer to the empirical mode-conditional frontier rather than merely increasing decision variability.
 
+\paragraph{Current routing-regret status.}
+The snapshot has enough signal records to show that probes expose the predeclared mode structure, but the allocation-regret claim remains conditional on the frozen worker frontier and the final prompt-only router decisions under the Spark-free worker menu.
+For this draft we therefore report the router plots as diagnostics rather than as promoted deployment evidence.
+The intended reading is conservative: mode information is available; whether it is useful depends on whether the router maps that information to the cost-adjusted worker frontier in Figure~\ref{fig:twomodel-frontier}.
+
 \paragraph{Experiment 4: paired selected-worker deployment gain.}
 Report all $j\in\{1,2,3\}$ with multiplicity control as the primary analysis.
 If a single non-static signal is selected on a diagnostic split, evaluate it only on a separate holdout split.
@@ -710,6 +818,13 @@ This experiment is the deployment validation of the theory-facing diagnostics.
 Proposition~\ref{prop:paired-unbiased} gives the estimand and estimator for the same-orchestrator comparison, while~\eqref{eq:deployment-loss} defines the loss used to decide whether a signal-conditioned policy is actually better after measurement cost is charged.
 Positive routing information and lower allocation regret are not sufficient by themselves; the routed-policy claim is supported only when the paired gain $\widehat{\Delta}_R(j)$ is positive on held-out trajectories.
 
+\paragraph{Current validation status.}
+The non-Spark confirmation block is nearly complete in the current campaign snapshot:
+\texttt{gpt\_5\_3\_codex} has 90/90 materialized holdout summaries and \texttt{gpt\_5\_4} has 78/90, with the remaining missing summaries concentrated in \texttt{resnet\_micro}.
+The \texttt{gpt\_5\_4\_mini} validation block is left blank until its pilot cell reaches the same support and the final lower-cost comparison is frozen.
+We therefore do not yet claim a positive paired router gain.
+The current result is a stronger calibration claim: the mature-worker pilot already produces rank disagreements that the holdout split is designed to validate or falsify.
+
 \paragraph{Experiment 5: negative controls.}
 Repeat Experiments 2--4 with schema-preserving controls:
 shuffled probe records, probes from the wrong task mode, and synthetic noise records with the same field names and token length.
@@ -717,6 +832,11 @@ The same router, prompt, worker menu, and scoring rule are used.
 These controls test whether router response, allocation regret, and paired deployment gain are specific to task-relevant signal content.
 They preserve the format, approximate context burden, and measurement/context cost of the corresponding real $Z_j$ while breaking its relationship to the task mode and worker frontier.
 A credible deployment claim requires the real signal to reduce allocation regret and improve paired deployment gain more than these controls after measurement cost is charged.
+
+\paragraph{Current negative-control status.}
+Negative controls are not yet promoted to the main result.
+They should remain a claim gate: if shuffled or wrong-mode probe records produce the same router shifts as true probe records, then the router is responding to format or context length rather than task-relevant signal content.
+In that case the paper should retain the worker-frontier result but weaken the routing-information claim.
 
 \paragraph{Experiment 6: robustness to task-instance variation.}
 The main protocol deliberately fixes \texttt{train.py} initialization and data split to isolate agentic trajectory variance.
@@ -726,6 +846,10 @@ They stress-test Assumption~\ref{ass:packed}, which requires the finite mode abs
 The additional seeds define nearby executable task instances, not new pooled evidence for the main estimates.
 If competence frontiers, allocation regret, or paired gains change qualitatively under these modest perturbations, the experiment has found a useful warning: the packed-mode abstraction is too coarse for the claimed theory-facing explanation.
 Accordingly, the main protocol is a fixed-prototype repeated-run study unless these additional instances are promoted into the main sampling design.
+
+\paragraph{Current robustness status.}
+The main tables in this draft are fixed-mode, fixed-template estimates.
+Additional seed and split perturbations are reserved for the appendix and should be interpreted as stress tests of Assumption~\ref{ass:packed}, not as extra pooled evidence for the main worker ranking.
 
 \paragraph{Claim promotion gates.}
 We promote a routing recommendation only when the following are reported: mode-conditional competence with uncertainty, worker-side cost sensitivity, router shift, allocation regret, paired deployment gain with measurement cost charged, negative controls, frontier stability, calibration of $\tilde p$, and surrogate-versus-loss ranking agreement.
@@ -754,7 +878,7 @@ Finally, repeated sampling and inference-time scaling show that lower-cost or sm
 The first-passage retry crossover in Theorem~\ref{thm:crossover} is the simplest version of that tradeoff.
 The four-term identity embeds the same idea in a mode-aware routing and measurement account.
 
-\section{Discussion and limitations}
+\section{Discussion, future directions, and conclusion}
 \label{sec:discussion}
 
 The paper has two levels of claim.
@@ -762,6 +886,8 @@ The theory-facing claim is an accounting identity under Assumption~\ref{ass:pack
 It is exact, but only for the certified log-effort surrogate.
 The deployment-facing claim is empirical: the accounting should predict or explain useful action selection under a richer deployment loss.
 These two claims should not be collapsed.
+The current experiments already support the weaker but central diagnostic claim: raw worker rankings, first-passage rankings, log-effort rankings, and deployment-loss rankings can disagree on the same checked task family.
+That disagreement is precisely the regime in which a budget-aware orchestration framework is needed.
 
 The packed-mode assumption is the main modeling limitation.
 Real agent trajectories are stateful, attempts are not independent, and task modes may be fuzzy.
@@ -777,10 +903,19 @@ Finally, measurement value is router-specific.
 A baseline probe can contain information about the best action and still fail to improve deployment loss if the actual router does not use it well or if the measurement is too expensive.
 For this reason, the paired gain $\Delta_R(j)$ is the main deployment estimand, while mutual-information diagnostics, allocation-summary mismatch, and allocation regret help explain why that gain appears or fails to appear.
 
-\paragraph{Takeaway.}
-The paper's message is that model choice inside an agent harness is not a scalar leaderboard problem.
+\paragraph{Future directions.}
+The immediate experimental next step is to finish the \texttt{gpt\_5\_4\_mini} pilot and holdout cells, replacing the unavailable Spark worker with a stable lower-cost action.
+That will make the worker menu span a genuine cost--capability frontier rather than only two strong models.
+The second next step is to freeze the Spark-free router prompt and rerun the $Z_0$--$Z_3$ routing audit against the final three-worker menu.
+Only then should the paired deployment-gain claim be promoted.
+Beyond this benchmark, the same protocol should be tested on repository repair, theorem checking, and multi-file research-code editing, where the mode schema is less artificial and measurement costs are more heterogeneous.
+
+\paragraph{Conclusion.}
+Model choice inside an agent harness is not a scalar leaderboard problem.
 It is a measurable decomposition problem validated by paired deployment outcomes.
-The right worker depends on task mode, checked competence, routing information, allocation quality, first-passage time, retry depth, and worker-side cost.
+The right worker depends on task state, checked competence, routing information, routing mismatch, first-passage time, retry depth, and worker-side cost.
+Our CIFAR-10 edit--verify campaign provides the first empirical slice of that argument: the same two mature workers can trade off speed, final improvement, log-effort, and deployment loss in different ways.
+The final claim will be strongest if the lower-cost \texttt{gpt\_5\_4\_mini} cells and the paired router validation preserve this rank-disagreement pattern while showing that pre-deployment information can move allocation toward the cost-adjusted frontier.
 
 \bibliographystyle{unsrt}
 \bibliography{references}
@@ -1096,6 +1231,56 @@ Success probabilities use Wilson intervals.
 Aggregated objectives, paired gains, and calibration diagnostics use bootstrap or randomization tests at the sampling unit declared for the study.
 If the main protocol remains a fixed-prototype repeated-run panel, paired randomization tests over repeated trajectories are descriptive for that panel and should not be interpreted as population-level inference.
 If independent task instances are added, uncertainty is reported at the task-instance level.
+
+\section{Additional diagnostic plots}
+\label{app:diagnostic-plots}
+
+This appendix collects diagnostics generated from the current campaign snapshot.
+Some plots still include partial or legacy cells from the campaign logs; the main text uses the Spark-free mature-worker figures in Figures~\ref{fig:twomodel-frontier} and~\ref{fig:twomodel-threshold} for the promoted comparison.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.49\linewidth]{figures/autoresearch/diag_first_hit_cdf_by_mode.png}
+\includegraphics[width=0.49\linewidth]{figures/autoresearch/diag_cost_to_tau_by_mode_worker.png}
+\caption{First-passage diagnostics.
+Left: first-hit CDFs by mode.
+Right: cost-to-threshold by mode and worker.
+These are the direct empirical objects behind the retry and time-to-certified-solution interpretation.}
+\label{fig:app-first-hit}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.49\linewidth]{figures/autoresearch/diag_worker_cost_quality.png}
+\includegraphics[width=0.49\linewidth]{figures/autoresearch/diag_worker_token_composition.png}
+\caption{Worker-side cost and accounting diagnostics.
+These plots check whether conclusions are driven by wall-clock cost, token composition, or quality differences.}
+\label{fig:app-worker-cost}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.49\linewidth]{figures/autoresearch/diag_z_signal_ablation.png}
+\includegraphics[width=0.49\linewidth]{figures/autoresearch/diag_router_selection_snapshot.png}
+\caption{Router-facing diagnostics.
+The signal ablation tests whether progressively richer records expose task-mode structure; the router-selection snapshot checks whether the prompt-only router changes action distribution under those records.}
+\label{fig:app-router}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.49\linewidth]{figures/autoresearch/diag_router_record_completion.png}
+\includegraphics[width=0.49\linewidth]{figures/autoresearch/diag_confirmation_progress.png}
+\caption{Campaign-completion diagnostics for router records and holdout confirmation runs.
+These plots are included to make clear which claims are mature and which remain gated by missing cells.}
+\label{fig:app-progress}
+\end{figure}
+
+\section{Checklist notes for finalization}
+\label{app:checklist-notes}
+
+Before submission, the checklist should be updated to reflect the final state of the experiments.
+The current draft contains the theory, operational protocol, statistical plan, and falsification criteria needed for a full NeurIPS-style writeup, but claims should cite exact frozen results only after the final campaign is complete.
 
 \newpage
 \input{checklist}
