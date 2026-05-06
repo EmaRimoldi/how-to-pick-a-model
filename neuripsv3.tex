@@ -546,13 +546,11 @@ When counterfactual outcomes for all actions are logged on the same instance, hi
 \section{Operational experimental campaign}
 \label{sec:experiments}
 
-This section specifies the controlled campaign used to test the routed-policy decomposition.
-The aim is not to estimate population performance over many unrelated CIFAR-10 programs.
-Instead, we freeze three canonical AutoResearch subinstances and use repeated agentic trajectories to estimate, for the same starting executable artifact, how worker choice, signal exposure, and routing affect first-passage success and cost.
+This section specifies the controlled campaign used to test the routed-policy decomposition. We freeze three canonical AutoResearch subinstances (consitent with terminology) and use repeated agentic trajectories to estimate, for the same starting executable artifact, how worker choice, signal exposure, and routing affect first-passage success and cost.
 
 \paragraph{Canonical task modes.}
 The task is AutoResearch-style executable-artifact optimization on CIFAR-10.
-Each task instance contains an editable \texttt{train.py}, a read-only data/checker module \texttt{prepare.py}, and an external verifier that executes \texttt{train.py} and reports validation loss, validation accuracy, runtime, optimizer steps, and parameter count.
+Each task instance contains an editable \texttt{train.py}, a read-only data/checker module \texttt{prepare.py}, and a verifier that executes \texttt{train.py} and reports validation loss, validation accuracy, runtime, optimizer steps, and parameter count.
 In this campaign, a task mode is a predeclared executable optimization subinstance, not merely an architecture label.
 Concretely, a mode family is specified by the tuple
 \[
