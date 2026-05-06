@@ -229,66 +229,60 @@ Here $\cX$ is an instance space, $\cY$ is an artifact or solution space, $V:\cX\
 An agent succeeds on $x\sim\mu$ if it produces $y$ with $V(x,y)=1$ before exhausting $B_{\mathrm{dep}}$.
 \end{definition}
 
-The verifier may be binary, as in tests or proof checking, or scalar, as in validation loss or reward. For simplicity we consider it binary here but in Appendix \ref{app:xxx} we generalize the results to continuous rewards.
-The key requirement is that success is evaluated outside the model.
-\pier{Really?} The task is transductive because performance is measured on concrete pairs $(x,y)$ rather than on a learned population predictor.
+The verifier may be binary, as in tests or proof checking, or scalar after thresholding.
+The key requirement is externality: success is evaluated outside the model.
 
 \begin{definition}[Workers, actions, and routed designs]
 \label{def:design}
 Let $\cM=\{M_1,\ldots,M_K\}$ be a finite menu of workers.
-A worker is any deployable solver that can operationally attempt the task instance and return an artifact for verification: a single model, or a fixed model-based agent policy that may call tools or other models according to a predeclared protocol.
+A worker is any deployable solver or fixed agent policy that can produce a candidate solution for verification.
 Let $\cA$ be a finite menu of deployable actions.
-In the simplest worker-selection setting, $\cA=\cM$; more generally, an action includes the worker together with fixed stopping, retry, tool-use, submodel-call, and carryover rules.
+In the simplest setting, $\cA=\cM$; more generally, an action bundles a worker with fixed stopping, retry, tool-use, and carryover rules.
 A routed design is a tuple
 \[
 d=(\cA,h,R,\kappa),
 \]
-where $h$ is the harness protocol, $R$ is a start-of-run router that selects an action after observing permitted information, and $\kappa(a)>0$ is the per-unit deployment cost convention for action $a\in\cA$.
-When no confusion is possible, we write $M$ for the deployed worker or fixed action selected by the design.
-In the main V3 experiment, the orchestrator $R$ and menu $\cA$ are fixed.
-A routing policy is therefore the signal-conditioned map induced by a progressive signal protocol,
+where $h$ is the deployment protocol, $R$ is a router that selects an action after observing permitted information, and $\kappa(a)>0$ is the declared cost of action $a\in\cA$.
+When no confusion is possible, we write $M$ for the selected worker or fixed action.
+A signal condition induces the routing policy
 \[
 \rho_j:x\mapsto \hat a_R^j(x)=R(Z_j(x))\in\cA .
 \]
-Future variants may also compare different orchestrators $R$, but the present protocol isolates the value of changing what the same orchestrator is allowed to observe before choosing a worker.
 \end{definition}
 
 The router is part of the deployed system, but it is evaluated through the action it selects.
-In the main protocol, the router observes information before deployment, chooses one worker, and then the chosen worker performs the full edit--verify trajectory from the original task state.
-The selected worker does not see measurement records unless that carryover is explicitly declared as part of the deployable action.
+Pre-deployment records are passed to the selected action only if this is declared as part of that action.
 
 \begin{definition}[Task instances and task modes]
 \label{def:modes}
 Given $\cT=(\cX,\cY,V,B_{\mathrm{dep}},\mu)$, a task instance is a concrete realization $X=x\in\cX$ of that same task.
-It is the measurable object supplied to the deployed system, such as a starting artifact, data/regime specification, seed, budget, and checker configuration; the model and router may access only the fields made available by the protocol.
+It is the measurable object supplied to the deployed system; the router and worker may access only the fields made available by the protocol.
 A task mode is a latent variable
 \[
 S=\sigma(X)\in\cS=\{1,\ldots,m_S\}
 \]
-induced by a measurable map $\sigma:\cX\to\cS$ that assigns each concrete instance to one of finitely many solver-relevant variants of the task.
+induced by a measurable map $\sigma:\cX\to\cS$ that assigns each instance to one of finitely many solver-relevant variants of the task.
 It defines a prior $\pi_s=\Prb_\mu[S=s]$ and mode-conditional instance distributions $\mu_s=\mu(\cdot\mid S=s)$.
 Modes are therefore not different tasks and not worker labels.
 They are variants of the same task: finite subpopulations of instances that share solver-relevant structure and may favor different workers or interventions.
 \end{definition}
 
 The mode variable is retained by the evaluator for accounting and diagnostic comparisons.
-It need not be observed by the worker, and in the main router experiment the router only sees permitted pre-deployment information.
-This lets the same theory cover both expert-defined task types and measurable diagnostic states used in the current benchmark.
+It need not be observed by either the router or the worker.
+This lets the same theory cover expert-defined task types and finite diagnostic states.
 
 \begin{assumption}[Packed latent-mode family]
 \label{ass:packed}
 Each instance $X\sim\mu$ is associated with a mode $S=\sigma(X)$ in a finite mode set $\cS$, with prior $\pi$.
-In the main protocol, the unit of deployment is a full routed trajectory: the router chooses one worker before deployment, and that worker runs the edit--verify process up to horizon $H$.
-Conditional on mode $s$, worker or action $M$ has certified first-success probability $p_M(s)>0$ under the declared checker, budget, horizon, and success threshold.
-This probability is trajectory-level, but it is estimated from the step-wise checker trace by asking whether the threshold is reached at least once before the horizon.
-At the start of a run, the router observes a signal $Z=z$ and selects one action for the whole trajectory.
+Conditional on mode $s$, action $M$ has success probability $p_M(s)>0$ under the declared deployment protocol.
+At deployment time, the router observes a signal $Z=z$ and selects one action.
 The evaluator defines the mode distribution induced by that signal,
 \[
 \pi_z(s)=\Prb[S=s\mid Z=z].
 \]
 The router is not required to output $\pi_z$ or any diagnostic-state distribution.
-Instead, after the selected-worker runs are scored, the evaluator constructs a mode-facing allocation summary $q_z\in\Delta(\cS)$, with support containing the support of $\pi_z$.
-This summary records whether the worker chosen under signal $z$ is aligned with the modes on which that worker has a favorable cost--competence profile.
+Instead, the evaluator uses a mode-facing allocation summary $q_z\in\Delta(\cS)$, with support containing the support of $\pi_z$.
+This summary records how the selected action covers the modes exposed by $z$.
 Write $M_z$ for the worker or fixed action selected by the routing policy after observing $z$.
 For an instance whose true mode is $s$, the certified effort surrogate is proportional to
 \begin{equation}
@@ -298,10 +292,10 @@ For an instance whose true mode is $s$, the certified effort surrogate is propor
 \end{assumption}
 
 Assumption~\ref{ass:packed} is deliberately restrictive.
-Real task instances can vary in infinitely many ways, but an empirical deployment campaign can only estimate and reuse finitely many state-conditioned quantities.
-The assumption says that, for the purposes of model selection, those concrete instances can be packed into a finite set of modes with stable worker success probabilities.
+Real task instances can vary in infinitely many ways, while the theory uses a finite state abstraction.
+The assumption says that, for model selection, instances can be packed into modes with stable action success probabilities.
 The purpose is to isolate the regime in which cost, competence, information, and mismatch are algebraically separable and empirically testable.
-The operational campaign therefore reports residuals, hazard curves, and occupancy diagnostics to measure when this finite packing is too coarse.
+Residual and calibration diagnostics measure when this finite packing is too coarse.
 
 \begin{definition}[Cost-adjusted certified log-effort objective]
 \label{def:objective}
@@ -323,7 +317,7 @@ The design-selection problem is
   \label{eq:design-selection}
 \end{equation}
 where each design $d$ induces a routed policy $\rho_d$ and allocation summary $q_d$, and lower $\J$ means lower expected certified log-effort.
-When the same orchestrator is evaluated under several progressive signals, $\J$ is applied to the signal-conditioned policy summaries; Appendix~\ref{app:operational-decomp} writes this comparison explicitly for $Z_j$ versus $Z_0$.
+When several signal conditions are compared, $\J$ is applied to the corresponding policy summaries; Appendix~\ref{app:operational-decomp} writes this comparison explicitly for $Z_j$ versus $Z_0$.
 \end{definition}
 
 The worker/action quantities in~\eqref{eq:objective} are $\kappa(M_Z)$ and $p_{M_Z}(s)$: how costly the selected worker is and how often it succeeds on mode $s$.
@@ -332,7 +326,7 @@ The router and information quantities are $Z$, $\pi_z$, and $q_z$: what the rout
 \begin{remark}[Meaning of the effort surrogate]
 \label{rem:effort-surrogate}
 Equation~\eqref{eq:effort-surrogate} says that, on a true mode $s$ after signal $z$, certified effort increases with worker cost, decreases with worker success probability on that mode, and increases when the induced allocation summary gives too little diagnostic mass to that mode.
-The router is not literally routing jobs to modes; modes are evaluator-defined task types.
+The router is not literally routing jobs to modes; modes are evaluator-defined states.
 The quantity $q_z(s)$ records whether the router's worker decision is aligned with the mode that actually governs the instance, and the KL term below charges the mismatch between signal-exposed mode structure and the induced worker allocation.
 \end{remark}
 
@@ -385,15 +379,15 @@ If the cost term is large and positive, a lower-cost worker may be preferable ev
 If the competence term varies by mode, a global worker ranking is likely to hide comparative advantage.
 If information gain is high, the pre-deployment state exposes solver-relevant structure.
 If mismatch is high, the router sees useful structure but fails to allocate computation according to it.
-In the V3 experiment, this is read as a comparison between signal-conditioned routing policies for the same orchestrator.
-Changing from $Z_0$ to $Z_j$ is useful only if it changes the selected worker toward a better mode-conditional cost--success tradeoff, and that improvement survives the measured cost of obtaining the richer signal.
+For two signal conditions, the identity compares the routed policies induced by those signals.
+A richer signal is useful only if its induced action change improves the cost--success tradeoff after the cost of obtaining the signal is charged.
 
 \paragraph{Operational reading.}
 The diagnostic state $S$ is not an oracle label for the best worker.
-The evaluator fixes a candidate mode schema before the campaign, then tests whether that schema is useful by running workers and estimating the mode-conditional quantities $p(a,s)$ and $\kappa(a)$.
-Routing information asks whether a progressive signal makes those predeclared modes more identifiable.
-Routing shift asks whether the same orchestrator actually changes its worker choice when the signal is enriched.
-Routing mismatch is then evaluated retrospectively: after worker outcomes are logged on a diagnostic split, we ask whether the signal-induced choice was closer to the empirical mode-conditional cost--success frontier.
+The evaluator fixes a mode schema before evaluation, then estimates the mode-conditional quantities $p(a,s)$ and $\kappa(a)$.
+Routing information asks whether a signal makes those modes more identifiable.
+Routing shift asks whether the selected action changes when the signal is enriched.
+Routing mismatch asks whether the signal-induced action is aligned with the estimated mode-conditional cost--success tradeoff.
 The final decision is not made by the information term alone; it is made by paired deployment gain on held-out instances after measurement and context costs are charged.
 Appendix~\ref{subsec:bridge} gives the full operationalization of these diagnostics.
 
