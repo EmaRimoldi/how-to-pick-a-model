@@ -543,89 +543,58 @@ $\E[\widehat{\Delta}_R(j)]=\Delta_R(j)$.
 When the same worker is selected under $Z_0$ and $Z_j$, using common deployment seeds preserves unbiasedness and reduces paired variance.
 When counterfactual outcomes for all actions are logged on the same instance, hindsight action regret can be reported as a diagnostic, but it is not the primary estimand.
 
-\section{Operational experimental campaign}
+\section{Operational experimental protocol}
 \label{sec:experiments}
 
-This section specifies the controlled campaign used to test the routed-policy decomposition. We freeze three canonical AutoResearch subinstances (consitent with terminology) and use repeated agentic trajectories to estimate, for the same starting executable artifact, how worker choice, signal exposure, and routing affect first-passage success and cost.
+This section specifies the controlled protocol used to test the routed-policy decomposition.
+We fix three AutoResearch task modes and use repeated agentic trajectories to estimate, for the same starting executable artifact, how worker choice, signal exposure, and routing affect first-passage success and cost.
 
-\paragraph{Canonical task modes.}
+\paragraph{Task modes.}
 The task is AutoResearch-style executable-artifact optimization on CIFAR-10.
-Each task instance contains an editable \texttt{train.py}, a read-only data/checker module \texttt{prepare.py}, and a verifier that executes \texttt{train.py} and reports validation loss, validation accuracy, runtime, optimizer steps, and parameter count.
-In this campaign, a task mode is a predeclared executable optimization subinstance, not merely an architecture label.
-Concretely, a mode family is specified by the tuple
+Each task instance contains an editable \texttt{train.py}, a read-only data/checker module \texttt{prepare.py}, and a verifier that executes \texttt{train.py} and reports task-level diagnostics for validation performance, compute cost, optimization progress, and model complexity.
+In this protocol, a task mode is a fixed executable optimization setting of the same CIFAR-10 task.
+Concretely, a task mode is specified by the tuple
 \[
 \chi_s=(A_s,D,\mathrm{split},u,\eta_s,V,B_V,H,\delta),
 \]
 where $A_s$ is the starting model class and editable \texttt{train.py} template, $D$ is CIFAR-10, $\mathrm{split}$ is the fixed train/validation split, $u$ is the model-initialization seed, $\eta_s$ denotes starting optimization and architecture hyperparameters, $V$ is the checker, $B_V$ is the checker budget, $H$ is the agent horizon, and $\delta$ is the success threshold.
-The main campaign instantiates three such mode families:
+The protocol uses three task modes:
 \[
-\cS=\{\texttt{mlp\_flat},\texttt{cnn\_compact},\texttt{resnet\_tiny}\}.
+\cS=\{\texttt{mlp\_flat},\texttt{cnn\_compact},\texttt{resnet\_micro}\}.
 \]
-Thus there is one canonical starting artifact per mode family in the main campaign.
-The mode is not a worker label and is not an oracle for the best worker; it is a predeclared partition of the same AutoResearch task.
-It is useful only if the resulting trajectories show mode-conditional differences in first-pass competence, cost, or allocation regret.
 
 \paragraph{Frozen executable configuration.}
-Table~\ref{tab:train-config} reports the fixed configuration read from the current \texttt{train.py} templates and the CIFAR-10 checker.
-The main campaign freezes the data split, starting artifact, training initialization seed, checker budget, success threshold, and horizon inside each mode family.
+Appendix~\ref{app:experiment-details} reports the full fixed configuration read from the current \texttt{train.py} templates and the CIFAR-10 checker in Table~\ref{tab:train-config}.
+The main protocol freezes the data split, starting artifact, training initialization seed, checker budget, success threshold, and horizon inside each task mode.
 This isolates the stochasticity of the agentic edit trajectory.
-Changing the model-initialization seed, the starting model class, or the data-subset seed creates a different executable subinstance and is therefore reserved for explicit robustness experiments.
-
-\begin{table}[t]
-\centering
-\small
-\caption{Frozen operational configuration for the main campaign.
-All values are fixed within a task mode; repeated runs vary only the agentic trajectory.}
-\label{tab:train-config}
-\begin{tabular}{@{}p{0.30\linewidth}p{0.60\linewidth}@{}}
-\toprule
-Component & Fixed value \\
-\midrule
-Dataset and split & CIFAR-10, $50{,}000$ training examples and $10{,}000$ validation examples; balanced subset, label noise $0.0$, imbalance ratio $1.0$; the train/validation split is fixed in the main campaign \\
-Data seed & Common predeclared data/subset seed for the controlled campaign; alternative split seeds are reported only as robustness variants \\
-\texttt{train.py} initialization seed & \texttt{SEED=42} in the main campaign; used for Python, NumPy, PyTorch, CUDA seeds, deterministic PyTorch mode, and the training-loader generator; alternative initialization seeds define robustness subinstances \\
-Training transforms & random crop with padding $4$, random horizontal flip, CIFAR-10 normalization; validation uses normalization only \\
-Training budget per checker call & fixed-step mode with \texttt{AUTOSEARCH\_MAX\_STEPS=128}; time budget \texttt{120s} is a fallback, not the primary scoring convention \\
-Common hyperparameters & \texttt{BATCH\_SIZE=64}, \texttt{NUM\_WORKERS=0}, Adam, learning rate $5\cdot 10^{-4}$, weight decay $10^{-4}$, betas $(0.9,0.999)$, no LR schedule \\
-Starting workload family & \texttt{mlp\_flat}, \texttt{cnn\_compact}, or \texttt{resnet\_tiny} \\
-Shared template parameters & depth $2$, base channels $12$, channel multiplier $2$, batch norm enabled, dropout $0.0$, and hidden width $48$ \\
-Agent horizon & $H=24$ edit--verify steps; trajectories continue to $H$ after first success to measure persistence and final quality \\
-\bottomrule
-\end{tabular}
-\end{table}
 
 \paragraph{Workers and repeated runs.}
 The paper-facing worker menu is
 \[
 \cM=\{\texttt{gpt\_5\_3\_codex\_spark},\ \texttt{gpt\_5\_3\_codex},\ \texttt{gpt\_5\_4}\}.
 \]
-Each worker uses the same prompt program, structured-edit protocol, JSON schema, tool policy, retry rule, and resource-accounting convention; the resolved model ID, CLI/API version, date, prompt hash, timeout, and token limits are logged.
-For every mode--worker cell we run
+Each worker uses the same prompt.
+For every task-mode--worker cell we run
 \[
 Q=10
 \]
-independent trajectories from the same canonical \texttt{train.py}.
+independent trajectories from the same fixed \texttt{train.py}.
 The repeated-run index changes only the agentic trajectory: LLM sampling, transport nondeterminism, edit proposals, and any tool-level nondeterminism.
-It does not change the CIFAR-10 split, the unmodified artifact, the \texttt{train.py} initialization seed, the checker budget, or the horizon.
-If a backend exposes an explicit sampling seed, the seed is recorded; otherwise repeated calls under the same frozen configuration are treated as independent deployment attempts and logged by run identifier.
 
 \paragraph{Progressive router signals.}
 The router is a fixed prompt-only orchestrator that chooses one worker from $\cM$ before deployment.
-It never edits \texttt{train.py}.
-We evaluate a nested signal sequence
+We evaluate a sequential signal protocol
 \[
-Z_0 \preceq Z_1 \preceq Z_2 \preceq Z_3 .
+Z_0,\ Z_1,\ Z_2,\ Z_3 .
 \]
 \(Z_0\) contains only the task name, checker objective, worker menu, and budget.
-\(Z_1\) adds the initial \texttt{train.py} and a static workload summary.
+\(Z_1\) adds the initial \texttt{train.py} and a static workload summary: starting model class, parameter count, optimizer and budget settings, dataset/checker identifiers, and parse/runtime availability.
 \(Z_2\) adds a low-cost checker probe of the unmodified artifact at a predeclared probe budget.
 \(Z_3\) adds the full unmodified-artifact baseline under the deployment checker budget.
 Probe records contain validation loss, validation accuracy, training seconds, total seconds, optimizer steps, parameter count, parse/runtime status, and the probe budget.
-The selected worker always starts from the original artifact; probe information is router context, not a warm start for the worker.
-Probe and router-context costs are charged when computing net deployment gain.
 
 \paragraph{Success, cost, and deployment loss.}
-Let $L_{\mathrm{base}}(s)$ be the validation loss of the unmodified canonical artifact for mode $s$ under the fixed deployment checker.
+Let $L_{\mathrm{base}}(s)$ be the validation loss of the unmodified starting artifact for task mode $s$ under the fixed deployment checker.
 At edit step $t$, a worker produces a candidate \texttt{train.py}, the checker returns loss $L_t$, and checked progress is
 \[
 G_t=\operatorname{clip}_{[0,1]}\!\left(
@@ -642,37 +611,29 @@ The competence estimator is $\hat p(a,s)=Q^{-1}\sum_{r=1}^Q\one\{\tau_{\delta,a,
 The primary cost $\hat\kappa(a,s)$ is worker wall-clock accumulated to $\tau_\delta\wedge H$; token count is reported as a sensitivity analysis.
 Deployment loss is the predeclared combination in~\eqref{eq:deployment-loss}, using first-passage failure, threshold occupancy, final checked quality, and worker-side cost.
 
-\paragraph{Theory-to-experiment map.}
-The mathematical results are not proved by the experiments; their proofs hold under the stated assumptions.
-The campaign tests whether those assumptions are operationally meaningful in the frozen AutoResearch setting, whether the terms in the theory are measurable, and whether their measured changes predict deployment outcomes.
-Experiments~1--4 operationalize Theorem~\ref{thm:four-term}: Experiment~1 estimates the worker-side cost and competence terms, Experiment~2 audits the routing-information channel induced by progressive signals, Experiment~3 diagnoses routing mismatch through allocation regret, and Experiment~4 validates the resulting routed policy by paired deployment loss.
-Theorem~\ref{thm:crossover} is tested as a single-mode subanalysis of Experiment~1, using the estimated first-passage probabilities and costs to ask when repeated deployments of a lower-cost worker match or beat one deployment of a stronger worker.
-Proposition~\ref{prop:paired-unbiased} supplies the estimator used in Experiment~4 for the net signal-conditioned routing gain $\Delta_R(j)$.
-Experiments~5--6 are falsification and robustness checks: the negative controls break the relationship between $Z$ and the task mode, while the seed perturbations probe whether Assumption~\ref{ass:packed} remains credible beyond the canonical executable artifacts.
-
 \paragraph{Experiment 1: worker frontier.}
-Run all workers on all three canonical modes without a router:
+Run all workers on all three task modes without a router:
 \[
-3\ \text{modes}\times 3\ \text{workers}\times 10\ \text{runs}=90
+3\ \text{task modes}\times 3\ \text{workers}\times 10\ \text{runs}=90
 \]
 full trajectories.
 Estimate $\hat p(a,s)$, $\hat\kappa(a,s)$, mean first-hit step, occupancy, final quality, and uncertainty intervals.
-For each mode, construct the empirical cost--success frontier
+For each task mode, construct the empirical cost--success frontier
 \[
 a^\star(s)\in
 \argmin_{a\in\cM}\{\log \hat\kappa(a,s)-\log \hat p(a,s)\}.
 \]
 This experiment is the worker-side calibration for Theorem~\ref{thm:four-term}.
 It estimates the quantities that enter the cost and competence terms, namely $\log\kappa(M_Z)$ and $-\log p_{M_Z}(S)$, before any router is allowed to choose.
-The task-mode schema is useful only if different executable subinstances induce different mode-conditional frontiers; otherwise the competence term collapses to a global worker ranking.
+The task-mode schema is useful only if different task modes induce different mode-conditional frontiers; otherwise the competence term collapses to a global worker ranking.
 The same estimates also instantiate Theorem~\ref{thm:crossover}, because the first-passage success probabilities and first-passage costs determine when repeated deployments of a lower-cost worker can match the one-attempt success probability of a stronger worker.
 
 \paragraph{Experiment 2: router-facing signal audit.}
-For each canonical mode and each signal $Z_j$, query the same orchestrator under the same worker menu.
+For each task mode and each signal $Z_j$, query the same orchestrator under the same worker menu.
 The router returns a structured decision record containing selected worker, confidence, short task diagnosis, evidence used, expected failure mode, and expected cost risk.
 No external classifier is introduced.
 The diagnostic question is whether progressive signals change the router's own decision record:
-selected-worker distribution, confidence, diagnosis consistency with the predeclared mode, and cited evidence.
+selected-worker distribution, confidence, diagnosis consistency with the declared task mode, and cited evidence.
 This experiment targets the routing-information term $\MI_\pi(S;Z)$ in Theorem~\ref{thm:four-term}.
 In the benchmark we do not give the orchestrator an oracle mode label or train a separate diagnostic classifier; instead, $Z_j$ is the progressively richer pre-deployment record actually available to the router.
 Thus the audit asks whether additional signals expose solver-relevant structure of the task instance strongly enough to alter the router-facing state and selected-worker distribution.
@@ -683,7 +644,7 @@ Using the decisions from Experiment 2, compute shift rates
 \[
 \Pr[\rho_j(X)\ne \rho_0(X)]
 \]
-across modes and router repetitions.
+across task modes and router repetitions.
 Then use the frontier from Experiment 1 to score each selected action by allocation regret
 \[
 r_j(s)
@@ -699,7 +660,7 @@ Conversely, low regret is the operational evidence that the richer signal improv
 
 \paragraph{Experiment 4: paired selected-worker deployment gain.}
 Choose the best-performing non-static signal condition from the diagnostic split, or report all $j\in\{1,2,3\}$ with multiplicity control.
-For each mode and paired run index $r$, compare the worker selected under $Z_0$ with the worker selected under $Z_j$ from the same original artifact and horizon.
+For each task mode and paired run index $r$, compare the worker selected under $Z_0$ with the worker selected under $Z_j$ from the same original artifact and horizon.
 Estimate
 \[
 \widehat{\Delta}_R(j)
@@ -717,18 +678,18 @@ Positive routing information and lower mismatch are not sufficient by themselves
 
 \paragraph{Experiment 5: negative controls.}
 Repeat Experiments 2--4 with schema-preserving controls:
-shuffled probe records, probes from the wrong canonical mode, and synthetic noise records with the same field names and token length.
+shuffled probe records, probes from the wrong task mode, and synthetic noise records with the same field names and token length.
 The same router, prompt, worker menu, and scoring rule are used.
 These controls test whether the measured routing-information and mismatch effects are specific to task-relevant signal content.
 They preserve the format and approximate context burden of $Z_j$ while breaking its relationship to the task mode and worker frontier.
 A credible interpretation of Theorem~\ref{thm:four-term} requires the real signal to reduce allocation regret and improve paired deployment gain more than these controls after measurement cost is charged.
 
 \paragraph{Experiment 6: robustness to task-instance variation.}
-The main campaign deliberately fixes \texttt{train.py} initialization and data split to isolate agentic trajectory variance.
-As a robustness appendix, repeat the worker-frontier and paired-routing comparisons with a small grid of additional initialization/data seeds, e.g. three seeds and five trajectories per mode--worker cell.
+The main protocol deliberately fixes \texttt{train.py} initialization and data split to isolate agentic trajectory variance.
+As a robustness appendix, repeat the worker-frontier and paired-routing comparisons with a small grid of additional initialization/data seeds, e.g. three seeds and five trajectories per task-mode--worker cell.
 These runs are not pooled with the main estimates.
-They stress-test Assumption~\ref{ass:packed}, which requires the finite mode abstraction to have stable worker success probabilities and costs within each mode family.
-The additional seeds define nearby executable task instances, not new pooled evidence for the main canonical estimates.
+They stress-test Assumption~\ref{ass:packed}, which requires the finite mode abstraction to have stable worker success probabilities and costs within each task mode.
+The additional seeds define nearby executable task instances, not new pooled evidence for the main estimates.
 If competence frontiers, allocation regret, or paired gains change qualitatively under these modest perturbations, the experiment has found a useful warning: the packed-mode abstraction is too coarse for the claimed theory-facing explanation.
 
 \paragraph{Claim promotion gates.}
@@ -1021,6 +982,29 @@ This signal-state decomposition is a diagnostic companion to the deployment-gain
 
 \section{Operational estimator details}
 \label{app:experiment-details}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Frozen operational configuration for the main protocol.
+All values are fixed within a task mode; repeated runs vary only the agentic trajectory.}
+\label{tab:train-config}
+\begin{tabular}{@{}p{0.30\linewidth}p{0.60\linewidth}@{}}
+\toprule
+Component & Fixed value \\
+\midrule
+Dataset and split & CIFAR-10, $50{,}000$ training examples and $10{,}000$ validation examples; balanced subset, label noise $0.0$, imbalance ratio $1.0$; the train/validation split is fixed in the main protocol \\
+Data seed & Common fixed data/subset seed; alternative split seeds are reported only as robustness variants \\
+\texttt{train.py} initialization seed & \texttt{SEED=42}; used for Python, NumPy, PyTorch, CUDA seeds, deterministic PyTorch mode, and the training-loader generator; alternative initialization seeds are robustness variants \\
+Training transforms & random crop with padding $4$, random horizontal flip, CIFAR-10 normalization; validation uses normalization only \\
+Training budget per checker call & fixed-step mode with \texttt{A\_MAX\_STEPS=256}; time budget \texttt{120s} is a fallback, not the primary scoring convention \\
+Common hyperparameters & \texttt{BATCH\_SIZE=64}, \texttt{NUM\_WORKERS=0}, Adam, learning rate $5\cdot 10^{-4}$, weight decay $10^{-4}$, betas $(0.9,0.999)$, no LR schedule \\
+Task mode & \texttt{mlp\_flat}, \texttt{cnn\_compact}, or \texttt{resnet\_micro} \\
+Shared template parameters & depth $2$, base channels $12$, channel multiplier $2$, batch norm enabled, dropout $0.0$, and hidden width $48$ \\
+Agent horizon & $H=20$ edit--verify steps; trajectories continue to $H$ after first success to measure persistence and final quality \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \paragraph{Trajectory record.}
 Each run stores the worker alias, resolved model identifier, split, task family, diagnostic state, seed, maximum horizon $H$, signal condition, prompt hash, router output, selected worker, and cost convention.
