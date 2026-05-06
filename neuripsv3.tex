@@ -154,6 +154,48 @@ given a task instance and a finite menu of possible workers or harnesses, which 
 The answer is not necessarily the model with the best final score.
 A deployment action must produce checked progress under finite time, token, API, and evaluation budgets.
 
+% ------------------------------------------------------------------
+% Archived pre-merge Definitions 1 and 2.
+% Kept commented for comparison with the current consolidated setup.
+%
+% \begin{definition}[Checked deployment task]
+% \label{def:checked-task}
+% A checked deployment task is a tuple
+% \[
+% \mathcal T=(\mathcal X,\mathcal Y,V,\mu),
+% \]
+% where $\mathcal X$ is an instance space, $\mathcal Y$ is an artifact or solution space,
+% $V$ is an external checker or scoring procedure on instance--artifact pairs, and
+% $\mu$ is the deployment distribution over instances.
+% For a realized instance $x\in\mathcal X$, an agent produces artifacts $y\in\mathcal Y$ that are scored by $V(x,y)$.
+% \end{definition}
+%
+% The checker may be binary, as in unit tests or proof checking, or scalar, as in validation loss or reward.
+% The key point is externality: progress is determined by the checker, not by the model's self-report.
+%
+% \begin{definition}[Actions and routers]
+% \label{def:actions-router}
+% Let $\mathcal A$ be a finite menu of deployable actions.
+% An action may be a single model, a fixed model harness, a retry policy, or a tool-using agent protocol.
+% For action $a\in\mathcal A$ and instance $x$, let
+% \[
+% \ell_{\mathrm{dep}}(a,x;\xi)
+% \]
+% be the predeclared deployment loss of running action $a$ on $x$, where $\xi$ denotes deployment randomness such as sampling, system latency, or data-order randomness.
+% The loss may include checked progress, failure, persistence above threshold, wall-clock time, token/API cost, and checker/evaluation cost.
+%
+% A router $R$ observes a permitted pre-deployment information state $W(x)$ and selects an action
+% \[
+% a_R(x)=R(W(x))\in\mathcal A.
+% \]
+% The selected action then performs the deployment run from the original task state.
+% \end{definition}
+%
+% This separates routing from deployment.
+% The router chooses what to run; the selected action performs the actual checked run.
+% Unless explicitly declared otherwise, pre-deployment records are shown only to the router and are not passed to the selected worker.
+% ------------------------------------------------------------------
+
 \begin{definition}[Budgeted externally checked task]
 \label{def:checked-task}
 \label{def:task}
