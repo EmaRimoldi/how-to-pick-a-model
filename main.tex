@@ -271,19 +271,9 @@ to accumulate the same focused computation expands by \(1/q_z(s)\).
 The support condition says that the scheduler may not assign zero effort to a mode that
 remains possible after observing \(Z=z\).
 
-\paragraph{Example: repository repair.}
 Consider a repository-repair benchmark such as SWE-bench.  An instance is a repository
 state with an issue, visible failures, and an evaluation harness; an artifact is a patch.
-Useful modes might be:
-\[
-    \text{local interface error},
-    \quad
-    \text{dependency or API mismatch},
-    \quad
-    \text{algorithmic invariant bug},
-    \quad
-    \text{performance regression}.
-\]
+Useful modes might be: local interface error, dependency or API mismatch, algorithmic invariant bug, performance regression.
 The signal \(Z\) could include the issue text, visible-test names, stack traces, static-analysis
 warnings, and a short smoke-test probe.  A packed scheduler might assign effort shares to
 strategies such as local type/interface edits, dependency updates, invariant-preserving
