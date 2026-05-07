@@ -428,11 +428,7 @@ Given a checked progress trace $G_1,\ldots,G_H$, define
 \[
 \tau_\delta(a,x;\xi)=\inf\{t\le H:G_t(a,x;\xi)\ge\delta\},
 \qquad
-F_\delta(a,x;\xi)=\one\{\tau_\delta(a,x;\xi)=\infty\},
-\]
-and
-\[
-\Occ_{\delta,H}(a,x;\xi)=H^{-1}\sum_{t=1}^H\one\{G_t(a,x;\xi)\ge\delta\}.
+F_\delta(a,x;\xi)=\one\{\tau_\delta(a,x;\xi)=\infty\}.
 \]
 Let $c_\delta(a,x;\xi)$ be the normalized worker-side resource vector accumulated to $\tau_\delta\wedge H$, and let
 \[
@@ -449,61 +445,27 @@ The primary loss is
 \end{equation}
 with $\alpha_{\mathrm{fail}}=1$ and normalized resource weights $\lambda$ fixed before evaluation.
 This is the loss used in $\J_R(j)$ and $\Delta_R(j)$ unless a different primary loss is explicitly declared.
-Because the benchmark records full trajectories to horizon $H$, we also report the full-horizon audit loss
-\begin{equation}
-\ell_{\mathrm{audit}}(a,x;\xi)
-=
-\ell_{\mathrm{dep}}(a,x;\xi)
-+\alpha_{\mathrm{occ}}\bigl(1-\Occ_{\delta,H}(a,x;\xi)\bigr)
-+\alpha_{\mathrm{qual}}\psi(G_H(a,x;\xi)),
-\label{eq:audit-loss}
-\end{equation}
-where $\alpha_{\mathrm{occ}}=\alpha_{\mathrm{qual}}=1$ and $\psi(u)=1-u$ after clipping $G_H\in[0,1]$.
-The audit loss checks persistence and final quality; it does not change the first-passage cost convention in Theorem~\ref{thm:four-term}.
-
-\begin{algorithm}[Theory-to-deployment selection protocol]
-\label{alg:decomp-selection}
-\begin{tabular}{@{}r p{0.86\linewidth}@{}}
-\textit{Input:} &
-Task family, checker, finite task-mode schema $\cS$, action menu $\cA$, admissible progressive signals $\{Z_j\}$, pilot cell count $n_{\mathrm{cell}}$, deployment repeats $Q_{\mathrm{dep}}$, confirmation budget.\\[0.25em]
-\textit{Output:} &
-Recommended signal-conditioned deployment policy, reported accounting terms, paired deployment gain, and calibration diagnostics.\\[0.35em]
-1 &
-\textit{Freeze the modes and loss.} Declare $\cS$, success threshold $\delta$, horizon $H$, cost normalizers, deployment loss~\eqref{eq:deployment-loss}, measurement costs, and router output contract.\\
-2 &
-\textit{Structured pilot.} For each action $a\in\cA$ and mode $s\in\cS$, estimate $\hat p(a,s)$, $\hat\kappa(a,s)$, first-hit curves, occupancy, and uncertainty intervals.\\
-3 &
-\textit{Signal and router diagnostics.} For each progressive signal $Z_j$, report any predeclared signal-information diagnostic and log the action allocation induced by the router.\\
-4 &
-\textit{Accounting score.} Compute the four log-effort terms from Theorem~\ref{thm:four-term} only for quantities whose diagnostic estimators were predeclared; otherwise report allocation regret separately.\\
-5 &
-\textit{Paired deployment validation.} On the same holdout instances, run the selected action under $Z_0$ and richer $Z_j$ conditions, score repeated selected-worker trajectories by~\eqref{eq:deployment-loss}, and subtract measurement cost.\\
-6 &
-\textit{Decision.} Choose the signal condition with the largest held-out $\widehat{\Delta}_R(j)$ subject to predeclared gates; use $\J$, frontier scores, and allocation regret as diagnostics, not as the final deployment objective.
-\end{tabular}
-\end{algorithm}
+Because the benchmark records full trajectories to horizon $H$, we also report persistence and final-quality audit diagnostics, but these do not change the first-passage convention in~\eqref{eq:deployment-loss}.
+Appendix~\ref{subsec:bridge} defines the audit loss, and Algorithm~\ref{alg:decomp-selection} gives the full protocol.
+Operationally, the protocol freezes the mode schema and losses, estimates worker success and first-passage cost by mode, audits signal and router allocation, and validates finalists by paired selected-worker deployment after measurement cost.
 
 \subsection{Progressive signals and paired router value}
 \label{subsec:paired}
 
-Let $Z_j(X;\zeta_j)$ be the router-visible pre-deployment record under signal condition $j$, where $\zeta_j$ denotes measurement randomness.
-Let $Z_0$ be the static signal observed before choosing a deployment action.
-For any admissible richer condition $j$, the router observes $Z_j$, pays the corresponding measurement and router-context cost, and selects an action
+Let $Z_j(X;\zeta_j)$ be the router-visible pre-deployment record under signal condition $j$, and let $Z_0$ be the static baseline record.
+For any richer condition \(j\), the same router observes \(Z_j\), pays measurement/context cost, and selects
 \[
 a_R^j(X)=R(Z_j(X;\zeta_j);U_R)\in\cA .
 \]
-Here $U_R$ denotes router-side randomness; for deterministic routers it is fixed and suppressed.
-Thus the experimental comparison is between routing policies $\rho_0,\rho_j$ induced by different signals for the same orchestrator $R$, not between different orchestrators.
+Here \(U_R\) denotes router-side randomness; for deterministic routers it is fixed.
 The normalized measurement loss is
 \[
 \ell_{\mathrm{meas}}(j,x;\zeta_j)
 =
 \lambda_{\mathrm{meas}}^\top d_j(x;\zeta_j),
 \]
-where $d_j$ contains measurement wall-clock, tokens, checker calls, context expansion, parsing, retry, and latency costs.
-Set $\ell_{\mathrm{meas}}(0,x)=0$.
-The weights $\lambda_{\mathrm{meas}}$ use the same predeclared normalizers as deployment resource cost unless a separate router-cost scale is declared.
-In the main protocol, pre-deployment probes are outside the selected action's deployment run: they are charged through $\ell_{\mathrm{meas}}$ and do not reduce the later horizon $H$ or verifier budget $B_V$.
+where \(d_j\) contains wall-clock, token, checker-call, context, parsing, retry, and latency costs; \(\ell_{\mathrm{meas}}(0,x)=0\).
+Pre-deployment probes are charged through \(\ell_{\mathrm{meas}}\) but do not consume the later deployment horizon \(H\) or verifier budget.
 
 The selected-action deployment objective is
 \begin{equation}
@@ -515,7 +477,6 @@ The selected-action deployment objective is
 \right].
 \label{eq:router-objective}
 \end{equation}
-The expectation averages over task instances, measurement randomness, router randomness, and deployment randomness unless a conditional estimand is explicitly declared.
 The router-facing value of signal condition $j$ is the paired gain
 \begin{equation}
 \Delta_R(j)
@@ -537,33 +498,7 @@ Allocation shift alone is insufficient:
 \mathrm{Shift}_R(j)=\Pr[a_R^j(X)\neq a_R^0(X)]
 \]
 measures decision relevance, not benefit.
-
-\begin{proposition}[Unbiased paired router-gain estimator]
-\label{prop:paired-unbiased}
-Assume task instances are sampled i.i.d.\ from $\mu$, the orchestrator, action menu, and signal protocols are fixed before evaluation, measurement costs are recorded without bias, and deployment seeds are independent conditional on selected action and instance.
-The router is run once per instance and signal condition; the $Q_{\mathrm{dep}}$ deployment repeats estimate the conditional expected loss of the selected action.
-For condition $j$, estimate
-\[
-\widehat{\Delta}_R(j)
-=
-\frac{1}{N}\sum_{i=1}^N
-\left[
-\frac{1}{Q_{\mathrm{dep}}}\sum_{q=1}^{Q_{\mathrm{dep}}}
-\ell_{\mathrm{dep}}(a_{R,i}^0,x_i;\xi_{i,q}^{0})
--
-\frac{1}{Q_{\mathrm{dep}}}\sum_{q=1}^{Q_{\mathrm{dep}}}
-\ell_{\mathrm{dep}}(a_{R,i}^j,x_i;\xi_{i,q}^{j})
--
-\widehat{\ell}_{\mathrm{meas}}(j,x_i)
-\right].
-\]
-If the repeated-run averages are unbiased for the expected deployment losses of the selected actions, then
-$\E[\widehat{\Delta}_R(j)]=\Delta_R(j)$.
-\end{proposition}
-
-When the same worker is selected under $Z_0$ and $Z_j$, using common deployment seeds preserves unbiasedness and reduces paired variance.
-When counterfactual outcomes for all actions are logged on the same instance, hindsight action regret can be reported as a diagnostic, but it is not the primary estimand.
-If the study fixes a finite panel of executable settings rather than sampling i.i.d.\ instances from $\mu$, the same estimator describes that panel and should not be interpreted as a population-level deployment estimand.
+Appendix~\ref{app:experiment-details} gives the finite-sample estimator and its unbiasedness conditions.
 
 
 \section{Experiments and analysis}
@@ -575,7 +510,7 @@ The task modes are three starting optimization variants of the same checked task
 They are task modes because the dataset, checker, horizon, and success rule are fixed while the editable artifact's starting architecture and parameterization change, letting us test whether worker choice is mode-conditional rather than a single global ranking.
 The analyzed worker menu is \(\{\texttt{gpt\_5\_3\_codex},\texttt{gpt\_5\_4}\}\).
 Each action is one worker under the common prompt and harness, so \(\cA=\cM\) in this experiment.
-For each task-mode--worker cell we use 35 trajectories,  i.e., 35 independent AutoResearch runs, providing sufficient statistical power to support our conclusions. .
+For each task-mode--worker cell we use 35 independent AutoResearch trajectories.
 The router is a deterministic prompt-only orchestrator evaluated under four nested pre-deployment records \(Z_0,\ldots,Z_3\), from budget-only context to full unmodified-artifact baseline.
 The primary decision metric is the first-passage deployment loss in~\eqref{eq:deployment-loss}; full-horizon occupancy and final quality are audit metrics.
 Appendix~\ref{app:experiment-details} gives the frozen configuration, including horizon, checker budget, training budget, success threshold, signal contents, measurement-cost convention, progress normalization, smoothing rule, and logging schema.
@@ -1168,6 +1103,17 @@ We also log persistence through
 \[
 \Occ_{\delta,H}(a,x)=\frac{1}{H}\sum_{t=1}^H \one\{G_t(a,x)\ge \delta\}.
 \]
+The full-horizon audit loss used for persistence and final-quality checks is
+\begin{equation}
+\ell_{\mathrm{audit}}(a,x;\xi)
+=
+\ell_{\mathrm{dep}}(a,x;\xi)
++\alpha_{\mathrm{occ}}\bigl(1-\Occ_{\delta,H}(a,x;\xi)\bigr)
++\alpha_{\mathrm{qual}}\psi(G_H(a,x;\xi)),
+\label{eq:audit-loss}
+\end{equation}
+where \(\alpha_{\mathrm{occ}}=\alpha_{\mathrm{qual}}=1\) and \(\psi(u)=1-u\) after clipping \(G_H\in[0,1]\).
+It is an audit diagnostic, not the primary deployment loss.
 
 \paragraph{Competence.}
 The action competence component $p(a,s)$ is the first-success probability of action $a$ on task mode $s$:
@@ -1300,6 +1246,28 @@ It is a diagnostic companion to the deployment-gain estimand~\eqref{eq:router-ga
 \section{Full selection protocol and experimental configuration}
 \label{app:experiment-details}
 
+\begin{algorithm}[Theory-to-deployment selection protocol]
+\label{alg:decomp-selection}
+\begin{tabular}{@{}r p{0.86\linewidth}@{}}
+\textit{Input:} &
+Task family, checker, finite task-mode schema $\cS$, action menu $\cA$, admissible progressive signals $\{Z_j\}$, pilot cell count $n_{\mathrm{cell}}$, deployment repeats $Q_{\mathrm{dep}}$, confirmation budget.\\[0.25em]
+\textit{Output:} &
+Recommended signal-conditioned deployment policy, reported accounting terms, paired deployment gain, and calibration diagnostics.\\[0.35em]
+1 &
+\textit{Freeze the modes and loss.} Declare $\cS$, success threshold $\delta$, horizon $H$, cost normalizers, deployment loss~\eqref{eq:deployment-loss}, measurement costs, and router output contract.\\
+2 &
+\textit{Structured pilot.} For each action $a\in\cA$ and mode $s\in\cS$, estimate $\hat p(a,s)$, $\hat\kappa(a,s)$, first-hit curves, occupancy, and uncertainty intervals.\\
+3 &
+\textit{Signal and router diagnostics.} For each progressive signal $Z_j$, report any predeclared signal-information diagnostic and log the action allocation induced by the router.\\
+4 &
+\textit{Accounting score.} Compute the four log-effort terms from Theorem~\ref{thm:four-term} only for quantities whose diagnostic estimators were predeclared; otherwise report allocation regret separately.\\
+5 &
+\textit{Paired deployment validation.} On the same holdout instances, run the selected action under $Z_0$ and richer $Z_j$ conditions, score repeated selected-worker trajectories by~\eqref{eq:deployment-loss}, and subtract measurement cost.\\
+6 &
+\textit{Decision.} Choose the signal condition with the largest held-out $\widehat{\Delta}_R(j)$ subject to predeclared gates; use $\J$, frontier scores, and allocation regret as diagnostics, not as the final deployment objective.
+\end{tabular}
+\end{algorithm}
+
 \paragraph{Panel of fixed executable settings.}
 The main experiment is a repeated-trajectory panel of fixed executable settings rather than a population draw from \(\mu\).
 Each task mode \(s\) is represented by one executable setting
@@ -1337,6 +1305,33 @@ For the router audit, the prompt-only router selects \texttt{gpt\_5\_4} on 27/30
 \paragraph{Promotion rule.}
 A routing recommendation is promoted only when worker-frontier estimates, cost sensitivity, router shift, action-frontier regret, paired gain after measurement cost, and negative controls agree.
 If diagnostics improve but paired deployment gain does not, the report treats the result as a mechanism failure rather than a useful router.
+
+\begin{proposition}[Unbiased paired router-gain estimator]
+\label{prop:paired-unbiased}
+Assume task instances are sampled i.i.d.\ from $\mu$, the orchestrator, action menu, and signal protocols are fixed before evaluation, measurement costs are recorded without bias, and deployment seeds are independent conditional on selected action and instance.
+The router is run once per instance and signal condition; the $Q_{\mathrm{dep}}$ deployment repeats estimate the conditional expected loss of the selected action.
+For condition $j$, estimate
+\[
+\widehat{\Delta}_R(j)
+=
+\frac{1}{N}\sum_{i=1}^N
+\left[
+\frac{1}{Q_{\mathrm{dep}}}\sum_{q=1}^{Q_{\mathrm{dep}}}
+\ell_{\mathrm{dep}}(a_{R,i}^0,x_i;\xi_{i,q}^{0})
+-
+\frac{1}{Q_{\mathrm{dep}}}\sum_{q=1}^{Q_{\mathrm{dep}}}
+\ell_{\mathrm{dep}}(a_{R,i}^j,x_i;\xi_{i,q}^{j})
+-
+\widehat{\ell}_{\mathrm{meas}}(j,x_i)
+\right].
+\]
+If the repeated-run averages are unbiased for the expected deployment losses of the selected actions, then
+$\E[\widehat{\Delta}_R(j)]=\Delta_R(j)$.
+\end{proposition}
+
+When the same worker is selected under $Z_0$ and $Z_j$, using common deployment seeds preserves unbiasedness and reduces paired variance.
+When counterfactual outcomes for all actions are logged on the same instance, hindsight action regret can be reported as a diagnostic, but it is not the primary estimand.
+If the study fixes a finite panel of executable settings rather than sampling i.i.d.\ instances from $\mu$, the same estimator describes that panel and should not be interpreted as a population-level deployment estimand.
 
 \begin{table}[t]
 \centering
