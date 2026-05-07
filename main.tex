@@ -653,40 +653,35 @@ We run every worker on every task mode before routing, estimating fixed-setting 
 These estimates instantiate the worker-side cost and competence terms in Theorem~\ref{thm:four-term}; the smoothed log-effort estimator is defined in Appendix~\ref{app:experiment-details}.
 
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\linewidth]{figures/autoresearch/twomodel_deployment_frontier.png}
-\caption{Two-worker frontier on the 35-run pooled panel.
-Left: first-passage deployment loss, lower is better.
-Right: certified log-effort surrogate.
-The two summaries disagree by mode: \texttt{gpt\_5\_4} reaches the threshold faster and has higher final verified improvement, while deployment-loss accounting favors \texttt{gpt\_5\_3\_codex} in the promoted two-worker panel.}
-\label{fig:twomodel-frontier}
-\end{figure}
-
 \begin{table}[t]
 \centering
 \small
-\caption{Different summaries select different workers on the same trajectories.
-Speed uses lower mean first-hit step; quality uses higher final relative improvement; lower is better for log-effort and deployment loss.}
-\label{tab:ranking-disagreement}
-\begin{tabular}{@{}lccc@{}}
+\setlength{\tabcolsep}{3.2pt}
+\caption{Worker-frontier accounting on the 35-run pooled panel.
+\(C_\gamma\) is normalized wall-clock cost to first passage or horizon; lower is better for \(C_\gamma\), deployment loss, and log-effort.
+Bold marks the better accounting value within each mode.}
+\label{tab:worker-frontier-accounting}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}llrrrrrr@{}}
 \toprule
-Criterion & \textit{MLP-flat} & \textit{compact CNN} & \textit{micro ResNet} \\
+Mode & Worker & Success & Fail & Mean \(\tau\) & \(C_\gamma\) & Dep. loss & Log-effort \\
 \midrule
-First-hit speed & \texttt{gpt\_5\_4} & \texttt{gpt\_5\_4} & \texttt{gpt\_5\_4} \\
-Final improvement & \texttt{gpt\_5\_4} & \texttt{gpt\_5\_4} & \texttt{gpt\_5\_4} \\
-Certified log-effort & \texttt{gpt\_5\_4} & \texttt{gpt\_5\_4} & \texttt{gpt\_5\_3\_codex} \\
-Deployment loss & \texttt{gpt\_5\_3\_codex} & \texttt{gpt\_5\_3\_codex} & \texttt{gpt\_5\_3\_codex} \\
+\textit{MLP-flat} & \texttt{gpt\_5\_3\_codex} & 32/35 & 3 & 7.41 & \textbf{0.632} & \textbf{1.015} & 6.029 \\
+\textit{MLP-flat} & \texttt{gpt\_5\_4} & 35/35 & 0 & 2.49 & 0.880 & 1.083 & \textbf{4.991} \\
+\textit{compact CNN} & \texttt{gpt\_5\_3\_codex} & 34/35 & 1 & 6.03 & \textbf{0.675} & \textbf{0.964} & 5.774 \\
+\textit{compact CNN} & \texttt{gpt\_5\_4} & 35/35 & 0 & 3.06 & 1.295 & 1.479 & \textbf{5.492} \\
+\textit{micro ResNet} & \texttt{gpt\_5\_3\_codex} & 35/35 & 0 & 2.60 & \textbf{0.766} & \textbf{0.987} & \textbf{5.015} \\
+\textit{micro ResNet} & \texttt{gpt\_5\_4} & 35/35 & 0 & 1.80 & 2.048 & 2.234 & 5.461 \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 The frontier already rejects a single leaderboard ordering.
 Averaged across modes, \texttt{gpt\_5\_4} has lower mean first-hit step (2.45 vs.\ 5.35), higher final improvement (0.309 vs.\ 0.206), and lower mean log-effort (5.315 vs.\ 5.606).
 Under the declared deployment loss, however, always using \texttt{gpt\_5\_3\_codex} has lower mean loss than always using \texttt{gpt\_5\_4} (0.989 vs.\ 1.598), and deployment-loss accounting selects \texttt{gpt\_5\_3\_codex} in all three modes.
-Table~\ref{tab:ranking-disagreement} makes the mismatch explicit: conventional speed and quality favor \texttt{gpt\_5\_4}, the certified log-effort diagnostic is mode-dependent, and the promoted deployment loss favors \texttt{gpt\_5\_3\_codex}.
+Table~\ref{tab:worker-frontier-accounting} is the main diagnostic object: \texttt{gpt\_5\_4} is stronger on first-hit step, final quality, and mean log-effort, but the decomposition shows that its normalized wall-clock cost can dominate the gain in verified success.
 This is the empirical role of the decomposition: it exposes whether apparent performance comes from first-passage competence, cost, or mode-specific comparative advantage before a deployment loss decides the recommendation.
-Appendix~\ref{app:diagnostic-plots} provides the threshold sensitivity, trajectory-level progress, cost, token, and router-record diagnostics behind these aggregate summaries.
+Appendix~\ref{app:diagnostic-plots} visualizes the same worker-frontier quantities and provides the threshold sensitivity, trajectory-level progress, cost, token, and router-record diagnostics behind these aggregate summaries.
 
 \paragraph{Experiment 2: Signal audit.}
 We audit whether richer pre-deployment records change the deterministic router's decision state. In the current diagnostic, budget-only records recover the three task-mode labels at 0.349 accuracy, while probe-containing records recover them perfectly on the diagnostic set. Thus the signals can expose mode structure; the remaining question is whether the router converts that structure into better actions.
@@ -1798,27 +1793,13 @@ The threshold, trajectory, and cost diagnostics below use the same analyzed work
 These appendix plots use the same 35-trajectory-per-cell panel as the main analysis.
 The pooled appendix plots are robustness and mechanism diagnostics for the same accounting quantities reported in the main text.
 
-\begin{table}[ht]
+\begin{figure}[ht]
 \centering
-\small
-\caption{Worker-frontier summary on the 35-run pooled panel.
-Each cell uses 35 trajectories.
-Lower is better for log-effort and deployment loss.}
-\label{tab:twomodel-frontier}
-\resizebox{\linewidth}{!}{%
-\begin{tabular}{@{}llrrrr@{}}
-\toprule
-Mode & Worker & Success & Mean $\tau$ & Log-effort & Dep. loss \\
-\midrule
-\textit{MLP-flat} & \texttt{gpt\_5\_3\_codex} & 32/35 & 7.41 & 6.029 & 1.015 \\
-\textit{MLP-flat} & \texttt{gpt\_5\_4} & 35/35 & 2.49 & 4.991 & 1.083 \\
-\textit{compact CNN} & \texttt{gpt\_5\_3\_codex} & 34/35 & 6.03 & 5.774 & 0.964 \\
-\textit{compact CNN} & \texttt{gpt\_5\_4} & 35/35 & 3.06 & 5.492 & 1.479 \\
-\textit{micro ResNet} & \texttt{gpt\_5\_3\_codex} & 35/35 & 2.60 & 5.015 & 0.987 \\
-\textit{micro ResNet} & \texttt{gpt\_5\_4} & 35/35 & 1.80 & 5.461 & 2.234 \\
-\bottomrule
-\end{tabular}}
-\end{table}
+\includegraphics[width=\linewidth]{figures/autoresearch/twomodel_deployment_frontier.png}
+\caption{Worker-frontier visualization for the accounting quantities in Table~\ref{tab:worker-frontier-accounting}.
+The plot is diagnostic only: the main text table reports the numerical terms used for the deployment recommendation.}
+\label{fig:app-twomodel-frontier}
+\end{figure}
 
 \begin{figure}[ht]
 \centering
