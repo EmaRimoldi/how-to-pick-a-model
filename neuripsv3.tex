@@ -76,12 +76,15 @@ A Framework for Budget-Aware Orchestration}
 \begin{abstract}
 Agent systems on verified tasks invite a deceptively simple question: which backbone model should be run?
 The strongest model is not always the best deployment choice, because verified progress must be bought under finite wall-clock, token, API, and evaluation budgets.
-We formulate this problem as deployment-aware model selection.
+\revdel{We formulate this problem as deployment-aware model selection.}
+\revadd{We formulate this problem as deployment-aware model selection for verified agent systems.}
 A fixed router observes a pre-deployment information state and chooses a worker or harness action; the decision is scored by a checker-indexed deployment loss rather than by routing accuracy or final checker score alone.
 The key estimand is paired: on the same task instances, with the same router and action menu, does richer information change the selected action and reduce net deployment loss after its own measurement and context costs are charged?
 We instantiate the framework on a Karpathy AutoResearch-inspired CIFAR-10 edit--verify benchmark, where a prompt-only router chooses among heterogeneous workers before costly deployment runs.
-The protocol reports when checker-score rankings disagree with deployment-loss rankings, when pre-deployment information changes routing, and whether those changes pay for themselves.
-The resulting protocol evaluates not which agent is best in isolation, but when information is worth buying before deploying one.
+\revdel{The protocol reports when checker-score rankings disagree with deployment-loss rankings, when pre-deployment information changes routing, and whether those changes pay for themselves.}
+\revadd{The promoted two-worker study shows that first-hit speed, final improvement, log-effort, and deployment loss can rank workers differently. It also gives a negative routing result: probe signals expose the task modes, but the evaluated prompt-only router does not convert that information into positive paired deployment gain.}
+\revdel{The resulting protocol evaluates not which agent is best in isolation, but when information is worth buying before deploying one.}
+\revadd{The resulting protocol evaluates not which agent is best in isolation, but whether a router can buy and use information well enough to improve deployment value.}
 \end{abstract}
 
 \section{Introduction}
@@ -429,6 +432,14 @@ Rather than evaluate every complete design as an independent arm, the builder fi
 Then a larger finite design menu can be scored analytically, with expensive deployment evaluations reserved for finalists and for paired validation.
 
 The log-effort objective $\J$ is a diagnostic surrogate, not the deployment loss.
+\begin{center}
+\fbox{\begin{minipage}{0.92\linewidth}
+\textbf{Diagnostic versus decision loss.}
+\(\J\) explains cost--competence and signal/accounting structure under a declared diagnostic convention.
+\(\ell_{\mathrm{dep}}\) is the decision-facing loss used for paired deployment validation.
+We use \(\J\) to diagnose why rankings differ, and \(\ell_{\mathrm{dep}}\) to decide whether a routed policy actually improves deployment value.
+\end{minipage}}
+\end{center}
 For deployment validation we use a predeclared first-passage loss.
 Given a checked progress trace $G_1,\ldots,G_H$, define
 \[
@@ -595,11 +606,12 @@ The protocol uses three task modes:
 
 \paragraph{Execution protocol.}
 Appendix~\ref{app:experiment-details} reports the full fixed configuration read from the current \texttt{train.py} templates and the CIFAR-10 checker in Table~\ref{tab:train-config}.
-The paper-facing worker menu is
+The \revdel{paper-facing worker menu}\revadd{full campaign worker menu} is
 \[
 \cM_{\mathrm{main}}=\{\texttt{gpt\_5\_4\_mini},\ \texttt{gpt\_5\_3\_codex},\ \texttt{gpt\_5\_4}\}.
 \]
 In the main experiment, each deployable action is one worker under the common fixed prompt and harness, so $\cA=\cM$.
+\revadd{The promoted action menu for the paper-facing empirical claims is the mature two-worker menu \(\{\texttt{gpt\_5\_3\_codex},\texttt{gpt\_5\_4}\}\).}
 In the current snapshot, \texttt{gpt\_5\_3\_codex} and \texttt{gpt\_5\_4} are the mature comparison pair.
 \texttt{gpt\_5\_4\_mini} is being filled in as the lower-cost replacement for the unavailable \texttt{gpt\_5\_3\_codex\_spark} condition.
 Each worker uses the same prompt.
@@ -663,6 +675,7 @@ where $\epsilon_{\mathrm{frontier}}$ is a predeclared uncertainty tolerance.
 This experiment is the worker-side calibration for Theorem~\ref{thm:four-term}.
 It estimates fixed-prototype analogues of $\kappa(a,s)$ and $p(a,s)$ for every candidate action before any router is allowed to choose.
 The same estimates can be plugged into Theorem~\ref{thm:crossover}, because the first-passage success probabilities and first-passage costs determine when repeated deployments of a lower-cost worker can match the one-attempt success probability of a stronger worker.
+\revadd{In the current promoted two-worker menu this theorem is treated as a design rule rather than as an empirically confirmed regime, because neither mature worker is a stable ``cheap but weaker'' action across all modes.}
 
 \paragraph{Current worker-frontier results.}
 Because the Spark condition hit rate limits, the main snapshot below compares the two mature workers only:
@@ -790,13 +803,15 @@ On the real signal records, the router remains strongly biased toward \texttt{gp
 Mean log-effort regret does not decrease monotonically with richer information: it is 0.177 for \(Z_0\), 0.183 for \(Z_1\), 0.148 for \(Z_2\), and 0.192 for \(Z_3\).
 Thus the router-response audit separates information availability from useful allocation.
 The probe signals expose the predeclared task modes, but the prompt-only router mostly maps them to the same worker and does not reliably move toward the cost-adjusted frontier in Figure~\ref{fig:twomodel-confirmation}.
+\revadd{The rightmost panel in Figure~\ref{fig:twomodel-router-regret} adds the always-worker baselines and a non-deployable oracle that chooses the lower-loss worker for each evaluator mode. This oracle gap shows that the worker frontier contains exploitable mode-conditional structure, while the evaluated router does not close that gap.}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{figures/autoresearch/twomodel_router_selection_regret.png}
 \caption{Final two-worker router-response audit.
 Left: selected-worker distribution under real signal records.
-Right: allocation regret against the 35-run pooled log-effort frontier.
+Middle: allocation regret against the 35-run pooled log-effort frontier.
+Right: always-worker baselines, prompt-router policies, and the non-deployable mode oracle under deployment loss.
 Richer records change the router only weakly and do not monotonically reduce regret, even though the signal audit shows that probes contain mode information.}
 \label{fig:twomodel-router-regret}
 \end{figure}
