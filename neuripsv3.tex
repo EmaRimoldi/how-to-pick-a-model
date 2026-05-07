@@ -149,7 +149,7 @@ We organize the paper around three questions, each paired with the contribution 
 
 The experiments below instantiate these claims with checked trajectories and deployment accounting.
 
-\section{Problem setup and deployment estimands}
+\section{\revdel{Problem setup and deployment estimands}\revadd{Setup and accounting}}
 \label{sec:framework}
 
 We study the problem faced by a deployment system before launching an agentic run:
@@ -259,10 +259,12 @@ Modes are therefore not different tasks and not worker labels.
 They are variants of the same task: finite subpopulations of instances that share solver-relevant structure and may favor different workers or interventions.
 \end{definition}
 
-The mode variable is retained by the evaluator for accounting and diagnostic comparisons.
+\revdel{The mode variable is retained by the evaluator for accounting and diagnostic comparisons.
 It need not be observed by either the router or the worker.
 This lets the same theory cover expert-defined task-mode schemas and finite evaluator-defined modes.
-When an experiment uses one fixed executable prototype per mode, it estimates conditional panel quantities rather than the population quantities induced by $\mu$.
+When an experiment uses one fixed executable prototype per mode, it estimates conditional panel quantities rather than the population quantities induced by $\mu$.}
+\revadd{The evaluator retains \(S\) only for accounting: neither the router nor the worker needs to observe it.
+In the experiments, each mode is represented by one fixed executable prototype, so the reported quantities are fixed-panel analogues rather than population-level estimates under \(\mu\).}
 
 \begin{assumption}[Packed latent-mode family]
 \label{ass:packed}
@@ -288,11 +290,13 @@ For an instance whose true mode is $s$, the certified effort surrogate is propor
 \end{equation}
 \end{assumption}
 
-Assumption~\ref{ass:packed} is deliberately restrictive.
+\revdel{Assumption~\ref{ass:packed} is deliberately restrictive.
 Real task instances can vary in infinitely many ways, while the theory uses a finite state abstraction.
 The assumption says that, for model selection, instances can be packed into modes with stable action success probabilities.
 The purpose is to isolate the regime in which cost, competence, information, and the predeclared mode-summary divergence are algebraically separable.
-Residual and calibration diagnostics measure when this finite packing is too coarse.
+Residual and calibration diagnostics measure when this finite packing is too coarse.}
+\revadd{Assumption~\ref{ass:packed} is a diagnostic abstraction, not an empirical claim that the finite schema is universally correct.
+It isolates the regime where cost, competence, signal information, and mode-summary mismatch are algebraically separable; residual, calibration, and held-out deployment diagnostics test whether this abstraction is useful for the declared panel.}
 
 \begin{definition}[Cost-adjusted certified log-effort diagnostic objective]
 \label{def:objective}
@@ -326,7 +330,7 @@ The KL term below is therefore a mode-summary divergence under the chosen diagno
 It should be interpreted as a router failure only if the experiment predefines a reproducible construction of $q_z$ from router behavior.
 \end{remark}
 
-\section{Performance accounting}
+\section{\revdel{Performance accounting}\revadd{Accounting identity}}
 \label{sec:accounting}
 
 For a fixed signal value $z$, the routing part of the objective is the cross-entropy between the signal-induced mode distribution and the fixed evaluator-side mode-summary distribution:
@@ -388,7 +392,7 @@ Allocation regret, used later in the empirical protocol, is a separate action-fr
 The final decision is not made by the information term alone; it is made by paired deployment gain on held-out instances after measurement and context costs are charged.
 Appendix~\ref{subsec:bridge} gives the full operationalization of these diagnostics.
 
-\subsection{When lower-cost retries win}
+\subsection{\revdel{When lower-cost retries win}\revadd{Retry crossover design rule}}
 \label{sec:crossover}
 
 \begin{theorem}[Single-mode retry crossover]
@@ -424,12 +428,14 @@ The multi-mode case is where the four-term identity matters.
 A lower-cost worker can be rational on one task mode and irrational on another.
 A router is useful only when different actions win the cost--success tradeoff on different modes and the pre-deployment information helps identify which mode applies.
 
-\section{Decomposition-guided selection}
+\section{\revdel{Decomposition-guided selection}\revadd{Deployment validation protocol}}
 \label{sec:selection}
 
-The decomposition suggests a practical protocol.
+\revdel{The decomposition suggests a practical protocol.
 Rather than evaluate every complete design as an independent arm, the builder first estimates shared quantities: mode-conditional success, cost, predeclared signal diagnostics, and action-allocation diagnostics.
-Then a larger finite design menu can be scored analytically, with expensive deployment evaluations reserved for finalists and for paired validation.
+Then a larger finite design menu can be scored analytically, with expensive deployment evaluations reserved for finalists and for paired validation.}
+\revadd{The log-effort decomposition guides diagnostics, but deployment recommendations are made only after paired validation under a predeclared loss.
+The empirical protocol is compact: freeze modes, losses, cost normalizers, and signal records; estimate mode-conditional worker success and first-passage cost; audit whether richer records expose modes and change allocation; then validate finalists by paired selected-worker deployment after measurement cost.}
 
 The log-effort objective $\J$ is a diagnostic surrogate, not the deployment loss.
 \begin{center}
@@ -582,13 +588,16 @@ When the same worker is selected under $Z_0$ and $Z_j$, using common deployment 
 When counterfactual outcomes for all actions are logged on the same instance, hindsight action regret can be reported as a diagnostic, but it is not the primary estimand.
 If the study fixes a finite prototype panel rather than sampling i.i.d.\ instances from $\mu$, the same estimator describes that panel and should not be interpreted as a population-level deployment estimand.
 
-\section{Operational experimental protocol}
+\section{\revdel{Operational experimental protocol}\revadd{Experiments}}
 \label{sec:experiments}
 
-This section specifies the controlled protocol used to test the routed-policy decomposition.
+\revdel{This section specifies the controlled protocol used to test the routed-policy decomposition.
 The main study is a fixed-prototype repeated-run panel: it fixes three AutoResearch task modes and uses repeated agentic trajectories to estimate, for the same starting executable artifact, how worker choice, signal exposure, and routing affect first-passage success and cost.
 Accordingly, the primary estimates are panel analogues of the population quantities in Section~\ref{sec:accounting}.
-Aggregate panel summaries use the predeclared empirical mode weighting $\hat\pi(s)=1/3$ for $s\in\cS$.
+Aggregate panel summaries use the predeclared empirical mode weighting $\hat\pi(s)=1/3$ for $s\in\cS$.}
+\revadd{We instantiate the protocol on a fixed-prototype repeated-run panel.
+The panel fixes three CIFAR-10 edit--verify modes and uses repeated agentic trajectories from the same starting executable artifacts to estimate how worker choice, router-visible information, and allocation affect first-passage success and cost.
+All main estimates are panel analogues, with predeclared empirical mode weighting \(\hat\pi(s)=1/3\).}
 
 \paragraph{Task modes.}
 The task is AutoResearch-style executable-artifact optimization on CIFAR-10.
@@ -654,7 +663,7 @@ The primary cost $\hat\kappa_{\chi_s}(a)$ is the sample mean worker wall-clock a
 The primary deployment loss is the first-passage loss in~\eqref{eq:deployment-loss}; threshold occupancy and final checked quality are reported through the audit loss~\eqref{eq:audit-loss}.
 For log scores, we use the predeclared smoothed success estimate $\tilde p_{\chi_s}(a)$ to avoid infinite values in zero-success pilot cells.
 
-\paragraph{Experiment 1: worker frontier.}
+\paragraph{\revdel{Experiment 1: worker frontier.}\revadd{Worker frontier.}}
 Run all workers on all three task modes without a router:
 \[
 3\ \text{task modes}\times 3\ \text{workers}\times n_{\mathrm{cell}}=90
@@ -677,7 +686,7 @@ It estimates fixed-prototype analogues of $\kappa(a,s)$ and $p(a,s)$ for every c
 The same estimates can be plugged into Theorem~\ref{thm:crossover}, because the first-passage success probabilities and first-passage costs determine when repeated deployments of a lower-cost worker can match the one-attempt success probability of a stronger worker.
 \revadd{In the current promoted two-worker menu this theorem is treated as a design rule rather than as an empirically confirmed regime, because neither mature worker is a stable ``cheap but weaker'' action across all modes.}
 
-\paragraph{Current worker-frontier results.}
+\paragraph{\revdel{Current worker-frontier results.}\revadd{Worker-frontier results.}}
 Because the Spark condition hit rate limits, the main snapshot below compares the two mature workers only:
 \texttt{gpt\_5\_3\_codex} and \texttt{gpt\_5\_4}.
 For each task-mode--worker cell, we use the same paper-facing pooled panel: ten pilot trajectories plus the first 25 materialized holdout trajectories under the frozen deterministic seed order, for 35 runs per cell.
@@ -741,7 +750,7 @@ The crossover result is therefore a design rule for adding a genuinely lower-cos
 \label{fig:twomodel-crossover}
 \end{figure}
 
-\paragraph{Experiment 2: router-response audit.}
+\paragraph{\revdel{Experiment 2: router-response audit.}\revadd{Signal audit.}}
 For each task mode and each signal $Z_j$, query the same orchestrator under the same worker menu.
 The router returns a structured decision record containing selected worker, confidence, short task diagnosis, evidence used, expected failure mode, and expected cost risk.
 The diagnostic question is whether progressive signals change the router's own decision record:
@@ -749,7 +758,7 @@ selected-worker distribution, confidence, diagnosis consistency with the declare
 This is a router-response diagnostic, not an estimator of $\MI_\pi(S;Z)$.
 An information estimator would require a predeclared finite representation or predictive model for the signal records.
 
-\paragraph{Current signal-audit results.}
+\paragraph{\revdel{Current signal-audit results.}\revadd{Signal-audit results.}}
 The current router-facing diagnostic is not yet a deployment claim.
 It asks the narrower question required by the information term: whether admissible pre-deployment records distinguish the task modes that have different empirical frontiers.
 On the current snapshot, budget-only records collapse the three modes to the same predicted class, while probe-containing records perfectly recover the predeclared mode labels.
@@ -775,7 +784,7 @@ Leaky current-state control & 63 & 1.000 & 1.000 \\
 This supports the premise that low-cost probes can reveal mode information, but it does not yet prove that the router uses that information correctly.
 The deployment-facing question is deferred to Experiments~3 and~4: whether the induced worker choice moves toward the empirical frontier and pays for the measurement cost.
 
-\paragraph{Experiment 3: routing shift and allocation regret.}
+\paragraph{\revdel{Experiment 3: routing shift and allocation regret.}\revadd{Routing shift and allocation regret.}}
 Using the decisions from Experiment 2, compute the empirical panel shift rate
 \[
 \widehat{\mathrm{Shift}}_R(j)
@@ -797,7 +806,7 @@ Shift rate measures whether $Z_j$ changes the routing policy, while allocation r
 A signal can induce a router response and still increase allocation regret if it makes the orchestrator change worker in the wrong direction.
 Conversely, low regret indicates that the selected action moved closer to the empirical mode-conditional frontier rather than merely increasing decision variability.
 
-\paragraph{Current routing-regret status.}
+\paragraph{\revdel{Current routing-regret status.}\revadd{Routing-regret results.}}
 The final two-worker router audit contains 480 prompt-only decisions: 30 instances, four signal levels, and four control conditions.
 On the real signal records, the router remains strongly biased toward \texttt{gpt\_5\_4}: it selects \texttt{gpt\_5\_4} on 27/30 budget-only records, 29/30 static-workload records, 30/30 probe records, and 28/30 full-scout records.
 Mean log-effort regret does not decrease monotonically with richer information: it is 0.177 for \(Z_0\), 0.183 for \(Z_1\), 0.148 for \(Z_2\), and 0.192 for \(Z_3\).
@@ -816,7 +825,7 @@ Richer records change the router only weakly and do not monotonically reduce reg
 \label{fig:twomodel-router-regret}
 \end{figure}
 
-\paragraph{Experiment 4: paired selected-worker deployment gain.}
+\paragraph{\revdel{Experiment 4: paired selected-worker deployment gain.}\revadd{Paired selected-worker deployment gain.}}
 Report all $j\in\{1,2,3\}$ with multiplicity control as the primary analysis.
 If a single non-static signal is selected on a diagnostic split, evaluate it only on a separate holdout split.
 For each task mode and paired deployment index $r$, compare the worker selected under $Z_0$ with the worker selected under $Z_j$ from the same original artifact and horizon.
@@ -837,7 +846,7 @@ This experiment is the deployment validation of the theory-facing diagnostics.
 Proposition~\ref{prop:paired-unbiased} gives the estimand and estimator for the same-orchestrator comparison, while~\eqref{eq:deployment-loss} defines the loss used to decide whether a signal-conditioned policy is actually better after measurement cost is charged.
 Positive routing information and lower allocation regret are not sufficient by themselves; the routed-policy claim is supported only when the paired gain $\widehat{\Delta}_R(j)$ is positive on held-out trajectories.
 
-\paragraph{Current validation status.}
+\paragraph{\revdel{Current validation status.}\revadd{Validation panel.}}
 For the two mature workers, we use the same 35-run pooled panel for all worker-frontier and routing-accounting quantities:
 \[
 3\ \text{task modes}\times 2\ \text{workers}\times 35=210
@@ -911,7 +920,7 @@ Signal & Pairs & Shift & Gross gain & Meas. loss & Net gain \\
 \end{tabular}
 \end{table}
 
-\paragraph{Experiment 5: negative controls.}
+\paragraph{\revdel{Experiment 5: negative controls.}\revadd{Negative controls.}}
 Repeat Experiments 2--4 with schema-preserving controls:
 shuffled probe records, probes from the wrong task mode, and synthetic noise records with the same field names and token length.
 The same router, prompt, worker menu, and scoring rule are used.
@@ -919,7 +928,7 @@ These controls test whether router response, allocation regret, and paired deplo
 They preserve the format, approximate context burden, and measurement/context cost of the corresponding real $Z_j$ while breaking its relationship to the task mode and worker frontier.
 A credible deployment claim requires the real signal to reduce allocation regret and improve paired deployment gain more than these controls after measurement cost is charged.
 
-\paragraph{Current negative-control status.}
+\paragraph{\revdel{Current negative-control status.}\revadd{Negative-control results.}}
 The negative controls are also complete on the final two-worker menu.
 They do not show a clean separation between real task-relevant signals and corrupted signals.
 For example, wrong-mode \(Z_2\) has a small positive mean net gain (0.017) with an interval crossing zero, while several shuffled or synthetic controls are negative with intervals similar to the real signals.
@@ -972,9 +981,10 @@ Finally, repeated sampling and inference-time scaling show that lower-cost or sm
 The first-passage retry crossover in Theorem~\ref{thm:crossover} is the simplest version of that tradeoff.
 The four-term identity embeds the same idea in a mode-aware routing and measurement account.
 
-\section{Discussion, future directions, and conclusion}
+\section{\revdel{Discussion, future directions, and conclusion}\revadd{Discussion and conclusion}}
 \label{sec:discussion}
 
+\revadd{The paper has two distinct claims: an exact theory-facing accounting identity for a certified log-effort surrogate, and a deployment-facing empirical claim that must pass paired-loss validation.}
 There are two levels of claim.
 The theory-facing claim is an accounting identity under Assumption~\ref{ass:packed}.
 It is exact, but only for the certified log-effort surrogate.
@@ -1002,7 +1012,7 @@ This distinction is the main empirical lesson of the final two-worker study.
 The \(Z_2\) and \(Z_3\) records contain task-mode information, but the induced policies have negative paired gain.
 The decomposition therefore functions as a claim discipline: it prevents us from promoting information availability as deployment value.
 
-\paragraph{Future directions.}
+\paragraph{\revdel{Future directions.}\revadd{Limitations and future work.}}
 The immediate experimental extension is to finish the \texttt{gpt\_5\_4\_mini} pilot and holdout cells, replacing the unavailable Spark worker with a stable lower-cost action.
 That would make the worker menu span a broader cost--capability frontier than the two-worker mature comparison reported here.
 It would also test the retry-crossover theorem in its intended regime, where a lower-cost worker may compensate for lower one-attempt success through repeated checked attempts.
@@ -1021,7 +1031,7 @@ That negative result is not a failure of the framework; it is the framework doin
 
 \appendix
 
-\section{Proof details}
+\section{\revdel{Proof details}\revadd{Proofs and retry rule}}
 \label{app:proofs}
 
 \subsection{Four-term identity}
@@ -1084,7 +1094,7 @@ A union bound over $|\cA|\,|\cS|$ cells yields the conservative pilot rule
 \]
 Wilson intervals and bootstrap intervals are reported in practice because pilot cell counts are small.
 
-\section{Operational diagnostics for the four terms}
+\section{\revdel{Operational diagnostics for the four terms}\revadd{Operational diagnostics}}
 \label{subsec:bridge}
 
 The identity above becomes useful only after each term is tied to quantities logged by the deployment protocol.
@@ -1179,7 +1189,7 @@ After these diagnostics are estimated, the experiment still reports the decision
 The full-horizon audit loss in~\eqref{eq:audit-loss} is reported separately for persistence and final-quality checks.
 These losses are not replacements for the theorem; they test whether designs favored or explained by the diagnostics improve the practical deployment objective.
 
-\section{Operational decomposition under progressive signals}
+\section{\revdel{Operational decomposition under progressive signals}\revadd{Progressive-signal decomposition}}
 \label{app:operational-decomp}
 
 The main four-term identity compares a deployed design to a prior-matched baseline.
@@ -1240,7 +1250,7 @@ When $Z_j$ refines $Z_0$, $G(j)=\MI(S;Z_j\mid Z_0)$.
 This signal-mode decomposition is theory-facing and excludes measurement cost unless such a term is added explicitly.
 It is a diagnostic companion to the deployment-gain estimand~\eqref{eq:router-gain}, not a replacement for it.
 
-\section{Operational estimator details}
+\section{\revdel{Operational estimator details}\revadd{Full selection protocol and experimental configuration}}
 \label{app:experiment-details}
 
 \begin{table}[t]
@@ -1331,7 +1341,7 @@ Aggregated objectives, paired gains, and calibration diagnostics use bootstrap o
 If the main protocol remains a fixed-prototype repeated-run panel, paired randomization tests over repeated trajectories are descriptive for that panel and should not be interpreted as population-level inference.
 If independent task instances are added, uncertainty is reported at the task-instance level.
 
-\section{Additional diagnostic plots}
+\section{\revdel{Additional diagnostic plots}\revadd{Additional plots}}
 \label{app:diagnostic-plots}
 
 This appendix collects auxiliary diagnostics generated from the experimental logs.
