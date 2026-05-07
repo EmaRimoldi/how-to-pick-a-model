@@ -536,99 +536,112 @@ systems win the cost--success tradeoff on different modes and the start-of-run s
 identify which mode applies.
 
 
-
 \section{Deployment validation protocol}
 \label{sec:selection}
 
+The packed identity is a diagnostic for mode-conditioned log-speedup.  Deployment
+recommendations are made by paired validation under a predeclared loss.  In this section
+we write \(a\in\cA\) for a generic deployable action: a single system \(M\), a retry block,
+a fallback rule, or a fixed harness.  If the validation menu contains only single systems,
+then \(\cA=\cM\).  This is the only notation change: Sections~\ref{subsec:packed-latent-modes}
+and~\ref{sec:accounting} use \(M\) for the systems entering the packed identity, while
+this section uses \(a\) for the actions actually compared in deployment.
 
-The log-effort decomposition guides diagnostics, but deployment recommendations are made only after paired validation under a predeclared loss.
-The empirical protocol is compact: freeze modes, losses, cost normalizers, and signal records; estimate mode-conditional worker success and first-passage cost; audit whether richer records expose modes and change allocation; then validate finalists by paired selected-worker deployment after measurement cost.
+The empirical protocol is compact: freeze the mode schema, loss, cost normalizers, and
+router-visible records; estimate mode-conditioned success and first-passage cost; audit
+whether richer records expose modes and change allocation; then validate finalists by paired
+selected-action deployment after measurement cost.
 
-The log-effort objective $\J$ is a diagnostic surrogate, not the deployment loss.
-\begin{center}
-\fbox{\begin{minipage}{0.92\linewidth}
-\textbf{Diagnostic versus decision loss.}
-\(\J\) explains cost--competence and signal/accounting structure under a declared diagnostic convention.
-\(\ell_{\mathrm{dep}}\) is the decision-facing loss used for paired deployment validation.
-We use \(\J\) to diagnose why rankings differ, and \(\ell_{\mathrm{dep}}\) to decide whether a routed policy actually improves deployment value.
-\end{minipage}}
-\end{center}
-For deployment validation we use a predeclared first-passage loss.
-Given a verified progress trace $G_1,\ldots,G_H$, define
+For deployment validation we use a predeclared first-passage loss.  Given a verified
+progress trace \(G_1,\ldots,G_H\), let \(\gamma>0\) be the empirical success threshold and define
 \[
-\tau_\delta(a,x;\xi)=\inf\{t\le H:G_t(a,x;\xi)\ge\delta\},
-\qquad
-F_\delta(a,x;\xi)=\one\{\tau_\delta(a,x;\xi)=\infty\}.
+    \tau_\gamma(a,x;\xi)
+    =
+    \inf\{t\le H:G_t(a,x;\xi)\ge\gamma\},
+    \qquad
+    F_\gamma(a,x;\xi)
+    =
+    \one\{\tau_\gamma(a,x;\xi)=\infty\}.
 \]
-Let $c_\delta(a,x;\xi)$ be the normalized worker-side resource vector accumulated to $\tau_\delta\wedge H$, and let
+Let \(c_\gamma(a,x;\xi)\) be the normalized worker-side resource vector accumulated to
+\(\tau_\gamma\wedge H\), and let
 \[
-C_\delta(a,x;\xi)=\lambda^\top c_\delta(a,x;\xi)
+    C_\gamma(a,x;\xi)
+    =
+    \lambda^\top c_\gamma(a,x;\xi)
 \]
-be the scalar cost used in $\kappa(a,s)$.
-The primary loss is
+be the scalar deployment cost under the predeclared resource weights \(\lambda\).
+The primary deployment loss is
 \begin{equation}
 \ell_{\mathrm{dep}}(a,x;\xi)
 =
-\alpha_{\mathrm{fail}}F_\delta(a,x;\xi)
-+C_\delta(a,x;\xi),
+\alpha_{\mathrm{fail}}F_\gamma(a,x;\xi)
++
+C_\gamma(a,x;\xi),
 \label{eq:deployment-loss}
 \end{equation}
-with $\alpha_{\mathrm{fail}}=1$ and normalized resource weights $\lambda$ fixed before evaluation.
-This is the loss used in $\J_R(j)$ and $\Delta_R(j)$ unless a different primary loss is explicitly declared.
-Because the benchmark records full trajectories to horizon $H$, we also report persistence and final-quality audit diagnostics, but these do not change the first-passage convention in~\eqref{eq:deployment-loss}.
-Appendix~\ref{subsec:bridge} defines the audit loss, and Algorithm~\ref{alg:decomp-selection} gives the full protocol.
-Operationally, the protocol freezes the mode schema and losses, estimates worker success and first-passage cost by mode, audits signal and router allocation, and validates finalists by paired selected-worker deployment after measurement cost.
+with \(\alpha_{\mathrm{fail}}\) and \(\lambda\) fixed before evaluation.
+This is the loss used in \(\J_R(j)\) and \(\Delta_R(j)\) unless a different primary loss is
+explicitly declared.  Because the benchmark records full trajectories to horizon \(H\), we
+also report persistence and final-quality diagnostics, but these do not change the
+first-passage convention in~\eqref{eq:deployment-loss}.
 
 \subsection{Progressive signals and paired router value}
 \label{subsec:paired}
 
-Let $Z_j(X;\zeta_j)$ be the router-visible pre-deployment record under signal condition $j$, and let $Z_0$ be the static baseline record.
-For any richer condition \(j\), the same router observes \(Z_j\), pays measurement/context cost, and selects
+Let \(Z_j(X;\zeta_j)\) be the router-visible pre-deployment record under signal condition
+\(j\), and let \(Z_0\) be the static baseline record.  For any richer condition \(j\), the same
+router observes \(Z_j\), pays measurement/context cost, and selects
 \[
-a_R^j(X)=R(Z_j(X;\zeta_j);U_R)\in\cA .
+    a_R^j(X)=R(Z_j(X;\zeta_j);U_R)\in\cA .
 \]
 Here \(U_R\) denotes router-side randomness; for deterministic routers it is fixed.
 The normalized measurement loss is
 \[
-\ell_{\mathrm{meas}}(j,x;\zeta_j)
-=
-\lambda_{\mathrm{meas}}^\top d_j(x;\zeta_j),
+    \ell_{\mathrm{meas}}(j,x;\zeta_j)
+    =
+    \lambda_{\mathrm{meas}}^\top d_j(x;\zeta_j),
 \]
-where \(d_j\) contains wall-clock, token, verifier-call, context, parsing, retry, and latency costs; \(\ell_{\mathrm{meas}}(0,x)=0\).
-Pre-deployment probes are charged through \(\ell_{\mathrm{meas}}\) but do not consume the later deployment horizon \(H\) or verifier budget.
+where \(d_j\) contains wall-clock, token, verifier-call, context, parsing, retry, and latency
+costs.  We set \(\ell_{\mathrm{meas}}(0,x)=0\).  Pre-deployment probes are charged through
+\(\ell_{\mathrm{meas}}\) but do not consume the later deployment horizon \(H\).
 
 The selected-action deployment objective is
 \begin{equation}
-\J_R(j)
-:=
-\E\left[
-\ell_{\mathrm{meas}}(j,X;\zeta_j)
-+\ell_{\mathrm{dep}}(a_R^j(X),X;\xi)
-\right].
+    \J_R(j)
+    :=
+    \E\left[
+        \ell_{\mathrm{meas}}(j,X;\zeta_j)
+        +
+        \ell_{\mathrm{dep}}(a_R^j(X),X;\xi)
+    \right].
 \label{eq:router-objective}
 \end{equation}
-The router-facing value of signal condition $j$ is the paired gain
+The router-facing value of signal condition \(j\) is the paired gain
 \begin{equation}
 \Delta_R(j)
 :=
 \J_R(0)-\J_R(j)
 =
 \E\!\left[
-\ell_{\mathrm{dep}}(a_R^0(X),X)
--
-\ell_{\mathrm{dep}}(a_R^j(X),X)
--
-\ell_{\mathrm{meas}}(j,X)
+    \ell_{\mathrm{dep}}(a_R^0(X),X)
+    -
+    \ell_{\mathrm{dep}}(a_R^j(X),X)
+    -
+    \ell_{\mathrm{meas}}(j,X)
 \right].
 \label{eq:router-gain}
 \end{equation}
-Positive $\Delta_R(j)$ means that the richer signal improves net deployment loss for the same router on the same task distribution.
-Allocation shift alone is insufficient:
+Positive \(\Delta_R(j)\) means that the richer signal improves net deployment loss for the
+same router on the same task distribution.  Allocation shift alone is insufficient:
 \[
-\mathrm{Shift}_R(j)=\Pr[a_R^j(X)\neq a_R^0(X)]
+    \mathrm{Shift}_R(j)
+    =
+    \Pr[a_R^j(X)\neq a_R^0(X)]
 \]
 measures decision relevance, not benefit.
-Appendix~\ref{app:experiment-details} gives the finite-sample estimator and its unbiasedness conditions.
+Appendix~\ref{app:experiment-details} gives the finite-sample estimator and its
+unbiasedness conditions.
 
 
 \section{Experiments and analysis}
@@ -636,12 +649,12 @@ Appendix~\ref{app:experiment-details} gives the finite-sample estimator and its 
 
 \paragraph{Setup.}
 We instantiate the framework on a repeated-trajectory panel for CIFAR-10 edit--verify optimization.
-The task modes are three starting optimization variants of the same verified task, \(\cS=\{\text{\textit{MLP-flat}},\text{\textit{compact CNN}},\text{\textit{micro ResNet}}\}\), with empirical weights \(\hat\pi(s)=1/3\).
-They are task modes because the dataset, verifier, horizon, and success rule are fixed while the editable artifact's starting architecture and parameterization change, letting us test whether worker choice is mode-conditional rather than a single global ranking.
+The task modes are three starting artifact variants of the same verified task, \(\cS=\{\text{\textit{MLP-flat}},\text{\textit{compact CNN}},\text{\textit{micro ResNet}}\}\).
+The dataset, verifier, horizon, and success rule are fixed while the editable artifact's starting architecture and parameterization change, letting us test whether worker choice is mode-conditional rather than a single global ranking.
 The analyzed worker menu is \(\{\texttt{gpt\_5\_3\_codex},\texttt{gpt\_5\_4}\}\).
 Each action is one worker under the common prompt and harness, so \(\cA=\cM\) in this experiment.
 For each task-mode--worker cell we use 35 independent AutoResearch trajectories.
-The router is a deterministic prompt-only orchestrator evaluated under four nested pre-deployment records \(Z_0,\ldots,Z_3\), from budget-only context to full unmodified-artifact baseline.
+The router is a deterministic prompt-only orchestrator evaluated under four nested pre-deployment records \(Z_0,\ldots,Z_3\). 
 The primary decision metric is the first-passage deployment loss in~\eqref{eq:deployment-loss}; full-horizon occupancy and final quality are audit metrics.
 Appendix~\ref{app:experiment-details} gives the frozen configuration, including horizon, verifier budget, training budget, success threshold, signal contents, measurement-cost convention, progress normalization, smoothing rule, and logging schema.
 
@@ -686,10 +699,7 @@ This is the empirical role of the decomposition: it exposes whether apparent per
 Appendix~\ref{app:diagnostic-plots} provides the threshold sensitivity, trajectory-level progress, cost, token, and router-record diagnostics behind these aggregate summaries.
 
 \paragraph{Experiment 2: Signal audit.}
-We audit whether richer pre-deployment records change the deterministic router's decision state.
-This is not an estimator of \(\MI(S;Z_j)\): a Shannon-information estimate would require a frozen finite representation or predictive model for the signal records.
-In the current diagnostic, budget-only records recover the three task-mode labels at 0.349 accuracy, while probe-containing records recover them perfectly on the diagnostic set.
-Thus the signals can expose mode structure; the remaining question is whether the router converts that structure into better actions.
+We audit whether richer pre-deployment records change the deterministic router's decision state. In the current diagnostic, budget-only records recover the three task-mode labels at 0.349 accuracy, while probe-containing records recover them perfectly on the diagnostic set. Thus the signals can expose mode structure; the remaining question is whether the router converts that structure into better actions.
 
 \paragraph{Experiment 3: Routing shift and action-frontier regret.}
 We measure this conversion with shift rate and action-frontier regret.
@@ -709,9 +719,7 @@ Richer records expose mode information but do not reliably move the prompt-only 
 
 The final audit contains 480 prompt-only decisions.
 On real signal records, the router remains strongly biased toward \texttt{gpt\_5\_4}.
-Mean log-effort regret is 0.177 for \(Z_0\), 0.183 for \(Z_1\), 0.148 for \(Z_2\), and 0.192 for \(Z_3\).
-Under the primary deployment loss, the non-deployable mode oracle in Figure~\ref{fig:twomodel-router-regret} coincides with always using \texttt{gpt\_5\_3\_codex}.
-This makes the failure sharper than missing a subtle switching rule: the prompt-only router remains biased toward \texttt{gpt\_5\_4}, the worker favored by speed and final-quality metrics rather than by the declared deployment loss.
+Mean log-effort regret is 0.177 for \(Z_0\), 0.183 for \(Z_1\), 0.148 for \(Z_2\), and 0.192 for \(Z_3\). The prompt-only router remains biased toward \texttt{gpt\_5\_4}, the worker favored by speed and final-quality metrics rather than by the declared deployment loss.
 Under log-effort, the frontier remains mode-dependent, with \texttt{gpt\_5\_4} favored on \textit{MLP-flat} and \textit{compact CNN} and \texttt{gpt\_5\_3\_codex} favored on \textit{micro ResNet}; the paired deployment loss decides which diagnostic should govern the promoted recommendation.
 Additional router-record completion and signal-ablation plots are reported in Appendix~\ref{app:diagnostic-plots}.
 
@@ -810,588 +818,334 @@ The final two-worker study asks that question directly and answers it negatively
 % APPENDIX PATCH
 % ============================================================
 
-\section{Proofs: Certified-time derivation of log-effort}
+
+\section{Proofs: certified-time derivation of log-effort}
 \label{app:certified-log-effort}
 
-This appendix derives the log-effort objective from certified time.
-The main text uses only the certified-time definition, the coding-gain upper bound, and the
-packed-mode identity.  Here we give the full chain:
+This appendix derives the log-effort identity used in Section~\ref{sec:accounting}.
+The main text uses three objects:
 \[
-    \text{certified time}
-    \;\longrightarrow\;
-    \text{universal scheduling}
-    \;\longrightarrow\;
-    \text{coding-gain upper bound}
-    \;\longrightarrow\;
-    \text{packed latent-mode identity}
-    \;\longrightarrow\;
-    \text{finite-horizon empirical surrogate}.
+    \overline T_M(\delta_{\mathrm{cert}})
+    \quad\text{global certified time,}
+    \qquad
+    \mathsf T_{M,q}(s,z)
+    \quad\text{packed mode-conditioned time,}
 \]
+and the packed identity of Theorem~\ref{thm:four-term}.
+The notation \(\overline T\) is reserved for certified-time quantiles; the symbol
+\(\mathsf T\) denotes the packed time-sharing model whose expected logarithm decomposes
+algebraically.
 
-\subsection{Certified time and universal scheduling}
+\subsection{Coding-gain bound}
 
-\paragraph{Verifiable task family.}
-For each scale \(n\), let
+Let \(\mathfrak A\) be a countable prefix-coded class of admissible solvers.  For
+\(B\in\mathfrak A\), let \(t_B(\delta_{\mathrm{cert}})\) denote its certified time at
+confidence level \(\delta_{\mathrm{cert}}\).  A baseline universal scheduler assigns Kraft
+weights \(w(B)\), while a conditioned scheduler, after observing a signal value \(Z=z\),
+assigns Kraft weights \(w(B\mid z)\).  Thus
 \[
-    \mathfrak T_n=(\cX_n,\cY_n,V_n,\mu_n)
+    \sum_{B\in\mathfrak A}w(B)\le 1,
+    \qquad
+    \sum_{B\in\mathfrak A}w(B\mid z)\le 1.
 \]
-be a verifiable deployment task, where \(\cX_n\) is the instance space, \(\cY_n\) is the
-artifact or solution space, \(V_n:\cX_n\times\cY_n\to\{0,1\}\) is an external verifier, and
-\(\mu_n\) is the deployment distribution.
-A randomized solver \(a\) maps \((x,r)\) to an artifact \(a(x;r)\), and its runtime is
-\(\tau_a(x;r)\).
-
-\begin{definition}[Certified time of a solver]
-\label{def:app-certified-time}
-For confidence level \(\delta_{\mathrm{cert}}\in(0,1)\), define
+Giving solver \(B\) only share \(w(B)\) of the wall-clock means that \(B\) receives
+\(t_B\) units of internal computation after \(t_B/w(B)\) wall-clock units.  Hence
 \[
-    t_a(n,\delta_{\mathrm{cert}})
-    :=
-    \inf\left\{
-        t>0:
-        \Pr_{X\sim\mu_n,r}
-        \big[
-            V_n(X,a(X;r))=1
-            \ \mathrm{and}\
-            \tau_a(X;r)\le t
-        \big]
-        \ge 1-\delta_{\mathrm{cert}}
-    \right\}.
-\]
-A solver is admissible at confidence \(\delta_{\mathrm{cert}}\) if this quantity is finite.
-We write \(\cA_n^\delta\) for the admissible solver class.
-\end{definition}
-
-\paragraph{Prefix-coded schedules.}
-Assume \(\cA_n^\delta\) is countable and prefix-coded.
-A baseline universal scheduler assigns Kraft weights
-\[
-    \sum_{a\in\cA_n^\delta} w(a)\le 1,
-\]
-while a conditioned scheduler, after observing side information \(D\), assigns
-\[
-    \sum_{a\in\cA_n^\delta} w(a\mid D)\le 1.
-\]
-Giving solver \(a\) a share \(w(a)\) of wall-clock computation means that \(a\) receives
-\(t_a\) internal units after approximately \(t_a/w(a)\) wall-clock units.  Thus the baseline
-and conditioned certified times are
-\[
-    \overline T_U(n,\delta_{\mathrm{cert}})
+    \overline T_U
     =
-    c_{\mathrm{sim}}(n)
-    \inf_{a\in\cA_n^\delta}
-    \frac{t_a(n,\delta_{\mathrm{cert}})}{w(a)},
-\]
-and
-\[
-    \overline T_{U_D}(n,\delta_{\mathrm{cert}})
+    c_{\mathrm{sim}}
+    \inf_{B\in\mathfrak A}
+    \frac{t_B(\delta_{\mathrm{cert}})}{w(B)},
+    \qquad
+    \overline T_{U\mid z}
     =
-    c_{\mathrm{sim}}(n)
-    \inf_{a\in\cA_n^\delta}
-    \frac{t_a(n,\delta_{\mathrm{cert}})}{w(a\mid D)}.
+    c_{\mathrm{sim}}
+    \inf_{B\in\mathfrak A}
+    \frac{t_B(\delta_{\mathrm{cert}})}{w(B\mid z)}.
 \]
-Here \(c_{\mathrm{sim}}(n)\ge 1\) is a shared simulation overhead.
 
 \begin{proposition}[Coding-gain bound]
 \label{prop:app-coding-gain}
-Fix a realization of \(D\), and let
+Fix a realized signal value \(z\), and let
 \[
-    a_D^\star
+    B_z^\star
     \in
-    \argmin_{a\in\cA_n^\delta}
-    \frac{t_a(n,\delta_{\mathrm{cert}})}{w(a\mid D)}.
+    \argmin_{B\in\mathfrak A}
+    \frac{t_B(\delta_{\mathrm{cert}})}{w(B\mid z)}.
 \]
 Then
 \[
-    \log\frac{\overline T_U(n,\delta_{\mathrm{cert}})}
-             {\overline T_{U_D}(n,\delta_{\mathrm{cert}})}
+    \log\frac{\overline T_U}{\overline T_{U\mid z}}
     \le
-    \log\frac{w(a_D^\star\mid D)}{w(a_D^\star)}.
+    \log\frac{w(B_z^\star\mid z)}{w(B_z^\star)}.
 \]
 \end{proposition}
 
 \begin{proof}
-By definition of \(a_D^\star\),
+By definition of \(B_z^\star\),
 \[
-    \overline T_{U_D}
+    \overline T_{U\mid z}
     =
     c_{\mathrm{sim}}
-    \frac{t_{a_D^\star}}{w(a_D^\star\mid D)}.
+    \frac{t_{B_z^\star}(\delta_{\mathrm{cert}})}
+         {w(B_z^\star\mid z)}.
 \]
-Since \(\overline T_U\) is an infimum over all admissible solvers,
+Since \(\overline T_U\) is an infimum over the same admissible solver class,
 \[
     \overline T_U
     \le
     c_{\mathrm{sim}}
-    \frac{t_{a_D^\star}}{w(a_D^\star)}.
+    \frac{t_{B_z^\star}(\delta_{\mathrm{cert}})}
+         {w(B_z^\star)}.
 \]
-Dividing the two inequalities cancels both \(c_{\mathrm{sim}}\) and \(t_{a_D^\star}\), yielding
+Dividing cancels \(c_{\mathrm{sim}}\) and \(t_{B_z^\star}(\delta_{\mathrm{cert}})\), giving
 \[
-    \frac{\overline T_U}{\overline T_{U_D}}
+    \frac{\overline T_U}{\overline T_{U\mid z}}
     \le
-    \frac{w(a_D^\star\mid D)}{w(a_D^\star)}.
+    \frac{w(B_z^\star\mid z)}{w(B_z^\star)}.
 \]
-Taking logs gives the claim.
+Taking logarithms proves the claim.
 \end{proof}
 
-\paragraph{Interpretation.}
-The bound says that side information cannot create certified speedup by magic.
-It can only move scheduler mass toward a solver that is good for the realized problem.
-On the log scale, this is a coding gain:
-\[
-    \log w(a\mid D)-\log w(a).
-\]
-This is the mathematical origin of the log objective.
+This is the basic coding interpretation of certified speedup: side information helps only
+by moving scheduler weight toward solvers that are useful for the realized instance.
 
-\subsection{Resource-bounded information upper bound}
+\subsection{Optional resource-bounded information form}
 
-The coding-gain bound is pointwise and elementary.
-To express it as an information upper bound, we need an aligned structure witness.
-This subsection states a safe version with all assumptions explicit.
+The previous bound is pointwise and does not require a structure variable.
+To express it as a resource-bounded information bound, one needs an aligned witness class.
 
 \begin{definition}[Resource-bounded structure length]
 \label{def:app-ipoly}
-Let \(H_n\) denote reusable task structure, and let
+Let \(H_{\mathrm{str}}\) denote reusable task structure, and let
 \[
-    \cS(H_n)\subseteq\cA_n^\delta
+    \mathfrak A(H_{\mathrm{str}})\subseteq \mathfrak A
 \]
-be a nonempty witness class of solvers realizing that structure.
-Define
+be a nonempty class of solvers realizing that structure.  Define
 \[
-    K^{\mathrm{poly}}(H_n)
+    K^{\mathrm{poly}}(H_{\mathrm{str}})
     :=
-    \inf_{a\in\cS(H_n)}\{-\log w(a)\},
+    \inf_{B\in\mathfrak A(H_{\mathrm{str}})}
+    \{-\log w(B)\},
 \]
 \[
-    K^{\mathrm{poly}}(H_n\mid D)
+    K^{\mathrm{poly}}(H_{\mathrm{str}}\mid z)
     :=
-    \inf_{a\in\cS(H_n)}\{-\log w(a\mid D)\},
+    \inf_{B\in\mathfrak A(H_{\mathrm{str}})}
+    \{-\log w(B\mid z)\},
 \]
 and
 \[
-    I_{\mathrm{poly}}(H_n:D)
+    I_{\mathrm{poly}}(H_{\mathrm{str}}:z)
     :=
-    K^{\mathrm{poly}}(H_n)
+    K^{\mathrm{poly}}(H_{\mathrm{str}})
     -
-    K^{\mathrm{poly}}(H_n\mid D).
+    K^{\mathrm{poly}}(H_{\mathrm{str}}\mid z).
 \]
 \end{definition}
 
 \begin{assumption}[Aligned witness]
 \label{ass:app-aligned-witness}
-For each realized \(D\), there exists a witness solver \(a_H(D)\in\cS(H_n)\) such that:
+For each realized \(z\), there exists
+\(B_H(z)\in\mathfrak A(H_{\mathrm{str}})\) such that
 \[
-    \log\frac{t_{a_H}}{w(a_H\mid D)}
+    \log\frac{t_{B_H}(\delta_{\mathrm{cert}})}{w(B_H\mid z)}
     \le
-    \inf_{a\in\cA_n^\delta}
-    \log\frac{t_a}{w(a\mid D)}
+    \inf_{B\in\mathfrak A}
+    \log\frac{t_B(\delta_{\mathrm{cert}})}{w(B\mid z)}
     +
-    \rho_D ,
+    \rho_z,
 \]
 and
 \[
-    -\log w(a_H)
+    -\log w(B_H)
     \le
-    K^{\mathrm{poly}}(H_n)+\kappa_D .
+    K^{\mathrm{poly}}(H_{\mathrm{str}})+\chi_z.
 \]
-The first inequality says the witness is nearly conditionally optimal.
-The second says it is not much longer under the baseline code than the shortest solver
-realizing the structure.
+The first inequality says that the structure witness is nearly conditionally optimal.
+The second says that the same witness is not much longer than the shortest prior-coded
+solver realizing the structure.
 \end{assumption}
 
-\begin{theorem}[Certified upper envelope]
-\label{thm:app-certified-upper-envelope}
+\begin{proposition}[Resource-bounded information upper bound]
+\label{prop:app-ipoly-bound}
 Under Assumption~\ref{ass:app-aligned-witness},
 \[
-    \log\frac{\overline T_U(n,\delta_{\mathrm{cert}})}
-             {\overline T_{U_D}(n,\delta_{\mathrm{cert}})}
+    \log\frac{\overline T_U}{\overline T_{U\mid z}}
     \le
-    I_{\mathrm{poly}}(H_n:D)+\kappa_D+\rho_D .
+    I_{\mathrm{poly}}(H_{\mathrm{str}}:z)+\chi_z+\rho_z.
 \]
-If the overheads satisfy \(\kappa_D+\rho_D=O(\log n+\log\log(1/\delta_{\mathrm{cert}}))\),
-then
-\[
-    \log\frac{\overline T_U(n,\delta_{\mathrm{cert}})}
-             {\overline T_{U_D}(n,\delta_{\mathrm{cert}})}
-    \le
-    I_{\mathrm{poly}}(H_n:D)
-    +
-    O(\log n+\log\log(1/\delta_{\mathrm{cert}})).
-\]
-\end{theorem}
+\end{proposition}
 
 \begin{proof}
 Let
 \[
-    L_U:=\inf_{a\in\cA_n^\delta}\left\{\log t_a-\log w(a)\right\},
+    L_U:=\inf_{B\in\mathfrak A}\{\log t_B-\log w(B)\},
     \qquad
-    L_D:=\inf_{a\in\cA_n^\delta}\left\{\log t_a-\log w(a\mid D)\right\}.
+    L_z:=\inf_{B\in\mathfrak A}\{\log t_B-\log w(B\mid z)\}.
 \]
-The shared simulation overhead cancels, so
+The simulation overhead cancels, so
 \[
-    \log\frac{\overline T_U}{\overline T_{U_D}}
+    \log\frac{\overline T_U}{\overline T_{U\mid z}}
     =
-    L_U-L_D.
+    L_U-L_z.
 \]
-For the aligned witness \(a_H=a_H(D)\),
+For \(B_H=B_H(z)\),
 \[
     L_U
     \le
-    \log t_{a_H}-\log w(a_H),
+    \log t_{B_H}-\log w(B_H),
 \]
-while Assumption~\ref{ass:app-aligned-witness} gives
+and Assumption~\ref{ass:app-aligned-witness} gives
 \[
-    L_D
+    L_z
     \ge
-    \log t_{a_H}-\log w(a_H\mid D)-\rho_D.
+    \log t_{B_H}-\log w(B_H\mid z)-\rho_z.
 \]
 Therefore
 \[
 \begin{aligned}
-    L_U-L_D
+    L_U-L_z
     &\le
-    \bigl[\log t_{a_H}-\log w(a_H)\bigr]
-    -
-    \bigl[\log t_{a_H}-\log w(a_H\mid D)-\rho_D\bigr]
-    \\
-    &=
-    -\log w(a_H)+\log w(a_H\mid D)+\rho_D.
+    -\log w(B_H)+\log w(B_H\mid z)+\rho_z.
 \end{aligned}
 \]
-By the prior-length assumption,
+Using
 \[
-    -\log w(a_H)\le K^{\mathrm{poly}}(H_n)+\kappa_D.
-\]
-Since \(a_H\in\cS(H_n)\),
-\[
-    -\log w(a_H\mid D)\ge K^{\mathrm{poly}}(H_n\mid D),
-\]
-equivalently,
-\[
-    \log w(a_H\mid D)\le -K^{\mathrm{poly}}(H_n\mid D).
-\]
-Combining,
-\[
-    L_U-L_D
+    -\log w(B_H)
     \le
-    K^{\mathrm{poly}}(H_n)-K^{\mathrm{poly}}(H_n\mid D)+\kappa_D+\rho_D
-    =
-    I_{\mathrm{poly}}(H_n:D)+\kappa_D+\rho_D .
+    K^{\mathrm{poly}}(H_{\mathrm{str}})+\chi_z
 \]
+and
+\[
+    \log w(B_H\mid z)
+    \le
+    -K^{\mathrm{poly}}(H_{\mathrm{str}}\mid z),
+\]
+we get
+\[
+    L_U-L_z
+    \le
+    K^{\mathrm{poly}}(H_{\mathrm{str}})
+    -
+    K^{\mathrm{poly}}(H_{\mathrm{str}}\mid z)
+    +
+    \chi_z+\rho_z.
+\]
+This is the claimed bound.
 \end{proof}
 
-\begin{remark}[Why the aligned-witness assumption is necessary]
-The elementary coding-gain bound holds without a structure witness.
-The \(I_{\mathrm{poly}}(H_n:D)\) upper bound does not.
-It requires the solver accelerated by \(D\) to be a near-optimal representative of the
-same reusable structure class \(H_n\).
-Without this alignment, side information might favor a solver unrelated to the proposed
-structure variable, and the claimed information upper bound would not follow.
+\begin{remark}[Why this assumption is explicit]
+The coding-gain bound in Proposition~\ref{prop:app-coding-gain} holds without a structure
+variable.  The \(I_{\mathrm{poly}}\) form does not.  It requires the solver accelerated by
+\(z\) to be represented by a near-optimal witness in the chosen reusable-structure class.
+Without this alignment, side information may favor a solver unrelated to
+\(H_{\mathrm{str}}\), and the information upper bound need not follow.
 \end{remark}
 
-\subsection{Packed latent-mode family}
+\subsection{Proper time and inverse-share expansion}
+\label{app:proper-time-inverse-share}
 
-We now specialize the scheduler picture to the finite mode model used in the main text.
+The packed-time law is the time-sharing expansion of focused certified time.
+For mode \(s\), \(t_0(M,s)\) is the focused certified scale of system \(M\): the time
+scale needed when all mode-relevant effort is assigned to the correct strategy.
+If the packed scheduler assigns that strategy only clock-rate share \(q_z(s)\), then the
+same focused computation is accumulated after time
+\[
+    \frac{t_0(M,s)}{q_z(s)}.
+\]
+Including scalar unit cost and shared simulation overhead gives
+\[
+    \mathsf T_{M,q}(s,z)
+    =
+    c_{\mathrm{sim}}\,
+    \kappa(M)\,
+    \frac{t_0(M,s)}{q_z(s)}.
+\]
+Thus the inverse-share factor is not a separate success-probability heuristic.
+The modeling assumption is the finite packed representation: that the workload is
+adequately described by a finite dictionary of solver-relevant modes and mode-specialized
+strategies.
 
-\begin{assumption}[Model-dependent packed latent-mode family]
-\label{ass:app-packed-model}
-Fix a task family and confidence level \(\delta_{\mathrm{cert}}\).
-Assume:
-\begin{enumerate}[leftmargin=1.25em,itemsep=0.15em]
-    \item \textbf{Latent modes.}
-    There is a finite latent mode
-    \[
-        S\in\cS=\{1,\ldots,m\},
-        \qquad
-        S\sim\pi.
-    \]
-    \item \textbf{Diagnostic signal.}
-    A diagnostic signal \(D_M\) may depend on the model or harness \(M\), with posterior
-    \[
-        \pi_D^M(s):=\Pr[S=s\mid D_M=D].
-    \]
-    If the diagnostic is model-independent, we write simply \(D\) and \(\pi_D\).
-    \item \textbf{Mode expert scale.}
-    For each model/action \(M\) and mode \(s\), there is an internal certified scale
-    \[
-        t_0(M,s,\delta_{\mathrm{cert}})>0.
-    \]
-    \item \textbf{Cost.}
-    Model/action \(M\) has per-unit deployment cost
-    \[
-        \kappa(M)>0.
-    \]
-    \item \textbf{Compute share.}
-    After observing \(D\), the scheduler chooses a share vector
-    \[
-        q_D^M\in\Delta(\cS),
-        \qquad
-        \pi_D^M(s)>0\Rightarrow q_D^M(s)>0.
-    \]
-    \item \textbf{Inverse-share certified time.}
-    Conditional on true mode \(s\), the certified time is
-    \[
-        \overline T^{(M)}_{q_D}(s,D)
-        =
-        c_{\mathrm{sim}}\,
-        \kappa(M)\,
-        \frac{t_0(M,s,\delta_{\mathrm{cert}})}{q_D^M(s)}.
-    \]
-\end{enumerate}
-\end{assumption}
-
-\paragraph{Why the inverse-share law is the right specialization.}
-The universal scheduler gives solver \(a\) only a fraction \(w(a)\) of wall-clock computation,
-so certified time is multiplied by \(1/w(a)\).
-In the packed family, the finite dictionary of solvers is identified with the mode dictionary.
-If the true mode is \(s\), only the share \(q_D^M(s)\) assigned to the correct mode expert
-contributes to that expert's internal progress.
-Thus assigning too little mass to the correct mode slows certified time by \(1/q_D^M(s)\).
-
-\subsection{Conditional log-time decomposition}
+\subsection{Conditional packed log-time}
 
 \begin{lemma}[Conditional packed log-time]
 \label{lem:app-conditional-packed}
-Under Assumption~\ref{ass:app-packed-model}, for every realized \(D\),
+Under Assumption~\ref{ass:packed}, for every realized signal \(Z=z\),
 \[
 \begin{aligned}
-    \E_{S\sim\pi_D^M}
+    \E_{S\sim\pi_z}
     \bigl[
-        \log \overline T^{(M)}_{q_D}(S,D)
+        \log \mathsf T_{M,q}(S,z)
     \bigr]
     &=
     \log c_{\mathrm{sim}}
     +
     \log\kappa(M)
     +
-    \E_{S\sim\pi_D^M}
-    [\log t_0(M,S,\delta_{\mathrm{cert}})]
+    \E_{S\sim\pi_z}[\log t_0(M,S)]
     \\
     &\quad
     +
-    H(\pi_D^M)
+    H(\pi_z)
     +
-    \KL(\pi_D^M\|q_D^M).
+    \KL(\pi_z\|q_z).
 \end{aligned}
 \]
-For fixed \(M\) and \(D\), the unique minimizer over share vectors is
+For fixed \(M\) and \(z\), the minimizing share vector is
 \[
-    q_D^{M,\star}=\pi_D^M,
+    q_z^\star=\pi_z,
 \]
-on the support of \(\pi_D^M\), and the excess conditional expected log-time of any other
-share vector is exactly
+on the support of \(\pi_z\), and the excess conditional expected log-time of any other
+\(q_z\) is exactly
 \[
-    \KL(\pi_D^M\|q_D^M).
+    \KL(\pi_z\|q_z).
 \]
 \end{lemma}
 
 \begin{proof}
-From Assumption~\ref{ass:app-packed-model},
+By Assumption~\ref{ass:packed},
 \[
-    \log \overline T^{(M)}_{q_D}(s,D)
-    =
-    \log c_{\mathrm{sim}}
-    +
-    \log \kappa(M)
-    +
-    \log t_0(M,s,\delta_{\mathrm{cert}})
-    -
-    \log q_D^M(s).
-\]
-Taking expectation over \(S\sim\pi_D^M\), all terms are immediate except the last:
-\[
-    \E_{S\sim\pi_D^M}[-\log q_D^M(S)]
-    =
-    \sum_s \pi_D^M(s)\log\frac{1}{q_D^M(s)}.
-\]
-By the cross-entropy identity,
-\[
-    \sum_s \pi_D^M(s)\log\frac{1}{q_D^M(s)}
-    =
-    H(\pi_D^M)+\KL(\pi_D^M\|q_D^M).
-\]
-Nonnegativity of KL gives optimality, and equality holds only when
-\(q_D^M=\pi_D^M\) on the support of \(\pi_D^M\).
-\end{proof}
-
-\subsection{Certified log-effort objective}
-
-\begin{definition}[Packed certified log-effort]
-\label{def:app-certified-log-effort}
-For model/action \(M\) and allocation rule \(D\mapsto q_D^M\), define
-\[
-    \J_{\log}(M,q)
-    :=
-    \E_D
-    \E_{S\sim\pi_D^M}
-    \left[
-        \log \overline T^{(M)}_{q_D}(S,D)
-    \right]
-    -
-    \log c_{\mathrm{sim}}.
-\]
-Equivalently,
-\[
-\boxed{
-    \J_{\log}(M,q)
-    =
-    \log\kappa(M)
-    +
-    \E_{S\sim\pi}
-    [\log t_0(M,S,\delta_{\mathrm{cert}})]
-    +
-    \E_D
-    \left[
-        H(\pi_D^M)+\KL(\pi_D^M\|q_D^M)
-    \right].
-}
-\]
-Lower \(\J_{\log}\) means lower geometric-mean certified effort.
-\end{definition}
-
-\begin{proof}[Justification of the equivalent expression]
-Apply Lemma~\ref{lem:app-conditional-packed} and average over \(D\).
-The term
-\[
-    \E_D\E_{S\sim\pi_D^M}[\log t_0(M,S,\delta_{\mathrm{cert}})]
-\]
-equals
-\[
-    \E_{S\sim\pi}[\log t_0(M,S,\delta_{\mathrm{cert}})]
-\]
-by the tower property.
-The shared \(\log c_{\mathrm{sim}}\) is subtracted by definition.
-\end{proof}
-
-\subsection{Routing-information identity}
-
-The first identity holds model fixed and isolates information generation and routing mismatch.
-
-\begin{theorem}[Routing-information identity]
-\label{thm:app-routing-information}
-Assume \(M\) is fixed, so \(t_0(M,s,\delta_{\mathrm{cert}})\) and \(\kappa(M)\) are common
-to baseline and deployed systems.
-Let the baseline use a fixed share vector \(q_0\), and let the deployed system use
-\(D\mapsto q_D\).
-Then
-\[
-\boxed{
-    \E
-    \left[
-        \log \overline T_{q_0}(S)
-        -
-        \log \overline T_{q_D}(S,D)
-    \right]
-    =
-    I_\pi(S;D)+\KL(\pi\|q_0)-\E_D\KL(\pi_D\|q_D).
-}
-\]
-In particular, if \(q_0=\pi\),
-\[
-    \E
-    \left[
-        \log \overline T_{\pi}(S)
-        -
-        \log \overline T_{q_D}(S,D)
-    \right]
-    =
-    I_\pi(S;D)-\E_D\KL(\pi_D\|q_D).
-\]
-\end{theorem}
-
-\begin{proof}
-For the fixed baseline \(q_0\), Lemma~\ref{lem:app-conditional-packed} with no diagnostic
-conditioning gives
-\[
-    \E[\log \overline T_{q_0}(S)]
+    \log \mathsf T_{M,q}(s,z)
     =
     \log c_{\mathrm{sim}}
     +
     \log\kappa(M)
     +
-    \E_\pi[\log t_0(M,S)]
-    +
-    H(\pi)
-    +
-    \KL(\pi\|q_0).
+    \log t_0(M,s)
+    -
+    \log q_z(s).
 \]
-For the deployed scheduler,
+Taking expectation over \(S\sim\pi_z\), the only nontrivial term is
 \[
-    \E[\log \overline T_{q_D}(S,D)]
+    \E_{S\sim\pi_z}[-\log q_z(S)]
     =
-    \log c_{\mathrm{sim}}
-    +
-    \log\kappa(M)
-    +
-    \E_\pi[\log t_0(M,S)]
-    +
-    \E_D H(\pi_D)
-    +
-    \E_D\KL(\pi_D\|q_D).
+    \sum_s \pi_z(s)\log\frac{1}{q_z(s)}.
 \]
-Subtracting cancels cost and internal scale, leaving
+The cross-entropy identity gives
 \[
-    H(\pi)-\E_DH(\pi_D)+\KL(\pi\|q_0)-\E_D\KL(\pi_D\|q_D).
+    \sum_s \pi_z(s)\log\frac{1}{q_z(s)}
+    =
+    H(\pi_z)+\KL(\pi_z\|q_z).
 \]
-Since
-\[
-    I_\pi(S;D)=H(\pi)-\E_DH(\pi_D),
-\]
-the result follows.
+Nonnegativity of KL gives optimality, with equality exactly when \(q_z=\pi_z\) on the
+support of \(\pi_z\).
 \end{proof}
 
-\subsection{Model-aware decomposition}
+\subsection{Proof of the packed-mode certified log-speedup identity}
 
-The previous theorem holds model fixed.
-The model-aware version adds cost and mode-conditioned competence.
-
-\begin{theorem}[Model-aware packed decomposition]
-\label{thm:app-model-aware}
-Under Assumption~\ref{ass:app-packed-model}, compare a baseline \((M_0,q_0)\) with a
-deployed system \((M,q_D^M)\).
-Then
-\[
-\boxed{
-\begin{aligned}
-&\E\!\left[
-    \log \overline T^{(M_0)}_{q_0}(S)
-    -
-    \log \overline T^{(M)}_{q_D}(S,D_M)
-\right]
-\\
-&\qquad =
-\underbrace{\log\frac{\kappa(M_0)}{\kappa(M)}}_{\mathrm{cost}}
-+
-\underbrace{
-\E_\pi
-\left[
-    \log\frac{t_0(M_0,S,\delta_{\mathrm{cert}})}
-              {t_0(M,S,\delta_{\mathrm{cert}})}
-\right]
-}_{\mathrm{competence}}
-+
-\underbrace{I_\pi(S;D_M)}_{\mathrm{routing\ information}}
-+
-\underbrace{\KL(\pi\|q_0)}_{\mathrm{baseline\ mismatch}}
--
-\underbrace{\E_{D_M}\KL(\pi_{D_M}^M\|q_{D_M}^M)}_{\mathrm{routing\ mismatch}} .
-\end{aligned}
-}
-\]
-If \(q_0=\pi\), this reduces to the four-term identity in the main text.
-\end{theorem}
-
-\begin{proof}
-For the baseline,
+\begin{proof}[Proof of Theorem~\ref{thm:four-term}]
+For the baseline system \((M_0,q_0)\), Lemma~\ref{lem:app-conditional-packed} with no
+signal conditioning gives
 \[
 \begin{aligned}
-    \E[\log \overline T^{(M_0)}_{q_0}(S)]
+    \E[\log \mathsf T_{M_0,q_0}(S)]
     &=
     \log c_{\mathrm{sim}}
     +
     \log\kappa(M_0)
     +
-    \E_\pi[\log t_0(M_0,S,\delta_{\mathrm{cert}})]
+    \E_{S\sim\pi}[\log t_0(M_0,S)]
     \\
     &\quad
     +
@@ -1400,69 +1154,108 @@ For the baseline,
     \KL(\pi\|q_0).
 \end{aligned}
 \]
-For the deployed system, Lemma~\ref{lem:app-conditional-packed} gives
+For the routed packed system \((M,q)\),
 \[
 \begin{aligned}
-    \E[\log \overline T^{(M)}_{q_D}(S,D_M)]
+    \E[\log \mathsf T_{M,q}(S,Z)]
     &=
     \log c_{\mathrm{sim}}
     +
     \log\kappa(M)
     +
-    \E_\pi[\log t_0(M,S,\delta_{\mathrm{cert}})]
+    \E_{S\sim\pi}[\log t_0(M,S)]
     \\
     &\quad
     +
-    \E_{D_M}H(\pi_{D_M}^M)
+    \E_ZH(\pi_Z)
     +
-    \E_{D_M}\KL(\pi_{D_M}^M\|q_{D_M}^M).
+    \E_Z\KL(\pi_Z\|q_Z).
 \end{aligned}
 \]
-Subtracting yields
+Here we used the tower property:
+\[
+    \E_Z\E_{S\sim\pi_Z}[\log t_0(M,S)]
+    =
+    \E_{S\sim\pi}[\log t_0(M,S)].
+\]
+Subtracting the routed expression from the baseline expression cancels the shared
+\(\log c_{\mathrm{sim}}\) and yields
 \[
 \begin{aligned}
-&\log\frac{\kappa(M_0)}{\kappa(M)}
-+
-\E_\pi
-\left[
-    \log\frac{t_0(M_0,S,\delta_{\mathrm{cert}})}
-              {t_0(M,S,\delta_{\mathrm{cert}})}
-\right]
+&\E[
+    \log \mathsf T_{M_0,q_0}(S)
+    -
+    \log \mathsf T_{M,q}(S,Z)
+]
 \\
-&\quad+
-H(\pi)-\E_{D_M}H(\pi_{D_M}^M)
+&\quad =
+\log\frac{\kappa(M_0)}{\kappa(M)}
++
+\E_{S\sim\pi}
+\left[
+    \log\frac{t_0(M_0,S)}{t_0(M,S)}
+\right]
++
+H(\pi)-\E_ZH(\pi_Z)
 +
 \KL(\pi\|q_0)
 -
-\E_{D_M}\KL(\pi_{D_M}^M\|q_{D_M}^M).
+\E_Z\KL(\pi_Z\|q_Z).
 \end{aligned}
 \]
-The entropy difference is \(I_\pi(S;D_M)\).
+Since
+\[
+    H(\pi)-\E_ZH(\pi_Z)=\MI_\pi(S;Z),
+\]
+we obtain
+\[
+\begin{aligned}
+&\E[
+    \log \mathsf T_{M_0,q_0}(S)
+    -
+    \log \mathsf T_{M,q}(S,Z)
+]
+\\
+&\quad =
+\log\frac{\kappa(M_0)}{\kappa(M)}
++
+\E_{S\sim\pi}
+\left[
+    \log\frac{t_0(M_0,S)}{t_0(M,S)}
+\right]
++
+\MI_\pi(S;Z)
++
+\KL(\pi\|q_0)
+-
+\E_Z\KL(\pi_Z\|q_Z).
+\end{aligned}
+\]
+This proves the general identity.  The prior-matched case \(q_0=\pi\) follows because
+\[
+    \KL(\pi\|\pi)=0.
+\]
 \end{proof}
 
-\subsection{From internal certified scale to success probability}
+\subsection{Success-hazard specialization}
 
-The decomposition above is exact in terms of the certified internal scale
-\(t_0(M,s,\delta_{\mathrm{cert}})\).
-The simpler notation \(p_M(s)\) is a specialization.
+The identity above is exact in terms of the focused certified scale \(t_0(M,s)\).
+The familiar success-probability form is a specialization.
 
-\paragraph{Exact geometric-trials calculation.}
-Suppose each unit attempt of model \(M\) on mode \(s\) succeeds independently with
-probability \(p_M(s)\in(0,1)\), and each unit attempt has normalized duration \(u_M(s)\).
+Suppose independent attempts of system \(M\) on mode \(s\) succeed with probability
+\(p_M(s)\in(0,1)\), and suppose one attempt has normalized unit duration \(u_M(s)\).
 After \(N\) attempts, the success probability is
 \[
     1-(1-p_M(s))^N.
 \]
-To achieve failure probability at most \(\delta_{\mathrm{cert}}\), it is enough and necessary that
+To achieve failure probability at most \(\delta_{\mathrm{cert}}\), it suffices and is necessary that
 \[
     N
     \ge
-    \frac{\log \delta_{\mathrm{cert}}}{\log(1-p_M(s))}
-    =
     \frac{\log(1/\delta_{\mathrm{cert}})}
          {-\log(1-p_M(s))}.
 \]
-Thus an exact geometric certified scale is
+Thus the exact geometric certified scale is
 \[
     t_0(M,s,\delta_{\mathrm{cert}})
     =
@@ -1470,65 +1263,54 @@ Thus an exact geometric certified scale is
     \left\lceil
     \frac{\log(1/\delta_{\mathrm{cert}})}
          {-\log(1-p_M(s))}
-    \right\rceil .
+    \right\rceil.
 \]
+Let
+\[
+    h_M(s):=-\log(1-p_M(s))
+\]
+be the verified success hazard.  Then, up to unit-duration and confidence constants,
+\[
+    t_0(M,s)\propto \frac{1}{h_M(s)}.
+\]
+When \(p_M(s)\) is small, or when \(p_M(s)\) is used as an effective verified success
+hazard,
+\[
+    h_M(s)\approx p_M(s),
+    \qquad
+    t_0(M,s)\propto\frac{1}{p_M(s)}.
+\]
+In that specialization,
+\[
+    \log\frac{t_0(M_0,s)}{t_0(M,s)}
+    =
+    \log\frac{p_M(s)}{p_{M_0}(s)}
+\]
+up to constants independent of the comparison.
 
-\paragraph{Hazard approximation.}
-For small or moderate \(p_M(s)\),
+\begin{remark}[Hazard versus raw success probability]
+When \(p_M(s)\) is not small, the exact scale is governed by
 \[
-    -\log(1-p_M(s))=p_M(s)+O(p_M(s)^2),
+    -\log(1-p_M(s)),
 \]
-so
-\[
-    t_0(M,s,\delta_{\mathrm{cert}})
-    \approx
-    u_M(s)\frac{\log(1/\delta_{\mathrm{cert}})}{p_M(s)}.
-\]
-If unit duration \(u_M(s)\) is absorbed into \(\kappa(M)\) or into the empirical cost term,
-then, up to constants independent of the design comparison,
-\[
-    \log t_0(M,s,\delta_{\mathrm{cert}})
-    \equiv
-    -\log p_M(s).
-\]
-This is the origin of the paper's cost-adjusted log-effort surrogate
-\[
-    \log\kappa(M)-\log p_M(s)-\log q_D(s).
-\]
-
-\begin{remark}[Use hazard rather than raw success probability when \(p\) is large]
-When \(p_M(s)\) is not small, the exact geometric scale is controlled by
-\[
-    h_M(s):=-\log(1-p_M(s)),
-\]
-not by \(p_M(s)\) itself.
-In that regime the exact competence term is
-\[
-    \E_\pi
-    \left[
-        \log\frac{h_M(S)}{h_{M_0}(S)}
-    \right]
-\]
-up to unit-duration factors.
-The simpler \(p_M(s)\) notation should be read as an effective certified hazard or
-finite-horizon success-efficiency surrogate.
+not by \(p_M(s)\) itself.  The main-text notation \(p_M(s)\) should therefore be read
+as an effective verified success hazard or as the small-\(p\) geometric-trials approximation.
 \end{remark}
 
 \subsection{Finite-horizon empirical surrogate}
 
-In AutoResearch-style experiments, the ideal geometric-trials model is only a motivating
-limit.  We therefore estimate finite-horizon quantities directly.
+In AutoResearch-style experiments, the geometric-trials model is only a motivating limit.
+We estimate finite-horizon quantities directly.
 
-\paragraph{First-hit probability and cost.}
-For model/action \(M\), mode \(s\), and horizon \(H\), define
+For system \(M\), mode \(s\), and horizon \(H\), define
 \[
     F_M(s,H):=\Pr(\tau_M\le H\mid S=s),
 \]
-where \(\tau_M\) is the first verified threshold crossing, and
+where \(\tau_M\) is the first verified threshold crossing, and define
 \[
     C_M(s,H):=\E[C_{\tau_M\wedge H}\mid M,S=s].
 \]
-The theorem-facing empirical log-effort loss is
+The theorem-facing finite-horizon log-effort loss is
 \[
     \ell_{\mathrm{hit}}(M,s;H)
     =
@@ -1536,15 +1318,14 @@ The theorem-facing empirical log-effort loss is
 \]
 where \(\alpha>0\) is a censoring floor.
 
-\paragraph{Occupancy when first hits saturate.}
-If first-hit success saturates, as in the current AutoResearch pilot, we also report a
-persistence statistic
+If first-hit success saturates, we also report a persistence statistic.  For empirical
+success threshold \(\gamma\),
 \[
-    O_M^\delta(s,H)
+    O_M^\gamma(s,H)
     =
     \E\left[
         \frac1H\sum_{h=1}^H
-        \one\{G_{M,h}\ge\delta\}
+        \one\{G_{M,h}\ge\gamma\}
         \,\middle|\,
         M,S=s
     \right],
@@ -1553,98 +1334,88 @@ and the corresponding operational loss
 \[
     \ell_{\mathrm{occ}}(M,s;H)
     =
-    \log C_M^H(s,H)-\log(O_M^\delta(s,H)\vee\alpha).
+    \log C_M^H(s,H)-\log(O_M^\gamma(s,H)\vee\alpha).
 \]
 Here \(C_M^H(s,H)\) is the full no-stop trajectory cost.
-This occupancy loss is not the exact packed theorem; it is an AutoResearch-facing
-deployment diagnostic for durable verified progress.
+This occupancy loss is not the exact packed theorem; it is a deployment diagnostic for
+durable verified progress.
 
 \paragraph{Metric guardrail.}
-The exact theorem decomposes
+The exact identity decomposes
 \[
-    \E[\log \overline T(S,D)].
+    \E[\log \mathsf T_{M,q}(S,Z)].
 \]
-The finite-horizon empirical losses approximate the same cost-divided-by-verified-progress
-principle, but they are not equal to a global certified quantile.
-For that reason the main experiments should report:
-\[
-    \ell_{\mathrm{hit}},
-    \qquad
-    \ell_{\mathrm{occ}},
-    \qquad
-    survival/hazard curves,
-    \qquad
-    and\ tail\ diagnostics
-\]
-rather than treating any single surrogate as the whole deployment objective.
+The finite-horizon losses approximate the same cost-divided-by-verified-progress principle,
+but they are not equal to the global certified-time quantile
+\(\overline T_M(\delta_{\mathrm{cert}})\).
+For that reason the experiments report first-hit loss, occupancy loss, survival curves,
+hazards, and residual calibration rather than treating a single surrogate as the complete
+deployment objective.
 
 \subsection{Approximate packedness and residual term}
 
-The packed identity is exact under the inverse-share time law.
-Outside that law, the correct statement is an identity plus a residual.
+The packed identity is exact under the inverse-share time law.  Outside that law, the
+right statement is an identity plus a residual.
 
-\begin{assumption}[Approximate inverse-share log-linearity]
-\label{ass:app-approx-log-linear}
+\begin{assumption}[Approximate packed log-linearity]
+\label{ass:app-approx-packed}
 Suppose
 \[
 \begin{aligned}
-    \log \overline T^{(M)}_{q_D}(s,D)
+    \log \mathsf T_{M,q}(s,z)
     &=
     \log c_{\mathrm{sim}}
     +
     \log\kappa(M)
     +
-    \log t_0(M,s,\delta_{\mathrm{cert}})
+    \log t_0(M,s)
     -
-    \log q_D^M(s)
-    \\
-    &\quad
+    \log q_z(s)
     +
-    r_M(s,D,q_D),
+    r_M(s,z,q),
 \end{aligned}
 \]
-where
+with
 \[
-    |r_M(s,D,q_D)|\le \eta
+    |r_M(s,z,q)|\le \eta
 \]
-uniformly over the evaluated design family.
+uniformly over the evaluated systems, modes, signals, and packed shares.
 \end{assumption}
 
-\begin{proposition}[Residual form of the decomposition]
+\begin{proposition}[Residual form of the packed identity]
 \label{prop:app-residual-decomp}
-Under Assumption~\ref{ass:app-approx-log-linear}, the model-aware decomposition becomes
+Under Assumption~\ref{ass:app-approx-packed},
 \[
 \begin{aligned}
 &\E[
-    \log \overline T^{(M_0)}_{q_0}(S)
+    \log \mathsf T_{M_0,q_0}(S)
     -
-    \log \overline T^{(M)}_{q_D}(S,D_M)
+    \log \mathsf T_{M,q}(S,Z)
 ]
 \\
-&\qquad =
+&\quad =
 \log\frac{\kappa(M_0)}{\kappa(M)}
 +
-\E_\pi
+\E_{S\sim\pi}
 \left[
     \log\frac{t_0(M_0,S)}{t_0(M,S)}
 \right]
 +
-I_\pi(S;D_M)
+\MI_\pi(S;Z)
 +
 \KL(\pi\|q_0)
 -
-\E_{D_M}\KL(\pi_{D_M}^M\|q_{D_M}^M)
+\E_Z\KL(\pi_Z\|q_Z)
 +
 R,
 \end{aligned}
 \]
 where
 \[
-    R
-    =
-    \E[r_{M_0}(S,q_0)-r_M(S,D_M,q_D)].
+    R=
+    \E[r_{M_0}(S,q_0)-r_M(S,Z,q)].
 \]
-If \(|r|\le\eta\), then
+If \(|r_M|\le\eta\) uniformly, then
 \[
     |R|\le 2\eta.
 \]
@@ -1652,26 +1423,29 @@ If \(|r|\le\eta\), then
 
 \begin{proof}
 Substitute the approximate log-linear expression into the proof of
-Theorem~\ref{thm:app-model-aware}.  All ideal terms decompose as before; the only leftover
-terms are the two residuals.  Uniform boundedness gives
+Theorem~\ref{thm:four-term}.  The ideal terms decompose exactly as before.  The only
+remaining terms are the two residuals:
+\[
+    R=
+    \E[r_{M_0}(S,q_0)-r_M(S,Z,q)].
+\]
+Uniform boundedness gives
 \[
     |R|
     \le
-    \E|r_{M_0}(S,q_0)|+\E|r_M(S,D_M,q_D)|
+    \E|r_{M_0}(S,q_0)|+\E|r_M(S,Z,q)|
     \le 2\eta.
 \]
 \end{proof}
 
-\paragraph{Empirical use.}
-The residual plot
+The empirical residual
 \[
     \widehat{\mathrm{Res}}(d)
     =
     \widehat J_{\mathrm{obs}}(d)-\widehat J_{\mathrm{acct}}(d)
 \]
-is the empirical test of approximate packedness.
-Large structured residuals by mode, model, horizon, or router indicate that the finite-mode
-inverse-share abstraction is missing an interaction.
+is the practical test of approximate packedness.  Structured residuals by mode, system,
+horizon, or router indicate that the finite packed abstraction is missing an interaction.
 
 
 \section{Operational diagnostics}
