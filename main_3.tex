@@ -17,6 +17,7 @@
 \newtheorem{assumption}{Assumption}
 \newtheorem{definition}{Definition}
 \newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
 \newtheorem{proposition}{Proposition}
 \newtheorem{corollary}{Corollary}
 \newtheorem{remark}{Remark}
@@ -734,13 +735,14 @@ Model choice inside an agent harness is not a scalar leaderboard problem.
 It is a budget-aware deployment decision validated by paired outcomes after measurement cost.
 The final two-worker study asks that question directly and answers it negatively for the current prompt-only router: pre-deployment information does not move allocation reliably enough to improve paired deployment loss.
 
-\bibliographystyle{unsrt}
+\bibliographystyle{unsrtnat}
 \bibliography{references}
 
 \appendix
 
 \section{Proofs and retry rule}
 \label{app:proofs}
+This appendix contains the algebra behind Theorem~\ref{thm:four-term} and the finite-pilot concentration argument used to motivate the experimental protocol.
 
 \subsection{From certified time to certified log-effort}
 \label{subsec:from-time-to-log-effort}
@@ -755,7 +757,7 @@ The log scale is the scale on which these multiplicative effects become additive
 This subsection derives the log-effort objective from certified time.
 
 \begin{definition}[Certified time-to-verified solution]
-\label{def:certified-time}
+\label{def:certified-time-app}
 Fix a checked deployment task \(\mathcal T=(\mathcal X,\mathcal Y,V,B_{\mathrm{dep}},\mu)\)
 and a randomized solver or deployable action \(A\).
 Let \(\tau_A(x;r)\) denote the time or normalized resource consumed by \(A\) on instance \(x\)
@@ -1437,7 +1439,7 @@ The threshold, trajectory, and cost diagnostics below use the same analyzed work
 These appendix plots use the same 35-trajectory-per-cell panel as the main analysis.
 The pooled appendix plots are robustness and mechanism diagnostics for the same accounting quantities reported in the main text.
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \small
 \caption{Worker-frontier summary on the 35-run pooled panel.
@@ -1459,7 +1461,7 @@ Mode & Worker & Success & Mean $\tau$ & Log-effort & Dep. loss \\
 \end{tabular}}
 \end{table}
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=\linewidth]{figures/autoresearch/twomodel_negative_controls.png}
 \caption{Negative-control paired gains for shuffled probes, wrong-mode probes, and synthetic noise records.
@@ -1545,17 +1547,6 @@ This supports the paper's budget-aware framing: worker choice cannot be reduced 
 The top row reports wall-clock minutes and the bottom row reports token accounting on a log scale.
 Mode-conditional cost spreads are large, which is why the retry-crossover theorem is treated as a cost-sensitive design rule rather than a generic endorsement of weaker workers.}
 \label{fig:app-cost-to-tau-full}
-\end{figure}
-
-\begin{figure}[p]
-\centering
-\includegraphics[width=0.49\linewidth]{figures/autoresearch/diag_first_hit_cdf_by_mode.png}
-\includegraphics[width=0.49\linewidth]{figures/autoresearch/diag_cost_to_tau_by_mode_worker.png}
-\caption{First-passage diagnostics.
-Left: first-hit CDFs by mode.
-Right: cost-to-threshold by mode and worker.
-These are the direct empirical objects behind the retry and time-to-certified-solution interpretation.}
-\label{fig:app-first-hit}
 \end{figure}
 
 \begin{figure}[p]
