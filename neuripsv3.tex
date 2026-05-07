@@ -15,6 +15,8 @@
 \usepackage{xcolor}
 \IfFileExists{ulem.sty}{\usepackage[normalem]{ulem}}{\newcommand{\sout}[1]{##1}}
 
+\newcommand{\pier}[1]{{\color{red} Pier: #1}}
+
 \newtheorem{assumption}{Assumption}
 \newtheorem{definition}{Definition}
 \newtheorem{theorem}{Theorem}
@@ -160,40 +162,40 @@ A deployment action must produce checked progress under finite time, token, API,
 % ------------------------------------------------------------------
 % Archived pre-merge Definitions 1 and 2.
 % Kept commented for comparison with the current consolidated setup.
-%
-% \begin{definition}[Checked deployment task]
-% \label{def:checked-task}
-% A checked deployment task is a tuple
-% \[
-% \mathcal T=(\mathcal X,\mathcal Y,V,\mu),
-% \]
-% where $\mathcal X$ is an instance space, $\mathcal Y$ is an artifact or solution space,
-% $V$ is an external checker or scoring procedure on instance--artifact pairs, and
-% $\mu$ is the deployment distribution over instances.
-% For a realized instance $x\in\mathcal X$, an agent produces artifacts $y\in\mathcal Y$ that are scored by $V(x,y)$.
-% \end{definition}
-%
-% The checker may be binary, as in unit tests or proof checking, or scalar, as in validation loss or reward.
-% The key point is externality: progress is determined by the checker, not by the model's self-report.
-%
-% \begin{definition}[Actions and routers]
-% \label{def:actions-router}
-% Let $\mathcal A$ be a finite menu of deployable actions.
-% An action may be a single model, a fixed model harness, a retry policy, or a tool-using agent protocol.
-% For action $a\in\mathcal A$ and instance $x$, let
-% \[
-% \ell_{\mathrm{dep}}(a,x;\xi)
-% \]
-% be the predeclared deployment loss of running action $a$ on $x$, where $\xi$ denotes deployment randomness such as sampling, system latency, or data-order randomness.
-% The loss may include checked progress, failure, persistence above threshold, wall-clock time, token/API cost, and checker/evaluation cost.
-%
-% A router $R$ observes a permitted pre-deployment information state $W(x)$ and selects an action
-% \[
-% a_R(x)=R(W(x))\in\mathcal A.
-% \]
-% The selected action then performs the deployment run from the original task state.
-% \end{definition}
-%
+
+\begin{definition}[Checked deployment task]
+\label{def:checked-task}
+A checked deployment task is a tuple
+\[
+\mathcal T=(\mathcal X,\mathcal Y,V,\mu),
+\]
+where $\mathcal X$ is an instance space, $\mathcal Y$ is an artifact or solution space,
+$V$ is an external checker or scoring procedure on instance--artifact pairs, and
+$\mu$ is the deployment distribution over instances.
+For a realized instance $x\in\mathcal X$, an agent produces artifacts $y\in\mathcal Y$ that are scored by $V(x,y)$.
+\end{definition}
+
+The checker may be binary, as in unit tests or proof checking, or scalar, as in validation loss or reward.
+The key point is externality: progress is determined by the checker, not by the model's self-report.
+
+\begin{definition}[Actions and routers]
+\label{def:actions-router}
+Let $\mathcal A$ be a finite menu of deployable actions.
+An action may be a single model, a fixed model harness, a retry policy, or a tool-using agent protocol.
+For action $a\in\mathcal A$ and instance $x$, let
+\[
+\ell_{\mathrm{dep}}(a,x;\xi)
+\]
+be the predeclared deployment loss of running action $a$ on $x$, where $\xi$ denotes deployment randomness such as sampling, system latency, or data-order randomness.
+The loss may include checked progress, failure, persistence above threshold, wall-clock time, token/API cost, and checker/evaluation cost.
+
+A router $R$ observes a permitted pre-deployment information state $W(x)$ and selects an action
+\[
+a_R(x)=R(W(x))\in\mathcal A.
+\]
+The selected action then performs the deployment run from the original task state.
+\end{definition}
+
 % This separates routing from deployment.
 % The router chooses what to run; the selected action performs the actual checked run.
 % Unless explicitly declared otherwise, pre-deployment records are shown only to the router and are not passed to the selected worker.
@@ -611,7 +613,7 @@ Appendix~\ref{app:experiment-details} gives the frozen configuration, signal con
 Experiment 1 runs every worker on every task mode before routing, estimating fixed-prototype analogues of \(p(a,s)\) and \(\kappa(a,s)\).
 This is the calibration step for the worker-side terms in Theorem~\ref{thm:four-term}: competence is first-passage success, and cost is normalized worker wall-clock accumulated to \(\tau_\delta\wedge H\).
 The log-effort score uses \(\log \hat\kappa_{\chi_s}(a)-\log \tilde p_{\chi_s}(a)\), with \(\tilde p\) the predeclared smoothed success estimate.
-The retry-crossover theorem is used only as a design diagnostic here: the two mature workers do not form a stable ``lower-cost but weaker'' pair across all modes, so the crossover result is not promoted as an empirical claim for this menu.
+
 
 \begin{figure}[t]
 \centering
@@ -651,7 +653,6 @@ This is the empirical role of the decomposition: it exposes whether apparent per
 
 \paragraph{Signal and routing diagnostics.}
 Experiment 2 audits whether richer pre-deployment records change the deterministic router's decision state.
-It logs selected worker, confidence, short task diagnosis, evidence cited, expected failure mode, and expected cost risk.
 This is not an estimator of \(\MI(S;Z_j)\): a Shannon-information estimate would require a frozen finite representation or predictive model for the signal records.
 In the current diagnostic, budget-only records recover the three task-mode labels at 0.349 accuracy, while probe-containing records recover them perfectly on the diagnostic set.
 Thus the signals can expose mode structure; the remaining question is whether the router converts that structure into better actions.
@@ -794,6 +795,8 @@ The immediate experimental extension is to finish the \texttt{gpt\_5\_4\_mini} p
 That would make the worker menu span a broader cost--capability frontier than the two-worker mature comparison reported here.
 It would also test the retry-crossover theorem in its intended regime, where a lower-cost worker may compensate for lower one-attempt success through repeated checked attempts.
 Beyond this benchmark, the same protocol should be tested on repository repair, theorem checking, and multi-file research-code editing, where the mode schema is less artificial and measurement costs are more heterogeneous.
+
+\pier{qui in limitations very extensive! Dobbiamo pensarle tutte. Dire perché, argue that also related work has them. And then in future direction say you want to understand if you could work them around.}
 
 \paragraph{Conclusion.}
 Model choice inside an agent harness is not a scalar leaderboard problem.
