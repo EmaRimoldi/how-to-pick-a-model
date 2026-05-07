@@ -264,9 +264,9 @@ They are variants of the same task: finite subpopulations of instances that shar
 \revdel{The mode variable is retained by the evaluator for accounting and diagnostic comparisons.
 It need not be observed by either the router or the worker.
 This lets the same theory cover expert-defined task-mode schemas and finite evaluator-defined modes.
-When an experiment uses one fixed executable prototype per mode, it estimates conditional panel quantities rather than the population quantities induced by $\mu$.}
+When an experiment uses one fixed executable setting per mode, it estimates conditional panel quantities rather than the population quantities induced by $\mu$.}
 \revadd{The evaluator retains \(S\) only for accounting: neither the router nor the worker needs to observe it.
-In the experiments, each mode is represented by one fixed executable prototype, so the reported quantities are fixed-panel analogues rather than population-level estimates under \(\mu\).}
+In the experiments, each mode is represented by one fixed executable setting, so the reported quantities are fixed-panel analogues rather than population-level estimates under \(\mu\).}
 
 \begin{assumption}[Packed latent-mode family]
 \label{ass:packed}
@@ -588,22 +588,16 @@ $\E[\widehat{\Delta}_R(j)]=\Delta_R(j)$.
 
 When the same worker is selected under $Z_0$ and $Z_j$, using common deployment seeds preserves unbiasedness and reduces paired variance.
 When counterfactual outcomes for all actions are logged on the same instance, hindsight action regret can be reported as a diagnostic, but it is not the primary estimand.
-If the study fixes a finite prototype panel rather than sampling i.i.d.\ instances from $\mu$, the same estimator describes that panel and should not be interpreted as a population-level deployment estimand.
+If the study fixes a finite panel of executable settings rather than sampling i.i.d.\ instances from $\mu$, the same estimator describes that panel and should not be interpreted as a population-level deployment estimand.
 
 
 \section{Experiments and analysis}
 \label{sec:experiments}
 
 \paragraph{Setup.}
-We instantiate the framework on a fixed-prototype repeated-trajectory panel for CIFAR-10 edit--verify optimization.
-The task modes are three starting optimization variants of the same checked task:
-\[
-\cS=\{\text{\textit{MLP-flat}},\text{\textit{compact CNN}},\text{\textit{micro ResNet}}\},
-\]
-with empirical weights \(\hat\pi(s)=1/3\).
-They are task modes because the dataset, checker, horizon, and success rule are held fixed, while the starting architecture family and parameterization of the editable artifact change.
-This creates different optimization landscapes and potentially different worker cost--success frontiers.
-We use these modes to test whether worker choice is mode-conditional rather than a single global ranking.
+We instantiate the framework on a repeated-trajectory panel of fixed executable settings for CIFAR-10 edit--verify optimization.
+The task modes are three starting optimization variants of the same checked task, \(\cS=\{\text{\textit{MLP-flat}},\text{\textit{compact CNN}},\text{\textit{micro ResNet}}\}\), with empirical weights \(\hat\pi(s)=1/3\).
+They are task modes because the dataset, checker, horizon, and success rule are fixed while the editable artifact's starting architecture and parameterization change, letting us test whether worker choice is mode-conditional rather than a single global ranking.
 The analyzed worker menu is \(\{\texttt{gpt\_5\_3\_codex},\texttt{gpt\_5\_4}\}\).
 Each action is one worker under the common prompt and harness, so \(\cA=\cM\) in this experiment.
 For each task-mode--worker cell we use 35 trajectories.
@@ -611,8 +605,8 @@ The router is a deterministic prompt-only orchestrator evaluated under four nest
 The primary decision metric is the first-passage deployment loss in~\eqref{eq:deployment-loss}; full-horizon occupancy and final quality are audit metrics.
 Appendix~\ref{app:experiment-details} gives the frozen configuration, including horizon, checker budget, training budget, success threshold, signal contents, measurement-cost convention, progress normalization, smoothing rule, and logging schema.
 
-\paragraph{Worker frontier.}
-Experiment 1 runs every worker on every task mode before routing, estimating fixed-prototype analogues of \(p(a,s)\) and \(\kappa(a,s)\).
+\paragraph{Experiment 1: Worker frontier.}
+We run every worker on every task mode before routing, estimating fixed-setting analogues of \(p(a,s)\) and \(\kappa(a,s)\).
 These estimates instantiate the worker-side cost and competence terms in Theorem~\ref{thm:four-term}; the smoothed log-effort estimator is defined in Appendix~\ref{app:experiment-details}.
 
 
@@ -653,13 +647,14 @@ Ranking by final improvement or first-hit speed makes \texttt{gpt\_5\_4} look do
 This is the empirical role of the decomposition: it exposes whether apparent performance comes from first-passage competence, cost, or mode-specific comparative advantage.
 Appendix~\ref{app:diagnostic-plots} provides the threshold sensitivity, trajectory-level progress, cost, token, and router-record diagnostics behind these aggregate summaries.
 
-\paragraph{Signal and routing diagnostics.}
-Experiment 2 audits whether richer pre-deployment records change the deterministic router's decision state.
+\paragraph{Experiment 2: Signal audit.}
+We audit whether richer pre-deployment records change the deterministic router's decision state.
 This is not an estimator of \(\MI(S;Z_j)\): a Shannon-information estimate would require a frozen finite representation or predictive model for the signal records.
 In the current diagnostic, budget-only records recover the three task-mode labels at 0.349 accuracy, while probe-containing records recover them perfectly on the diagnostic set.
 Thus the signals can expose mode structure; the remaining question is whether the router converts that structure into better actions.
 
-Experiment 3 measures this conversion with shift rate and action-frontier regret.
+\paragraph{Experiment 3: Routing shift and action-frontier regret.}
+We measure this conversion with shift rate and action-frontier regret.
 Shift rate is the fraction of modes for which the richer signal changes the selected worker; action-frontier regret scores the selected action against the mode-conditional frontier from Experiment 1.
 Both diagnostics are defined in Appendix~\ref{app:experiment-details}.
 
@@ -680,9 +675,8 @@ Mean log-effort regret is 0.177 for \(Z_0\), 0.183 for \(Z_1\), 0.148 for \(Z_2\
 The non-deployable oracle in Figure~\ref{fig:twomodel-router-regret} shows that the worker frontier contains exploitable mode-conditional structure, but the evaluated router does not close that gap.
 Additional router-record completion and signal-ablation plots are reported in Appendix~\ref{app:diagnostic-plots}.
 
-\paragraph{Paired deployment gain.}
-Experiment 4 is the deployment-facing test.
-For each richer signal \(Z_j\), we compare the action selected under \(Z_j\) with the action selected under \(Z_0\) on the same prototype panel and subtract measurement cost:
+\paragraph{Experiment 4: Paired deployment gain.}
+For each richer signal \(Z_j\), we compare the action selected under \(Z_j\) with the action selected under \(Z_0\) on the same executable-setting panel and subtract measurement cost:
 \[
 \widehat{\Delta}_R(j)=
 \widehat{\ell}_{\mathrm{dep}}(\rho_0)-
@@ -714,8 +708,8 @@ Against \(Z_0\), richer real signals produce small shift rates and negative net 
 The bootstrap intervals from the accounting script are \([-0.116,0.002]\) for \(Z_1\), \([-0.127,-0.007]\) for \(Z_2\), and \([-0.113,-0.024]\) for \(Z_3\).
 This is the main falsification result: informative records are not enough; the deployed router must use them in a way that improves the selected action's checked cost--success tradeoff.
 
-\paragraph{Negative controls and interpretation.}
-Experiment 5 repeats the router and paired-gain analyses with schema-preserving controls: shuffled probe records, wrong-mode probes, and synthetic noise records with matched field names and approximate context burden.
+\paragraph{Experiment 5: Negative controls.}
+We repeat the router and paired-gain analyses with schema-preserving controls: shuffled probe records, wrong-mode probes, and synthetic noise records with matched field names and approximate context burden.
 Controls are charged under the same measurement/context-cost convention as the corresponding real signal.
 They test whether router response and paired gain are specific to task-relevant signal content.
 
@@ -771,7 +765,7 @@ If these diagnostics are unstable, the decomposition remains a useful diagnostic
 The operational task-mode schema is also a limitation.
 If $S$ is too coarse, mode-conditional competence is washed out and the router appears useless.
 If $S$ is too fine, sample sizes per cell collapse and the signal--mode estimates become unstable.
-The present evaluation fixes the executable prototypes and mode schema to isolate agentic trajectory variance; task-instance and schema perturbations are left as robustness extensions rather than promoted experiments.
+The present evaluation fixes the executable settings and mode schema to isolate agentic trajectory variance; task-instance and schema perturbations are left as robustness extensions rather than promoted experiments.
 
 Finally, measurement value is router-specific.
 A baseline probe can contain information about the best action and still fail to improve deployment loss if the actual router does not use it well or if the measurement is too expensive.
@@ -1023,9 +1017,9 @@ It is a diagnostic companion to the deployment-gain estimand~\eqref{eq:router-ga
 \section{\revdel{Operational estimator details}\revadd{Full selection protocol and experimental configuration}}
 \label{app:experiment-details}
 
-\paragraph{Fixed-prototype panel.}
-The main experiment is a fixed-prototype repeated-trajectory panel rather than a population draw from \(\mu\).
-Each task mode \(s\) is represented by one executable prototype
+\paragraph{Panel of fixed executable settings.}
+The main experiment is a repeated-trajectory panel of fixed executable settings rather than a population draw from \(\mu\).
+Each task mode \(s\) is represented by one executable setting
 \[
 \chi_s=(A_s,D,\mathrm{split},u,\eta_s,V,B_V,H,\delta),
 \]
@@ -1126,7 +1120,7 @@ The scalar estimator matched to Assumption~\ref{ass:packed} is the cell mean
 \[
 \hat\kappa(a,s)=\frac{1}{n_{a,s}}\sum_{i:S_i=s} C_{\delta,i}(a),
 \]
-or its fixed-prototype analogue $\hat\kappa_{\chi_s}(a)$ in Section~\ref{sec:experiments}.
+or its fixed-setting analogue $\hat\kappa_{\chi_s}(a)$ in Section~\ref{sec:experiments}.
 
 \paragraph{Information, allocation summaries, and regret.}
 For each progressive signal $Z_j$, a Shannon information estimate is reported only if the protocol predeclares a finite signal representation or calibrated predictive model for estimating $\pi_j(\cdot\mid Z_j)$ on held-out instances.
@@ -1137,7 +1131,7 @@ For the deterministic router, the empirical panel shift rate is
 \widehat{\mathrm{Shift}}_R(j)=
 \sum_{s\in\cS}\hat\pi(s)\one\{\rho_j(\chi_s)\ne\rho_0(\chi_s)\}.
 \]
-In the main fixed-prototype protocol, the primary operational diagnostic is allocation regret,
+In the main fixed-setting protocol, the primary operational diagnostic is allocation regret,
 \[
 \hat r_j(x_i)
 =
@@ -1151,7 +1145,7 @@ where $a_{j,i}=R(Z_j(x_i))$ and $s_i=\sigma(x_i)$.
 \paragraph{Uncertainty.}
 Success probabilities use Wilson intervals.
 Aggregated objectives, paired gains, and calibration diagnostics use bootstrap or randomization tests at the sampling unit declared for the study.
-If the main protocol remains a fixed-prototype repeated-run panel, paired randomization tests over repeated trajectories are descriptive for that panel and should not be interpreted as population-level inference.
+If the main protocol remains a panel of fixed executable settings, paired randomization tests over repeated trajectories are descriptive for that panel and should not be interpreted as population-level inference.
 If independent task instances are added, uncertainty is reported at the task-instance level.
 
 \section{\revdel{Additional diagnostic plots}\revadd{Additional plots}}
