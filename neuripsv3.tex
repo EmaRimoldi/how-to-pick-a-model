@@ -591,7 +591,7 @@ When counterfactual outcomes for all actions are logged on the same instance, hi
 If the study fixes a finite prototype panel rather than sampling i.i.d.\ instances from $\mu$, the same estimator describes that panel and should not be interpreted as a population-level deployment estimand.
 
 
-\section{Experiments}
+\section{Experiments and analysis}
 \label{sec:experiments}
 
 \paragraph{Setup.}
@@ -601,13 +601,13 @@ The three task modes are
 \cS=\{\texttt{mlp\_flat},\texttt{cnn\_compact},\texttt{resnet\_micro}\},
 \]
 with empirical weights \(\hat\pi(s)=1/3\).
-Each mode is represented by one fixed executable prototype with an editable \texttt{train.py}, a common read-only checker, horizon \(H=20\), success threshold \(\delta=0.05\), and fixed training budget \texttt{A\_MAX\_STEPS=256} per checker call.
-The full worker menu is \(\{\texttt{gpt\_5\_4\_mini},\texttt{gpt\_5\_3\_codex},\texttt{gpt\_5\_4}\}\); the promoted empirical comparison below uses the mature two-worker menu \(\{\texttt{gpt\_5\_3\_codex},\texttt{gpt\_5\_4}\}\), because the mini condition is still being filled to matched support.
+Each mode is represented by one fixed executable prototype with an editable \texttt{train.py} and a common read-only checker.
+The analyzed worker menu is \(\{\texttt{gpt\_5\_3\_codex},\texttt{gpt\_5\_4}\}\).
 Each action is one worker under the common prompt and harness, so \(\cA=\cM\) in this experiment.
-For each task-mode--worker cell we use 35 trajectories: ten pilot runs plus 25 frozen holdout runs.
+For each task-mode--worker cell we use 35 trajectories.
 The router is a deterministic prompt-only orchestrator evaluated under four nested pre-deployment records \(Z_0,\ldots,Z_3\), from budget-only context to full unmodified-artifact baseline.
 The primary decision metric is the first-passage deployment loss in~\eqref{eq:deployment-loss}; full-horizon occupancy and final quality are audit metrics.
-Appendix~\ref{app:experiment-details} gives the frozen configuration, signal contents, measurement-cost convention, progress normalization, smoothing rule, and logging schema.
+Appendix~\ref{app:experiment-details} gives the frozen configuration, including horizon, checker budget, training budget, success threshold, signal contents, measurement-cost convention, progress normalization, smoothing rule, and logging schema.
 
 \paragraph{Worker frontier.}
 Experiment 1 runs every worker on every task mode before routing, estimating fixed-prototype analogues of \(p(a,s)\) and \(\kappa(a,s)\).
@@ -629,7 +629,7 @@ The two summaries disagree by mode: \texttt{gpt\_5\_4} reaches the threshold fas
 \centering
 \small
 \caption{Worker-frontier summary on the 35-run pooled panel.
-Each cell uses ten pilot trajectories plus 25 holdout trajectories.
+Each cell uses 35 trajectories.
 Lower is better for log-effort and deployment loss.}
 \label{tab:twomodel-frontier}
 \resizebox{\linewidth}{!}{%
@@ -650,6 +650,7 @@ Mode & Worker & $n$ & Success & Mean $\tau$ & Occupancy & Final improv. & Log-ef
 The frontier already falsifies a single-score recommendation.
 Ranking by final improvement or first-hit speed makes \texttt{gpt\_5\_4} look dominant, but ranking by the charged deployment loss changes the recommendation.
 This is the empirical role of the decomposition: it exposes whether apparent performance comes from first-passage competence, cost, or mode-specific comparative advantage.
+Appendix~\ref{app:diagnostic-plots} provides the threshold sensitivity, trajectory-level progress, cost, token, and router-record diagnostics behind these aggregate summaries.
 
 \paragraph{Signal and routing diagnostics.}
 Experiment 2 audits whether richer pre-deployment records change the deterministic router's decision state.
@@ -681,6 +682,7 @@ The final audit contains 480 prompt-only decisions.
 On real signal records, the router remains strongly biased toward \texttt{gpt\_5\_4}: it selects \texttt{gpt\_5\_4} on 27/30 budget-only records, 29/30 static-workload records, 30/30 probe records, and 28/30 full-scout records.
 Mean log-effort regret is 0.177 for \(Z_0\), 0.183 for \(Z_1\), 0.148 for \(Z_2\), and 0.192 for \(Z_3\).
 The non-deployable oracle in Figure~\ref{fig:twomodel-router-regret} shows that the worker frontier contains exploitable mode-conditional structure, but the evaluated router does not close that gap.
+Additional router-record completion and signal-ablation plots are reported in Appendix~\ref{app:diagnostic-plots}.
 
 \paragraph{Paired deployment gain.}
 Experiment 4 is the deployment-facing test.
@@ -791,8 +793,8 @@ The \(Z_2\) and \(Z_3\) records contain task-mode information, but the induced p
 The decomposition therefore functions as a claim discipline: it prevents us from promoting information availability as deployment value.
 
 \paragraph{\revdel{Future directions.}\revadd{Limitations and future work.}}
-The immediate experimental extension is to finish the \texttt{gpt\_5\_4\_mini} pilot and holdout cells, replacing the unavailable Spark worker with a stable lower-cost action.
-That would make the worker menu span a broader cost--capability frontier than the two-worker mature comparison reported here.
+The immediate experimental extension is to add a stable lower-cost action with matched trajectory support.
+That would make the worker menu span a broader cost--capability frontier than the two-worker comparison reported here.
 It would also test the retry-crossover theorem in its intended regime, where a lower-cost worker may compensate for lower one-attempt success through repeated checked attempts.
 Beyond this benchmark, the same protocol should be tested on repository repair, theorem checking, and multi-file research-code editing, where the mode schema is less artificial and measurement costs are more heterogeneous.
 
@@ -1041,6 +1043,7 @@ Each task mode \(s\) is represented by one executable prototype
 \]
 where \(A_s\) is the editable \texttt{train.py} template and starting model class, \(D\) is CIFAR-10, \(\mathrm{split}\) is the fixed train/validation split, \(u\) is the model-initialization seed, \(\eta_s\) are starting optimization and architecture hyperparameters, \(V\) is the checker, \(B_V\) is the checker budget, \(H\) is the edit--verify horizon, and \(\delta\) is the success threshold.
 Panel-level aggregates use \(\hat\pi(s)=1/3\).
+The analyzed worker menu is \(\{\texttt{gpt\_5\_3\_codex},\texttt{gpt\_5\_4}\}\).
 The paper-facing comparison sets \(\cA=\cM\): each deployable action is a single worker run under the common prompt and harness.
 
 \paragraph{Progressive signal records.}
@@ -1054,8 +1057,8 @@ Probe runs are outside the selected worker deployment: they are charged through 
 The evaluator-only baseline used to compute \(G_t\) is router-visible only in \(Z_3\).
 
 \paragraph{Experiment accounting.}
-The worker frontier uses \(n_{\mathrm{cell}}=10\) pilot trajectories plus 25 frozen holdout trajectories per task-mode--worker cell when reporting the 35-run pooled results.
-The selected-router validation uses the same frozen panel and reports all richer signals \(j\in\{1,2,3\}\) rather than selecting a single best signal on the same data.
+The worker frontier uses 35 trajectories per task-mode--worker cell.
+The selected-router validation uses the same fixed panel and reports all richer signals \(j\in\{1,2,3\}\) rather than selecting a single best signal on the same data.
 Negative controls keep the signal schema and approximate context burden of the matched real signal: shuffled probes, wrong-mode probes, and synthetic noise records are charged under the same measurement/context-cost convention as the real record they mimic.
 
 \begin{table}[t]
@@ -1150,8 +1153,8 @@ If independent task instances are added, uncertainty is reported at the task-ins
 \label{app:diagnostic-plots}
 
 This appendix collects auxiliary diagnostics generated from the experimental logs.
-The threshold, trajectory, and cost diagnostics below use only the two mature workers, \texttt{gpt\_5\_3\_codex} and \texttt{gpt\_5\_4}, after excluding Spark.
-These appendix plots use the same paper-facing pooled panel as the main analysis: ten pilot trajectories plus 25 holdout trajectories for each task-mode--worker cell, giving 35 runs per cell.
+The threshold, trajectory, and cost diagnostics below use the same analyzed workers, \texttt{gpt\_5\_3\_codex} and \texttt{gpt\_5\_4}.
+These appendix plots use the same 35-trajectory-per-cell panel as the main analysis.
 The pooled appendix plots are robustness and mechanism diagnostics for the same accounting quantities reported in the main text.
 
 \subsection{Pooled threshold and trajectory diagnostics}
@@ -1171,7 +1174,6 @@ The sharp drop at larger thresholds shows why the exact threshold is not an inno
 \centering
 \includegraphics[width=\linewidth]{figures/autoresearch/diag_threshold_sensitivity_by_worker.png}
 \caption{Threshold sensitivity by worker on the 35-run pooled panel.
-Spark is excluded, so the comparison matches the mature two-worker menu used in the paper-facing analysis.
 \texttt{gpt\_5\_4} remains stronger at higher thresholds, while \texttt{gpt\_5\_3\_codex} degrades earlier; this supports the competence term in Theorem~\ref{thm:four-term}.}
 \label{fig:app-threshold-by-worker}
 \end{figure}
