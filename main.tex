@@ -759,10 +759,12 @@ This is the main falsification result: informative records are not enough; the d
 \paragraph{Experiment 5: Negative controls.}
 We repeat the router and paired-gain analyses with schema-preserving controls: shuffled probe records, wrong-mode probes, and synthetic noise records with matched field names and approximate context burden.
 Controls are charged under the same measurement/context-cost convention as the corresponding real signal.
-They test whether router response and paired gain are specific to task-relevant signal content.
+They test whether router response and paired gain are specific to task-relevant signal content, rather than to the presence, length, or schema of an additional probe record.
+If the router were reliably using the real probe information, real records should outperform shuffled, wrong-mode, and synthetic records under paired deployment gain.
 
-The controls block a strong routing-information claim.
+The controls block that stronger attribution.
 Wrong-mode \(Z_2\) has a small positive mean net gain with an interval crossing zero, while several shuffled or synthetic controls are negative with intervals similar to the real signals.
+Thus Experiment 5 does not contradict Experiment 2: probes can reveal task-mode structure, while the prompt-only router still fails to exploit the task-relevant content of those probes reliably.
 The correct conclusion is diagnostic rather than prescriptive: probes reveal task modes and the diagnostics expose ranking disagreement, but the primary deployment loss does not reward this router's action changes in the promoted two-worker menu.
 Appendices~\ref{app:experiment-details} and~\ref{app:diagnostic-plots} state the full promotion rule and provide the negative-control figure used to separate diagnostic improvements from a deployable routing recommendation.
 
