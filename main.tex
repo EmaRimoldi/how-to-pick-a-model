@@ -742,17 +742,12 @@ Our question is upstream of the launched worker: which action should be selected
 \section{Discussion and limitations}
 \label{sec:discussion}
 
-The paper separates a theory-facing diagnostic claim from a deployment-facing validation claim.
-The experiments support the diagnostic claim: first-passage speed, final improvement, certified log-effort, and deployment loss disagree on the same verified task family.
-The cost and competence diagnostics explain the worker-frontier part of this disagreement: \texttt{gpt\_5\_4} looks best under benchmark-style speed and quality summaries, while \texttt{gpt\_5\_3\_codex} has the lower charged wall-clock cost to verified success or horizon and therefore the lower primary deployment loss.
-They do not support the stronger claim that the evaluated prompt-only router improves deployment loss.
-The routing diagnostics explain why: probe records expose the predeclared task modes, so the information side of the orchestration problem is not empty, but the prompt-only router remains biased toward the worker favored by speed and final-quality metrics.
-Under the primary deployment loss the mature two-worker menu also does not create a positive switching opportunity beyond always using \texttt{gpt\_5\_3\_codex}.
-Thus the information and mismatch terms diagnose whether an orchestrator is worth deploying: useful signal is not enough; the harness must use that signal to select lower-regret, lower-loss actions after measurement cost.
+The experiments support a diagnostic, not prescriptive, claim: first-passage speed, final improvement, certified log-effort, and deployment loss disagree on the same verified task family.
+\texttt{gpt\_5\_4} looks best under benchmark-style speed and quality summaries, but \texttt{gpt\_5\_3\_codex} has lower charged wall-clock cost and lower primary deployment loss.
+The prompt-only router does not improve deployment loss: probes expose the predeclared task modes, but the router remains biased toward the benchmark-favored worker and the two-worker menu creates no positive switching opportunity beyond always using \texttt{gpt\_5\_3\_codex}.
 
-The main limitations are the packed-mode abstraction, fixed executable prototypes, and the two-worker mature action menu.
-Real agent trajectories are stateful, task modes may be fuzzy, and the reported quantities are fixed-panel diagnostics rather than population-level deployment estimates; the appendix therefore reports threshold, occupancy, cost, token, and signal-ablation checks.
-The decomposition is a claim discipline: it identifies cost, competence, information, and allocation mechanisms, but paired deployment gain decides whether a routing recommendation is deployable.
+The main limitations are packed modes, fixed executable prototypes, a two-worker mature action menu, and fixed-panel rather than population-level estimates.
+The appendix therefore reports threshold, occupancy, cost, token, and signal-ablation checks; paired deployment gain remains the final test for any routing recommendation.
 
 \paragraph{Future work.}
 Future work should add a matched lower-cost action and test repository repair, theorem checking, and multi-file research-code editing, where modes and measurement costs are less artificial.
