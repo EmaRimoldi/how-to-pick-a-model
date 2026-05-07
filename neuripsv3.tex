@@ -667,13 +667,13 @@ The same estimates can be plugged into Theorem~\ref{thm:crossover}, because the 
 \paragraph{Current worker-frontier results.}
 Because the Spark condition hit rate limits, the main snapshot below compares the two mature workers only:
 \texttt{gpt\_5\_3\_codex} and \texttt{gpt\_5\_4}.
-For each mode, we use the maximum common support available to both workers: ten pilot trajectories for \texttt{cnn\_compact}, ten for \texttt{mlp\_flat}, and nine for \texttt{resnet\_micro}.
+For each task-mode--worker cell, we use the same paper-facing pooled panel: ten pilot trajectories plus the first 25 materialized holdout trajectories under the frozen deterministic seed order, for 35 runs per cell.
 The provisional \texttt{gpt\_5\_4\_mini} pilot is intentionally not pooled into these estimates; it is reserved for the final lower-cost comparison once the cell reaches the same support.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{figures/autoresearch/twomodel_deployment_frontier.png}
-\caption{Mature-worker snapshot on common pilot support, excluding the rate-limited Spark condition.
+\caption{Mature-worker snapshot on the 35-run pooled panel, excluding the rate-limited Spark condition.
 Left: deployment loss, where lower is better and intervals are the bootstrap intervals produced by the accounting script.
 Right: the certified log-effort surrogate used by the decomposition.
 The key qualitative result is a rank disagreement: \texttt{gpt\_5\_4} reaches the threshold faster and achieves higher final improvement, but the deployment-loss accounting currently favors \texttt{gpt\_5\_3\_codex} in all three modes, and the log-effort surrogate favors different workers by mode.}
@@ -683,22 +683,22 @@ The key qualitative result is a rank disagreement: \texttt{gpt\_5\_4} reaches th
 \begin{table}[t]
 \centering
 \small
-\caption{Pilot worker-frontier summary on common support.
-$n_{\mathrm{common}}$ is the number of paired trial indices retained for the two mature workers in that mode.
+\caption{Worker-frontier summary on the 35-run pooled panel.
+$n$ is fixed to ten pilot trajectories plus 25 holdout trajectories for each task-mode--worker cell.
 The table reports first-hit success at $\delta=0.05$, mean first-hit step among successful runs, mean threshold occupancy, mean final relative improvement, the log-effort surrogate, and deployment loss.
 Lower is better for the last two columns.}
 \label{tab:twomodel-frontier}
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{@{}llrrrrrrr@{}}
 \toprule
-Mode & Worker & $n_{\mathrm{common}}$ & Success & Mean $\tau$ & Occupancy & Final improv. & Log-effort & Dep. loss \\
+Mode & Worker & $n$ & Success & Mean $\tau$ & Occupancy & Final improv. & Log-effort & Dep. loss \\
 \midrule
-\texttt{cnn\_compact} & \texttt{gpt\_5\_3\_codex} & 10 & 10/10 & 6.50 & 0.725 & 0.232 & 5.814 & 0.848 \\
-\texttt{cnn\_compact} & \texttt{gpt\_5\_4} & 10 & 10/10 & 3.30 & 0.885 & 0.373 & 5.503 & 1.580 \\
-\texttt{mlp\_flat} & \texttt{gpt\_5\_3\_codex} & 10 & 9/10 & 8.11 & 0.580 & 0.171 & 6.045 & 0.890 \\
-\texttt{mlp\_flat} & \texttt{gpt\_5\_4} & 10 & 10/10 & 2.60 & 0.920 & 0.267 & 5.358 & 1.158 \\
-\texttt{resnet\_micro} & \texttt{gpt\_5\_3\_codex} & 9 & 10/10 & 3.20 & 0.890 & 0.194 & 5.102 & 0.962 \\
-\texttt{resnet\_micro} & \texttt{gpt\_5\_4} & 9 & 9/9 & 1.67 & 0.967 & 0.282 & 5.626 & 1.934 \\
+\texttt{cnn\_compact} & \texttt{gpt\_5\_3\_codex} & 35 & 34/35 & 6.03 & 0.727 & 0.231 & 5.774 & 0.964 \\
+\texttt{cnn\_compact} & \texttt{gpt\_5\_4} & 35 & 35/35 & 3.06 & 0.897 & 0.369 & 5.492 & 1.479 \\
+\texttt{mlp\_flat} & \texttt{gpt\_5\_3\_codex} & 35 & 32/35 & 7.41 & 0.621 & 0.191 & 6.029 & 1.015 \\
+\texttt{mlp\_flat} & \texttt{gpt\_5\_4} & 35 & 35/35 & 2.49 & 0.926 & 0.264 & 4.991 & 1.083 \\
+\texttt{resnet\_micro} & \texttt{gpt\_5\_3\_codex} & 35 & 35/35 & 2.60 & 0.920 & 0.195 & 5.015 & 0.987 \\
+\texttt{resnet\_micro} & \texttt{gpt\_5\_4} & 35 & 35/35 & 1.80 & 0.960 & 0.295 & 5.461 & 2.234 \\
 \bottomrule
 \end{tabular}}
 \end{table}
@@ -721,9 +721,9 @@ The fact that this speed advantage does not automatically imply lower deployment
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{figures/autoresearch/twomodel_crossover_applicability.png}
-\caption{Applicability check for the retry-crossover theorem on the frozen two-worker confirmation split.
+\caption{Applicability check for the retry-crossover theorem on the 35-run pooled two-worker panel.
 The theorem requires a lower-cost action with lower one-attempt success probability and a stronger but more expensive action.
-The two mature workers do not cleanly enter this regime: \texttt{gpt\_5\_4} has both higher success and lower first-passage cost on \texttt{mlp\_flat}, while both workers succeed on every frozen \texttt{resnet\_micro} run and \texttt{gpt\_5\_3\_codex} is cheaper there.
+The two mature workers do not cleanly enter this regime: \texttt{gpt\_5\_4} has both higher success and lower first-passage cost on \texttt{mlp\_flat}, while both workers succeed on every pooled \texttt{resnet\_micro} run and \texttt{gpt\_5\_3\_codex} is cheaper there.
 The crossover result is therefore a design rule for adding a genuinely lower-cost worker, not a promoted empirical claim of the present two-worker menu.}
 \label{fig:twomodel-crossover}
 \end{figure}
@@ -787,7 +787,7 @@ Conversely, low regret indicates that the selected action moved closer to the em
 \paragraph{Current routing-regret status.}
 The final two-worker router audit contains 480 prompt-only decisions: 30 instances, four signal levels, and four control conditions.
 On the real signal records, the router remains strongly biased toward \texttt{gpt\_5\_4}: it selects \texttt{gpt\_5\_4} on 27/30 budget-only records, 29/30 static-workload records, 30/30 probe records, and 28/30 full-scout records.
-Mean log-effort regret does not decrease with richer information: it is 0.166 for \(Z_0\), 0.194 for \(Z_1\), 0.158 for \(Z_2\), and 0.197 for \(Z_3\).
+Mean log-effort regret does not decrease monotonically with richer information: it is 0.177 for \(Z_0\), 0.183 for \(Z_1\), 0.148 for \(Z_2\), and 0.192 for \(Z_3\).
 Thus the router-response audit separates information availability from useful allocation.
 The probe signals expose the predeclared task modes, but the prompt-only router mostly maps them to the same worker and does not reliably move toward the cost-adjusted frontier in Figure~\ref{fig:twomodel-confirmation}.
 
@@ -796,7 +796,7 @@ The probe signals expose the predeclared task modes, but the prompt-only router 
 \includegraphics[width=\linewidth]{figures/autoresearch/twomodel_router_selection_regret.png}
 \caption{Final two-worker router-response audit.
 Left: selected-worker distribution under real signal records.
-Right: allocation regret against the frozen log-effort frontier.
+Right: allocation regret against the 35-run pooled log-effort frontier.
 Richer records change the router only weakly and do not monotonically reduce regret, even though the signal audit shows that probes contain mode information.}
 \label{fig:twomodel-router-regret}
 \end{figure}
@@ -823,41 +823,41 @@ Proposition~\ref{prop:paired-unbiased} gives the estimand and estimator for the 
 Positive routing information and lower allocation regret are not sufficient by themselves; the routed-policy claim is supported only when the paired gain $\widehat{\Delta}_R(j)$ is positive on held-out trajectories.
 
 \paragraph{Current validation status.}
-For the two mature workers, we freeze the confirmation analysis at 25 runs per task-mode--worker cell:
+For the two mature workers, we use the same 35-run pooled panel for all worker-frontier and routing-accounting quantities:
 \[
-3\ \text{task modes}\times 2\ \text{workers}\times 25=150
+3\ \text{task modes}\times 2\ \text{workers}\times 35=210
 \]
-holdout trajectories.
-The frozen comparison uses \texttt{gpt\_5\_3\_codex} and \texttt{gpt\_5\_4}; Spark is excluded because the endpoint hit rate limits, and \texttt{gpt\_5\_4\_mini} is reserved for a later lower-cost extension once its cells reach comparable support.
+trajectories, consisting of ten pilot trajectories plus 25 frozen holdout trajectories per task-mode--worker cell.
+The pooled comparison uses \texttt{gpt\_5\_3\_codex} and \texttt{gpt\_5\_4}; Spark is excluded because the endpoint hit rate limits, and \texttt{gpt\_5\_4\_mini} is reserved for a later lower-cost extension once its cells reach comparable support.
 The paired-gain analysis therefore evaluates whether router-visible information improves deployment loss within this two-worker action menu.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{figures/autoresearch/twomodel_frozen_confirmation_frontier.png}
-\caption{Frozen two-worker confirmation frontier with 25 holdout trajectories per task-mode--worker cell.
+\caption{Two-worker frontier on the 35-run pooled panel.
 The left panel reports deployment loss with bootstrap intervals; the right panel reports the certified log-effort surrogate.
-The confirmation split preserves the qualitative rank disagreement from the pilot: \texttt{gpt\_5\_4} has lower first-hit time, but deployment loss favors \texttt{gpt\_5\_3\_codex} on \texttt{cnn\_compact} and \texttt{resnet\_micro}, while \texttt{mlp\_flat} is nearly tied.}
+The pooled panel preserves the qualitative rank disagreement: \texttt{gpt\_5\_4} has lower first-hit time, but deployment loss favors \texttt{gpt\_5\_3\_codex} on \texttt{cnn\_compact} and \texttt{resnet\_micro}, while \texttt{mlp\_flat} remains close.}
 \label{fig:twomodel-confirmation}
 \end{figure}
 
 \begin{table}[t]
 \centering
 \small
-\caption{Frozen confirmation summary for the two mature workers.
-Each cell uses the first 25 materialized holdout seeds under the frozen deterministic seed order.
-Deployment-loss intervals are bootstrap intervals over the 25 trajectories.}
+\caption{Pooled 35-run summary for the two mature workers.
+Each cell uses ten pilot trajectories plus the first 25 materialized holdout trajectories under the frozen deterministic seed order.
+Deployment-loss intervals are bootstrap intervals over the 35 trajectories.}
 \label{tab:twomodel-confirmation}
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{@{}llrrrrr@{}}
 \toprule
 Mode & Worker & Success & Mean $\tau$ & Dep. loss & 95\% CI & Log-effort \\
 \midrule
-\texttt{cnn\_compact} & \texttt{gpt\_5\_3\_codex} & 24/25 & 5.83 & 1.011 & [0.843, 1.231] & 5.577 \\
-\texttt{cnn\_compact} & \texttt{gpt\_5\_4} & 25/25 & 2.96 & 1.438 & [1.170, 1.770] & 5.498 \\
-\texttt{mlp\_flat} & \texttt{gpt\_5\_3\_codex} & 23/25 & 7.13 & 1.065 & [0.867, 1.283] & 6.028 \\
-\texttt{mlp\_flat} & \texttt{gpt\_5\_4} & 25/25 & 2.44 & 1.053 & [0.901, 1.238] & 4.955 \\
-\texttt{resnet\_micro} & \texttt{gpt\_5\_3\_codex} & 25/25 & 2.36 & 0.997 & [0.894, 1.105] & 4.981 \\
-\texttt{resnet\_micro} & \texttt{gpt\_5\_4} & 25/25 & 1.84 & 2.193 & [1.593, 2.996] & 5.456 \\
+\texttt{cnn\_compact} & \texttt{gpt\_5\_3\_codex} & 34/35 & 6.03 & 0.964 & [0.842, 1.122] & 5.774 \\
+\texttt{cnn\_compact} & \texttt{gpt\_5\_4} & 35/35 & 3.06 & 1.479 & [1.213, 1.779] & 5.492 \\
+\texttt{mlp\_flat} & \texttt{gpt\_5\_3\_codex} & 32/35 & 7.41 & 1.015 & [0.862, 1.193] & 6.029 \\
+\texttt{mlp\_flat} & \texttt{gpt\_5\_4} & 35/35 & 2.49 & 1.083 & [0.951, 1.224] & 4.991 \\
+\texttt{resnet\_micro} & \texttt{gpt\_5\_3\_codex} & 35/35 & 2.60 & 0.987 & [0.910, 1.068] & 5.015 \\
+\texttt{resnet\_micro} & \texttt{gpt\_5\_4} & 35/35 & 1.80 & 2.234 & [1.735, 2.863] & 5.461 \\
 \bottomrule
 \end{tabular}}
 \end{table}
@@ -865,16 +865,16 @@ Mode & Worker & Success & Mean $\tau$ & Dep. loss & 95\% CI & Log-effort \\
 \paragraph{Paired-gain result.}
 The paired deployment validation is negative for the current prompt-only router.
 Against \(Z_0\), richer real signals produce small shift rates and negative net gain after measurement cost:
-\(Z_1\) shifts 13.3\% of decisions with net gain \(-0.043\) and bootstrap interval \([-0.100,-0.000]\);
-\(Z_2\) shifts 10.0\% with net gain \(-0.050\), interval \([-0.107,-0.007]\);
-and \(Z_3\) shifts 10.0\% with net gain \(-0.057\), interval \([-0.100,-0.028]\).
+\(Z_1\) shifts 13.3\% of decisions with net gain \(-0.049\) and bootstrap interval \([-0.116,0.002]\);
+\(Z_2\) shifts 10.0\% with net gain \(-0.059\), interval \([-0.127,-0.007]\);
+and \(Z_3\) shifts 10.0\% with net gain \(-0.060\), interval \([-0.113,-0.024]\).
 The gross gains are already non-positive, and measurement cost makes the probe/scout conditions worse.
 This is the critical falsification result for the deployment-facing claim: informative signals are not sufficient; the deployed router must use them in a way that improves the selected action's checked cost--success tradeoff.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.62\linewidth]{figures/autoresearch/twomodel_router_paired_gain.png}
-\caption{Paired deployment gain for real signal records relative to \(Z_0\), using the frozen two-worker holdout frontier.
+\caption{Paired deployment gain for real signal records relative to \(Z_0\), using the 35-run pooled two-worker frontier.
 All richer signal levels have negative net gain after measurement cost, so the current prompt-only router fails the deployment claim gate.}
 \label{fig:twomodel-router-gain}
 \end{figure}
@@ -889,9 +889,9 @@ Net gain is \(\widehat{\ell}_{\mathrm{dep}}(\rho_0)-\widehat{\ell}_{\mathrm{dep}
 \toprule
 Signal & Pairs & Shift & Gross gain & Meas. loss & Net gain \\
 \midrule
-\(Z_1\) & 30 & 0.133 & -0.043 & 0.000 & -0.043 \\
-\(Z_2\) & 30 & 0.100 & -0.043 & 0.007 & -0.050 \\
-\(Z_3\) & 30 & 0.100 & -0.029 & 0.028 & -0.057 \\
+\(Z_1\) & 30 & 0.133 & -0.049 & 0.000 & -0.049 \\
+\(Z_2\) & 30 & 0.100 & -0.051 & 0.007 & -0.059 \\
+\(Z_3\) & 30 & 0.100 & -0.032 & 0.028 & -0.060 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1321,8 +1321,8 @@ If independent task instances are added, uncertainty is reported at the task-ins
 
 This appendix collects auxiliary diagnostics generated from the experimental logs.
 The threshold, trajectory, and cost diagnostics below use only the two mature workers, \texttt{gpt\_5\_3\_codex} and \texttt{gpt\_5\_4}, after excluding Spark.
-For descriptive power they pool pilot and frozen holdout runs on common seed support: 40 runs per worker on CNN, 40 on MLP, and 36 on ResNet.
-The confirmatory deployment claims in the main text remain tied to the predeclared frozen holdout analysis; the pooled appendix plots are robustness and mechanism diagnostics, not a replacement for the holdout split.
+These appendix plots use the same paper-facing pooled panel as the main analysis: ten pilot trajectories plus 25 holdout trajectories for each task-mode--worker cell, giving 35 runs per cell.
+The pooled appendix plots are robustness and mechanism diagnostics for the same accounting quantities reported in the main text.
 
 \subsection{Pooled threshold and trajectory diagnostics}
 \label{app:pilot-threshold-diagnostics}
@@ -1330,7 +1330,7 @@ The confirmatory deployment claims in the main text remain tied to the predeclar
 \begin{figure}[p]
 \centering
 \includegraphics[width=\linewidth]{figures/autoresearch/diag_threshold_sensitivity_current_pilot.png}
-\caption{Zoomed threshold sensitivity for the two mature workers on pooled common support.
+\caption{Zoomed threshold sensitivity for the two mature workers on the 35-run pooled panel.
 The red line marks the operating threshold \(\delta=0.05\).
 At this threshold, entry success is near saturated while mean first-hit time remains low, which makes \(\delta=0.05\) a pragmatic operating point for studying time-to-certified-solution.
 The sharp drop at larger thresholds shows why the exact threshold is not an innocuous plotting choice.}
@@ -1340,7 +1340,7 @@ The sharp drop at larger thresholds shows why the exact threshold is not an inno
 \begin{figure}[p]
 \centering
 \includegraphics[width=\linewidth]{figures/autoresearch/diag_threshold_sensitivity_by_worker.png}
-\caption{Threshold sensitivity by worker on pooled common support.
+\caption{Threshold sensitivity by worker on the 35-run pooled panel.
 Spark is excluded, so the comparison matches the mature two-worker menu used in the paper-facing analysis.
 \texttt{gpt\_5\_4} remains stronger at higher thresholds, while \texttt{gpt\_5\_3\_codex} degrades earlier; this supports the competence term in Theorem~\ref{thm:four-term}.}
 \label{fig:app-threshold-by-worker}
@@ -1378,7 +1378,7 @@ This is the empirical object behind the cost and competence terms of the four-te
 \centering
 \includegraphics[width=\linewidth]{figures/autoresearch/diag_relative_improvement_spaghetti.png}
 \caption{Best-so-far improvement trajectories.
-The mean trajectories show that \texttt{gpt\_5\_4} improves earlier and reaches higher final relative improvement in the pooled panel, but the holdout deployment accounting in the main text shows that this does not automatically imply lower deployment loss after cost is charged.
+The mean trajectories show that \texttt{gpt\_5\_4} improves earlier and reaches higher final relative improvement in the pooled panel, but the deployment accounting in the main text shows that this does not automatically imply lower deployment loss after cost is charged.
 This contrast is the main empirical reason to separate worker competence from deployment value.}
 \label{fig:app-improvement-trajectories}
 \end{figure}
