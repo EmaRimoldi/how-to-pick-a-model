@@ -106,8 +106,9 @@ Indeed, Achille and Soatto \citep{achille2025agents} recently argued that time t
 
 Building on this intuition, we operationalize a certified log-effort surrogate gap between two possible designs. We show that it mathematically decomposes into four components that isolate the mechanisms of choice mentioned above.
 
-The experimental protocol estimates the operational quantities that are directly measurable and tests, by paired selected-worker deployment, whether richer pre-deployment information improves net deployment loss after measurement costs are charged.
-This gives the paper's main diagnostic separation: first estimate whether a worker frontier contains mode-conditional structure, then test whether pre-deployment records reveal that structure, and finally validate whether the deployed router turns the information into positive paired deployment gain.
+On our final two-worker AutoResearch panel, benchmark-style summaries favor \texttt{gpt\_5\_4}: it reaches the verifier threshold in fewer edit--verify steps and has stronger final-quality diagnostics.
+After charging verified failure and normalized wall-clock cost in the deployment loss, however, \texttt{gpt\_5\_3\_codex} is selected in all three task modes.
+The routing audit gives the complementary result: richer pre-deployment records reveal the task-mode structure, but the evaluated prompt-only router remains biased toward the benchmark-favored worker and produces negative paired net gain after measurement cost.
 
 % Run a lower-cost worker and a higher-capability worker on held-out instances; choose the one with the best average score.
 % For externally verified agentic tasks, this can be the wrong unit of comparison.
@@ -612,13 +613,13 @@ These estimates instantiate the worker-side cost and competence terms in Theorem
 
 \begin{table}[t]
 \centering
-\small
-\setlength{\tabcolsep}{3.2pt}
+\scriptsize
+\setlength{\tabcolsep}{2.4pt}
 \caption{Worker-frontier accounting on the 35-run pooled panel.
 \(C_\gamma\) is normalized wall-clock cost to first passage or horizon; lower is better for \(C_\gamma\), deployment loss, and log-effort.
 Bold marks the better accounting value within each mode.}
 \label{tab:worker-frontier-accounting}
-\resizebox{\linewidth}{!}{%
+\resizebox{0.88\linewidth}{!}{%
 \begin{tabular}{@{}llrrrrrr@{}}
 \toprule
 Mode & Worker & Success & Fail & Mean \(\tau\) & \(C_\gamma\) & Dep. loss & Log-effort \\
