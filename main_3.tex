@@ -72,19 +72,7 @@ A Framework for Budget-Aware Orchestration}
 \maketitle
 
 \begin{abstract}
-Agent systems on verified tasks invite a deceptively simple question: which backbone model should be run?
-The strongest model is not always the best deployment choice, because verified progress must be bought under finite wall-clock, token, API, and evaluation budgets.
-
-We formulate this problem as deployment-aware model selection for verified agent systems.
-A fixed router observes a pre-deployment information state and chooses a worker or harness action; the decision is scored by a checker-indexed deployment loss rather than by routing accuracy or final checker score alone.
-The key estimand is paired: on the same task instances, with the same router and action menu, does richer information change the selected action and reduce net deployment loss after its own measurement and context costs are charged?
-We instantiate the framework on a Karpathy AutoResearch-inspired CIFAR-10 edit--verify benchmark, where a prompt-only router chooses among heterogeneous workers before costly deployment runs.
-
-The protocol separates three objects that benchmark racing conflates: worker-frontier structure, information availability, and deployable routing value.
-The main two-worker study shows that first-hit speed, final improvement, log-effort, and deployment loss can rank workers differently.
-The same diagnostics then locate a routing failure: probe signals expose the task modes, but the evaluated prompt-only router does not convert that information into positive paired deployment gain.
-
-The resulting protocol evaluates not which agent is best in isolation, but whether measured information is actually usable by a router under the charged deployment objective.
+Agent systems on verified tasks invite a deceptively simple question: which backbone model should be run? The strongest model is not always the best deployment choice, because verified progress must be bought under finite wall-clock, token, API, and evaluation budgets. We formulate this problem as deployment-aware model selection. A fixed router observes a pre-deployment information state and chooses a worker or harness action; the decision is scored by a verifier-indexed deployment loss rather than by routing accuracy or final verifier score alone. The key estimand is paired: on the same task instances, with the same router and action menu, does richer information change the selected action and reduce net deployment loss after its own measurement and context costs are charged? We instantiate the framework on an Karpathy's AutoResearch-inspired CIFAR-10 edit--verify benchmark, where a prompt-only router chooses among heterogeneous workers before costly deployment runs. The protocol reports when verifier-score rankings disagree with deployment-loss rankings, when pre-deployment information changes routing, and whether those changes pay for themselves. The resulting protocol evaluates not which agent is best in isolation, but when information is worth buying before deploying one.
 \end{abstract}
 
 \section{Introduction}
@@ -122,15 +110,15 @@ The experimental protocol estimates the operational quantities that are directly
 This gives the paper's main diagnostic separation: first estimate whether a worker frontier contains mode-conditional structure, then test whether pre-deployment records reveal that structure, and finally validate whether the deployed router turns the information into positive paired deployment gain.
 
 % Run a lower-cost worker and a higher-capability worker on held-out instances; choose the one with the best average score.
-% For externally checked agentic tasks, this can be the wrong unit of comparison.
-% A model that eventually succeeds after a long expensive search may be dominated by a lower-cost action that reaches a sufficient checked outcome earlier, or by a router that sends different instances to different workers.
+% For externally verified agentic tasks, this can be the wrong unit of comparison.
+% A model that eventually succeeds after a long expensive search may be dominated by a lower-cost action that reaches a sufficient verified outcome earlier, or by a router that sends different instances to different workers.
 
 % This paper studies model and harness choice through \emph{performance accounting}.
-% The motivating regime includes code editing against unit tests, repository repair against continuous-integration checks, theorem search against a formal checker, and AutoResearch-style loops in which an agent edits a training program and receives external validation feedback~\citep{jimenez2024swebench,karpathy2026autoresearch}.
+% The motivating regime includes code editing against unit tests, repository repair against continuous-integration checks, theorem search against a formal verifier, and AutoResearch-style loops in which an agent edits a training program and receives external validation feedback~\citep{jimenez2024swebench,karpathy2026autoresearch}.
 % These tasks are transductive in Vapnik's sense~\citep{vapnik1996structure}: the system is handed a concrete instance and must produce a concrete artifact.
-% They are also externally checked: progress is determined by a verifier or scoring procedure outside the model.
+% They are also externally verified: progress is determined by a verifier or scoring procedure outside the model.
 % In this regime, the deployment object is not standalone accuracy.
-% It is the resource needed to reach, evaluate, and maintain checked progress, matching the time-centric view of agents as task solvers in \citet{achille2025agents}.
+% It is the resource needed to reach, evaluate, and maintain verified progress, matching the time-centric view of agents as task solvers in \citet{achille2025agents}.
 
 % The central difficulty is that one benchmark score conflates mechanisms that imply different engineering decisions.
 % A system can win because its worker has lower per-step cost.
@@ -148,106 +136,254 @@ We organize the paper around three questions, each paired with the contribution 
   Theorem~\ref{thm:crossover} gives the single-mode crossover rule, and the multi-mode accounting shows why the answer changes across task modes.
 \end{enumerate}
 
-The experiments below instantiate these claims with checked trajectories and deployment accounting.
+The experiments below instantiate these claims with verified trajectories and deployment accounting.
 
 \section{Setup and accounting}
 \label{sec:framework}
 
-We study the problem faced by a deployment system before launching an agentic run:
-given a task instance and a finite menu of possible workers or harnesses, which one should be run?
-The answer is not necessarily the model with the best final score.
-A deployment action must produce checked progress under finite time, token, API, and evaluation budgets.
+We give here the mathematical framework for agent systems on verified tasks. Let \(\X\) denote a family of tasks, such as
+SWE-bench, \(x\in\X\) a particular \textit{instance} of that task.
 
-\begin{definition}[Budgeted externally checked task]
-\label{def:checked-task}
-\label{def:task}
-A budgeted externally checked task is a tuple
+\begin{definition}[Verified task]
+\label{def:verified-task}
+A verifiable task is a tuple
 \[
-\cT=(\cX,\cY,V,B_{\mathrm{dep}},\mu).
+\mathcal T=(\mathcal X,\mathcal Y,V,\mu),
 \]
-Here $\cX$ is an instance space, $\cY$ is a solution space,
-$V:\cX\times\cY\to\mathcal R$ is an external checker or scoring procedure on instance--artifact pairs,
-$B_{\mathrm{dep}}$ is the full deployment budget and acceptance object,
-and $\mu$ is the deployment distribution over instances.
-The object $B_{\mathrm{dep}}$ may include a horizon, verifier budget, token/time/cost caps, and a thresholding rule that induces a binary success event from the checker score.
-For a realized instance $x\in\cX$, an agent produces artifacts $y\in\cY$ that are scored by $V(x,y)$.
-An agent succeeds on $x\sim\mu$ if it produces an accepted $y$ before exhausting $B_{\mathrm{dep}}$.
+where $\mathcal X$ is an instance space, $\mathcal Y$ is an artifact or solution space,
+$V$ is an external verifier or scoring procedure on instance--artifact pairs, and
+$\mu$ is the deployment distribution over instances.
+For a realized instance $x\in\mathcal X$, an agent produces artifacts $y\in\mathcal Y$ that are scored by $V(x,y)$.
 \end{definition}
 
-The checker may be binary, as in unit tests or proof checking, or scalar, as in validation loss or reward.
-The key point is externality: progress is determined by the checker, not by the model's self-report.
+The verifier may be binary, as in unit tests or proof checking, or scalar, as in validation loss or reward.
+The key point is externality: progress is determined by the verifier, not by the model's self-report.
+In SWE-bench \citet{jimenez2024swebench}, an instance \(x\in\cX\) is a repository together with an issue, failing behavior, and evaluation commands.
+An artifact \(y\in\cY\) is a proposed patch.
+The checker \(V(x,y)\) applies the patch and runs the benchmark test harness; \(V(x,y)=1\) means that the patch passes the held-out evaluation tests.
 
-\begin{definition}[Workers, actions, and routers]
-\label{def:actions-router}
+\begin{definition}[System]
 \label{def:design}
-Let $\cM=\{M_1,\ldots,M_K\}$ be a finite menu of workers, where a worker is any deployable solver or fixed agent policy that can produce a candidate solution for verification.
-Let $\mathcal A$ be a finite menu of deployable actions.
-An action may be a single model, a fixed model harness, a retry policy, or a tool-using agent protocol.
-In the simplest setting, $\cA=\cM$; more generally, an action bundles a worker with fixed stopping, retry, tool-use, and carryover rules.
-
-The deployment loss is defined in Section~\ref{sec:selection}, where it is tied to first-passage cost, audit loss, and measurement loss.
-A routed design is a tuple
+A deployable (agent) system \(M\in\cM\) is a frozen agent procedure for \(\cT\).
+Given an instance \(x\) and internal randomness \(r\), it may call models, tools, memory, and checkers according to a fixed harness, and it emits candidate artifacts over time.
+The finite menu
 \[
-d=(\cA,R,\kappa),
+    \cM=\{M_1,\ldots,M_K\}
 \]
-where $R$ is a router that selects an action after observing permitted information and $\kappa$ is the declared scalar action-cost convention used in the log-effort diagnostic.
-When costs are logged as resource vectors, the protocol must fix the scalar reduction before evaluation.
-A router $R$ observes a permitted pre-deployment information state $Z_j(x)$ and selects an action
-\[
-a_j(x)=R(Z_j(x))\in\mathcal A.
-\]
-Equivalently, a signal condition induces the routing policy $\rho_j:x\mapsto a_j(x)$.
-The selected action then performs the deployment run from the original task state.
+is the set of systems the builder is willing to compare and deploy.
 \end{definition}
 
-This separates routing from deployment.
-The router chooses what to run; the selected action performs the actual checked run.
-Unless explicitly declared otherwise, pre-deployment records are shown only to the router and are not passed to the selected worker.
+The harness can include, e.g., a single model call, a repeated-sampling loop, a tool-using code agent, or a fixed SKILL.md script.
+% In the main experimental setting, the router observes live signals before the run begins, chooses one model or subagent from the menu, and that chosen model performs the whole run; we do not use step-level model routing in the main paper.
+% When the menu has one element, the notation collapses to a single base model.
+% To keep the theorem algebra light, we write $M$ for the deployed model chosen by the routed design whenever the dependence on $(\mathcal M,q)$ is clear from context.
 
-\begin{definition}[Task instances and task modes]
-\label{def:modes}
-Given $\cT=(\cX,\cY,V,B_{\mathrm{dep}},\mu)$, a task instance is a concrete realization $X=x\in\cX$ of that same task.
-It is the measurable object supplied to the deployed system; the router and worker may access only the fields made available by the protocol.
-A task mode is a latent variable
+\begin{definition}[Router and routed design]
+\label{def:router}
+A router observes an admissible start-of-run information state \(Z=Z(x)\) and chooses one system:
 \[
-S=\sigma(X)\in\cS=\{1,\ldots,m_S\}
+    R:\mathcal Z\to\cM,
+    \qquad
+    M_R(x):=R(Z(x)).
 \]
-induced by a measurable map $\sigma:\cX\to\cS$ that assigns each instance to one of finitely many solver-relevant variants of the task.
-It defines a prior $\pi_s=\Prb_\mu[S=s]$ and mode-conditional instance distributions $\mu_s=\mu(\cdot\mid S=s)$.
-Modes are therefore not different tasks and not worker labels.
-They are variants of the same task: finite subpopulations of instances that share solver-relevant structure and may favor different workers or interventions.
+A routed design is the pair \((\cM,R)\), together with the protocol that produces \(Z\).
+The no-routing baseline is the special case where \(R\) is constant.
 \end{definition}
+A start-of-run signal \(Z\) might contain the issue text, failing visible-test names, stack-trace features, file counts, dependency metadata, a cheap static-analysis report, or the result of a short smoke-test run.
+A router might use this information to choose between a local-edit worker, a long-context repository worker, a dependency-repair harness, or an expensive frontier model.
 
 
-\begin{definition}[Certified time-to-verified solution]
+\begin{definition}[Certified time-to-solution]
 \label{def:certified-time}
-Fix a checked deployment task \(\mathcal T=(\mathcal X,\mathcal Y,V,B_{\mathrm{dep}},\mu)\)
-and a randomized solver or deployable action \(A\).
-Let \(\tau_A(x;r)\) denote the time or normalized resource consumed by \(A\) on instance \(x\)
-and randomness \(r\), and let \(A(x;r)\) denote its produced artifact.
-For confidence parameter \(\delta_{\mathrm{cert}}\in(0,1)\), the certified time-to-verified solution is
+For confidence level \(\delta\in(0,1)\), the certified time-to-solution
+of \(M\) is
 \[
-    \overline T_A(\delta_{\mathrm{cert}})
+    \overline T_M(\delta)
     :=
     \inf\left\{
         t>0:
         \Pr_{X\sim\mu,r}
-        \bigl[
-            V(X,A(X;r))=1
-            \ \text{and}\
-            \tau_A(X;r)\le t
-        \bigr]
-        \ge 1-\delta_{\mathrm{cert}}
+        \big[
+            V(X,M(X;r))=1
+            \ \mathrm{and}\
+            \tau_M(X;r)\le t
+        \big]
+        \ge 1-\delta
     \right\}.
 \]
-Certified cost and certified memory are defined analogously by replacing the time resource
-with the corresponding resource counter.
 \end{definition}
+The certified log-speedup of \(M\) over a baseline \(M_0\) is
+\[
+    \Delta(M_0,M)
+    :=
+    \log \overline T_{M_0}(\delta)
+    -
+    \log \overline T_M(\delta).
+\]
+Certified time asks how much resource is needed to reach an externally accepted artifact with high probability.
+On SWE-bench, it is the wall-clock, token, dollar, or verifier-call budget needed for the agent to produce a patch accepted by the evaluation harness with probability at least \(1-\delta_{\mathrm{cert}}\) over deployment instances and run randomness.
+
+
+\subsection{Packed latent modes}
+\label{subsec:packed-latent-modes}
+
+We now introduce a stylized structure on our family of tasks to reflect task families with different kind of instances inside. Intuitively, what we are saying is: imagine your task is actually made by a different tasks and you are sampling between one of those at every time.
+The question for the paper is, can you understand how to route optimally, so decide optimally what agent harness or backbone to use based on limited information?
+The structure is useful when, for instance, instances fall into a small number of solver-relevant bottlenecks and a routed system can spend more or less effort on the strategy appropriate to each bottleneck.
+
+\begin{assumption}[Packed latent-mode model]
+\label{ass:packed}
+There is a finite latent mode
+\[
+    S\in\cS=\{1,\ldots,m\},\qquad S\sim\pi,
+\]
+where \(S=s\) denotes the solver-relevant bottleneck of the instance.
+Before the costly deployment run, the system observes a signal \(Z\) and forms the posterior
+\[
+    \pi_z(s):=\Pr[S=s\mid Z=z].
+\]
+Given \(z\), the routed scheduler chooses a share vector
+\[
+    q_z\in\Delta(\cS),
+    \qquad
+    \mathrm{supp}(\pi_z)\subseteq \mathrm{supp}(q_z).
+\]
+For each deployable action \(a\) and mode \(s\), let \(t_0(a,s)>0\) be the internal
+certified scale of action \(a\) when all effort is focused on the correct mode, and let
+\(\kappa(a)>0\) be its unit cost.
+The packed-time model assumes
+\[
+    \overline T_{a,q}(s,z)
+    =
+    c_{\mathrm{sim}}\,
+    \kappa(a)\,
+    \frac{t_0(a,s)}{q_z(s)} .
+\]
+\end{assumption}
+
+The factor \(1/q_z(s)\) is the inverse-share penalty: if the true mode is \(s\) but only
+\(q_z(s)\) of the attempt budget is assigned to the corresponding strategy, certified time
+is slowed by \(1/q_z(s)\).
+Thus
+\[
+    \log \overline T_{a,q}(s,z)
+    =
+    \log c_{\mathrm{sim}}+\log\kappa(a)+\log t_0(a,s)-\log q_z(s).
+\]
+Conditioning on \(Z=z\), the router-dependent term becomes
+\[
+    \E_{S\sim\pi_z}[-\log q_z(S)]
+    =
+    H(\pi_z)+\KL(\pi_z\|q_z),
+\]
+which is the source of the information and mismatch terms below.
+
+\paragraph{Example: SWE-bench.}
+In repository repair, modes might correspond to type-interface errors, dependency conflicts,
+flaky-test isolation, performance regressions, or multi-file invariant repairs.
+The signal \(Z\) can include the issue text, visible failing tests, stack traces, static-analysis
+warnings, and a short smoke-test probe.
+A share \(q_z(s)\) is the fraction of repair effort assigned to strategy \(s\): local type edits,
+dependency updates, invariant-preserving multi-file edits, and so on.
+If the true bottleneck is a dependency conflict but the router assigns only \(10\%\) of its
+budget to dependency repair, the packed model charges a \(10\times\) slowdown for reaching
+a verified patch through that strategy.
+
+% We study the problem faced by a deployment system before launching an agentic run:
+% given a task instance and a finite menu of possible workers or harnesses, which one should be run?
+% The answer is not necessarily the model with the best final score.
+% A deployment action must produce verified progress under finite time, token, API, and evaluation budgets.
+
+% \begin{definition}[Budgeted externally verified task]
+% \label{def:verified-task}
+% \label{def:task}
+% A budgeted externally verified task is a tuple
+% \[
+% \cT=(\cX,\cY,V,B_{\mathrm{dep}},\mu).
+% \]
+% Here $\cX$ is an instance space, $\cY$ is a solution space,
+% $V:\cX\times\cY\to\mathcal R$ is an external verifier or scoring procedure on instance--artifact pairs,
+% $B_{\mathrm{dep}}$ is the full deployment budget and acceptance object,
+% and $\mu$ is the deployment distribution over instances.
+% The object $B_{\mathrm{dep}}$ may include a horizon, verifier budget, token/time/cost caps, and a thresholding rule that induces a binary success event from the verifier score.
+% For a realized instance $x\in\cX$, an agent produces artifacts $y\in\cY$ that are scored by $V(x,y)$.
+% An agent succeeds on $x\sim\mu$ if it produces an accepted $y$ before exhausting $B_{\mathrm{dep}}$.
+% \end{definition}
+
+% The verifier may be binary, as in unit tests or proof checking, or scalar, as in validation loss or reward.
+% The key point is externality: progress is determined by the verifier, not by the model's self-report.
+
+% \begin{definition}[Workers, actions, and routers]
+% \label{def:actions-router}
+% \label{def:design}
+% Let $\cM=\{M_1,\ldots,M_K\}$ be a finite menu of workers, where a worker is any deployable solver or fixed agent policy that can produce a candidate solution for verification.
+% Let $\mathcal A$ be a finite menu of deployable actions.
+% An action may be a single model, a fixed model harness, a retry policy, or a tool-using agent protocol.
+% In the simplest setting, $\cA=\cM$; more generally, an action bundles a worker with fixed stopping, retry, tool-use, and carryover rules.
+
+% The deployment loss is defined in Section~\ref{sec:selection}, where it is tied to first-passage cost, audit loss, and measurement loss.
+% A routed design is a tuple
+% \[
+% d=(\cA,R,\kappa),
+% \]
+% where $R$ is a router that selects an action after observing permitted information and $\kappa$ is the declared scalar action-cost convention used in the log-effort diagnostic.
+% When costs are logged as resource vectors, the protocol must fix the scalar reduction before evaluation.
+% A router $R$ observes a permitted pre-deployment information state $Z_j(x)$ and selects an action
+% \[
+% a_j(x)=R(Z_j(x))\in\mathcal A.
+% \]
+% Equivalently, a signal condition induces the routing policy $\rho_j:x\mapsto a_j(x)$.
+% The selected action then performs the deployment run from the original task state.
+% \end{definition}
+
+% This separates routing from deployment.
+% The router chooses what to run; the selected action performs the actual verified run.
+% Unless explicitly declared otherwise, pre-deployment records are shown only to the router and are not passed to the selected worker.
+
+% \begin{definition}[Task instances and task modes]
+% \label{def:modes}
+% Given $\cT=(\cX,\cY,V,B_{\mathrm{dep}},\mu)$, a task instance is a concrete realization $X=x\in\cX$ of that same task.
+% It is the measurable object supplied to the deployed system; the router and worker may access only the fields made available by the protocol.
+% A task mode is a latent variable
+% \[
+% S=\sigma(X)\in\cS=\{1,\ldots,m_S\}
+% \]
+% induced by a measurable map $\sigma:\cX\to\cS$ that assigns each instance to one of finitely many solver-relevant variants of the task.
+% It defines a prior $\pi_s=\Prb_\mu[S=s]$ and mode-conditional instance distributions $\mu_s=\mu(\cdot\mid S=s)$.
+% Modes are therefore not different tasks and not worker labels.
+% They are variants of the same task: finite subpopulations of instances that share solver-relevant structure and may favor different workers or interventions.
+% \end{definition}
+
+
+% \begin{definition}[Certified time-to-verified solution]
+% \label{def:certified-time}
+% Fix a verified deployment task \(\mathcal T=(\mathcal X,\mathcal Y,V,B_{\mathrm{dep}},\mu)\)
+% and a randomized solver or deployable action \(A\).
+% Let \(\tau_A(x;r)\) denote the time or normalized resource consumed by \(A\) on instance \(x\)
+% and randomness \(r\), and let \(A(x;r)\) denote its produced artifact.
+% For confidence parameter \(\delta_{\mathrm{cert}}\in(0,1)\), the certified time-to-verified solution is
+% \[
+%     \overline T_A(\delta_{\mathrm{cert}})
+%     :=
+%     \inf\left\{
+%         t>0:
+%         \Pr_{X\sim\mu,r}
+%         \bigl[
+%             V(X,A(X;r))=1
+%             \ \text{and}\
+%             \tau_A(X;r)\le t
+%         \bigr]
+%         \ge 1-\delta_{\mathrm{cert}}
+%     \right\}.
+% \]
+% Certified cost and certified memory are defined analogously by replacing the time resource
+% with the corresponding resource counter.
+% \end{definition}
 
 
 
-The evaluator retains \(S\) only for accounting: neither the router nor the worker needs to observe it.
-In the experiments, each mode is represented by one fixed executable setting, so the reported quantities are fixed-panel analogues rather than population-level estimates under \(\mu\).
+% The evaluator retains \(S\) only for accounting: neither the router nor the worker needs to observe it.
+% In the experiments, each mode is represented by one fixed executable setting, so the reported quantities are fixed-panel analogues rather than population-level estimates under \(\mu\).
 
 \begin{assumption}[Packed latent-mode family]
 \label{ass:packed}
@@ -308,6 +444,92 @@ The quantity $q_z(s)$ is a diagnostic summary, not a deployment probability.
 The KL term below is therefore a mode-summary divergence under the chosen diagnostic convention.
 It should be interpreted as a router failure only if the experiment predefines a reproducible construction of $q_z$ from router behavior.
 \end{remark}
+
+
+\section{Certified time and packed-mode log-effort}
+\label{subsec:certified-time-packed}
+
+\paragraph{Certified time.}
+For scale \(n\), let
+\[
+    \mathfrak T_n=(\cX_n,\cY_n,V_n,\mu_n)
+\]
+be a verifiable deployment task, where \(V_n:\cX_n\times\cY_n\to\{0,1\}\) is an
+external verifier and \(X\sim\mu_n\) is the deployment instance.  A randomized solver
+\(A\) produces \(A(X;r)\) in runtime \(\tau_A(X;r)\).
+
+\begin{definition}[Certified time-to-solution]
+\label{def:certified-time}
+For confidence level \(\delta\in(0,1)\), the certified time-to-solution
+of \(A\) is
+\[
+    \overline T_A(\delta)
+    :=
+    \inf\left\{
+        t>0:
+        \Pr_{X\sim\mu,r}
+        \big[
+            V(X,A(X;r))=1
+            \ \mathrm{and}\
+            \tau_A(X;r)\le t
+        \big]
+        \ge 1-\delta
+    \right\}.
+\]
+\end{definition}
+The certified log-speedup of \(A\) over a baseline \(A_0\) is
+\[
+    \Delta(A_0,A)
+    :=
+    \log \overline T_{A_0}(\delta)
+    -
+    \log \overline T_A(\delta).
+\]
+
+\paragraph{Certified speedup is coding gain.}
+Let \(\cA_n^\delta\) be a countable prefix-coded class of admissible solvers, with Kraft
+weights \(w(a)\) before observing side information \(D\) and \(w(a\mid D)\) after observing
+\(D\).  Let \(t_a(n,\delta_{\mathrm{cert}})\) be the certified time of solver \(a\), and define
+the universal and conditioned schedules
+\[
+    \overline T_U
+    =
+    c_{\mathrm{sim}}(n)
+    \inf_{a\in\cA_n^\delta}
+    \frac{t_a(n,\delta_{\mathrm{cert}})}{w(a)},
+    \qquad
+    \overline T_{U_D}
+    =
+    c_{\mathrm{sim}}(n)
+    \inf_{a\in\cA_n^\delta}
+    \frac{t_a(n,\delta_{\mathrm{cert}})}{w(a\mid D)}.
+\]
+If
+\[
+    a_D^\star
+    \in
+    \argmin_{a\in\cA_n^\delta}
+    \frac{t_a(n,\delta_{\mathrm{cert}})}{w(a\mid D)},
+\]
+then
+\[
+\boxed{
+    \log\frac{\overline T_U}{\overline T_{U_D}}
+    \le
+    \log\frac{w(a_D^\star\mid D)}{w(a_D^\star)} .
+}
+\]
+Thus side information can certify speedup only by increasing effective scheduler weight on
+solvers that are good for the realized instance.  Under the aligned structure-witness
+assumptions in Appendix~\ref{app:certified-log-effort}, this coding gain is bounded by a
+resource-bounded information term
+\[
+    \log\frac{\overline T_U}{\overline T_{U_D}}
+    \le
+    I_{\mathrm{poly}}(H_n:D)+\mathrm{overhead}.
+\]
+
+
 
 \section{Accounting identity}
 \label{sec:accounting}
@@ -424,7 +646,7 @@ We use \(\J\) to diagnose why rankings differ, and \(\ell_{\mathrm{dep}}\) to de
 \end{minipage}}
 \end{center}
 For deployment validation we use a predeclared first-passage loss.
-Given a checked progress trace $G_1,\ldots,G_H$, define
+Given a verified progress trace $G_1,\ldots,G_H$, define
 \[
 \tau_\delta(a,x;\xi)=\inf\{t\le H:G_t(a,x;\xi)\ge\delta\},
 \qquad
@@ -464,7 +686,7 @@ The normalized measurement loss is
 =
 \lambda_{\mathrm{meas}}^\top d_j(x;\zeta_j),
 \]
-where \(d_j\) contains wall-clock, token, checker-call, context, parsing, retry, and latency costs; \(\ell_{\mathrm{meas}}(0,x)=0\).
+where \(d_j\) contains wall-clock, token, verifier-call, context, parsing, retry, and latency costs; \(\ell_{\mathrm{meas}}(0,x)=0\).
 Pre-deployment probes are charged through \(\ell_{\mathrm{meas}}\) but do not consume the later deployment horizon \(H\) or verifier budget.
 
 The selected-action deployment objective is
@@ -506,14 +728,14 @@ Appendix~\ref{app:experiment-details} gives the finite-sample estimator and its 
 
 \paragraph{Setup.}
 We instantiate the framework on a repeated-trajectory panel of fixed executable settings for CIFAR-10 edit--verify optimization.
-The task modes are three starting optimization variants of the same checked task, \(\cS=\{\text{\textit{MLP-flat}},\text{\textit{compact CNN}},\text{\textit{micro ResNet}}\}\), with empirical weights \(\hat\pi(s)=1/3\).
-They are task modes because the dataset, checker, horizon, and success rule are fixed while the editable artifact's starting architecture and parameterization change, letting us test whether worker choice is mode-conditional rather than a single global ranking.
+The task modes are three starting optimization variants of the same verified task, \(\cS=\{\text{\textit{MLP-flat}},\text{\textit{compact CNN}},\text{\textit{micro ResNet}}\}\), with empirical weights \(\hat\pi(s)=1/3\).
+They are task modes because the dataset, verifier, horizon, and success rule are fixed while the editable artifact's starting architecture and parameterization change, letting us test whether worker choice is mode-conditional rather than a single global ranking.
 The analyzed worker menu is \(\{\texttt{gpt\_5\_3\_codex},\texttt{gpt\_5\_4}\}\).
 Each action is one worker under the common prompt and harness, so \(\cA=\cM\) in this experiment.
 For each task-mode--worker cell we use 35 independent AutoResearch trajectories.
 The router is a deterministic prompt-only orchestrator evaluated under four nested pre-deployment records \(Z_0,\ldots,Z_3\), from budget-only context to full unmodified-artifact baseline.
 The primary decision metric is the first-passage deployment loss in~\eqref{eq:deployment-loss}; full-horizon occupancy and final quality are audit metrics.
-Appendix~\ref{app:experiment-details} gives the frozen configuration, including horizon, checker budget, training budget, success threshold, signal contents, measurement-cost convention, progress normalization, smoothing rule, and logging schema.
+Appendix~\ref{app:experiment-details} gives the frozen configuration, including horizon, verifier budget, training budget, success threshold, signal contents, measurement-cost convention, progress normalization, smoothing rule, and logging schema.
 
 \paragraph{Experiment 1: Worker frontier.}
 We run every worker on every task mode before routing, estimating fixed-setting analogues of \(p(a,s)\) and \(\kappa(a,s)\).
@@ -526,7 +748,7 @@ These estimates instantiate the worker-side cost and competence terms in Theorem
 \caption{Two-worker frontier on the 35-run pooled panel.
 Left: first-passage deployment loss, lower is better.
 Right: certified log-effort surrogate.
-The two summaries disagree by mode: \texttt{gpt\_5\_4} reaches the threshold faster and has higher final checked improvement, while deployment-loss accounting favors \texttt{gpt\_5\_3\_codex} in the promoted two-worker panel.}
+The two summaries disagree by mode: \texttt{gpt\_5\_4} reaches the threshold faster and has higher final verified improvement, while deployment-loss accounting favors \texttt{gpt\_5\_3\_codex} in the promoted two-worker panel.}
 \label{fig:twomodel-frontier}
 \end{figure}
 
@@ -616,7 +838,7 @@ Signal & Pairs & Shift & Gross gain & Meas. loss & Net gain \\
 The paired validation is negative for the current prompt-only router.
 Against \(Z_0\), richer real signals produce small shift rates and negative net gain after measurement cost.
 The bootstrap intervals from the accounting script are \([-0.116,0.002]\) for \(Z_1\), \([-0.127,-0.007]\) for \(Z_2\), and \([-0.113,-0.024]\) for \(Z_3\).
-This is the main falsification result: informative records are not enough; the deployed router must use them in a way that improves the selected action's checked cost--success tradeoff.
+This is the main falsification result: informative records are not enough; the deployed router must use them in a way that improves the selected action's verified cost--success tradeoff.
 
 \paragraph{Experiment 5: Negative controls.}
 We repeat the router and paired-gain analyses with schema-preserving controls: shuffled probe records, wrong-mode probes, and synthetic noise records with matched field names and approximate context burden.
@@ -633,14 +855,14 @@ Appendices~\ref{app:experiment-details} and~\ref{app:diagnostic-plots} state the
 
 The closest classical ancestor is algorithm selection.
 Since Rice's formulation, solver portfolios have treated performance as instance-dependent: SATzilla and AutoFolio learn to select solvers from instance features rather than report one globally best solver~\citep{rice1976algorithm,xu2012satzilla,lindauer2015autofolio,kotthoff2016algorithm}.
-Our contribution is the specialization to externally checked LLM agents, where a router observes a controlled pre-deployment record and is scored by paired deployment loss rather than standalone routing accuracy.
+Our contribution is the specialization to externally verified LLM agents, where a router observes a controlled pre-deployment record and is scored by paired deployment loss rather than standalone routing accuracy.
 Unlike AutoML systems such as auto-sklearn, which tune pipelines offline for a dataset, our unit is a deployable action for a concrete verifier-backed instance~\citep{feurer2015autosklearn}.
 
 LLM routing and cascades provide the model-menu context.
 FrugalGPT, RouteLLM, RouterBench, LLMRouterBench, and compound-system routers study cost-quality routing over heterogeneous model pools~\citep{chen2023frugalgpt,ong2024routellm,hu2024routerbench,anonymous2026llmrouterbench,chen2025optimizing,yue2025masrouter,zaharia2024compound}.
-We ask how much checked, task-specific information is worth before committing to an expensive agentic deployment.
+We ask how much verified, task-specific information is worth before committing to an expensive agentic deployment.
 
-Checked agent benchmarks provide the task substrate.
+verified agent benchmarks provide the task substrate.
 SWE-bench evaluates repository repair against tests, AutoResearch evaluates training-loop edits against validation feedback, and theorem-proving systems use analogous external validators~\citep{jimenez2024swebench,karpathy2026autoresearch}.
 Repeated sampling and inference-time scaling further show that lower-cost or smaller models can become competitive when verification is available~\citep{brown2024monkeys,snell2025testtime,wu2025inference,osca2024}.
 Our question is upstream of the launched worker: which action should be selected, what should the router observe, and how should that observation be charged?
@@ -649,7 +871,7 @@ Our question is upstream of the launched worker: which action should be selected
 \label{sec:discussion}
 
 The paper separates a theory-facing diagnostic claim from a deployment-facing validation claim.
-The experiments support the diagnostic claim: first-passage speed, final improvement, certified log-effort, and deployment loss disagree on the same checked task family.
+The experiments support the diagnostic claim: first-passage speed, final improvement, certified log-effort, and deployment loss disagree on the same verified task family.
 They do not support the stronger claim that the evaluated prompt-only router improves deployment loss.
 Probe records expose the predeclared task modes, but under the primary deployment loss the mature two-worker menu does not create a positive switching opportunity beyond always using \texttt{gpt\_5\_3\_codex}; the router remains biased toward the worker favored by speed and final-quality metrics.
 
@@ -661,7 +883,7 @@ The decomposition is therefore a claim discipline: it helps identify cost, compe
 \paragraph{Future work.}
 The immediate experimental extension is to add a stable lower-cost action with matched trajectory support.
 That would make the worker menu span a broader cost--capability frontier than the two-worker comparison reported here.
-It would also test the retry-crossover theorem in its intended regime, where a lower-cost worker may compensate for lower one-attempt success through repeated checked attempts.
+It would also test the retry-crossover theorem in its intended regime, where a lower-cost worker may compensate for lower one-attempt success through repeated verified attempts.
 The ongoing \texttt{gpt\_5\_4\_mini} cells are not promoted here because support is still uneven across modes; they are the natural candidate for the retry-crossover experiment once matched at 35 trajectories per cell.
 Beyond this benchmark, repository repair, theorem checking, and multi-file research-code editing would test less artificial mode schemas and more heterogeneous measurement costs.
 
@@ -675,416 +897,884 @@ The final two-worker study asks that question directly and answers it negatively
 
 \appendix
 
-\section{Proofs and retry rule}
-\label{app:proofs}
-This appendix contains the algebra behind Theorem~\ref{thm:four-term} and the finite-pilot concentration argument used to motivate the experimental protocol.
 
-\subsection{From certified time to certified log-effort}
-\label{subsec:from-time-to-log-effort}
+% ============================================================
+% APPENDIX PATCH
+% ============================================================
 
-\paragraph{Why a logarithmic objective appears.}
-The logarithm in this paper is not introduced as a heuristic score.
-It is forced by the way certified time changes under scheduling, retries, and routing.
-A solver that receives only a fraction of the available search budget runs slower by the inverse
-of that fraction; a model that is \(30\times\) cheaper changes cost by a multiplicative factor;
-and a mode-specific success probability changes time-to-success multiplicatively.
-The log scale is the scale on which these multiplicative effects become additive.
-This subsection derives the log-effort objective from certified time.
+\section{Proofs: Certified-time derivation of log-effort}
+\label{app:certified-log-effort}
 
-\begin{definition}[Certified time-to-verified solution]
-\label{def:certified-time-app}
-Fix a checked deployment task \(\mathcal T=(\mathcal X,\mathcal Y,V,B_{\mathrm{dep}},\mu)\)
-and a randomized solver or deployable action \(A\).
-Let \(\tau_A(x;r)\) denote the time or normalized resource consumed by \(A\) on instance \(x\)
-and randomness \(r\), and let \(A(x;r)\) denote its produced artifact.
-For confidence parameter \(\delta_{\mathrm{cert}}\in(0,1)\), the certified time-to-verified solution is
+This appendix derives the log-effort objective from certified time.
+The main text uses only the certified-time definition, the coding-gain upper bound, and the
+packed-mode identity.  Here we give the full chain:
 \[
-    \overline T_A(\delta_{\mathrm{cert}})
+    \text{certified time}
+    \;\longrightarrow\;
+    \text{universal scheduling}
+    \;\longrightarrow\;
+    \text{coding-gain upper bound}
+    \;\longrightarrow\;
+    \text{packed latent-mode identity}
+    \;\longrightarrow\;
+    \text{finite-horizon empirical surrogate}.
+\]
+
+\subsection{Certified time and universal scheduling}
+
+\paragraph{Verifiable task family.}
+For each scale \(n\), let
+\[
+    \mathfrak T_n=(\cX_n,\cY_n,V_n,\mu_n)
+\]
+be a verifiable deployment task, where \(\cX_n\) is the instance space, \(\cY_n\) is the
+artifact or solution space, \(V_n:\cX_n\times\cY_n\to\{0,1\}\) is an external verifier, and
+\(\mu_n\) is the deployment distribution.
+A randomized solver \(a\) maps \((x,r)\) to an artifact \(a(x;r)\), and its runtime is
+\(\tau_a(x;r)\).
+
+\begin{definition}[Certified time of a solver]
+\label{def:app-certified-time}
+For confidence level \(\delta_{\mathrm{cert}}\in(0,1)\), define
+\[
+    t_a(n,\delta_{\mathrm{cert}})
     :=
     \inf\left\{
         t>0:
-        \Pr_{X\sim\mu,r}
-        \bigl[
-            V(X,A(X;r))=1
-            \ \text{and}\
-            \tau_A(X;r)\le t
-        \bigr]
+        \Pr_{X\sim\mu_n,r}
+        \big[
+            V_n(X,a(X;r))=1
+            \ \mathrm{and}\
+            \tau_a(X;r)\le t
+        \big]
         \ge 1-\delta_{\mathrm{cert}}
     \right\}.
 \]
-Certified cost and certified memory are defined analogously by replacing the time resource
-with the corresponding resource counter.
+A solver is admissible at confidence \(\delta_{\mathrm{cert}}\) if this quantity is finite.
+We write \(\cA_n^\delta\) for the admissible solver class.
 \end{definition}
 
-\paragraph{Metric guardrail.}
-The object above is a high-probability time guarantee.
-The decomposition below concerns expected \emph{log} certified time across latent modes,
-equivalently a geometric-mean certified-time criterion.
-This is the quantity that decomposes additively.
-It should not be confused with the single global quantile
-\(\overline T_A(\delta_{\mathrm{cert}})\) unless additional uniform mode-wise guarantees are imposed.
-In experiments we therefore report the log-effort score together with survival, occupancy,
-and tail-risk diagnostics.
-
-\begin{definition}[Certified log-speedup]
-\label{def:certified-log-speedup}
-Given a baseline solver \(A_0\) and a deployed solver \(A\), the certified log-speedup is
+\paragraph{Prefix-coded schedules.}
+Assume \(\cA_n^\delta\) is countable and prefix-coded.
+A baseline universal scheduler assigns Kraft weights
 \[
-    \Delta(A_0,A)
-    :=
-    \log \overline T_{A_0}(\delta_{\mathrm{cert}})
-    -
-    \log \overline T_A(\delta_{\mathrm{cert}}).
+    \sum_{a\in\cA_n^\delta} w(a)\le 1,
 \]
-Positive \(\Delta(A_0,A)\) means that \(A\) is faster than \(A_0\) by a multiplicative factor
-\(\exp(\Delta(A_0,A))\) on the certified-time scale.
-\end{definition}
-
-\paragraph{The inverse-share principle.}
-The log-effort decomposition starts from a simple scheduling fact.
-Suppose a solver \(a\) needs \(t_a\) units of internal computation to reach a certified success
-guarantee.
-If a meta-scheduler gives \(a\) only a share \(w(a)\in(0,1]\) of wall-clock computation,
-then \(a\) receives \(t_a\) internal units only after approximately \(t_a/w(a)\) wall-clock units.
-Thus a universal or portfolio scheduler has the form
+while a conditioned scheduler, after observing side information \(D\), assigns
 \[
-    \overline T_U
+    \sum_{a\in\cA_n^\delta} w(a\mid D)\le 1.
+\]
+Giving solver \(a\) a share \(w(a)\) of wall-clock computation means that \(a\) receives
+\(t_a\) internal units after approximately \(t_a/w(a)\) wall-clock units.  Thus the baseline
+and conditioned certified times are
+\[
+    \overline T_U(n,\delta_{\mathrm{cert}})
     =
-    c_{\mathrm{sim}}
-    \inf_{a}
-    \frac{t_a}{w(a)}.
+    c_{\mathrm{sim}}(n)
+    \inf_{a\in\cA_n^\delta}
+    \frac{t_a(n,\delta_{\mathrm{cert}})}{w(a)},
 \]
-After observing diagnostic information \(D\), a conditioned scheduler may replace \(w(a)\)
-by \(w(a\mid D)\), giving
+and
+\[
+    \overline T_{U_D}(n,\delta_{\mathrm{cert}})
+    =
+    c_{\mathrm{sim}}(n)
+    \inf_{a\in\cA_n^\delta}
+    \frac{t_a(n,\delta_{\mathrm{cert}})}{w(a\mid D)}.
+\]
+Here \(c_{\mathrm{sim}}(n)\ge 1\) is a shared simulation overhead.
+
+\begin{proposition}[Coding-gain bound]
+\label{prop:app-coding-gain}
+Fix a realization of \(D\), and let
+\[
+    a_D^\star
+    \in
+    \argmin_{a\in\cA_n^\delta}
+    \frac{t_a(n,\delta_{\mathrm{cert}})}{w(a\mid D)}.
+\]
+Then
+\[
+    \log\frac{\overline T_U(n,\delta_{\mathrm{cert}})}
+             {\overline T_{U_D}(n,\delta_{\mathrm{cert}})}
+    \le
+    \log\frac{w(a_D^\star\mid D)}{w(a_D^\star)}.
+\]
+\end{proposition}
+
+\begin{proof}
+By definition of \(a_D^\star\),
 \[
     \overline T_{U_D}
     =
     c_{\mathrm{sim}}
-    \inf_{a}
-    \frac{t_a}{w(a\mid D)}.
+    \frac{t_{a_D^\star}}{w(a_D^\star\mid D)}.
 \]
-Taking logs turns inverse weights into code lengths:
+Since \(\overline T_U\) is an infimum over all admissible solvers,
 \[
-    \log\frac{t_a/w(a)}{t_a/w(a\mid D)}
-    =
-    \log\frac{w(a\mid D)}{w(a)}.
-\]
-This is the coding-gain origin of certified log-speedup.
-
-\begin{assumption}[Packed latent-mode time model]
-\label{ass:packed-time}
-Fix a finite latent mode set \(\mathcal S=\{1,\ldots,m\}\).
-An instance has hidden mode \(S\sim\pi\), where \(S=s\) means that mode \(s\) is the
-solution strategy or bottleneck relevant to the instance.
-Before allocating expensive computation, the system observes a diagnostic signal \(Z\)
-with posterior
-\[
-    \pi_z(s)
-    :=
-    \Pr[S=s\mid Z=z].
-\]
-A scheduler or router chooses a compute-share vector
-\[
-    q_z\in\Delta(\mathcal S),
-    \qquad
-    q_z(s)>0\ \text{whenever}\ \pi_z(s)>0.
-\]
-For action \(a\), mode \(s\), and confidence level \(\delta_{\mathrm{cert}}\), let
-\(t_0(a,s,\delta_{\mathrm{cert}})>0\) be the internal certified scale of the expert or strategy
-appropriate to mode \(s\).
-If the true mode is \(s\), assigning share \(q_z(s)\) to the correct strategy yields certified
-costed time
-\[
-    \overline T_{a,q}(s,z;\delta_{\mathrm{cert}})
-    =
+    \overline T_U
+    \le
     c_{\mathrm{sim}}
-    \,
-    \kappa(a)
-    \,
-    \frac{t_0(a,s,\delta_{\mathrm{cert}})}{q_z(s)}.
+    \frac{t_{a_D^\star}}{w(a_D^\star)}.
 \]
-Here \(\kappa(a)>0\) is the per-unit deployment cost of action \(a\), and \(c_{\mathrm{sim}}\ge 1\)
-is a scheduling or simulation overhead shared across designs.
-\end{assumption}
+Dividing the two inequalities cancels both \(c_{\mathrm{sim}}\) and \(t_{a_D^\star}\), yielding
+\[
+    \frac{\overline T_U}{\overline T_{U_D}}
+    \le
+    \frac{w(a_D^\star\mid D)}{w(a_D^\star)}.
+\]
+Taking logs gives the claim.
+\end{proof}
 
 \paragraph{Interpretation.}
-Assumption~\ref{ass:packed-time} says that routing changes time through compute shares.
-If the true instance is an induction problem and only \(10\%\) of the attempt budget is spent on
-induction-like search, then the induction expert effectively runs \(10\times\) slower.
-If \(50\%\) of the budget is spent on that strategy, it runs only \(2\times\) slower.
-Thus the penalty for under-allocating the true mode is \(1/q_z(s)\), and on the log scale it is
-\(-\log q_z(s)\).
+The bound says that side information cannot create certified speedup by magic.
+It can only move scheduler mass toward a solver that is good for the realized problem.
+On the log scale, this is a coding gain:
+\[
+    \log w(a\mid D)-\log w(a).
+\]
+This is the mathematical origin of the log objective.
 
-\begin{lemma}[Conditional log-time decomposition]
-\label{lem:conditional-log-time}
-Under Assumption~\ref{ass:packed-time}, for every realized signal \(Z=z\),
+\subsection{Resource-bounded information upper bound}
+
+The coding-gain bound is pointwise and elementary.
+To express it as an information upper bound, we need an aligned structure witness.
+This subsection states a safe version with all assumptions explicit.
+
+\begin{definition}[Resource-bounded structure length]
+\label{def:app-ipoly}
+Let \(H_n\) denote reusable task structure, and let
+\[
+    \cS(H_n)\subseteq\cA_n^\delta
+\]
+be a nonempty witness class of solvers realizing that structure.
+Define
+\[
+    K^{\mathrm{poly}}(H_n)
+    :=
+    \inf_{a\in\cS(H_n)}\{-\log w(a)\},
+\]
+\[
+    K^{\mathrm{poly}}(H_n\mid D)
+    :=
+    \inf_{a\in\cS(H_n)}\{-\log w(a\mid D)\},
+\]
+and
+\[
+    I_{\mathrm{poly}}(H_n:D)
+    :=
+    K^{\mathrm{poly}}(H_n)
+    -
+    K^{\mathrm{poly}}(H_n\mid D).
+\]
+\end{definition}
+
+\begin{assumption}[Aligned witness]
+\label{ass:app-aligned-witness}
+For each realized \(D\), there exists a witness solver \(a_H(D)\in\cS(H_n)\) such that:
+\[
+    \log\frac{t_{a_H}}{w(a_H\mid D)}
+    \le
+    \inf_{a\in\cA_n^\delta}
+    \log\frac{t_a}{w(a\mid D)}
+    +
+    \rho_D ,
+\]
+and
+\[
+    -\log w(a_H)
+    \le
+    K^{\mathrm{poly}}(H_n)+\kappa_D .
+\]
+The first inequality says the witness is nearly conditionally optimal.
+The second says it is not much longer under the baseline code than the shortest solver
+realizing the structure.
+\end{assumption}
+
+\begin{theorem}[Certified upper envelope]
+\label{thm:app-certified-upper-envelope}
+Under Assumption~\ref{ass:app-aligned-witness},
+\[
+    \log\frac{\overline T_U(n,\delta_{\mathrm{cert}})}
+             {\overline T_{U_D}(n,\delta_{\mathrm{cert}})}
+    \le
+    I_{\mathrm{poly}}(H_n:D)+\kappa_D+\rho_D .
+\]
+If the overheads satisfy \(\kappa_D+\rho_D=O(\log n+\log\log(1/\delta_{\mathrm{cert}}))\),
+then
+\[
+    \log\frac{\overline T_U(n,\delta_{\mathrm{cert}})}
+             {\overline T_{U_D}(n,\delta_{\mathrm{cert}})}
+    \le
+    I_{\mathrm{poly}}(H_n:D)
+    +
+    O(\log n+\log\log(1/\delta_{\mathrm{cert}})).
+\]
+\end{theorem}
+
+\begin{proof}
+Let
+\[
+    L_U:=\inf_{a\in\cA_n^\delta}\left\{\log t_a-\log w(a)\right\},
+    \qquad
+    L_D:=\inf_{a\in\cA_n^\delta}\left\{\log t_a-\log w(a\mid D)\right\}.
+\]
+The shared simulation overhead cancels, so
+\[
+    \log\frac{\overline T_U}{\overline T_{U_D}}
+    =
+    L_U-L_D.
+\]
+For the aligned witness \(a_H=a_H(D)\),
+\[
+    L_U
+    \le
+    \log t_{a_H}-\log w(a_H),
+\]
+while Assumption~\ref{ass:app-aligned-witness} gives
+\[
+    L_D
+    \ge
+    \log t_{a_H}-\log w(a_H\mid D)-\rho_D.
+\]
+Therefore
 \[
 \begin{aligned}
-    \E_{S\sim\pi_z}
+    L_U-L_D
+    &\le
+    \bigl[\log t_{a_H}-\log w(a_H)\bigr]
+    -
+    \bigl[\log t_{a_H}-\log w(a_H\mid D)-\rho_D\bigr]
+    \\
+    &=
+    -\log w(a_H)+\log w(a_H\mid D)+\rho_D.
+\end{aligned}
+\]
+By the prior-length assumption,
+\[
+    -\log w(a_H)\le K^{\mathrm{poly}}(H_n)+\kappa_D.
+\]
+Since \(a_H\in\cS(H_n)\),
+\[
+    -\log w(a_H\mid D)\ge K^{\mathrm{poly}}(H_n\mid D),
+\]
+equivalently,
+\[
+    \log w(a_H\mid D)\le -K^{\mathrm{poly}}(H_n\mid D).
+\]
+Combining,
+\[
+    L_U-L_D
+    \le
+    K^{\mathrm{poly}}(H_n)-K^{\mathrm{poly}}(H_n\mid D)+\kappa_D+\rho_D
+    =
+    I_{\mathrm{poly}}(H_n:D)+\kappa_D+\rho_D .
+\]
+\end{proof}
+
+\begin{remark}[Why the aligned-witness assumption is necessary]
+The elementary coding-gain bound holds without a structure witness.
+The \(I_{\mathrm{poly}}(H_n:D)\) upper bound does not.
+It requires the solver accelerated by \(D\) to be a near-optimal representative of the
+same reusable structure class \(H_n\).
+Without this alignment, side information might favor a solver unrelated to the proposed
+structure variable, and the claimed information upper bound would not follow.
+\end{remark}
+
+\subsection{Packed latent-mode family}
+
+We now specialize the scheduler picture to the finite mode model used in the main text.
+
+\begin{assumption}[Model-dependent packed latent-mode family]
+\label{ass:app-packed-model}
+Fix a task family and confidence level \(\delta_{\mathrm{cert}}\).
+Assume:
+\begin{enumerate}[leftmargin=1.25em,itemsep=0.15em]
+    \item \textbf{Latent modes.}
+    There is a finite latent mode
+    \[
+        S\in\cS=\{1,\ldots,m\},
+        \qquad
+        S\sim\pi.
+    \]
+    \item \textbf{Diagnostic signal.}
+    A diagnostic signal \(D_M\) may depend on the model or harness \(M\), with posterior
+    \[
+        \pi_D^M(s):=\Pr[S=s\mid D_M=D].
+    \]
+    If the diagnostic is model-independent, we write simply \(D\) and \(\pi_D\).
+    \item \textbf{Mode expert scale.}
+    For each model/action \(M\) and mode \(s\), there is an internal certified scale
+    \[
+        t_0(M,s,\delta_{\mathrm{cert}})>0.
+    \]
+    \item \textbf{Cost.}
+    Model/action \(M\) has per-unit deployment cost
+    \[
+        \kappa(M)>0.
+    \]
+    \item \textbf{Compute share.}
+    After observing \(D\), the scheduler chooses a share vector
+    \[
+        q_D^M\in\Delta(\cS),
+        \qquad
+        \pi_D^M(s)>0\Rightarrow q_D^M(s)>0.
+    \]
+    \item \textbf{Inverse-share certified time.}
+    Conditional on true mode \(s\), the certified time is
+    \[
+        \overline T^{(M)}_{q_D}(s,D)
+        =
+        c_{\mathrm{sim}}\,
+        \kappa(M)\,
+        \frac{t_0(M,s,\delta_{\mathrm{cert}})}{q_D^M(s)}.
+    \]
+\end{enumerate}
+\end{assumption}
+
+\paragraph{Why the inverse-share law is the right specialization.}
+The universal scheduler gives solver \(a\) only a fraction \(w(a)\) of wall-clock computation,
+so certified time is multiplied by \(1/w(a)\).
+In the packed family, the finite dictionary of solvers is identified with the mode dictionary.
+If the true mode is \(s\), only the share \(q_D^M(s)\) assigned to the correct mode expert
+contributes to that expert's internal progress.
+Thus assigning too little mass to the correct mode slows certified time by \(1/q_D^M(s)\).
+
+\subsection{Conditional log-time decomposition}
+
+\begin{lemma}[Conditional packed log-time]
+\label{lem:app-conditional-packed}
+Under Assumption~\ref{ass:app-packed-model}, for every realized \(D\),
+\[
+\begin{aligned}
+    \E_{S\sim\pi_D^M}
     \bigl[
-        \log \overline T_{a,q}(S,z;\delta_{\mathrm{cert}})
-        \,\bigm|\,
-        Z=z
+        \log \overline T^{(M)}_{q_D}(S,D)
     \bigr]
     &=
     \log c_{\mathrm{sim}}
     +
-    \log \kappa(a)
+    \log\kappa(M)
     +
-    \E_{S\sim\pi_z}
-    \bigl[
-        \log t_0(a,S,\delta_{\mathrm{cert}})
-    \bigr]
+    \E_{S\sim\pi_D^M}
+    [\log t_0(M,S,\delta_{\mathrm{cert}})]
     \\
     &\quad
     +
-    H(\pi_z)
+    H(\pi_D^M)
     +
-    \KL(\pi_z\|q_z).
+    \KL(\pi_D^M\|q_D^M).
 \end{aligned}
 \]
-For fixed \(a\) and \(z\), the unique allocation minimizing the conditional expected log-time is
+For fixed \(M\) and \(D\), the unique minimizer over share vectors is
 \[
-    q_z^\star=\pi_z,
+    q_D^{M,\star}=\pi_D^M,
 \]
-and the excess conditional expected log-time of any other allocation \(q_z\) is exactly
+on the support of \(\pi_D^M\), and the excess conditional expected log-time of any other
+share vector is exactly
 \[
-    \KL(\pi_z\|q_z).
+    \KL(\pi_D^M\|q_D^M).
 \]
 \end{lemma}
 
 \begin{proof}
-By Assumption~\ref{ass:packed-time},
+From Assumption~\ref{ass:app-packed-model},
 \[
-    \log \overline T_{a,q}(s,z;\delta_{\mathrm{cert}})
+    \log \overline T^{(M)}_{q_D}(s,D)
     =
     \log c_{\mathrm{sim}}
     +
-    \log\kappa(a)
+    \log \kappa(M)
     +
-    \log t_0(a,s,\delta_{\mathrm{cert}})
+    \log t_0(M,s,\delta_{\mathrm{cert}})
     -
-    \log q_z(s).
+    \log q_D^M(s).
 \]
-Taking expectation over \(S\sim\pi_z\) leaves only the last term to simplify:
+Taking expectation over \(S\sim\pi_D^M\), all terms are immediate except the last:
 \[
-    \E_{S\sim\pi_z}[-\log q_z(S)]
+    \E_{S\sim\pi_D^M}[-\log q_D^M(S)]
     =
-    \sum_s \pi_z(s)\log\frac{1}{q_z(s)}
-    =
-    H(\pi_z)+\KL(\pi_z\|q_z),
+    \sum_s \pi_D^M(s)\log\frac{1}{q_D^M(s)}.
 \]
-the standard cross-entropy identity.
-Nonnegativity of KL divergence gives optimality, and equality holds only when \(q_z=\pi_z\)
-on the support of \(\pi_z\).
+By the cross-entropy identity,
+\[
+    \sum_s \pi_D^M(s)\log\frac{1}{q_D^M(s)}
+    =
+    H(\pi_D^M)+\KL(\pi_D^M\|q_D^M).
+\]
+Nonnegativity of KL gives optimality, and equality holds only when
+\(q_D^M=\pi_D^M\) on the support of \(\pi_D^M\).
 \end{proof}
 
-\paragraph{From internal certified scale to success probability.}
-The current paper often writes competence using a mode-conditional success probability
-\(p_a(s)\).
-This is a geometric-trials specialization of \(t_0(a,s,\delta_{\mathrm{cert}})\).
-Suppose one unit attempt of action \(a\) succeeds on mode \(s\) with probability \(p_a(s)\),
-independently across attempts.
-After \(N\) attempts, the failure probability is
-\[
-    (1-p_a(s))^N.
-\]
-To achieve failure probability at most \(\delta_{\mathrm{cert}}\), it suffices that
-\[
-    N
-    \ge
-    \frac{\log \delta_{\mathrm{cert}}}{\log(1-p_a(s))}.
-\]
-For small or moderate \(p_a(s)\),
-\[
-    \frac{\log \delta_{\mathrm{cert}}}{\log(1-p_a(s))}
-    \approx
-    \frac{\log(1/\delta_{\mathrm{cert}})}{p_a(s)}.
-\]
-Thus, up to factors depending only on the confidence level and unit attempt duration,
-\[
-    t_0(a,s,\delta_{\mathrm{cert}})
-    \propto
-    \frac{1}{p_a(s)}.
-\]
-Consequently,
-\[
-    \log t_0(a,s,\delta_{\mathrm{cert}})
-    =
-    -\log p_a(s)
-    +
-    \mathrm{const}(\delta_{\mathrm{cert}}),
-\]
-which is why the log-effort objective contains the term \(-\log p_a(s)\).
+\subsection{Certified log-effort objective}
 
-\begin{definition}[Cost-adjusted certified log-effort]
-\label{def:cost-adjusted-log-effort}
-Under Assumption~\ref{ass:packed-time}, the packed-family certified log-effort of action \(a\)
-and allocation rule \(q: z\mapsto q_z\) is
+\begin{definition}[Packed certified log-effort]
+\label{def:app-certified-log-effort}
+For model/action \(M\) and allocation rule \(D\mapsto q_D^M\), define
 \[
-\begin{aligned}
-    \mathcal J_{\log}(a,q)
-    &:=
-    \E_{Z}
-    \E_{S\sim\pi_Z}
-    \bigl[
-        \log \overline T_{a,q}(S,Z;\delta_{\mathrm{cert}})
-    \bigr]
+    \J_{\log}(M,q)
+    :=
+    \E_D
+    \E_{S\sim\pi_D^M}
+    \left[
+        \log \overline T^{(M)}_{q_D}(S,D)
+    \right]
     -
     \log c_{\mathrm{sim}}.
-\end{aligned}
 \]
 Equivalently,
 \[
 \boxed{
-    \mathcal J_{\log}(a,q)
+    \J_{\log}(M,q)
     =
-    \log \kappa(a)
+    \log\kappa(M)
     +
     \E_{S\sim\pi}
-    \bigl[
-        \log t_0(a,S,\delta_{\mathrm{cert}})
-    \bigr]
+    [\log t_0(M,S,\delta_{\mathrm{cert}})]
     +
-    \E_Z
+    \E_D
     \left[
-        H(\pi_Z)+\KL(\pi_Z\|q_Z)
+        H(\pi_D^M)+\KL(\pi_D^M\|q_D^M)
     \right].
 }
 \]
-In the geometric-trials specialization \(t_0(a,s,\delta_{\mathrm{cert}})\propto 1/p_a(s)\),
-constants independent of \(a\) and \(q\) can be dropped, giving
-\[
-\boxed{
-    \mathcal J_{\log}(a,q)
-    \equiv
-    \log \kappa(a)
-    +
-    \E_{S\sim\pi}
-    [-\log p_a(S)]
-    +
-    \E_Z
-    \left[
-        H(\pi_Z)+\KL(\pi_Z\|q_Z)
-    \right].
-}
-\]
-Lower \(\mathcal J_{\log}\) means lower geometric-mean certified effort.
+Lower \(\J_{\log}\) means lower geometric-mean certified effort.
 \end{definition}
 
+\begin{proof}[Justification of the equivalent expression]
+Apply Lemma~\ref{lem:app-conditional-packed} and average over \(D\).
+The term
+\[
+    \E_D\E_{S\sim\pi_D^M}[\log t_0(M,S,\delta_{\mathrm{cert}})]
+\]
+equals
+\[
+    \E_{S\sim\pi}[\log t_0(M,S,\delta_{\mathrm{cert}})]
+\]
+by the tower property.
+The shared \(\log c_{\mathrm{sim}}\) is subtracted by definition.
+\end{proof}
 
-\paragraph{Finite-horizon empirical surrogate.}
-In a finite AutoResearch-style trajectory of horizon \(H\), the one-step geometric model may be
-too crude.
-The empirical version replaces \(p_a(s)\) by a horizon-\(H\) first-hit probability
+\subsection{Routing-information identity}
+
+The first identity holds model fixed and isolates information generation and routing mismatch.
+
+\begin{theorem}[Routing-information identity]
+\label{thm:app-routing-information}
+Assume \(M\) is fixed, so \(t_0(M,s,\delta_{\mathrm{cert}})\) and \(\kappa(M)\) are common
+to baseline and deployed systems.
+Let the baseline use a fixed share vector \(q_0\), and let the deployed system use
+\(D\mapsto q_D\).
+Then
 \[
-    F_a(s,H):=\Pr(\tau_a\le H\mid S=s),
-\]
-and replaces the idealized unit cost by the observed cost-to-hit or cost-to-censor
-\[
-    C_a(s,H):=\E[C_{\tau_a\wedge H}\mid S=s].
-\]
-This yields the finite-horizon log-effort surrogate
-\[
-    \ell_{\mathrm{hit}}(a,s;H)
+\boxed{
+    \E
+    \left[
+        \log \overline T_{q_0}(S)
+        -
+        \log \overline T_{q_D}(S,D)
+    \right]
     =
-    \log C_a(s,H)
+    I_\pi(S;D)+\KL(\pi\|q_0)-\E_D\KL(\pi_D\|q_D).
+}
+\]
+In particular, if \(q_0=\pi\),
+\[
+    \E
+    \left[
+        \log \overline T_{\pi}(S)
+        -
+        \log \overline T_{q_D}(S,D)
+    \right]
+    =
+    I_\pi(S;D)-\E_D\KL(\pi_D\|q_D).
+\]
+\end{theorem}
+
+\begin{proof}
+For the fixed baseline \(q_0\), Lemma~\ref{lem:app-conditional-packed} with no diagnostic
+conditioning gives
+\[
+    \E[\log \overline T_{q_0}(S)]
+    =
+    \log c_{\mathrm{sim}}
+    +
+    \log\kappa(M)
+    +
+    \E_\pi[\log t_0(M,S)]
+    +
+    H(\pi)
+    +
+    \KL(\pi\|q_0).
+\]
+For the deployed scheduler,
+\[
+    \E[\log \overline T_{q_D}(S,D)]
+    =
+    \log c_{\mathrm{sim}}
+    +
+    \log\kappa(M)
+    +
+    \E_\pi[\log t_0(M,S)]
+    +
+    \E_D H(\pi_D)
+    +
+    \E_D\KL(\pi_D\|q_D).
+\]
+Subtracting cancels cost and internal scale, leaving
+\[
+    H(\pi)-\E_DH(\pi_D)+\KL(\pi\|q_0)-\E_D\KL(\pi_D\|q_D).
+\]
+Since
+\[
+    I_\pi(S;D)=H(\pi)-\E_DH(\pi_D),
+\]
+the result follows.
+\end{proof}
+
+\subsection{Model-aware decomposition}
+
+The previous theorem holds model fixed.
+The model-aware version adds cost and mode-conditioned competence.
+
+\begin{theorem}[Model-aware packed decomposition]
+\label{thm:app-model-aware}
+Under Assumption~\ref{ass:app-packed-model}, compare a baseline \((M_0,q_0)\) with a
+deployed system \((M,q_D^M)\).
+Then
+\[
+\boxed{
+\begin{aligned}
+&\E\!\left[
+    \log \overline T^{(M_0)}_{q_0}(S)
     -
-    \log(F_a(s,H)\vee \alpha),
+    \log \overline T^{(M)}_{q_D}(S,D_M)
+\right]
+\\
+&\qquad =
+\underbrace{\log\frac{\kappa(M_0)}{\kappa(M)}}_{\mathrm{cost}}
++
+\underbrace{
+\E_\pi
+\left[
+    \log\frac{t_0(M_0,S,\delta_{\mathrm{cert}})}
+              {t_0(M,S,\delta_{\mathrm{cert}})}
+\right]
+}_{\mathrm{competence}}
++
+\underbrace{I_\pi(S;D_M)}_{\mathrm{routing\ information}}
++
+\underbrace{\KL(\pi\|q_0)}_{\mathrm{baseline\ mismatch}}
+-
+\underbrace{\E_{D_M}\KL(\pi_{D_M}^M\|q_{D_M}^M)}_{\mathrm{routing\ mismatch}} .
+\end{aligned}
+}
+\]
+If \(q_0=\pi\), this reduces to the four-term identity in the main text.
+\end{theorem}
+
+\begin{proof}
+For the baseline,
+\[
+\begin{aligned}
+    \E[\log \overline T^{(M_0)}_{q_0}(S)]
+    &=
+    \log c_{\mathrm{sim}}
+    +
+    \log\kappa(M_0)
+    +
+    \E_\pi[\log t_0(M_0,S,\delta_{\mathrm{cert}})]
+    \\
+    &\quad
+    +
+    H(\pi)
+    +
+    \KL(\pi\|q_0).
+\end{aligned}
+\]
+For the deployed system, Lemma~\ref{lem:app-conditional-packed} gives
+\[
+\begin{aligned}
+    \E[\log \overline T^{(M)}_{q_D}(S,D_M)]
+    &=
+    \log c_{\mathrm{sim}}
+    +
+    \log\kappa(M)
+    +
+    \E_\pi[\log t_0(M,S,\delta_{\mathrm{cert}})]
+    \\
+    &\quad
+    +
+    \E_{D_M}H(\pi_{D_M}^M)
+    +
+    \E_{D_M}\KL(\pi_{D_M}^M\|q_{D_M}^M).
+\end{aligned}
+\]
+Subtracting yields
+\[
+\begin{aligned}
+&\log\frac{\kappa(M_0)}{\kappa(M)}
++
+\E_\pi
+\left[
+    \log\frac{t_0(M_0,S,\delta_{\mathrm{cert}})}
+              {t_0(M,S,\delta_{\mathrm{cert}})}
+\right]
+\\
+&\quad+
+H(\pi)-\E_{D_M}H(\pi_{D_M}^M)
++
+\KL(\pi\|q_0)
+-
+\E_{D_M}\KL(\pi_{D_M}^M\|q_{D_M}^M).
+\end{aligned}
+\]
+The entropy difference is \(I_\pi(S;D_M)\).
+\end{proof}
+
+\subsection{From internal certified scale to success probability}
+
+The decomposition above is exact in terms of the certified internal scale
+\(t_0(M,s,\delta_{\mathrm{cert}})\).
+The simpler notation \(p_M(s)\) is a specialization.
+
+\paragraph{Exact geometric-trials calculation.}
+Suppose each unit attempt of model \(M\) on mode \(s\) succeeds independently with
+probability \(p_M(s)\in(0,1)\), and each unit attempt has normalized duration \(u_M(s)\).
+After \(N\) attempts, the success probability is
+\[
+    1-(1-p_M(s))^N.
+\]
+To achieve failure probability at most \(\delta_{\mathrm{cert}}\), it is enough and necessary that
+\[
+    N
+    \ge
+    \frac{\log \delta_{\mathrm{cert}}}{\log(1-p_M(s))}
+    =
+    \frac{\log(1/\delta_{\mathrm{cert}})}
+         {-\log(1-p_M(s))}.
+\]
+Thus an exact geometric certified scale is
+\[
+    t_0(M,s,\delta_{\mathrm{cert}})
+    =
+    u_M(s)
+    \left\lceil
+    \frac{\log(1/\delta_{\mathrm{cert}})}
+         {-\log(1-p_M(s))}
+    \right\rceil .
+\]
+
+\paragraph{Hazard approximation.}
+For small or moderate \(p_M(s)\),
+\[
+    -\log(1-p_M(s))=p_M(s)+O(p_M(s)^2),
+\]
+so
+\[
+    t_0(M,s,\delta_{\mathrm{cert}})
+    \approx
+    u_M(s)\frac{\log(1/\delta_{\mathrm{cert}})}{p_M(s)}.
+\]
+If unit duration \(u_M(s)\) is absorbed into \(\kappa(M)\) or into the empirical cost term,
+then, up to constants independent of the design comparison,
+\[
+    \log t_0(M,s,\delta_{\mathrm{cert}})
+    \equiv
+    -\log p_M(s).
+\]
+This is the origin of the paper's cost-adjusted log-effort surrogate
+\[
+    \log\kappa(M)-\log p_M(s)-\log q_D(s).
+\]
+
+\begin{remark}[Use hazard rather than raw success probability when \(p\) is large]
+When \(p_M(s)\) is not small, the exact geometric scale is controlled by
+\[
+    h_M(s):=-\log(1-p_M(s)),
+\]
+not by \(p_M(s)\) itself.
+In that regime the exact competence term is
+\[
+    \E_\pi
+    \left[
+        \log\frac{h_M(S)}{h_{M_0}(S)}
+    \right]
+\]
+up to unit-duration factors.
+The simpler \(p_M(s)\) notation should be read as an effective certified hazard or
+finite-horizon success-efficiency surrogate.
+\end{remark}
+
+\subsection{Finite-horizon empirical surrogate}
+
+In AutoResearch-style experiments, the ideal geometric-trials model is only a motivating
+limit.  We therefore estimate finite-horizon quantities directly.
+
+\paragraph{First-hit probability and cost.}
+For model/action \(M\), mode \(s\), and horizon \(H\), define
+\[
+    F_M(s,H):=\Pr(\tau_M\le H\mid S=s),
+\]
+where \(\tau_M\) is the first verified threshold crossing, and
+\[
+    C_M(s,H):=\E[C_{\tau_M\wedge H}\mid M,S=s].
+\]
+The theorem-facing empirical log-effort loss is
+\[
+    \ell_{\mathrm{hit}}(M,s;H)
+    =
+    \log C_M(s,H)-\log(F_M(s,H)\vee\alpha),
 \]
 where \(\alpha>0\) is a censoring floor.
-If first-hit success saturates, one can replace \(F_a(s,H)\) by a persistence statistic such as
-threshold occupancy,
+
+\paragraph{Occupancy when first hits saturate.}
+If first-hit success saturates, as in the current AutoResearch pilot, we also report a
+persistence statistic
 \[
-    O_a^\delta(s,H)
+    O_M^\delta(s,H)
     =
     \E\left[
-        \frac{1}{H}\sum_{h=1}^H
-        \mathbf 1\{G_{a,h}\ge\delta\}
-        \,\middle|\, S=s
+        \frac1H\sum_{h=1}^H
+        \one\{G_{M,h}\ge\delta\}
+        \,\middle|\,
+        M,S=s
     \right],
 \]
-giving
+and the corresponding operational loss
 \[
-    \ell_{\mathrm{occ}}(a,s;H)
+    \ell_{\mathrm{occ}}(M,s;H)
     =
-    \log C_a^H(s,H)
+    \log C_M^H(s,H)-\log(O_M^\delta(s,H)\vee\alpha).
+\]
+Here \(C_M^H(s,H)\) is the full no-stop trajectory cost.
+This occupancy loss is not the exact packed theorem; it is an AutoResearch-facing
+deployment diagnostic for durable verified progress.
+
+\paragraph{Metric guardrail.}
+The exact theorem decomposes
+\[
+    \E[\log \overline T(S,D)].
+\]
+The finite-horizon empirical losses approximate the same cost-divided-by-verified-progress
+principle, but they are not equal to a global certified quantile.
+For that reason the main experiments should report:
+\[
+    \ell_{\mathrm{hit}},
+    \qquad
+    \ell_{\mathrm{occ}},
+    \qquad
+    survival/hazard curves,
+    \qquad
+    and\ tail\ diagnostics
+\]
+rather than treating any single surrogate as the whole deployment objective.
+
+\subsection{Approximate packedness and residual term}
+
+The packed identity is exact under the inverse-share time law.
+Outside that law, the correct statement is an identity plus a residual.
+
+\begin{assumption}[Approximate inverse-share log-linearity]
+\label{ass:app-approx-log-linear}
+Suppose
+\[
+\begin{aligned}
+    \log \overline T^{(M)}_{q_D}(s,D)
+    &=
+    \log c_{\mathrm{sim}}
+    +
+    \log\kappa(M)
+    +
+    \log t_0(M,s,\delta_{\mathrm{cert}})
     -
-    \log(O_a^\delta(s,H)\vee \alpha).
+    \log q_D^M(s)
+    \\
+    &\quad
+    +
+    r_M(s,D,q_D),
+\end{aligned}
 \]
-These finite-horizon losses are empirical surrogates for the same principle:
-certified effort is cost divided by checked success or checked progress, and log-effort is the
-additive form of that ratio.
+where
+\[
+    |r_M(s,D,q_D)|\le \eta
+\]
+uniformly over the evaluated design family.
+\end{assumption}
 
-\subsection{Four-term identity}
+\begin{proposition}[Residual form of the decomposition]
+\label{prop:app-residual-decomp}
+Under Assumption~\ref{ass:app-approx-log-linear}, the model-aware decomposition becomes
+\[
+\begin{aligned}
+&\E[
+    \log \overline T^{(M_0)}_{q_0}(S)
+    -
+    \log \overline T^{(M)}_{q_D}(S,D_M)
+]
+\\
+&\qquad =
+\log\frac{\kappa(M_0)}{\kappa(M)}
++
+\E_\pi
+\left[
+    \log\frac{t_0(M_0,S)}{t_0(M,S)}
+\right]
++
+I_\pi(S;D_M)
++
+\KL(\pi\|q_0)
+-
+\E_{D_M}\KL(\pi_{D_M}^M\|q_{D_M}^M)
++
+R,
+\end{aligned}
+\]
+where
+\[
+    R
+    =
+    \E[r_{M_0}(S,q_0)-r_M(S,D_M,q_D)].
+\]
+If \(|r|\le\eta\), then
+\[
+    |R|\le 2\eta.
+\]
+\end{proposition}
 
-Under Assumption~\ref{ass:packed},
+\begin{proof}
+Substitute the approximate log-linear expression into the proof of
+Theorem~\ref{thm:app-model-aware}.  All ideal terms decompose as before; the only leftover
+terms are the two residuals.  Uniform boundedness gives
 \[
-  \log T_{\rho,q}(S,Z)
-  =
-  C+\log\kappa(a_Z,S)-\log p(a_Z,S)-\log q_Z(S).
+    |R|
+    \le
+    \E|r_{M_0}(S,q_0)|+\E|r_M(S,D_M,q_D)|
+    \le 2\eta.
 \]
-Conditioning on $Z=z$,
-\[
-  \E[-\log q_z(S)\mid Z=z]
-  =
-  \sum_s \pi_z(s)\log\frac{1}{q_z(s)}
-  =
-  \Hent(\pi_z)+\KL(\pi_z\|q_z).
-\]
-Therefore
-\[
-  \E[\log T_{\rho,q}]
-  =
-  C+\E_Z\E_{S\sim\pi_Z}\!\left[\log\kappa(a_Z,S)-\log p(a_Z,S)\right]
-  +\E_Z[\Hent(\pi_Z)]
-  +\E_Z[\KL(\pi_Z\|q_Z)].
-\]
-For the prior-matched baseline $\rho_0$ that deploys fixed action $a_0$ and uses $q_0(\cdot\mid z)\equiv\pi$,
-\[
-  \E[\log T_{\rho_0,\pi}]
-  =
-  C+\E_{S\sim\pi}\!\left[\log\kappa(a_0,S)-\log p(a_0,S)\right]
-  +\Hent(\pi).
-\]
-Subtracting the deployed effort from the baseline effort yields
-\[
-  \Delta
-  =
-  \E_Z\E_{S\sim\pi_Z}\!\left[\log\frac{\kappa(a_0,S)}{\kappa(a_Z,S)}\right]
-  + \E_Z\E_{S\sim\pi_Z}\!\left[\log\frac{p(a_Z,S)}{p(a_0,S)}\right]
-  + \Hent(\pi)-\E_Z[\Hent(\pi_Z)]
-  - \E_Z[\KL(\pi_Z\|q_Z)] .
-\]
-The entropy difference is $\MI_\pi(S;Z)$, giving~\eqref{eq:four-term}.
+\end{proof}
 
-\subsection{Pilot concentration}
+\paragraph{Empirical use.}
+The residual plot
+\[
+    \widehat{\mathrm{Res}}(d)
+    =
+    \widehat J_{\mathrm{obs}}(d)-\widehat J_{\mathrm{acct}}(d)
+\]
+is the empirical test of approximate packedness.
+Large structured residuals by mode, model, horizon, or router indicate that the finite-mode
+inverse-share abstraction is missing an interaction.
 
-For binary success observations in an action-mode cell, Hoeffding gives
-\[
-  \Prb(|\hat p(a,s)-p(a,s)|>\alpha)\le 2\exp(-2n_0\alpha^2).
-\]
-If all true probabilities are at least $\pmin$, then the log-probability error obeys
-$|\log \hat p-\log p|\le \alpha/\pmin+O(\alpha^2/\pmin^2)$ on the good event.
-A union bound over $|\cA|\,|\cS|$ cells yields the conservative pilot rule
-\[
-  n_0
-  =
-  O\!\left(
-  \frac{\log(|\cA|\,|\cS|/\dconf)}{\dacc^2\pmin^2}
-  \right).
-\]
-Wilson intervals and bootstrap intervals are reported in practice because pilot cell counts are small.
 
 \section{Operational diagnostics}
 \label{subsec:bridge}
 
 The identity above becomes useful only after each term is tied to quantities logged by the deployment protocol.
-The checker-facing progress process is the common object used to operationalize competence, cost, information, and allocation diagnostics.
-Fix a horizon $H$ and a task-normalized checked progress process $G_t(a,x)\in[0,1]$ for action $a$ on instance $x$.
+The verifier-facing progress process is the common object used to operationalize competence, cost, information, and allocation diagnostics.
+Fix a horizon $H$ and a task-normalized verified progress process $G_t(a,x)\in[0,1]$ for action $a$ on instance $x$.
 In the main experiment, the router acts once before deployment: after observing $Z$, it selects one action, and that action is used for the whole trajectory.
 The success and cost diagnostics below are therefore trajectory-level quantities computed from the step-wise verifier trace.
-For lower-is-better checker losses, one admissible normalization is
+For lower-is-better verifier losses, one admissible normalization is
 \[
 G_t(a,x)
 =
@@ -1092,7 +1782,7 @@ G_t(a,x)
 \frac{L_0(x)-L_t(a,x)}{|L_0(x)|+\eps_L}
 \right),
 \]
-where $L_0(x)$ is the starting-artifact loss and $L_t(a,x)$ is the checked loss convention at step $t$.
+where $L_0(x)$ is the starting-artifact loss and $L_t(a,x)$ is the verified loss convention at step $t$.
 Given a success threshold $\delta>0$,
 \[
 \tau_\delta(a,x)=\inf\{t\le H:G_t(a,x)\ge \delta\},
@@ -1144,7 +1834,7 @@ C_\delta(a,x;\xi)
 \bigr)(a,x;\xi),
 \]
 and report worker wall-clock cost as primary, with token count as a sensitivity analysis.
-Checker runtime is logged for audit, but it is not part of $\kappa(a,s)$ unless the checker protocol or checker-call frequency differs across actions.
+verifier runtime is logged for audit, but it is not part of $\kappa(a,s)$ unless the verifier protocol or verifier-call frequency differs across actions.
 
 \paragraph{Routing information.}
 The theorem term $\MI(S;Z)$ measures how much a router-visible signal $Z$ separates the predeclared task modes before deployment.
@@ -1250,7 +1940,7 @@ It is a diagnostic companion to the deployment-gain estimand~\eqref{eq:router-ga
 \label{alg:decomp-selection}
 \begin{tabular}{@{}r p{0.86\linewidth}@{}}
 \textit{Input:} &
-Task family, checker, finite task-mode schema $\cS$, action menu $\cA$, admissible progressive signals $\{Z_j\}$, pilot cell count $n_{\mathrm{cell}}$, deployment repeats $Q_{\mathrm{dep}}$, confirmation budget.\\[0.25em]
+Task family, verifier, finite task-mode schema $\cS$, action menu $\cA$, admissible progressive signals $\{Z_j\}$, pilot cell count $n_{\mathrm{cell}}$, deployment repeats $Q_{\mathrm{dep}}$, confirmation budget.\\[0.25em]
 \textit{Output:} &
 Recommended signal-conditioned deployment policy, reported accounting terms, paired deployment gain, and calibration diagnostics.\\[0.35em]
 1 &
@@ -1274,7 +1964,7 @@ Each task mode \(s\) is represented by one executable setting
 \[
 \chi_s=(A_s,D,\mathrm{split},u,\eta_s,V,B_V,H,\delta),
 \]
-where \(A_s\) is the editable \texttt{train.py} template and starting model class, \(D\) is CIFAR-10, \(\mathrm{split}\) is the fixed train/validation split, \(u\) is the model-initialization seed, \(\eta_s\) are starting optimization and architecture hyperparameters, \(V\) is the checker, \(B_V\) is the checker budget, \(H\) is the edit--verify horizon, and \(\delta\) is the success threshold.
+where \(A_s\) is the editable \texttt{train.py} template and starting model class, \(D\) is CIFAR-10, \(\mathrm{split}\) is the fixed train/validation split, \(u\) is the model-initialization seed, \(\eta_s\) are starting optimization and architecture hyperparameters, \(V\) is the verifier, \(B_V\) is the verifier budget, \(H\) is the edit--verify horizon, and \(\delta\) is the success threshold.
 Panel-level aggregates use \(\hat\pi(s)=1/3\).
 The analyzed worker menu is \(\{\texttt{gpt\_5\_3\_codex},\texttt{gpt\_5\_4}\}\).
 The paper-facing comparison sets \(\cA=\cM\): each deployable action is a single worker run under the common prompt and harness.
@@ -1283,17 +1973,17 @@ The paper-facing comparison sets \(\cA=\cM\): each deployable action is a single
 The paper-facing task modes are named by the starting model family in the editable artifact.
 \textit{MLP-flat} (\texttt{mlp\_flat}) is a fully connected classifier over flattened CIFAR-10 inputs; \textit{compact CNN} (\texttt{cnn\_compact}) is a small convolutional classifier with local spatial inductive bias; and \textit{micro ResNet} (\texttt{resnet\_micro}) is a reduced residual convolutional classifier with skip connections.
 They are not different datasets or different workers.
-They are evaluator-defined variants of the same CIFAR-10 edit--verify task: the dataset, split, checker, prompt harness, horizon, and success threshold are fixed, while the initial architecture family and associated template parameters change.
+They are evaluator-defined variants of the same CIFAR-10 edit--verify task: the dataset, split, verifier, prompt harness, horizon, and success threshold are fixed, while the initial architecture family and associated template parameters change.
 This choice makes the mode variable operationally meaningful for the theory, because different starting artifacts can change both first-passage competence \(p(a,s)\) and cost \(\kappa(a,s)\) for the same worker.
 
 \paragraph{Progressive signal records.}
 The router sees one of four nested pre-deployment records.
-\(Z_0\) contains only the task name, checker objective, worker menu, and budget.
-\(Z_1\) adds the initial \texttt{train.py} plus a static workload summary: starting model class, parameter count, optimizer and budget settings, dataset/checker identifiers, and parse/runtime availability.
-\(Z_2\) adds a low-cost checker probe of the unmodified artifact at a predeclared probe budget.
-\(Z_3\) adds the full unmodified-artifact baseline under the deployment checker budget.
+\(Z_0\) contains only the task name, verifier objective, worker menu, and budget.
+\(Z_1\) adds the initial \texttt{train.py} plus a static workload summary: starting model class, parameter count, optimizer and budget settings, dataset/verifier identifiers, and parse/runtime availability.
+\(Z_2\) adds a low-cost verifier probe of the unmodified artifact at a predeclared probe budget.
+\(Z_3\) adds the full unmodified-artifact baseline under the deployment verifier budget.
 Probe records include validation loss, validation accuracy, training seconds, total seconds, optimizer steps, parameter count, parse/runtime status, and probe budget.
-Probe runs are outside the selected worker deployment: they are charged through \(\ell_{\mathrm{meas}}\) and do not consume the later deployment horizon or checker budget.
+Probe runs are outside the selected worker deployment: they are charged through \(\ell_{\mathrm{meas}}\) and do not consume the later deployment horizon or verifier budget.
 The evaluator-only baseline used to compute \(G_t\) is router-visible only in \(Z_3\).
 
 \paragraph{Experiment accounting.}
@@ -1347,7 +2037,7 @@ Dataset and split & CIFAR-10, $50{,}000$ training examples and $10{,}000$ valida
 Data seed & Common fixed data/subset seed; alternative split seeds are reported only as robustness variants \\
 \texttt{train.py} initialization seed & \texttt{SEED=42}; used for Python, NumPy, PyTorch, CUDA seeds, deterministic PyTorch mode, and the training-loader generator; alternative initialization seeds are robustness variants \\
 Training transforms & random crop with padding $4$, random horizontal flip, CIFAR-10 normalization; validation uses normalization only \\
-Training budget per checker call & fixed-step mode with \texttt{A\_MAX\_STEPS=256}; time budget \texttt{120s} is a fallback, not the primary scoring convention \\
+Training budget per verifier call & fixed-step mode with \texttt{A\_MAX\_STEPS=256}; time budget \texttt{120s} is a fallback, not the primary scoring convention \\
 Common hyperparameters & \texttt{BATCH\_SIZE=64}, \texttt{NUM\_WORKERS=0}, Adam, learning rate $5\cdot 10^{-4}$, weight decay $10^{-4}$, betas $(0.9,0.999)$, no LR schedule \\
 Task mode & \textit{MLP-flat} (\texttt{mlp\_flat}), \textit{compact CNN} (\texttt{cnn\_compact}), or \textit{micro ResNet} (\texttt{resnet\_micro}) \\
 Shared template parameters & depth $2$, base channels $12$, channel multiplier $2$, batch norm enabled, dropout $0.0$, and hidden width $48$ \\
@@ -1363,7 +2053,7 @@ Router configuration & deterministic prompt-only router with fixed model identif
 
 \paragraph{Trajectory record.}
 Each run stores the worker alias, resolved model identifier, API date, split, task family, task mode, seed, maximum horizon $H$, signal condition, prompt hash, router model identifier, router temperature/top-p, router seed policy, parser version, router output, selected worker, and cost convention.
-Each step stores the prompt-visible state, proposed \texttt{train.py} artifact, parse status, checker result, validation loss, validation accuracy, relative improvement, incremental worker wall time, token usage, and checker runtime for audit.
+Each step stores the prompt-visible state, proposed \texttt{train.py} artifact, parse status, verifier result, validation loss, validation accuracy, relative improvement, incremental worker wall time, token usage, and verifier runtime for audit.
 Parser failures are logged as unsuccessful routing or deployment records under the predeclared parser-failure policy.
 
 \paragraph{Success and time-to-verification.}
@@ -1391,7 +2081,7 @@ This prevents zero-success pilot cells from making log scores infinite; raw succ
 \paragraph{Cost.}
 The primary cost is cumulative worker wall-clock time to $\tau\wedge H$.
 Secondary worker-side cost is cumulative token count.
-Checker runtime is logged as a protocol audit field and excluded from action-cost comparisons unless the checker protocol differs across actions.
+verifier runtime is logged as a protocol audit field and excluded from action-cost comparisons unless the verifier protocol differs across actions.
 All plots that support model recommendations must be reproducible under at least worker wall-clock and token-count conventions.
 When a worker fails before producing a parseable artifact, its cost is still counted and the step is marked unsuccessful.
 The scalar estimator matched to Assumption~\ref{ass:packed} is the cell mean
