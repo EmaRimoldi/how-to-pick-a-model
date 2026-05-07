@@ -135,6 +135,13 @@ We organize the paper around three questions, each paired with the contribution 
   Algorithm~\ref{alg:decomp-selection} and the pilot concentration bound in Appendix~\ref{app:proofs} turn the identity into a structured pilot protocol that estimates measurable worker-side terms, audits router-visible signals, and reserves deployment recommendations for paired selected-worker validation.
   \item \textbf{When does a lower-cost model with retries beat a stronger model?}
   Theorem~\ref{thm:crossover} gives the single-mode crossover rule, and the multi-mode accounting shows why the answer changes across task modes.
+  \item \textbf{AutoResearch-inspired evidence and negative controls.}
+    On a two-worker CIFAR-10 edit--verify panel, benchmark-style speed and quality
+    favor \texttt{gpt\_5\_4}, while the predeclared deployment loss favors
+    \texttt{gpt\_5\_3\_codex}.
+    Richer records reveal task-mode structure but do not improve paired deployment loss
+    for the evaluated prompt-only router; matched controls block a strong routing-value
+    claim.
 \end{enumerate}
 
 The experiments below instantiate these claims with verified trajectories and deployment accounting.
@@ -742,20 +749,40 @@ Our question is upstream of the launched worker: which action should be selected
 \section{Discussion and limitations}
 \label{sec:discussion}
 
-The experiments support a diagnostic, not prescriptive, claim: first-passage speed, final improvement, certified log-effort, and deployment loss disagree on the same verified task family.
-\texttt{gpt\_5\_4} looks best under benchmark-style speed and quality summaries, but \texttt{gpt\_5\_3\_codex} has lower charged wall-clock cost and lower primary deployment loss.
-The prompt-only router does not improve deployment loss: probes expose the predeclared task modes, but the router remains biased toward the benchmark-favored worker and the two-worker menu creates no positive switching opportunity beyond always using \texttt{gpt\_5\_3\_codex}.
+\paragraph{Limitations.}
+The results are conditional on the packed-mode abstraction, the predeclared deployment loss,
+and the final two-worker action menu.  Real agent trajectories are stateful, modes may
+overlap, and different cost conventions can change the promoted worker.  Moreover, the
+experiment is a fixed executable panel rather than a population-level deployment study:
+it diagnoses this verified task family and router, not all repository repair or research-code
+agents.  Finally, under the primary loss the mature two-worker menu contains no positive
+switching opportunity beyond always using \texttt{gpt\_5\_3\_codex}; thus the router result is
+a useful negative result, not evidence that richer records cannot help a broader menu or a
+calibrated router.
 
-The main limitations are packed modes, fixed executable prototypes, a two-worker mature action menu, and fixed-panel rather than population-level estimates.
-The appendix therefore reports threshold, occupancy, cost, token, and signal-ablation checks; paired deployment gain remains the final test for any routing recommendation.
+\paragraph{Conclusion.}
+Model choice inside an agent harness is not a scalar leaderboard problem.
+It is a budget-aware deployment decision: the useful system is the one that reaches
+verified progress under the declared cost convention.
+The packed-mode identity diagnoses where apparent certified speedup comes from---unit
+cost, focused certified scale, mode information, or allocation mismatch---while paired
+validation decides whether a routed design is deployable.
 
-\paragraph{Future work and conclusion.}
-Future work should add a matched lower-cost action and test repository repair, theorem checking, and multi-file research-code editing, where modes and measurement costs are less artificial.
-Model choice inside an agent harness is not a scalar leaderboard problem: it is a budget-aware deployment decision validated by paired outcomes after measurement cost.
-Our two-worker study answers negatively for the current prompt-only router: pre-deployment information does not improve paired deployment loss.
+On the final two-worker AutoResearch-inspired panel, benchmark-style summaries favor
+\texttt{gpt\_5\_4}, but the predeclared deployment loss favors \texttt{gpt\_5\_3\_codex}.
+Richer records expose the task-mode structure, yet the evaluated prompt-only router remains
+biased toward the benchmark-favored worker and has negative paired net gain after
+measurement cost.
+The appropriate conclusion is therefore diagnostic rather than prescriptive: informative
+signals are not enough.
+A measurement or router should be promoted only when it changes selected actions in a way
+that improves paired verified deployment loss under the declared resource convention.
 
+\clearpage
 \bibliographystyle{unsrtnat}
 \bibliography{references}
+
+\clearpage
 
 \appendix
 
