@@ -749,7 +749,7 @@ SWE-bench evaluates repository repair against tests, AutoResearch evaluates trai
 Repeated sampling and inference-time scaling further show that lower-cost or smaller models can become competitive when verification is available~\citep{brown2024monkeys,snell2025testtime,wu2025inference,osca2024}.
 Our question is upstream of the launched worker: which action should be selected, what should the router observe, and how should that observation be charged?
 
-\section{\revdel{Discussion, future directions, and conclusion}\revadd{Discussion and conclusion}}
+\section{Discussion and limitations}
 \label{sec:discussion}
 
 \revadd{The paper has two distinct claims: an exact theory-facing accounting identity for a certified log-effort surrogate, and a deployment-facing empirical claim that must pass paired-loss validation.}
@@ -780,7 +780,7 @@ This distinction is the main empirical lesson of the final two-worker study.
 The \(Z_2\) and \(Z_3\) records contain task-mode information, but the induced policies have negative paired gain.
 The decomposition therefore functions as a claim discipline: it prevents us from promoting information availability as deployment value.
 
-\paragraph{\revdel{Future directions.}\revadd{Limitations and future work.}}
+\paragraph{Future work.}
 The immediate experimental extension is to add a stable lower-cost action with matched trajectory support.
 That would make the worker menu span a broader cost--capability frontier than the two-worker comparison reported here.
 It would also test the retry-crossover theorem in its intended regime, where a lower-cost worker may compensate for lower one-attempt success through repeated checked attempts.
