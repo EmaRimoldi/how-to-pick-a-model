@@ -218,6 +218,33 @@ They are variants of the same task: finite subpopulations of instances that shar
 \end{definition}
 
 
+\begin{definition}[Certified time-to-verified solution]
+\label{def:certified-time}
+Fix a checked deployment task \(\mathcal T=(\mathcal X,\mathcal Y,V,B_{\mathrm{dep}},\mu)\)
+and a randomized solver or deployable action \(A\).
+Let \(\tau_A(x;r)\) denote the time or normalized resource consumed by \(A\) on instance \(x\)
+and randomness \(r\), and let \(A(x;r)\) denote its produced artifact.
+For confidence parameter \(\delta_{\mathrm{cert}}\in(0,1)\), the certified time-to-verified solution is
+\[
+    \overline T_A(\delta_{\mathrm{cert}})
+    :=
+    \inf\left\{
+        t>0:
+        \Pr_{X\sim\mu,r}
+        \bigl[
+            V(X,A(X;r))=1
+            \ \text{and}\
+            \tau_A(X;r)\le t
+        \bigr]
+        \ge 1-\delta_{\mathrm{cert}}
+    \right\}.
+\]
+Certified cost and certified memory are defined analogously by replacing the time resource
+with the corresponding resource counter.
+\end{definition}
+
+
+
 The evaluator retains \(S\) only for accounting: neither the router nor the worker needs to observe it.
 In the experiments, each mode is represented by one fixed executable setting, so the reported quantities are fixed-panel analogues rather than population-level estimates under \(\mu\).
 
@@ -547,7 +574,7 @@ The task modes are three starting optimization variants of the same checked task
 They are task modes because the dataset, checker, horizon, and success rule are fixed while the editable artifact's starting architecture and parameterization change, letting us test whether worker choice is mode-conditional rather than a single global ranking.
 The analyzed worker menu is \(\{\texttt{gpt\_5\_3\_codex},\texttt{gpt\_5\_4}\}\).
 Each action is one worker under the common prompt and harness, so \(\cA=\cM\) in this experiment.
-For each task-mode--worker cell we use 35 trajectories.
+For each task-mode--worker cell we use 35 trajectories,  i.e., 35 independent AutoResearch runs, providing sufficient statistical power to support our conclusions. .
 The router is a deterministic prompt-only orchestrator evaluated under four nested pre-deployment records \(Z_0,\ldots,Z_3\), from budget-only context to full unmodified-artifact baseline.
 The primary decision metric is the first-passage deployment loss in~\eqref{eq:deployment-loss}; full-horizon occupancy and final quality are audit metrics.
 Appendix~\ref{app:experiment-details} gives the frozen configuration, including horizon, checker budget, training budget, success threshold, signal contents, measurement-cost convention, progress normalization, smoothing rule, and logging schema.
@@ -714,6 +741,343 @@ The final two-worker study asks that question directly and answers it negatively
 
 \section{Proofs and retry rule}
 \label{app:proofs}
+
+\subsection{From certified time to certified log-effort}
+\label{subsec:from-time-to-log-effort}
+
+\paragraph{Why a logarithmic objective appears.}
+The logarithm in this paper is not introduced as a heuristic score.
+It is forced by the way certified time changes under scheduling, retries, and routing.
+A solver that receives only a fraction of the available search budget runs slower by the inverse
+of that fraction; a model that is \(30\times\) cheaper changes cost by a multiplicative factor;
+and a mode-specific success probability changes time-to-success multiplicatively.
+The log scale is the scale on which these multiplicative effects become additive.
+This subsection derives the log-effort objective from certified time.
+
+\begin{definition}[Certified time-to-verified solution]
+\label{def:certified-time}
+Fix a checked deployment task \(\mathcal T=(\mathcal X,\mathcal Y,V,B_{\mathrm{dep}},\mu)\)
+and a randomized solver or deployable action \(A\).
+Let \(\tau_A(x;r)\) denote the time or normalized resource consumed by \(A\) on instance \(x\)
+and randomness \(r\), and let \(A(x;r)\) denote its produced artifact.
+For confidence parameter \(\delta_{\mathrm{cert}}\in(0,1)\), the certified time-to-verified solution is
+\[
+    \overline T_A(\delta_{\mathrm{cert}})
+    :=
+    \inf\left\{
+        t>0:
+        \Pr_{X\sim\mu,r}
+        \bigl[
+            V(X,A(X;r))=1
+            \ \text{and}\
+            \tau_A(X;r)\le t
+        \bigr]
+        \ge 1-\delta_{\mathrm{cert}}
+    \right\}.
+\]
+Certified cost and certified memory are defined analogously by replacing the time resource
+with the corresponding resource counter.
+\end{definition}
+
+\paragraph{Metric guardrail.}
+The object above is a high-probability time guarantee.
+The decomposition below concerns expected \emph{log} certified time across latent modes,
+equivalently a geometric-mean certified-time criterion.
+This is the quantity that decomposes additively.
+It should not be confused with the single global quantile
+\(\overline T_A(\delta_{\mathrm{cert}})\) unless additional uniform mode-wise guarantees are imposed.
+In experiments we therefore report the log-effort score together with survival, occupancy,
+and tail-risk diagnostics.
+
+\begin{definition}[Certified log-speedup]
+\label{def:certified-log-speedup}
+Given a baseline solver \(A_0\) and a deployed solver \(A\), the certified log-speedup is
+\[
+    \Delta(A_0,A)
+    :=
+    \log \overline T_{A_0}(\delta_{\mathrm{cert}})
+    -
+    \log \overline T_A(\delta_{\mathrm{cert}}).
+\]
+Positive \(\Delta(A_0,A)\) means that \(A\) is faster than \(A_0\) by a multiplicative factor
+\(\exp(\Delta(A_0,A))\) on the certified-time scale.
+\end{definition}
+
+\paragraph{The inverse-share principle.}
+The log-effort decomposition starts from a simple scheduling fact.
+Suppose a solver \(a\) needs \(t_a\) units of internal computation to reach a certified success
+guarantee.
+If a meta-scheduler gives \(a\) only a share \(w(a)\in(0,1]\) of wall-clock computation,
+then \(a\) receives \(t_a\) internal units only after approximately \(t_a/w(a)\) wall-clock units.
+Thus a universal or portfolio scheduler has the form
+\[
+    \overline T_U
+    =
+    c_{\mathrm{sim}}
+    \inf_{a}
+    \frac{t_a}{w(a)}.
+\]
+After observing diagnostic information \(D\), a conditioned scheduler may replace \(w(a)\)
+by \(w(a\mid D)\), giving
+\[
+    \overline T_{U_D}
+    =
+    c_{\mathrm{sim}}
+    \inf_{a}
+    \frac{t_a}{w(a\mid D)}.
+\]
+Taking logs turns inverse weights into code lengths:
+\[
+    \log\frac{t_a/w(a)}{t_a/w(a\mid D)}
+    =
+    \log\frac{w(a\mid D)}{w(a)}.
+\]
+This is the coding-gain origin of certified log-speedup.
+
+\begin{assumption}[Packed latent-mode time model]
+\label{ass:packed-time}
+Fix a finite latent mode set \(\mathcal S=\{1,\ldots,m\}\).
+An instance has hidden mode \(S\sim\pi\), where \(S=s\) means that mode \(s\) is the
+solution strategy or bottleneck relevant to the instance.
+Before allocating expensive computation, the system observes a diagnostic signal \(Z\)
+with posterior
+\[
+    \pi_z(s)
+    :=
+    \Pr[S=s\mid Z=z].
+\]
+A scheduler or router chooses a compute-share vector
+\[
+    q_z\in\Delta(\mathcal S),
+    \qquad
+    q_z(s)>0\ \text{whenever}\ \pi_z(s)>0.
+\]
+For action \(a\), mode \(s\), and confidence level \(\delta_{\mathrm{cert}}\), let
+\(t_0(a,s,\delta_{\mathrm{cert}})>0\) be the internal certified scale of the expert or strategy
+appropriate to mode \(s\).
+If the true mode is \(s\), assigning share \(q_z(s)\) to the correct strategy yields certified
+costed time
+\[
+    \overline T_{a,q}(s,z;\delta_{\mathrm{cert}})
+    =
+    c_{\mathrm{sim}}
+    \,
+    \kappa(a)
+    \,
+    \frac{t_0(a,s,\delta_{\mathrm{cert}})}{q_z(s)}.
+\]
+Here \(\kappa(a)>0\) is the per-unit deployment cost of action \(a\), and \(c_{\mathrm{sim}}\ge 1\)
+is a scheduling or simulation overhead shared across designs.
+\end{assumption}
+
+\paragraph{Interpretation.}
+Assumption~\ref{ass:packed-time} says that routing changes time through compute shares.
+If the true instance is an induction problem and only \(10\%\) of the attempt budget is spent on
+induction-like search, then the induction expert effectively runs \(10\times\) slower.
+If \(50\%\) of the budget is spent on that strategy, it runs only \(2\times\) slower.
+Thus the penalty for under-allocating the true mode is \(1/q_z(s)\), and on the log scale it is
+\(-\log q_z(s)\).
+
+\begin{lemma}[Conditional log-time decomposition]
+\label{lem:conditional-log-time}
+Under Assumption~\ref{ass:packed-time}, for every realized signal \(Z=z\),
+\[
+\begin{aligned}
+    \E_{S\sim\pi_z}
+    \bigl[
+        \log \overline T_{a,q}(S,z;\delta_{\mathrm{cert}})
+        \,\bigm|\,
+        Z=z
+    \bigr]
+    &=
+    \log c_{\mathrm{sim}}
+    +
+    \log \kappa(a)
+    +
+    \E_{S\sim\pi_z}
+    \bigl[
+        \log t_0(a,S,\delta_{\mathrm{cert}})
+    \bigr]
+    \\
+    &\quad
+    +
+    H(\pi_z)
+    +
+    \KL(\pi_z\|q_z).
+\end{aligned}
+\]
+For fixed \(a\) and \(z\), the unique allocation minimizing the conditional expected log-time is
+\[
+    q_z^\star=\pi_z,
+\]
+and the excess conditional expected log-time of any other allocation \(q_z\) is exactly
+\[
+    \KL(\pi_z\|q_z).
+\]
+\end{lemma}
+
+\begin{proof}
+By Assumption~\ref{ass:packed-time},
+\[
+    \log \overline T_{a,q}(s,z;\delta_{\mathrm{cert}})
+    =
+    \log c_{\mathrm{sim}}
+    +
+    \log\kappa(a)
+    +
+    \log t_0(a,s,\delta_{\mathrm{cert}})
+    -
+    \log q_z(s).
+\]
+Taking expectation over \(S\sim\pi_z\) leaves only the last term to simplify:
+\[
+    \E_{S\sim\pi_z}[-\log q_z(S)]
+    =
+    \sum_s \pi_z(s)\log\frac{1}{q_z(s)}
+    =
+    H(\pi_z)+\KL(\pi_z\|q_z),
+\]
+the standard cross-entropy identity.
+Nonnegativity of KL divergence gives optimality, and equality holds only when \(q_z=\pi_z\)
+on the support of \(\pi_z\).
+\end{proof}
+
+\paragraph{From internal certified scale to success probability.}
+The current paper often writes competence using a mode-conditional success probability
+\(p_a(s)\).
+This is a geometric-trials specialization of \(t_0(a,s,\delta_{\mathrm{cert}})\).
+Suppose one unit attempt of action \(a\) succeeds on mode \(s\) with probability \(p_a(s)\),
+independently across attempts.
+After \(N\) attempts, the failure probability is
+\[
+    (1-p_a(s))^N.
+\]
+To achieve failure probability at most \(\delta_{\mathrm{cert}}\), it suffices that
+\[
+    N
+    \ge
+    \frac{\log \delta_{\mathrm{cert}}}{\log(1-p_a(s))}.
+\]
+For small or moderate \(p_a(s)\),
+\[
+    \frac{\log \delta_{\mathrm{cert}}}{\log(1-p_a(s))}
+    \approx
+    \frac{\log(1/\delta_{\mathrm{cert}})}{p_a(s)}.
+\]
+Thus, up to factors depending only on the confidence level and unit attempt duration,
+\[
+    t_0(a,s,\delta_{\mathrm{cert}})
+    \propto
+    \frac{1}{p_a(s)}.
+\]
+Consequently,
+\[
+    \log t_0(a,s,\delta_{\mathrm{cert}})
+    =
+    -\log p_a(s)
+    +
+    \mathrm{const}(\delta_{\mathrm{cert}}),
+\]
+which is why the log-effort objective contains the term \(-\log p_a(s)\).
+
+\begin{definition}[Cost-adjusted certified log-effort]
+\label{def:cost-adjusted-log-effort}
+Under Assumption~\ref{ass:packed-time}, the packed-family certified log-effort of action \(a\)
+and allocation rule \(q: z\mapsto q_z\) is
+\[
+\begin{aligned}
+    \mathcal J_{\log}(a,q)
+    &:=
+    \E_{Z}
+    \E_{S\sim\pi_Z}
+    \bigl[
+        \log \overline T_{a,q}(S,Z;\delta_{\mathrm{cert}})
+    \bigr]
+    -
+    \log c_{\mathrm{sim}}.
+\end{aligned}
+\]
+Equivalently,
+\[
+\boxed{
+    \mathcal J_{\log}(a,q)
+    =
+    \log \kappa(a)
+    +
+    \E_{S\sim\pi}
+    \bigl[
+        \log t_0(a,S,\delta_{\mathrm{cert}})
+    \bigr]
+    +
+    \E_Z
+    \left[
+        H(\pi_Z)+\KL(\pi_Z\|q_Z)
+    \right].
+}
+\]
+In the geometric-trials specialization \(t_0(a,s,\delta_{\mathrm{cert}})\propto 1/p_a(s)\),
+constants independent of \(a\) and \(q\) can be dropped, giving
+\[
+\boxed{
+    \mathcal J_{\log}(a,q)
+    \equiv
+    \log \kappa(a)
+    +
+    \E_{S\sim\pi}
+    [-\log p_a(S)]
+    +
+    \E_Z
+    \left[
+        H(\pi_Z)+\KL(\pi_Z\|q_Z)
+    \right].
+}
+\]
+Lower \(\mathcal J_{\log}\) means lower geometric-mean certified effort.
+\end{definition}
+
+
+\paragraph{Finite-horizon empirical surrogate.}
+In a finite AutoResearch-style trajectory of horizon \(H\), the one-step geometric model may be
+too crude.
+The empirical version replaces \(p_a(s)\) by a horizon-\(H\) first-hit probability
+\[
+    F_a(s,H):=\Pr(\tau_a\le H\mid S=s),
+\]
+and replaces the idealized unit cost by the observed cost-to-hit or cost-to-censor
+\[
+    C_a(s,H):=\E[C_{\tau_a\wedge H}\mid S=s].
+\]
+This yields the finite-horizon log-effort surrogate
+\[
+    \ell_{\mathrm{hit}}(a,s;H)
+    =
+    \log C_a(s,H)
+    -
+    \log(F_a(s,H)\vee \alpha),
+\]
+where \(\alpha>0\) is a censoring floor.
+If first-hit success saturates, one can replace \(F_a(s,H)\) by a persistence statistic such as
+threshold occupancy,
+\[
+    O_a^\delta(s,H)
+    =
+    \E\left[
+        \frac{1}{H}\sum_{h=1}^H
+        \mathbf 1\{G_{a,h}\ge\delta\}
+        \,\middle|\, S=s
+    \right],
+\]
+giving
+\[
+    \ell_{\mathrm{occ}}(a,s;H)
+    =
+    \log C_a^H(s,H)
+    -
+    \log(O_a^\delta(s,H)\vee \alpha).
+\]
+These finite-horizon losses are empirical surrogates for the same principle:
+certified effort is cost divided by checked success or checked progress, and log-effort is the
+additive form of that ratio.
 
 \subsection{Four-term identity}
 
