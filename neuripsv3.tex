@@ -1236,7 +1236,7 @@ Mode-conditional cost spreads are large, which is why the retry-crossover theore
 \label{fig:app-cost-to-tau-full}
 \end{figure}
 
-\begin{figure}[t]
+\begin{figure}[p]
 \centering
 \includegraphics[width=0.49\linewidth]{figures/autoresearch/diag_first_hit_cdf_by_mode.png}
 \includegraphics[width=0.49\linewidth]{figures/autoresearch/diag_cost_to_tau_by_mode_worker.png}
@@ -1247,34 +1247,15 @@ These are the direct empirical objects behind the retry and time-to-certified-so
 \label{fig:app-first-hit}
 \end{figure}
 
-\begin{figure}[t]
+\begin{figure}[p]
 \centering
-\includegraphics[width=0.49\linewidth]{figures/autoresearch/diag_worker_cost_quality.png}
-\includegraphics[width=0.49\linewidth]{figures/autoresearch/diag_worker_token_composition.png}
-\caption{Worker-side cost and accounting diagnostics.
-These plots check whether conclusions are driven by wall-clock cost, token composition, or quality differences.}
-\label{fig:app-worker-cost}
-\end{figure}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.49\linewidth]{figures/autoresearch/diag_z_signal_ablation.png}
-\includegraphics[width=0.49\linewidth]{figures/autoresearch/diag_router_selection_snapshot.png}
-\caption{Router-facing diagnostics.
-The signal ablation tests whether progressively richer records expose task-mode structure; the router-selection snapshot checks whether the prompt-only router changes action distribution under those records.}
+\includegraphics[width=0.92\linewidth]{figures/autoresearch/diag_z_signal_ablation.png}
+\caption{Router-facing signal ablation.
+The diagnostic tests whether progressively richer records expose the task-mode structure used in the accounting analysis.}
 \label{fig:app-router}
 \end{figure}
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.49\linewidth]{figures/autoresearch/diag_router_record_completion.png}
-\includegraphics[width=0.49\linewidth]{figures/autoresearch/diag_confirmation_progress.png}
-\caption{Run-coverage diagnostics for router records and holdout confirmation runs.
-These plots document which analyses are part of the promoted two-worker comparison and which are exploratory.}
-\label{fig:app-progress}
-\end{figure}
-
-\newpage
+\clearpage
 \input{checklist}
 
 \end{document}
