@@ -138,6 +138,7 @@ class StepRecord(BaseModel):
     agent_cost_usd: float | None = None
     input_tokens: int | None = None
     output_tokens: int | None = None
+    total_tokens: int | None = None
     model_output_raw_text: str | None = None
     parsed_model_output_json: dict[str, Any] | None = None
     post_feedback_mode_probs: dict[str, float] | None = None

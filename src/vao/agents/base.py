@@ -36,3 +36,6 @@ class AgentAdapter(Protocol):
 
     def propose_step_single(self, state: AgentState, branch_dirs: dict[str, Path]) -> tuple[ModeDistribution, CandidateProposal]:
         ...
+
+    def propose_single_prompt_trajectory(self, state: AgentState, max_steps: int) -> dict[str, Any]:
+        ...

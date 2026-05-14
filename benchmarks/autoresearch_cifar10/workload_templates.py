@@ -15,6 +15,7 @@ WORKLOAD_DIR = Path(__file__).resolve().parent / "workloads"
 WORKLOAD_KEYS = {
     "cnn_compact",
     "mlp_flat",
+    "resnet_micro",
     "resnet_tiny",
 }
 

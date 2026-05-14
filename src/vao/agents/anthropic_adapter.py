@@ -362,6 +362,43 @@ class ClaudeHaikuAdapter:
         )
         return distribution, proposal
 
+    def propose_single_prompt_trajectory(self, state: AgentState, max_steps: int) -> dict[str, Any]:
+        """Return a full edit trajectory from one model call.
+
+        The harness still verifies each proposed edit sequentially. The model
+        receives only the initial artifact and must provide a finite ordered
+        list of structured edits; it does not get verifier feedback between
+        proposed steps.
+        """
+        prompt_template = str(state.metadata.get("prompt_template", "autoresearch_program.txt"))
+        base_prompt = render_template(
+            prompt_template,
+            profile_summary=json.dumps(state.profile_summary, sort_keys=True),
+            visible_history=json.dumps(state.visible_history, sort_keys=True),
+            current_solution_source=state.current_solution_source,
+        )
+        prompt = (
+            base_prompt
+            + "\n\nSingle-prompt trajectory mode:\n"
+            + f"Return up to {int(max_steps)} sequential structured-edit steps in `trajectory_steps`. "
+            + "Each step will be applied to the result of the previous accepted step by the external harness. "
+            + "Do not assume verifier feedback after individual proposed edits. Return only JSON."
+        )
+        prompt_hash = sha256_text(prompt)
+        raw, meta = self._complete(prompt, self._trajectory_schema(int(max_steps)), int(self.config.get("max_tokens_trajectory", self.config.get("max_tokens_batch", 12000))))
+        payload = parse_json_object(raw)
+        steps = payload.get("trajectory_steps")
+        if not isinstance(steps, list):
+            raise ModelOutputError("trajectory_steps_missing_or_not_array")
+        return {
+            "raw": raw,
+            "meta": meta,
+            "payload": payload,
+            "prompt": prompt,
+            "prompt_hash": prompt_hash,
+            "prompt_template": prompt_template,
+        }
+
     def propose_mode_distribution(self, state: AgentState) -> ModeDistribution:
         raise RuntimeError("single_step_program_only: use candidate_generation=batched and propose_step_batch")
 
@@ -518,7 +555,15 @@ class ClaudeHaikuAdapter:
                             "type": "object",
                             "additionalProperties": False,
                             "properties": self._structured_candidate_properties(mode),
-                            "required": ["primary_mode", "declared_mode", "edit_format", "rationale", "edits"],
+                            "required": [
+                                "primary_mode",
+                                "declared_mode",
+                                "edit_format",
+                                "secondary_modes",
+                                "rationale",
+                                "target_regions",
+                                "edits",
+                            ],
                         }
                         for mode in MODES
                     },
@@ -558,13 +603,53 @@ class ClaudeHaikuAdapter:
                             "text": {"type": "string"},
                             "source": {"type": "string"},
                         },
-                        "required": ["op"],
+                        "required": ["op", "function", "old", "new", "anchor", "text", "source"],
                     },
                     "minItems": 1,
                     "maxItems": 8,
                 },
             },
-            "required": ["primary_mode", "declared_mode", "edit_format", "rationale", "edits"],
+            "required": ["primary_mode", "declared_mode", "edit_format", "secondary_modes", "rationale", "edits"],
+        }
+
+    def _trajectory_schema(self, max_steps: int) -> dict[str, Any]:
+        return {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "trajectory_rationale": {"type": "string"},
+                "trajectory_steps": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": max(1, int(max_steps)),
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": False,
+                        "properties": {
+                            "step": {"type": "integer", "minimum": 0},
+                            "primary_mode": {"type": "string", "enum": MODES},
+                            "declared_mode": {"type": "string", "enum": MODES},
+                            "edit_format": {"type": "string", "enum": ["structured_edits"]},
+                            "secondary_modes": {
+                                "type": "array",
+                                "items": {"type": "string", "enum": MODES},
+                            },
+                            "rationale": {"type": "string"},
+                            "edits": self._single_candidate_schema()["properties"]["edits"],
+                        },
+                        "required": [
+                            "step",
+                            "primary_mode",
+                            "declared_mode",
+                            "edit_format",
+                            "secondary_modes",
+                            "rationale",
+                            "edits",
+                        ],
+                    },
+                },
+            },
+            "required": ["trajectory_rationale", "trajectory_steps"],
         }
 
     def _structured_candidate_properties(self, mode: str) -> dict[str, Any]:
@@ -583,7 +668,7 @@ class ClaudeHaikuAdapter:
                 "text": {"type": "string"},
                 "source": {"type": "string"},
             },
-            "required": ["op"],
+            "required": ["op", "function", "old", "new", "anchor", "text", "source"],
         }
         return {
             "primary_mode": {"type": "string", "enum": [mode]},

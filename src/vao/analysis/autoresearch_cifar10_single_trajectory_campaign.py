@@ -47,7 +47,7 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--profile", default="autoresearch_cifar10")
     parser.add_argument("--split", choices=["pilot", "holdout"], default="pilot")
     parser.add_argument("--steps", type=int, default=20)
-    parser.add_argument("--max-train-steps", type=int, default=128)
+    parser.add_argument("--max-train-steps", type=int, default=256)
     parser.add_argument("--output-root", default=None)
     parser.add_argument("--run-prefix", default="autoresearch_singletraj")
     args = parser.parse_args(argv)

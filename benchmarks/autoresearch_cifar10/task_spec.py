@@ -22,6 +22,7 @@ METADATA_PATH = Path(__file__).resolve().parent / "metadata" / "instance_config.
 WORKLOAD_DESCRIPTIONS = {
     "cnn_compact": "A compact convolutional CIFAR-10 training script with shallow pooling blocks and a small MLP head.",
     "mlp_flat": "A flattened-image MLP classifier on CIFAR-10; same verifier, but different architecture and optimization geometry.",
+    "resnet_micro": "A micro residual CNN on CIFAR-10 with skip connections but a smaller channel and depth budget than resnet_tiny.",
     "resnet_tiny": "A tiny residual CNN on CIFAR-10 with skip connections and stage-wise downsampling.",
 }
 
@@ -32,7 +33,7 @@ WORKLOAD_REGISTRY: dict[str, dict[str, Any]] = {
         "val_subset_size": 10000,
         "label_noise_rate": 0.0,
         "imbalance_ratio": 1.0,
-        "max_train_steps": 128,
+        "max_train_steps": 256,
         "seed": 61,
         "architecture_name": "compact_cnn",
     },
@@ -42,9 +43,19 @@ WORKLOAD_REGISTRY: dict[str, dict[str, Any]] = {
         "val_subset_size": 10000,
         "label_noise_rate": 0.0,
         "imbalance_ratio": 1.0,
-        "max_train_steps": 128,
+        "max_train_steps": 256,
         "seed": 67,
         "architecture_name": "flat_mlp",
+    },
+    "resnet_micro": {
+        "description": WORKLOAD_DESCRIPTIONS["resnet_micro"],
+        "train_subset_size": 50000,
+        "val_subset_size": 10000,
+        "label_noise_rate": 0.0,
+        "imbalance_ratio": 1.0,
+        "max_train_steps": 256,
+        "seed": 71,
+        "architecture_name": "micro_resnet",
     },
     "resnet_tiny": {
         "description": WORKLOAD_DESCRIPTIONS["resnet_tiny"],
@@ -52,13 +63,13 @@ WORKLOAD_REGISTRY: dict[str, dict[str, Any]] = {
         "val_subset_size": 10000,
         "label_noise_rate": 0.0,
         "imbalance_ratio": 1.0,
-        "max_train_steps": 128,
+        "max_train_steps": 256,
         "seed": 73,
         "architecture_name": "tiny_resnet",
     },
 }
 
-ALL_WORKLOADS = list(WORKLOAD_REGISTRY)
+ALL_WORKLOADS = ["cnn_compact", "mlp_flat", "resnet_micro"]
 ALL_FAMILIES = list(ALL_WORKLOADS)  # compatibility alias for older scripts
 TASK_MODE_SET = set(ALL_WORKLOADS)
 TASK_MODE_DESCRIPTIONS = dict(WORKLOAD_DESCRIPTIONS)  # compatibility alias
