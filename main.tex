@@ -606,9 +606,10 @@ unbiasedness conditions.
 We instantiate the framework on a repeated-trajectory panel for CIFAR-10 edit--verify optimization.
 The task modes are three starting artifact variants of the same verified task, \(\cS=\{\text{\textit{MLP-flat}},\text{\textit{compact CNN}},\text{\textit{micro ResNet}}\}\).
 The dataset, verifier, horizon, and success rule are fixed while the editable artifact's starting architecture and parameterization change, letting us test whether worker choice is mode-conditional rather than a single global ranking.
-The analyzed worker menu is \(\{\texttt{gpt\_5\_3\_codex},\texttt{gpt\_5\_4}\}\).
+The analyzed worker menu is \(\{\texttt{gpt\_5\_3\_codex},\texttt{gpt\_5\_4},\texttt{gpt\_5\_4\_mini}\}\).
 Each action is one worker under the common prompt and harness, so \(\cA=\cM\) in this experiment.
-For each task-mode--worker cell we use 35 independent AutoResearch trajectories.
+For each task-mode--worker cell we use 35 independent AutoResearch trajectories for \texttt{gpt\_5\_3\_codex} and \texttt{gpt\_5\_4}, and 30 valid trajectories for \texttt{gpt\_5\_4\_mini}.
+The \texttt{gpt\_5\_4\_mini} cells combine 10 pilot and 20 holdout trajectories per mode; unfinished or invalid runs are excluded by the same validity checks as the existing workers.
 The router is a deterministic prompt-only orchestrator evaluated under four nested pre-deployment records \(Z_0,\ldots,Z_3\). 
 The primary decision metric is the first-passage deployment loss in~\eqref{eq:deployment-loss}; full-horizon occupancy and final quality are audit metrics.
 Appendix~\ref{app:experiment-details} gives the frozen configuration, including horizon, verifier budget, training budget, success threshold, signal contents, measurement-cost convention, progress normalization, smoothing rule, and logging schema.
@@ -620,37 +621,64 @@ These estimates instantiate the worker-side cost and competence terms in Theorem
 
 \begin{table}[t]
 \centering
-\scriptsize
-\setlength{\tabcolsep}{2.4pt}
-\caption{Worker-frontier accounting on the 35-run pooled panel.
+\small
+\setlength{\tabcolsep}{3.2pt}
+\caption{Worker-frontier accounting on the pooled three-worker panel.
+\texttt{gpt\_5\_3\_codex} and \texttt{gpt\_5\_4} use \(n=35\) valid trajectories per task-mode cell; \texttt{gpt\_5\_4\_mini} uses \(n=30\).
 \(C_\gamma\) is normalized wall-clock cost to first passage or horizon; lower is better for \(C_\gamma\), deployment loss, and log-effort.
-Bold marks the better accounting value within each mode.}
+Bold marks the best decision-metric value within each mode.}
 \label{tab:worker-frontier-accounting}
 \resizebox{0.88\linewidth}{!}{%
 \begin{tabular}{@{}llrrrrrr@{}}
 \toprule
 Mode & Worker & Success & Fail & Mean \(\tau\) & \(C_\gamma\) & Dep. loss & Log-effort \\
 \midrule
-\textit{MLP-flat} & \texttt{gpt\_5\_3\_codex} & 32/35 & 3 & 7.41 & \textbf{0.632} & \textbf{1.015} & 6.029 \\
-\textit{MLP-flat} & \texttt{gpt\_5\_4} & 35/35 & 0 & 2.49 & 0.880 & 1.083 & \textbf{4.991} \\
-\textit{compact CNN} & \texttt{gpt\_5\_3\_codex} & 34/35 & 1 & 6.03 & \textbf{0.675} & \textbf{0.964} & 5.774 \\
-\textit{compact CNN} & \texttt{gpt\_5\_4} & 35/35 & 0 & 3.06 & 1.295 & 1.479 & \textbf{5.492} \\
-\textit{micro ResNet} & \texttt{gpt\_5\_3\_codex} & 35/35 & 0 & 2.60 & \textbf{0.766} & \textbf{0.987} & \textbf{5.015} \\
-\textit{micro ResNet} & \texttt{gpt\_5\_4} & 35/35 & 0 & 1.80 & 2.048 & 2.234 & 5.461 \\
+\textit{MLP-flat} & \texttt{gpt\_5\_3\_codex} & 32/35 & 3 & 7.41 & 0.241 & 0.327 & -1.466 \\
+\textit{MLP-flat} & \texttt{gpt\_5\_4} & 35/35 & 0 & \textbf{2.49} & \textbf{0.115} & \textbf{0.115} & \textbf{-2.504} \\
+\textit{MLP-flat} & \texttt{gpt\_5\_4\_mini} & 28/30 & 2 & 4.93 & 0.207 & 0.273 & -1.389 \\
+\textit{compact CNN} & \texttt{gpt\_5\_3\_codex} & 34/35 & 1 & 6.03 & 0.211 & 0.240 & -1.721 \\
+\textit{compact CNN} & \texttt{gpt\_5\_4} & 35/35 & 0 & 3.06 & 0.184 & 0.184 & -2.003 \\
+\textit{compact CNN} & \texttt{gpt\_5\_4\_mini} & 29/30 & 1 & \textbf{2.52} & \textbf{0.134} & \textbf{0.167} & \textbf{-2.173} \\
+\textit{micro ResNet} & \texttt{gpt\_5\_3\_codex} & 35/35 & 0 & 2.60 & \textbf{0.096} & \textbf{0.096} & \textbf{-2.480} \\
+\textit{micro ResNet} & \texttt{gpt\_5\_4} & 35/35 & 0 & 1.80 & 0.182 & 0.182 & -2.035 \\
+\textit{micro ResNet} & \texttt{gpt\_5\_4\_mini} & 30/30 & 0 & \textbf{1.33} & 0.151 & 0.151 & -2.048 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{3.5pt}
+\caption{Threshold robustness of the three-worker frontier.
+Primary results use \(\gamma=0.05\); other thresholds audit whether the deployment recommendation is threshold-specific.
+Winner triples are ordered as \textit{MLP-flat}/\textit{compact CNN}/\textit{micro ResNet}, with \(C=\texttt{gpt\_5\_3\_codex}\), \(4=\texttt{gpt\_5\_4}\), and \(m=\texttt{gpt\_5\_4\_mini}\).
+Pooled columns are ordered \(C/4/m\).}
+\label{tab:threshold-robustness}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+\(\gamma\) & Dep.-loss winners & Log-effort winners & Pooled dep. loss & Pooled \(C_\gamma\) & Change vs.\ 0.05 \\
+\midrule
+0.02 & \(4/4/C\) & \(4/C/C\) & \(0.138/0.108/0.153\) & \(0.129/0.108/0.142\) & yes \\
+0.05 & \(4/m/C\) & \(4/m/C\) & \(0.221/0.160/0.197\) & \(0.183/0.160/0.164\) & no \\
+0.10 & \(4/4/C\) & \(4/m/C\) & \(0.356/0.239/0.325\) & \(0.251/0.239/0.247\) & yes \\
+0.20 & \(4/4/m\) & \(4/4/m\) & \(0.953/0.594/0.643\) & \(0.515/0.546/0.465\) & yes \\
 \bottomrule
 \end{tabular}}
 \end{table}
 
 The frontier already rejects a single leaderboard ordering.
-Averaged across modes, \texttt{gpt\_5\_4} has lower mean first-hit step (2.45 vs.\ 5.35), higher final improvement (0.309 vs.\ 0.206), and lower mean log-effort (5.315 vs.\ 5.606).
-These are the quantities closest to benchmark racing: they ask which worker improves more, or reaches a verified threshold in fewer edit--verify steps, without charging the real worker-side resource needed to do so.
-Under the declared deployment loss, however, always using \texttt{gpt\_5\_3\_codex} has lower mean loss than always using \texttt{gpt\_5\_4} (0.989 vs.\ 1.598), and deployment-loss accounting selects \texttt{gpt\_5\_3\_codex} in all three modes.
-The reason is the cost term: Table~\ref{tab:worker-frontier-accounting} shows that normalized wall-clock cost \(C_\gamma\) is lower for \texttt{gpt\_5\_3\_codex} than for \texttt{gpt\_5\_4} in every mode (0.632 vs.\ 0.880 on \textit{MLP-flat}, 0.675 vs.\ 1.295 on \textit{compact CNN}, and 0.766 vs.\ 2.048 on \textit{micro ResNet}).
-Thus \texttt{gpt\_5\_4} reaches the threshold in fewer agentic steps and has stronger full-horizon quality diagnostics, but \texttt{gpt\_5\_3\_codex} reaches verified success, or the horizon on failures, with substantially lower charged wall-clock cost.
-This is where the first two accounting channels are used for model choice: the competence term asks whether a worker reaches verified success on the relevant mode, while the cost term asks how much normalized deployment resource is spent to get there.
-The selected worker is not the one that wins every benchmark-style summary; it is the one that offers the best verified success--cost tradeoff under the predeclared deployment loss.
-Table~\ref{tab:worker-frontier-accounting} is the main diagnostic object: conventional speed, final quality, and mean log-effort favor \texttt{gpt\_5\_4} in aggregate, but the promoted deployment loss favors \texttt{gpt\_5\_3\_codex}.
-This is the empirical role of the decomposition: it exposes whether apparent performance comes from first-passage competence, cost, or mode-specific comparative advantage before the deployment loss combines verified failure and normalized resource cost to decide the recommendation.
+Averaged across modes, \texttt{gpt\_5\_4} has the lowest pooled deployment loss (0.160), the fastest mean first-hit step (2.45), the highest final improvement (0.309), and the lowest mean log-effort (-2.181).
+\texttt{gpt\_5\_4\_mini} is competitive on speed and final quality (mean first-hit step 2.93 and final improvement 0.295) but has three failures in 90 runs and higher pooled deployment loss (0.197) than \texttt{gpt\_5\_4}.
+\texttt{gpt\_5\_3\_codex} has the lowest pooled final improvement (0.206) and slowest mean first-hit step (5.35), but its low cost on \textit{micro ResNet} keeps it on the deployment frontier.
+Table~\ref{tab:worker-frontier-accounting} is the main diagnostic object: deployment-loss accounting selects \texttt{gpt\_5\_4} on \textit{MLP-flat}, \texttt{gpt\_5\_4\_mini} on \textit{compact CNN}, and \texttt{gpt\_5\_3\_codex} on \textit{micro ResNet}.
+Thus adding \texttt{gpt\_5\_4\_mini} changes the promoted mode-conditional recommendation for \textit{compact CNN}, but it does not become the global always-worker default.
+The mode oracle over the three-worker frontier has mean deployment loss 0.126, below the best always-worker policy.
+Table~\ref{tab:threshold-robustness} shows the operating-threshold audit.
+The primary recommendation is not completely threshold-invariant: at \(\gamma=0.02\) and \(\gamma=0.10\), \texttt{gpt\_5\_4} replaces Mini on \textit{compact CNN}, while at \(\gamma=0.20\) Mini becomes the deployment-loss winner on \textit{micro ResNet}.
+The balanced \(n=30\) sensitivity preserves the \(\gamma=0.05\) deployment winners \(4/m/C\), so the primary result is not an artifact of keeping 35 runs for the two existing workers.
+This is the empirical role of the decomposition: it exposes whether apparent performance comes from first-passage competence, cost, or mode-specific comparative advantage before a deployment loss decides the recommendation.
 Appendix~\ref{app:diagnostic-plots} visualizes the same worker-frontier quantities and provides the threshold sensitivity, trajectory-level progress, cost, token, and router-record diagnostics behind these aggregate summaries.
 
 \paragraph{Experiment 2: Signal audit.}
@@ -668,20 +696,20 @@ Both diagnostics are defined in Appendix~\ref{app:experiment-details}.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{figures/autoresearch/twomodel_router_selection_regret.png}
-\caption{Two-worker router-response audit.
+\includegraphics[width=\linewidth]{figures/autoresearch/threeworker_router_selection_regret.png}
+\caption{Three-worker router-response audit.
 Left: selected-worker distribution under real signal records.
-Middle: action-frontier regret against the 35-run pooled log-effort frontier.
-Right: deployment loss for always-worker baselines, prompt-router policies, and the mode oracle; under the primary loss the oracle coincides with always \texttt{gpt\_5\_3\_codex}.
-Richer records expose mode information but do not reliably move the prompt-only router toward the deployment-loss recommendation.}
-\label{fig:twomodel-router-regret}
+Middle: action-frontier regret against the three-worker log-effort frontier.
+Right: deployment loss for always-worker baselines, prompt-router policies, and the mode oracle.
+The router is allowed to choose \texttt{gpt\_5\_4\_mini}, but does not select it on the real records.}
+\label{fig:threeworker-router-regret}
 \end{figure}
 
 The final audit contains 480 prompt-only decisions.
-On real signal records, the router remains strongly biased toward \texttt{gpt\_5\_4}, the worker favored by speed and final-quality metrics rather than by the declared deployment loss.
-Mean log-effort regret is 0.177 for \(Z_0\), 0.183 for \(Z_1\), 0.148 for \(Z_2\), and 0.192 for \(Z_3\).
-Under log-effort, the frontier remains mode-dependent, with \texttt{gpt\_5\_4} favored on \textit{MLP-flat} and \textit{compact CNN} and \texttt{gpt\_5\_3\_codex} favored on \textit{micro ResNet}; the paired deployment loss decides which diagnostic should govern the promoted recommendation.
-The routing diagnostics therefore locate the failure mechanism: the records contain mode information, but the prompt-only harness does not reliably turn that information into lower-regret or lower-loss actions.
+On real signal records, the router remains strongly biased toward \texttt{gpt\_5\_4}: it selects \texttt{gpt\_5\_4} on 29/30 \(Z_0\) records, 29/30 \(Z_1\) records, 30/30 \(Z_2\) records, and 28/30 \(Z_3\) records.
+It never selects \texttt{gpt\_5\_4\_mini}, even though Mini is the compact-CNN deployment-loss and log-effort winner.
+Mean log-effort regret falls from 0.240 at \(Z_0\) to 0.214, 0.205, and 0.175 for \(Z_1,Z_2,Z_3\), respectively, so richer records improve the retrospective action-frontier diagnostic.
+The allocation still misses the three-worker mode frontier \(4/m/C\), which is why paired deployment gain remains the deciding test.
 Additional router-record completion and signal-ablation plots are reported in Appendix~\ref{app:diagnostic-plots}.
 
 \paragraph{Experiment 4: Paired deployment gain.}
@@ -698,24 +726,24 @@ This is the primary empirical estimand; positive signal information or lower reg
 \begin{table}[t]
 \centering
 \small
-\caption{Paired router validation on the final two-worker menu.
+\caption{Paired router validation on the final three-worker menu.
 Net gain is \(\widehat{\ell}_{\mathrm{dep}}(\rho_0)-\widehat{\ell}_{\mathrm{dep}}(\rho_j)-\widehat{\ell}_{\mathrm{meas}}(j)\); positive is better.}
-\label{tab:twomodel-router-gain}
+\label{tab:threeworker-router-gain}
 \begin{tabular}{@{}lrrrrr@{}}
 \toprule
 Signal & Pairs & Shift & Gross gain & Meas. loss & Net gain \\
 \midrule
-\(Z_1\) & 30 & 0.133 & -0.049 & 0.000 & -0.049 \\
-\(Z_2\) & 30 & 0.100 & -0.051 & 0.007 & -0.059 \\
-\(Z_3\) & 30 & 0.100 & -0.032 & 0.028 & -0.060 \\
+\(Z_1\) & 30 & 0.067 & 0.005 & 0.000 & 0.005 \\
+\(Z_2\) & 30 & 0.033 & 0.007 & 0.007 & -0.000 \\
+\(Z_3\) & 30 & 0.100 & 0.013 & 0.028 & -0.015 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The paired validation is negative for the current prompt-only router.
-Against \(Z_0\), richer real signals produce small shift rates and negative net gain after measurement cost.
-The bootstrap intervals from the accounting script are \([-0.116,0.002]\) for \(Z_1\), \([-0.127,-0.007]\) for \(Z_2\), and \([-0.113,-0.024]\) for \(Z_3\).
-This is the main falsification result: informative records are not enough; the deployed router must use them in a way that improves the selected action's verified cost--success tradeoff.
+The paired validation is still not a deployable routing improvement.
+Against \(Z_0\), \(Z_1\) has a tiny positive mean net gain of 0.005, but its bootstrap interval crosses zero \([-0.006,0.021]\) and one shifted pair increases loss.
+\(Z_2\) is essentially break-even after probe cost \([-0.008,0.015]\), while \(Z_3\) is negative after measurement cost \([-0.028,0.002]\).
+Thus adding Mini creates a real mode-conditional worker opportunity, but this prompt-only router does not exploit it: it improves retrospective regret while failing to choose Mini on the mode where Mini wins.
 
 \paragraph{Experiment 5: Negative controls.}
 We repeat the router and paired-gain analyses with schema-preserving controls: shuffled probe records, wrong-mode probes, and synthetic noise records with matched field names and approximate context burden.
@@ -723,10 +751,11 @@ Controls are charged under the same measurement/context-cost convention as the c
 They test whether router response and paired gain are specific to task-relevant signal content, rather than to the presence, length, or schema of an additional probe record.
 If the router were reliably using the real probe information, real records should outperform shuffled, wrong-mode, and synthetic records under paired deployment gain.
 
-The controls block that stronger attribution.
-Wrong-mode \(Z_2\) has a small positive mean net gain with an interval crossing zero, while several shuffled or synthetic controls are negative with intervals similar to the real signals.
-Thus Experiment 5 does not contradict Experiment 2: probes can reveal task-mode structure, while the prompt-only router still fails to exploit the task-relevant content of those probes reliably.
-The correct conclusion is diagnostic rather than prescriptive: probes reveal task modes and the diagnostics expose ranking disagreement, but the primary deployment loss does not reward this router's action changes in the promoted two-worker menu.
+The controls block a strong attribution claim.
+Real \(Z_1\) is slightly positive while its shuffled control is slightly negative, but synthetic and wrong-mode \(Z_1\) records produce no shifts.
+For \(Z_2\) and \(Z_3\), real records are better than the corresponding shuffled, wrong-mode, and synthetic controls, but the real probe and scout records still do not produce robust positive net gain after measurement cost.
+Thus Experiment 5 does not contradict Experiment 2: probes can reveal task-mode structure, and the router responds somewhat to richer records, but the deployed action changes still fail to exploit the task-relevant Mini opportunity reliably.
+The correct conclusion is diagnostic rather than prescriptive: the three-worker menu exposes ranking disagreement and a compact-CNN Mini frontier point, but paired deployment loss does not support promoting this prompt-only router.
 Appendices~\ref{app:experiment-details} and~\ref{app:diagnostic-plots} state the full promotion rule and provide the negative-control figure used to separate diagnostic improvements from a deployable routing recommendation.
 
 \section{Related work}
@@ -749,24 +778,26 @@ Our question is upstream of the launched worker: which action should be selected
 \section{Discussion and limitations}
 \label{sec:discussion}
 
-\paragraph{Limitations.}
-The results are conditional on the packed-mode abstraction, the predeclared deployment loss,
-and the final two-worker action menu.  Real agent trajectories are stateful, modes may
-overlap, and different cost conventions can change the promoted worker.  Moreover, the
-experiment is a fixed executable panel rather than a population-level deployment study:
-it diagnoses this verified task family and router, not all repository repair or research-code
-agents.  Finally, under the primary loss the mature two-worker menu contains no positive
-switching opportunity beyond always using \texttt{gpt\_5\_3\_codex}; thus the router result is
-a useful negative result, not evidence that richer records cannot help a broader menu or a
-calibrated router.
+The paper separates a theory-facing diagnostic claim from a deployment-facing validation claim.
+The experiments support the diagnostic claim: first-passage speed, final improvement, certified log-effort, and deployment loss disagree on the same verified task family.
+They do not support the stronger claim that the evaluated prompt-only router robustly improves deployment loss.
+Probe records expose the predeclared task modes, and the three-worker frontier creates a genuine mode-conditional opportunity: \texttt{gpt\_5\_4\_mini} wins on \textit{compact CNN}.
+The router remains biased toward \texttt{gpt\_5\_4}, never selects Mini on real records, and does not turn the information into a reliable net deployment gain after measurement cost.
+
+The main limitations are the packed-mode abstraction, the fixed executable prototypes, and the small three-worker action menu.
+Real agent trajectories are stateful, task modes may be fuzzy, and the reported quantities are fixed-panel diagnostics rather than population-level deployment estimates.
+This is why the appendix reports threshold curves, occupancy, cost sensitivity, token accounting, and signal-ablation checks instead of treating the finite-mode surrogate as sufficient.
+The decomposition is therefore a claim discipline: it helps identify cost, competence, information, and allocation mechanisms, but paired deployment gain decides whether a routing recommendation is deployable.
+
+\paragraph{Future work.}
+The immediate experimental extension is to add more stable lower-cost actions with matched trajectory support and to train or constrain routers against the deployment-loss frontier rather than only prompt them with records.
+The current \texttt{gpt\_5\_4\_mini} panel already shows the retry-crossover regime on \textit{compact CNN}, but richer menus are needed to test whether lower-cost workers can reliably compensate for lower one-attempt success across more task families.
+Beyond this benchmark, repository repair, theorem checking, and multi-file research-code editing would test less artificial mode schemas and more heterogeneous measurement costs.
 
 \paragraph{Conclusion.}
 Model choice inside an agent harness is not a scalar leaderboard problem.
-It is a budget-aware deployment decision: the useful system is the one that reaches
-verified progress under the declared cost convention.
-The packed-mode identity diagnoses where apparent certified speedup comes from---unit
-cost, focused certified scale, mode information, or allocation mismatch---while paired
-validation decides whether a routed design is deployable.
+It is a budget-aware deployment decision validated by paired outcomes after measurement cost.
+The final three-worker study asks that question directly and answers it negatively for the current prompt-only router: pre-deployment information exposes a better compact-CNN action, but does not move allocation reliably enough to improve paired deployment loss.
 
 On the final two-worker AutoResearch-inspired panel, benchmark-style summaries favor
 \texttt{gpt\_5\_4}, but the predeclared deployment loss favors \texttt{gpt\_5\_3\_codex}.
@@ -795,6 +826,7 @@ that improves paired verified deployment loss under the declared resource conven
 \section{Proofs: certified-time derivation of log-effort}
 \label{app:proofs}
 \label{app:certified-log-effort}
+\label{app:proofs}
 
 This appendix derives the log-effort identity used in Section~\ref{sec:accounting}.
 The main text uses three objects:
@@ -1676,7 +1708,7 @@ Each task mode \(s\) is represented by one executable setting
 \]
 where \(A_s\) is the editable \texttt{train.py} template and starting model class, \(D\) is CIFAR-10, \(\mathrm{split}\) is the fixed train/validation split, \(u\) is the model-initialization seed, \(\eta_s\) are starting optimization and architecture hyperparameters, \(V\) is the verifier, \(B_V\) is the verifier budget, \(H\) is the edit--verify horizon, and \(\delta\) is the success threshold.
 Panel-level aggregates use \(\hat\pi(s)=1/3\).
-The analyzed worker menu is \(\{\texttt{gpt\_5\_3\_codex},\texttt{gpt\_5\_4}\}\).
+The analyzed worker menu is \(\{\texttt{gpt\_5\_3\_codex},\texttt{gpt\_5\_4},\texttt{gpt\_5\_4\_mini}\}\).
 The paper-facing comparison sets \(\cA=\cM\): each deployable action is a single worker run under the common prompt and harness.
 
 \paragraph{Task-mode construction.}
@@ -1697,10 +1729,11 @@ Probe runs are outside the selected worker deployment: they are charged through 
 The evaluator-only baseline used to compute \(G_t\) is router-visible only in \(Z_3\).
 
 \paragraph{Experiment accounting.}
-The worker frontier uses 35 trajectories per task-mode--worker cell.
+The worker frontier uses 35 trajectories per task-mode--worker cell for \texttt{gpt\_5\_3\_codex} and \texttt{gpt\_5\_4}, and 30 valid trajectories per cell for \texttt{gpt\_5\_4\_mini}.
+Mini's primary cells use 10 pilot trajectories and 20 holdout trajectories per mode; the appendix sensitivity that balances all workers at \(n=30\) preserves the primary \(\gamma=0.05\) deployment winners.
 The selected-router validation uses the same fixed panel and reports all richer signals \(j\in\{1,2,3\}\) rather than selecting a single best signal on the same data.
 Negative controls keep the signal schema and approximate context burden of the matched real signal: shuffled probes, wrong-mode probes, and synthetic noise records are charged under the same measurement/context-cost convention as the real record they mimic.
-For the router audit, the prompt-only router selects \texttt{gpt\_5\_4} on 27/30 budget-only records, 29/30 static-workload records, 30/30 probe records, and 28/30 full-scout records.
+For the three-worker router audit on real records, the prompt-only router selects \texttt{gpt\_5\_4} on 29/30 budget-only records, 29/30 static-workload records, 30/30 probe records, and 28/30 full-scout records; it never selects \texttt{gpt\_5\_4\_mini}.
 
 \paragraph{Promotion rule.}
 A routing recommendation is promoted only when worker-frontier estimates, cost sensitivity, router shift, action-frontier regret, paired gain after measurement cost, and negative controls agree.
@@ -1830,23 +1863,23 @@ If independent task instances are added, uncertainty is reported at the task-ins
 \label{app:diagnostic-plots}
 
 This appendix collects auxiliary diagnostics generated from the experimental logs.
-The threshold, trajectory, and cost diagnostics below use the same analyzed workers, \texttt{gpt\_5\_3\_codex} and \texttt{gpt\_5\_4}.
-These appendix plots use the same 35-trajectory-per-cell panel as the main analysis.
+The threshold, trajectory, and cost diagnostics below use the same analyzed workers, \texttt{gpt\_5\_3\_codex}, \texttt{gpt\_5\_4}, and \texttt{gpt\_5\_4\_mini}.
+These appendix plots use the same \(n=35/35/30\) task-mode--worker panel as the main analysis.
 The pooled appendix plots are robustness and mechanism diagnostics for the same accounting quantities reported in the main text.
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=\linewidth]{figures/autoresearch/twomodel_deployment_frontier.png}
+\includegraphics[width=\linewidth]{figures/autoresearch/threeworker_deployment_frontier.png}
 \caption{Worker-frontier visualization for the accounting quantities in Table~\ref{tab:worker-frontier-accounting}.
 The plot is diagnostic only: the main text table reports the numerical terms used for the deployment recommendation.}
-\label{fig:app-twomodel-frontier}
+\label{fig:app-threeworker-frontier}
 \end{figure}
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=\linewidth]{figures/autoresearch/twomodel_negative_controls.png}
+\includegraphics[width=\linewidth]{figures/autoresearch/threeworker_negative_controls.png}
 \caption{Negative-control paired gains for shuffled probes, wrong-mode probes, and synthetic noise records.
-The real records do not cleanly outperform the controls, indicating that the current prompt-only router is not reliably exploiting task-relevant measurement content.}
+The real probe and scout records generally outperform their controls, but they still do not produce robust positive net deployment gain after measurement cost.}
 \label{fig:app-negative-controls}
 \end{figure}
 
@@ -1855,8 +1888,8 @@ The real records do not cleanly outperform the controls, indicating that the cur
 
 \begin{figure}[p]
 \centering
-\includegraphics[width=\linewidth]{figures/autoresearch/diag_threshold_sensitivity_current_pilot.png}
-\caption{Zoomed threshold sensitivity for the two mature workers on the 35-run pooled panel.
+\includegraphics[width=\linewidth]{figures/autoresearch/threeworker_threshold_sensitivity.png}
+\caption{Threshold sensitivity for the three-worker pooled panel.
 The red line marks the operating threshold \(\delta=0.05\).
 At this threshold, entry success is near saturated while mean first-hit time remains low, which makes \(\delta=0.05\) a pragmatic operating point for studying time-to-certified-solution.
 The sharp drop at larger thresholds shows why the exact threshold is not an innocuous plotting choice.}
@@ -1865,25 +1898,8 @@ The sharp drop at larger thresholds shows why the exact threshold is not an inno
 
 \begin{figure}[p]
 \centering
-\includegraphics[width=\linewidth]{figures/autoresearch/diag_threshold_sensitivity_by_worker.png}
-\caption{Threshold sensitivity by worker on the 35-run pooled panel.
-\texttt{gpt\_5\_4} remains stronger at higher thresholds, while \texttt{gpt\_5\_3\_codex} degrades earlier; this supports the competence term in Theorem~\ref{thm:four-term}.}
-\label{fig:app-threshold-by-worker}
-\end{figure}
-
-\begin{figure}[p]
-\centering
-\includegraphics[width=\linewidth]{figures/autoresearch/diag_threshold_sensitivity_extended_current_pilot.png}
-\caption{Extended threshold sensitivity for the two-worker pooled panel.
-The full threshold range shows that high-threshold success is rare even when \(\delta=0.05\) is nearly saturated.
-This is why the paper reports first-passage curves, occupancy, and final quality rather than relying on a single binary success rate.}
-\label{fig:app-threshold-extended}
-\end{figure}
-
-\begin{figure}[p]
-\centering
-\includegraphics[width=\linewidth]{figures/autoresearch/diag_improvement_distribution_by_worker.png}
-\caption{Run-level improvement distribution for the two mature workers.
+\includegraphics[width=\linewidth]{figures/autoresearch/threeworker_improvement_distribution.png}
+\caption{Run-level improvement distribution for the three analyzed workers.
 Dots show final best-visible relative improvement and thick ticks mark worker medians.
 The survival plot makes the threshold choice explicit: near \(\delta=0.05\), most runs succeed, but the ordering and separation change at higher thresholds.
 This diagnostic supports the paper's claim that final quality, first-passage success, and deployment loss are distinct empirical objects.}
@@ -1892,18 +1908,18 @@ This diagnostic supports the paper's claim that final quality, first-passage suc
 
 \begin{figure}[p]
 \centering
-\includegraphics[width=\linewidth]{figures/autoresearch/diag_tau_distribution_pilot.png}
+\includegraphics[width=\linewidth]{figures/autoresearch/threeworker_tau_distribution.png}
 \caption{Pooled time-to-success distribution by task mode and worker.
-The violin plots expose mode-conditional heterogeneity: \texttt{gpt\_5\_4} typically hits the threshold quickly, while \texttt{gpt\_5\_3\_codex} has broader first-hit times, especially on MLP.
+The scatter plots expose mode-conditional heterogeneity: Mini is fastest on \textit{compact CNN} and \textit{micro ResNet}, while \texttt{gpt\_5\_4} is fastest on \textit{MLP-flat}.
 This is the empirical object behind the cost and competence terms of the four-term decomposition.}
 \label{fig:app-tau-distribution}
 \end{figure}
 
 \begin{figure}[p]
 \centering
-\includegraphics[width=\linewidth]{figures/autoresearch/diag_relative_improvement_spaghetti.png}
+\includegraphics[width=\linewidth]{figures/autoresearch/threeworker_relative_improvement_trajectories.png}
 \caption{Best-so-far improvement trajectories.
-The mean trajectories show that \texttt{gpt\_5\_4} improves earlier and reaches higher final relative improvement in the pooled panel, but the deployment accounting in the main text shows that this does not automatically imply lower deployment loss after cost is charged.
+The mean trajectories show that early progress and final quality vary by mode and worker, but the deployment accounting in the main text shows that this does not automatically imply lower deployment loss after cost is charged.
 This contrast is the main empirical reason to separate worker competence from deployment value.}
 \label{fig:app-improvement-trajectories}
 \end{figure}
@@ -1913,9 +1929,9 @@ This contrast is the main empirical reason to separate worker competence from de
 
 \begin{figure}[p]
 \centering
-\includegraphics[width=\linewidth]{figures/autoresearch/diag_worker_cost_quality_diagnostics.png}
+\includegraphics[width=\linewidth]{figures/autoresearch/threeworker_worker_cost_quality_diagnostics.png}
 \caption{Worker cost--quality diagnostics.
-Each point is a pooled common-support run, and diamonds mark worker medians.
+Each point is a valid pooled run.
 The plots show that better final improvement is accompanied by substantial variation in wall-clock time, total token accounting, and generated-token volume.
 This supports the paper's budget-aware framing: worker choice cannot be reduced to final improvement alone.}
 \label{fig:app-worker-cost-quality-full}
@@ -1923,9 +1939,8 @@ This supports the paper's budget-aware framing: worker choice cannot be reduced 
 
 \begin{figure}[p]
 \centering
-\includegraphics[width=\linewidth]{figures/autoresearch/diag_cost_to_tau_by_mode_worker_full.png}
+\includegraphics[width=\linewidth]{figures/autoresearch/threeworker_cost_to_tau_by_mode_worker.png}
 \caption{Resource cost accumulated to first hit or horizon.
-The top row reports wall-clock minutes and the bottom row reports token accounting on a log scale.
 Mode-conditional cost spreads are large, which is why the retry-crossover theorem is treated as a cost-sensitive design rule rather than a generic endorsement of weaker workers.}
 \label{fig:app-cost-to-tau-full}
 \end{figure}
