@@ -603,19 +603,16 @@ unbiasedness conditions.
 \label{sec:experiments}
 
 \paragraph{Setup.}
-We instantiate the framework on a repeated-trajectory panel for CIFAR-10 edit--verify optimization.
-The task modes are three starting artifact variants of the same verified task, \(\cS=\{\text{\textit{MLP-flat}},\text{\textit{compact CNN}},\text{\textit{micro ResNet}}\}\).
-The dataset, verifier, horizon, and success rule are fixed while the editable artifact's starting architecture and parameterization change, letting us test whether worker choice is mode-conditional rather than a single global ranking.
+We instantiate the framework on CIFAR-10 based Autoresereach.
+We consider as task modes the three starting artifact variants of the same verified task, i.e. optimizing the training of three different models (\(\cS=\{\text{\textit{MLP-flat}},\text{\textit{compact CNN}},\text{\textit{micro ResNet}}\}\) . The dataset, verifier, horizon, and success rule are fixed while the editable artifact's starting architecture and parameterization change, letting us test whether worker choice is mode-conditional rather than a single global ranking.
 The analyzed worker menu is \(\{\texttt{gpt\_5\_3\_codex},\texttt{gpt\_5\_4},\texttt{gpt\_5\_4\_mini}\}\).
 Each action is one worker under the common prompt and harness, so \(\cA=\cM\) in this experiment.
-For each task-mode--worker cell we use 35 independent AutoResearch trajectories for \texttt{gpt\_5\_3\_codex} and \texttt{gpt\_5\_4}, and 30 valid trajectories for \texttt{gpt\_5\_4\_mini}.
-The \texttt{gpt\_5\_4\_mini} cells combine 10 pilot and 20 holdout trajectories per mode; unfinished or invalid runs are excluded by the same validity checks as the existing workers.
-The router is a deterministic prompt-only orchestrator evaluated under four nested pre-deployment records \(Z_0,\ldots,Z_3\). 
+For each task-mode--worker cell we use 34 independent AutoResearch trajectories for each of the three models tested. The router, whose goal is to pick the most suited model for a certain taks, is a prompt-only orchestrator evaluated under four nested pre-deployment records \(Z_0,\ldots,Z_3\). 
 The primary decision metric is the first-passage deployment loss in~\eqref{eq:deployment-loss}; full-horizon occupancy and final quality are audit metrics.
 Appendix~\ref{app:experiment-details} gives the frozen configuration, including horizon, verifier budget, training budget, success threshold, signal contents, measurement-cost convention, progress normalization, smoothing rule, and logging schema.
 
 \paragraph{Experiment 1: Worker frontier.}
-We run every worker on every task mode before routing, estimating fixed-setting analogues of \(p(a,s)\) and \(\kappa(a,s)\).
+We run every [worker? Model? Harness?] on every task mode before routing, estimating fixed-setting analogues of \(p(a,s)\) and \(\kappa(a,s)\).
 These estimates instantiate the worker-side cost and competence terms in Theorem~\ref{thm:four-term}; the smoothed log-effort estimator is defined in Appendix~\ref{app:experiment-details}.
 
 
@@ -668,7 +665,6 @@ Pooled columns are ordered \(C/4/m\).}
 \end{tabular}}
 \end{table}
 
-The frontier already rejects a single leaderboard ordering.
 Averaged across modes, \texttt{gpt\_5\_4} has the lowest pooled deployment loss (0.160), the fastest mean first-hit step (2.45), the highest final improvement (0.309), and the lowest mean log-effort (-2.181).
 \texttt{gpt\_5\_4\_mini} is competitive on speed and final quality (mean first-hit step 2.93 and final improvement 0.295) but has three failures in 90 runs and higher pooled deployment loss (0.197) than \texttt{gpt\_5\_4}.
 \texttt{gpt\_5\_3\_codex} has the lowest pooled final improvement (0.206) and slowest mean first-hit step (5.35), but its low cost on \textit{micro ResNet} keeps it on the deployment frontier.
