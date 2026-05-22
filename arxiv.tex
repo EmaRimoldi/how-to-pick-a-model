@@ -14,6 +14,8 @@
 \usepackage{microtype}
 \usepackage{xcolor}
 
+\newcommand{\pier}[1]{{\color{red}Pier: #1}}
+
 \newtheorem{assumption}{Assumption}
 \newtheorem{definition}{Definition}
 \newtheorem{theorem}{Theorem}
@@ -110,9 +112,9 @@ Indeed, Achille and Soatto \citep{achille2025agents} recently argued that time t
 
 Building on this intuition, we operationalize a certified log-effort surrogate gap between two possible designs. We show that it mathematically decomposes into four components that isolate the mechanisms of choice mentioned above.
 
-On our final two-worker AutoResearch panel, benchmark-style summaries favor \texttt{gpt\_5\_4}: it reaches the verifier threshold in fewer edit--verify steps and has stronger final-quality diagnostics.
-After charging verified failure and normalized wall-clock cost in the deployment loss, however, \texttt{gpt\_5\_3\_codex} is selected in all three task modes.
-The routing audit gives the complementary result: richer pre-deployment records reveal the task-mode structure, but the evaluated prompt-only router remains biased toward the benchmark-favored worker and produces negative paired net gain after measurement cost.
+On our final three-worker AutoResearch panel, benchmark-style summaries favor \texttt{gpt\_5\_4} on average, but deployment accounting exposes a mode-conditional frontier: \texttt{gpt\_5\_4} on \textit{MLP-flat}, \texttt{gpt\_5\_4\_mini} on \textit{compact CNN}, and \texttt{gpt\_5\_3\_codex} on \textit{micro ResNet}.
+The routing audit gives the complementary result: static records mostly preserve router priors, while candidate-agent scout traces move prompt-only routers toward the per-instance full-horizon frontier.
+The best scout-informed router beats the best always-worker baseline in full-horizon quality on the balanced panel, but a deployable recommendation still requires paired net-gain validation after scout measurement cost.
 
 % Run a lower-cost worker and a higher-capability worker on held-out instances; choose the one with the best average score.
 % For externally verified agentic tasks, this can be the wrong unit of comparison.
@@ -139,13 +141,14 @@ We organize the paper around three questions, each paired with the contribution 
   Algorithm~\ref{alg:decomp-selection} and the pilot concentration bound in Appendix~\ref{app:proofs} turn the identity into a structured pilot protocol that estimates measurable worker-side terms, audits router-visible signals, and reserves deployment recommendations for paired selected-worker validation.
   \item \textbf{When does a lower-cost model with retries beat a stronger model?}
   Theorem~\ref{thm:crossover} gives the single-mode crossover rule, and the multi-mode accounting shows why the answer changes across task modes.
-  \item \textbf{AutoResearch-inspired evidence and negative controls.}
-    On a two-worker CIFAR-10 edit--verify panel, benchmark-style speed and quality
-    favor \texttt{gpt\_5\_4}, while the predeclared deployment loss favors
-    \texttt{gpt\_5\_3\_codex}.
-    Richer records reveal task-mode structure but do not improve paired deployment loss
-    for the evaluated prompt-only router; matched controls block a strong routing-value
-    claim.
+  \item \textbf{AutoResearch-inspired evidence and routing audit.}
+    On a three-worker CIFAR-10 edit--verify panel, benchmark-style averages favor
+    \texttt{gpt\_5\_4}, while deployment accounting exposes a mode-conditional
+    frontier involving all three workers.
+    Candidate-agent scout records then produce useful allocation shifts: the best
+    \(Z_2\) router beats the best always-worker baseline in full-horizon quality,
+    while the final deployment claim remains gated by paired net-gain accounting
+    with scout costs charged.
 \end{enumerate}
 
 The experiments below instantiate these claims with verified trajectories and deployment accounting.
@@ -604,7 +607,7 @@ The analyzed worker menu is \(\{\texttt{gpt\_5\_3\_codex},\texttt{gpt\_5\_4},\te
 Each action is one worker under the common prompt and harness, so \(\cA=\cM\) in this experiment.
 For each task-mode--worker cell we use 35 independent AutoResearch trajectories for \texttt{gpt\_5\_3\_codex} and \texttt{gpt\_5\_4}, and 30 valid trajectories for \texttt{gpt\_5\_4\_mini}.
 The \texttt{gpt\_5\_4\_mini} cells combine 10 pilot and 20 holdout trajectories per mode; unfinished or invalid runs are excluded by the same validity checks as the existing workers.
-The router is a deterministic prompt-only orchestrator evaluated under four nested pre-deployment records \(Z_0,\ldots,Z_3\). 
+The main router audit uses deterministic prompt-only candidate-agent selectors evaluated under three nested pre-deployment records \(Z_0,Z_1,Z_2\).
 The primary decision metric is the first-passage deployment loss in~\eqref{eq:deployment-loss}; full-horizon occupancy and final quality are audit metrics.
 Appendix~\ref{app:experiment-details} gives the frozen configuration, including horizon, verifier budget, training budget, success threshold, signal contents, measurement-cost convention, progress normalization, smoothing rule, and logging schema.
 
@@ -675,86 +678,69 @@ The balanced \(n=30\) sensitivity preserves the \(\gamma=0.05\) deployment winne
 This is the empirical role of the decomposition: it exposes whether apparent performance comes from first-passage competence, cost, or mode-specific comparative advantage before a deployment loss decides the recommendation.
 Appendix~\ref{app:diagnostic-plots} visualizes the same worker-frontier quantities and provides the threshold sensitivity, trajectory-level progress, cost, token, and router-record diagnostics behind these aggregate summaries.
 
-\paragraph{Experiment 2: Signal audit.}
-We next ask a different question: not which worker is best under the deployment loss, but whether there is useful pre-deployment information that could justify an orchestrator.
-Routing information is the relevant diagnostic for this question.
-If \(Z_j\) does not make solver-relevant modes more identifiable, then buying or passing that record to a router cannot help except by chance.
-In the current diagnostic, budget-only records recover the three task-mode labels at 0.349 accuracy, while probe-containing records recover them perfectly on the diagnostic set.
-Thus the signals can expose mode structure; the remaining question is whether the router converts that structure into better actions.
+\paragraph{Experiment 2: Candidate-agent scout signals.}
+We next ask whether pre-deployment information can move a router toward the right worker.
+This audit uses the balanced \(n=30\) panel and restricts router decisions to the ten shared seeds \(9300,\ldots,9309\) in each task mode, giving 30 task instances.
+For each instance, the router chooses among \(\{\texttt{gpt\_5\_3\_codex},\texttt{gpt\_5\_4},\texttt{gpt\_5\_4\_mini}\}\).
+We evaluate three router models, \(\texttt{gpt\_5\_5\_router\_xhigh}\), \(\texttt{gpt\_5\_4\_router\_xhigh}\), and \(\texttt{gpt\_5\_4\_mini\_router\_xhigh}\), under three nested records:
+\(Z_0\) contains only the deployment contract and worker menu;
+\(Z_1\) adds the initial \texttt{train.py} and static workload description;
+and \(Z_2\) adds two edit--verify scout steps for every candidate worker.
+The scout prefix is evidence for selection only: the selected worker is still evaluated by its full trajectory, and the router never observes full-horizon outcomes.
 
-\paragraph{Experiment 3: Routing shift and action-frontier regret.}
-We measure this conversion with shift rate and action-frontier regret, the empirical analogue of allocation mismatch for a router that returns actions rather than mode distributions.
-Shift rate is the fraction of modes for which the richer signal changes the selected worker; action-frontier regret scores the selected action against the mode-conditional frontier from Experiment 1.
-Together, routing information and allocation regret answer whether orchestration is useful in this configuration: the former asks whether the signal contains exploitable structure, and the latter asks whether the actual router uses that structure to move toward the empirical cost--success frontier.
-Both diagnostics are defined in Appendix~\ref{app:experiment-details}.
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=\linewidth]{figures/autoresearch/threeworker_router_selection_regret.png}
-\caption{Three-worker router-response audit.
-Left: selected-worker distribution under real signal records.
-Middle: action-frontier regret against the three-worker log-effort frontier.
-Right: deployment loss for always-worker baselines, prompt-router policies, and the mode oracle.
-The router is allowed to choose \texttt{gpt\_5\_4\_mini}, but does not select it on the real records.}
-\label{fig:threeworker-router-regret}
-\end{figure}
-
-The final audit contains 480 prompt-only decisions.
-On real signal records, the router remains strongly biased toward \texttt{gpt\_5\_4}: it selects \texttt{gpt\_5\_4} on 29/30 \(Z_0\) records, 29/30 \(Z_1\) records, 30/30 \(Z_2\) records, and 28/30 \(Z_3\) records.
-It never selects \texttt{gpt\_5\_4\_mini}, even though Mini is the compact-CNN deployment-loss and log-effort winner.
-Mean log-effort regret falls from 0.240 at \(Z_0\) to 0.214, 0.205, and 0.175 for \(Z_1,Z_2,Z_3\), respectively, so richer records improve the retrospective action-frontier diagnostic.
-The allocation still misses the three-worker mode frontier \(4/m/C\), which is why paired deployment gain remains the deciding test.
-Additional router-record completion and signal-ablation plots are reported in Appendix~\ref{app:diagnostic-plots}.
-
-\paragraph{Experiment 4: Paired deployment gain.}
-For each richer signal \(Z_j\), we compare the action selected under \(Z_j\) with the action selected under \(Z_0\) on the same executable-setting panel and subtract measurement cost:
-\[
-\widehat{\Delta}_R(j)=
-\widehat{\ell}_{\mathrm{dep}}(\rho_0)-
-\widehat{\ell}_{\mathrm{dep}}(\rho_j)-
-\widehat{\ell}_{\mathrm{meas}}(j).
-\]
-Positive values mean that the richer signal improves net deployment loss after the cost of measuring or using the signal is charged.
-This is the primary empirical estimand; positive signal information or lower regret alone is insufficient.
+The full-horizon outcome table already shows why this is a nontrivial routing problem.
+On these 30 instances, the always-\texttt{gpt\_5\_4} policy succeeds on \(30/30\) runs and has mean best-visible validation loss \(1.192\).
+\texttt{gpt\_5\_3\_codex} succeeds on \(29/30\), with mean loss \(1.396\), while \texttt{gpt\_5\_4\_mini} succeeds on \(28/30\), with mean loss \(1.262\).
+The per-instance full-horizon oracle has mean loss \(1.113\), choosing \texttt{gpt\_5\_4} on 18 instances and \texttt{gpt\_5\_4\_mini} on 12; it never chooses \texttt{gpt\_5\_3\_codex}.
+Thus the best always-worker baseline is strong, but there is still instance-level headroom.
 
 \begin{table}[t]
 \centering
 \small
-\caption{Paired router validation on the final three-worker menu.
-Net gain is \(\widehat{\ell}_{\mathrm{dep}}(\rho_0)-\widehat{\ell}_{\mathrm{dep}}(\rho_j)-\widehat{\ell}_{\mathrm{meas}}(j)\); positive is better.}
-\label{tab:threeworker-router-gain}
-\begin{tabular}{@{}lrrrrr@{}}
+\setlength{\tabcolsep}{3.5pt}
+\caption{Candidate-agent scout routing audit on the balanced \(n=30\) panel.
+Selection counts are ordered \(C/4/m\), where \(C=\texttt{gpt\_5\_3\_codex}\), \(4=\texttt{gpt\_5\_4}\), and \(m=\texttt{gpt\_5\_4\_mini}\).
+Oracle hit means the selected worker matches the per-instance worker with the lowest full-horizon best-visible validation loss.
+Regret is the selected loss minus that oracle loss.}
+\label{tab:candidate-scout-router}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}llrrrrrr@{}}
 \toprule
-Signal & Pairs & Shift & Gross gain & Meas. loss & Net gain \\
+Router & Signal & Select \(C/4/m\) & Oracle hit & Success & Mean loss & Regret & Mean cost \\
 \midrule
-\(Z_1\) & 30 & 0.067 & 0.005 & 0.000 & 0.005 \\
-\(Z_2\) & 30 & 0.033 & 0.007 & 0.007 & -0.000 \\
-\(Z_3\) & 30 & 0.100 & 0.013 & 0.028 & -0.015 \\
+\texttt{gpt\_5\_4\_router\_xhigh} & \(Z_0\) & \(26/4/0\) & 3/30 & 30/30 & 1.377 & 0.264 & 483 \\
+\texttt{gpt\_5\_4\_router\_xhigh} & \(Z_1\) & \(19/11/0\) & 7/30 & 29/30 & 1.298 & 0.185 & 973 \\
+\texttt{gpt\_5\_4\_router\_xhigh} & \(Z_2\) & \(3/13/14\) & \textbf{21/30} & 30/30 & \textbf{1.160} & \textbf{0.047} & 2228 \\
+\texttt{gpt\_5\_5\_router\_xhigh} & \(Z_0\) & \(30/0/0\) & 0/30 & 29/30 & 1.396 & 0.283 & 429 \\
+\texttt{gpt\_5\_5\_router\_xhigh} & \(Z_1\) & \(28/2/0\) & 0/30 & 29/30 & 1.394 & 0.280 & 446 \\
+\texttt{gpt\_5\_5\_router\_xhigh} & \(Z_2\) & \(4/11/15\) & 19/30 & 29/30 & 1.180 & 0.066 & 2204 \\
+\texttt{gpt\_5\_4\_mini\_router\_xhigh} & \(Z_0\) & \(6/24/0\) & 16/30 & 30/30 & 1.236 & 0.123 & 1263 \\
+\texttt{gpt\_5\_4\_mini\_router\_xhigh} & \(Z_1\) & \(2/27/1\) & 16/30 & 30/30 & 1.205 & 0.092 & 1556 \\
+\texttt{gpt\_5\_4\_mini\_router\_xhigh} & \(Z_2\) & \(4/18/8\) & 19/30 & 30/30 & 1.189 & 0.076 & 1656 \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
-The paired validation is still not a deployable routing improvement.
-Against \(Z_0\), \(Z_1\) has a tiny positive mean net gain of 0.005, but its bootstrap interval crosses zero \([-0.006,0.021]\) and one shifted pair increases loss.
-\(Z_2\) is essentially break-even after probe cost \([-0.008,0.015]\), while \(Z_3\) is negative after measurement cost \([-0.028,0.002]\).
-Thus adding Mini creates a real mode-conditional worker opportunity, but this prompt-only router does not exploit it: it improves retrospective regret while failing to choose Mini on the mode where Mini wins.
+\paragraph{Experiment 3: Routing response and quality gain.}
+Table~\ref{tab:candidate-scout-router} shows that the scout record changes the qualitative behavior of the routers.
+Without scout evidence, \texttt{gpt\_5\_5\_router\_xhigh} and \texttt{gpt\_5\_4\_router\_xhigh} are overly conservative and route mostly to \texttt{gpt\_5\_3\_codex}, despite \texttt{gpt\_5\_3\_codex} never being the full-horizon oracle on this panel.
+Adding static code in \(Z_1\) helps only modestly.
+Adding candidate-agent scout traces in \(Z_2\) moves all three routers toward the two workers that actually occupy the full-horizon oracle frontier.
+The best setting is \(\texttt{gpt\_5\_4\_router\_xhigh}\) with \(Z_2\): it selects \(C/4/m=3/13/14\), matches the oracle worker on \(21/30\) instances, succeeds on \(30/30\), and reduces mean full-horizon loss to \(1.160\).
+This beats the best always-worker baseline, \texttt{gpt\_5\_4}, by \(0.032\) mean loss and closes much of the gap to the per-instance oracle at \(1.113\).
 
-\paragraph{Experiment 5: Negative controls.}
-We repeat the router and paired-gain analyses with schema-preserving controls: shuffled probe records, wrong-mode probes, and synthetic noise records with matched field names and approximate context burden.
-Controls are charged under the same measurement/context-cost convention as the corresponding real signal.
-They test whether router response and paired gain are specific to task-relevant signal content, rather than to the presence, length, or schema of an additional probe record.
-If the router were reliably using the real probe information, real records should outperform shuffled, wrong-mode, and synthetic records under paired deployment gain.
+The improvement is specifically tied to candidate-level evidence.
+Across the three routers, \(Z_2\) decisions are unanimous on \(22/30\) instances and split two-to-one on the remaining eight; no instance produces three different selected workers.
+In contrast, \(Z_0\) and \(Z_1\) are dominated by router priors and disagree mainly over how much to prefer the cheaper coding-specialized worker.
+This is the mechanism predicted by the framework: richer information is useful only when it changes allocation toward actions with better realized cost--quality profiles.
 
-The controls block a strong attribution claim.
-Real \(Z_1\) is slightly positive while its shuffled control is slightly negative, but synthetic and wrong-mode \(Z_1\) records produce no shifts.
-For \(Z_2\) and \(Z_3\), real records are better than the corresponding shuffled, wrong-mode, and synthetic controls, but the real probe and scout records still do not produce robust positive net gain after measurement cost.
-Thus Experiment 5 does not contradict Experiment 2: probes can reveal task-mode structure, and the router responds somewhat to richer records, but the deployed action changes still fail to exploit the task-relevant Mini opportunity reliably.
-The correct conclusion is diagnostic rather than prescriptive: the three-worker menu exposes ranking disagreement and a compact-CNN Mini frontier point, but paired deployment loss does not support promoting this prompt-only router.
-Appendices~\ref{app:experiment-details} and~\ref{app:diagnostic-plots} state the full promotion rule and provide the negative-control figure used to separate diagnostic improvements from a deployable routing recommendation.
-
-
-
-\section{Experiments on SWE-bench}
+\paragraph{Experiment 4: Deployment interpretation.}
+The candidate-scout result is positive but not yet a free-standing deployment recommendation.
+First, Table~\ref{tab:candidate-scout-router} is a full-horizon best-loss audit on an existing balanced trajectory panel, not a fresh paired deployment experiment with independent selected-worker reruns.
+Second, the reported mean cost is the selected worker's full-run accounting cost; it does not yet include the measurement cost of running all candidate scouts before selection.
+Third, the best routing setting improves quality relative to the best always-worker baseline while increasing selected-run cost.
+Therefore the result validates the information and allocation mechanism, but the final deployment claim still requires the paired net-gain estimand in~\eqref{eq:router-gain} with scout costs charged explicitly.
+The main conclusion is correspondingly conditional: candidate-agent scout traces can make prompt-only routing useful on this panel, while deployment promotion depends on whether their measurement cost is worth paying.
 
 
 
@@ -770,7 +756,7 @@ LLM routing and cascades provide the model-menu context.
 FrugalGPT, RouteLLM, RouterBench, LLMRouterBench, and compound-system routers study cost-quality routing over heterogeneous model pools~\citep{chen2023frugalgpt,ong2024routellm,hu2024routerbench,anonymous2026llmrouterbench,chen2025optimizing,yue2025masrouter,zaharia2024compound}.
 We ask how much verified, task-specific information is worth before committing to an expensive agentic deployment.
 
-verified agent benchmarks provide the task substrate.
+Verified agent benchmarks provide the task substrate.
 SWE-bench evaluates repository repair against tests, AutoResearch evaluates training-loop edits against validation feedback, and theorem-proving systems use analogous external validators~\citep{jimenez2024swebench,karpathy2026autoresearch}.
 Repeated sampling and inference-time scaling further show that lower-cost or smaller models can become competitive when verification is available~\citep{brown2024monkeys,snell2025testtime,wu2025inference,osca2024}.
 Our question is upstream of the launched worker: which action should be selected, what should the router observe, and how should that observation be charged?
@@ -779,35 +765,30 @@ Our question is upstream of the launched worker: which action should be selected
 \label{sec:discussion}
 
 The paper separates a theory-facing diagnostic claim from a deployment-facing validation claim.
-The experiments support the diagnostic claim: first-passage speed, final improvement, certified log-effort, and deployment loss disagree on the same verified task family.
-They do not support the stronger claim that the evaluated prompt-only router robustly improves deployment loss.
-Probe records expose the predeclared task modes, and the three-worker frontier creates a genuine mode-conditional opportunity: \texttt{gpt\_5\_4\_mini} wins on \textit{compact CNN}.
-The router remains biased toward \texttt{gpt\_5\_4}, never selects Mini on real records, and does not turn the information into a reliable net deployment gain after measurement cost.
+The experiments support the diagnostic claim: first-passage speed, final improvement, certified log-effort, full-horizon quality, and deployment loss disagree on the same verified task family.
+They also show that the form of pre-deployment information matters.
+Static task descriptions alone mostly preserve router priors, while candidate-agent scout traces can move prompt-only routers toward the workers that actually occupy the per-instance full-horizon frontier.
+In the strongest audit, \(\texttt{gpt\_5\_4\_router\_xhigh}\) with \(Z_2\) beats the best always-worker baseline in mean best-visible validation loss and substantially reduces oracle regret.
+This is evidence for the information-allocation mechanism, not yet for an unqualified deployment policy: the audit reuses an existing balanced trajectory table, and the scout measurement cost must still be charged in a fresh paired net-gain evaluation.
 
 The main limitations are the packed-mode abstraction, the fixed executable prototypes, and the small three-worker action menu.
 Real agent trajectories are stateful, task modes may be fuzzy, and the reported quantities are fixed-panel diagnostics rather than population-level deployment estimates.
-This is why the appendix reports threshold curves, occupancy, cost sensitivity, token accounting, and signal-ablation checks instead of treating the finite-mode surrogate as sufficient.
+This is why the appendix reports threshold curves, occupancy, cost sensitivity, token accounting, router-record checks, and signal-ablation diagnostics instead of treating the finite-mode surrogate as sufficient.
 The decomposition is therefore a claim discipline: it helps identify cost, competence, information, and allocation mechanisms, but paired deployment gain decides whether a routing recommendation is deployable.
 
 \paragraph{Future work.}
-The immediate experimental extension is to add more stable lower-cost actions with matched trajectory support and to train or constrain routers against the deployment-loss frontier rather than only prompt them with records.
-The current \texttt{gpt\_5\_4\_mini} panel already shows the retry-crossover regime on \textit{compact CNN}, but richer menus are needed to test whether lower-cost workers can reliably compensate for lower one-attempt success across more task families.
+The immediate experimental extension is to rerun the candidate-scout router as a fresh paired deployment study: run the scouts, sample independent selected-worker trajectories from scratch, and subtract scout wall-clock, token, and context costs.
+A second extension is to train or constrain routers against the deployment-loss frontier rather than only prompt them with records.
+The current \texttt{gpt\_5\_4\_mini} panel already shows a retry-crossover regime on \textit{compact CNN}, but richer menus are needed to test whether lower-cost workers can reliably compensate for lower one-attempt success across more task families.
 Beyond this benchmark, repository repair, theorem checking, and multi-file research-code editing would test less artificial mode schemas and more heterogeneous measurement costs.
 
 \paragraph{Conclusion.}
 Model choice inside an agent harness is not a scalar leaderboard problem.
 It is a budget-aware deployment decision validated by paired outcomes after measurement cost.
-The final three-worker study asks that question directly and answers it negatively for the current prompt-only router: pre-deployment information exposes a better compact-CNN action, but does not move allocation reliably enough to improve paired deployment loss.
-
-On the final two-worker AutoResearch-inspired panel, benchmark-style summaries favor
-\texttt{gpt\_5\_4}, but the predeclared deployment loss favors \texttt{gpt\_5\_3\_codex}.
-Richer records expose the task-mode structure, yet the evaluated prompt-only router remains
-biased toward the benchmark-favored worker and has negative paired net gain after
-measurement cost.
-The appropriate conclusion is therefore diagnostic rather than prescriptive: informative
-signals are not enough.
-A measurement or router should be promoted only when it changes selected actions in a way
-that improves paired verified deployment loss under the declared resource convention.
+The three-worker study makes this concrete.
+The worker frontier rejects a single global ranking, and the candidate-scout audit shows that richer pre-deployment evidence can change routing in the right direction: the best \(Z_2\) router beats the best always-worker baseline in full-horizon quality on the balanced panel.
+The remaining gate is deployment accounting.
+A measurement or router should be promoted only when it changes selected actions in a way that improves paired verified deployment loss under the declared resource convention, with the cost of buying the information included.
 
 \clearpage
 \bibliographystyle{unsrtnat}
@@ -1719,21 +1700,23 @@ They are evaluator-defined variants of the same CIFAR-10 edit--verify task: the 
 This choice makes the mode variable operationally meaningful for the theory, because different starting artifacts can change both first-passage competence \(p(a,s)\) and cost \(\kappa(a,s)\) for the same worker.
 
 \paragraph{Progressive signal records.}
-The router sees one of four nested pre-deployment records.
-\(Z_0\) contains only the task name, verifier objective, worker menu, and budget.
-\(Z_1\) adds the initial \texttt{train.py} plus a static workload summary: starting model class, parameter count, optimizer and budget settings, dataset/verifier identifiers, and parse/runtime availability.
-\(Z_2\) adds a low-cost verifier probe of the unmodified artifact at a predeclared probe budget.
-\(Z_3\) adds the full unmodified-artifact baseline under the deployment verifier budget.
-Probe records include validation loss, validation accuracy, training seconds, total seconds, optimizer steps, parameter count, parse/runtime status, and probe budget.
-Probe runs are outside the selected worker deployment: they are charged through \(\ell_{\mathrm{meas}}\) and do not consume the later deployment horizon or verifier budget.
-The evaluator-only baseline used to compute \(G_t\) is router-visible only in \(Z_3\).
+The candidate-agent scout router audit uses three nested pre-deployment records.
+\(Z_0\) contains only the task name, verifier objective, worker menu, horizon, checker budget, and success rule.
+\(Z_1\) adds the initial \texttt{train.py} plus a static workload summary: starting model class, template path, dataset/verifier identifiers, and task-mode parameters.
+\(Z_2\) adds candidate-agent scout records.
+For every candidate worker in the menu, the scout record contains the first two edit--verify steps on the same task instance: selected edit mode, selected-step correctness, relative improvement so far, best visible loss within the scout budget, wall-clock and token counts, validation failures, and interactive error count.
+Scout runs are outside the selected worker deployment.
+They are router evidence only, are not warm starts, and do not transfer edited code, checkpoints, hidden state, or partial progress to the selected worker.
+Full-horizon outcomes are never included in \(Z_2\).
+For a deployable net-gain claim, scout wall-clock, token, and context costs must be charged through \(\ell_{\mathrm{meas}}\).
 
 \paragraph{Experiment accounting.}
 The worker frontier uses 35 trajectories per task-mode--worker cell for \texttt{gpt\_5\_3\_codex} and \texttt{gpt\_5\_4}, and 30 valid trajectories per cell for \texttt{gpt\_5\_4\_mini}.
-Mini's primary cells use 10 pilot trajectories and 20 holdout trajectories per mode; the appendix sensitivity that balances all workers at \(n=30\) preserves the primary \(\gamma=0.05\) deployment winners.
-The selected-router validation uses the same fixed panel and reports all richer signals \(j\in\{1,2,3\}\) rather than selecting a single best signal on the same data.
-Negative controls keep the signal schema and approximate context burden of the matched real signal: shuffled probes, wrong-mode probes, and synthetic noise records are charged under the same measurement/context-cost convention as the real record they mimic.
-For the three-worker router audit on real records, the prompt-only router selects \texttt{gpt\_5\_4} on 29/30 budget-only records, 29/30 static-workload records, 30/30 probe records, and 28/30 full-scout records; it never selects \texttt{gpt\_5\_4\_mini}.
+Mini's primary cells use 10 pilot trajectories and 20 holdout trajectories per mode; the balanced sensitivity uses 30 trajectories per worker and preserves the primary \(\gamma=0.05\) deployment winners.
+The candidate-scout router audit uses the balanced panel restricted to seeds \(9300,\ldots,9309\) in each mode, for 30 shared task instances with complete trajectories for all three workers.
+It evaluates three deterministic prompt-only routers under \(Z_0,Z_1,Z_2\), for \(3\times 3\times 30=270\) decisions.
+Router decisions are joined to the already logged full-horizon trajectories to compute success, mean best-visible validation loss, oracle-hit rate, full-horizon loss regret, and selected-run accounting cost.
+This is an allocation and full-horizon quality audit; it is not by itself an unbiased estimate of net deployment gain because selected workers are not rerun independently after routing and scout measurement costs are not yet subtracted.
 
 \paragraph{Promotion rule.}
 A routing recommendation is promoted only when worker-frontier estimates, cost sensitivity, router shift, action-frontier regret, paired gain after measurement cost, and negative controls agree.
@@ -1788,7 +1771,7 @@ Agent horizon & $H=20$ edit--verify steps; trajectories continue to $H$ after fi
 Progress normalization & $\eps_L=10^{-8}$ in the denominator of $G_t$ \\
 Primary loss weights & $\alpha_{\mathrm{fail}}=1$; normalized worker wall-clock is the primary scalar $C_\delta$; token cost is a sensitivity analysis \\
 Audit loss weights & $\alpha_{\mathrm{occ}}=\alpha_{\mathrm{qual}}=1$, $\psi(u)=1-u$ \\
-Measurement cost & pre-deployment probes are charged through $\ell_{\mathrm{meas}}$ using the same wall-clock normalizer as $C_\delta$; context-token cost is reported as sensitivity \\
+Measurement cost & Pre-deployment probes or candidate-agent scouts are charged through $\ell_{\mathrm{meas}}$ using the same wall-clock normalizer as $C_\delta$; context-token cost is reported as sensitivity \\
 Router configuration & deterministic prompt-only router with fixed model identifier, prompt hash, parser, temperature, top-p, and seed policy recorded before evaluation \\
 \bottomrule
 \end{tabular}
@@ -1859,6 +1842,49 @@ Aggregated objectives, paired gains, and calibration diagnostics use bootstrap o
 If the main protocol remains a panel of fixed executable settings, paired randomization tests over repeated trajectories are descriptive for that panel and should not be interpreted as population-level inference.
 If independent task instances are added, uncertainty is reported at the task-instance level.
 
+\subsection{Router prompt template}
+\label{app:router-prompt}
+
+The deterministic prompt-only candidate-agent selector uses the following frozen
+instruction skeleton. The experiment runner fills the candidate menu, allowed
+signal record, and JSON schema before calling the router.
+
+\begingroup
+\footnotesize
+\begin{verbatim}
+VAO_CIFAR10_AGENT_MODEL_SELECTOR_V2
+
+You must choose exactly one candidate agent model to run a CIFAR-10 code-editing
+optimization task.
+
+The selected agent model will receive the original initial train.py and run the
+full edit-verify trajectory from scratch. Scout information is router context
+only; it is not a warm start and does not transfer edited code, checkpoints,
+hidden state, or partial progress.
+
+Decision objective:
+
+- Choose the candidate agent model with the lowest expected deployment loss
+  under the allowed signal record.
+- Consider expected probability of verified success, expected cost to first
+  success, fit to the task instance, failure risk, and signal reliability.
+- Use only the allowed signal record below.
+- If candidate_agent_scouts is present, compare prefix-scout behavior: valid
+  selected edits, improvement within the scout budget, success within the scout
+  budget, wall-clock/token cost, and error patterns.
+- Do not infer or use full-horizon outcomes unless they are explicitly present
+  in the allowed signal record.
+
+Candidate agent models:
+$candidate_agent_models
+
+Allowed signal record:
+$signal_record
+
+Return only valid JSON matching the required schema. Do not include markdown.
+\end{verbatim}
+\endgroup
+
 \section{Additional plots}
 \label{app:diagnostic-plots}
 
@@ -1878,8 +1904,8 @@ The plot is diagnostic only: the main text table reports the numerical terms use
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\linewidth]{figures/autoresearch/threeworker_negative_controls.png}
-\caption{Negative-control paired gains for shuffled probes, wrong-mode probes, and synthetic noise records.
-The real probe and scout records generally outperform their controls, but they still do not produce robust positive net deployment gain after measurement cost.}
+\caption{Earlier probe-router negative-control audit for shuffled probes, wrong-mode probes, and synthetic noise records.
+This diagnostic checks schema and context-burden artifacts for the probe-style router records; it is separate from the candidate-agent scout audit in Table~\ref{tab:candidate-scout-router}.}
 \label{fig:app-negative-controls}
 \end{figure}
 
