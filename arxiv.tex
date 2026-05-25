@@ -693,6 +693,8 @@ On these 30 instances, the always-\texttt{gpt\_5\_4} policy succeeds on \(30/30\
 \texttt{gpt\_5\_3\_codex} succeeds on \(29/30\), with mean loss \(1.396\), while \texttt{gpt\_5\_4\_mini} succeeds on \(28/30\), with mean loss \(1.262\).
 The per-instance full-horizon oracle has mean loss \(1.113\), choosing \texttt{gpt\_5\_4} on 18 instances and \texttt{gpt\_5\_4\_mini} on 12; it never chooses \texttt{gpt\_5\_3\_codex}.
 Thus the best always-worker baseline is strong, but there is still instance-level headroom.
+The oracle here is retrospective: for each shared instance \(x\), it is the worker with the lowest full-horizon best-visible validation loss among the three complete worker trajectories.
+It is not visible to the router and is used only to test whether progressively richer pre-deployment evidence points the router toward the worker that actually performs best on that instance.
 
 \begin{table}[t]
 \centering
@@ -721,18 +723,53 @@ Router & Signal & Select \(C/4/m\) & Oracle hit & Success & Mean loss & Regret &
 \end{tabular}}
 \end{table}
 
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{3.5pt}
+\caption{Oracle-alignment gain from progressively richer router records.
+Oracle hit means that the selected worker matches the per-instance full-horizon quality oracle from Table~\ref{tab:candidate-scout-router}.
+Shift is measured relative to each router's \(Z_0\) decision on the same instance.
+The aggregate rows pool the three routers, for \(90\) decisions per signal level.}
+\label{tab:oracle-alignment-by-signal}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+Router & Signal & Oracle hit & Hit rate & Mean regret & Shift vs.\ \(Z_0\) & Selected \(C/4/m\) \\
+\midrule
+\texttt{gpt\_5\_4\_mini\_router\_xhigh} & \(Z_0\) & 16/30 & 0.533 & 0.123 & -- & \(6/24/0\) \\
+\texttt{gpt\_5\_4\_mini\_router\_xhigh} & \(Z_1\) & 16/30 & 0.533 & 0.092 & 8/30 & \(2/27/1\) \\
+\texttt{gpt\_5\_4\_mini\_router\_xhigh} & \(Z_2\) & 19/30 & 0.633 & 0.076 & 13/30 & \(4/18/8\) \\
+\midrule
+\texttt{gpt\_5\_4\_router\_xhigh} & \(Z_0\) & 3/30 & 0.100 & 0.264 & -- & \(26/4/0\) \\
+\texttt{gpt\_5\_4\_router\_xhigh} & \(Z_1\) & 7/30 & 0.233 & 0.185 & 15/30 & \(19/11/0\) \\
+\texttt{gpt\_5\_4\_router\_xhigh} & \(Z_2\) & \textbf{21/30} & \textbf{0.700} & \textbf{0.047} & 24/30 & \(3/13/14\) \\
+\midrule
+\texttt{gpt\_5\_5\_router\_xhigh} & \(Z_0\) & 0/30 & 0.000 & 0.283 & -- & \(30/0/0\) \\
+\texttt{gpt\_5\_5\_router\_xhigh} & \(Z_1\) & 0/30 & 0.000 & 0.280 & 2/30 & \(28/2/0\) \\
+\texttt{gpt\_5\_5\_router\_xhigh} & \(Z_2\) & 19/30 & 0.633 & 0.066 & 26/30 & \(4/11/15\) \\
+\midrule
+All routers & \(Z_0\) & 19/90 & 0.211 & 0.223 & -- & \(62/28/0\) \\
+All routers & \(Z_1\) & 23/90 & 0.256 & 0.186 & 25/90 & \(49/40/1\) \\
+All routers & \(Z_2\) & \textbf{59/90} & \textbf{0.656} & \textbf{0.063} & 63/90 & \(11/42/37\) \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
 \paragraph{Experiment 3: Routing response and quality gain.}
-Table~\ref{tab:candidate-scout-router} shows that the scout record changes the qualitative behavior of the routers.
+Tables~\ref{tab:candidate-scout-router} and~\ref{tab:oracle-alignment-by-signal} show that the scout record changes the qualitative behavior of the routers and improves their alignment with the per-instance full-horizon oracle.
 Without scout evidence, \texttt{gpt\_5\_5\_router\_xhigh} and \texttt{gpt\_5\_4\_router\_xhigh} are overly conservative and route mostly to \texttt{gpt\_5\_3\_codex}, despite \texttt{gpt\_5\_3\_codex} never being the full-horizon oracle on this panel.
 Adding static code in \(Z_1\) helps only modestly.
 Adding candidate-agent scout traces in \(Z_2\) moves all three routers toward the two workers that actually occupy the full-horizon oracle frontier.
 The best setting is \(\texttt{gpt\_5\_4\_router\_xhigh}\) with \(Z_2\): it selects \(C/4/m=3/13/14\), matches the oracle worker on \(21/30\) instances, succeeds on \(30/30\), and reduces mean full-horizon loss to \(1.160\).
 This beats the best always-worker baseline, \texttt{gpt\_5\_4}, by \(0.032\) mean loss and closes much of the gap to the per-instance oracle at \(1.113\).
+Pooling across the three router models, oracle hits increase from \(19/90\) under \(Z_0\) to \(23/90\) under \(Z_1\) and \(59/90\) under \(Z_2\), while mean full-horizon regret drops from \(0.223\) to \(0.186\) and then to \(0.063\).
+Thus the improvement is not merely that routers change their output more often: the changes induced by candidate-agent scouts are directionally aligned with the worker that later achieves the best full-horizon validation loss on the same instance.
 
 The improvement is specifically tied to candidate-level evidence.
 Across the three routers, \(Z_2\) decisions are unanimous on \(22/30\) instances and split two-to-one on the remaining eight; no instance produces three different selected workers.
 In contrast, \(Z_0\) and \(Z_1\) are dominated by router priors and disagree mainly over how much to prefer the cheaper coding-specialized worker.
-This is the mechanism predicted by the framework: richer information is useful only when it changes allocation toward actions with better realized cost--quality profiles.
+This is the mechanism predicted by the framework: richer information is useful when it changes allocation toward actions with better realized instance-level cost--quality profiles.
 
 \paragraph{Experiment 4: Deployment interpretation.}
 The candidate-scout result is positive but not yet a free-standing deployment recommendation.
@@ -767,9 +804,12 @@ Our question is upstream of the launched worker: which action should be selected
 The paper separates a theory-facing diagnostic claim from a deployment-facing validation claim.
 The experiments support the diagnostic claim: first-passage speed, final improvement, certified log-effort, full-horizon quality, and deployment loss disagree on the same verified task family.
 They also show that the form of pre-deployment information matters.
-Static task descriptions alone mostly preserve router priors, while candidate-agent scout traces can move prompt-only routers toward the workers that actually occupy the per-instance full-horizon frontier.
-In the strongest audit, \(\texttt{gpt\_5\_4\_router\_xhigh}\) with \(Z_2\) beats the best always-worker baseline in mean best-visible validation loss and substantially reduces oracle regret.
-This is evidence for the information-allocation mechanism, not yet for an unqualified deployment policy: the audit reuses an existing balanced trajectory table, and the scout measurement cost must still be charged in a fresh paired net-gain evaluation.
+Static task descriptions alone mostly preserve router priors, while candidate-agent scout traces provide actionable instance-level evidence.
+Across the three prompt-only routers, the contract-only record \(Z_0\) matches the per-instance full-horizon oracle on only \(19/90\) decisions; adding the static program in \(Z_1\) gives \(23/90\); adding two-step candidate scouts in \(Z_2\) gives \(59/90\).
+The same progression reduces mean full-horizon oracle regret from \(0.223\) to \(0.186\) and then to \(0.063\).
+In the strongest audit, \(\texttt{gpt\_5\_4\_router\_xhigh}\) with \(Z_2\) matches the oracle worker on \(21/30\) instances, beats the best always-worker baseline in mean best-visible validation loss, and substantially reduces oracle regret.
+This is evidence for the information-allocation mechanism: interacting briefly with the task through candidate-agent scouts helps routers choose the worker that will perform best on that instance.
+It is not yet an unqualified deployment policy because the audit reuses an existing balanced trajectory table, and the scout measurement cost must still be charged in a fresh paired net-gain evaluation.
 
 The main limitations are the packed-mode abstraction, the fixed executable prototypes, and the small three-worker action menu.
 Real agent trajectories are stateful, task modes may be fuzzy, and the reported quantities are fixed-panel diagnostics rather than population-level deployment estimates.
@@ -786,7 +826,7 @@ Beyond this benchmark, repository repair, theorem checking, and multi-file resea
 Model choice inside an agent harness is not a scalar leaderboard problem.
 It is a budget-aware deployment decision validated by paired outcomes after measurement cost.
 The three-worker study makes this concrete.
-The worker frontier rejects a single global ranking, and the candidate-scout audit shows that richer pre-deployment evidence can change routing in the right direction: the best \(Z_2\) router beats the best always-worker baseline in full-horizon quality on the balanced panel.
+The worker frontier rejects a single global ranking, and the candidate-scout audit shows that richer pre-deployment evidence can change routing in the right direction: with \(Z_2\), routers collectively move from \(19/90\) to \(59/90\) per-instance oracle hits, and the best \(Z_2\) router beats the best always-worker baseline in full-horizon quality on the balanced panel.
 The remaining gate is deployment accounting.
 A measurement or router should be promoted only when it changes selected actions in a way that improves paired verified deployment loss under the declared resource convention, with the cost of buying the information included.
 
