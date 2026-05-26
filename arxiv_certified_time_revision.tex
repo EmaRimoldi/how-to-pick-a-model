@@ -379,6 +379,7 @@ under an aligned-witness assumption.
 
 \paragraph{Packed-mode specialization.}
 \newtext{The coding-gain bound is too abstract to estimate directly in our experiments. The packed-mode specialization gives a finite, mode-conditioned accounting model whose terms correspond to logged quantities: unit cost, mode-conditioned success/time, signal information, and allocation mismatch.}
+\newtext{In the AutoResearch study we do not estimate \(\mathsf T_{M,q}(s,z)\) itself. We estimate direct finite-horizon certified times \(\widehat T^{a,s}_{H,\gamma}\), certified log-speedups, and routing proxies; the packed quantity is used as the theoretical accounting object that explains which mechanisms those empirical diagnostics probe.}
 In the packed model, \(S\in\cS\) is the latent bottleneck mode, \(Z\) is the start-of-run
 signal, \(\pi_z(s)=\Pr[S=s\mid Z=z]\) is the signal-induced posterior, and \(q_z(s)\)
 is the share assigned to mode \(s\) by the packed scheduler.  Assumption~\ref{ass:packed}
@@ -439,7 +440,7 @@ For a prior-matched baseline \((M_0,\pi)\), the packed certified log-speedup of
     \underbrace{\E_Z\KL(\pi_Z\|q_Z)}_{\text{allocation mismatch}} .
 \end{aligned}
 \end{equation}
-\newtext{A prior-matched baseline is a no-signal scheduler that allocates effort according to the prior mode frequencies \(q_0=\pi\). In this case the baseline is not penalized for an arbitrary mismatch between its fixed allocation and the mode distribution, so the remaining gain isolates the value of the signal and the routed allocation. The quantity \(\mathsf T_{M,q}(s,z)\) is not the global certified-time quantile \(T^M(\delta_{\mathrm{cert}})\). It is the packed, mode-conditioned time assigned by the allocation model. Its expected logarithm is the object that admits the four-term decomposition.}
+\newtext{A prior-matched baseline is a no-signal scheduler that allocates effort according to the prior mode frequencies \(q_0=\pi\). In this case the baseline is not penalized for an arbitrary mismatch between its fixed allocation and the mode distribution, so the remaining gain isolates the value of the signal and the routed allocation. The quantity \(\mathsf T_{M,q}(s,z)\) is not the global certified-time quantile \(T^M(\delta_{\mathrm{cert}})\), and it is not directly computed in our AutoResearch audit because the deployed routers return worker choices rather than calibrated allocation distributions \(q_z\). It is the packed, mode-conditioned time assigned by the allocation model. Its expected logarithm is the object that admits the four-term decomposition.}
 
 \begin{theorem}[Packed-mode certified log-speedup identity]
 \label{thm:four-term}
@@ -744,7 +745,8 @@ GPT-5.4 is the benchmark-race/global winner, but finite-horizon certified time a
 The corresponding \(\delta_{\mathrm{cert}}=0.10\) certified log-speedups relative to GPT-5.4 are \(-1.13\) for GPT-5.3 Codex and \(-0.17\) for GPT-5.4 Mini on \textit{MLP-flat}, \(+0.17\) for GPT-5.4 Mini on \textit{compact CNN}, and \(+0.69\) for GPT-5.3 Codex on \textit{micro ResNet}.
 Thus GPT-5.4 remains the global average worker, but the mode frontier is not globally ordered.
 This motivates routing: the right worker may depend on the task mode or the realized instance.
-The packed decomposition explains whether the difference comes from cost, focused competence, or allocation.
+The packed decomposition explains, as an accounting model, whether the difference comes from cost, focused competence, or allocation.
+We do not report numerical estimates of \(\mathsf T_{M,q}(s,z)\); Table~\ref{tab:worker-frontier-accounting} reports the directly estimated certified-time frontier, while the routing tables below report oracle-hit and regret proxies for allocation quality.
 Appendix~\ref{app:diagnostic-plots} visualizes the same worker-frontier quantities and provides threshold sensitivity, trajectory-level progress, cost, token, and router-record diagnostics behind these aggregate summaries.
 }
 
@@ -847,7 +849,7 @@ The improvement is not merely a response to more context; it appears specificall
 \newtext{Under \(Z_2\), the routers largely converge: on 22 of the 30 audit instances all three routers select the same worker, and on the remaining eight instances two routers agree while one differs. Thus the scout record induces a shared evidence-driven preference rather than three unrelated choices.}
 In contrast, \(Z_0\) and \(Z_1\) are dominated by router priors and disagree mainly over how much to prefer the cheaper coding-specialized worker.
 This is the mechanism predicted by the framework: richer information is useful when it changes allocation toward actions with better realized instance-level cost--quality profiles.
-The routing audit does not directly estimate the Shannon term \(I(S;Z)\) or the KL term \(\mathbb E_Z\mathrm{KL}(\pi_Z\|q_Z)\), because the deployed router returns a worker rather than a calibrated distribution over modes.
+The routing audit does not directly estimate \(\mathsf T_{M,q}(s,z)\), the Shannon term \(I(S;Z)\), or the KL term \(\mathbb E_Z\mathrm{KL}(\pi_Z\|q_Z)\), because the deployed router returns a worker rather than a calibrated distribution over modes.
 Instead, oracle-hit rate and regret are operational proxies: higher oracle-hit rate indicates that the signal moves probability mass toward the frontier action, while lower regret indicates reduced allocation mismatch.
 Paired bootstrap over the 90 router-instance decisions gives a mean regret change \(Z_2-Z_0=-0.160\) with 95\% interval \([-0.208,-0.112]\), and \(Z_2-Z_1=-0.122\) with interval \([-0.168,-0.078]\).
 Paired randomization tests for these regret reductions give \(p<10^{-4}\) in both comparisons.
