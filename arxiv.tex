@@ -703,7 +703,18 @@ The certified-resource frontier gives a different practitioner-facing answer onc
 Across the \(\delta_{\mathrm{cert}}\) sweep, the lowest empirical certified resource is achieved by \textit{GPT 5.4} on MLP, \textit{GPT 5.4 Mini} on CNN, and \textit{GPT 5.3 Codex} on ResNet.
 At \(\delta_{\mathrm{cert}}=0.10\), the corresponding mode-conditioned policy has pooled \(\widehat T_{\delta}=0.229\), below the best always-agent-system value, \(\widehat T_{\delta}=0.319\) for \textit{GPT 5.4}.
 This is the empirical role of the decomposition: it shows when a single global benchmark winner should be replaced by a mode-conditioned orchestration under the declared certified-resource criterion.
-Appendix~\ref{app:diagnostic-plots} visualizes the same agent-system frontier quantities and provides threshold sensitivity, trajectory-level progress, cost, token, and router-record diagnostics behind these aggregate summaries.
+Figure~\ref{fig:certified-resource-summary} visualizes the same conclusion: mode-conditioning gives a certified speedup throughout the \(\delta_{\mathrm{cert}}\) sweep, and the resource heatmap shows a different winning agent system in each mode.
+Appendix~\ref{app:diagnostic-plots} provides additional threshold sensitivity, trajectory-level progress, cost, token, and router-record diagnostics behind these aggregate summaries.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.48\linewidth]{figures/autoresearch/certified_speedup_curve.png}\hfill
+\includegraphics[width=0.48\linewidth]{figures/autoresearch/certified_resource_heatmap.png}
+\caption{Certified-resource view of the benchmark result.
+Left: certified speedup of the mode-conditioned policy over the best pooled always-agent baseline, \textit{GPT 5.4}.
+Right: mode-conditioned empirical certified resource at \(\gamma=0.05\) and \(\delta_{\mathrm{cert}}=0.10\); stars mark the lowest-resource agent system within each mode.}
+\label{fig:certified-resource-summary}
+\end{figure}
 
 \paragraph{Experiment 2: Candidate-agent scout signals.}
 We next ask whether start-of-run information can move a router toward the right agent system.
@@ -1960,6 +1971,36 @@ This appendix collects auxiliary diagnostics generated from the experimental log
 The threshold, trajectory, and cost diagnostics below use the same analyzed candidate agent systems, \textit{GPT 5.3 Codex}, \textit{GPT 5.4}, and \textit{GPT 5.4 Mini}.
 These appendix plots use the same balanced \(n=30\) task-mode--agent-system panel as the main analysis.
 The pooled appendix plots are robustness and mechanism diagnostics for the same accounting quantities reported in the main text.
+
+\subsection{Certified-resource diagnostics}
+\label{app:certified-resource-diagnostics}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=0.86\linewidth]{figures/autoresearch/quality_vs_certified_resource.png}
+\caption{Final validation loss versus empirical certified resource at \(\gamma=0.05\) and \(\delta_{\mathrm{cert}}=0.10\).
+Points are mode--agent-system cells; larger outlined points are the mode-conditioned frontier from Table~\ref{tab:worker-frontier-accounting}.
+The plot shows why final quality alone is not a sufficient deployment criterion.}
+\label{fig:app-quality-resource-scatter}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth]{figures/autoresearch/first_hit_ecdf_by_mode.png}
+\caption{Success-by-budget curves used to compute \(\widehat T_{\delta}\).
+The dashed horizontal line marks \(90\%\) success, corresponding to \(\delta_{\mathrm{cert}}=0.10\).
+Vertical dotted lines mark the mode-conditioned frontier value in each mode.}
+\label{fig:app-first-hit-ecdf}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth]{figures/autoresearch/deployment_mix_sensitivity.png}
+\caption{Deployment-mix sensitivity for \(\gamma=0.05\) and \(\delta_{\mathrm{cert}}=0.10\).
+Each panel increases the share of one mode while splitting the remaining mass equally across the other two.
+The mode-conditioned policy remains above the no-speedup baseline across the displayed mixtures.}
+\label{fig:app-deployment-mix-sensitivity}
+\end{figure}
 
 \begin{figure}[ht]
 \centering
