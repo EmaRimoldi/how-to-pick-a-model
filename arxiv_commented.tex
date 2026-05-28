@@ -218,6 +218,8 @@ For confidence level \(\delta\in(0,1)\), the certified time-to-solution $\overli
         \ge 1-\delta
     \right\}.
 \]
+
+\textcolor{blue}{Come possiamo concretamente calcolarlo? Time after first hit according to success criterium ? /gamma . La definizione dice ''how much resource''...ma non è tempo? Tempo<->Resource, sono connesse. Esatto, in termini di autoresearch corrisponde al numero di token in output prima di first hit. Quale è la nostra /mu in Autoreseach?}
 \end{definition}
 Certified time asks how much resource is needed to reach an externally accepted artifact with high probability.
 On SWE-bench, could be interpreted as the wall-clock, token, dollar, or verifier-call budget needed for the agent to produce a patch accepted by the evaluation harness with probability at least \(1-\delta_{\mathrm{cert}}\) over the distribution $\mu$ of the task instances and the randomness of the agent system run.
@@ -234,14 +236,14 @@ We will call certified log-speedup of \(M \in \cM \) over a baseline \(M_0 \in \
 \subsection{Packed latent modes}
 \label{subsec:packed-latent-modes}
 
-Certified time is defined for any agent system and can be estimated naturally by running the agent on the task a certain number of times and estimating the end-to-end runtime. The naive approach to answer our main question is thus design a statistical test of one system $M$ \textit{vs.} the others $\mathcal{M} \backslash M$ and this can be naively  is  To decompose its logarithm, we
-introduce a stylized allocation model.  The model is exact for schedulers that split effort
-across a finite dictionary of mode-specialized strategies.  It is used here as an accounting
-abstraction for agentic model and harness selection.
+Certified time is defined for any agent system and can be estimated naturally by running the agent on the task a certain number of times and estimating the end-to-end runtime. The naive approach to answer our main question is thus design a statistical test of one system $M$ \textit{vs.} the others $\mathcal{M} \backslash M$ and this can be naively  is \textcolor{blue}{Frase non finita?} To decompose its logarithm, we
+introduce a stylized allocation model \textcolor{blue}{Allocation model? Non chiaro.}.  The model is exact for schedulers that split effort
+across a finite dictionary of mode-specialized strategies \textcolor{blue}{Strategies? Che cosa si intende?}.  It is used here as an accounting
+abstraction for agentic model \textcolor{blue}{Non lo chiamiamo worker? Normalizzazione della terminologia!} and harness selection.
 
 \begin{assumption}[Packed latent-mode model]
 \label{ass:packed}
-There is a finite latent mode
+There is a finite latent mode \textcolor{blue}{Solver-relevant bottleneck of the instance? Più chiaro. Come mai finite latent mode? Non sarebbe più corretto finite latent mode choiche?}
 \[
     S\in\cS=\{1,\ldots,m\},
     \qquad
@@ -252,13 +254,13 @@ A start-of-run signal \(Z\) induces the posterior
 \[
     \pi_z(s):=\Pr[S=s\mid Z=z].
 \]
-Given \(z\), a packed scheduler chooses a share vector
+Given \(z\), a packed scheduler \textcolor{blue}{AKA router? Che cosa è oggettivamente lo share vector? supp? } chooses a share vector
 \[
     q_z\in\Delta(\cS),
     \qquad
     \mathrm{supp}(\pi_z)\subseteq \mathrm{supp}(q_z).
 \]
-For each agent system \(M\) and mode \(s\), let \(t_0(M,s)>0\) be the focused
+For each agent system \(M\) \textcolor{blue}{Questa decomposizione sembra rifersi puramente all'agent system, tuttavia la deocmposizione tiene in considerazione anche termini di routing che non si riferiscono puramente al modello agent ma anche all'harness. Si può risolvere normalizzando la nomencaltura.} and mode \(s\) \textcolor{blue}{Quindi questo termine T si è dipendente dal modo, essendo dipendente da s. Confermo, mode-conditioned}, let \(t_0(M,s)>0\) be the focused
 certified scale of \(M\) on mode \(s\), and let \(\kappa(M)>0\) be its scalar unit cost.
 The packed mode-conditioned time is
 \[
@@ -270,10 +272,10 @@ The packed mode-conditioned time is
 \]
 \end{assumption}
 
-The finite mode dictionary is the modeling assumption.  The inverse-share factor is the
+The finite mode dictionary is the modeling assumption \textcolor{blue}{Come mai ha senso?}.  The inverse-share factor is the
 time-sharing expansion of focused certified time: if the true bottleneck is \(s\), but only
 \(q_z(s)\) of the relevant effort is assigned to the mode-\(s\) strategy, then the time needed
-to accumulate the same focused computation expands by \(1/q_z(s)\).
+to accumulate the same focused computation expands by \(1/q_z(s)\) \textcolor{blue}{Qui c'è qualcosa che non stiamo tenendo in considerazione (non ancora) nella modellizzazione sperimentale. Come si traduce $q\_z$ nei nostri esperimenti? Domanda a cui dobbiamo rispondere per risolvere il problema.}.
 The support condition says that the scheduler may not assign zero effort to a mode that
 remains possible after observing \(Z=z\).
 
@@ -297,7 +299,7 @@ only by increasing the scheduler's effective weight on useful solvers.  We then 
 this statement to the finite packed-mode model, where the gain splits exactly into four terms.
 
 \paragraph{Certified speedup as coding gain.}
-
+\textcolor{blue}{Non mi è chiaro questo paragrafo.}
 Let \(\mathfrak A\) be a countable class of admissible solvers, and let
 \(t_B(\delta_{\mathrm{cert}})\) denote the certified time of solver \(B\in\mathfrak A\).
 A universal scheduler assigns Kraft weights \(w(B)\) before observing side information
@@ -334,7 +336,7 @@ toward solvers that are useful for the realized instance.  Appendix~\ref{app:cer
 proves~\eqref{eq:coding-gain-bound} and gives the resource-bounded information version
 under an aligned-witness assumption.
 
-\paragraph{Packed-mode specialization.}
+\paragraph{Packed-mode specialization. \textcolor{blue}{Come mai abbiamo bisogno di questa specializzazione?}}
 In the packed model, \(S\in\cS\) is the latent bottleneck mode, \(Z\) is the start-of-run
 signal, \(\pi_z(s)=\Pr[S=s\mid Z=z]\) is the signal-induced posterior, and \(q_z(s)\)
 is the share assigned to mode \(s\) by the packed scheduler.  Assumption~\ref{ass:packed}
@@ -358,7 +360,7 @@ Taking logs gives
     -
     \log q_z(s).
 \]
-For fixed \(z\), the allocation-dependent term averages to
+For fixed \(z\), the allocation-dependent term averages to \textcolor{blue}{Ma lo calcoliamo davvero così?}
 \[
     \E_{S\sim\pi_z}[-\log q_z(S)]
     =
@@ -366,7 +368,7 @@ For fixed \(z\), the allocation-dependent term averages to
 \]
 This is the source of the information and mismatch terms.
 
-
+\textcolor{blue}{Che cosa è una prior-matched baseline? (M 0 e pi che cosa sono? ). Non mi è chiaro inoltre che cosa è questa quantità T che definiamo.}
 
 For a prior-matched baseline \((M_0,\pi)\), the packed certified log-speedup of
 \((M,q)\) is
@@ -464,7 +466,7 @@ Subtracting the baseline expression cancels the shared simulation constant and u
     H(\pi)-\E_ZH(\pi_Z)=\MI_\pi(S;Z).
 \]
 
-
+\textcolor{blue}{What does it mean?}
 The full algebra and the success-hazard specialization are in
 Appendix~\ref{app:certified-log-effort}.
 \end{proof}
@@ -488,7 +490,7 @@ deployment losses are empirical diagnostics introduced later.
 
 
 \paragraph{Retry consequence.}
-The single-mode retry calculation is algebraically independent of the packed identity, so we defer it to Appendix~\ref{app:retry-crossover}.  It says that a lower-cost system with one-attempt success \(p_\ell\) matches a stronger system with success \(p_h\) after
+The single-mode retry calculation is algebraically independent of the packed identity \textcolor{blue}{Referenzia questa packed identity}, so we defer it to Appendix~\ref{app:retry-crossover}.  It says that a lower-cost system with one-attempt success \(p_\ell\) matches a stronger system with success \(p_h\) after
 \[
     D_{\mathrm{cross}}=\frac{\log(1-p_h)}{\log(1-p_\ell)}
 \]
@@ -548,7 +550,7 @@ retries, and is cost-favorable when \(\lceil D_{\mathrm{cross}}\rceil\kappa_\ell
 \label{subsec:paired}
 
 Let \(Z_j(X;\zeta_j)\) be the router-visible pre-deployment record under signal condition
-\(j\), and let \(Z_0\) be the static baseline record.  For any richer condition \(j\), the same
+\(j\), and let \(Z_0\) be the static baseline record (\textcolor{blue}{Che cosa è questa static baseline record?)}.  For any richer condition \(j\), the same
 router observes \(Z_j\), pays measurement/context cost, and selects
 \[
     a_R^j(X)=R(Z_j(X;\zeta_j);U_R)\in\cA .
@@ -629,9 +631,16 @@ Appendix~\ref{app:experiment-details} gives the frozen configuration, including 
 
 \paragraph{Experiment 1: Worker frontier.}
 
+\textcolor{blue}{I feel like we're losing to much space on nombers that could be summarized by a table / plot. }
 
-
-
+\textcolor{blue}{A mio parere una cosa interessante che si potrebbe aggiungere riguarda il fatto che: 
+\begin{enumerate}
+    \item Usando progressive routing signals il router è in grado di scegliere il modello più adatto al task mode che ci troviamo ad affrontare, in modo da non usare sempre il best over all (che potrebbe anche essere più costoso) ma di bilanciare costo e performance proprio grazie all'assunzione di questi packed latent modes. Ovvimanete il miglior worker a priori per validare i nostri esperimenti viene calcolato usando la benchmark race. 
+    \item Inoltre, nella nostra narrativa potremmo partire proprio dalla benchmark race performance (hit rate of the successful criterion over the Horizon), poi definire il proper time e poi passare alla decomposizione in 4 termini. 
+    \item Il nostro algoritmo potrebbe dare un qualcosa : ti forniamo una decomposizione che ti aiuta a scegliere, quando stai sviluppando un sistema di orchestrazione, quale è effettivamenete la configurazione migliore da usare, in termini di modelli che ottimizzino sia performaces che costo che interazione router-task (in task verificabili) per rendere il routing ottimale. 
+    \item Si potrebbe framare il paper nella seguente maniera anche: questa è una prima dimostrazione che questo sistema potrebbe favorire un optimal recepy per scegliere l'orchestrazione, ovvianete ha bisgono della sua ottimizzazione. E' un vero e proprio problema di ottimizzazione. 
+\end{enumerate}
+}
 We run every worker on every task mode before routing, estimating fixed-setting analogues of \(p(a,s)\) and \(\kappa(a,s)\).
 These estimates instantiate the worker-side cost and competence terms in Theorem~\ref{thm:four-term}; the smoothed log-effort estimator is defined in Appendix~\ref{app:experiment-details}.
 
@@ -698,21 +707,21 @@ This is the empirical role of the decomposition: it exposes whether apparent per
 Appendix~\ref{app:diagnostic-plots} visualizes the same worker-frontier quantities and provides the threshold sensitivity, trajectory-level progress, cost, token, and router-record diagnostics behind these aggregate summaries.
 
 \paragraph{Experiment 2: Candidate-agent scout signals.}
-We next ask whether pre-deployment information can move a router toward the right worker.
-This audit uses the balanced \(n=30\) panel. In each task mode, giving 30 task instances.
-For each instance, the router chooses among \(\{\texttt{gpt\_5\_3\_codex},\texttt{gpt\_5\_4},\texttt{gpt\_5\_4\_mini}\}\).
-We evaluate three router models, \(\texttt{gpt\_5\_5\_router\_xhigh}\), \(\texttt{gpt\_5\_4\_router\_xhigh}\), and \(\texttt{gpt\_5\_4\_mini\_router\_xhigh}\), under three nested records:
-\(Z_0\) contains only the deployment contract and worker menu;
-\(Z_1\) adds the initial \texttt{train.py} and static workload description;
-and \(Z_2\) adds two edit--verify scout steps for every candidate worker.
+We next ask whether pre-deployment information can move a router toward the right worker. \textcolor{blue}{According to what? How is defined the BEST worker? According to benchmark race?}
+This audit uses the balanced \(n=30\) panel \textcolor{blue}{Panel? Meglio dire trials no?}. In each task mode, giving 30 task instances.
+For each instance, the router chooses among \textcolor{blue}{the possible workers its has available, hence: }\(\{\texttt{gpt\_5\_3\_codex},\texttt{gpt\_5\_4},\texttt{gpt\_5\_4\_mini}\}\).
+\textcolor{blue}{To check if the router itself plays a role in the routing process}, we evaluate three router models \textcolor{blue}{all of them in their extra high reasoning mode, to avoid confounding effects give by their reduced ability}, \(\texttt{gpt\_5\_5\_router\_xhigh}\), \(\texttt{gpt\_5\_4\_router\_xhigh}\), and \(\texttt{gpt\_5\_4\_mini\_router\_xhigh}\), under three nested records:
+\(Z_0\) contains only the deployment contract \textcolor{blue}{Not clear, what is a deployment contract? Must be called in a more intuitive manner} and worker menu \textcolor{blue}{I don't personally like the word menu? Are we at a restaurant?};
+\(Z_1\) adds the initial \texttt{train.py} \textcolor{blue}{Why is that useful? } and static \textcolor{blue}{static? Why static? } workload description;
+and \(Z_2\) adds two edit--verify scout steps for every candidate worker \textcolor{blue}{Sort of Perturbation of the state, as in quantum mechanics. Progressive interaction to interrogate the system under analysis}.
 \sout{The scout prefix is evidence for selection only: the selected worker is still evaluated by its full trajectory, and the router never observes full-horizon outcomes.}
 
-The full-horizon outcome table already shows why this is a nontrivial routing problem.
+The full-horizon outcome table already shows why this is a nontrivial routing problem. \textcolor{blue}{What is the notion of success here? Always gpt policy? Why do we speak about deployment loss? We're trying ot investigate whether the router is sensitive to task signal or not.}
 On these 30 instances, the always-\texttt{gpt\_5\_4} policy succeeds on \(30/30\) runs and has mean best-visible validation loss \(1.192\).
 \texttt{gpt\_5\_3\_codex} succeeds on \(29/30\), with mean loss \(1.396\), while \texttt{gpt\_5\_4\_mini} succeeds on \(28/30\), with mean loss \(1.262\).
 The per-instance full-horizon oracle has mean loss \(1.113\), choosing \texttt{gpt\_5\_4} on 18 instances and \texttt{gpt\_5\_4\_mini} on 12; it never chooses \texttt{gpt\_5\_3\_codex}.
-Thus the best always-worker baseline is strong, but there is still instance-level headroom.
-The oracle here is retrospective: for each shared instance \(x\), it is the worker with the lowest full-horizon best-visible validation loss among the three complete worker trajectories.
+Thus the best always-worker baseline is strong, but there is still instance-level headroom. \textcolor{blue}{What does it mean the last sentence?}
+The oracle here is retrospective: for each shared instance \(x\), it is the worker with the lowest full-horizon best-visible validation loss among the three complete worker trajectories. \textcolor{blue}{Is the definition of the oracle?}
 It is not visible to the router and is used only to test whether progressively richer pre-deployment evidence points the router toward the worker that actually performs best on that instance.
 
 \begin{table}[t]
@@ -778,28 +787,28 @@ All routers & \(Z_2\) & \textbf{59/90} & \textbf{0.656} & \textbf{0.063} & 63/90
 \paragraph{Experiment 3: Routing response and quality gain.}
 Tables~\ref{tab:candidate-scout-router} and~\ref{tab:oracle-alignment-by-signal} show that the scout record changes the qualitative behavior of the routers and improves their alignment with the per-instance full-horizon oracle.
 Without scout evidence, \texttt{gpt\_5\_5\_router\_xhigh} and \texttt{gpt\_5\_4\_router\_xhigh} are overly conservative and route mostly to \texttt{gpt\_5\_3\_codex}, despite \texttt{gpt\_5\_3\_codex} never being the full-horizon oracle on this panel.
-Adding static code in \(Z_1\) helps only modestly.
-Adding candidate-agent scout traces in \(Z_2\) moves all three routers toward the two workers that actually occupy the full-horizon oracle frontier.
+Adding static code in \(Z_1\) helps only modestly. \textcolor{blue}{Perhaps is better to statistically estimate what is the difference in the prerformances given the various pre-deployment signals? Aka. diagnostic signals.  }
+Adding candidate-agent scout traces in \(Z_2\) moves all three routers toward the two workers that actually occupy the full-horizon oracle frontier. \textcolor{blue}{The last sentence is not clear, rephrase.} \textcolor{blue}{In the table, please do not use slugs, e.g., \texttt{gpt\_5\_4\_mini}. Instead, list the model names in the same font as ``All routers''. Also, do not include the \texttt{xhigh} specification, since we already state it in the text.}
 The best setting is \(\texttt{gpt\_5\_4\_router\_xhigh}\) with \(Z_2\): it selects \(C/4/m=3/13/14\), matches the oracle worker on \(21/30\) instances, succeeds on \(30/30\), and reduces mean full-horizon loss to \(1.160\).
-This beats the best always-worker baseline, \texttt{gpt\_5\_4}, by \(0.032\) mean loss and closes much of the gap to the per-instance oracle at \(1.113\).
+This beats the best always-worker baseline, \texttt{gpt\_5\_4}, by \(0.032\) mean loss and closes much of the gap to the per-instance oracle at \(1.113\). \textcolor{blue}{No need to list deployment loss values. Statistical testing neeeded to reinfornce claims that there is a difference in the routing capabilities.}
 Pooling across the three router models, oracle hits increase from \(19/90\) under \(Z_0\) to \(23/90\) under \(Z_1\) and \(59/90\) under \(Z_2\), while mean full-horizon regret drops from \(0.223\) to \(0.186\) and then to \(0.063\).
 Thus the improvement is not merely that routers change their output more often: the changes induced by candidate-agent scouts are directionally aligned with the worker that later achieves the best full-horizon validation loss on the same instance.
 
-The improvement is specifically tied to candidate-level evidence.
-Across the three routers, \(Z_2\) decisions are unanimous on \(22/30\) instances and split two-to-one on the remaining eight; no instance produces three different selected workers.
+The improvement is specifically tied to candidate-level evidence. \textcolor{blue}{This sentence is unclear, rephrase.}
+Across the three routers, \(Z_2\) decisions are unanimous on \(22/30\) instances and split two-to-one on the remaining eight; no instance produces three different selected workers. \textcolor{blue}{This sentence is unclear, rephrase.}
 In contrast, \(Z_0\) and \(Z_1\) are dominated by router priors and disagree mainly over how much to prefer the cheaper coding-specialized worker.
-This is the mechanism predicted by the framework: richer information is useful when it changes allocation toward actions with better realized instance-level cost--quality profiles.
+This is the mechanism predicted by the framework: richer information is useful when it changes allocation toward actions with better realized instance-level cost--quality profiles. \textcolor{blue}{Future direction: how is possible to estimate the information content of a diagnostic signal? The different signals entail a clear differentiation in the router's choiches. How we can estimate that information content?}
 
 \paragraph{Experiment 4: Deployment interpretation.}
 \sout{The candidate-scout result is positive but not yet a free-standing deployment recommendation.}
 First, Table~\ref{tab:candidate-scout-router} is a full-horizon best-loss audit on an existing balanced trajectory panel, not a fresh paired deployment experiment with independent selected-worker reruns.
 Second, the reported mean cost is the selected worker's full-run accounting cost; it does not yet include the measurement cost of running all candidate scouts before selection.
-
+\textcolor{blue}{My question is: do we really need to take this into account? Could be just a validation that probing could help the router understand the best worker to select ex-ante. Actually maybe makes sense to take into account the cost, future directions could optimize the tradeoff between routing signal depth and routing signal cost. Another future direction could regard the routing prompt optimization to investigate the effect of prompt tuning over the routing prformances. }
 Third, the best routing setting improves quality relative to the best always-worker baseline while increasing selected-run cost.
 Therefore the result validates the information and allocation mechanism, but the final deployment claim still requires the paired net-gain estimand in~\eqref{eq:router-gain} with scout costs charged explicitly.
 The main conclusion is correspondingly conditional: candidate-agent scout traces can make prompt-only routing useful on this panel, while deployment promotion depends on whether their measurement cost is worth paying.
 
-
+\textcolor{red}{I have the following observation: while we associated time and success terms we calculated to the decomposition theorem, we never linked the entropy / routing capability terms to the theorem.}
 
 \section{Related work}
 \label{sec:related}
@@ -1096,7 +1105,7 @@ Without this alignment, side information may favor a solver unrelated to
 The packed-time law is the time-sharing expansion of focused certified time.
 For mode \(s\), \(t_0(M,s)\) is the focused certified scale of system \(M\): the time
 scale needed when all mode-relevant effort is assigned to the correct strategy.
-If the packed scheduler assigns that strategy only clock-rate share \(q_z(s)\), then the
+If the packed scheduler \textcolor{blue}{Aka scheduler? A che cosa corrisponde $\Delta_s$?} assigns that strategy only clock-rate share \(q_z(s)\), then the
 same focused computation is accumulated after time
 \[
     \frac{t_0(M,s)}{q_z(s)}.
