@@ -218,8 +218,6 @@ For confidence level \(\delta\in(0,1)\), the certified time-to-solution $\overli
         \ge 1-\delta
     \right\}.
 \]
-
-\textcolor{blue}{Come possiamo concretamente calcolarlo? Time after first hit according to success criterium ? /gamma . La definizione dice ''how much resource''...ma non è tempo? Tempo<->Resource, sono connesse. Esatto, in termini di autoresearch corrisponde al numero di token in output prima di first hit. Quale è la nostra /mu in Autoreseach?}
 \end{definition}
 Certified time asks how much resource is needed to reach an externally accepted artifact with high probability.
 On SWE-bench, could be interpreted as the wall-clock, token, dollar, or verifier-call budget needed for the agent to produce a patch accepted by the evaluation harness with probability at least \(1-\delta_{\mathrm{cert}}\) over the distribution $\mu$ of the task instances and the randomness of the agent system run.
