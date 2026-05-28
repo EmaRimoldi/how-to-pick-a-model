@@ -622,28 +622,20 @@ Here \(U_R\) denotes router-side randomness; for deterministic routers it is fix
 \label{sec:experiments}
 
 \paragraph{Setup.}
-\sout{We instantiate the framework on a repeated-trajectory panel for CIFAR-10 edit--verify optimization.}
+AutoResearch is a useful testbed because it is a verified, open-ended optimization task: an agent system edits a training program and receives an external score, but there is no natural benchmark leaderboard that tells a practitioner which system should be used for every research-like subproblem.
+We instantiate this setting on CIFAR-10 program optimization.  Each instance starts from an editable \texttt{train.py}; the agent system proposes code changes, and an external evaluator trains and scores the resulting program.
 
+We use the starting architecture as the predeclared mode schema.  The three modes are a flat multilayer perceptron (MLP), a compact convolutional neural network (CNN), and a small residual network (ResNet).
+Across modes, the dataset, evaluator, horizon, success rule, and other experimental variables are held fixed; only the initial architecture and its parameterization change.
+This lets us test whether the best agent system is mode-conditional rather than a single global choice.
 
-% Task mode -> How is it called in the definition? 
-% Estimating: p_(a,s) & k_(a,s) -> che cosa sono? 
-% Cost and competence -> su che cosa viene definita l'uguaglianza? 
-% Introduciamo subito la deployment loss, siamo sicuri che sia la migliore narrativa per il paper? Probabilmente la prima cosa che dobbiamo controllare è: Quale è il modello che performa meglio secondo la benchmark race? Quindi puramente secondo una metrica di successo verificato. 
+The candidate agent systems are \(\{\textit{GPT 5.3 Codex},\textit{GPT 5.4},\textit{GPT 5.4 Mini}\}\), all run under a common prompt and harness; thus \(\cM\) is exactly this set in the experiment.
+For each architecture mode and candidate agent system, the balanced analysis uses 30 independent trials.
+The router audit uses deterministic prompt-only routers evaluated under start-of-run signals \(Z_0,Z_1,Z_2\) with increasing information content: \(Z_0\) contains only the task contract and candidate systems, \(Z_1\) adds the initial program, and \(Z_2\) adds short scout runs for each candidate system.
+The primary empirical quantity is a finite-horizon certified-resource proxy: whether the system reaches the declared success event and how much normalized resource is used to do so.  Full-horizon quality and occupancy are reported as audit metrics.
+Appendix~\ref{app:experiment-details} gives the frozen values of the other experimental variables, including horizon, evaluator budget, training budget, success threshold, signal contents, measurement-cost convention, progress normalization, smoothing rule, and logging schema.
 
-% final improvement? mean log-effort? Anche perchè poi abbiamo questo effetto di diversificazione per /gamma, magari andando a controllare solalmente l'hit rate possiamo identificare sempre lo stesso modello. 
-
-
-The task modes are three starting artifact variants of the same verified task, \(\cS=\{\text{\textit{MLP-flat}},\text{\textit{compact CNN}},\text{\textit{micro ResNet}}\}\).
-The dataset, verifier, horizon, and success rule are fixed while the editable artifact's starting architecture and parameterization change, letting us test whether worker choice is mode-conditional rather than a single global ranking.
-The analyzed worker menu is \(\{\texttt{gpt\_5\_3\_codex},\texttt{gpt\_5\_4},\texttt{gpt\_5\_4\_mini}\}\).
-Each action is one worker under the common prompt and harness, so \(\cA=\cM\) in this experiment.
-For each task-mode--worker cell we use 35 independent AutoResearch trajectories for \texttt{gpt\_5\_3\_codex} and \texttt{gpt\_5\_4}, and 30 valid trajectories for \texttt{gpt\_5\_4\_mini}.
-The \texttt{gpt\_5\_4\_mini} cells combine 10 pilot and 20 holdout trajectories per mode; unfinished or invalid runs are excluded by the same validity checks as the existing workers.
-The main router audit uses deterministic prompt-only candidate-agent selectors evaluated under three nested pre-deployment records \(Z_0,Z_1,Z_2\).
-The primary decision metric is the first-passage deployment loss in~\eqref{eq:deployment-loss}; full-horizon occupancy and final quality are audit metrics.
-Appendix~\ref{app:experiment-details} gives the frozen configuration, including horizon, verifier budget, training budget, success threshold, signal contents, measurement-cost convention, progress normalization, smoothing rule, and logging schema.
-
-\paragraph{Experiment 1: Worker frontier.}
+\paragraph{Experiment 1: Agent-system frontier.}
 
 
 
