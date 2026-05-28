@@ -10,6 +10,7 @@
 \usepackage{booktabs}
 \usepackage{graphicx}
 \usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{multirow}
 \usepackage{enumitem}
 \usepackage{microtype}
 \usepackage{xcolor}
@@ -682,15 +683,17 @@ Bold marks the lowest finite \(\widehat T_\gamma\) within each mode and threshol
 \toprule
 Mode & Agent system & \(\widehat T_{0.05}\) & \(\widehat T_{0.10}\) & \(\widehat T_{0.15}\) & \(\widehat T_{0.20}\) & \(\widehat T_{0.25}\) \\
 \midrule
-\textit{MLP} & \textit{GPT 5.3 Codex} & 0.893 & -- & -- & -- & -- \\
-\textit{MLP} & \textit{GPT 5.4} & \textbf{0.288} & \textbf{0.370} & \textbf{0.790} & \textbf{0.974} & -- \\
-\textit{MLP} & \textit{GPT 5.4 Mini} & 0.340 & -- & -- & -- & -- \\
-\textit{CNN} & \textit{GPT 5.3 Codex} & 0.385 & 0.556 & -- & -- & -- \\
-\textit{CNN} & \textit{GPT 5.4} & 0.327 & \textbf{0.522} & \textbf{1.164} & \textbf{1.164} & \textbf{1.811} \\
-\textit{CNN} & \textit{GPT 5.4 Mini} & \textbf{0.275} & 0.577 & -- & -- & -- \\
-\textit{ResNet} & \textit{GPT 5.3 Codex} & \textbf{0.160} & \textbf{0.256} & 0.573 & -- & -- \\
-\textit{ResNet} & \textit{GPT 5.4} & 0.319 & 0.376 & 0.753 & 1.156 & -- \\
-\textit{ResNet} & \textit{GPT 5.4 Mini} & 0.290 & 0.318 & \textbf{0.394} & \textbf{0.783} & -- \\
+\multirow{3}{*}{\textit{MLP}} & \textit{GPT 5.3 Codex} & 0.893 & -- & -- & -- & -- \\
+& \textit{GPT 5.4} & \textbf{0.288} & \textbf{0.370} & \textbf{0.790} & \textbf{0.974} & -- \\
+& \textit{GPT 5.4 Mini} & 0.340 & -- & -- & -- & -- \\
+\cmidrule(lr){1-7}
+\multirow{3}{*}{\textit{CNN}} & \textit{GPT 5.3 Codex} & 0.385 & 0.556 & -- & -- & -- \\
+& \textit{GPT 5.4} & 0.327 & \textbf{0.522} & \textbf{1.164} & \textbf{1.164} & \textbf{1.811} \\
+& \textit{GPT 5.4 Mini} & \textbf{0.275} & 0.577 & -- & -- & -- \\
+\cmidrule(lr){1-7}
+\multirow{3}{*}{\textit{ResNet}} & \textit{GPT 5.3 Codex} & \textbf{0.160} & \textbf{0.256} & 0.573 & -- & -- \\
+& \textit{GPT 5.4} & 0.319 & 0.376 & 0.753 & 1.156 & -- \\
+& \textit{GPT 5.4 Mini} & 0.290 & 0.318 & \textbf{0.394} & \textbf{0.783} & -- \\
 \bottomrule
 \end{tabular}}
 \end{table}
