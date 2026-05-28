@@ -241,23 +241,24 @@ To make this comparison interpretable, we model certified resource on each mode 
 
 \begin{assumption}[Packed latent-mode model]
 \label{ass:packed}
-There is a finite latent mode
+There is a finite set of latent modes
 \[
-    S\in\cS=\{1,\ldots,m\},
-    \qquad
-    S\sim\pi,
+    \cS=\{1,\ldots,m\}.
 \]
-where \(S=s\) denotes the solver-relevant bottleneck of the instance.
+Each instance has one mode \(S\in\cS\), with \(S\sim\pi\), where \(\pi\in\Delta(\cS)\) is the deployment prior over modes.
+The event \(S=s\) indicates the coarse part of the task that determines which worker or strategy is most resource-efficient.
 A start-of-run signal \(Z\) induces the posterior
 \[
     \pi_z(s):=\Pr[S=s\mid Z=z].
 \]
-Given \(z\), a packed scheduler chooses a share vector
+Given \(z\), a packed allocation rule chooses a share vector
 \[
     q_z\in\Delta(\cS),
     \qquad
     \mathrm{supp}(\pi_z)\subseteq \mathrm{supp}(q_z).
 \]
+The coordinate \(q_z(s)\) is the fraction of allocatable resource assigned to components specialized for mode \(s\).
+This is a soft accounting object: a hard router that chooses a single worker does not directly expose \(q_z\) unless such shares are elicited or implemented.
 For each agent system \(M\) and mode \(s\), let \(t_0(M,s)>0\) be the focused
 certified scale of \(M\) on mode \(s\), and let \(\kappa(M)>0\) be its scalar unit cost.
 The packed mode-conditioned time is
@@ -271,20 +272,20 @@ The packed mode-conditioned time is
 \end{assumption}
 
 The finite mode dictionary is the modeling assumption.  The inverse-share factor is the
-time-sharing expansion of focused certified time: if the true bottleneck is \(s\), but only
-\(q_z(s)\) of the relevant effort is assigned to the mode-\(s\) strategy, then the time needed
-to accumulate the same focused computation expands by \(1/q_z(s)\).
-The support condition says that the scheduler may not assign zero effort to a mode that
-remains possible after observing \(Z=z\).
+resource-sharing expansion of focused certified time: if the realized mode is \(s\), but only
+\(q_z(s)\) of the allocatable resource is assigned to components specialized for \(s\), then
+the resource needed to accumulate the same focused work expands by \(1/q_z(s)\).
+The support condition says that the allocation rule may not assign zero resource to a mode
+that remains possible after observing \(Z=z\).
 
 Consider a repository-repair benchmark such as SWE-bench.  An instance is a repository
 state with an issue, visible failures, and an evaluation harness; an artifact is a patch.
 Useful modes might be: local interface error, dependency or API mismatch, algorithmic invariant bug, performance regression.
 The signal \(Z\) could include the issue text, visible-test names, stack traces, static-analysis
-warnings, and a short smoke-test probe.  A packed scheduler might assign effort shares to
+warnings, and a short smoke-test probe.  A packed allocation rule might assign effort shares to
 strategies such as local type/interface edits, dependency updates, invariant-preserving
 multi-file edits, or performance-oriented rewrites.  If the true bottleneck is a dependency
-mismatch but the scheduler assigns only \(q_z(\mathrm{dep})=0.1\) to dependency repair,
+mismatch but the allocation rule assigns only \(q_z(\mathrm{dep})=0.1\) to dependency repair,
 then the packed model charges a \(10\times\) slowdown relative to devoting all relevant
 effort to that strategy.
 
