@@ -642,7 +642,8 @@ Appendix~\ref{app:experiment-details} gives the frozen values of the other exper
 We first separate a benchmark-style pooled audit from the resource-facing decision.
 The pooled audit averages over the balanced task distribution without conditioning on architecture mode.
 Table~\ref{tab:pooled-benchmark-audit} reports success within \(H=20\) at the primary success threshold \(\gamma=0.05\), together with final quality.
-This is the view a practitioner would get from a single global ranking: \textit{GPT 5.4} has the highest success rate and the best final validation loss.
+It also reports stricter acceptance margins as a benchmark robustness audit.
+This is the view a practitioner would get from a single global ranking: \textit{GPT 5.4} has the highest success rate across the reported margins and the best final validation loss.
 
 For the certified-resource comparison, we keep the success event fixed at \(\gamma=0.05\) and sweep the certification tolerance \(\delta_{\mathrm{cert}}\).
 For each mode--agent-system cell and tolerance \(\delta_{\mathrm{cert}}\), \(\widehat T_{\delta}\) is the smallest normalized resource budget \(b\) such that at least \(1-\delta_{\mathrm{cert}}\) of the 30 runs succeed by budget \(b\); failures are treated as infinite first-hit resource.
@@ -652,18 +653,18 @@ Table~\ref{tab:worker-frontier-accounting} reports this empirical certified reso
 \begin{table}[t]
 \centering
 \footnotesize
-\setlength{\tabcolsep}{5pt}
+\setlength{\tabcolsep}{3.2pt}
 \caption{Pooled benchmark-style audit on the balanced \(n=30\) panel.
-Success is measured within \(H=20\) at relative-improvement threshold \(\gamma=0.05\).
+Success columns report success within \(H=20\) at relative-improvement threshold \(\gamma\).
 Final improvement is \((L_{\mathrm{init}}-L_{\mathrm{final}})/L_{\mathrm{init}}\); final validation loss is \(L_{\mathrm{final}}\).}
 \label{tab:pooled-benchmark-audit}
-\begin{tabular}{@{}lrrrr@{}}
+\begin{tabular}{@{}lrrrrrrr@{}}
 \toprule
-Agent system & Success & Success rate & Final impr. & Final val. loss \\
+Agent system & S@0.05 & S@0.10 & S@0.15 & S@0.20 & S@0.25 & Final impr. & Final val. loss \\
 \midrule
-\textit{GPT 5.3 Codex} & 86/90 & 0.956 & 0.201 & 1.394 \\
-\textit{GPT 5.4} & \textbf{90/90} & \textbf{1.000} & \textbf{0.307} & \textbf{1.211} \\
-\textit{GPT 5.4 Mini} & 87/90 & 0.967 & 0.297 & 1.224 \\
+\textit{GPT 5.3 Codex} & 0.956 & 0.889 & 0.811 & 0.533 & 0.278 & 0.201 & 1.394 \\
+\textit{GPT 5.4} & \textbf{1.000} & \textbf{1.000} & \textbf{0.967} & \textbf{0.956} & \textbf{0.778} & \textbf{0.307} & \textbf{1.211} \\
+\textit{GPT 5.4 Mini} & 0.967 & 0.922 & 0.867 & 0.822 & 0.656 & 0.297 & 1.224 \\
 \bottomrule
 \end{tabular}
 \end{table}
