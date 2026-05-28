@@ -303,10 +303,15 @@ exactly into four terms.
 
 \paragraph{A General Allocation Bound.}
 
-Let \(\mathfrak A\) be a countable class of admissible solvers, and let
-\(t_B(\delta_{\mathrm{cert}})\) denote the certified time of solver \(B\in\mathfrak A\).
-A universal scheduler assigns Kraft weights \(w(B)\) before observing side information
-\(Z\), and conditional Kraft weights \(w(B\mid z)\) after observing \(Z=z\).  Define
+Let \(\mathfrak A\) be a countable class of candidate procedures.  A procedure
+\(B\in\mathfrak A\) can be an agent system, a harness, or a mode-specialized
+subroutine.  Let \(t_B(\delta_{\mathrm{cert}})\) be the certified resource needed
+by \(B\) to solve the task at confidence \(1-\delta_{\mathrm{cert}}\).
+An allocation rule assigns nonnegative weights over candidate procedures.  Before
+observing side information, it uses weights \(w(B)\); after observing \(Z=z\),
+it uses conditional weights \(w(B\mid z)\).  These weights represent the fraction
+of search or deployment budget assigned to procedure \(B\), and are normalized so that
+\(\sum_B w(B)\le 1\) and \(\sum_B w(B\mid z)\le 1\).  Define
 \[
     \overline T_U
     =
@@ -320,6 +325,9 @@ A universal scheduler assigns Kraft weights \(w(B)\) before observing side infor
     \inf_{B\in\mathfrak A}
     \frac{t_B(\delta_{\mathrm{cert}})}{w(B\mid z)} .
 \]
+Thus \(\overline T_U\) is the certified resource of the best weighted candidate
+before observing \(z\), while \(\overline T_{U\mid z}\) is the corresponding
+quantity after the allocation weights are updated using \(z\).
 If
 \[
     B_z^\star
@@ -334,8 +342,9 @@ then
     \le
     \log\frac{w(B_z^\star\mid z)}{w(B_z^\star)} .
 \end{equation}
-Thus side information cannot create speedup by itself; it helps by moving scheduler mass
-toward solvers that are useful for the realized instance.  Appendix~\ref{app:certified-log-effort}
+Here \(B_z^\star\) is the candidate attaining the conditional optimum.
+Thus side information cannot create speedup by itself; it helps by moving allocation mass
+toward procedures that are useful for the realized instance.  Appendix~\ref{app:certified-log-effort}
 proves~\eqref{eq:coding-gain-bound} and gives the resource-bounded information version
 under an aligned-witness assumption.
 
