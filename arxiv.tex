@@ -179,8 +179,8 @@ In SWE-bench \citet{jimenez2024swebench}, an instance \(x\in\cX\) is a repositor
 An artifact \(y\in\cY\) is a proposed patch.
 The checker \(V(x,y)\) applies the patch and runs the benchmark test harness; \(V(x,y)=1\) means that the patch passes the held-out evaluation tests.
 
-We denote an agent systems by $M$.
-Given an instance \(x\) and internal randomness \(r\), an agent $M$ may call models, tools, memory, and checkers according to a fixed harness, and it emits candidate artifacts over time. The harness can include, e.g., a single model call, a repeated-sampling loop, a tool-using code agent, or a fixed SKILL.md script.
+We denote a complete agent system by \(M\): a backbone model together with its prompt, harness, tools, and fixed execution policy.
+Given an instance \(x\) and internal randomness \(r\), an agent system \(M\) may call models, tools, memory, and checkers according to its harness, and it emits candidate artifacts over time. The harness can include, e.g., a single model call, a repeated-sampling loop, a tool-using code agent, or a fixed SKILL.md script.
 % In the main experimental setting, the router observes live signals before the run begins, chooses one model or subagent from the menu, and that chosen model performs the whole run; we do not use step-level model routing in the main paper.
 % When the menu has one element, the notation collapses to a single base model.
 % To keep the theorem algebra light, we write $M$ for the deployed model chosen by the routed design whenever the dependence on $(\mathcal M,q)$ is clear from context.
@@ -197,7 +197,7 @@ A router $R:\mathcal Z\to\cM$ observes an admissible start-of-run information st
 \end{definition}
 The no-routing baseline is the special case where \(R\) is constant.
 A start-of-run signal \(Z\) might contain the issue text, failing visible-test names, stack-trace features, file counts, dependency metadata, a cheap static-analysis report, or the result of a short smoke-test run.
-A router might use this information to choose between a local-edit worker, a long-context repository worker, a dependency-repair harness, or an expensive frontier model.
+A router might use this information to choose between a local-edit agent system, a long-context repository agent system, a dependency-repair harness, or an expensive frontier model.
 
 
 \begin{definition}[Certified time-to-solution]
@@ -234,10 +234,10 @@ We will call certified log-speedup of \(M \in \cM \) over a baseline \(M_0 \in \
 \subsection{Packed latent modes}
 \label{subsec:packed-latent-modes}
 
-Certified time is defined for any agent system and can be estimated naturally by running the agent on the task a certain number of times and estimating the end-to-end runtime. A direct benchmark-style approach would estimate one pooled certified-time quantity for each candidate worker, where ``pooled'' means aggregated over the target task distribution \(X\sim\mu\) without conditioning on the latent mode \(S\), and select the smallest. This answers which worker is best on average under the chosen task distribution, but it does not explain whether the gain comes from lower unit cost, mode-specific competence, or useful start-of-run information.
-To make this comparison interpretable, we model certified resource on each mode as a product of unit cost, mode-specific certified scale, and allocation efficiency. Taking logarithms turns this product into an additive accounting identity. The model is literal for systems that explicitly allocate resource across mode-specialized components. In our experiments, the router makes a hard worker choice, so we use the packed model as an accounting abstraction for understanding worker and orchestration selection.
+Certified time is defined for any agent system and can be estimated naturally by running the agent on the task a certain number of times and estimating the end-to-end runtime. A direct benchmark-style approach would estimate one pooled certified-time quantity for each candidate agent system, where ``pooled'' means aggregated over the target task distribution \(X\sim\mu\) without conditioning on the latent mode \(S\), and select the smallest. This answers which agent system is best on average under the chosen task distribution, but it does not explain whether the gain comes from lower unit cost, mode-specific competence, or useful start-of-run information.
+To make this comparison interpretable, we model certified resource on each mode as a product of unit cost, mode-specific certified scale, and allocation efficiency. Taking logarithms turns this product into an additive accounting identity. The model is literal for systems that explicitly allocate resource across mode-specialized components. In our experiments, the router makes a hard choice among candidate agent systems, so we use the packed model as an accounting abstraction for understanding agent-system and orchestration selection.
 
-\textcolor{blue}{For open-ended verified domains such as academic research, modes need not be preexisting benchmark labels. They can be practitioner-declared bottleneck classes, such as literature retrieval, mathematical proofing, experimental design, code implementation, or empirical analysis, where different workers may have different cost--competence profiles.}
+\textcolor{blue}{For open-ended verified domains such as academic research, modes need not be preexisting benchmark labels. They can be practitioner-declared bottleneck classes, such as literature retrieval, mathematical proofing, experimental design, code implementation, or empirical analysis, where different agent systems may have different cost--competence profiles.}
 
 \begin{assumption}[Packed latent-mode model]
 \label{ass:packed}
@@ -246,7 +246,7 @@ There is a finite set of latent modes
     \cS=\{1,\ldots,m\}.
 \]
 Each instance has one mode \(S\in\cS\), with \(S\sim\pi\), where \(\pi\in\Delta(\cS)\) is the deployment prior over modes.
-The event \(S=s\) indicates the coarse part of the task that determines which worker or strategy is most resource-efficient.
+The event \(S=s\) means that the current instance belongs to a subproblem type on which candidate agent systems may require different resource budgets to achieve certified success.
 A start-of-run signal \(Z\) induces the posterior
 \[
     \pi_z(s):=\Pr[S=s\mid Z=z].
@@ -257,10 +257,10 @@ Given \(z\), a packed allocation rule chooses a share vector
     \qquad
     \mathrm{supp}(\pi_z)\subseteq \mathrm{supp}(q_z).
 \]
-The coordinate \(q_z(s)\) is the fraction of allocatable resource assigned to components specialized for mode \(s\).
-This is a soft accounting object: a hard router that chooses a single worker does not directly expose \(q_z\) unless such shares are elicited or implemented.
-For each agent system \(M\) and mode \(s\), let \(t_0(M,s)>0\) be the focused
-certified scale of \(M\) on mode \(s\), and let \(\kappa(M)>0\) be its scalar unit cost.
+The coordinate \(q_z(s)\) is the model's accounting fraction for mode \(s\): if \(q_z(s)=0.2\), the allocation rule behaves as if one fifth of the available budget were spent on work useful for mode \(s\).
+This quantity is not directly observed when a router simply chooses one agent system.
+It becomes observable only if the system allocates budget across modes, or if we explicitly ask the router to report such an allocation.
+For each agent system \(M\) and mode \(s\), let \(t_0(M,s)>0\) be the resource scale required by \(M\) on mode \(s\) when all mode-relevant budget is assigned to that mode, and let \(\kappa(M)>0\) be its scalar unit cost.
 The packed mode-conditioned time is
 \[
     \mathsf T_{M,q}(s,z)
@@ -275,8 +275,8 @@ The finite mode dictionary is the modeling assumption.  The inverse-share factor
 resource-sharing expansion of focused certified time: if the realized mode is \(s\), but only
 \(q_z(s)\) of the allocatable resource is assigned to components specialized for \(s\), then
 the resource needed to accumulate the same focused work expands by \(1/q_z(s)\).
-The support condition says that the allocation rule may not assign zero resource to a mode
-that remains possible after observing \(Z=z\).
+The support condition is technical: any mode that remains possible after observing \(Z=z\)
+must receive positive allocation, so that \(1/q_z(s)\) and \(-\log q_z(s)\) are finite.
 
 Consider a repository-repair benchmark such as SWE-bench.  An instance is a repository
 state with an issue, visible failures, and an evaluation harness; an artifact is a patch.
