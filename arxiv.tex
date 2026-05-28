@@ -641,69 +641,66 @@ Appendix~\ref{app:experiment-details} gives the frozen values of the other exper
 
 We first separate a benchmark-style pooled audit from the resource-facing decision.
 The pooled audit averages over the balanced task distribution without conditioning on architecture mode.
-Table~\ref{tab:pooled-benchmark-audit} reports success within \(H=20\) at several relative-improvement thresholds, together with final quality.
-This is the view a practitioner would get from a single global ranking: \textit{GPT 5.4} is strongest at the primary threshold \(\gamma=0.05\), and it remains strongest in success rate through \(\gamma=0.25\).
+Table~\ref{tab:pooled-benchmark-audit} reports success within \(H=20\) at the primary success threshold \(\gamma=0.05\), together with final quality.
+This is the view a practitioner would get from a single global ranking: \textit{GPT 5.4} has the highest success rate and the best final validation loss.
 
-For the certified-resource comparison, we fix \(\delta_{\mathrm{cert}}=0.10\) and compute \(\widehat T_\gamma\) at the same success thresholds used in Table~\ref{tab:pooled-benchmark-audit}.
-For each mode--agent-system cell and threshold \(\gamma\), \(\widehat T_\gamma\) is the smallest normalized resource budget \(b\) such that at least \(90\%\) of the 30 runs succeed by budget \(b\); failures are treated as infinite first-hit resource.
+For the certified-resource comparison, we keep the success event fixed at \(\gamma=0.05\) and sweep the certification tolerance \(\delta_{\mathrm{cert}}\).
+For each mode--agent-system cell and tolerance \(\delta_{\mathrm{cert}}\), \(\widehat T_{\delta}\) is the smallest normalized resource budget \(b\) such that at least \(1-\delta_{\mathrm{cert}}\) of the 30 runs succeed by budget \(b\); failures are treated as infinite first-hit resource.
 Table~\ref{tab:worker-frontier-accounting} reports this empirical certified resource.
 
 
 \begin{table}[t]
 \centering
-\small
-\setlength{\tabcolsep}{3.2pt}
+\footnotesize
+\setlength{\tabcolsep}{5pt}
 \caption{Pooled benchmark-style audit on the balanced \(n=30\) panel.
-Success columns report success within \(H=20\) at relative-improvement threshold \(\gamma\).
+Success is measured within \(H=20\) at relative-improvement threshold \(\gamma=0.05\).
 Final improvement is \((L_{\mathrm{init}}-L_{\mathrm{final}})/L_{\mathrm{init}}\); final validation loss is \(L_{\mathrm{final}}\).}
 \label{tab:pooled-benchmark-audit}
-\resizebox{\linewidth}{!}{%
-\begin{tabular}{@{}lrrrrrrr@{}}
+\begin{tabular}{@{}lrrrr@{}}
 \toprule
-Agent system & S@0.05 & S@0.10 & S@0.15 & S@0.20 & S@0.25 & Final impr. & Final val. loss \\
+Agent system & Success & Success rate & Final impr. & Final val. loss \\
 \midrule
-\textit{GPT 5.3 Codex} & 0.956 & 0.889 & 0.811 & 0.533 & 0.278 & 0.201 & 1.394 \\
-\textit{GPT 5.4} & \textbf{1.000} & \textbf{1.000} & \textbf{0.967} & \textbf{0.956} & \textbf{0.778} & \textbf{0.307} & \textbf{1.211} \\
-\textit{GPT 5.4 Mini} & 0.967 & 0.922 & 0.867 & 0.822 & 0.656 & 0.297 & 1.224 \\
+\textit{GPT 5.3 Codex} & 86/90 & 0.956 & 0.201 & 1.394 \\
+\textit{GPT 5.4} & \textbf{90/90} & \textbf{1.000} & \textbf{0.307} & \textbf{1.211} \\
+\textit{GPT 5.4 Mini} & 87/90 & 0.967 & 0.297 & 1.224 \\
 \bottomrule
-\end{tabular}}
+\end{tabular}
 \end{table}
 
 \begin{table}[t]
 \centering
-\small
-\setlength{\tabcolsep}{3.2pt}
-\caption{Mode-conditioned empirical certified resource at the same thresholds as Table~\ref{tab:pooled-benchmark-audit}.
-\(\widehat T_\gamma\) is the empirical budget certifying \(90\%\) success within the 30 runs in the cell.
-Because \(\delta_{\mathrm{cert}}=0.10\), this requires at least \(27/30\) successes by some observed budget.
-``--'' means that fewer than 27 runs succeed within the observed horizon, so no finite empirical certified resource is available for that cell and threshold.
-Bold marks the lowest finite \(\widehat T_\gamma\) within each mode and threshold.}
+\scriptsize
+\setlength{\tabcolsep}{2.4pt}
+\caption{Mode-conditioned empirical certified resource for fixed success threshold \(\gamma=0.05\).
+Columns sweep the certification tolerance \(\delta_{\mathrm{cert}}\).
+\(\widehat T_{\delta}\) is the empirical budget certifying \(1-\delta_{\mathrm{cert}}\) success within the 30 runs in the cell; for example, \(\delta_{\mathrm{cert}}=0.10\) requires at least \(27/30\) successes.
+``--'' means that the required success count is not reached within the observed horizon.
+Bold marks the lowest finite \(\widehat T_{\delta}\) within each mode and tolerance.}
 \label{tab:worker-frontier-accounting}
-\resizebox{\linewidth}{!}{%
-\begin{tabular}{@{}llccccc@{}}
+\begin{tabular}{@{}llrccccc@{}}
 \toprule
-Mode & Agent system & \(\widehat T_{0.05}\) & \(\widehat T_{0.10}\) & \(\widehat T_{0.15}\) & \(\widehat T_{0.20}\) & \(\widehat T_{0.25}\) \\
+Mode & Agent system & Success & \(\delta=.05\) & \(\delta=.10\) & \(\delta=.15\) & \(\delta=.20\) & \(\delta=.25\) \\
 \midrule
-\multirow{3}{*}{\textit{MLP}} & \textit{GPT 5.3 Codex} & 0.893 & -- & -- & -- & -- \\
-& \textit{GPT 5.4} & \textbf{0.288} & \textbf{0.370} & \textbf{0.790} & \textbf{0.974} & -- \\
-& \textit{GPT 5.4 Mini} & 0.340 & -- & -- & -- & -- \\
-\cmidrule(lr){1-7}
-\multirow{3}{*}{\textit{CNN}} & \textit{GPT 5.3 Codex} & 0.385 & 0.556 & -- & -- & -- \\
-& \textit{GPT 5.4} & 0.327 & \textbf{0.522} & \textbf{1.164} & \textbf{1.164} & \textbf{1.811} \\
-& \textit{GPT 5.4 Mini} & \textbf{0.275} & 0.577 & -- & -- & -- \\
-\cmidrule(lr){1-7}
-\multirow{3}{*}{\textit{ResNet}} & \textit{GPT 5.3 Codex} & \textbf{0.160} & \textbf{0.256} & 0.573 & -- & -- \\
-& \textit{GPT 5.4} & 0.319 & 0.376 & 0.753 & 1.156 & -- \\
-& \textit{GPT 5.4 Mini} & 0.290 & 0.318 & \textbf{0.394} & \textbf{0.783} & -- \\
+\multirow{3}{*}{\textit{MLP}} & \textit{GPT 5.3 Codex} & 27/30 & -- & 0.893 & 0.868 & 0.502 & 0.487 \\
+& \textit{GPT 5.4} & 30/30 & \textbf{0.365} & \textbf{0.288} & \textbf{0.194} & \textbf{0.154} & \textbf{0.144} \\
+& \textit{GPT 5.4 Mini} & 28/30 & -- & 0.340 & 0.336 & 0.319 & 0.301 \\
+\cmidrule(lr){1-8}
+\multirow{3}{*}{\textit{CNN}} & \textit{GPT 5.3 Codex} & 29/30 & 0.463 & 0.385 & 0.374 & 0.300 & 0.273 \\
+& \textit{GPT 5.4} & 30/30 & 0.604 & 0.327 & 0.283 & 0.223 & 0.222 \\
+& \textit{GPT 5.4 Mini} & 29/30 & \textbf{0.461} & \textbf{0.275} & \textbf{0.229} & \textbf{0.162} & \textbf{0.143} \\
+\cmidrule(lr){1-8}
+\multirow{3}{*}{\textit{ResNet}} & \textit{GPT 5.3 Codex} & 30/30 & \textbf{0.188} & \textbf{0.160} & \textbf{0.155} & \textbf{0.142} & \textbf{0.130} \\
+& \textit{GPT 5.4} & 30/30 & 0.598 & 0.319 & 0.244 & 0.194 & 0.190 \\
+& \textit{GPT 5.4 Mini} & 30/30 & 0.474 & 0.290 & 0.220 & 0.182 & 0.174 \\
 \bottomrule
-\end{tabular}}
+\end{tabular}
 \end{table}
 
-The pooled benchmark audit would select \textit{GPT 5.4}: it has perfect success through \(\gamma=0.10\), the best success rate at every reported threshold, and the best mean final validation loss.
+The pooled benchmark audit would select \textit{GPT 5.4}: it has the best success rate, the largest final improvement, and the best mean final validation loss.
 The certified-resource frontier gives a different practitioner-facing answer once modes are exposed.
-At \(\gamma=0.05\), the lowest empirical certified resource is achieved by \textit{GPT 5.4} on MLP, \textit{GPT 5.4 Mini} on CNN, and \textit{GPT 5.3 Codex} on ResNet.
-The corresponding mode-conditioned policy has pooled \(\widehat T_{0.05}=0.229\), below the best always-agent-system value, \(\widehat T_{0.05}=0.319\) for \textit{GPT 5.4}.
-At stricter thresholds, the frontier changes: \textit{GPT 5.4} becomes the certified-resource choice for CNN, while \textit{GPT 5.4 Mini} becomes the choice for ResNet at \(\gamma=0.15\) and \(\gamma=0.20\).
+Across the \(\delta_{\mathrm{cert}}\) sweep, the lowest empirical certified resource is achieved by \textit{GPT 5.4} on MLP, \textit{GPT 5.4 Mini} on CNN, and \textit{GPT 5.3 Codex} on ResNet.
+At \(\delta_{\mathrm{cert}}=0.10\), the corresponding mode-conditioned policy has pooled \(\widehat T_{\delta}=0.229\), below the best always-agent-system value, \(\widehat T_{\delta}=0.319\) for \textit{GPT 5.4}.
 This is the empirical role of the decomposition: it shows when a single global benchmark winner should be replaced by a mode-conditioned orchestration under the declared certified-resource criterion.
 Appendix~\ref{app:diagnostic-plots} visualizes the same agent-system frontier quantities and provides threshold sensitivity, trajectory-level progress, cost, token, and router-record diagnostics behind these aggregate summaries.
 
