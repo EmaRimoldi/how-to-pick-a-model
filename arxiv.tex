@@ -655,7 +655,7 @@ Table~\ref{tab:worker-frontier-accounting} reports this empirical certified reso
 \setlength{\tabcolsep}{3.2pt}
 \caption{Pooled benchmark-style audit on the balanced \(n=30\) panel.
 Success columns report success within \(H=20\) at relative-improvement threshold \(\gamma\).
-Final improvement and validation loss are full-horizon quality diagnostics.}
+Final improvement is \((L_{\mathrm{init}}-L_{\mathrm{final}})/L_{\mathrm{init}}\); final validation loss is \(L_{\mathrm{final}}\).}
 \label{tab:pooled-benchmark-audit}
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{@{}lrrrrrrr@{}}
@@ -675,7 +675,8 @@ Agent system & S@0.05 & S@0.10 & S@0.15 & S@0.20 & S@0.25 & Final impr. & Final 
 \setlength{\tabcolsep}{3.2pt}
 \caption{Mode-conditioned empirical certified resource at the same thresholds as Table~\ref{tab:pooled-benchmark-audit}.
 \(\widehat T_\gamma\) is the empirical budget certifying \(90\%\) success within the 30 runs in the cell.
-``--'' means that \(90\%\) success is not certified within the observed horizon.
+Because \(\delta_{\mathrm{cert}}=0.10\), this requires at least \(27/30\) successes by some observed budget.
+``--'' means that fewer than 27 runs succeed within the observed horizon, so no finite empirical certified resource is available for that cell and threshold.
 Bold marks the lowest finite \(\widehat T_\gamma\) within each mode and threshold.}
 \label{tab:worker-frontier-accounting}
 \resizebox{\linewidth}{!}{%
