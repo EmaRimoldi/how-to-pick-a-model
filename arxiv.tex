@@ -708,11 +708,10 @@ Appendix~\ref{app:diagnostic-plots} provides additional threshold sensitivity, t
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.48\linewidth]{figures/autoresearch/certified_speedup_curve.png}\hfill
-\includegraphics[width=0.48\linewidth]{figures/autoresearch/certified_resource_heatmap.png}
-\caption{Certified-resource view of the benchmark result.
-Left: certified speedup of the mode-conditioned policy over the best pooled always-agent baseline, \textit{GPT 5.4}.
-Right: mode-conditioned empirical certified resource at \(\gamma=0.05\) and \(\delta_{\mathrm{cert}}=0.10\); stars mark the lowest-resource agent system within each mode.}
+\includegraphics[width=\linewidth]{figures/autoresearch/certified_resource_summary_unified.png}
+\caption{Unified certified-resource view of the benchmark result.
+Panel A constructs the mode-conditioned policy by taking the row-wise minima of empirical certified resource at \(\gamma=0.05\) and \(\delta_{\mathrm{cert}}=0.10\).
+Panel B evaluates the same policy against the best pooled always-agent baseline, \textit{GPT 5.4}, across the \(\delta_{\mathrm{cert}}\) sweep.}
 \label{fig:certified-resource-summary}
 \end{figure}
 
