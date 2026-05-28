@@ -293,12 +293,15 @@ effort to that strategy.
 \section{Certified speedup accounting}
 \label{sec:accounting}
 
-The packed model turns certified speedup into a coding-gain accounting problem.
-We first state the general scheduler bound: side information can improve certified time
-only by increasing the scheduler's effective weight on useful solvers.  We then specialize
-this statement to the finite packed-mode model, where the gain splits exactly into four terms.
+The packed model turns certified speedup into an allocation accounting problem.
+It separates two questions that are conflated by a pooled benchmark comparison:
+which agent systems are intrinsically cheaper or more competent on each mode,
+and whether start-of-run information moves allocation toward the modes that
+matter for the current instance.  We first state this intuition in a general
+bound, then specialize it to the finite packed-mode model, where the gain splits
+exactly into four terms.
 
-\paragraph{Certified speedup as coding gain.}
+\paragraph{A General Allocation Bound.}
 
 Let \(\mathfrak A\) be a countable class of admissible solvers, and let
 \(t_B(\delta_{\mathrm{cert}})\) denote the certified time of solver \(B\in\mathfrak A\).
