@@ -234,10 +234,13 @@ We will call certified log-speedup of \(M \in \cM \) over a baseline \(M_0 \in \
 \subsection{Packed latent modes}
 \label{subsec:packed-latent-modes}
 
-Certified time is defined for any agent system and can be estimated naturally by running the agent on the task a certain number of times and estimating the end-to-end runtime. The naive approach to answer our main question is thus design a statistical test of one system $M$ \textit{vs.} the others $\mathcal{M} \backslash M$ and this can be naively  is  To decompose its logarithm, we
+Certified time is defined for any agent system and can be estimated naturally by running the agent on the task a certain number of times and estimating the end-to-end runtime. \sout{The naive approach to answer our main question is thus to design a statistical test of one system against the rest.}
+A direct benchmark-style approach would estimate one pooled certified-time quantity for each candidate worker, where ``pooled'' means aggregated over the target task distribution \(X\sim\mu\) without conditioning on the latent mode \(S\), and select the smallest. This answers which worker is best on average under the chosen task distribution, but it does not explain whether the gain comes from lower unit cost, mode-specific competence, or useful start-of-run information. To decompose its logarithm, we
 introduce a stylized allocation model.  The model is exact for schedulers that split effort
 across a finite dictionary of mode-specialized strategies.  It is used here as an accounting
 abstraction for agentic model and harness selection.
+
+\textcolor{green}{For open-ended verified domains such as academic research, modes need not be preexisting benchmark labels. They can be practitioner-declared bottleneck classes, such as literature retrieval, mathematical proofing, experimental design, code implementation, or empirical analysis, where different workers may have different cost--competence profiles.}
 
 \begin{assumption}[Packed latent-mode model]
 \label{ass:packed}
