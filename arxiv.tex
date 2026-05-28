@@ -251,13 +251,14 @@ A start-of-run signal \(Z\) induces the posterior
 \[
     \pi_z(s):=\Pr[S=s\mid Z=z].
 \]
-Given \(z\), a packed allocation rule chooses a share vector
+Given \(z\), a packed allocation rule \(q\) returns a share vector
 \[
     q_z\in\Delta(\cS),
     \qquad
     \mathrm{supp}(\pi_z)\subseteq \mathrm{supp}(q_z).
 \]
-The coordinate \(q_z(s)\) is the model's accounting fraction for mode \(s\): if \(q_z(s)=0.2\), the allocation rule behaves as if one fifth of the available budget were spent on work useful for mode \(s\).
+We interpret \(q_z(s)\) as the fraction of the system's deployable budget assigned to work useful for mode \(s\).
+For example, \(q_z(s)=0.2\) means that only one fifth of the budget is effectively directed toward mode-\(s\) work.
 This quantity is not directly observed when a router simply chooses one agent system.
 It becomes observable only if the system allocates budget across modes, or if we explicitly ask the router to report such an allocation.
 For each agent system \(M\) and mode \(s\), let \(t_0(M,s)>0\) be the resource scale required by \(M\) on mode \(s\) when all mode-relevant budget is assigned to that mode, and let \(\kappa(M)>0\) be its scalar unit cost.
@@ -271,12 +272,12 @@ The packed mode-conditioned time is
 \]
 \end{assumption}
 
-The finite mode dictionary is the modeling assumption.  The inverse-share factor is the
-resource-sharing expansion of focused certified time: if the realized mode is \(s\), but only
-\(q_z(s)\) of the allocatable resource is assigned to components specialized for \(s\), then
-the resource needed to accumulate the same focused work expands by \(1/q_z(s)\).
-The support condition is technical: any mode that remains possible after observing \(Z=z\)
-must receive positive allocation, so that \(1/q_z(s)\) and \(-\log q_z(s)\) are finite.
+The finite mode dictionary is the modeling assumption.  The inverse-share factor formalizes
+a simple budget-sharing convention.  If an instance has mode \(s\), the scale \(t_0(M,s)\)
+is the resource needed when all mode-relevant budget is directed toward \(s\).  If only the
+fraction \(q_z(s)\) is directed toward \(s\), the packed model charges \(t_0(M,s)/q_z(s)\).
+The support condition is technical: every mode that remains possible after observing \(z\)
+must receive positive allocation, otherwise this quantity and its logarithm are infinite.
 
 Consider a repository-repair benchmark such as SWE-bench.  An instance is a repository
 state with an issue, visible failures, and an evaluation harness; an artifact is a patch.
