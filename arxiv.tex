@@ -192,9 +192,15 @@ Assume we have a finite set of agent systems
 \[
     \cM=\{M_1,\ldots,M_K\}
 \]
-from which we have to pick one to deploy.
-A router $R:\mathcal Z\to\cM$ observes an admissible start-of-run information state \(Z=Z(x)\) and chooses one system $M_R(x) = R(Z(x)) \in \mathcal{M}$
-\pier{ha senso?}
+from which a deployment policy will eventually pick one to run.
+A router observes an admissible start-of-run information state \(Z=Z(x)\) and returns
+the information used by that deployment policy.  In the direct-selection case,
+the router is a hard-choice map \(R_{\mathrm{hard}}:\mathcal Z\to\cM\) and outputs
+one system \(M_R(x)=R_{\mathrm{hard}}(Z(x))\).  In the allocation-aligned case
+introduced below, the router outputs a mode posterior and, when the deployment
+mechanism actually shares budget across modes, a mode allocation \(q_z\).  A
+calibrated deployment policy then combines these outputs with mode--system
+certified-resource estimates.
 \end{definition}
 The no-routing baseline is the special case where \(R\) is constant.
 A start-of-run signal \(Z\) might contain the issue text, failing visible-test names, stack-trace features, file counts, dependency metadata, a cheap static-analysis report, or the result of a short smoke-test run.
@@ -236,7 +242,7 @@ We will call certified log-speedup of \(M \in \cM \) over a baseline \(M_0 \in \
 \label{subsec:packed-latent-modes}
 
 Certified time is defined for any agent system and can be estimated naturally by running the agent on the task a certain number of times and estimating the end-to-end runtime. A direct benchmark-style approach would estimate one pooled certified-time quantity for each candidate agent system, where ``pooled'' means aggregated over the target task distribution \(X\sim\mu\) without conditioning on the latent mode \(S\), and select the smallest. This answers which agent system is best on average under the chosen task distribution, but it does not explain whether the gain comes from lower unit cost, mode-specific competence, or useful start-of-run information.
-To make this comparison interpretable, we model certified resource on each mode as a product of unit cost, mode-specific certified scale, and allocation efficiency. Taking logarithms turns this product into an additive accounting identity. The model is literal for systems that explicitly allocate resource across mode-specialized components. In our experiments, the router makes a hard choice among candidate agent systems, so we use the packed model as an accounting abstraction for understanding agent-system and orchestration selection.
+To make this comparison interpretable, we model certified resource on each mode as a product of unit cost, mode-specific certified scale, and allocation efficiency. Taking logarithms turns this product into an additive accounting identity. The allocation rule in this model is not itself the final choice of an agent system: it assigns deployable budget across modes or mode-specialized strategies. The inverse-allocation term is literal for systems that explicitly share resource across mode-specialized components. If the deployment mechanism instead makes a single hard choice of one agent system, the calibrated mode--system table and the mode posterior determine that hard choice, while \(q_z\) is a diagnostic allocation target rather than an implemented budget share.
 
 \textcolor{blue}{For open-ended verified domains such as academic research, modes need not be preexisting benchmark labels. They can be practitioner-declared bottleneck classes, such as literature retrieval, mathematical proofing, experimental design, code implementation, or empirical analysis, where different agent systems may have different cost--competence profiles.}
 
@@ -260,9 +266,31 @@ Given \(z\), a packed allocation rule \(q\) returns a share vector
 \]
 We interpret \(q_z(s)\) as the fraction of the system's deployable budget assigned to work useful for mode \(s\).
 For example, \(q_z(s)=0.2\) means that only one fifth of the budget is effectively directed toward mode-\(s\) work.
-This quantity is not directly observed when a router simply chooses one agent system.
-It becomes observable only if the system allocates budget across modes, or if we explicitly ask the router to report such an allocation.
 For each agent system \(M\) and mode \(s\), let \(t_0(M,s)>0\) be the resource scale required by \(M\) on mode \(s\) when all mode-relevant budget is assigned to that mode, and let \(\kappa(M)>0\) be its scalar unit cost.
+Thus the calibrated mode--system table is \(C(M,s):=c_{\mathrm{sim}}\kappa(M)t_0(M,s)\).
+If the deployment mechanism runs a packed scheduler that shares budget according to \(q_z\),
+the calibrated system choice is
+\[
+    d_{\mathrm{alloc}}(z)
+    \in
+    \argmin_{M\in\cM}
+    \E_{S\sim\pi_z}
+    \left[
+        \frac{C(M,S)}{q_z(S)}
+    \right].
+\]
+If the deployment mechanism only makes a single hard agent-system choice and does not
+run mode-specialized components in parallel, the corresponding calibrated choice is instead
+\[
+    d_{\mathrm{hard}}(z)
+    \in
+    \argmin_{M\in\cM}
+    \E_{S\sim\pi_z}
+    \left[
+        C(M,S)
+    \right].
+\]
+This separates three roles: \(\pi_z\) says which mode is likely, \(q_z\) says how a packed orchestration allocates budget across modes, and \(d(z)\) is the final agent-system choice.  A router that reports only \(d(z)\) is a hard-choice router; it does not identify \(q_z\).  The allocation becomes observable only if the system allocates budget across modes, or if the router contract explicitly asks for the allocation vector.
 The packed mode-conditioned time is
 \[
     \mathsf T_{M,q}(s,z)
@@ -352,7 +380,7 @@ under an aligned-witness assumption.
 \paragraph{Packed-mode specialization.}
 In the packed model, \(S\in\cS\) is the latent bottleneck mode, \(Z\) is the start-of-run
 signal, \(\pi_z(s)=\Pr[S=s\mid Z=z]\) is the signal-induced posterior, and \(q_z(s)\)
-is the share assigned to mode \(s\) by the packed scheduler.  Assumption~\ref{ass:packed}
+is the share assigned to mode \(s\) by the allocation rule.  Assumption~\ref{ass:packed}
 states that
 \[
     \mathsf T_{M,q}(s,z)
@@ -380,6 +408,17 @@ For fixed \(z\), the allocation-dependent term averages to
     H(\pi_z)+\KL(\pi_z\|q_z).
 \]
 This is the source of the information and mismatch terms.
+
+The hard deployment choice is downstream of this accounting object.  Once
+\(C(M,s)=c_{\mathrm{sim}}\kappa(M)t_0(M,s)\) has been calibrated for every
+candidate agent system and mode, a single-choice deployment policy can select the
+agent system with the lowest posterior expected certified resource
+\(\E_{S\sim\pi_z}[C(M,S)]\).  A packed scheduler that actually shares budget
+across modes instead uses the posterior expected packed time
+\(\E_{S\sim\pi_z}[C(M,S)/q_z(S)]\).  Thus mode information becomes actionable
+only through a calibrated table linking modes to agent-system certified resource,
+and \(q_z\) matters as a resource term only when the deployment mechanism
+implements or elicits an allocation over modes.
 
 
 A useful special case is an uninformed baseline whose allocation matches the mode prior:
