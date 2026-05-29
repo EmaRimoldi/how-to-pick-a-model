@@ -266,8 +266,8 @@ Given \(z\), a packed allocation rule \(q\) returns a share vector
 \]
 We interpret \(q_z(s)\) as the fraction of the system's deployable budget assigned to work useful for mode \(s\).
 For example, \(q_z(s)=0.2\) means that only one fifth of the budget is effectively directed toward mode-\(s\) work.
-For each agent system \(M\) and mode \(s\), let \(t_0(M,s)>0\) be the resource scale required by \(M\) on mode \(s\) when all mode-relevant budget is assigned to that mode, and let \(\kappa(M)>0\) be its scalar unit cost.
-Thus the calibrated mode--system table is \(C(M,s):=c_{\mathrm{sim}}\kappa(M)t_0(M,s)\).
+For each agent system \(M\) and mode \(s\), let \(t_0(M,s)>0\) be the resource scale required by \(M\) on mode \(s\) when all mode-relevant budget is assigned to that mode, and let \(\kappa(M,s)>0\) be its unit resource cost on that mode.
+Thus the calibrated mode--system table is \(C(M,s):=c_{\mathrm{sim}}\kappa(M,s)t_0(M,s)\).
 If the deployment mechanism runs a packed scheduler that shares budget according to \(q_z\),
 the calibrated system choice is
 \[
@@ -296,10 +296,14 @@ The packed mode-conditioned time is
     \mathsf T_{M,q}(s,z)
     =
     c_{\mathrm{sim}}\,
-    \kappa(M)\,
+    \kappa(M,s)\,
     \frac{t_0(M,s)}{q_z(s)} .
 \]
 \end{assumption}
+
+In the experiments, \(t_0(M,s)\) is estimated from repeated runs as the empirical \(1-\delta_{\mathrm{cert}}\) quantile of the first step at which \(M\) reaches the declared success event on mode \(s\).
+The unit cost \(\kappa(M,s)\) is the median per-step resource of \(M\) on that mode; we use wall-clock seconds per step in the main table and normalize by \(c_{\mathrm{sim}}=1/1800\).
+When calibrating a single mode--agent-system cell, no budget is split across modes, so \(q_z(s)=1\) and the reported table entry is \(C(M,s)=c_{\mathrm{sim}}\kappa(M,s)t_0(M,s)\).
 
 The finite mode dictionary is the modeling assumption.  The inverse-share factor formalizes
 a simple budget-sharing convention.  If an instance has mode \(s\), the scale \(t_0(M,s)\)
@@ -386,7 +390,7 @@ states that
     \mathsf T_{M,q}(s,z)
     =
     c_{\mathrm{sim}}\,
-    \kappa(M)\,
+    \kappa(M,s)\,
     \frac{t_0(M,s)}{q_z(s)} .
 \]
 Taking logs gives
@@ -395,7 +399,7 @@ Taking logs gives
     =
     \log c_{\mathrm{sim}}
     +
-    \log\kappa(M)
+    \log\kappa(M,s)
     +
     \log t_0(M,s)
     -
@@ -410,7 +414,7 @@ For fixed \(z\), the allocation-dependent term averages to
 This is the source of the information and mismatch terms.
 
 The hard deployment choice is downstream of this accounting object.  Once
-\(C(M,s)=c_{\mathrm{sim}}\kappa(M)t_0(M,s)\) has been calibrated for every
+\(C(M,s)=c_{\mathrm{sim}}\kappa(M,s)t_0(M,s)\) has been calibrated for every
 candidate agent system and mode, a single-choice deployment policy can select the
 agent system with the lowest posterior expected certified resource
 \(\E_{S\sim\pi_z}[C(M,S)]\).  A packed scheduler that actually shares budget
@@ -438,7 +442,12 @@ For a prior-matched baseline \((M_0,\pi)\), the packed certified log-speedup of
     \right]
     \\
     &=
-    \underbrace{\log\frac{\kappa(M_0)}{\kappa(M)}}_{\text{unit cost}}
+    \underbrace{
+    \E_{S\sim\pi}
+    \left[
+        \log\frac{\kappa(M_0,S)}{\kappa(M,S)}
+    \right]
+    }_{\text{unit cost}}
     +
     \underbrace{
     \E_{S\sim\pi}
@@ -468,7 +477,10 @@ Under Assumption~\ref{ass:packed}, compare a baseline system \((M_0,q_0)\), wher
 \right]
 \\
 &\qquad =
-\log\frac{\kappa(M_0)}{\kappa(M)}
+\E_{S\sim\pi}
+\left[
+    \log\frac{\kappa(M_0,S)}{\kappa(M,S)}
+\right]
 +
 \E_{S\sim\pi}
 \left[
@@ -501,7 +513,7 @@ The packed-time law gives
     =
     \log c_{\mathrm{sim}}
     +
-    \log\kappa(M)
+    \log\kappa(M,s)
     +
     \log t_0(M,s)
     -
@@ -685,8 +697,9 @@ It also reports stricter acceptance margins as a benchmark robustness audit.
 This is the view a practitioner would get from a single global ranking: \textit{GPT 5.4} has the highest success rate across the reported margins and the best final validation loss.
 
 For the certified-resource comparison, we keep the success event fixed at \(\gamma=0.05\) and sweep the certification tolerance \(\delta_{\mathrm{cert}}\).
-For each mode--agent-system cell and tolerance \(\delta_{\mathrm{cert}}\), \(\widehat T_{\delta}\) is the smallest normalized resource budget \(b\) such that at least \(1-\delta_{\mathrm{cert}}\) of the 30 runs succeed by budget \(b\); failures are treated as infinite first-hit resource.
-Table~\ref{tab:worker-frontier-accounting} reports this empirical certified resource.
+For each mode--agent-system cell and tolerance \(\delta_{\mathrm{cert}}\), \(\widehat T_{\delta}=c_{\mathrm{sim}}\widehat\kappa(M,s)\widehat t_0(M,s;\delta_{\mathrm{cert}})\), where \(\widehat t_0\) is the empirical \(1-\delta_{\mathrm{cert}}\) quantile of first-hit steps and \(\widehat\kappa(M,s)\) is the median per-step wall-clock cost in that cell.
+Failures are treated as infinite first-hit steps.
+Table~\ref{tab:worker-frontier-accounting} reports this factored certified time.
 
 
 \begin{table}[t]
@@ -712,9 +725,9 @@ Agent system & S@0.05 & S@0.10 & S@0.15 & S@0.20 & S@0.25 & Final impr. & Final 
 \centering
 \scriptsize
 \setlength{\tabcolsep}{2.4pt}
-\caption{Mode-conditioned empirical certified resource for fixed success threshold \(\gamma=0.05\).
+\caption{Mode-conditioned factored certified time for fixed success threshold \(\gamma=0.05\).
 Columns sweep the certification tolerance \(\delta_{\mathrm{cert}}\).
-\(\widehat T_{\delta}\) is the empirical budget certifying \(1-\delta_{\mathrm{cert}}\) success within the 30 runs in the cell; for example, \(\delta_{\mathrm{cert}}=0.10\) requires at least \(27/30\) successes.
+\(\widehat T_{\delta}=c_{\mathrm{sim}}\widehat\kappa(M,s)\widehat t_0(M,s;\delta_{\mathrm{cert}})\), with \(\widehat\kappa(M,s)\) the median per-step wall-clock cost for that mode--agent-system cell; for example, \(\delta_{\mathrm{cert}}=0.10\) requires at least \(27/30\) successes.
 ``--'' means that the required success count is not reached within the observed horizon.
 Bold marks the lowest finite \(\widehat T_{\delta}\) within each mode and tolerance.}
 \label{tab:worker-frontier-accounting}
@@ -722,35 +735,34 @@ Bold marks the lowest finite \(\widehat T_{\delta}\) within each mode and tolera
 \toprule
 Mode & Agent system & Success & \(\delta=.05\) & \(\delta=.10\) & \(\delta=.15\) & \(\delta=.20\) & \(\delta=.25\) \\
 \midrule
-\multirow{3}{*}{\textit{MLP}} & \textit{GPT 5.3 Codex} & 27/30 & -- & 0.893 & 0.868 & 0.502 & 0.487 \\
-& \textit{GPT 5.4} & 30/30 & \textbf{0.365} & \textbf{0.288} & \textbf{0.194} & \textbf{0.154} & \textbf{0.144} \\
-& \textit{GPT 5.4 Mini} & 28/30 & -- & 0.340 & 0.336 & 0.319 & 0.301 \\
+\multirow{3}{*}{\textit{MLP}} & \textit{GPT 5.3 Codex} & 27/30 & -- & 0.416 & 0.333 & 0.270 & 0.270 \\
+& \textit{GPT 5.4} & 30/30 & \textbf{0.204} & \textbf{0.164} & \textbf{0.164} & \textbf{0.123} & \textbf{0.123} \\
+& \textit{GPT 5.4 Mini} & 28/30 & -- & 0.478 & 0.478 & 0.368 & 0.258 \\
 \cmidrule(lr){1-8}
-\multirow{3}{*}{\textit{CNN}} & \textit{GPT 5.3 Codex} & 29/30 & 0.463 & 0.385 & 0.374 & 0.300 & 0.273 \\
-& \textit{GPT 5.4} & 30/30 & 0.604 & 0.327 & 0.283 & 0.223 & 0.222 \\
-& \textit{GPT 5.4 Mini} & 29/30 & \textbf{0.461} & \textbf{0.275} & \textbf{0.229} & \textbf{0.162} & \textbf{0.143} \\
+\multirow{3}{*}{\textit{CNN}} & \textit{GPT 5.3 Codex} & 29/30 & 0.521 & 0.405 & 0.376 & 0.289 & 0.260 \\
+& \textit{GPT 5.4} & 30/30 & \textbf{0.438} & 0.328 & 0.328 & 0.219 & 0.219 \\
+& \textit{GPT 5.4 Mini} & 29/30 & 0.768 & \textbf{0.295} & \textbf{0.236} & \textbf{0.236} & \textbf{0.236} \\
 \cmidrule(lr){1-8}
-\multirow{3}{*}{\textit{ResNet}} & \textit{GPT 5.3 Codex} & 30/30 & \textbf{0.188} & \textbf{0.160} & \textbf{0.155} & \textbf{0.142} & \textbf{0.130} \\
-& \textit{GPT 5.4} & 30/30 & 0.598 & 0.319 & 0.244 & 0.194 & 0.190 \\
-& \textit{GPT 5.4 Mini} & 30/30 & 0.474 & 0.290 & 0.220 & 0.182 & 0.174 \\
+\multirow{3}{*}{\textit{ResNet}} & \textit{GPT 5.3 Codex} & 30/30 & 0.254 & \textbf{0.145} & \textbf{0.145} & \textbf{0.145} & \textbf{0.109} \\
+& \textit{GPT 5.4} & 30/30 & 0.246 & 0.164 & 0.164 & 0.164 & 0.164 \\
+& \textit{GPT 5.4 Mini} & 30/30 & \textbf{0.198} & 0.198 & 0.198 & 0.198 & 0.198 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 The pooled benchmark audit would select \textit{GPT 5.4}: it has the best success rate, the largest final improvement, and the best mean final validation loss.
-The certified-resource frontier gives a different practitioner-facing answer once modes are exposed.
-Across the \(\delta_{\mathrm{cert}}\) sweep, the lowest empirical certified resource is achieved by \textit{GPT 5.4} on MLP, \textit{GPT 5.4 Mini} on CNN, and \textit{GPT 5.3 Codex} on ResNet.
-At \(\delta_{\mathrm{cert}}=0.10\), the corresponding mode-conditioned policy has pooled \(\widehat T_{\delta}=0.229\), below the best always-agent-system value, \(\widehat T_{\delta}=0.319\) for \textit{GPT 5.4}.
-This is the empirical role of the decomposition: it shows when a single global benchmark winner should be replaced by a mode-conditioned orchestration under the declared certified-resource criterion.
-Figure~\ref{fig:certified-resource-summary} visualizes the same conclusion: mode-conditioning gives a certified speedup throughout the \(\delta_{\mathrm{cert}}\) sweep, and the resource heatmap shows a different winning agent system in each mode.
+The factored certified-time frontier gives a different practitioner-facing answer once modes are exposed.
+At \(\delta_{\mathrm{cert}}=0.10\), the lowest factored certified time is achieved by \textit{GPT 5.4} on MLP, \textit{GPT 5.4 Mini} on CNN, and \textit{GPT 5.3 Codex} on ResNet.
+This is the empirical role of the decomposition: it turns a single global ranking into a mode--agent-system calibration table under the declared certified-resource criterion.
+Figure~\ref{fig:certified-resource-summary} then checks how the induced mode-conditioned policy compares with the best pooled always-agent baseline across the \(\delta_{\mathrm{cert}}\) sweep.
 Appendix~\ref{app:diagnostic-plots} provides additional threshold sensitivity, trajectory-level progress, cost, token, and router-record diagnostics behind these aggregate summaries.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{figures/autoresearch/certified_resource_summary_unified.png}
-\caption{Unified certified-resource view of the benchmark result.
-Panel A constructs the mode-conditioned policy by taking the row-wise minima of empirical certified resource at \(\gamma=0.05\) and \(\delta_{\mathrm{cert}}=0.10\).
-Panel B evaluates the same policy against the best pooled always-agent baseline, \textit{GPT 5.4}, across the \(\delta_{\mathrm{cert}}\) sweep.}
+\caption{Certified-time ratio for the mode-conditioned policy induced by Table~\ref{tab:worker-frontier-accounting}.
+The curve compares the factored certified time of the policy \(\{\textit{MLP}\mapsto\textit{GPT 5.4},\textit{CNN}\mapsto\textit{GPT 5.4 Mini},\textit{ResNet}\mapsto\textit{GPT 5.3 Codex}\}\) against the best pooled always-agent baseline, \textit{GPT 5.4}.
+Values above one indicate lower certified time for the mode-conditioned policy.}
 \label{fig:certified-resource-summary}
 \end{figure}
 
@@ -1179,7 +1191,7 @@ Including scalar unit cost and shared simulation overhead gives
     \mathsf T_{M,q}(s,z)
     =
     c_{\mathrm{sim}}\,
-    \kappa(M)\,
+    \kappa(M,s)\,
     \frac{t_0(M,s)}{q_z(s)}.
 \]
 Thus the inverse-share factor is not a separate success-probability heuristic.
@@ -1201,7 +1213,7 @@ Under Assumption~\ref{ass:packed}, for every realized signal \(Z=z\),
     &=
     \log c_{\mathrm{sim}}
     +
-    \log\kappa(M)
+    \E_{S\sim\pi_z}[\log\kappa(M,S)]
     +
     \E_{S\sim\pi_z}[\log t_0(M,S)]
     \\
@@ -1230,7 +1242,7 @@ By Assumption~\ref{ass:packed},
     =
     \log c_{\mathrm{sim}}
     +
-    \log\kappa(M)
+    \log\kappa(M,s)
     +
     \log t_0(M,s)
     -
@@ -1263,7 +1275,7 @@ signal conditioning gives
     &=
     \log c_{\mathrm{sim}}
     +
-    \log\kappa(M_0)
+    \E_{S\sim\pi}[\log\kappa(M_0,S)]
     +
     \E_{S\sim\pi}[\log t_0(M_0,S)]
     \\
@@ -1281,7 +1293,7 @@ For the routed packed system \((M,q)\),
     &=
     \log c_{\mathrm{sim}}
     +
-    \log\kappa(M)
+    \E_{S\sim\pi}[\log\kappa(M,S)]
     +
     \E_{S\sim\pi}[\log t_0(M,S)]
     \\
@@ -1292,8 +1304,12 @@ For the routed packed system \((M,q)\),
     \E_Z\KL(\pi_Z\|q_Z).
 \end{aligned}
 \]
-Here we used the tower property:
+Here we used the tower property for the mode-conditioned terms:
 \[
+    \E_Z\E_{S\sim\pi_Z}[\log\kappa(M,S)]
+    =
+    \E_{S\sim\pi}[\log\kappa(M,S)],
+    \qquad
     \E_Z\E_{S\sim\pi_Z}[\log t_0(M,S)]
     =
     \E_{S\sim\pi}[\log t_0(M,S)].
@@ -1309,7 +1325,10 @@ Subtracting the routed expression from the baseline expression cancels the share
 ]
 \\
 &\quad =
-\log\frac{\kappa(M_0)}{\kappa(M)}
+\E_{S\sim\pi}
+\left[
+    \log\frac{\kappa(M_0,S)}{\kappa(M,S)}
+\right]
 +
 \E_{S\sim\pi}
 \left[
@@ -1337,7 +1356,10 @@ we obtain
 ]
 \\
 &\quad =
-\log\frac{\kappa(M_0)}{\kappa(M)}
+\E_{S\sim\pi}
+\left[
+    \log\frac{\kappa(M_0,S)}{\kappa(M,S)}
+\right]
 +
 \E_{S\sim\pi}
 \left[
@@ -1538,7 +1560,7 @@ Suppose
     &=
     \log c_{\mathrm{sim}}
     +
-    \log\kappa(M)
+    \log\kappa(M,s)
     +
     \log t_0(M,s)
     -
@@ -1566,7 +1588,10 @@ Under Assumption~\ref{ass:app-approx-packed},
 ]
 \\
 &\quad =
-\log\frac{\kappa(M_0)}{\kappa(M)}
+\E_{S\sim\pi}
+\left[
+    \log\frac{\kappa(M_0,S)}{\kappa(M,S)}
+\right]
 +
 \E_{S\sim\pi}
 \left[
