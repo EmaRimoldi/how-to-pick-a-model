@@ -207,7 +207,12 @@ def load_frozen_runs(root: Path, n_per_cell: int) -> tuple[list[dict[str, Any]],
     return frozen, selection
 
 
-def load_pooled_runs(campaign: Path, pilot_per_cell: int, holdout_per_cell: int) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+def load_pooled_runs(
+    campaign: Path,
+    pilot_per_cell: int,
+    holdout_per_cell: int,
+    total_per_cell: int | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     by_split_cell_seed: dict[tuple[str, str, str, int], dict[str, Any]] = {}
     for split, pattern, root in [
         ("pilot", "worker_pilot_pilot_*/", campaign / "runs" / "worker_pilot"),
@@ -224,17 +229,19 @@ def load_pooled_runs(campaign: Path, pilot_per_cell: int, holdout_per_cell: int)
 
     rows: list[dict[str, Any]] = []
     selection: dict[str, Any] = {
-        "worker_targets": WORKER_TARGETS,
+        "worker_targets": WORKER_TARGETS if total_per_cell is None else {worker: total_per_cell for worker in WORKERS},
         "pilot_targets": PILOT_TARGETS,
+        "holdout_per_cell": holdout_per_cell,
+        "total_per_cell": total_per_cell,
         "cells": {},
     }
     for mode in MODES:
         for worker in WORKERS:
             cell_rows = []
             cell_info = {}
-            target = WORKER_TARGETS[worker]
-            pilot_limit = min(PILOT_TARGETS[worker], target)
-            holdout_limit = target - pilot_limit
+            target = total_per_cell if total_per_cell is not None else WORKER_TARGETS[worker]
+            pilot_limit = min(pilot_per_cell, PILOT_TARGETS[worker], target)
+            holdout_limit = min(holdout_per_cell, target - pilot_limit)
             for split, limit in [("pilot", pilot_limit), ("holdout", holdout_limit)]:
                 candidates = [
                     by_split_cell_seed[(split, mode, worker, seed)]
@@ -344,7 +351,7 @@ def router_analysis(router_path: Path | None, frontier: list[dict[str, Any]], mo
             continue
         item = json.loads(raw)
         output = item.get("router_output") or {}
-        worker = output.get("selected_worker")
+        worker = output.get("selected_agent_model") or output.get("selected_worker")
         mode = ((item.get("instance") or {}).get("workload_id") or (item.get("signal_record") or {}).get("instance", {}).get("workload_id"))
         seed = ((item.get("instance") or {}).get("seed") or (item.get("signal_record") or {}).get("instance", {}).get("seed"))
         if mode not in MODES or worker not in WORKERS:
@@ -1052,6 +1059,7 @@ def main() -> None:
     parser.add_argument("--n-per-cell", type=int, default=25)
     parser.add_argument("--pilot-per-cell", type=int, default=10)
     parser.add_argument("--pooled", action="store_true")
+    parser.add_argument("--total-per-cell", type=int, default=None)
     parser.add_argument("--router-decisions", default=None)
     parser.add_argument("--output-json", default=None)
     parser.add_argument("--accounting-dir", default=None)
@@ -1062,7 +1070,7 @@ def main() -> None:
 
     campaign = Path(args.campaign_root)
     if args.pooled:
-        rows, selection = load_pooled_runs(campaign, args.pilot_per_cell, args.n_per_cell)
+        rows, selection = load_pooled_runs(campaign, args.pilot_per_cell, args.n_per_cell, args.total_per_cell)
         analysis_label = "pooled_pilot_holdout"
     else:
         rows, selection = load_frozen_runs(campaign / "runs" / "worker_confirmation", args.n_per_cell)

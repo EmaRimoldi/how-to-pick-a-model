@@ -226,7 +226,7 @@ def router_residuals(router_decisions: Path | None, frontier_rows: list[dict[str
             continue
         item = json.loads(raw)
         output = item.get("router_output") or {}
-        worker = output.get("selected_worker")
+        worker = output.get("selected_agent_model") or output.get("selected_worker")
         mode = ((item.get("instance") or {}).get("workload_id") or (item.get("signal_record") or {}).get("instance", {}).get("workload_id"))
         if not worker or not mode or (mode, worker) not in score:
             continue

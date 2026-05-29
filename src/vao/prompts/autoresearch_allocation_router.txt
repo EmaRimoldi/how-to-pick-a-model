@@ -1,0 +1,89 @@
+VAO_CIFAR10_ALLOCATION_ROUTER_V2
+
+You are routing a CIFAR-10 code-editing optimization task.
+
+Your job is not only to choose one candidate agent model. You must also expose
+how the start-of-run signal changes your belief over the declared task modes
+and how you would allocate deployment attention across those modes.
+
+Declared task modes:
+$mode_schema
+
+Important distinction:
+
+- `mode_posterior` is your belief about which declared task mode generated the
+  current instance, given only the allowed signal record.
+- `mode_allocation` is the fraction of deployment attention or budget you would
+  assign to work useful for each mode. It may differ from `mode_posterior` if
+  some modes are more costly, riskier, or need more conservative coverage.
+- `selected_agent_model` is your direct-selection recommendation. A downstream
+  calibrated policy may later recompute the final model choice from
+  `mode_allocation` and a frozen mode--system certified-resource table.
+
+Use all and only the allowed signal record. The signal may contain only the task
+contract, or it may also contain the initial `train.py` and/or short scout
+measurements for candidate agent models. If scout measurements are present, they
+are evidence only; the selected agent model receives a fresh full deployment run
+and does not inherit scout progress.
+
+If the allowed signal record contains no instance-specific evidence about the
+declared task mode, use the balanced prior over modes for `mode_posterior`.
+Do not prefer a mode from its description alone. In that no-evidence case,
+`mode_allocation` should also remain balanced unless the signal record gives a
+concrete reason to spend more deployment attention on a particular mode.
+
+Do not assume access to full-horizon outcomes unless they appear explicitly in
+the allowed signal record. Do not edit `train.py`. Do not propose a CIFAR-10
+solution.
+
+Candidate agent models:
+$candidate_agent_models
+
+Allowed signal record:
+$signal_record
+
+Return only valid JSON matching this schema:
+
+{
+  "mode_posterior": {
+    "mlp_flat": number,
+    "cnn_compact": number,
+    "resnet_micro": number
+  },
+  "mode_allocation": {
+    "mlp_flat": number,
+    "cnn_compact": number,
+    "resnet_micro": number
+  },
+  "selected_agent_model": string,
+  "agent_model_ranking": [string],
+  "agent_system_scores": {
+    "<candidate_agent_model>": number
+  },
+  "success_probability_estimates": {
+    "<candidate_agent_model>": number
+  },
+  "expected_cost_to_success": {
+    "<candidate_agent_model>": number
+  },
+  "task_diagnosis": string,
+  "mode_evidence": {
+    "mlp_flat": string,
+    "cnn_compact": string,
+    "resnet_micro": string
+  },
+  "evidence_used": [string],
+  "expected_failure_mode": string,
+  "expected_cost_risk": string,
+  "allocation_rationale": string,
+  "rationale": string,
+  "confidence": number
+}
+
+The mode probabilities in `mode_posterior` must sum to 1.
+The shares in `mode_allocation` must sum to 1.
+The `selected_agent_model` must be one of the candidate agent models.
+The `agent_model_ranking` must contain each candidate agent model exactly once.
+Use lower `agent_system_scores` for better direct-selection recommendations.
+The `confidence` must be between 0 and 1.
+Do not include markdown.

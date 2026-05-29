@@ -24,8 +24,16 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 MODE_ORDER = ["cnn_compact", "mlp_flat", "resnet_micro"]
 MODE_LABELS = ["CNN", "MLP", "ResNet"]
-WORKER_ORDER = ["gpt-5.3-codex", "gpt-5.4"]
-WORKER_LABELS = ["GPT-5.3 Codex", "GPT-5.4"]
+WORKER_ORDER = ["gpt-5.3-codex", "gpt-5.4", "gpt-5.4-mini"]
+WORKER_LABELS = ["GPT-5.3 Codex", "GPT-5.4", "GPT-5.4 Mini"]
+WORKER_COLORS = {
+    "gpt-5.3-codex": "#4c78a8",
+    "gpt-5.4": "#f58518",
+    "gpt-5.4-mini": "#54a24b",
+}
+N34_TOTAL_PER_CELL = 34
+N34_PILOT_PER_CELL = 10
+N34_HOLDOUT_PER_CELL = N34_TOTAL_PER_CELL - N34_PILOT_PER_CELL
 THRESHOLD = 0.05
 
 from vao.analysis.autoresearch_cifar10_z_signal_ablation import FEATURE_SETS, evaluate_feature_set, load_records
@@ -70,6 +78,8 @@ def normalize_worker(value: Any) -> str:
         "gpt-5.3-codex": "gpt-5.3-codex",
         "gpt_5_4": "gpt-5.4",
         "gpt-5.4": "gpt-5.4",
+        "gpt_5_4_mini": "gpt-5.4-mini",
+        "gpt-5.4-mini": "gpt-5.4-mini",
     }
     return mapping.get(raw, raw)
 
@@ -103,8 +113,12 @@ def load_runs(root: Path) -> list[dict[str, Any]]:
     return rows
 
 
-def pooled_pilot_holdout_panel(rows: list[dict[str, Any]], pilot_per_cell: int = 10, holdout_per_cell: int = 25) -> list[dict[str, Any]]:
-    """Use the paper-facing 10 pilot + 25 holdout runs for each mature-worker cell."""
+def pooled_pilot_holdout_panel(
+    rows: list[dict[str, Any]],
+    pilot_per_cell: int = N34_PILOT_PER_CELL,
+    holdout_per_cell: int = N34_HOLDOUT_PER_CELL,
+) -> list[dict[str, Any]]:
+    """Use the balanced three-worker 10 pilot + 24 holdout runs for each cell."""
     by_key: dict[tuple[str, str, str, int], dict[str, Any]] = {}
     for row in rows:
         if row["mode"] not in MODE_ORDER or row["worker"] not in WORKER_ORDER or row.get("seed") is None:
@@ -327,7 +341,7 @@ def plot_threshold_sensitivity(rows: list[dict[str, Any]]) -> None:
     axes[2].legend()
     for ax in axes:
         ax.axvline(0.05, linestyle=":", color="#cc0000", linewidth=1.4)
-    fig.suptitle(f"Threshold sensitivity, two mature workers pooled common support (n={len(rows)})", y=1.04)
+    fig.suptitle(f"Threshold sensitivity, balanced three-worker pooled support (n={len(rows)})", y=1.04)
     save(fig, "01_threshold_sensitivity_current_pilot")
 
     fig, axes = plt.subplots(1, 3, figsize=(12.5, 3.7))
@@ -350,7 +364,7 @@ def plot_threshold_sensitivity(rows: list[dict[str, Any]]) -> None:
     for ax in axes:
         ax.axvline(0.05, linestyle=":", color="#cc0000", linewidth=1.4, label="delta=0.05")
         ax.axvline(max(x), linestyle="--", color="#666666", linewidth=1.1, label=f"last >0: {max(x):.2f}")
-    fig.suptitle(f"Extended threshold sensitivity, two mature workers pooled common support (n={len(rows)})", y=1.04)
+    fig.suptitle(f"Extended threshold sensitivity, balanced three-worker pooled support (n={len(rows)})", y=1.04)
     save(fig, "01b_threshold_sensitivity_extended_current_pilot")
 
 
@@ -359,7 +373,7 @@ def plot_threshold_sensitivity_by_model(rows: list[dict[str, Any]]) -> None:
     _, by_model = threshold_stats(rows, thresholds)
     if not by_model:
         return
-    colors = dict(zip(WORKER_ORDER, ["#f58518", "#54a24b"]))
+    colors = WORKER_COLORS
     fig, axes = plt.subplots(1, 3, figsize=(13.8, 3.9))
     for worker in WORKER_ORDER:
         worker_rows = sorted([row for row in by_model if normalize_worker(row["model_alias"]) == worker], key=lambda row: row["threshold"])
@@ -382,13 +396,13 @@ def plot_threshold_sensitivity_by_model(rows: list[dict[str, Any]]) -> None:
     axes[2].set_ylabel("selected occupancy")
     axes[2].set_title("Occupancy by worker")
     axes[0].legend(fontsize=7, loc="lower left")
-    fig.suptitle(f"Extended threshold sensitivity by worker, pooled common support (n={len(rows)})", y=1.04)
+    fig.suptitle(f"Extended threshold sensitivity by worker, balanced n=34 support (n={len(rows)})", y=1.04)
     save(fig, "01b_threshold_sensitivity_by_worker")
 
 
 def plot_improvement_distribution(pilot: list[dict[str, Any]]) -> None:
     fig, axes = plt.subplots(1, 2, figsize=(12.3, 4.0))
-    colors = dict(zip(WORKER_ORDER, ["#f58518", "#54a24b"]))
+    colors = WORKER_COLORS
     rng = np.random.default_rng(20260506)
     for i, worker in enumerate(WORKER_ORDER):
         rows = [row for row in pilot if row["worker"] == worker]
@@ -425,8 +439,8 @@ def plot_success_tau_occupancy(pilot: list[dict[str, Any]]) -> None:
     draw_heatmap(occ, occ_ann, "Pilot threshold occupancy proxy", "03_occupancy_heatmap_pilot", cmap="Oranges")
 
     fig, ax = plt.subplots(figsize=(11.2, 4.9))
-    colors = dict(zip(WORKER_ORDER, ["#f58518", "#54a24b"]))
-    offsets = dict(zip(WORKER_ORDER, [-0.18, 0.18]))
+    colors = WORKER_COLORS
+    offsets = dict(zip(WORKER_ORDER, np.linspace(-0.24, 0.24, len(WORKER_ORDER))))
     positions: list[float] = []
     values: list[list[int]] = []
     cell_workers: list[str] = []
@@ -496,7 +510,7 @@ def plot_success_tau_occupancy(pilot: list[dict[str, Any]]) -> None:
 
 def plot_trajectories(pilot: list[dict[str, Any]]) -> None:
     fig, axes = plt.subplots(1, len(MODE_ORDER), figsize=(13.5, 3.8), sharey=True)
-    colors = dict(zip(WORKER_ORDER, ["#f58518", "#54a24b"]))
+    colors = WORKER_COLORS
     for ax, mode in zip(axes, MODE_ORDER):
         for worker in WORKER_ORDER:
             runs = [row for row in pilot if row["mode"] == mode and row["worker"] == worker]
@@ -527,7 +541,7 @@ def plot_trajectories(pilot: list[dict[str, Any]]) -> None:
 
 
 def plot_trajectory_spaghetti(pilot: list[dict[str, Any]]) -> None:
-    colors = dict(zip(WORKER_ORDER, ["#f58518", "#54a24b"]))
+    colors = WORKER_COLORS
     fig, axes = plt.subplots(1, len(MODE_ORDER), figsize=(13.8, 3.9), sharey=True)
     for ax, mode in zip(axes, MODE_ORDER):
         for worker in WORKER_ORDER:
@@ -579,28 +593,37 @@ def plot_throughput() -> None:
     save(fig, "06_throughput_calibration")
 
 
-def plot_z_ablation() -> None:
-    path = CAMPAIGN_ROOT / "accounting" / "z_signal_ablation_partial.json"
-    if not path.exists():
+def z_records_for_runs(rows: list[dict[str, Any]]) -> list[Any]:
+    selected_dirs = {Path(row["run_dir"]).resolve() for row in rows}
+    records = load_records([
+        CAMPAIGN_ROOT / "runs" / "worker_pilot",
+        CAMPAIGN_ROOT / "runs" / "worker_confirmation",
+    ])
+    return [record for record in records if record.run_dir.resolve() in selected_dirs]
+
+
+def plot_z_ablation(rows: list[dict[str, Any]]) -> None:
+    records = z_records_for_runs(rows)
+    if not records:
         return
-    data = load_json(path)
     names = ["budget_only", "probe_only", "probe_plus_budget", "leaky_current"]
     labels = ["budget", "probe", "probe+budget", "leaky current"]
-    vals = [data["feature_sets"][name]["macro_accuracy"] for name in names]
+    results = {name: evaluate_feature_set(records, FEATURE_SETS[name]) for name in names}
+    vals = [results[name]["macro_accuracy"] for name in names]
     fig, ax = plt.subplots(figsize=(6.6, 3.8))
     bars = ax.bar(range(len(names)), vals, color=["#999999", "#4c78a8", "#72b7b2", "#f58518"])
     ax.set_xticks(range(len(names)))
     ax.set_xticklabels(labels, rotation=20, ha="right")
     ax.set_ylim(0, 1.05)
     ax.set_ylabel("leave-one-out macro accuracy")
-    ax.set_title(f"Z-signal mode prediction ablation (n={data['record_count']})")
+    ax.set_title(f"Z-signal mode prediction ablation (balanced n={len(records)})")
     for bar, value in zip(bars, vals):
         ax.text(bar.get_x() + bar.get_width() / 2, value + 0.025, f"{value:.2f}", ha="center", fontsize=8)
     save(fig, "07_z_signal_ablation")
 
 
-def plot_z_ablation_by_worker() -> None:
-    records = load_records([CAMPAIGN_ROOT / "runs" / "worker_pilot"])
+def plot_z_ablation_by_worker(rows: list[dict[str, Any]]) -> None:
+    records = z_records_for_runs(rows)
     if not records:
         return
     names = ["budget_only", "probe_only", "probe_plus_budget", "leaky_current"]
@@ -613,7 +636,7 @@ def plot_z_ablation_by_worker() -> None:
     fig, ax = plt.subplots(figsize=(8.8, 4.0))
     x = np.arange(len(names))
     width = 0.23
-    colors = dict(zip(WORKER_ORDER, ["#4c78a8", "#f58518", "#54a24b"]))
+    colors = WORKER_COLORS
     offsets = np.linspace(-width, width, len(WORKER_ORDER))
     for offset, worker in zip(offsets, WORKER_ORDER):
         worker_records = by_worker.get(worker, [])
@@ -633,50 +656,64 @@ def plot_z_ablation_by_worker() -> None:
     ax.set_xticklabels(labels, rotation=18, ha="right")
     ax.set_ylim(0, 1.08)
     ax.set_ylabel("leave-one-out macro accuracy")
-    ax.set_title("Z-signal mode prediction ablation by worker")
+    ax.set_title("Z-signal mode prediction ablation by worker, balanced n=34 support")
     ax.legend(fontsize=7, loc="upper left")
     save(fig, "07b_z_signal_ablation_by_worker")
 
 
 def plot_deployment_frontier() -> None:
-    path = CAMPAIGN_ROOT / "accounting" / "deployment_accounting_partial.json"
+    path = CAMPAIGN_ROOT / "accounting" / "threeworker_n34_final_analysis.json"
+    if not path.exists():
+        path = CAMPAIGN_ROOT / "accounting" / "threeworker_final_analysis.json"
     if not path.exists():
         return
-    data = load_json(path)
-    rows = data.get("frontier", [])
+    rows = load_json(path).get("frontier", [])
     if not rows:
         return
     fig, ax = plt.subplots(figsize=(7.2, 4.4))
-    colors = dict(zip(WORKER_ORDER, ["#4c78a8", "#f58518", "#54a24b"]))
     markers = dict(zip(MODE_ORDER, ["o", "s", "^"]))
     for row in rows:
         worker = normalize_worker(row["worker"])
         mode = row["mode"]
+        x = float(row["log_effort_objective"])
+        y = float(row["mean_final_relative_improvement"])
         ax.scatter(
-            row["log_effort_objective"],
-            row["mean_final_relative_improvement"],
+            x,
+            y,
             s=85,
-            color=colors.get(worker, "#777777"),
+            color=WORKER_COLORS.get(worker, "#777777"),
             marker=markers.get(mode, "o"),
             edgecolor="black",
             linewidth=0.5,
         )
-        ax.text(row["log_effort_objective"], row["mean_final_relative_improvement"] + 0.006, f"{mode.replace('_', ' ')}\n{worker.replace('gpt-', '')}", fontsize=7, ha="center")
+        ax.text(
+            x,
+            y + 0.006,
+            f"{mode.replace('_', ' ')}\n{worker.replace('gpt-', '')}",
+            fontsize=7,
+            ha="center",
+        )
     ax.set_xlabel("log-effort objective (lower is better)")
     ax.set_ylabel("mean final relative improvement")
-    ax.set_title("Deployment frontier snapshot (pilot, partial Spark)")
+    ax.set_title("Deployment frontier snapshot (balanced n=34 per cell)")
     save(fig, "08_deployment_frontier_snapshot")
 
-
 def plot_router_snapshot() -> None:
-    path = CAMPAIGN_ROOT / "router" / "router_decisions_pilot_z0_z3_controls.jsonl"
+    path = CAMPAIGN_ROOT / "router" / "router_decisions_threeworker_z0_z3_controls.jsonl"
     if not path.exists() or path.stat().st_size == 0:
         return
     rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
     completed = [row for row in rows if row.get("router_output")]
     if not completed:
         return
-    counts = Counter((row["signal_level"], row["negative_control"], row["router_output"]["selected_worker"]) for row in completed)
+    counts = Counter(
+        (
+            row["signal_level"],
+            row["negative_control"],
+            normalize_worker(row["router_output"].get("selected_agent_model") or row["router_output"].get("selected_worker")),
+        )
+        for row in completed
+    )
     signal_levels = ["Z0", "Z1", "Z2", "Z3"]
     controls = ["none", "shuffle_probe", "wrong_mode_probe", "synthetic_noise"]
 
@@ -694,7 +731,7 @@ def plot_router_snapshot() -> None:
         ax.set_ylabel("selection share")
         ax.set_ylim(0, 1.0)
     axes[1].legend(loc="center left", bbox_to_anchor=(1.02, 0.5))
-    fig.suptitle(f"Router decision snapshot ({len(completed)}/480 records complete)", y=1.03)
+    fig.suptitle(f"Three-worker router decision snapshot ({len(completed)}/480 records complete)", y=1.03)
     save(fig, "09_router_selection_snapshot")
 
     fig, ax = plt.subplots(figsize=(7.2, 3.8))
@@ -726,7 +763,7 @@ def plot_confirmation_progress(confirmation: list[dict[str, Any]]) -> None:
     complete = []
     success = []
     for mode in MODE_ORDER:
-        for worker in ["gpt-5.3-codex", "gpt-5.4"]:
+        for worker in WORKER_ORDER:
             labels.append(f"{MODE_LABELS[MODE_ORDER.index(mode)]}\n{worker.replace('gpt-', '')}")
             complete.append(counts[(mode, worker)])
             success.append(succ[(mode, worker)])
@@ -751,7 +788,7 @@ def plot_worker_cost_quality(pilot: list[dict[str, Any]]) -> None:
         rows.append({**run, "total_tokens": total_tokens, "output_tokens": output_tokens})
     if not rows:
         return
-    colors = dict(zip(WORKER_ORDER, ["#f58518", "#54a24b"]))
+    colors = WORKER_COLORS
     fig, axes = plt.subplots(1, 3, figsize=(13.6, 4.2))
     panels = [
         ("elapsed_wall_seconds", 60.0, "wall time per run (minutes)", "Quality vs wall-clock"),
@@ -772,13 +809,13 @@ def plot_worker_cost_quality(pilot: list[dict[str, Any]]) -> None:
         ax.set_ylabel("best relative improvement")
         ax.set_title(title)
     axes[0].legend(loc="lower right", fontsize=7)
-    fig.suptitle("Worker cost/quality diagnostics, pooled common support", y=1.04)
+    fig.suptitle("Worker cost/quality diagnostics, balanced n=34 support", y=1.04)
     save(fig, "12_worker_cost_quality_diagnostics")
 
 
 def plot_first_hit_cdf(pilot: list[dict[str, Any]]) -> None:
     fig, axes = plt.subplots(1, len(MODE_ORDER), figsize=(13.4, 3.9), sharey=True)
-    colors = dict(zip(WORKER_ORDER, ["#f58518", "#54a24b"]))
+    colors = WORKER_COLORS
     horizon = max([row["steps_completed"] for row in pilot if row.get("steps_completed")] or [20])
     steps = np.arange(1, horizon + 1)
     for ax, mode in zip(axes, MODE_ORDER):
@@ -809,7 +846,7 @@ def plot_entry_occupancy_scatter(pilot: list[dict[str, Any]]) -> None:
     rows = pilot_cell_metrics(pilot)
     if not rows:
         return
-    colors = dict(zip(WORKER_ORDER, ["#f58518", "#54a24b"]))
+    colors = WORKER_COLORS
     markers = dict(zip(MODE_ORDER, ["o", "s", "^"]))
     fig, ax = plt.subplots(figsize=(7.4, 5.2))
     for row in rows:
@@ -853,7 +890,7 @@ def plot_cost_adjusted_frontier_by_mode(pilot: list[dict[str, Any]]) -> None:
     rows = pilot_cell_metrics(pilot)
     if not rows:
         return
-    colors = dict(zip(WORKER_ORDER, ["#f58518", "#54a24b"]))
+    colors = WORKER_COLORS
     fig, axes = plt.subplots(1, len(MODE_ORDER), figsize=(13.0, 4.1), sharey=True)
     for ax, mode in zip(axes, MODE_ORDER):
         cell_rows = [row for row in rows if row["mode"] == mode and math.isfinite(row["log_effort"])]
@@ -898,8 +935,8 @@ def plot_cost_to_tau(pilot: list[dict[str, Any]]) -> None:
             rows.append({**run, "wall_to_tau": wall, "tokens_to_tau": tokens})
     if not rows:
         return
-    colors = dict(zip(WORKER_ORDER, ["#f58518", "#54a24b"]))
-    offsets = dict(zip(WORKER_ORDER, [-0.15, 0.15]))
+    colors = WORKER_COLORS
+    offsets = dict(zip(WORKER_ORDER, np.linspace(-0.24, 0.24, len(WORKER_ORDER))))
     fig, axes = plt.subplots(2, len(MODE_ORDER), figsize=(13.5, 6.2), sharex=True)
     rng = np.random.default_rng(20260506)
     for col, mode in enumerate(MODE_ORDER):
@@ -931,7 +968,7 @@ def write_index(generated: list[str]) -> None:
     lines = [
         "# Current Snapshot Figures",
         "",
-        "Generated from the current campaign state. Worker diagnostics use the two mature workers on the paper-facing pooled panel: 10 pilot + 25 holdout runs per cell; Spark is excluded.",
+        "Generated from the balanced three-worker pooled panel: 10 pilot + 24 holdout runs per mode/worker cell (n=34), using gpt_5_3_codex, gpt_5_4, and gpt_5_4_mini. Spark is excluded.",
         "",
     ]
     for name in generated:
@@ -965,6 +1002,18 @@ def main() -> None:
         "15_entry_vs_occupancy",
         "16_cost_adjusted_frontier_by_mode",
         "17_cost_to_tau_by_mode_worker",
+        "threeworker_frozen_confirmation_frontier",
+        "threeworker_deployment_frontier",
+        "threeworker_threshold_sensitivity",
+        "threeworker_router_selection_regret",
+        "threeworker_router_paired_gain",
+        "threeworker_negative_controls",
+        "threeworker_crossover_applicability",
+        "threeworker_improvement_distribution",
+        "threeworker_tau_distribution",
+        "threeworker_relative_improvement_trajectories",
+        "threeworker_worker_cost_quality_diagnostics",
+        "threeworker_cost_to_tau_by_mode_worker",
     ]
     plot_threshold_sensitivity(pooled)
     plot_threshold_sensitivity_by_model(pooled)
@@ -973,8 +1022,8 @@ def main() -> None:
     plot_trajectories(pooled)
     plot_trajectory_spaghetti(pooled)
     plot_throughput()
-    plot_z_ablation()
-    plot_z_ablation_by_worker()
+    plot_z_ablation(pooled)
+    plot_z_ablation_by_worker(pooled)
     plot_deployment_frontier()
     plot_router_snapshot()
     plot_confirmation_progress(confirmation)
@@ -983,6 +1032,11 @@ def main() -> None:
     plot_entry_occupancy_scatter(pooled)
     plot_cost_adjusted_frontier_by_mode(pooled)
     plot_cost_to_tau(pooled)
+    generated = [
+        name
+        for name in generated
+        if (OUT_DIR / f"{name}.png").exists() and (OUT_DIR / f"{name}.pdf").exists()
+    ]
     write_index(generated)
     support = Counter((row["mode"], row["worker"]) for row in pooled)
     print(json.dumps({"output_dir": str(OUT_DIR), "pooled_common_support": {f"{k[0]}/{k[1]}": v for k, v in sorted(support.items())}, "figures": generated}, indent=2))

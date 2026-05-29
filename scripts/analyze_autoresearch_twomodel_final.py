@@ -263,7 +263,7 @@ def router_analysis(router_path: Path | None, frontier: list[dict[str, Any]], mo
             continue
         item = json.loads(raw)
         output = item.get("router_output") or {}
-        worker = output.get("selected_worker")
+        worker = output.get("selected_agent_model") or output.get("selected_worker")
         mode = ((item.get("instance") or {}).get("workload_id") or (item.get("signal_record") or {}).get("instance", {}).get("workload_id"))
         seed = ((item.get("instance") or {}).get("seed") or (item.get("signal_record") or {}).get("instance", {}).get("seed"))
         if mode not in MODES or worker not in WORKERS:
