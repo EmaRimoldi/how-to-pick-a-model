@@ -13,7 +13,6 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import LinearSegmentedColormap
-from matplotlib.patches import FancyArrowPatch, Rectangle
 
 
 GAMMA = 0.05
@@ -36,9 +35,37 @@ def load_analysis_module(repo_root: Path):
     return module
 
 
-def first_hit_cost(analysis, row: dict, gamma: float = GAMMA) -> float:
-    stat = analysis.row_at_threshold(row, gamma, LAMBDA_WALL)
-    return stat["c_gamma"] if stat["success"] else math.inf
+def mode_worker_kappa(rows: list[dict]) -> dict[tuple[str, str], float]:
+    out: dict[tuple[str, str], float] = {}
+    for mode in {row["mode"] for row in rows}:
+        for worker in {row["worker"] for row in rows}:
+            per_step = [
+                float(row["elapsed_wall_seconds"]) / max(int(row["steps_completed"]), 1)
+                for row in rows
+                if row["mode"] == mode and row["worker"] == worker and float(row.get("elapsed_wall_seconds") or 0.0) > 0.0
+            ]
+            out[(mode, worker)] = float(np.median(per_step)) if per_step else math.inf
+    return out
+
+
+def first_hit_cost(analysis, row: dict, kappa: dict[tuple[str, str], float], gamma: float = GAMMA) -> float:
+    tau = analysis.first_hit_step(row["baseline_loss"], row["best_losses_by_step"], gamma)
+    if tau is None:
+        return math.inf
+    return LAMBDA_WALL * kappa[(row["mode"], row["worker"])] * float(tau)
+
+
+def worker_kappa(rows: list[dict]) -> dict[str, float]:
+    """Legacy helper retained for ad hoc comparisons outside the main figure."""
+    out = {}
+    for worker in {row["worker"] for row in rows}:
+        per_step = [
+            float(row["elapsed_wall_seconds"]) / max(int(row["steps_completed"]), 1)
+            for row in rows
+            if row["worker"] == worker and float(row.get("elapsed_wall_seconds") or 0.0) > 0.0
+        ]
+        out[worker] = float(np.median(per_step)) if per_step else math.inf
+    return out
 
 
 def empirical_t(costs: list[float], delta: float) -> float:
@@ -98,17 +125,17 @@ def rows_for_policy(rows: list[dict], policy: str | dict[str, str]) -> list[dict
     return [row for row in rows if row["worker"] == policy[row["mode"]]]
 
 
-def costs_by_mode_for_policy(analysis, rows: list[dict], policy: str | dict[str, str]) -> dict[str, list[float]]:
+def costs_by_mode_for_policy(analysis, rows: list[dict], kappa: dict[tuple[str, str], float], policy: str | dict[str, str]) -> dict[str, list[float]]:
     out = {}
     for mode in analysis.MODES:
         worker = policy if isinstance(policy, str) else policy[mode]
-        out[mode] = [first_hit_cost(analysis, row) for row in rows if row["mode"] == mode and row["worker"] == worker]
+        out[mode] = [first_hit_cost(analysis, row, kappa) for row in rows if row["mode"] == mode and row["worker"] == worker]
     return out
 
 
-def plot_speedup_curve(analysis, rows: list[dict], out_dir: Path) -> None:
-    mode_costs = [first_hit_cost(analysis, row) for row in rows_for_policy(rows, MODE_POLICY)]
-    always_costs = [first_hit_cost(analysis, row) for row in rows_for_policy(rows, ALWAYS_POLICY)]
+def plot_speedup_curve(analysis, rows: list[dict], kappa: dict[tuple[str, str], float], out_dir: Path) -> None:
+    mode_costs = [first_hit_cost(analysis, row, kappa) for row in rows_for_policy(rows, MODE_POLICY)]
+    always_costs = [first_hit_cost(analysis, row, kappa) for row in rows_for_policy(rows, ALWAYS_POLICY)]
     mode_t = [empirical_t(mode_costs, delta) for delta in DELTAS]
     always_t = [empirical_t(always_costs, delta) for delta in DELTAS]
     speedup = [base / mode for base, mode in zip(always_t, mode_t)]
@@ -121,7 +148,7 @@ def plot_speedup_curve(analysis, rows: list[dict], out_dir: Path) -> None:
         ax.text(x, y + 0.035, f"{y:.2f}x", ha="center", va="bottom", fontsize=9, color="#0f5132")
     ax.set_xlabel(r"certification tolerance $\delta_{\mathrm{cert}}$")
     ax.set_ylabel("certified speedup")
-    ax.set_title("Mode-conditioned orchestration beats the best always system")
+    ax.set_title("Mode-conditioned orchestration under the formula clock")
     ax.set_xticks(DELTAS)
     ax.set_ylim(0.95, max(speedup) + 0.22)
     ax.text(
@@ -136,12 +163,12 @@ def plot_speedup_curve(analysis, rows: list[dict], out_dir: Path) -> None:
     save(fig, out_dir, "certified_speedup_curve")
 
 
-def plot_resource_heatmap(analysis, rows: list[dict], out_dir: Path) -> None:
+def plot_resource_heatmap(analysis, rows: list[dict], kappa: dict[tuple[str, str], float], out_dir: Path) -> None:
     delta = 0.10
     matrix = np.zeros((len(analysis.MODES), len(analysis.WORKERS)))
     for i, mode in enumerate(analysis.MODES):
         for j, worker in enumerate(analysis.WORKERS):
-            costs = [first_hit_cost(analysis, row) for row in rows if row["mode"] == mode and row["worker"] == worker]
+            costs = [first_hit_cost(analysis, row, kappa) for row in rows if row["mode"] == mode and row["worker"] == worker]
             matrix[i, j] = empirical_t(costs, delta)
 
     cmap = LinearSegmentedColormap.from_list("resource", ["#1f7a4d", "#f5d76e", "#b73239"])
@@ -151,7 +178,7 @@ def plot_resource_heatmap(analysis, rows: list[dict], out_dir: Path) -> None:
     ax.set_xticklabels([label(analysis, w) for w in analysis.WORKERS], rotation=18, ha="right")
     ax.set_yticks(np.arange(len(analysis.MODES)))
     ax.set_yticklabels([analysis.MODE_LABELS[m] for m in analysis.MODES])
-    ax.set_title(r"Empirical certified resource, $\gamma=0.05$, $\delta_{\mathrm{cert}}=0.10$")
+    ax.set_title(r"Factored certified time, $\gamma=0.05$, $\delta_{\mathrm{cert}}=0.10$")
     ax.grid(False)
     for i in range(matrix.shape[0]):
         best_j = int(np.argmin(matrix[i]))
@@ -164,181 +191,60 @@ def plot_resource_heatmap(analysis, rows: list[dict], out_dir: Path) -> None:
     save(fig, out_dir, "certified_resource_heatmap")
 
 
-def certified_speedup_values(analysis, rows: list[dict]) -> tuple[list[float], list[float], list[float]]:
-    mode_costs = [first_hit_cost(analysis, row) for row in rows_for_policy(rows, MODE_POLICY)]
-    always_costs = [first_hit_cost(analysis, row) for row in rows_for_policy(rows, ALWAYS_POLICY)]
+def certified_speedup_values(analysis, rows: list[dict], kappa: dict[tuple[str, str], float]) -> tuple[list[float], list[float], list[float]]:
+    mode_costs = [first_hit_cost(analysis, row, kappa) for row in rows_for_policy(rows, MODE_POLICY)]
+    always_costs = [first_hit_cost(analysis, row, kappa) for row in rows_for_policy(rows, ALWAYS_POLICY)]
     mode_t = [empirical_t(mode_costs, delta) for delta in DELTAS]
     always_t = [empirical_t(always_costs, delta) for delta in DELTAS]
     speedup = [base / mode for base, mode in zip(always_t, mode_t)]
     return mode_t, always_t, speedup
 
 
-def certified_resource_matrix(analysis, rows: list[dict], delta: float = 0.10) -> np.ndarray:
+def certified_resource_matrix(analysis, rows: list[dict], kappa: dict[tuple[str, str], float], delta: float = 0.10) -> np.ndarray:
     matrix = np.zeros((len(analysis.MODES), len(analysis.WORKERS)))
     for i, mode in enumerate(analysis.MODES):
         for j, worker in enumerate(analysis.WORKERS):
-            costs = [first_hit_cost(analysis, row) for row in rows if row["mode"] == mode and row["worker"] == worker]
+            costs = [first_hit_cost(analysis, row, kappa) for row in rows if row["mode"] == mode and row["worker"] == worker]
             matrix[i, j] = empirical_t(costs, delta)
     return matrix
 
 
-def plot_unified_summary(analysis, rows: list[dict], out_dir: Path) -> None:
-    matrix = certified_resource_matrix(analysis, rows, delta=0.10)
-    _, _, speedup = certified_speedup_values(analysis, rows)
+def plot_unified_summary(analysis, rows: list[dict], kappa: dict[tuple[str, str], float], out_dir: Path) -> None:
+    _, _, speedup = certified_speedup_values(analysis, rows, kappa)
 
-    fig = plt.figure(figsize=(12.6, 4.45))
-    gs = fig.add_gridspec(1, 3, width_ratios=[1.18, 0.26, 1.18], wspace=0.28)
-    ax_h = fig.add_subplot(gs[0, 0])
-    ax_mid = fig.add_subplot(gs[0, 1])
-    ax_s = fig.add_subplot(gs[0, 2])
-
-    cmap = LinearSegmentedColormap.from_list("neutral_resource", ["#f8fafc", "#dbe3ed", "#8b97a7", "#334155"])
-    ax_h.imshow(matrix, cmap=cmap, aspect="auto", vmin=np.nanmin(matrix), vmax=np.nanmax(matrix))
-    ax_h.set_xticks(np.arange(len(analysis.WORKERS)))
-    ax_h.set_xticklabels([label(analysis, worker) for worker in analysis.WORKERS], rotation=18, ha="right")
-    for tick, worker in zip(ax_h.get_xticklabels(), analysis.WORKERS):
-        tick.set_color(analysis.WORKER_COLORS[worker])
-        tick.set_fontweight("bold")
-    ax_h.set_yticks(np.arange(len(analysis.MODES)))
-    ax_h.set_yticklabels([analysis.MODE_LABELS[mode] for mode in analysis.MODES])
-    ax_h.set_title("A. Construct the mode policy", loc="left", fontweight="bold")
-    ax_h.grid(False)
-
-    for i, mode in enumerate(analysis.MODES):
-        best_j = int(np.argmin(matrix[i]))
-        for j, worker in enumerate(analysis.WORKERS):
-            is_best = j == best_j
-            ax_h.add_patch(
-                Rectangle(
-                    (j - 0.5, i - 0.5),
-                    1,
-                    1,
-                    fill=False,
-                    edgecolor=analysis.WORKER_COLORS[worker] if is_best else "white",
-                    linewidth=3.0 if is_best else 0.7,
-                )
-            )
-            text_color = "white" if matrix[i, j] > 0.55 else "#0f172a"
-            ax_h.text(
-                j,
-                i,
-                f"{matrix[i, j]:.3f}",
-                ha="center",
-                va="center",
-                color=text_color,
-                fontsize=11,
-                fontweight="bold" if is_best else "normal",
-            )
-    ax_h.text(
-        2.48,
-        -0.67,
-        "darker = more resource",
-        transform=ax_h.transData,
-        ha="right",
-        va="center",
-        fontsize=8.5,
-        color="#475569",
-    )
-    ax_h.text(
-        -0.48,
-        3.02,
-        "row-wise minima:",
-        transform=ax_h.transData,
-        ha="left",
-        va="center",
-        fontsize=9,
-        color="#475569",
-    )
-    policy_x = 0.55
-    for mode in analysis.MODES:
-        worker = MODE_POLICY[mode]
-        ax_h.text(
-            policy_x,
-            3.02,
-            f"{analysis.MODE_LABELS[mode]} → {label(analysis, worker).replace('GPT ', '')}",
-            transform=ax_h.transData,
-            ha="left",
-            va="center",
-            fontsize=8.5,
-            color="#0f172a",
-            bbox={"boxstyle": "round,pad=0.25", "fc": "#ffffff", "ec": analysis.WORKER_COLORS[worker], "lw": 1.4},
-        )
-        policy_x += 0.95
-
-    ax_mid.axis("off")
-    arrow = FancyArrowPatch(
-        (0.06, 0.53),
-        (0.94, 0.53),
-        transform=ax_mid.transAxes,
-        arrowstyle="-|>",
-        mutation_scale=22,
-        linewidth=2.2,
-        color="#0f172a",
-    )
-    ax_mid.add_patch(arrow)
-    ax_mid.text(
-        0.50,
-        0.64,
-        "same\npolicy",
-        ha="center",
-        va="center",
-        transform=ax_mid.transAxes,
-        fontsize=8.5,
-        fontweight="bold",
-        color="#0f172a",
-    )
-    ax_mid.text(
-        0.50,
-        0.40,
-        "evaluated\nagainst\nalways GPT 5.4",
-        ha="center",
-        va="center",
-        transform=ax_mid.transAxes,
-        fontsize=8.2,
-        color="#475569",
-    )
-
-    ax_s.axhline(1.0, color=analysis.WORKER_COLORS[ALWAYS_POLICY], linewidth=1.6, linestyle="--")
-    ax_s.fill_between(DELTAS, 1.0, speedup, color="#dcfce7", alpha=0.9)
-    ax_s.plot(DELTAS, speedup, color="#0f5132", marker="o", linewidth=2.8, markersize=6.5)
+    fig, ax_s = plt.subplots(figsize=(6.4, 3.15))
+    ax_s.axhline(1.0, color="#94a3b8", linewidth=1.2, linestyle="--")
+    ax_s.fill_between(DELTAS, 1.0, speedup, color="#dcfce7", alpha=0.65)
+    ax_s.plot(DELTAS, speedup, color="#0f5132", marker="o", linewidth=2.3, markersize=5.8)
     for x, y in zip(DELTAS, speedup):
-        ax_s.text(x, y + 0.032, f"{y:.2f}x", ha="center", va="bottom", fontsize=9, color="#0f5132")
-    ax_s.set_title("B. Evaluate certified speedup", loc="left", fontweight="bold")
+        va = "bottom" if y >= 1.0 else "top"
+        offset = 0.025 if y >= 1.0 else -0.025
+        ax_s.text(x, y + offset, f"{y:.2f}x", ha="center", va=va, fontsize=8.5, color="#0f5132")
+    ax_s.set_title("Mode-conditioned certified-time ratio", loc="left", fontweight="bold")
     ax_s.set_xlabel(r"certification tolerance $\delta_{\mathrm{cert}}$")
-    ax_s.set_ylabel("certified speedup")
+    ax_s.set_ylabel("speedup vs always GPT 5.4")
     ax_s.set_xticks(DELTAS)
-    ax_s.set_ylim(0.95, max(speedup) + 0.20)
+    ax_s.set_ylim(min(0.85, min(speedup) - 0.06), max(speedup) + 0.12)
     ax_s.text(
         DELTAS[-1],
-        1.025,
-        "always GPT 5.4 baseline",
+        1.015,
+        "baseline",
         ha="right",
         va="bottom",
-        fontsize=8.4,
-        color=analysis.WORKER_COLORS[ALWAYS_POLICY],
+        fontsize=8,
+        color="#64748b",
     )
-    ax_s.text(
-        DELTAS[0],
-        max(speedup) + 0.105,
-        "Mode policy from panel A stays above the baseline",
-        ha="left",
-        va="center",
-        fontsize=9.2,
-        color="#0f5132",
-        bbox={"boxstyle": "round,pad=0.3", "fc": "#f0fdf4", "ec": "#86efac", "lw": 1.0},
-    )
-
-    fig.suptitle("Mode-conditioned selection creates certified speedup", y=1.03, fontsize=15, fontweight="bold")
+    fig.tight_layout()
     save(fig, out_dir, "certified_resource_summary_unified")
 
 
-def plot_quality_resource_scatter(analysis, rows: list[dict], out_dir: Path) -> None:
+def plot_quality_resource_scatter(analysis, rows: list[dict], kappa: dict[tuple[str, str], float], out_dir: Path) -> None:
     markers = {"mlp_flat": "o", "cnn_compact": "s", "resnet_micro": "^"}
     fig, ax = plt.subplots(figsize=(6.5, 4.1))
     for mode in analysis.MODES:
         for worker in analysis.WORKERS:
             cell = [row for row in rows if row["mode"] == mode and row["worker"] == worker]
-            costs = [first_hit_cost(analysis, row) for row in cell]
+            costs = [first_hit_cost(analysis, row, kappa) for row in cell]
             t_value = empirical_t(costs, 0.10)
             final_loss = sum(row["final_loss"] for row in cell) / len(cell)
             is_frontier = MODE_POLICY[mode] == worker
@@ -374,12 +280,12 @@ def plot_quality_resource_scatter(analysis, rows: list[dict], out_dir: Path) -> 
     save(fig, out_dir, "quality_vs_certified_resource")
 
 
-def plot_first_hit_ecdf(analysis, rows: list[dict], out_dir: Path) -> None:
+def plot_first_hit_ecdf(analysis, rows: list[dict], kappa: dict[tuple[str, str], float], out_dir: Path) -> None:
     fig, axes = plt.subplots(1, len(analysis.MODES), figsize=(12.3, 3.7), sharey=True)
     target = 0.90
     for ax, mode in zip(axes, analysis.MODES):
         for worker in analysis.WORKERS:
-            costs = sorted(first_hit_cost(analysis, row) for row in rows if row["mode"] == mode and row["worker"] == worker)
+            costs = sorted(first_hit_cost(analysis, row, kappa) for row in rows if row["mode"] == mode and row["worker"] == worker)
             finite = [value for value in costs if math.isfinite(value)]
             if not finite:
                 continue
@@ -398,9 +304,9 @@ def plot_first_hit_ecdf(analysis, rows: list[dict], out_dir: Path) -> None:
     save(fig, out_dir, "first_hit_ecdf_by_mode")
 
 
-def plot_deployment_mix_sensitivity(analysis, rows: list[dict], out_dir: Path) -> None:
-    mode_costs = costs_by_mode_for_policy(analysis, rows, MODE_POLICY)
-    always_costs = costs_by_mode_for_policy(analysis, rows, ALWAYS_POLICY)
+def plot_deployment_mix_sensitivity(analysis, rows: list[dict], kappa: dict[tuple[str, str], float], out_dir: Path) -> None:
+    mode_costs = costs_by_mode_for_policy(analysis, rows, kappa, MODE_POLICY)
+    always_costs = costs_by_mode_for_policy(analysis, rows, kappa, ALWAYS_POLICY)
     xs = np.linspace(1.0 / 3.0, 1.0, 80)
     fig, axes = plt.subplots(1, len(analysis.MODES), figsize=(12.1, 3.6), sharey=True)
     for ax, dominant_mode in zip(axes, analysis.MODES):
@@ -440,13 +346,14 @@ def main() -> None:
         total_per_cell=args.total_per_cell,
     )
     out_dir = Path(args.out_dir)
+    kappa = mode_worker_kappa(rows)
     style()
-    plot_unified_summary(analysis, rows, out_dir)
-    plot_speedup_curve(analysis, rows, out_dir)
-    plot_resource_heatmap(analysis, rows, out_dir)
-    plot_quality_resource_scatter(analysis, rows, out_dir)
-    plot_first_hit_ecdf(analysis, rows, out_dir)
-    plot_deployment_mix_sensitivity(analysis, rows, out_dir)
+    plot_unified_summary(analysis, rows, kappa, out_dir)
+    plot_speedup_curve(analysis, rows, kappa, out_dir)
+    plot_resource_heatmap(analysis, rows, kappa, out_dir)
+    plot_quality_resource_scatter(analysis, rows, kappa, out_dir)
+    plot_first_hit_ecdf(analysis, rows, kappa, out_dir)
+    plot_deployment_mix_sensitivity(analysis, rows, kappa, out_dir)
 
 
 if __name__ == "__main__":
