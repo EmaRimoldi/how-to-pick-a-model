@@ -772,6 +772,22 @@ Thus the best always-worker baseline is strong, but there is still instance-leve
 The oracle here is retrospective: for each shared instance \(x\), it is the worker with the lowest full-horizon best-visible validation loss among the three complete worker trajectories.
 It is not visible to the router and is used only to test whether progressively richer pre-deployment evidence points the router toward the worker that actually performs best on that instance.
 
+We also run an allocation-output version of the router audit for the two completed frontier routers, asking each router to report a mode posterior \(\pi_z\), a mode-allocation vector \(q_z\), and a hard selected agent system.
+Figure~\ref{fig:router-shift-lookup-summary} summarizes the resulting diagnostic.
+The left panel shows that \(Z_0\) correctly behaves like an uninformative balanced record, while \(Z_1\) and \(Z_2\) move both posterior mass and allocation mass toward the predeclared architecture mode.
+The middle panel shows that this mode recognition does not by itself make the direct hard worker choice stable.
+The right panel applies the frozen mode--system certified-resource table from Experiment 1 to the router posterior; this lookup-calibrated choice is much more stable and exposes the intended separation between recognizing the mode and choosing the agent system.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/autoresearch/router_shift_lookup_summary.png}
+\caption{Single-figure audit of mode recognition and worker choice for the allocation-output router protocol.
+Panel A plots, for each instance, posterior mass on the true architecture mode against allocation mass on the same mode; large markers are signal-level means.
+Panels B and C compare the direct hard worker choice with the lookup-calibrated choice induced by the posterior and the frozen mode--system certified-resource table.
+Counts are shown for the completed \(\texttt{gpt\_5\_5\_router\_xhigh}\) and \(\texttt{gpt\_5\_4\_router\_xhigh}\) allocation-output audits.}
+\label{fig:router-shift-lookup-summary}
+\end{figure}
+
 \begin{table}[t]
 \centering
 \small
