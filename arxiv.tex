@@ -86,6 +86,8 @@ Agent systems on verified tasks invite a deceptively simple question: which back
 \section{Introduction}
 \label{sec:intro}
 
+\pier{ As of early 2026, in the valley, people are arguing whether it is better to have a minimal harness around better and better models, whether stronger harnesses will be necessary in terms of better orchestration or better "subagent spawning" or, whether prompts should be optimized or not. The reason why these arguments are open is that we do not have a clear metric and a clear argument for picking the winner. We provide here a way to answer those arguments. We argue that "better agentic systems" means deep down solving an optimization problem: less time/cost/token count to correct solution. Importantly, we show that: (1) any design question about agentic systems can be framed this way, from choosing the backbone(s), to the orchestration, to prompt optimization. This general framework \textit{is} useful and deployable: (2) we can we prove mathematically that our certified time to solution splits in four meaningful pieces which can be estimated from the traces; and (3) we can use it in practice to pull down the time to solution achieving SOTA performance in SWE-bench and Karpathy's AutoResearch in SOTA time. }
+
 Practitioners building agent systems face multiple practical challenges:
 which model (backbone) to use, how to route between models, when to spawn sub-agents, how to engineer context between them, and so on.
 All these possible choices often affect performance (quality of the solution), speed (time to solution), and token/API cost.
@@ -322,6 +324,8 @@ multi-file edits, or performance-oriented rewrites.  If the true bottleneck is a
 mismatch but the allocation rule assigns only \(q_z(\mathrm{dep})=0.1\) to dependency repair,
 then the packed model charges a \(10\times\) slowdown relative to devoting all relevant
 effort to that strategy.
+
+\pier{As a last remark, importantly, these modes, or the subtasks in which the task splits do not need to be known or explicit from scratch, the router can (and generally does) in-context learn them. If our model realizes that a subfamily of tasks are more difficult and treats them differently ...}
 
 \section{Certified speedup accounting}
 \label{sec:accounting}
@@ -611,6 +615,20 @@ retries, and is cost-favorable when \(\lceil D_{\mathrm{cross}}\rceil\kappa_\ell
 % explicitly declared.  Because the benchmark records full trajectories to horizon \(H\), we
 % also report persistence and final-quality diagnostics, but these do not change the
 % first-passage convention in~\eqref{eq:deployment-loss}.
+
+\section{Reduction of Agentic System Building to our Framework}
+
+Tomer's paragraph.
+
+(System) Prompt Optimization.
+
+Choice of Harness (Orchestration).
+
+Choice of Backbone.
+
+This is the key fundamental step towards automating harness optimization.
+
+We are defining what is better, we are defining the objective function --- not the solver to the optimization problem. Indeed, in our experiments we solve the optimization problem greedily. The next step will be coming up with solvers, for this operations research problem, but this is not what we do here, yet!
 
 \section{Progressive signals and paired router value}
 \label{subsec:paired}
