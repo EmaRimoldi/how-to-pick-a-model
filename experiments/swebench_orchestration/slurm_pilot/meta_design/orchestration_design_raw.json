@@ -1,0 +1,634 @@
+{
+  "assumptions": [
+    "Gold patches and hidden tests are unavailable; solvers may use only issue text, repository state, allowed repository inspection tools, generated diffs, JSONL logs, and deployment verifier feedback.",
+    "Declared modes are noisy but useful priors; the controller may override them using observable issue and repository signals.",
+    "Because local test execution is not listed as an allowed tool, verification is primarily static review plus sparse external verifier calls when available.",
+    "All worker models are Qwen-family OpenAI-compatible chat endpoints; model_families is therefore 1 for every orchestration."
+  ],
+  "benchmark": "princeton-nlp/SWE-Bench_Verified:test",
+  "design_id": "swe_verified_e1_qwen_distribution_aware_v1",
+  "evidence_level": "E1",
+  "expected_tradeoffs": [
+    "Universal_u1 has the lowest orchestration complexity but is expected to underperform on framework lifecycle and object-model issues.",
+    "Literal_s1 is cheapest and likely best for sympy__sympy-16886-like exact mapping bugs but intentionally stops early on ambiguity.",
+    "Framework_s2 and SymPy_s4 spend more 14B budget because their hidden-test regression surfaces are larger.",
+    "Hierarchical_h1 adds routing complexity but should reduce difficulty-normalized mismatch by assigning low budgets to literal fixes and higher review/escalation budgets to broad framework or object-model modes.",
+    "Absence of local test execution increases reliance on reviewer quality and makes verifier calls more valuable but still capped."
+  ],
+  "logging_plan": [
+    "Write one JSONL record per component call with instance_id, repo, base_commit, declared_mode, inferred_mode, model, prompt_template_id, tool_calls, token estimates, and wall-clock estimate.",
+    "Log every rg query, inspected file snippet range, ranked localization result, and confidence score.",
+    "Log each patch proposal with proposal_index, modified_files, diff_hash, specialist_id, escalation_used, reviewer verdict, and stated risks.",
+    "Log verifier decisions as verified|failed|not_called with feedback summary, call_index, and whether feedback was actionable.",
+    "Log stopping reason using a fixed enum: verified, max_proposals, max_verifier_calls, reviewer_stop, low_confidence, malformed_diff, non_actionable_failure, or budget_guard_stop."
+  ],
+  "mode_taxonomy": [
+    {
+      "description": "Issue text names an exact symbol, file-level behavior, or one-line expected change.",
+      "expected_difficulty": "low",
+      "expected_strategy": "Use cheap localization, patch the named line or nearby branch, and spend most effort on regression-risk review.",
+      "mode_id": "literal_small_fix",
+      "observable_signals": [
+        "Problem statement contains exact incorrect literal or method name",
+        "Search finds a single obvious definition or table entry",
+        "Low FAIL_TO_PASS count and small affected surface"
+      ]
+    },
+    {
+      "description": "Framework internal lifecycle, registry, middleware, admin, cache, or handler-chain behavior with broad regression risk.",
+      "expected_difficulty": "medium",
+      "expected_strategy": "Localize around named framework subsystem, inspect adjacent tests and historical patterns, generate conservative targeted patches with reviewer checking cross-mode behavior.",
+      "mode_id": "framework_lifecycle",
+      "observable_signals": [
+        "Repository family is Django or similar large framework",
+        "Issue mentions middleware, registry, ModelAdmin, async/sync adaptation, cache clearing, or internal API contract",
+        "High PASS_TO_PASS count implies broad compatibility constraints"
+      ]
+    },
+    {
+      "description": "Array, indexing, dtype, dimension-name, or copy semantics where a small API misuse can affect many paths.",
+      "expected_difficulty": "medium",
+      "expected_strategy": "Trace reproducer names through indexing/copy helpers, preserve public API semantics, and avoid broad rewrites of core data structures.",
+      "mode_id": "array_indexing_dtype",
+      "observable_signals": [
+        "Repository family is xarray or similar array library",
+        "Issue includes a short reproducer using dims, coords, loc, copy, dtype, or indexes",
+        "Affected behavior depends on keyword collisions or dtype preservation"
+      ]
+    },
+    {
+      "description": "Symbolic math object construction, canonicalization, subclassing, or exact symbolic semantics.",
+      "expected_difficulty": "medium",
+      "expected_strategy": "Search exact class or mapping, inspect constructor invariants, prefer minimal object-model compatible changes, and escalate for reviewer scrutiny when class identity changes.",
+      "mode_id": "numeric_symbolic_object_model",
+      "observable_signals": [
+        "Repository family is SymPy",
+        "Issue mentions Basic, __new__, classmethods, subclassing, symbolic object creation, or math-domain mappings",
+        "Patch may require maintaining canonical constructors and compatibility"
+      ]
+    },
+    {
+      "description": "Version parsing, dependency capability, configuration keyword, or compatibility shim issue.",
+      "expected_difficulty": "medium",
+      "expected_strategy": "Find the compatibility wrapper, compare existing dependency policies, patch narrowly while avoiding new hard dependencies.",
+      "mode_id": "dependency_version_config",
+      "observable_signals": [
+        "Issue names package versions, dependency parser behavior, config settings, or keyword collision with dependency API",
+        "Failure occurs at boundary between project helper and third-party API",
+        "Problem statement suggests a replacement parser or argument sanitization"
+      ]
+    },
+    {
+      "description": "Insufficient or conflicting signals after initial localization.",
+      "expected_difficulty": "high",
+      "expected_strategy": "Use broader localization and stronger patcher once, then stop unless verifier feedback gives a concrete next target.",
+      "mode_id": "unknown",
+      "observable_signals": [
+        "Search returns many unrelated candidates",
+        "Issue lacks exact API names or reproducer",
+        "Controller confidence below threshold"
+      ]
+    }
+  ],
+  "optimization_loss": "Primary loss is expected unverified failure plus weighted costs for model calls, context tokens, patch proposals, verifier calls, and mode-normalized retry waste. The preferred deployment candidate is hierarchical_h1 when routing confidence is high enough to avoid unnecessary 14B use; universal_u1 is the simplicity baseline; standalone specialists are frozen ablations and fallbacks for declared or inferred modes.",
+  "orchestrations": [
+    {
+      "complexity": {
+        "agents": 3,
+        "context_budget_tokens": 24000,
+        "max_patch_proposals": 2,
+        "model_families": 1,
+        "prompt_templates": 3,
+        "routing_branches": 1,
+        "tool_policies": 3
+      },
+      "components": [
+        {
+          "component_id": "u1_localizer",
+          "max_calls": 2,
+          "model": "qwen3_4b_instruct",
+          "output_contract": "JSON object with search_queries, ranked_files, key_symbols, risk_notes, and localization_confidence.",
+          "prompt_summary": "Extract exact symbols, error strings, suspected files, reproduction clues, and search queries from the issue; rank up to 6 files with confidence and rationale.",
+          "role": "localizer",
+          "tools": [
+            "rg/search repository text",
+            "inspect file snippets",
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "u1_patcher",
+          "max_calls": 2,
+          "model": "qwen2_5_coder_7b",
+          "output_contract": "Unified diff plus JSON metadata listing modified files, intended behavior, and regression risks.",
+          "prompt_summary": "Using only issue text and localized snippets, produce one minimal unified diff and explain why it addresses the failure without broad rewrites.",
+          "role": "patcher",
+          "tools": [
+            "inspect file snippets",
+            "generate unified diff patches",
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "u1_reviewer",
+          "max_calls": 2,
+          "model": "qwen2_5_7b_instruct",
+          "output_contract": "JSON verdict approve|revise|reject with blocking_issues, suggested_patch_focus, and verifier_ready boolean.",
+          "prompt_summary": "Review the proposed diff against issue facts, surrounding code style, edge cases, and likely hidden tests; either approve or request one concrete revision.",
+          "role": "reviewer",
+          "tools": [
+            "inspect file snippets",
+            "maintain JSONL trace logs"
+          ]
+        }
+      ],
+      "evidence_policy": "Use E1 public fields only as priors for risk: high PASS_TO_PASS count increases reviewer strictness and discourages broad changes; hints are ignored because not included.",
+      "expected_failure_modes": [
+        "Static-only review may miss behavioral regressions hidden by absent local test execution.",
+        "Single universal prompt may underfit Django lifecycle and SymPy object-model invariants.",
+        "Small-model localization can overweight exact words and miss indirect call paths."
+      ],
+      "fallback_policy": "If qwen2_5_coder_7b emits malformed diff twice or reviewer rejects for conceptual misunderstanding, escalate the same context to qwen2_5_coder_14b for the final patch attempt.",
+      "name": "Universal Conservative Static Solver",
+      "objective_summary": "A single low-complexity pipeline for all instances: cheap localization, one coder patch, one independent review, then at most one feedback-driven retry.",
+      "orchestration_id": "universal_u1_static_conservative",
+      "orchestration_type": "universal",
+      "patch_policy": "Generate at most two patches. First patch must touch no more than 2 files unless the localizer finds a named test file and source file pair. Second patch may only address reviewer or verifier feedback.",
+      "routing_policy": "No mode routing. Always run localizer, patcher, reviewer. If localization confidence is below 0.45, allow one extra rg pass before patching.",
+      "stopping_rule": "Stop on first verified patch, on two rejected or failed patch proposals, on non-actionable verifier failure after escalation, or when no ranked file exceeds confidence 0.25.",
+      "target_modes": [
+        "literal_small_fix",
+        "framework_lifecycle",
+        "array_indexing_dtype",
+        "numeric_symbolic_object_model",
+        "dependency_version_config",
+        "unknown"
+      ],
+      "verification_policy": "Before any verifier call, require reviewer verifier_ready=true. Use one verifier call for the reviewed patch. If it fails with actionable feedback, perform one revision and one final verifier call."
+    },
+    {
+      "complexity": {
+        "agents": 3,
+        "context_budget_tokens": 12000,
+        "max_patch_proposals": 1,
+        "model_families": 1,
+        "prompt_templates": 3,
+        "routing_branches": 0,
+        "tool_policies": 2
+      },
+      "components": [
+        {
+          "component_id": "s1_locator",
+          "max_calls": 1,
+          "model": "qwen3_4b_instruct",
+          "output_contract": "JSON with target_file, target_lines_summary, literal_or_symbol, and confidence.",
+          "prompt_summary": "Search exact bad literal, exact symbol, and nearby aliases; return the single most likely edit location and adjacent regression test area.",
+          "role": "localizer",
+          "tools": [
+            "rg/search repository text",
+            "inspect file snippets",
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "s1_patcher",
+          "max_calls": 1,
+          "model": "qwen2_5_coder_7b",
+          "output_contract": "Unified diff plus short JSON risk assessment.",
+          "prompt_summary": "Produce the smallest possible diff for the named literal or branch; avoid refactoring and avoid touching unrelated tests unless a regression test location is obvious.",
+          "role": "patcher",
+          "tools": [
+            "inspect file snippets",
+            "generate unified diff patches",
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "s1_reviewer",
+          "max_calls": 1,
+          "model": "qwen2_5_7b_instruct",
+          "output_contract": "JSON verdict approve|reject with one blocking reason if rejected.",
+          "prompt_summary": "Check for exact correctness, nearby table consistency, import side effects, and whether the patch is unnecessarily broad.",
+          "role": "reviewer",
+          "tools": [
+            "inspect file snippets",
+            "maintain JSONL trace logs"
+          ]
+        }
+      ],
+      "evidence_policy": "Acquire no extra evidence beyond exact rg hits and the edited snippet unless reviewer flags ambiguity.",
+      "expected_failure_modes": [
+        "May miss nonlocal consequences of apparently literal changes.",
+        "Too aggressive stopping can lose recoverable cases with misleading issue wording."
+      ],
+      "fallback_policy": "If exact search is ambiguous or reviewer rejects conceptual fit, hand off to universal or hierarchical fallback rather than expanding this specialist.",
+      "name": "Literal Small Fix Specialist",
+      "objective_summary": "Minimize cost for exact-literal and named-symbol bugs by using cheap search and one minimal patch.",
+      "orchestration_id": "specialist_literal_s1",
+      "orchestration_type": "mode_specialist",
+      "patch_policy": "One proposal only; patch should usually be a one-line or one-branch change. No escalation unless embedded in hierarchical orchestration.",
+      "routing_policy": "Use only when exact search finds one or two high-confidence locations and issue semantics are local.",
+      "stopping_rule": "Stop after first verified patch, reviewer rejection, malformed diff, or one verifier failure without same-location feedback.",
+      "target_modes": [
+        "literal_small_fix"
+      ],
+      "verification_policy": "Use a single verifier call only after reviewer approval; do not spend a retry unless verifier feedback names the same local region."
+    },
+    {
+      "complexity": {
+        "agents": 4,
+        "context_budget_tokens": 36000,
+        "max_patch_proposals": 2,
+        "model_families": 1,
+        "prompt_templates": 4,
+        "routing_branches": 1,
+        "tool_policies": 4
+      },
+      "components": [
+        {
+          "component_id": "s2_controller",
+          "max_calls": 1,
+          "model": "qwen2_5_7b_instruct",
+          "output_contract": "JSON with invariants, subsystem, search_plan, and broad_change_guardrails.",
+          "prompt_summary": "Convert the issue into framework invariants, likely subsystem boundaries, and forbidden broad changes; choose focused search plan.",
+          "role": "controller",
+          "tools": [
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "s2_localizer",
+          "max_calls": 3,
+          "model": "qwen3_4b_instruct",
+          "output_contract": "JSON ranked source files, relevant tests, call_chain_summary, and confidence.",
+          "prompt_summary": "Search named framework methods/classes and adjacent tests; inspect call chain around cache clearing, middleware loading, admin lookup, or handler adaptation.",
+          "role": "localizer",
+          "tools": [
+            "rg/search repository text",
+            "inspect file snippets",
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "s2_patcher",
+          "max_calls": 2,
+          "model": "qwen2_5_coder_14b",
+          "output_contract": "Unified diff plus JSON explaining contract preservation and changed control flow.",
+          "prompt_summary": "Generate a minimal framework-internal diff preserving documented contracts, async/sync boundaries, inheritance semantics, and cache invalidation expectations.",
+          "role": "patcher",
+          "tools": [
+            "inspect file snippets",
+            "generate unified diff patches",
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "s2_reviewer",
+          "max_calls": 2,
+          "model": "qwen2_5_7b_instruct",
+          "output_contract": "JSON verdict approve|revise|reject with regression_risks and required_revision.",
+          "prompt_summary": "Perform adversarial framework review: compatibility, hidden-test risk, named issue reproduction, and whether narrower existing helper patterns should be used.",
+          "role": "reviewer",
+          "tools": [
+            "inspect file snippets",
+            "maintain JSONL trace logs"
+          ]
+        }
+      ],
+      "evidence_policy": "Spend extra rg and snippet budget on adjacent tests and existing helper patterns; do not inspect unrelated framework subsystems once a call chain is established.",
+      "expected_failure_modes": [
+        "May overpay on simple Django one-line cache fixes.",
+        "Static reasoning about async middleware can miss coroutine wrapping behavior.",
+        "Strict review may reject viable but slightly broader patches."
+      ],
+      "fallback_policy": "If 14B patcher cannot produce a coherent diff, fall back to a no-test minimal source change from qwen2_5_coder_7b only when localizer confidence exceeds 0.75; otherwise stop.",
+      "name": "Framework Lifecycle Specialist",
+      "objective_summary": "Handle Django-like internals with conservative localization, stronger patch generation, and stricter review of async/sync, registry, and admin compatibility.",
+      "orchestration_id": "specialist_framework_s2",
+      "orchestration_type": "mode_specialist",
+      "patch_policy": "Allow up to two proposals. First must be source-only unless a test file is clearly localized. Second may revise control flow or add a narrowly scoped regression test if verifier feedback implies missing coverage.",
+      "routing_policy": "Use for Django registry/admin/middleware/handler/cache signals or any high PASS_TO_PASS framework instance.",
+      "stopping_rule": "Stop on verified patch, two patch proposals, reviewer hard rejection, or inability to identify a concrete framework invariant.",
+      "target_modes": [
+        "framework_lifecycle"
+      ],
+      "verification_policy": "Reviewer approval required. Use one verifier call after first approved patch and one after a feedback-driven revision. Avoid verifier calls for patches touching broad framework dispatch without reviewer approval."
+    },
+    {
+      "complexity": {
+        "agents": 3,
+        "context_budget_tokens": 28000,
+        "max_patch_proposals": 2,
+        "model_families": 1,
+        "prompt_templates": 3,
+        "routing_branches": 1,
+        "tool_policies": 3
+      },
+      "components": [
+        {
+          "component_id": "s3_localizer",
+          "max_calls": 3,
+          "model": "qwen3_4b_instruct",
+          "output_contract": "JSON with reproducer_trace, ranked_files, suspected_api_boundary, and confidence.",
+          "prompt_summary": "Extract reproducer operations, search dims/coords/loc/copy/index variable paths, and identify where kwargs or dtype conversions cross API boundaries.",
+          "role": "localizer",
+          "tools": [
+            "rg/search repository text",
+            "inspect file snippets",
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "s3_patcher",
+          "max_calls": 2,
+          "model": "qwen2_5_coder_7b",
+          "output_contract": "Unified diff plus JSON mapping reproducer steps to modified code.",
+          "prompt_summary": "Generate a narrow diff that preserves dtype and dimension-name semantics; avoid changing public API signatures unless the issue is a keyword collision.",
+          "role": "patcher",
+          "tools": [
+            "inspect file snippets",
+            "generate unified diff patches",
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "s3_reviewer",
+          "max_calls": 2,
+          "model": "qwen2_5_7b_instruct",
+          "output_contract": "JSON verdict approve|revise|reject with edge_cases and revision_focus.",
+          "prompt_summary": "Review dtype preservation, keyword forwarding, coordinate/index consistency, and likely regressions in related copy/indexing paths.",
+          "role": "reviewer",
+          "tools": [
+            "inspect file snippets",
+            "maintain JSONL trace logs"
+          ]
+        }
+      ],
+      "evidence_policy": "Inspect source plus nearby tests for the same public method; prefer reproducer trace over repository-wide exploration.",
+      "expected_failure_modes": [
+        "May under-handle old dependency-version behavior in historical xarray commits.",
+        "Cannot execute the short reproducer locally under the allowed tool set.",
+        "Keyword-collision fixes may require subtle signature changes."
+      ],
+      "fallback_policy": "Escalate second patch to qwen2_5_coder_14b only when first verifier failure is actionable and the affected path is multi-function.",
+      "name": "Array Indexing And Dtype Specialist",
+      "objective_summary": "Repair xarray-like reproduction-driven bugs by tracing the exact API path and preserving dtype/indexing semantics with minimal changes.",
+      "orchestration_id": "specialist_array_s3",
+      "orchestration_type": "mode_specialist",
+      "patch_policy": "Two proposal maximum. Keep edits in core indexing/copy helper layer; if patch touches more than 2 source files, reviewer must reject unless verifier feedback explicitly requires it.",
+      "routing_policy": "Use for xarray issues mentioning loc, dims, coords, IndexVariable, copy, dtype, or keyword collisions.",
+      "stopping_rule": "Stop on verified patch, two proposals, ambiguous reproducer trace after second localization, or reviewer rejection for public API breakage.",
+      "target_modes": [
+        "array_indexing_dtype"
+      ],
+      "verification_policy": "Use one verifier call after review. If failure feedback indicates a different API boundary, relocalize once and submit one revised patch."
+    },
+    {
+      "complexity": {
+        "agents": 4,
+        "context_budget_tokens": 30000,
+        "max_patch_proposals": 2,
+        "model_families": 1,
+        "prompt_templates": 4,
+        "routing_branches": 2,
+        "tool_policies": 3
+      },
+      "components": [
+        {
+          "component_id": "s4_router",
+          "max_calls": 1,
+          "model": "qwen3_4b_instruct",
+          "output_contract": "JSON route literal|object_model with confidence and key_symbols.",
+          "prompt_summary": "Classify SymPy issue as exact mapping/literal or object-model constructor change; choose cheap or careful path.",
+          "role": "router",
+          "tools": [
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "s4_localizer",
+          "max_calls": 2,
+          "model": "qwen3_4b_instruct",
+          "output_contract": "JSON ranked_files, constructor_invariants, exact_mapping_hits, and confidence.",
+          "prompt_summary": "Search exact class, mapping, method, and Basic constructor calls; inspect nearest tests and invariants.",
+          "role": "localizer",
+          "tools": [
+            "rg/search repository text",
+            "inspect file snippets",
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "s4_patcher",
+          "max_calls": 2,
+          "model": "qwen2_5_coder_14b",
+          "output_contract": "Unified diff plus JSON route, invariant_preservation, and modified_symbols.",
+          "prompt_summary": "For literal route, patch minimally. For object_model route, preserve SymPy Basic semantics while replacing hard-coded base-class construction with subclass-aware construction.",
+          "role": "patcher",
+          "tools": [
+            "inspect file snippets",
+            "generate unified diff patches",
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "s4_reviewer",
+          "max_calls": 2,
+          "model": "qwen2_5_7b_instruct",
+          "output_contract": "JSON verdict approve|revise|reject with invariant_failures and hidden_test_risk.",
+          "prompt_summary": "Check exact symbolic correctness, subclass identity, canonicalization, and whether changes affect equality/hash assumptions.",
+          "role": "reviewer",
+          "tools": [
+            "inspect file snippets",
+            "maintain JSONL trace logs"
+          ]
+        }
+      ],
+      "evidence_policy": "For literal route, inspect only mapping and immediate tests. For object_model route, inspect constructor helpers and callers before patching.",
+      "expected_failure_modes": [
+        "14B cost is unnecessary for very simple mapping bugs unless hierarchical router selects literal specialist instead.",
+        "Subclassing fixes may require knowledge of SymPy internal invariants not visible in localized snippets.",
+        "Static review may miss equality or caching regressions."
+      ],
+      "fallback_policy": "If object-model reviewer finds unresolved invariant risk, stop rather than submit speculative broad constructor rewrites.",
+      "name": "Numeric Symbolic Object Specialist",
+      "objective_summary": "Address SymPy object-model and symbolic literal issues using exact localization first, with stronger review for constructor invariants.",
+      "orchestration_id": "specialist_sympy_s4",
+      "orchestration_type": "mode_specialist",
+      "patch_policy": "Literal route has one proposal. Object-model route has up to two proposals and must keep constructor changes localized to the named class/helper.",
+      "routing_policy": "Within SymPy, use literal route for exact mapping or table bugs; object_model route for __new__, Basic, subclassing, or canonicalization signals.",
+      "stopping_rule": "Stop on verified patch, literal-route verifier failure without exact same mapping feedback, object-model two proposals, or invariant rejection.",
+      "target_modes": [
+        "numeric_symbolic_object_model"
+      ],
+      "verification_policy": "Single verifier call for literal route after approval. Object-model route allows one feedback-driven retry because hidden tests may exercise subclass identity."
+    },
+    {
+      "complexity": {
+        "agents": 3,
+        "context_budget_tokens": 26000,
+        "max_patch_proposals": 2,
+        "model_families": 1,
+        "prompt_templates": 3,
+        "routing_branches": 1,
+        "tool_policies": 3
+      },
+      "components": [
+        {
+          "component_id": "s5_localizer",
+          "max_calls": 2,
+          "model": "qwen3_4b_instruct",
+          "output_contract": "JSON target_boundary, ranked_files, dependency_policy_notes, and confidence.",
+          "prompt_summary": "Search for named helper, dependency parser, setting, keyword, or error string; identify third-party boundary and current compatibility policy.",
+          "role": "localizer",
+          "tools": [
+            "rg/search repository text",
+            "inspect file snippets",
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "s5_patcher",
+          "max_calls": 2,
+          "model": "qwen2_5_coder_7b",
+          "output_contract": "Unified diff plus JSON dependency_assumption and compatibility_rationale.",
+          "prompt_summary": "Patch the boundary by using existing compatibility helpers, sanitizing reserved kwargs, or choosing an already available parser; avoid adding new required dependencies.",
+          "role": "patcher",
+          "tools": [
+            "inspect file snippets",
+            "generate unified diff patches",
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "s5_reviewer",
+          "max_calls": 2,
+          "model": "qwen2_5_7b_instruct",
+          "output_contract": "JSON verdict approve|revise|reject with dependency_risks and required_revision.",
+          "prompt_summary": "Check dependency availability, supported Python/version range, reserved keyword behavior, and whether the patch changes unrelated configuration semantics.",
+          "role": "reviewer",
+          "tools": [
+            "inspect file snippets",
+            "maintain JSONL trace logs"
+          ]
+        }
+      ],
+      "evidence_policy": "Inspect packaging/import compatibility files and nearby tests before patching; do not search the whole repo after the boundary helper is found.",
+      "expected_failure_modes": [
+        "Historical dependency constraints may be hard to infer from snippets only.",
+        "Boundary fixes can pass the issue but fail old-version compatibility hidden tests.",
+        "Mode overlaps with framework lifecycle for Django ASGI middleware cases."
+      ],
+      "fallback_policy": "Escalate to qwen2_5_coder_14b only when the first patch fails due to multi-version compatibility or async/sync interaction.",
+      "name": "Dependency Version Config Specialist",
+      "objective_summary": "Repair dependency boundary and configuration bugs by finding wrapper APIs, sanitizing arguments, and avoiding new dependency assumptions.",
+      "orchestration_id": "specialist_dependency_s5",
+      "orchestration_type": "mode_specialist",
+      "patch_policy": "Up to two proposals. Prefer existing helpers and local fallbacks over new imports. Any new import must be justified by existing project dependency metadata found via rg.",
+      "routing_policy": "Use when issue centers on version parsing, optional dependency behavior, settings/config side effects, or reserved argument names crossing an API boundary.",
+      "stopping_rule": "Stop on verified patch, two proposals, unresolved dependency availability, or verifier failure pointing outside the localized boundary.",
+      "target_modes": [
+        "dependency_version_config"
+      ],
+      "verification_policy": "Reviewer approval required. Use one verifier call, then one revision only if feedback names the same dependency/config boundary."
+    },
+    {
+      "complexity": {
+        "agents": 5,
+        "context_budget_tokens": 42000,
+        "max_patch_proposals": 3,
+        "model_families": 1,
+        "prompt_templates": 7,
+        "routing_branches": 6,
+        "tool_policies": 5
+      },
+      "components": [
+        {
+          "component_id": "h1_router",
+          "max_calls": 2,
+          "model": "qwen3_4b_instruct",
+          "output_contract": "JSON with mode_id, confidence, selected_specialist, search_seed, budget_class low|normal|high, and fallback_trigger.",
+          "prompt_summary": "Infer mode from issue text, repo family, exact symbols, public counts, and first-pass rg hits; output mode, confidence, expected difficulty, and selected specialist.",
+          "role": "router",
+          "tools": [
+            "rg/search repository text",
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "h1_budget_guard",
+          "max_calls": 1,
+          "model": "qwen2_5_7b_instruct",
+          "output_contract": "JSON approved_mode, max_proposals, max_verifier_calls, context_budget, and reason.",
+          "prompt_summary": "Validate router choice and assign proposal/verifier budget so harder modes get more effort only when evidence supports higher frontier difficulty.",
+          "role": "controller",
+          "tools": [
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "h1_specialist_executor",
+          "max_calls": 3,
+          "model": "qwen2_5_coder_7b",
+          "output_contract": "Unified diff plus JSON specialist_id, mode_id, proposal_index, escalation_used, and confidence.",
+          "prompt_summary": "Execute the selected specialist policy using its localized prompt summary and tool budget; use 14B only when the policy or guard authorizes escalation.",
+          "role": "patcher",
+          "tools": [
+            "rg/search repository text",
+            "inspect file snippets",
+            "generate unified diff patches",
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "h1_reviewer",
+          "max_calls": 3,
+          "model": "qwen2_5_7b_instruct",
+          "output_contract": "JSON verdict verify|revise|reroute|stop with blocking_issue, revised_mode_if_any, and verifier_ready.",
+          "prompt_summary": "Apply mode-specific review checklist, check diff minimality and hidden-test risk, and decide whether to verify, revise, reroute, or stop.",
+          "role": "reviewer",
+          "tools": [
+            "inspect file snippets",
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "h1_escalation_patcher",
+          "max_calls": 1,
+          "model": "qwen2_5_coder_14b",
+          "output_contract": "Unified diff plus JSON explaining how it addresses the prior failure and why no broader search is needed.",
+          "prompt_summary": "Given failed reviewed patch or actionable verifier feedback, produce one final targeted revision without broadening beyond the approved mode boundary.",
+          "role": "fallback",
+          "tools": [
+            "inspect file snippets",
+            "generate unified diff patches",
+            "maintain JSONL trace logs"
+          ]
+        }
+      ],
+      "evidence_policy": "E1 evidence is used only for budget shaping, not outcome leakage. Low-risk exact issues get one proposal and one verifier call. High PASS_TO_PASS framework and array modes get one extra localization/review call before verifier. No hints are requested.",
+      "expected_failure_modes": [
+        "Router can misclassify overlapping dependency_config and framework_lifecycle cases.",
+        "Specialist prompt compression may omit a needed invariant from the full standalone specialist.",
+        "Two verifier calls may be insufficient for genuinely multi-file hidden-test failures."
+      ],
+      "fallback_policy": "Fallback order is reroute before verifier when review identifies mode mismatch, then 14B final revision only after actionable verifier or reviewer feedback. Unknown mode uses universal_u1 with 14B patcher and one verifier call.",
+      "name": "Hierarchical Distribution-Aware Router",
+      "objective_summary": "Use a cheap controller to select the cheapest credible specialist, escalate only on low confidence or actionable verifier failure, and keep retry budgets mode-normalized.",
+      "orchestration_id": "hierarchical_h1_distribution_router",
+      "orchestration_type": "hierarchical_routed",
+      "patch_policy": "Specialist executor follows the selected specialist patch policy. Rerouting is allowed once before any verifier call if reviewer finds mode mismatch. After verifier failure, only one final 14B escalation is allowed and must directly address feedback.",
+      "routing_policy": "Initial route by strongest signal: exact literal table bugs to literal_small_fix; Django lifecycle/admin/cache/middleware to framework_lifecycle unless the issue is a pure config boundary; xarray dims/loc/copy/dtype to array_indexing_dtype; SymPy __new__/Basic/subclassing or symbolic mappings to numeric_symbolic_object_model; version parsing, dependency parser, settings, and reserved keyword collisions to dependency_version_config; otherwise unknown. If router confidence is below 0.55, use universal_u1 first-pass localization before selecting a specialist.",
+      "stopping_rule": "Stop on first verified patch, two verifier calls, three total patch proposals, reviewer stop verdict, non-actionable verifier failure after escalation, or budget_guard detecting unsupported broad search.",
+      "target_modes": [
+        "literal_small_fix",
+        "framework_lifecycle",
+        "array_indexing_dtype",
+        "numeric_symbolic_object_model",
+        "dependency_version_config",
+        "unknown"
+      ],
+      "verification_policy": "At most two verifier calls per instance. Never call verifier before mode-specific reviewer marks verifier_ready. For low difficulty modes, verifier failure stops unless feedback is directly local. For medium/high modes, one feedback-driven revision is allowed."
+    }
+  ]
+}

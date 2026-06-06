@@ -1,0 +1,309 @@
+{
+  "$defs": {
+    "ComplexitySpec": {
+      "additionalProperties": false,
+      "properties": {
+        "agents": {
+          "minimum": 1,
+          "title": "Agents",
+          "type": "integer"
+        },
+        "context_budget_tokens": {
+          "minimum": 0,
+          "title": "Context Budget Tokens",
+          "type": "integer"
+        },
+        "max_patch_proposals": {
+          "minimum": 1,
+          "title": "Max Patch Proposals",
+          "type": "integer"
+        },
+        "model_families": {
+          "minimum": 1,
+          "title": "Model Families",
+          "type": "integer"
+        },
+        "prompt_templates": {
+          "minimum": 1,
+          "title": "Prompt Templates",
+          "type": "integer"
+        },
+        "routing_branches": {
+          "minimum": 0,
+          "title": "Routing Branches",
+          "type": "integer"
+        },
+        "tool_policies": {
+          "minimum": 0,
+          "title": "Tool Policies",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "agents",
+        "model_families",
+        "prompt_templates",
+        "routing_branches",
+        "tool_policies",
+        "max_patch_proposals",
+        "context_budget_tokens"
+      ],
+      "title": "ComplexitySpec",
+      "type": "object"
+    },
+    "ComponentSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "component_id": {
+          "title": "Component Id",
+          "type": "string"
+        },
+        "max_calls": {
+          "minimum": 0,
+          "title": "Max Calls",
+          "type": "integer"
+        },
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "output_contract": {
+          "title": "Output Contract",
+          "type": "string"
+        },
+        "prompt_summary": {
+          "title": "Prompt Summary",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "controller",
+            "localizer",
+            "patcher",
+            "reviewer",
+            "tester",
+            "router",
+            "fallback"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "tools": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Tools",
+          "type": "array"
+        }
+      },
+      "required": [
+        "component_id",
+        "role",
+        "model",
+        "prompt_summary",
+        "max_calls",
+        "output_contract"
+      ],
+      "title": "ComponentSpec",
+      "type": "object"
+    },
+    "ModeSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "expected_difficulty": {
+          "default": "unknown",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "unknown"
+          ],
+          "title": "Expected Difficulty",
+          "type": "string"
+        },
+        "expected_strategy": {
+          "title": "Expected Strategy",
+          "type": "string"
+        },
+        "mode_id": {
+          "title": "Mode Id",
+          "type": "string"
+        },
+        "observable_signals": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Observable Signals",
+          "type": "array"
+        }
+      },
+      "required": [
+        "mode_id",
+        "description",
+        "expected_strategy"
+      ],
+      "title": "ModeSpec",
+      "type": "object"
+    },
+    "OrchestrationSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "complexity": {
+          "$ref": "#/$defs/ComplexitySpec"
+        },
+        "components": {
+          "items": {
+            "$ref": "#/$defs/ComponentSpec"
+          },
+          "title": "Components",
+          "type": "array"
+        },
+        "evidence_policy": {
+          "title": "Evidence Policy",
+          "type": "string"
+        },
+        "expected_failure_modes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Expected Failure Modes",
+          "type": "array"
+        },
+        "fallback_policy": {
+          "title": "Fallback Policy",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "objective_summary": {
+          "title": "Objective Summary",
+          "type": "string"
+        },
+        "orchestration_id": {
+          "title": "Orchestration Id",
+          "type": "string"
+        },
+        "orchestration_type": {
+          "enum": [
+            "universal",
+            "mode_specialist",
+            "hierarchical_routed"
+          ],
+          "title": "Orchestration Type",
+          "type": "string"
+        },
+        "patch_policy": {
+          "title": "Patch Policy",
+          "type": "string"
+        },
+        "routing_policy": {
+          "title": "Routing Policy",
+          "type": "string"
+        },
+        "stopping_rule": {
+          "title": "Stopping Rule",
+          "type": "string"
+        },
+        "target_modes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Target Modes",
+          "type": "array"
+        },
+        "verification_policy": {
+          "title": "Verification Policy",
+          "type": "string"
+        }
+      },
+      "required": [
+        "orchestration_id",
+        "name",
+        "orchestration_type",
+        "objective_summary",
+        "components",
+        "routing_policy",
+        "evidence_policy",
+        "patch_policy",
+        "verification_policy",
+        "fallback_policy",
+        "stopping_rule",
+        "complexity"
+      ],
+      "title": "OrchestrationSpec",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "assumptions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Assumptions",
+      "type": "array"
+    },
+    "benchmark": {
+      "default": "SWE-bench",
+      "title": "Benchmark",
+      "type": "string"
+    },
+    "design_id": {
+      "title": "Design Id",
+      "type": "string"
+    },
+    "evidence_level": {
+      "title": "Evidence Level",
+      "type": "string"
+    },
+    "expected_tradeoffs": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Expected Tradeoffs",
+      "type": "array"
+    },
+    "logging_plan": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Logging Plan",
+      "type": "array"
+    },
+    "mode_taxonomy": {
+      "items": {
+        "$ref": "#/$defs/ModeSpec"
+      },
+      "title": "Mode Taxonomy",
+      "type": "array"
+    },
+    "optimization_loss": {
+      "title": "Optimization Loss",
+      "type": "string"
+    },
+    "orchestrations": {
+      "items": {
+        "$ref": "#/$defs/OrchestrationSpec"
+      },
+      "title": "Orchestrations",
+      "type": "array"
+    }
+  },
+  "required": [
+    "design_id",
+    "evidence_level",
+    "assumptions",
+    "mode_taxonomy",
+    "orchestrations",
+    "optimization_loss",
+    "logging_plan"
+  ],
+  "title": "OrchestrationDesign",
+  "type": "object"
+}

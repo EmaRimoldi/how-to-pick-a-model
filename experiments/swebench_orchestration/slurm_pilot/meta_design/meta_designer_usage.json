@@ -1,0 +1,15 @@
+{
+  "cost_usd": null,
+  "elapsed_wall_seconds": 154.91906255600043,
+  "max_tokens_requested": 16000,
+  "model": "gpt-5.5",
+  "raw_cli_result": {
+    "stderr_tail": "gets to broad framework or object-model modes.\",\n    \"Absence of local test execution increases reliance on reviewer quality and makes verifier calls more valuable but still capped.\"\n  ],\n  \"logging_plan\": [\n    \"Write one JSONL record per component call with instance_id, repo, base_commit, declared_mode, inferred_mode, model, prompt_template_id, tool_calls, token estimates, and wall-clock estimate.\",\n    \"Log every rg query, inspected file snippet range, ranked localization result, and confidence score.\",\n    \"Log each patch proposal with proposal_index, modified_files, diff_hash, specialist_id, escalation_used, reviewer verdict, and stated risks.\",\n    \"Log verifier decisions as verified|failed|not_called with feedback summary, call_index, and whether feedback was actionable.\",\n    \"Log stopping reason using a fixed enum: verified, max_proposals, max_verifier_calls, reviewer_stop, low_confidence, malformed_diff, non_actionable_failure, or budget_guard_stop.\"\n  ]\n}\ntokens used\n37,692\n",
+    "stdout_tail": "view/escalation budgets to broad framework or object-model modes.\",\n    \"Absence of local test execution increases reliance on reviewer quality and makes verifier calls more valuable but still capped.\"\n  ],\n  \"logging_plan\": [\n    \"Write one JSONL record per component call with instance_id, repo, base_commit, declared_mode, inferred_mode, model, prompt_template_id, tool_calls, token estimates, and wall-clock estimate.\",\n    \"Log every rg query, inspected file snippet range, ranked localization result, and confidence score.\",\n    \"Log each patch proposal with proposal_index, modified_files, diff_hash, specialist_id, escalation_used, reviewer verdict, and stated risks.\",\n    \"Log verifier decisions as verified|failed|not_called with feedback summary, call_index, and whether feedback was actionable.\",\n    \"Log stopping reason using a fixed enum: verified, max_proposals, max_verifier_calls, reviewer_stop, low_confidence, malformed_diff, non_actionable_failure, or budget_guard_stop.\"\n  ]\n}\n"
+  },
+  "reasoning_effort": "xhigh",
+  "transport": "codex_cli",
+  "usage": {
+    "total_tokens": 37692
+  }
+}
