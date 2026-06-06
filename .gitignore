@@ -6,11 +6,17 @@ __pycache__/
 .ruff_cache/
 .venv/
 venv/
+.venv-vllm/
+.hf_cache/
 .claude/
 artifacts/*.tmp
 logs/
 runs/*
 !runs/.gitkeep
+swebench/runtime/
+swebench/runs/
+experiments/swebench_orchestration/slurm_runs/
+experiments/swebench_orchestration/open_source_pilot/
 artifacts/qwen_routing_lora/
 benchmarks/autoresearch_cifar10/__pycache__/
 benchmarks/autoresearch_cifar10/data/
