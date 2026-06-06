@@ -14,6 +14,7 @@ dependencies = [
     "tqdm",
     "rich",
     "transformers",
+    "datasets>=5.0.0",
     "anthropic",
 ]
 
@@ -44,6 +45,10 @@ vao-oracle-family-policy-compare = "vao.analysis.oracle_family_policy_compare:ma
 vao-autoresearch-cifar10-pilot = "vao.analysis.autoresearch_cifar10_pilot:main"
 vao-autoresearch-cifar10-mode-catalog = "vao.analysis.autoresearch_cifar10_mode_catalog:main"
 vao-autoresearch-cifar10-single-trajectory = "vao.analysis.autoresearch_cifar10_single_trajectory_campaign:main"
+vao-swebench-download = "vao.swebench_orchestration.download:main"
+vao-swebench-meta-prompt = "vao.swebench_orchestration.prompt:main"
+vao-swebench-analyze = "vao.swebench_orchestration.analyze:main"
+vao-swebench-evaluate = "vao.swebench_orchestration.evaluate:main"
 
 [build-system]
 requires = ["setuptools>=69", "wheel"]
@@ -55,6 +60,7 @@ include = ["vao*", "benchmarks*"]
 
 [tool.setuptools.package-data]
 benchmarks = ["stateful_query_engine/metadata/*.json", "autoresearch_cifar10/metadata/*.json"]
+vao = ["prompts/*.txt"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
