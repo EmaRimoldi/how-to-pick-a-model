@@ -4,6 +4,12 @@ set -euo pipefail
 REPO_ROOT="${REPO_ROOT:-/home/erimoldi/openclaw_remote/projects/NeurIPS_2026}"
 cd "${REPO_ROOT}"
 
+SWEBENCH_ROOT="${SWEBENCH_ROOT:-${REPO_ROOT}/swebench}"
+SLURM_LOCAL_ROOT_DEFAULT="${SWEBENCH_ROOT}/runtime"
+if [[ -n "${SLURM_TMPDIR:-}" ]]; then
+  SLURM_LOCAL_ROOT_DEFAULT="${SLURM_TMPDIR}/swebench_runtime"
+fi
+
 CONFIG="${CONFIG:-configs/swebench_orchestration_slurm_pilot.yaml}"
 WORKERS_CONFIG="${WORKERS_CONFIG:-configs/swebench_open_source_workers_slurm_pilot.yaml}"
 DESIGN="${DESIGN:-}"
@@ -12,11 +18,11 @@ MAX_INSTANCES="${MAX_INSTANCES:-4}"
 PARALLEL_WORKERS="${PARALLEL_WORKERS:-2}"
 MAX_CALLS_PER_COMPONENT="${MAX_CALLS_PER_COMPONENT:-1}"
 RUN_ID="${RUN_ID:-swebench_orchestration_slurm_pilot_$(date +%Y%m%d_%H%M%S)}"
-OUTPUT_DIR="${OUTPUT_DIR:-experiments/swebench_orchestration/slurm_runs/${RUN_ID}}"
+OUTPUT_DIR="${OUTPUT_DIR:-${SWEBENCH_ROOT}/runs/${RUN_ID}}"
 LOG_DIR="${OUTPUT_DIR}/logs"
-VLLM_VENV="${VLLM_VENV:-${REPO_ROOT}/.venv-vllm}"
+VLLM_VENV="${VLLM_VENV:-${SLURM_LOCAL_ROOT_DEFAULT}/.venv-vllm}"
 PY311="${PY311:-$(command -v python3.11 || command -v python3 || true)}"
-HF_HOME="${HF_HOME:-${REPO_ROOT}/.hf_cache}"
+HF_HOME="${HF_HOME:-${SLURM_LOCAL_ROOT_DEFAULT}/.hf_cache}"
 VLLM_START_TIMEOUT_SECONDS="${VLLM_START_TIMEOUT_SECONDS:-1800}"
 MAX_MODEL_LEN="${MAX_MODEL_LEN:-16384}"
 VLLM_VERSION="${VLLM_VERSION:-0.10.2}"
@@ -31,6 +37,7 @@ if [[ -z "${DESIGN}" ]]; then
 fi
 
 mkdir -p "${LOG_DIR}" "${HF_HOME}"
+mkdir -p "${SWEBENCH_ROOT}" "${SLURM_LOCAL_ROOT_DEFAULT}"
 
 export HF_HOME
 export TRANSFORMERS_CACHE="${TRANSFORMERS_CACHE:-${HF_HOME}/transformers}"
@@ -42,6 +49,8 @@ echo "host=$(hostname)"
 echo "CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-}"
 echo "design=${DESIGN}"
 echo "orchestration_id=${ORCHESTRATION_ID:-<auto>}"
+echo "swebench_root=${SWEBENCH_ROOT}"
+echo "slurm_local_root=${SLURM_LOCAL_ROOT_DEFAULT}"
 echo "output_dir=${OUTPUT_DIR}"
 command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi || true
 
