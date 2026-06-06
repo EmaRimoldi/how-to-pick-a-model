@@ -19,6 +19,11 @@ PY311="${PY311:-$(command -v python3.11 || command -v python3 || true)}"
 HF_HOME="${HF_HOME:-${REPO_ROOT}/.hf_cache}"
 VLLM_START_TIMEOUT_SECONDS="${VLLM_START_TIMEOUT_SECONDS:-1800}"
 MAX_MODEL_LEN="${MAX_MODEL_LEN:-16384}"
+VLLM_VERSION="${VLLM_VERSION:-0.10.2}"
+TRANSFORMERS_SPEC="${TRANSFORMERS_SPEC:-transformers>=4.55,<5}"
+TOKENIZERS_SPEC="${TOKENIZERS_SPEC:-tokenizers>=0.21,<0.22}"
+HF_HUB_SPEC="${HF_HUB_SPEC:-huggingface_hub<1.0}"
+NUMPY_SPEC="${NUMPY_SPEC:-numpy<2.3}"
 
 if [[ -z "${DESIGN}" ]]; then
   echo "Set DESIGN=/path/to/orchestration_design.json before running this script." >&2
@@ -50,11 +55,40 @@ if [[ -z "${PY311}" ]]; then
   exit 1
 fi
 
-if [[ ! -x "${VLLM_VENV}/bin/vllm" ]]; then
+if [[ ! -x "${VLLM_VENV}/bin/python" ]]; then
   "${PY311}" -m venv "${VLLM_VENV}"
-  "${VLLM_VENV}/bin/python" -m pip install -U pip setuptools wheel
-  "${VLLM_VENV}/bin/python" -m pip install "vllm>=0.10,<0.11"
 fi
+
+if ! "${VLLM_VENV}/bin/python" - "${VLLM_VERSION}" <<'PY' >/dev/null 2>&1
+import importlib.metadata as md
+import sys
+
+required_vllm = sys.argv[1]
+try:
+    vllm_version = md.version("vllm")
+    transformers_version = md.version("transformers")
+except md.PackageNotFoundError:
+    raise SystemExit(1)
+
+if vllm_version != required_vllm:
+    raise SystemExit(1)
+if int(transformers_version.split(".", 1)[0]) >= 5:
+    raise SystemExit(1)
+PY
+then
+  "${VLLM_VENV}/bin/python" -m pip install -U pip setuptools wheel
+  "${VLLM_VENV}/bin/python" -m pip install --upgrade --force-reinstall "vllm==${VLLM_VERSION}"
+  "${VLLM_VENV}/bin/python" -m pip install --upgrade --force-reinstall "${TRANSFORMERS_SPEC}" "${TOKENIZERS_SPEC}" "${HF_HUB_SPEC}" "${NUMPY_SPEC}"
+fi
+
+"${VLLM_VENV}/bin/python" - <<'PY'
+import importlib.metadata as md
+print("vllm", md.version("vllm"))
+print("transformers", md.version("transformers"))
+print("tokenizers", md.version("tokenizers"))
+print("huggingface_hub", md.version("huggingface_hub"))
+print("numpy", md.version("numpy"))
+PY
 
 mapfile -t WORKER_ROWS < <("${REPO_ROOT}/.venv/bin/python" - "$DESIGN" "$WORKERS_CONFIG" "$ORCHESTRATION_ID" <<'PY'
 import json
