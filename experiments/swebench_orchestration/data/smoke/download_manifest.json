@@ -1,0 +1,25 @@
+{
+  "created_at": "2026-06-05T23:51:06.948650+00:00",
+  "dataset_name": "princeton-nlp/SWE-Bench_Verified",
+  "files": {
+    "private_metadata": "experiments/swebench_orchestration/data/smoke/instances_private_metadata.jsonl",
+    "public": "experiments/swebench_orchestration/data/smoke/instances_public.jsonl"
+  },
+  "include_gold_patches": false,
+  "include_hints_in_public": false,
+  "instance_ids": [
+    "astropy__astropy-7671",
+    "django__django-13810",
+    "django__django-16661",
+    "django__django-17029",
+    "pydata__xarray-3095",
+    "pydata__xarray-4695",
+    "sympy__sympy-12489",
+    "sympy__sympy-16886"
+  ],
+  "limit": 8,
+  "repos": null,
+  "row_count": 8,
+  "seed": 20260605,
+  "split": "test"
+}

@@ -28,5 +28,8 @@ are driven by `autoresearch_program.txt`.
 ## Diagnostics
 
 - `feedback_use_cb.yaml`: local C(b) feedback-use diagnostic with controlled mode selection.
+- `swebench_orchestration_smoke.yaml`: first SWE-bench distribution-aware orchestration scaffold using leakage-safe Verified metadata and Codex/GPT-5.5 only as the offline meta-designer.
+- `swebench_open_source_workers.yaml`: runtime-only open-source Qwen Coder worker endpoints served through OpenAI-compatible APIs.
+- `swebench_orchestration_pilot.yaml`: small patch-generation-only executor pilot over the smoke slice using the open-source worker config.
 
 Historical Phase 1/2/3/3.5 configs and superseded one-off smokes were removed to keep the experiment surface small.
