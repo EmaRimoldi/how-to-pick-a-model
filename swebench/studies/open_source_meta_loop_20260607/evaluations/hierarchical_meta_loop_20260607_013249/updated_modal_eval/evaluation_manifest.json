@@ -1,0 +1,85 @@
+{
+  "command": [
+    "/home/erimoldi/openclaw_remote/projects/NeurIPS_2026/.venv/bin/python",
+    "-m",
+    "swebench.harness.run_evaluation",
+    "--dataset_name",
+    "princeton-nlp/SWE-Bench_Verified",
+    "--split",
+    "test",
+    "--predictions_path",
+    "/home/erimoldi/openclaw_remote/projects/.worktrees/swebench-real-20260606-103655/swebench/runs/hierarchical_meta_loop_20260607_013249/updated/executor/predictions.jsonl",
+    "--run_id",
+    "hierarchical_meta_loop_20260607_013249_updated_modal_eval",
+    "--max_workers",
+    "1",
+    "--timeout",
+    "1800",
+    "--force_rebuild",
+    "false",
+    "--cache_level",
+    "env",
+    "--clean",
+    "false",
+    "--namespace",
+    "swebench",
+    "--rewrite_reports",
+    "false",
+    "--modal",
+    "true",
+    "--instance_ids",
+    "sympy__sympy-16886",
+    "--report_dir",
+    "/home/erimoldi/openclaw_remote/projects/.worktrees/swebench-real-20260606-103655/swebench/evaluations/hierarchical_meta_loop_20260607_013249/updated_modal_eval/reports"
+  ],
+  "created_at": "2026-06-07T01:50:30.608835+00:00",
+  "dataset_name": "princeton-nlp/SWE-Bench_Verified",
+  "execute": true,
+  "expected_report_exists": false,
+  "expected_report_path": "/home/erimoldi/openclaw_remote/projects/.worktrees/swebench-real-20260606-103655/swebench/evaluations/hierarchical_meta_loop_20260607_013249/updated_modal_eval/hierarchical_h1_distribution_router.hierarchical_meta_loop_20260607_013249_updated_modal_eval.json",
+  "instance_results": [
+    {
+      "instance_id": "sympy__sympy-16886",
+      "log_dir": "/home/erimoldi/openclaw_remote/projects/.worktrees/swebench-real-20260606-103655/swebench/evaluations/hierarchical_meta_loop_20260607_013249/updated_modal_eval/logs/run_evaluation/hierarchical_meta_loop_20260607_013249_updated_modal_eval/hierarchical_h1_distribution_router/sympy__sympy-16886",
+      "report_bytes": 0,
+      "report_exists": false,
+      "report_path": "/home/erimoldi/openclaw_remote/projects/.worktrees/swebench-real-20260606-103655/swebench/evaluations/hierarchical_meta_loop_20260607_013249/updated_modal_eval/logs/run_evaluation/hierarchical_meta_loop_20260607_013249_updated_modal_eval/hierarchical_h1_distribution_router/sympy__sympy-16886/report.json",
+      "run_instance_log_exists": false,
+      "run_instance_log_path": "/home/erimoldi/openclaw_remote/projects/.worktrees/swebench-real-20260606-103655/swebench/evaluations/hierarchical_meta_loop_20260607_013249/updated_modal_eval/logs/run_evaluation/hierarchical_meta_loop_20260607_013249_updated_modal_eval/hierarchical_h1_distribution_router/sympy__sympy-16886/run_instance.log",
+      "test_output_bytes": 0,
+      "test_output_path": "/home/erimoldi/openclaw_remote/projects/.worktrees/swebench-real-20260606-103655/swebench/evaluations/hierarchical_meta_loop_20260607_013249/updated_modal_eval/logs/run_evaluation/hierarchical_meta_loop_20260607_013249_updated_modal_eval/hierarchical_h1_distribution_router/sympy__sympy-16886/test_output.txt"
+    }
+  ],
+  "logs_dir": "/home/erimoldi/openclaw_remote/projects/.worktrees/swebench-real-20260606-103655/swebench/evaluations/hierarchical_meta_loop_20260607_013249/updated_modal_eval/logs/run_evaluation/hierarchical_meta_loop_20260607_013249_updated_modal_eval",
+  "modal": true,
+  "modal_installed": true,
+  "modal_token_configured": true,
+  "output_dir": "/home/erimoldi/openclaw_remote/projects/.worktrees/swebench-real-20260606-103655/swebench/evaluations/hierarchical_meta_loop_20260607_013249/updated_modal_eval",
+  "prediction_validation": {
+    "duplicate_instance_ids": [],
+    "empty_patch_ids": [
+      "sympy__sympy-16886"
+    ],
+    "first_model_name": "hierarchical_h1_distribution_router",
+    "instance_ids": [
+      "sympy__sympy-16886"
+    ],
+    "missing_required": [],
+    "missing_required_fields": 0,
+    "model_names": [
+      "hierarchical_h1_distribution_router"
+    ],
+    "nonempty_patch_count": 0,
+    "patch_chars_max": 0,
+    "patch_chars_min": 0,
+    "rows": 1
+  },
+  "predictions_path": "/home/erimoldi/openclaw_remote/projects/.worktrees/swebench-real-20260606-103655/swebench/runs/hierarchical_meta_loop_20260607_013249/updated/executor/predictions.jsonl",
+  "report_dir": "/home/erimoldi/openclaw_remote/projects/.worktrees/swebench-real-20260606-103655/swebench/evaluations/hierarchical_meta_loop_20260607_013249/updated_modal_eval/reports",
+  "returncode": 0,
+  "run_id": "hierarchical_meta_loop_20260607_013249_updated_modal_eval",
+  "split": "test",
+  "stderr_path": "/home/erimoldi/openclaw_remote/projects/.worktrees/swebench-real-20260606-103655/swebench/evaluations/hierarchical_meta_loop_20260607_013249/updated_modal_eval/stderr.log",
+  "stdout_path": "/home/erimoldi/openclaw_remote/projects/.worktrees/swebench-real-20260606-103655/swebench/evaluations/hierarchical_meta_loop_20260607_013249/updated_modal_eval/stdout.log",
+  "swebench_installed": true
+}

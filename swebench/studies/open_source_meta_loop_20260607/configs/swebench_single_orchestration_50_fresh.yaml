@@ -1,0 +1,74 @@
+experiment:
+  name: swebench_single_orchestration_50_fresh
+  dataset_name: princeton-nlp/SWE-Bench_Verified
+  split: test
+  evidence_level: E2_50_stratified
+  public_instances: experiments/swebench_orchestration/data/verified_50_fresh/instances_public.jsonl
+  output_dir: experiments/swebench_orchestration/single_50_fresh
+  transductive: false
+
+meta_designer:
+  adapter: codex_cli
+  model_id: gpt-5.5
+  reasoning_effort: xhigh
+  timeout_seconds: 1800
+  description: >
+    Fresh meta-agent that reads leakage-safe SWE-bench instances and generates
+    exactly one adaptive orchestration policy. It must not reuse a previous
+    orchestration id or design family.
+
+worker_models:
+  - alias: qwen3_4b_instruct
+    model_id: Qwen/Qwen3-4B-Instruct-2507
+    endpoint: http://127.0.0.1:8000/v1
+    intended_use: cheap controller, router, localizer, and short observation passes
+    hf_url: https://hf.co/Qwen/Qwen3-4B-Instruct-2507
+  - alias: qwen2_5_7b_instruct
+    model_id: Qwen/Qwen2.5-7B-Instruct
+    endpoint: http://127.0.0.1:8001/v1
+    intended_use: general reasoning, reviewer, budget guard, and routing backup
+    hf_url: https://hf.co/Qwen/Qwen2.5-7B-Instruct
+  - alias: qwen2_5_coder_7b
+    model_id: Qwen/Qwen2.5-Coder-7B-Instruct
+    endpoint: http://127.0.0.1:8002/v1
+    intended_use: default patch generation on code-heavy instances
+    hf_url: https://hf.co/Qwen/Qwen2.5-Coder-7B-Instruct
+  - alias: qwen2_5_coder_14b
+    model_id: Qwen/Qwen2.5-Coder-14B-Instruct
+    endpoint: http://127.0.0.1:8003/v1
+    intended_use: stronger escalation path for difficult patch generation
+    hf_url: https://hf.co/Qwen/Qwen2.5-Coder-14B-Instruct
+
+allowed_tools:
+  - rg/search repository text
+  - inspect file snippets
+  - generate unified diff patches
+  - local git apply --check
+  - official SWE-bench Modal verifier feedback
+  - deterministic leakage-safe transforms from public issue text and repo context when explicitly justified
+  - maintain JSONL trace logs
+
+loss_weights:
+  alpha_fail: 100.0
+  token_weight: 0.00001
+  wall_weight: 0.0002777777777777778
+  test_weight: 0.0002777777777777778
+  api_weight: 1.0
+  verifier_call_weight: 0.05
+  simplicity_weight: 0.25
+  imbalance_weight: 1.0
+  route_regret_weight: 1.0
+  wasted_effort_weight: 0.5
+
+executor:
+  workers_config: configs/swebench_open_source_workers_slurm_pilot.yaml
+  output_dir: experiments/swebench_orchestration/single_50_fresh/executor
+  max_instances: 50
+  parallel_workers: 4
+  # Null means no executor-level retry cap; the experiment observes retries until
+  # verified success or external interruption, while per-attempt component limits
+  # remain part of the generated orchestration policy.
+  max_calls_per_component: null
+  patch_repair_attempts: 1
+  public_literal_repair_enabled: false
+  dry_run: false

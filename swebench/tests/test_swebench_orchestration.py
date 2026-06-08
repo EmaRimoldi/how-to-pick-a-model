@@ -15,7 +15,8 @@ from vao.swebench_orchestration.evaluate import (
 )
 from vao.swebench_orchestration.executor import ExecutorConfig, load_worker_configs, main as executor_main, run_executor
 from vao.swebench_orchestration.prompt import render_prompt
-from vao.swebench_orchestration.schemas import OrchestrationDesign, TraceStep
+from vao.swebench_orchestration.repo_context import safe_instance_payload
+from vao.swebench_orchestration.schemas import OrchestrationDesign, SWEInstancePublic, TraceStep
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -460,6 +461,80 @@ executor:
     executor_main(["--config", str(config), "--dry-run"])
     assert (output_dir / "traces.jsonl").exists()
     assert (output_dir / "predictions.jsonl").exists()
+
+
+def test_executor_cli_accepts_meta_update_fields(tmp_path: Path) -> None:
+    instances = tmp_path / "instances_public.jsonl"
+    instances.write_text(
+        json.dumps(
+            {
+                "instance_id": "demo",
+                "repo": "demo/repo",
+                "problem_statement": "A failing test reports `old` should be `new`.",
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    workers = _write_open_source_workers(tmp_path)
+    output_dir = tmp_path / "cli"
+    config = tmp_path / "pilot.yaml"
+    config.write_text(
+        f"""
+experiment:
+  name: cli_dry
+  split: test
+  public_instances: {instances}
+executor:
+  design: {FIXTURES / "swebench_orchestration_design.json"}
+  workers_config: {workers}
+  orchestration_id: O_all
+  output_dir: {output_dir}
+  max_instances: 1
+  parallel_workers: 1
+  max_calls_per_component: null
+  patch_repair_attempts: 2
+  public_literal_repair_enabled: true
+  patch_apply_timeout_seconds: 7
+  repo_context:
+    enabled: false
+""",
+        encoding="utf-8",
+    )
+    executor_main(["--config", str(config), "--dry-run"])
+
+    manifest = json.loads((output_dir / "executor_manifest.json").read_text(encoding="utf-8"))
+    assert manifest["max_calls_per_component"] is None
+    assert manifest["patch_repair_attempts"] == 2
+    assert manifest["public_literal_repair_enabled"] is True
+    assert manifest["repo_context_enabled"] is False
+
+
+def test_safe_instance_payload_drops_leaky_fields() -> None:
+    payload = safe_instance_payload(
+        SWEInstancePublic.model_validate(
+            {
+                "instance_id": "demo",
+                "repo": "demo/repo",
+                "problem_statement": "public issue",
+                "gold_patch": "secret",
+                "nested": {"test_patch": "secret", "keep": "visible"},
+            }
+        )
+    )
+
+    assert payload == {
+        "base_commit": None,
+        "created_at": None,
+        "declared_mode": "unknown",
+        "hints_text": None,
+        "instance_id": "demo",
+        "nested": {"keep": "visible"},
+        "problem_statement": "public issue",
+        "public_fields": {},
+        "repo": "demo/repo",
+        "version": None,
+    }
 
 
 def _write_open_source_workers(tmp_path: Path) -> Path:

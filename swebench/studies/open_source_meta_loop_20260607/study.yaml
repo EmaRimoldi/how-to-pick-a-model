@@ -1,0 +1,46 @@
+study:
+  id: open_source_meta_loop_20260607
+  source_worktree: /home/erimoldi/openclaw_remote/projects/.worktrees/swebench-real-20260606-103655
+  archived_from_branch: wip/swebench-real-instances-20260606-103655
+  purpose: preserve compact mechanistic artifacts from historical open-source SWE-bench meta-loop experiments
+
+artifact_policy:
+  kept:
+    - reports
+    - plots
+    - compact analysis summaries
+    - executor manifests
+    - predictions
+    - traces
+    - failure bundles
+    - meta-update outputs
+    - selected designs and configs
+    - official evaluation manifests
+  omitted:
+    - checkout directories
+    - repo caches
+    - vLLM logs
+    - raw Slurm stdout/stderr
+    - full_with_gold dataset copy
+
+leakage_policy:
+  prompt_safe:
+    - public issue fields
+    - prompt-safe public hints when included by the dataset slice
+    - repository state at base_commit
+    - generated traces
+    - local apply-check output
+    - official verifier feedback
+  post_hoc_only:
+    - gold repair shape labels
+    - gold domain clusters
+    - private metadata
+    - hidden tests
+    - solution fields
+
+main_reports:
+  - analysis/real_failure_modes_20260606/experiment_resoconto_20260607.md
+  - analysis/real_failure_modes_20260606/hierarchical_meta_loop_report_20260607.md
+  - analysis/real_failure_modes_20260606/single50_meta_orchestration_report_20260607.md
+  - analysis/real_failure_modes_20260606/oracle_validation_report_20260606.md
+  - analysis/verified_instances_20260606/verified_instance_cluster_report.md

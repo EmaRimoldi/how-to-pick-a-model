@@ -7,10 +7,13 @@ This folder contains the frozen orchestration design used by the
 
 - `orchestration_design.json`: executable JSON design consumed by
   `vao.swebench_orchestration.executor`.
+- `orchestration_design.annotated.jsonc`: commented mirror for humans. This is
+  not consumed by the executor.
 
 The design file is intentionally kept as strict JSON. Do not add inline comments
 or `_comment` fields to it: the executor loads it with `json.loads`, and the
-Pydantic schema forbids extra fields.
+Pydantic schema forbids extra fields. Keep the `.jsonc` mirror in sync when the
+executable design changes.
 
 ## Top-Level Fields
 

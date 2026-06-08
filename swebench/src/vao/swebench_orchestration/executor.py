@@ -4,17 +4,25 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures
+import difflib
 import json
 import re
 import shutil
 import subprocess
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 import yaml
 
+from vao.swebench_orchestration.repo_context import (
+    RepoContext,
+    RepoContextConfig,
+    build_repository_context,
+    default_work_dir,
+    safe_instance_payload,
+)
 from vao.agents.codex_cli_adapter import CodexCliAdapter
 from vao.agents.openai_compatible_adapter import OpenAICompatibleAdapter
 from vao.swebench_orchestration.schemas import (
@@ -93,11 +101,24 @@ class ExecutorConfig:
     split: str
     max_instances: int | None
     parallel_workers: int
-    max_calls_per_component: int
+    max_calls_per_component: int | None
     dry_run: bool
     materialize_checkouts: bool = False
     checkout_root: Path | None = None
     keep_checkouts: bool = False
+    patch_repair_attempts: int = 0
+    public_literal_repair_enabled: bool = False
+    patch_apply_timeout_seconds: int = 30
+    repo_context_enabled: bool = False
+    repo_cache_dir: Path | None = None
+    repo_work_dir: Path | None = None
+    repo_urls: dict[str, str] = field(default_factory=dict)
+    repo_context_max_tree_entries: int = 160
+    repo_context_max_search_queries: int = 12
+    repo_context_max_search_hits: int = 28
+    repo_context_max_candidate_files: int = 8
+    repo_context_max_snippet_chars: int = 18_000
+    repo_context_command_timeout_seconds: int = 120
 
 
 @dataclass
@@ -171,7 +192,7 @@ def run_executor(config: ExecutorConfig) -> dict[str, Any]:
 
     config.output_dir.mkdir(parents=True, exist_ok=True)
     with concurrent.futures.ThreadPoolExecutor(max_workers=max(config.parallel_workers, 1)) as pool:
-        futures = [
+        futures = {
             pool.submit(
                 execute_instance,
                 instance=instance,
@@ -179,10 +200,24 @@ def run_executor(config: ExecutorConfig) -> dict[str, Any]:
                 orchestration=orchestration,
                 workers=workers,
                 config=config,
-            )
+            ): instance
             for instance in instances
-        ]
-        results = [future.result() for future in concurrent.futures.as_completed(futures)]
+        }
+        results = []
+        for future in concurrent.futures.as_completed(futures):
+            instance = futures[future]
+            try:
+                results.append(future.result())
+            except Exception as exc:  # pragma: no cover - backend failures vary by environment.
+                results.append(
+                    _instance_failure_result(
+                        instance=instance,
+                        design=design,
+                        orchestration=orchestration,
+                        config=config,
+                        error=f"{type(exc).__name__}:{exc}",
+                    )
+                )
     results.sort(key=lambda item: item.instance_id)
 
     traces = [trace.model_dump(mode="json") for result in results for trace in result.traces]
@@ -206,6 +241,12 @@ def run_executor(config: ExecutorConfig) -> dict[str, Any]:
         "instances": len(instances),
         "parallel_workers": config.parallel_workers,
         "max_calls_per_component": config.max_calls_per_component,
+        "patch_repair_attempts": config.patch_repair_attempts,
+        "public_literal_repair_enabled": config.public_literal_repair_enabled,
+        "patch_apply_timeout_seconds": config.patch_apply_timeout_seconds,
+        "repo_context_enabled": config.repo_context_enabled,
+        "repo_cache_dir": str(config.repo_cache_dir or Path("swebench/repos/cache")),
+        "repo_work_dir": str(config.repo_work_dir or default_work_dir(config.output_dir, config.run_id)),
         "traces_path": str(traces_path),
         "predictions_path": str(predictions_path),
         "limitations": LIMITATIONS,
@@ -228,7 +269,17 @@ def execute_instance(
     selected_patch = ""
     selected_model = orchestration.orchestration_id
     step = 1
-    workspace = _instance_workspace(instance, config)
+    repo_context = _build_repo_context(instance=instance, config=config, run_id=run_id)
+    repo_context_path = _write_repo_context_artifact(
+        output_dir=config.output_dir,
+        instance_id=instance.instance_id,
+        repo_context=repo_context,
+    )
+    workspace = (
+        InstanceWorkspace(checkout_dir=Path(repo_context.checkout_path))
+        if repo_context.status == "ready" and repo_context.checkout_path
+        else _instance_workspace(instance, config)
+    )
 
     traces.append(
         _trace(
@@ -242,7 +293,11 @@ def execute_instance(
             agent_id="executor",
             model_id=None,
             wall_seconds=0.0,
-            extra={"limitations": LIMITATIONS},
+            extra={
+                "limitations": LIMITATIONS,
+                "repo_context_path": str(repo_context_path) if repo_context_path else None,
+                **repo_context.trace_payload(),
+            },
         )
     )
     step += 1
@@ -261,7 +316,11 @@ def execute_instance(
                 model_id=None,
                 wall_seconds=0.0,
                 error=workspace.error,
-                extra={"checkout_dir": str(workspace.checkout_dir) if workspace.checkout_dir else None},
+                extra={
+                    "checkout_dir": str(workspace.checkout_dir) if workspace.checkout_dir else None,
+                    "repo_context_path": str(repo_context_path) if repo_context_path else None,
+                    **repo_context.trace_payload(),
+                },
             )
         )
         return InstanceResult(
@@ -276,14 +335,18 @@ def execute_instance(
 
     try:
         for component in orchestration.components:
-            calls = _bounded_calls(component.max_calls, config.max_calls_per_component)
-            for call_index in range(calls):
+            base_calls = _bounded_calls(component.max_calls, config.max_calls_per_component)
+            granted_repair_calls = 0
+            call_index = 0
+            while call_index < base_calls + granted_repair_calls:
                 worker = workers[component.model]
                 started = time.perf_counter()
                 error: str | None = None
                 payload: dict[str, Any] = {}
                 usage_meta: dict[str, Any] = {}
                 phase = _phase_for_component(component)
+                patch_apply_check: dict[str, Any] | None = None
+                patch_repair_retry_granted = False
                 try:
                     if config.dry_run:
                         payload, usage_meta = _dry_run_payload(component, instance)
@@ -294,6 +357,7 @@ def execute_instance(
                             instance=instance,
                             orchestration=orchestration,
                             observations=observations,
+                            repo_context=repo_context,
                             call_index=call_index,
                             checkout_dir=workspace.checkout_dir,
                         )
@@ -302,6 +366,24 @@ def execute_instance(
                 wall_seconds = time.perf_counter() - started
 
                 usage = _usage(usage_meta)
+                candidate_patch = ""
+                if error is None and _is_patch_component(component):
+                    candidate_patch = _extract_patch(payload)
+                    if not candidate_patch and workspace.checkout_dir is not None:
+                        candidate_patch = _git_diff(workspace.checkout_dir)
+                    if candidate_patch:
+                        patch_apply_check = _check_patch_applicable(
+                            patch=candidate_patch,
+                            repo_context=repo_context,
+                            checkout_dir=workspace.checkout_dir,
+                            timeout=config.patch_apply_timeout_seconds,
+                        )
+                        if patch_apply_check.get("status") in {"passed", "skipped_no_checkout"}:
+                            selected_patch = candidate_patch
+                            selected_model = worker.model_id
+                        elif granted_repair_calls < config.patch_repair_attempts:
+                            granted_repair_calls += 1
+                            patch_repair_retry_granted = True
                 traces.append(
                     _trace(
                         run_id=run_id,
@@ -325,23 +407,83 @@ def execute_instance(
                             "dry_run": config.dry_run,
                             "call_index": call_index,
                             "checkout_dir": str(workspace.checkout_dir) if workspace.checkout_dir else None,
+                            "payload_summary": _payload_summary(payload),
+                            "patch_empty_reason": _patch_empty_reason(component=component, payload=payload, error=error),
+                            "patch_apply_check": patch_apply_check,
+                            "patch_repair_retry_granted": patch_repair_retry_granted,
                         },
                     )
                 )
                 step += 1
 
                 if error is not None:
+                    call_index += 1
                     continue
                 observations.append({"component_id": component.component_id, "role": component.role, "payload": payload})
-                if component.role in {"patcher", "fallback"} and not selected_patch:
-                    selected_patch = _extract_patch(payload)
-                    if not selected_patch and workspace.checkout_dir is not None:
-                        selected_patch = _git_diff(workspace.checkout_dir)
-                    if selected_patch:
-                        selected_model = worker.model_id
-                        break
+                if selected_patch:
+                    break
+                call_index += 1
             if selected_patch:
                 break
+
+        if (
+            not selected_patch
+            and config.public_literal_repair_enabled
+            and _orchestration_allows_public_literal_repair(orchestration)
+        ):
+            started = time.perf_counter()
+            payload = _public_literal_replacement_patch(instance=instance, repo_context=repo_context)
+            candidate_patch = _extract_patch(payload)
+            apply_check = (
+                _check_patch_applicable(
+                    patch=candidate_patch,
+                    repo_context=repo_context,
+                    checkout_dir=workspace.checkout_dir,
+                    timeout=config.patch_apply_timeout_seconds,
+                )
+                if candidate_patch
+                else {"status": "skipped_empty_patch"}
+            )
+            if candidate_patch and apply_check.get("status") in {"passed", "skipped_no_checkout"}:
+                selected_patch = candidate_patch
+                selected_model = f"{orchestration.orchestration_id}:public_literal_repair"
+            traces.append(
+                _trace(
+                    run_id=run_id,
+                    design=design,
+                    orchestration=orchestration,
+                    instance=instance,
+                    config=config,
+                    step=step,
+                    phase="fallback",
+                    agent_id="public_literal_repair",
+                    model_id=None,
+                    wall_seconds=time.perf_counter() - started,
+                    extra={
+                        "component_role": "deterministic_repair",
+                        "model_name_or_path": selected_model,
+                        "payload_summary": _payload_summary(payload),
+                        "patch_empty_reason": _patch_empty_reason(
+                            component=ComponentSpec(
+                                component_id="public_literal_repair",
+                                role="patcher",
+                                model=orchestration.components[0].model,
+                                prompt_summary="deterministic public literal repair",
+                                max_calls=1,
+                                output_contract="model_patch unified diff",
+                            ),
+                            payload=payload,
+                            error=None,
+                        ),
+                        "patch_apply_check": apply_check,
+                        "public_literal_repair": True,
+                        "public_literal_repair_payload": {
+                            key: value for key, value in payload.items() if key != "model_patch"
+                        },
+                    },
+                )
+            )
+            step += 1
     finally:
         _cleanup_workspace(workspace, config)
 
@@ -359,7 +501,14 @@ def execute_instance(
             wall_seconds=0.0,
             verified=False,
             error="not_implemented:target_tests_and_swebench_verifier_are_not_run_inline_by_executor",
-            extra={"limitations": LIMITATIONS},
+            extra={
+                "limitations": LIMITATIONS,
+                "stopping_reason": "local_applyable_patch_selected" if selected_patch else "no_local_applyable_patch",
+                "selected_patch_chars": len(selected_patch),
+                "selected_patch_modified_files": _modified_files_from_patch(selected_patch),
+                "repo_context_path": str(repo_context_path) if repo_context_path else None,
+                **repo_context.trace_payload(),
+            },
         )
     )
 
@@ -371,6 +520,38 @@ def execute_instance(
             "model_patch": selected_patch,
         },
         traces=traces,
+    )
+
+
+def _instance_failure_result(
+    *,
+    instance: SWEInstancePublic,
+    design: OrchestrationDesign,
+    orchestration: OrchestrationSpec,
+    config: ExecutorConfig,
+    error: str,
+) -> InstanceResult:
+    trace = _trace(
+        run_id=f"{config.run_id}_{instance.instance_id}",
+        design=design,
+        orchestration=orchestration,
+        instance=instance,
+        config=config,
+        step=1,
+        phase="other",
+        agent_id="executor",
+        model_id=None,
+        error=f"instance_execution_failed:{error}",
+        extra={"instance_failure_error": error},
+    )
+    return InstanceResult(
+        instance_id=instance.instance_id,
+        prediction={
+            "instance_id": instance.instance_id,
+            "model_name_or_path": orchestration.orchestration_id,
+            "model_patch": "",
+        },
+        traces=[trace],
     )
 
 
@@ -458,6 +639,48 @@ def _safe_path_name(value: str) -> str:
     return safe.strip("._-") or "unnamed"
 
 
+def _build_repo_context(*, instance: SWEInstancePublic, config: ExecutorConfig, run_id: str) -> RepoContext:
+    if config.dry_run:
+        return RepoContext(repo=instance.repo, base_commit=instance.base_commit, status="disabled")
+    return build_repository_context(
+        instance=instance,
+        config=_repo_context_config(config),
+        run_id=run_id,
+        output_dir=config.output_dir,
+    )
+
+
+def _repo_context_config(config: ExecutorConfig) -> RepoContextConfig:
+    return RepoContextConfig(
+        enabled=config.repo_context_enabled,
+        cache_dir=config.repo_cache_dir or Path("swebench/repos/cache"),
+        work_dir=config.repo_work_dir,
+        repo_urls=config.repo_urls,
+        max_tree_entries=config.repo_context_max_tree_entries,
+        max_search_queries=config.repo_context_max_search_queries,
+        max_search_hits=config.repo_context_max_search_hits,
+        max_candidate_files=config.repo_context_max_candidate_files,
+        max_snippet_chars=config.repo_context_max_snippet_chars,
+        command_timeout_seconds=config.repo_context_command_timeout_seconds,
+    )
+
+
+def _write_repo_context_artifact(
+    *, output_dir: Path, instance_id: str, repo_context: RepoContext
+) -> Path | None:
+    if repo_context.status in {"disabled", "skipped_no_base_commit"}:
+        return None
+    context_dir = output_dir / "repo_context"
+    context_dir.mkdir(parents=True, exist_ok=True)
+    path = context_dir / f"{_safe_filename(instance_id)}.json"
+    path.write_text(json.dumps(repo_context.prompt_payload(), indent=2, sort_keys=True), encoding="utf-8")
+    return path
+
+
+def _safe_filename(value: str) -> str:
+    return re.sub(r"[^A-Za-z0-9_.-]+", "__", value).strip("._-") or "instance"
+
+
 def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default=None, help="Optional executor experiment YAML.")
@@ -470,11 +693,18 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--split", default=None)
     parser.add_argument("--max-instances", type=int, default=None)
     parser.add_argument("--parallel-workers", type=int, default=None)
-    parser.add_argument("--max-calls-per-component", type=int, default=None)
+    parser.add_argument(
+        "--max-calls-per-component",
+        default=None,
+        help="Optional executor-level cap. Use a positive integer, 0, null, none, or unbounded.",
+    )
     parser.add_argument("--dry-run", action="store_true", help="Validate flow without calling GPU endpoints.")
     parser.add_argument("--materialize-checkouts", action="store_true", help="Clone SWE-bench repos before worker calls.")
     parser.add_argument("--checkout-root", default=None, help="Directory for per-instance checkouts and repo cache.")
     parser.add_argument("--keep-checkouts", action="store_true", help="Keep cloned SWE-bench worktrees after each instance.")
+    parser.add_argument("--repo-cache-dir", default=None, help="Durable bare clone cache for SWE-bench repos.")
+    parser.add_argument("--repo-work-dir", default=None, help="Per-run repository working-copy root.")
+    parser.add_argument("--no-repo-context", action="store_true", help="Disable repository context extraction.")
     return parser
 
 
@@ -482,7 +712,35 @@ def config_from_args(args: argparse.Namespace) -> ExecutorConfig:
     file_config = _load_yaml(Path(args.config)) if args.config else {}
     executor = file_config.get("executor", {})
     experiment = file_config.get("experiment", {})
+    repo_settings_raw = executor.get("repo_context", {})
+    if isinstance(repo_settings_raw, bool):
+        repo_settings: dict[str, Any] = {"enabled": repo_settings_raw}
+    elif isinstance(repo_settings_raw, dict):
+        repo_settings = repo_settings_raw
+    else:
+        repo_settings = {}
     run_id = args.run_id or executor.get("run_id") or experiment.get("name") or "swebench_orchestration_executor"
+    output_dir = Path(args.output_dir or executor.get("output_dir") or "swebench/studies/open_source_orchestration/runs/pilot/executor")
+    materialize_checkouts = bool(args.materialize_checkouts or executor.get("materialize_checkouts", False))
+    repo_context_enabled = bool(
+        repo_settings.get("enabled", executor.get("repo_context_enabled", materialize_checkouts))
+    )
+    if args.no_repo_context:
+        repo_context_enabled = False
+    repo_cache_dir = Path(
+        args.repo_cache_dir
+        or executor.get("repo_cache_dir")
+        or repo_settings.get("cache_dir")
+        or "swebench/repos/cache"
+    )
+    repo_work_dir_value = (
+        args.repo_work_dir
+        or executor.get("repo_work_dir")
+        or repo_settings.get("work_dir")
+        or args.checkout_root
+        or executor.get("checkout_root")
+    )
+    repo_work_dir = Path(repo_work_dir_value) if repo_work_dir_value else default_work_dir(output_dir, str(run_id))
     return ExecutorConfig(
         design_path=Path(_required(args.design or executor.get("design"), "--design")),
         instances_path=Path(
@@ -496,7 +754,7 @@ def config_from_args(args: argparse.Namespace) -> ExecutorConfig:
                 "--workers-config",
             )
         ),
-        output_dir=Path(args.output_dir or executor.get("output_dir") or "swebench/studies/open_source_orchestration/runs/pilot/executor"),
+        output_dir=output_dir,
         orchestration_id=args.orchestration_id or executor.get("orchestration_id"),
         run_id=str(run_id),
         split=str(args.split or executor.get("split") or experiment.get("split") or "test"),
@@ -504,15 +762,29 @@ def config_from_args(args: argparse.Namespace) -> ExecutorConfig:
         parallel_workers=int(
             args.parallel_workers if args.parallel_workers is not None else executor.get("parallel_workers", 1)
         ),
-        max_calls_per_component=int(
+        max_calls_per_component=_optional_positive_int_from_any(
             args.max_calls_per_component
             if args.max_calls_per_component is not None
-            else executor.get("max_calls_per_component", 1)
+            else executor.get("max_calls_per_component", 1),
+            default=1,
         ),
         dry_run=bool(args.dry_run or executor.get("dry_run", False)),
-        materialize_checkouts=bool(args.materialize_checkouts or executor.get("materialize_checkouts", False)),
+        materialize_checkouts=materialize_checkouts,
         checkout_root=Path(args.checkout_root or executor["checkout_root"]) if args.checkout_root or executor.get("checkout_root") else None,
         keep_checkouts=bool(args.keep_checkouts or executor.get("keep_checkouts", False)),
+        patch_repair_attempts=max(0, _int_from_any(executor.get("patch_repair_attempts"), 0)),
+        public_literal_repair_enabled=bool(executor.get("public_literal_repair_enabled", False)),
+        patch_apply_timeout_seconds=max(1, _int_from_any(executor.get("patch_apply_timeout_seconds"), 30)),
+        repo_context_enabled=repo_context_enabled,
+        repo_cache_dir=repo_cache_dir,
+        repo_work_dir=repo_work_dir,
+        repo_urls={str(key): str(value) for key, value in (repo_settings.get("repo_urls") or {}).items()},
+        repo_context_max_tree_entries=int(repo_settings.get("max_tree_entries", 160)),
+        repo_context_max_search_queries=int(repo_settings.get("max_search_queries", 12)),
+        repo_context_max_search_hits=int(repo_settings.get("max_search_hits", 28)),
+        repo_context_max_candidate_files=int(repo_settings.get("max_candidate_files", 8)),
+        repo_context_max_snippet_chars=int(repo_settings.get("max_snippet_chars", 18_000)),
+        repo_context_command_timeout_seconds=int(repo_settings.get("command_timeout_seconds", 120)),
     )
 
 
@@ -573,6 +845,7 @@ def _call_worker(
     instance: SWEInstancePublic,
     orchestration: OrchestrationSpec,
     observations: list[dict[str, Any]],
+    repo_context: RepoContext,
     call_index: int,
     checkout_dir: Path | None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -582,6 +855,7 @@ def _call_worker(
         instance=instance,
         orchestration=orchestration,
         observations=observations,
+        repo_context=repo_context,
         call_index=call_index,
         checkout_dir=checkout_dir,
     )
@@ -642,6 +916,7 @@ def _render_component_prompt(
     instance: SWEInstancePublic,
     orchestration: OrchestrationSpec,
     observations: list[dict[str, Any]],
+    repo_context: RepoContext,
     call_index: int,
     checkout_dir: Path | None,
 ) -> str:
@@ -672,7 +947,9 @@ def _render_component_prompt(
             _checkout_prompt_line(checkout_dir),
             "Current runtime limitations: target tests and SWE-bench verifier calls are not run inline by this executor.",
             "Public SWE-bench instance:",
-            json.dumps(instance.model_dump(mode="json"), indent=2, sort_keys=True),
+            json.dumps(safe_instance_payload(instance), indent=2, sort_keys=True),
+            "Leakage-safe repository context:",
+            json.dumps(repo_context.prompt_payload(), indent=2, sort_keys=True),
             "Prior component outputs:",
             json.dumps(observations, indent=2, sort_keys=True),
             output_instruction,
@@ -771,17 +1048,283 @@ def _phase_for_component(component: ComponentSpec) -> str:
     }.get(component.role, "other")
 
 
-def _bounded_calls(spec_calls: int, configured_max: int) -> int:
-    if spec_calls <= 0 or configured_max <= 0:
+def _is_patch_component(component: ComponentSpec) -> bool:
+    contract = component.output_contract.lower()
+    prompt = component.prompt_summary.lower()
+    return component.role == "patcher" or (
+        component.role == "fallback" and ("patch" in contract or "diff" in contract or "patch" in prompt)
+    )
+
+
+def _bounded_calls(spec_calls: int, configured_max: int | None) -> int:
+    if spec_calls <= 0:
+        return 0
+    if configured_max is None:
+        return spec_calls
+    if configured_max <= 0:
         return 0
     return min(spec_calls, configured_max)
+
+
+def _check_patch_applicable(
+    *,
+    patch: str,
+    repo_context: RepoContext,
+    checkout_dir: Path | None,
+    timeout: int,
+) -> dict[str, Any]:
+    if not patch.strip():
+        return {"status": "skipped_empty_patch", "patch_chars": 0}
+    apply_dir = Path(repo_context.checkout_path) if repo_context.status == "ready" and repo_context.checkout_path else checkout_dir
+    if apply_dir is None:
+        return {
+            "status": "skipped_no_checkout",
+            "patch_chars": len(patch),
+            "repo_context_status": repo_context.status,
+        }
+    command = ["git", "-C", str(apply_dir), "apply", "--check", "--whitespace=nowarn", "-"]
+    try:
+        completed = subprocess.run(
+            command,
+            input=patch,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=timeout,
+            check=False,
+        )
+    except subprocess.TimeoutExpired as exc:
+        return {
+            "status": "timeout",
+            "command": " ".join(command),
+            "patch_chars": len(patch),
+            "timeout_seconds": timeout,
+            "stdout_preview": _preview(exc.stdout or "", 500) if isinstance(exc.stdout, str) else "",
+            "stderr_preview": _preview(exc.stderr or "", 500) if isinstance(exc.stderr, str) else "",
+        }
+    return {
+        "status": "passed" if completed.returncode == 0 else "failed",
+        "command": " ".join(command),
+        "patch_chars": len(patch),
+        "returncode": completed.returncode,
+        "stdout_preview": _preview(completed.stdout or "", 500),
+        "stderr_preview": _preview(completed.stderr or "", 500),
+    }
+
+
+def _public_literal_replacement_patch(*, instance: SWEInstancePublic, repo_context: RepoContext) -> dict[str, Any]:
+    if repo_context.status != "ready" or not repo_context.checkout_path:
+        return {
+            "model_patch": "",
+            "summary": "public_literal_repair skipped: no leakage-safe checkout is available.",
+            "confidence": 0.0,
+        }
+    literals = _issue_backtick_literals(instance.problem_statement)
+    if len(literals) < 2:
+        return {
+            "model_patch": "",
+            "summary": "public_literal_repair skipped: fewer than two public backtick literals found.",
+            "confidence": 0.0,
+        }
+    checkout = Path(repo_context.checkout_path)
+    candidate_files = _dedupe(
+        [
+            *[str(path) for path in repo_context.candidate_files],
+            *[
+                str(snippet.get("path"))
+                for snippet in repo_context.snippets
+                if isinstance(snippet, dict) and snippet.get("path")
+            ],
+        ]
+    )
+    for path in candidate_files:
+        if not _is_likely_implementation_file(path):
+            continue
+        file_path = checkout / path
+        if not file_path.exists() or not file_path.is_file():
+            continue
+        original = file_path.read_text(encoding="utf-8", errors="replace")
+        for old_literal, new_literal in _literal_replacement_pairs(literals):
+            if old_literal not in original or old_literal == new_literal:
+                continue
+            updated = original.replace(old_literal, new_literal, 1)
+            patch = _unified_file_replacement_patch(path=path, original=original, updated=updated)
+            return {
+                "model_patch": patch,
+                "summary": "public_literal_repair replaced an explicit public old/new literal pair.",
+                "confidence": 0.95,
+                "modified_file": path,
+                "old_literal": old_literal,
+                "new_literal": new_literal,
+                "repair_policy": "public_literal_repair",
+            }
+    return {
+        "model_patch": "",
+        "summary": "public_literal_repair skipped: public old literal was not found in candidate implementation files.",
+        "confidence": 0.0,
+    }
+
+
+def _orchestration_allows_public_literal_repair(orchestration: OrchestrationSpec) -> bool:
+    haystack = "\n".join(
+        [
+            orchestration.routing_policy,
+            orchestration.evidence_policy,
+            orchestration.patch_policy,
+            orchestration.verification_policy,
+            orchestration.fallback_policy,
+            *[
+                " ".join([component.prompt_summary, component.output_contract, " ".join(component.tools)])
+                for component in orchestration.components
+            ],
+        ]
+    ).lower()
+    return "public_literal_repair" in haystack
+
+
+def _issue_backtick_literals(problem_statement: str) -> list[str]:
+    values = [match.strip() for match in re.findall(r"`([^`]+)`", problem_statement or "")]
+    return [value for value in values if value]
+
+
+def _literal_replacement_pairs(literals: list[str]) -> list[tuple[str, str]]:
+    pairs: list[tuple[str, str]] = []
+    for old_index, old_literal in enumerate(literals):
+        for new_literal in literals[old_index + 1 :]:
+            if old_literal != new_literal:
+                pairs.append((old_literal, new_literal))
+    return pairs
+
+
+def _unified_file_replacement_patch(*, path: str, original: str, updated: str) -> str:
+    diff_lines = list(
+        difflib.unified_diff(
+            original.splitlines(),
+            updated.splitlines(),
+            fromfile=f"a/{path}",
+            tofile=f"b/{path}",
+            lineterm="",
+        )
+    )
+    return "\n".join([f"diff --git a/{path} b/{path}", *diff_lines]) + "\n"
 
 
 def _extract_patch(payload: dict[str, Any]) -> str:
     patch = payload.get("model_patch") or payload.get("patch") or payload.get("unified_diff") or ""
     if not isinstance(patch, str):
         return ""
-    return _strip_code_fences(patch).strip()
+    stripped = _strip_code_fences(patch)
+    return stripped if stripped.strip() else ""
+
+
+def _patch_empty_reason(*, component: ComponentSpec, payload: dict[str, Any], error: str | None) -> str:
+    if not _is_patch_component(component):
+        return "not_patch_component"
+    if error is not None:
+        return "worker_error"
+    if not payload:
+        return "empty_payload"
+    if not any(key in payload for key in ("model_patch", "patch", "unified_diff")):
+        return "missing_patch_field"
+    raw_patch = None
+    for key in ("model_patch", "patch", "unified_diff"):
+        if key in payload:
+            raw_patch = payload.get(key)
+            break
+    if raw_patch is None:
+        return "patch_field_null"
+    if not isinstance(raw_patch, str):
+        return "patch_field_not_string"
+    if not _strip_code_fences(raw_patch).strip():
+        summary = str(payload.get("summary") or payload.get("notes") or "").strip()
+        if summary:
+            return "empty_patch:" + _preview(summary, 160)
+        return "empty_patch"
+    return "non_empty_patch"
+
+
+def _payload_summary(payload: dict[str, Any]) -> dict[str, Any]:
+    patch = _extract_patch(payload)
+    return {
+        "keys": sorted(payload.keys()),
+        "mode": payload.get("mode"),
+        "confidence": payload.get("confidence"),
+        "candidate_files": _preview_list(payload.get("candidate_files")),
+        "summary_preview": _preview(str(payload.get("summary") or ""), 320),
+        "notes_preview": _preview(str(payload.get("notes") or ""), 320),
+        "model_patch_chars": len(patch),
+        "model_patch_nonempty": bool(patch),
+        "model_patch_modified_files": _modified_files_from_patch(patch),
+    }
+
+
+def _modified_files_from_patch(patch: str) -> list[str]:
+    files: list[str] = []
+    for line in patch.splitlines():
+        if line.startswith("diff --git "):
+            parts = line.split()
+            if len(parts) >= 4:
+                files.append(parts[3][2:] if parts[3].startswith("b/") else parts[3])
+        elif line.startswith("+++ ") and not line.startswith("+++ /dev/null"):
+            path = line[4:].strip()
+            files.append(path[2:] if path.startswith("b/") else path)
+    return _dedupe(files)[:20]
+
+
+def _preview(value: str, limit: int) -> str:
+    compact = " ".join(value.split())
+    if len(compact) <= limit:
+        return compact
+    return compact[: limit - 3] + "..."
+
+
+def _preview_list(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [_preview(str(item), 160) for item in value[:20]]
+
+
+def _is_likely_implementation_file(path: str) -> bool:
+    lowered = path.lower()
+    if not lowered:
+        return False
+    blocked_parts = {".github", "docs", "doc", "examples", "example", "tests", "test", "testing"}
+    parts = set(re.split(r"[/\\]+", lowered))
+    if parts & blocked_parts:
+        return False
+    blocked_suffixes = (".md", ".rst", ".txt")
+    if lowered.endswith(blocked_suffixes):
+        return False
+    return Path(lowered).suffix in {
+        ".py",
+        ".pyi",
+        ".pyx",
+        ".c",
+        ".cc",
+        ".cpp",
+        ".h",
+        ".hpp",
+        ".js",
+        ".ts",
+        ".java",
+        ".rs",
+        ".toml",
+        ".cfg",
+        ".ini",
+        ".yaml",
+        ".yml",
+        ".json",
+    }
+
+
+def _dedupe(values: list[str]) -> list[str]:
+    seen: set[str] = set()
+    out: list[str] = []
+    for value in values:
+        if value not in seen:
+            seen.add(value)
+            out.append(value)
+    return out
 
 
 def _strip_code_fences(text: str) -> str:
@@ -828,6 +1371,26 @@ def _required(value: Any, flag: str) -> Any:
     if value is None or value == "":
         raise ValueError(f"{flag} is required, either as a CLI argument or executor config field")
     return value
+
+
+def _int_from_any(value: Any, default: int) -> int:
+    if value is None or value == "":
+        return default
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _optional_positive_int_from_any(value: Any, *, default: int | None) -> int | None:
+    if value is None:
+        return None
+    if isinstance(value, str) and value.strip().lower() in {"", "none", "null", "unbounded"}:
+        return None
+    parsed = _int_from_any(value, default if default is not None else 0)
+    if parsed <= 0:
+        return 0
+    return parsed
 
 
 if __name__ == "__main__":
