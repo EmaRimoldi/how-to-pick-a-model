@@ -12,8 +12,8 @@ It was archived when the main paper and active framework were refocused on the A
 
 The active benchmark surface now lives under:
 
-- `benchmarks/autoresearch_cifar10/`
+- `autoresearch/benchmark/cifar10/`
 - `src/vao/analysis/autoresearch_*`
-- `configs/autoresearch_cifar10_*`
+- `autoresearch/configs/autoresearch_cifar10_*`
 
 If you need the older query-engine experiments for replication or historical comparison, use the archived paths explicitly rather than importing them into new runs.

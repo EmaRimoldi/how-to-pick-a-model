@@ -49,6 +49,29 @@ def test_codex_cli_complete_uses_output_schema(monkeypatch: pytest.MonkeyPatch) 
     assert 'model_reasoning_effort="medium"' in captured["cmd"]
 
 
+def test_codex_cli_complete_uses_absolute_working_dir(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    captured: dict[str, Any] = {}
+
+    monkeypatch.setattr("vao.agents.codex_cli_adapter.shutil.which", lambda _: "/usr/local/bin/codex")
+
+    def fake_run(cmd: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
+        captured["cmd"] = cmd
+        captured["cwd"] = kwargs["cwd"]
+        output_path = Path(cmd[cmd.index("--output-last-message") + 1])
+        output_path.write_text('{"ok": true}', encoding="utf-8")
+        return subprocess.CompletedProcess(cmd, 0, stdout="", stderr="")
+
+    monkeypatch.setattr("vao.agents.codex_cli_adapter.subprocess.run", fake_run)
+    adapter = CodexCliAdapter(model_id="gpt-5.4-mini", working_dir=tmp_path)
+
+    adapter._complete("prompt", {"type": "object"}, 10)
+
+    cd_path = Path(captured["cmd"][captured["cmd"].index("-C") + 1])
+    assert cd_path.is_absolute()
+    assert cd_path == tmp_path.resolve()
+    assert Path(captured["cwd"]) == tmp_path.resolve()
+
+
 def test_codex_cli_complete_reports_cli_failure(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("vao.agents.codex_cli_adapter.shutil.which", lambda _: "/usr/local/bin/codex")
 
