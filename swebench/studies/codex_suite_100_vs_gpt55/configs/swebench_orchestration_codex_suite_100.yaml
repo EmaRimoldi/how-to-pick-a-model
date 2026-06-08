@@ -1,0 +1,20 @@
+experiment:  # Metadata for the orchestrated 100-instance arm.
+  name: codex_suite_single_100  # Stable name for the orchestrated experiment.
+  dataset_name: princeton-nlp/SWE-Bench_Verified  # Dataset used for the slice.
+  split: test  # Dataset split used for evaluation.
+  evidence_level: E1_codex_suite_self_optimizing  # Declared evidence/protocol level.
+  public_instances: swebench/studies/codex_suite_100_vs_gpt55/data/verified_100/instances_public.jsonl  # Prompt-safe public instances.
+  output_dir: swebench/studies/codex_suite_100_vs_gpt55/runs/codex_suite_100  # Default logical output directory.
+
+executor:  # Parameters consumed by the runtime executor.
+  design: swebench/studies/codex_suite_100_vs_gpt55/designs/codex_suite_single/orchestration_design.json  # Frozen design JSON.
+  workers_config: swebench/studies/codex_suite_100_vs_gpt55/configs/swebench_codex_suite_workers.yaml  # Worker menu for design aliases.
+  orchestration_id: codex_suite_single_self_optimizing_v1  # Orchestration selected from the design JSON.
+  output_dir: swebench/studies/codex_suite_100_vs_gpt55/runs/codex_suite_100/executor  # Executor output directory.
+  max_instances: 100  # Maximum number of instances to process.
+  parallel_workers: 1  # Number of instances/components that may run in parallel.
+  max_calls_per_component: 1  # Per-instance call limit for each component.
+  dry_run: false  # If true, writes manifests without real model calls.
+  materialize_checkouts: true  # If true, creates local SWE-bench repo checkouts.
+  checkout_root: swebench/studies/codex_suite_100_vs_gpt55/runs/codex_suite_100/checkouts  # Root for temporary checkouts.
+  keep_checkouts: false  # If false, checkouts are disposable after the run.

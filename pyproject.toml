@@ -42,9 +42,9 @@ vao-oracle-family-multimodel-visuals = "vao.analysis.oracle_family_multimodel_vi
 vao-oracle-family-latent-modes = "vao.analysis.oracle_family_latent_modes:main"
 vao-oracle-family-iterative = "vao.analysis.oracle_family_iterative:main"
 vao-oracle-family-policy-compare = "vao.analysis.oracle_family_policy_compare:main"
-vao-autoresearch-cifar10-pilot = "vao.analysis.autoresearch_cifar10_pilot:main"
-vao-autoresearch-cifar10-mode-catalog = "vao.analysis.autoresearch_cifar10_mode_catalog:main"
-vao-autoresearch-cifar10-single-trajectory = "vao.analysis.autoresearch_cifar10_single_trajectory_campaign:main"
+vao-autoresearch-cifar10-pilot = "autoresearch.analysis.autoresearch_cifar10_pilot:main"
+vao-autoresearch-cifar10-mode-catalog = "autoresearch.analysis.autoresearch_cifar10_mode_catalog:main"
+vao-autoresearch-cifar10-single-trajectory = "autoresearch.analysis.autoresearch_cifar10_single_trajectory_campaign:main"
 vao-swebench-download = "vao.swebench_orchestration.download:main"
 vao-swebench-meta-prompt = "vao.swebench_orchestration.prompt:main"
 vao-swebench-execute = "vao.swebench_orchestration.executor:main"
@@ -56,14 +56,15 @@ requires = ["setuptools>=69", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-where = ["src", "."]
-include = ["vao*", "benchmarks*"]
+where = ["src", "swebench/src", "swebench", "."]
+include = ["vao*", "autoresearch*"]
 
 [tool.setuptools.package-data]
-benchmarks = ["stateful_query_engine/metadata/*.json", "autoresearch_cifar10/metadata/*.json"]
+autoresearch = ["benchmark/cifar10/metadata/*.json", "prompts/*.txt"]
 vao = ["prompts/*.txt"]
+"vao.swebench_orchestration" = ["prompts/*.txt"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "autoresearch/tests", "swebench/tests"]
 python_files = ["test_*.py"]
-pythonpath = ["src", "."]
+pythonpath = ["src", "swebench/src", "swebench", "."]

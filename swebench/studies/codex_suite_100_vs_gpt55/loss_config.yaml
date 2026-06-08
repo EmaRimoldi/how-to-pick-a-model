@@ -1,0 +1,31 @@
+loss:
+  objective: >
+    Minimize unresolved repairs first, then resource use, orchestration
+    complexity, and allocation waste.
+  failure:
+    alpha_unresolved: 100.0
+  resource:
+    token_weight: 0.00001
+    wall_weight: 0.0002777777777777778
+    test_weight: 0.0002777777777777778
+    api_weight: 1.0
+    verifier_call_weight: 0.05
+  complexity:
+    simplicity_weight: 0.25
+    agents: 1.0
+    model_families: 1.0
+    prompt_templates: 0.5
+    routing_branches: 0.75
+    tool_policies: 0.5
+    max_patch_proposals: 0.25
+    context_budget_tokens_per_100k: 1.0
+  allocation:
+    imbalance_weight: 1.0
+    route_regret_weight: 1.0
+    wasted_effort_weight: 0.5
+
+terms:
+  failure: alpha_unresolved * unresolved_count
+  resource: token_weight * tokens + wall_weight * wall_seconds + test_weight * test_seconds + api_weight * api_cost_usd + verifier_call_weight * verifier_calls
+  complexity: simplicity_weight * weighted_complexity_score
+  allocation: imbalance_weight * imbalance + route_regret_weight * route_regret + wasted_effort_weight * wasted_effort

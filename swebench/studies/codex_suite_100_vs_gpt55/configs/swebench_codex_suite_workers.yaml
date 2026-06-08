@@ -1,0 +1,67 @@
+workers:  # Full worker menu available to the executor; selected roles are defined by design.components[].model.
+  codex_gpt_5_5_planner:  # Selected by the frozen design for hard-case fallback/escalation.
+    adapter: codex_cli  # Runtime adapter; uses the local Codex CLI.
+    model_id: gpt-5.5  # Model invoked through the adapter.
+    reasoning_effort: xhigh  # Requested qualitative reasoning budget.
+    sandbox: workspace-write  # Sandbox mode used while the worker runs.
+    timeout_seconds: 1800  # Maximum duration for one worker call, in seconds.
+    max_tokens_observe: 4096  # Token budget for observation and analysis phases.
+    max_tokens_patch: 16000  # Token budget for generating or repairing patches.
+    retries: 1  # Retries allowed after recoverable failures.
+    use_output_schema: true  # Request schema-constrained output when supported.
+    intended_use: global planner, hard reviewer, and final escalation  # Intended design role.
+  codex_gpt_5_4_reviewer:  # Selected by the frozen design for review and verifier-result interpretation.
+    adapter: codex_cli  # Runtime adapter; uses the local Codex CLI.
+    model_id: gpt-5.4  # Model invoked through the adapter.
+    reasoning_effort: high  # Requested qualitative reasoning budget.
+    sandbox: workspace-write  # Sandbox mode used while the worker runs.
+    timeout_seconds: 1200  # Maximum duration for one worker call, in seconds.
+    max_tokens_observe: 4096  # Token budget for observation and analysis phases.
+    max_tokens_patch: 12000  # Token budget for generating or repairing patches.
+    retries: 1  # Retries allowed after recoverable failures.
+    use_output_schema: true  # Request schema-constrained output when supported.
+    intended_use: reviewer, repair planner, and verifier-log interpreter  # Intended design role.
+  codex_gpt_5_4_mini_router:  # Selected by the frozen design for routing, triage, and lightweight search.
+    adapter: codex_cli  # Runtime adapter; uses the local Codex CLI.
+    model_id: gpt-5.4-mini  # Model invoked through the adapter.
+    reasoning_effort: medium  # Requested qualitative reasoning budget.
+    sandbox: workspace-write  # Sandbox mode used while the worker runs.
+    timeout_seconds: 900  # Maximum duration for one worker call, in seconds.
+    max_tokens_observe: 2048  # Token budget for observation and analysis phases.
+    max_tokens_patch: 8192  # Token budget for generating or repairing patches.
+    retries: 1  # Retries allowed after recoverable failures.
+    use_output_schema: true  # Request schema-constrained output when supported.
+    intended_use: cheap triage, repository search planning, and routing  # Intended design role.
+  codex_gpt_5_4_patcher:  # Selected by the frozen design for primary patch generation.
+    adapter: codex_cli  # Runtime adapter; uses the local Codex CLI.
+    model_id: gpt-5.4  # Model invoked through the adapter.
+    reasoning_effort: high  # Requested qualitative reasoning budget.
+    sandbox: workspace-write  # Sandbox mode used while the worker runs.
+    timeout_seconds: 1200  # Maximum duration for one worker call, in seconds.
+    max_tokens_observe: 4096  # Token budget for observation and analysis phases.
+    max_tokens_patch: 12000  # Token budget for generating or repairing patches.
+    retries: 1  # Retries allowed after recoverable failures.
+    use_output_schema: true  # Request schema-constrained output when supported.
+    intended_use: default patch generation when gpt-5.5 escalation is not yet justified  # Intended design role.
+  codex_gpt_5_3_codex_spark_fast:  # Selected by the frozen design for fast localization and simple patch attempts.
+    adapter: codex_cli  # Runtime adapter; uses the local Codex CLI.
+    model_id: gpt-5.3-codex-spark  # Model invoked through the adapter.
+    reasoning_effort: medium  # Requested qualitative reasoning budget.
+    sandbox: workspace-write  # Sandbox mode used while the worker runs.
+    timeout_seconds: 900  # Maximum duration for one worker call, in seconds.
+    max_tokens_observe: 2048  # Token budget for observation and analysis phases.
+    max_tokens_patch: 8192  # Token budget for generating or repairing patches.
+    retries: 1  # Retries allowed after recoverable failures.
+    use_output_schema: true  # Request schema-constrained output when supported.
+    intended_use: fast localization and simple patch attempts  # Intended design role.
+  codex_gpt_5_2_codex_fallback:  # Available in the menu but not selected by the current frozen design.
+    adapter: codex_cli  # Runtime adapter; uses the local Codex CLI.
+    model_id: gpt-5.2-codex  # Model invoked through the adapter.
+    reasoning_effort: medium  # Requested qualitative reasoning budget.
+    sandbox: workspace-write  # Sandbox mode used while the worker runs.
+    timeout_seconds: 900  # Maximum duration for one worker call, in seconds.
+    max_tokens_observe: 2048  # Token budget for observation and analysis phases.
+    max_tokens_patch: 8192  # Token budget for generating or repairing patches.
+    retries: 1  # Retries allowed after recoverable failures.
+    use_output_schema: true  # Request schema-constrained output when supported.
+    intended_use: diversity fallback for malformed or overfit patches  # Intended design role.

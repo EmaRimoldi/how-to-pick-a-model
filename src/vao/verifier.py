@@ -17,7 +17,7 @@ from vao.taxonomy import DEFAULT_MODE
 def validate_source(source_text: str, *, benchmark_id: str = "autoresearch_cifar10") -> dict[str, Any]:
     if benchmark_id != "autoresearch_cifar10":
         raise KeyError(f"Archived benchmark_id {benchmark_id!r} is not part of the active verifier")
-    from benchmarks.autoresearch_cifar10.task_spec import validate_solution_source as validate_autoresearch_source
+    from autoresearch.benchmark.cifar10.task_spec import validate_solution_source as validate_autoresearch_source
 
     return validate_autoresearch_source(source_text)
 
@@ -75,7 +75,7 @@ def _evaluate_autoresearch_solution(
     run_id: str | None = None,
     instance_overrides: dict[str, Any] | None = None,
 ) -> BranchEvaluation:
-    from benchmarks.autoresearch_cifar10.dynamic_benchmark import run_candidate
+    from autoresearch.benchmark.cifar10.dynamic_benchmark import run_candidate
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     raw_root = out_path.parent / "verifier_raw"
@@ -120,13 +120,14 @@ def smoke_test() -> None:
     root = Path("artifacts/verifier_smoke")
     root.mkdir(parents=True, exist_ok=True)
     result = evaluate_solution(
-        Path("benchmarks/autoresearch_cifar10/solution_template.py"),
+        Path("autoresearch/benchmark/cifar10/solution_template.py"),
         "autoresearch_cifar10",
         120,
         root / "baseline_verification.json",
         run_id="baseline_smoke",
         instance_overrides={
-            "families": ["lr-sensitive"],
+            "workloads": ["cnn_compact"],
+            "families": ["cnn_compact"],
             "train_subset_size": 128,
             "val_subset_size": 64,
             "max_train_steps": 1,

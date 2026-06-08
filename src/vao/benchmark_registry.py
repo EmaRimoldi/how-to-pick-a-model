@@ -30,16 +30,16 @@ def infer_benchmark_id(config: dict[str, Any]) -> str:
 
 
 def _autoresearch_cifar10_spec() -> BenchmarkSpec:
-    from benchmarks.autoresearch_cifar10.task_spec import (
+    from autoresearch.benchmark.cifar10.task_spec import (
         classify_edit_mode as autoresearch_classify_edit_mode,
     )
-    from benchmarks.autoresearch_cifar10.task_spec import (
+    from autoresearch.benchmark.cifar10.task_spec import (
         profile_summary as autoresearch_profile_summary,
     )
-    from benchmarks.autoresearch_cifar10.task_spec import (
+    from autoresearch.benchmark.cifar10.task_spec import (
         task_mode_from_instance_overrides as autoresearch_task_mode_from_instance_overrides,
     )
-    from benchmarks.autoresearch_cifar10.task_spec import (
+    from autoresearch.benchmark.cifar10.task_spec import (
         validate_solution_source as autoresearch_validate_source,
     )
     from vao.verifier import _evaluate_autoresearch_solution

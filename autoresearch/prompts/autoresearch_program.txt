@@ -1,0 +1,180 @@
+VAO_AUTORESEARCH_PROGRAM_V3
+CANONICAL_AUTORESEARCH_TASK_BLOCK_V2
+
+This is an experiment to have the LLM do its own research on a verifiable
+CIFAR-10 training task.
+
+## Setup
+
+You are operating inside a framework-controlled AutoResearch harness. The
+original AutoResearch workflow asks an agent to create a branch, edit train.py,
+run the training script, commit promising changes, log results.tsv, and revert
+failed ideas. In this benchmark, the framework performs the filesystem,
+branching, verification, promotion, and logging mechanics for you.
+
+The framework gives you:
+
+- `solution.py`, which becomes `train.py` during evaluation.
+- A fixed read-only `prepare.py`, which defines CIFAR-10 data loading,
+  training/evaluation helpers, and the verifier contract.
+- A profile summary describing the workload instance: model family, dataset
+  regime, subset sizes, label noise, imbalance, seed, and checker budget.
+- A visible history record when the current protocol permits it.
+
+You do not create git branches, commits, run logs, or `results.tsv`. You do not
+run the verifier yourself. You propose compact structured edits; the framework
+materializes them, runs the verifier offline, promotes the selected artifact
+according to the experiment policy, and records all results.
+
+## Experimentation
+
+The active task is AutoResearch-style code optimization on CIFAR-10. The
+training script runs under a fixed checker budget declared in the profile
+summary. The active checker reports validation loss and accuracy. Lower
+validation loss is better. Success is evaluated by relative validation-loss
+improvement over the unmodified baseline.
+
+What you CAN do:
+
+- Modify `solution.py`, which becomes `train.py` during evaluation.
+- Change model architecture, optimizer, hyperparameters, scheduler, batch size,
+  training loop details, model size, regularization, and other code inside
+  `solution.py`.
+- Use the current source, profile summary, and visible history to choose the
+  next experimental idea.
+- Prefer simple changes when expected gains are comparable.
+- Keep simplifications that preserve or improve verified loss.
+
+What you CANNOT do:
+
+- Do not modify or depend on modifications to `prepare.py`.
+- Do not install packages or add dependencies.
+- Do not modify the evaluation harness.
+- Do not use file IO, network, subprocess, `eval`, `exec`, or hidden global
+  state.
+- Do not assume access to branch results unless they appear in visible history.
+- Do not output a full replacement file.
+- Do not include chain-of-thought.
+
+The goal is simple: get the lowest verified CIFAR-10 validation loss while
+keeping the script executable and contract-compliant. Since the checker budget
+is fixed for this task instance, you should improve the quality reached within
+that budget rather than optimizing for unrestricted training time.
+
+Simplicity criterion:
+
+All else being equal, simpler is better. A small improvement that adds ugly
+complexity is not worth it. Conversely, removing something and getting equal or
+better results is a strong outcome. When evaluating whether to keep a change,
+weigh the complexity cost against the improvement magnitude.
+
+## Output Format
+
+The verifier prints metrics like:
+
+```
+---
+val_loss:          1.521500
+val_bpb:           1.521500
+val_accuracy:      0.4421
+training_seconds:  4.8
+total_seconds:     18.2
+total_steps:       256
+total_epochs:      1
+param_count:       77254
+evaluator_mode:    fixed_steps
+train_max_steps:   256
+```
+
+The framework extracts these metrics automatically. You only need to propose
+the next structured edit or, in single-prompt trajectory mode, an ordered list
+of structured edits.
+
+## Experiment Loop
+
+Think like an autonomous researcher running repeated edit-verify experiments:
+
+1. Inspect the current `solution.py`, profile summary, and visible history.
+2. Choose a concrete experimental idea.
+3. Express the idea as exact structured edits.
+4. The framework will run the verifier and promote or reject the resulting
+   artifact according to the protocol.
+5. Continue proposing useful follow-up ideas when the schema asks for a full
+   trajectory.
+
+Crashes should be avoided. If an idea is likely to violate the contract, choose
+a simpler or safer edit.
+
+## Action-Family Labels
+
+The framework uses six canonical labels to describe the dominant idea of an
+edit. These labels are for logging, routing, and counterfactual analysis; they
+are not literal permissions and they are not a whitelist of lines to modify.
+
+- layout: architecture and model-capacity changes such as depth, width,
+  classifier shape, normalization layout, or residual structure.
+- `indexing`: optimizer-family and gradient-dynamics changes such as Adam,
+  AdamW, SGD, momentum, betas, clipping, or related optimizer helpers.
+- `topk`: learning-rate scale changes and nearby scalar optimization
+  magnitudes.
+- `caching`: regularization and robustness changes such as weight decay,
+  dropout, augmentation robustness, or anti-overfitting edits.
+- `summaries`: scheduler and budget-allocation changes such as warmup, cosine
+  decay, milestones, or use of the fixed training budget.
+- `micro`: batching, loop-local stability, numerical hygiene, or small
+  training-script cleanups.
+
+Choose the action family that best describes the main experimental idea. If the
+schema asks for one candidate, choose the single most promising family and
+produce one candidate. If it asks for a trajectory, each step should identify
+the family for that step.
+
+## Structured Edit Rules
+
+- Use 1 to 8 edits per step. Prefer the fewest edits that are sufficient.
+- The JSON schema may include all edit fields for every operation. For fields
+  that are not used by an operation, return the empty string `""`; never return
+  `null`.
+- Use one of these operations:
+  - `replace_exact`: `{"op":"replace_exact","old":"exact existing text","new":"replacement text"}`
+  - `delete_exact`: `{"op":"delete_exact","text":"exact existing text"}`
+  - `insert_before`: `{"op":"insert_before","anchor":"exact existing text","text":"inserted text"}`
+  - `insert_after`: `{"op":"insert_after","anchor":"exact existing text","text":"inserted text"}`
+  - `replace_function`: `{"op":"replace_function","function":"function_name","source":"complete replacement function with exact indentation"}`
+- For `replace_exact`, both `old` and `new` must be non-empty strings and
+  `old` must occur exactly once. Do not put replacement targets in `anchor`.
+- For `delete_exact`, `text` must be non-empty and occur exactly once.
+- For `insert_before` and `insert_after`, both `anchor` and `text` must be
+  non-empty and `anchor` must occur exactly once.
+- For `replace_function`, both `function` and `source` must be non-empty.
+- Exact text and anchors must occur exactly once in the parent file.
+- `replace_function` is preferred when changing a whole helper or `main`; exact
+  edits are preferred for constants and small local changes.
+
+## Required Contract After Every Edit
+
+The file must remain a valid Python training script and must define:
+
+`SEED`, `DEPTH`, `BASE_CHANNELS`, `CHANNEL_MULT`, `USE_BATCHNORM`,
+`DROPOUT_RATE`, `FC_HIDDEN`, `OPTIMIZER`, `LEARNING_RATE`, `WEIGHT_DECAY`,
+`MOMENTUM`, `ADAM_BETAS`, `USE_LR_SCHEDULE`, `BATCH_SIZE`, `NUM_WORKERS`,
+`CIFAR10Net`, `build_optimizer`, `build_scheduler`, and `main`.
+
+It may import only standard baseline dependencies already present in the parent
+file.
+
+## Response
+
+Return only valid JSON matching the Required JSON schema. Do not include
+markdown or commentary.
+
+Visible history:
+$visible_history
+
+Profile summary:
+$profile_summary
+
+Current parent solution.py:
+```python
+$current_solution_source
+```

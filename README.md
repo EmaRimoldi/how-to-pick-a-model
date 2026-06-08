@@ -15,11 +15,14 @@ The old QueryState / Stateful Query Engine benchmark has been archived under
 
 ## Active benchmark surface
 
-The active benchmark lives under:
+The active AutoResearch surface is consolidated under:
 
-- `benchmarks/autoresearch_cifar10/`
-- `src/vao/analysis/autoresearch_*`
-- `configs/autoresearch_cifar10_*`
+- `autoresearch/benchmark/cifar10/`
+- `autoresearch/analysis/autoresearch_*`
+- `autoresearch/configs/autoresearch_cifar10_*`
+- `autoresearch/prompts/`
+- `autoresearch/scripts/`
+- `autoresearch/campaigns/`
 
 A task instance is a concrete AutoResearch run consisting of:
 
@@ -38,14 +41,14 @@ but start from different architectures:
 
 - `cnn_compact`
 - `mlp_flat`
-- `resnet_tiny`
+- `resnet_micro`
 
 These workload labels are properties of the editable starting program, not
 action labels.
 
 Current verifier budget:
 
-- all three workloads default to **128 inner training steps** per verifier run
+- all three workloads default to **256 inner training steps** per verifier run
 
 ## Active protocol
 
@@ -64,64 +67,79 @@ The current default model menu is:
 
 - `gpt_5_4_mini`
 - `gpt_5_3_codex`
-- `claude_sonnet`
+- `gpt_5_4`
 
 ## Quick start
 
-### 1) Local deterministic smoke
+### 1) Workload pilot campaign
 
 ```bash
-PYTHONPATH=src:. ./.venv/bin/python -m vao.orchestrator \
-  --config configs/autoresearch_cifar10_workload_local_smoke.yaml \
-  --steps 1 \
-  --run-id autoresearch_workload_smoke
-```
-
-### 2) Workload pilot campaign
-
-```bash
-PYTHONPATH=src:. ./.venv/bin/python -m vao.analysis.autoresearch_cifar10_pilot \
-  --config configs/autoresearch_cifar10_workload_pilot.yaml \
-  --models gpt_5_4_mini,gpt_5_3_codex,claude_sonnet \
-  --workloads cnn_compact,mlp_flat,resnet_tiny \
+PYTHONPATH=src:. ./.venv/bin/python -m autoresearch.analysis.autoresearch_cifar10_pilot \
+  --config autoresearch/configs/autoresearch_cifar10_workload_pilot.yaml \
+  --models gpt_5_3_codex,gpt_5_4,gpt_5_4_mini \
+  --workloads cnn_compact,mlp_flat,resnet_micro \
   --seeds 7001:2 \
   --split pilot
 ```
 
-### 3) Workload holdout campaign
+### 2) Workload holdout campaign
 
 ```bash
-PYTHONPATH=src:. ./.venv/bin/python -m vao.analysis.autoresearch_cifar10_pilot \
-  --config configs/autoresearch_cifar10_workload_holdout.yaml \
-  --models gpt_5_4_mini,gpt_5_3_codex,claude_sonnet \
-  --workloads cnn_compact,mlp_flat,resnet_tiny \
+PYTHONPATH=src:. ./.venv/bin/python -m autoresearch.analysis.autoresearch_cifar10_pilot \
+  --config autoresearch/configs/autoresearch_cifar10_workload_holdout.yaml \
+  --models gpt_5_3_codex,gpt_5_4,gpt_5_4_mini \
+  --workloads cnn_compact,mlp_flat,resnet_micro \
   --seeds 8001:2 \
   --split holdout
 ```
 
-### 4) Threshold / occupancy analysis on completed runs
+### 3) Threshold / occupancy analysis on completed runs
 
 ```bash
-PYTHONPATH=src:. ./.venv/bin/python -m vao.analysis.autoresearch_cifar10_threshold_sweep \
-  runs/autoresearch_cifar10/workload_pilot runs/autoresearch_cifar10/workload_holdout \
-  --output artifacts/autoresearch_cifar10/workload_threshold_report.json
+PYTHONPATH=src:. ./.venv/bin/python -m autoresearch.analysis.autoresearch_cifar10_threshold_sweep \
+  autoresearch/runs/workload_pilot autoresearch/runs/workload_holdout \
+  --output autoresearch/artifacts/workload_threshold_report.json
 ```
 
 ## Main entry points
 
-- `python -m vao.orchestrator --config configs/autoresearch_cifar10_workload_local_smoke.yaml --steps 1 --run-id autoresearch_workload_smoke`
-- `python -m vao.analysis.autoresearch_cifar10_pilot --config configs/autoresearch_cifar10_workload_pilot.yaml ...`
-- `python -m vao.analysis.autoresearch_cifar10_single_trajectory_campaign --config configs/autoresearch_cifar10_single_trajectory_campaign.yaml ...`
-- `python -m vao.analysis.autoresearch_cifar10_threshold_sweep runs/... --output artifacts/.../workload_threshold_report.json`
+- `python -m autoresearch.analysis.autoresearch_cifar10_pilot --config autoresearch/configs/autoresearch_cifar10_workload_pilot.yaml ...`
+- `python -m autoresearch.analysis.autoresearch_cifar10_single_trajectory_campaign --config autoresearch/configs/autoresearch_cifar10_single_trajectory_campaign.yaml ...`
+- `python -m autoresearch.analysis.autoresearch_cifar10_threshold_sweep autoresearch/runs/... --output autoresearch/artifacts/.../workload_threshold_report.json`
+
+## SWE-bench orchestration scaffold
+
+The experimental SWE-bench orchestration scaffold lives under:
+
+- `swebench/studies/open_source_orchestration/`
+- `swebench/studies/codex_suite_100_vs_gpt55/`
+- `swebench/src/vao/swebench_orchestration/`
+
+Small dev-slice run:
+
+```bash
+PYTHONPATH=src:swebench/src:swebench:. ./.venv/bin/python -m vao.swebench_orchestration.download \
+  --dataset-name princeton-nlp/SWE-Bench_Verified \
+  --split test \
+  --limit 8 \
+  --output-dir swebench/studies/open_source_orchestration/data/dev_slice
+
+PYTHONPATH=src:swebench/src:swebench:. ./.venv/bin/python -m vao.swebench_orchestration.prompt \
+  --config swebench/studies/open_source_orchestration/configs/swebench_orchestration_meta_design.yaml
+
+PYTHONPATH=src:swebench/src:swebench:. ./.venv/bin/python -m vao.swebench_orchestration.analyze \
+  --traces swebench/tests/fixtures/swebench_orchestration_traces.jsonl \
+  --orchestration-design swebench/tests/fixtures/swebench_orchestration_design.json \
+  --output swebench/studies/open_source_orchestration/runs/fixture_analysis/report.json
+```
 
 ## Configs
 
 Useful configs:
 
-- `configs/autoresearch_cifar10_workload_local_smoke.yaml`
-- `configs/autoresearch_cifar10_workload_pilot.yaml`
-- `configs/autoresearch_cifar10_workload_holdout.yaml`
-- `configs/autoresearch_cifar10_single_trajectory_campaign.yaml`
+- `autoresearch/configs/autoresearch_cifar10_workload_pilot.yaml`
+- `autoresearch/configs/autoresearch_cifar10_workload_holdout.yaml`
+- `autoresearch/configs/autoresearch_cifar10_single_trajectory_campaign.yaml`
 
 ## Paper LaTeX submodule
 

@@ -1,0 +1,1 @@
+"""Legacy synthetic initialization templates."""

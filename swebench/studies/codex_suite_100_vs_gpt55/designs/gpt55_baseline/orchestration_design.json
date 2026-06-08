@@ -1,0 +1,82 @@
+{
+  "assumptions": [
+    "This baseline isolates the best single Codex-suite model, gpt-5.5, under the same executor and verifier used by the orchestration experiment.",
+    "The worker can inspect a materialized SWE-bench repository checkout before returning a unified diff.",
+    "Gold patches are unavailable; only public issue text, repository state, tool output, generated patches, and verifier feedback may be used.",
+    "The local no-Docker verifier is run downstream on predictions.jsonl, not inline by the executor."
+  ],
+  "benchmark": "princeton-nlp/SWE-Bench_Verified:test",
+  "design_id": "gpt55_single_worker_baseline_design_v1",
+  "evidence_level": "E1_gpt55_baseline",
+  "expected_tradeoffs": [
+    "The baseline has no router or model-specialization overhead.",
+    "The baseline uses the strongest single model on every instance, so it may spend more API budget on easy cases than a routed orchestration.",
+    "The local verifier is less hermetic than Docker but provides the same no-Docker correctness check used for the orchestration."
+  ],
+  "logging_plan": [
+    "Log one JSONL trace row for the gpt-5.5 patch attempt with token usage, wall seconds, and error.",
+    "Log each generated prediction with instance_id, model_name_or_path, and model_patch.",
+    "Log local verifier manifests and per-instance report paths.",
+    "Log empty patches, patch-apply failures, test timeouts, and resolved status."
+  ],
+  "mode_taxonomy": [
+    {
+      "description": "All SWE-bench instances are handled by the same single-model solver.",
+      "expected_difficulty": "unknown",
+      "expected_strategy": "Inspect the checkout, generate one minimal unified diff, and rely on downstream local verification.",
+      "mode_id": "all_instances",
+      "observable_signals": [
+        "public issue statement",
+        "repository checkout",
+        "available tests and source files"
+      ]
+    }
+  ],
+  "optimization_loss": "Minimize 100*unresolved + token_weight*tokens + wall_weight*wall_seconds + test_weight*test_seconds + api_cost + 0.05*verifier_calls.",
+  "orchestrations": [
+    {
+      "complexity": {
+        "agents": 1,
+        "context_budget_tokens": 120000,
+        "max_patch_proposals": 1,
+        "model_families": 1,
+        "prompt_templates": 1,
+        "routing_branches": 0,
+        "tool_policies": 1
+      },
+      "components": [
+        {
+          "component_id": "gpt55_direct_patcher",
+          "max_calls": 1,
+          "model": "codex_gpt_5_5_baseline",
+          "output_contract": "Return a single unified diff patch, concise summary, and confidence.",
+          "prompt_summary": "Inspect the SWE-bench checkout and public issue fields, then produce the smallest diff likely to resolve the issue.",
+          "role": "patcher",
+          "tools": [
+            "rg/search repository text",
+            "inspect file snippets",
+            "generate unified diff patches"
+          ]
+        }
+      ],
+      "evidence_policy": "Use public issue text and repository checkout only. Never use gold patches or private metadata in prompts.",
+      "expected_failure_modes": [
+        "single attempt misses issues that need verifier-guided repair",
+        "high API cost on easy instances",
+        "empty patch when the issue cannot be localized from public evidence and checkout inspection"
+      ],
+      "fallback_policy": "No fallback. Stop after the single gpt-5.5 patch attempt.",
+      "name": "GPT-5.5 Single-Worker SWE-bench Baseline",
+      "objective_summary": "One direct gpt-5.5 patch generation attempt per SWE-bench instance.",
+      "orchestration_id": "gpt55_single_worker_baseline_v1",
+      "orchestration_type": "universal",
+      "patch_policy": "Generate one minimal unified diff. Avoid unrelated refactors and formatting churn.",
+      "routing_policy": "No routing; every instance goes to gpt-5.5.",
+      "stopping_rule": "Stop after one patch attempt or an explicit empty-patch response.",
+      "target_modes": [
+        "all_instances"
+      ],
+      "verification_policy": "Evaluate predictions with the downstream local no-Docker verifier and compare resolved rate, patch applyability, runtime, and empty-patch rate against the routed Codex-suite orchestration."
+    }
+  ]
+}

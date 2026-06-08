@@ -1,0 +1,80 @@
+experiment:  # Metadata used by the meta-designer that produced the frozen design.
+  name: swebench_orchestration_codex_suite_single  # Stable name for the design-generation phase.
+  dataset_name: princeton-nlp/SWE-Bench_Verified  # Dataset used to design the system.
+  split: test  # Dataset split consulted during design.
+  evidence_level: E1_codex_suite_self_optimizing  # Declared evidence/protocol level.
+  output_dir: swebench/studies/codex_suite_100_vs_gpt55/runs/swebench_orchestration_codex_suite_single  # Meta-designer output directory.
+  public_instances: swebench/studies/codex_suite_100_vs_gpt55/data/verified_100/instances_public.jsonl  # Prompt-safe public instances.
+  private_instances: swebench/studies/codex_suite_100_vs_gpt55/data/verified_100/instances_private_metadata.jsonl  # Private metadata; not for runtime prompts.
+  horizon_patch_proposals: 3  # Maximum number of patch proposals assumed by the design.
+  max_wall_seconds_per_instance: 3600  # Per-instance wall-clock budget assumed by the design.
+  transductive: true  # If true, design may use aggregate statistics from the slice.
+
+meta_designer:  # Model configuration for generating/optimizing the design.
+  adapter: codex_cli  # Runtime adapter used to call the meta-designer.
+  model_id: gpt-5.5  # Model responsible for designing the system.
+  reasoning_effort: xhigh  # Requested qualitative reasoning budget.
+  sandbox: workspace-write  # Sandbox mode used during design.
+  timeout_seconds: 3600  # Maximum duration for the design call, in seconds.
+  description: >  # Informational role description and anti-leakage constraints.
+    Meta-agent that reads leakage-safe SWE-bench instances, generates one frozen
+    Codex-suite orchestration, dry-runs/debugs it, tests trial patches with the
+    local no-Docker verifier when possible, and returns the optimized final
+    design. It does not see gold patches.
+
+worker_models:  # Candidate worker menu offered to the meta-designer; the frozen design records the selected aliases.
+  - alias: codex_gpt_5_5_planner  # Candidate alias for global planning and escalation.
+    adapter: codex_cli  # Expected runtime adapter for this worker.
+    model_id: gpt-5.5  # Candidate model associated with the alias.
+    intended_use: global planner, hard reviewer, and final escalation  # Intended role.
+  - alias: codex_gpt_5_4_reviewer  # Candidate alias for review and verifier analysis.
+    adapter: codex_cli  # Expected runtime adapter for this worker.
+    model_id: gpt-5.4  # Candidate model associated with the alias.
+    intended_use: reviewer, repair planner, and verifier-log interpreter  # Intended role.
+  - alias: codex_gpt_5_4_mini_router  # Candidate alias for lower-cost routing.
+    adapter: codex_cli  # Expected runtime adapter for this worker.
+    model_id: gpt-5.4-mini  # Candidate model associated with the alias.
+    intended_use: cheap triage, repository search planning, and routing  # Intended role.
+  - alias: codex_gpt_5_4_patcher  # Candidate alias for standard patch generation.
+    adapter: codex_cli  # Expected runtime adapter for this worker.
+    model_id: gpt-5.4  # Candidate model associated with the alias.
+    intended_use: default patch generation  # Intended role.
+  - alias: codex_gpt_5_3_codex_spark_fast  # Candidate alias for fast localization.
+    adapter: codex_cli  # Expected runtime adapter for this worker.
+    model_id: gpt-5.3-codex-spark  # Candidate model associated with the alias.
+    intended_use: fast localization and simple patch attempts  # Intended role.
+  - alias: codex_gpt_5_2_codex_fallback  # Candidate alias for diversity/fallback.
+    adapter: codex_cli  # Expected runtime adapter for this worker.
+    model_id: gpt-5.2-codex  # Candidate model associated with the alias.
+    intended_use: diversity fallback for malformed or overfit patches  # Intended role.
+
+allowed_tools:  # Operations allowed to the meta-designer during design.
+  - rg/search repository text  # Locate relevant code and symbols.
+  - inspect file snippets  # Read bounded source snippets.
+  - generate unified diff patches  # Propose patch candidates.
+  - run targeted pytest commands  # Execute narrow validation tests.
+  - run executor dry-runs  # Validate orchestration plumbing without full execution.
+  - run local no-Docker SWE-bench verifier with --backend local  # Validate patch behavior locally.
+  - inspect traces, manifests, verifier reports, and patch-apply logs  # Audit outputs and failures.
+  - revise orchestration JSON against the schema  # Iterate on the frozen design format.
+
+loss_weights:  # Loss weights used to prefer robust and economical designs.
+  alpha_fail: 100.0  # Dominant penalty for each unresolved instance.
+  token_weight: 0.00001  # Penalty per consumed token.
+  wall_weight: 0.0002777777777777778  # Penalty per wall-clock second.
+  test_weight: 0.0002777777777777778  # Penalty per test/evaluation second.
+  api_weight: 1.0  # Penalty per API cost in USD.
+  verifier_call_weight: 0.05  # Penalty per verifier call.
+  simplicity_weight: 0.25  # Global penalty for design complexity.
+  imbalance_weight: 1.0  # Penalty for imbalanced load across workers/roles.
+  route_regret_weight: 1.0  # Penalty for suboptimal routing decisions.
+  wasted_effort_weight: 0.5  # Penalty for wasted or redundant attempts.
+
+complexity_weights:  # Components of the design complexity score.
+  agents: 1.0  # Weight for the number of distinct agents/components.
+  model_families: 1.0  # Weight for the number of distinct model families.
+  prompt_templates: 0.5  # Weight for the number of distinct prompt templates.
+  routing_branches: 0.75  # Weight for the number of routing branches.
+  tool_policies: 0.5  # Weight for specialized tool policies.
+  max_patch_proposals: 0.25  # Weight for the maximum number of patch proposals.
+  context_budget_tokens_per_100k: 1.0  # Weight for context budget normalized per 100k tokens.

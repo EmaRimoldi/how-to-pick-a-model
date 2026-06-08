@@ -137,37 +137,27 @@ def _mode_scores(profile_summary: dict[str, Any]) -> dict[str, float]:
     if imbalance_ratio < 0.999:
         scores["indexing"] += 1.2
         scores["micro"] += 0.4
-    if task_mode == "lr-sensitive":
-        scores["topk"] += 2.2
+    if task_mode == "cnn_compact":
+        scores["topk"] += 2.2 if max_steps <= 256 else 0.4
         scores["micro"] += 0.6
-    elif task_mode == "regularization-sensitive":
-        scores["caching"] += 2.2
-        scores["indexing"] += 0.6
-    elif task_mode in {"optimizer-sensitive", "data-skew-sensitive"}:
+    elif task_mode == "mlp_flat":
         scores["indexing"] += 2.2
         scores["micro"] += 0.6
-    elif task_mode == "capacity-sensitive":
+    elif task_mode in {"resnet_micro", "resnet_tiny"}:
         scores["layout"] += 2.0
         scores["summaries"] += 0.8
-    elif task_mode == "schedule-sensitive":
-        scores["summaries"] += 1.8
-        scores["layout"] += 1.0
     return scores
 
 
 def _mode_rationale(profile_summary: dict[str, Any], mode: str) -> str:
     task_mode = profile_summary.get("task_mode_true", "unknown")
     aliases = profile_summary.get("action_mode_aliases", {})
-    if mode == "topk" and task_mode == "lr-sensitive":
-        return f"{task_mode}: short budget, so learning-rate scale is likely to move validation loss fastest."
-    if mode == "caching" and task_mode == "regularization-sensitive":
-        return f"{task_mode}: noisy labels make regularization more valuable."
-    if mode == "indexing" and task_mode in {"optimizer-sensitive", "data-skew-sensitive"}:
+    if mode == "topk" and task_mode == "cnn_compact":
+        return f"{task_mode}: compact convolutional training often responds quickly to learning-rate scale."
+    if mode == "indexing" and task_mode == "mlp_flat":
         return f"{task_mode}: optimizer dynamics and coverage are the main bottleneck."
-    if mode == "layout" and task_mode == "capacity-sensitive":
+    if mode == "layout" and task_mode in {"resnet_micro", "resnet_tiny"}:
         return f"{task_mode}: model capacity is likely to dominate."
-    if mode == "summaries" and task_mode == "schedule-sensitive":
-        return f"{task_mode}: longer horizon makes schedule tuning worthwhile."
     return f"{task_mode}: heuristic allocation for {aliases.get(mode, mode)}."
 
 
@@ -178,23 +168,24 @@ def _candidate_edits(mode: str, profile_summary: dict[str, Any]) -> list[dict[st
     imbalance_ratio = float(profile_summary.get("imbalance_ratio", 1.0))
 
     if mode == "layout":
-        depth = 3 if task_mode == "capacity-sensitive" else 2
-        base_channels = 16 if task_mode == "capacity-sensitive" else 12
-        fc_hidden = 64 if task_mode == "capacity-sensitive" else 48
+        capacity_like = task_mode in {"resnet_micro", "resnet_tiny"}
+        depth = 3 if capacity_like else 2
+        base_channels = 16 if capacity_like else 12
+        fc_hidden = 64 if capacity_like else 48
         return [
             {"op": "replace_exact", "old": "DEPTH = 2", "new": f"DEPTH = {depth}"},
             {"op": "replace_exact", "old": "BASE_CHANNELS = 12", "new": f"BASE_CHANNELS = {base_channels}"},
             {"op": "replace_exact", "old": "FC_HIDDEN = 48", "new": f"FC_HIDDEN = {fc_hidden}"},
         ]
     if mode == "indexing":
-        optimizer = "sgd" if task_mode in {"optimizer-sensitive", "data-skew-sensitive"} or imbalance_ratio < 0.999 else "adamw"
+        optimizer = "sgd" if task_mode == "mlp_flat" or imbalance_ratio < 0.999 else "adamw"
         return [
             {"op": "replace_exact", "old": 'OPTIMIZER = "adam"', "new": f'OPTIMIZER = "{optimizer}"'},
             {"op": "replace_exact", "old": "MOMENTUM = 0.9", "new": "MOMENTUM = 0.95"},
             {"op": "replace_exact", "old": "ADAM_BETAS = (0.9, 0.999)", "new": "ADAM_BETAS = (0.9, 0.99)"},
         ]
     if mode == "topk":
-        lr = 0.0015 if task_mode == "lr-sensitive" or max_steps <= 2 else 0.0008
+        lr = 0.0015 if task_mode == "cnn_compact" or max_steps <= 2 else 0.0008
         return [
             {"op": "replace_exact", "old": "LEARNING_RATE = 5e-4", "new": f"LEARNING_RATE = {lr}"},
         ]

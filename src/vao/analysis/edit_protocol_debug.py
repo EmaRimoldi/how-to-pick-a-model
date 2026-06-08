@@ -170,7 +170,7 @@ def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--json_out", default="artifacts/edit_protocol_debug_report.json")
     parser.add_argument("--md_out", default="artifacts/edit_protocol_debug_report.md")
-    parser.add_argument("--parent", default="benchmarks/autoresearch_cifar10/solution_template.py")
+    parser.add_argument("--parent", default="autoresearch/benchmark/cifar10/solution_template.py")
     parser.add_argument("--root", action="append", default=[], help="name=run_root. Defaults to known protocol roots.")
     args = parser.parse_args(argv)
     roots = dict(DEFAULT_ROOTS)

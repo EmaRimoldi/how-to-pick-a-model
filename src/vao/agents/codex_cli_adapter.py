@@ -37,6 +37,7 @@ class CodexCliAdapter(ClaudeHaikuAdapter):
         sandbox: str = "read-only",
         use_output_schema: bool = False,
         extra_cli_args: list[str] | None = None,
+        working_dir: str | Path | None = None,
         **kwargs: object,
     ) -> None:
         super().__init__(
@@ -57,6 +58,7 @@ class CodexCliAdapter(ClaudeHaikuAdapter):
         self.sandbox = str(sandbox)
         self.use_output_schema = bool(use_output_schema or use_json_schema)
         self.extra_cli_args = list(extra_cli_args or [])
+        self.working_dir = Path(working_dir).resolve() if working_dir else None
 
     def _complete(self, prompt: str, schema: dict[str, Any], max_tokens: int) -> tuple[str, dict[str, Any]]:
         if shutil.which("codex") is None:
@@ -76,6 +78,7 @@ class CodexCliAdapter(ClaudeHaikuAdapter):
                 f'model_reasoning_effort="{self.reasoning_effort}"',
                 "-s",
                 self.sandbox,
+                *(["-C", str(self.working_dir)] if self.working_dir else []),
                 "--output-last-message",
                 str(output_path),
             ]
@@ -94,6 +97,7 @@ class CodexCliAdapter(ClaudeHaikuAdapter):
                 stdin=subprocess.DEVNULL,
                 capture_output=True,
                 timeout=self.timeout_seconds,
+                cwd=str(self.working_dir) if self.working_dir else None,
             )
             elapsed = time.perf_counter() - started
             if proc.returncode != 0:
@@ -153,6 +157,7 @@ class CodexCliAdapter(ClaudeHaikuAdapter):
                 "-c",
                 f'model_reasoning_effort="{self.reasoning_effort}"',
                 *sandbox_args,
+                *(["-C", str(self.working_dir)] if self.working_dir else []),
                 "--json",
                 "--output-last-message",
                 str(output_path),
@@ -167,6 +172,7 @@ class CodexCliAdapter(ClaudeHaikuAdapter):
                 input=prompt_input,
                 capture_output=True,
                 timeout=self.timeout_seconds,
+                cwd=str(self.working_dir) if self.working_dir else None,
             )
             elapsed = time.perf_counter() - started
             if proc.returncode != 0:

@@ -8,14 +8,14 @@ import yaml
 from vao.prompts import render_template
 
 
-def test_only_single_program_prompt_file_is_active() -> None:
-    prompt_files = {
-        path.name
-        for path in Path("src/vao/prompts").glob("*.txt")
-    }
-    assert prompt_files == {
+def test_prompt_files_are_in_expected_catalogs() -> None:
+    assert {path.name for path in Path("src/vao/prompts").glob("*.txt")} == {
         "single_step_program.txt",
+    }
+    assert {path.name for path in Path("autoresearch/prompts").glob("*.txt")} == {
+        "autoresearch_allocation_router.txt",
         "autoresearch_program.txt",
+        "autoresearch_router.txt",
     }
 
 
@@ -43,14 +43,14 @@ def test_autoresearch_prompt_contains_task_specific_contract() -> None:
         visible_history="[]",
         current_solution_source=source,
     )
-    assert "VAO_AUTORESEARCH_PROGRAM_V2" in rendered
-    assert "This is an experiment in autonomous research" in rendered
-    assert "the framework implements that loop for you" in rendered
-    assert "Lower val_loss is better" in rendered
+    assert "VAO_AUTORESEARCH_PROGRAM_V3" in rendered
+    assert "This is an experiment to have the LLM do its own research" in rendered
+    assert "the framework performs the filesystem" in rendered
+    assert "Lower\nvalidation loss is better" in rendered
     assert "layout: architecture and model-capacity changes" in rendered
     assert "`SEED`, `DEPTH`, `BASE_CHANNELS`" in rendered
     assert "If the\nschema asks for one candidate" in rendered
-    assert "required JSON schema asks for six candidates" in rendered
+    assert "schema asks for a full\n   trajectory" in rendered
 
 
 @pytest.mark.parametrize(
@@ -98,29 +98,29 @@ def test_single_prompt_batch_prompt_is_explicit() -> None:
     assert "not a whitelist of functions or lines" in rendered
 
 
-def test_active_autoresearch_configs_use_single_prompt() -> None:
+def test_active_autoresearch_configs_use_canonical_prompt() -> None:
     config_paths = [
-        Path("configs/autoresearch_cifar10_model_routing.yaml"),
-        Path("configs/autoresearch_cifar10_model_routing_smoke.yaml"),
-        Path("configs/autoresearch_cifar10_pilot.yaml"),
-        Path("configs/autoresearch_cifar10_single_trajectory_campaign.yaml"),
-        Path("configs/autoresearch_cifar10_workload_pilot.yaml"),
-        Path("configs/autoresearch_cifar10_workload_holdout.yaml"),
+        Path("autoresearch/configs/autoresearch_cifar10_model_routing.yaml"),
+        Path("autoresearch/configs/autoresearch_cifar10_pilot.yaml"),
+        Path("autoresearch/configs/autoresearch_cifar10_single_trajectory_campaign.yaml"),
+        Path("autoresearch/configs/autoresearch_cifar10_workload_pilot.yaml"),
+        Path("autoresearch/configs/autoresearch_cifar10_workload_holdout.yaml"),
     ]
     for path in config_paths:
         config = yaml.safe_load(path.read_text(encoding="utf-8"))
         assert config["experiment"]["prompt_template"] == "autoresearch_program.txt"
-        assert config["experiment"]["candidate_generation"] == "single"
+        assert config["experiment"]["candidate_generation"] == "interactive_session"
+        assert config["experiment"]["steps"] == 20
 
 
 def test_model_routing_config_contains_existing_backends() -> None:
-    matrix = yaml.safe_load(Path("configs/autoresearch_cifar10_model_routing.yaml").read_text(encoding="utf-8"))
+    matrix = yaml.safe_load(Path("autoresearch/configs/autoresearch_cifar10_model_routing.yaml").read_text(encoding="utf-8"))
     models_config = yaml.safe_load(Path("configs/models.yaml").read_text(encoding="utf-8"))["models"]
     requested = set(matrix["models"]["include"])
 
-    assert matrix["experiment"]["candidate_generation"] == "single"
+    assert matrix["experiment"]["candidate_generation"] == "interactive_session"
     assert matrix["experiment"]["prompt_template"] == "autoresearch_program.txt"
-    assert requested
+    assert requested == {"gpt_5_3_codex", "gpt_5_4", "gpt_5_4_mini"}
     assert all(name in models_config for name in requested)
     for name in requested:
         assert models_config[name]["edit_protocol"] == "structured_edits"
@@ -128,10 +128,10 @@ def test_model_routing_config_contains_existing_backends() -> None:
         assert models_config[name]["adapter"] == "codex_cli"
 
 
-def test_autoresearch_single_trajectory_campaign_config_is_single_candidate() -> None:
-    config = yaml.safe_load(Path("configs/autoresearch_cifar10_single_trajectory_campaign.yaml").read_text(encoding="utf-8"))
+def test_autoresearch_single_trajectory_campaign_config_is_interactive_h20() -> None:
+    config = yaml.safe_load(Path("autoresearch/configs/autoresearch_cifar10_single_trajectory_campaign.yaml").read_text(encoding="utf-8"))
 
-    assert config["experiment"]["candidate_generation"] == "single"
-    assert config["experiment"]["steps"] == 32
+    assert config["experiment"]["candidate_generation"] == "interactive_session"
+    assert config["experiment"]["steps"] == 20
     assert config["experiment"]["prompt_template"] == "autoresearch_program.txt"
     assert config["benchmark"]["id"] == "autoresearch_cifar10"

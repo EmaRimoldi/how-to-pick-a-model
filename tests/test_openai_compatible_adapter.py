@@ -31,7 +31,7 @@ class FakeOpenAICompatibleAdapter(OpenAICompatibleAdapter):
 
 
 def test_openai_compatible_batched_structured_edits_materialize_candidates(tmp_path: Path) -> None:
-    parent_source = Path("benchmarks/autoresearch_cifar10/solution_template.py").read_text(encoding="utf-8")
+    parent_source = Path("autoresearch/benchmark/cifar10/solution_template.py").read_text(encoding="utf-8")
     run_dir = tmp_path / "run"
     workspace = run_dir / "workspace" / "solution.py"
     workspace.parent.mkdir(parents=True)
@@ -49,8 +49,8 @@ def test_openai_compatible_batched_structured_edits_materialize_candidates(tmp_p
     assert snapshot_path.exists()
     assert snapshot_meta.exists()
     snapshot = snapshot_path.read_text(encoding="utf-8")
-    assert "VAO_AUTORESEARCH_PROGRAM_V2" in snapshot
-    assert "This is an experiment in autonomous research" in snapshot
+    assert "VAO_AUTORESEARCH_PROGRAM_V3" in snapshot
+    assert "This is an experiment to have the LLM do its own research" in snapshot
     assert json.loads(snapshot_meta.read_text(encoding="utf-8"))["template"] == "autoresearch_program.txt"
     assert set(proposals) == set(MODES)
     for mode, proposal in proposals.items():
@@ -62,7 +62,7 @@ def test_openai_compatible_batched_structured_edits_materialize_candidates(tmp_p
 
 
 def test_openai_compatible_batched_invalid_candidate_becomes_logged_noop(tmp_path: Path) -> None:
-    parent_source = Path("benchmarks/autoresearch_cifar10/solution_template.py").read_text(encoding="utf-8")
+    parent_source = Path("autoresearch/benchmark/cifar10/solution_template.py").read_text(encoding="utf-8")
     run_dir = tmp_path / "run"
     workspace = run_dir / "workspace" / "solution.py"
     workspace.parent.mkdir(parents=True)
@@ -89,7 +89,7 @@ def test_openai_compatible_batched_invalid_candidate_becomes_logged_noop(tmp_pat
 
 
 def test_strict_batched_adapter_does_not_repair_with_second_prompt(tmp_path: Path) -> None:
-    parent_source = Path("benchmarks/autoresearch_cifar10/solution_template.py").read_text(encoding="utf-8")
+    parent_source = Path("autoresearch/benchmark/cifar10/solution_template.py").read_text(encoding="utf-8")
     run_dir = tmp_path / "run"
     workspace = run_dir / "workspace" / "solution.py"
     workspace.parent.mkdir(parents=True)
@@ -117,7 +117,7 @@ def test_strict_batched_adapter_does_not_repair_with_second_prompt(tmp_path: Pat
 
 
 def test_openai_compatible_single_structured_edit_materializes_one_candidate(tmp_path: Path) -> None:
-    parent_source = Path("benchmarks/autoresearch_cifar10/solution_template.py").read_text(encoding="utf-8")
+    parent_source = Path("autoresearch/benchmark/cifar10/solution_template.py").read_text(encoding="utf-8")
     run_dir = tmp_path / "run"
     workspace = run_dir / "workspace" / "solution.py"
     workspace.parent.mkdir(parents=True)
