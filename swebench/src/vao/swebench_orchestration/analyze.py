@@ -38,10 +38,8 @@ def _complexity_by_orchestration(path: Path | None) -> dict[str, float]:
         return {}
     payload = json.loads(path.read_text(encoding="utf-8"))
     design = OrchestrationDesign.model_validate(payload)
-    return {
-        orchestration.orchestration_id: orchestration.complexity.score()
-        for orchestration in design.orchestrations
-    }
+    orchestration = design.orchestration
+    return {orchestration.orchestration_id: orchestration.complexity.score()}
 
 
 def _summarize_run(

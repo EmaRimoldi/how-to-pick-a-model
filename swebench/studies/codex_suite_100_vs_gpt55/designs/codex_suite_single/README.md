@@ -25,7 +25,7 @@ executable design changes.
 - `optimization_loss`: objective the design tries to minimize.
 - `logging_plan`: required trace and manifest logging behavior.
 - `expected_tradeoffs`: known cost, complexity, and verifier tradeoffs.
-- `orchestrations`: executable orchestration specs. This design contains one.
+- `orchestration`: the single executable orchestration spec for this design.
 
 ## Selected Orchestration
 

@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 import pytest
+import yaml
 
 from vao.swebench_orchestration.analyze import analyze
 from vao.swebench_orchestration.evaluate import (
@@ -25,12 +26,8 @@ FIXTURES = Path(__file__).parent / "fixtures"
 def test_orchestration_design_schema_fixture() -> None:
     payload = json.loads((FIXTURES / "swebench_orchestration_design.json").read_text(encoding="utf-8"))
     design = OrchestrationDesign.model_validate(payload)
-    assert {item.orchestration_type for item in design.orchestrations} == {
-        "universal",
-        "mode_specialist",
-        "hierarchical_routed",
-    }
-    assert design.orchestrations[0].complexity.score() > 0
+    assert design.orchestration.orchestration_type == "hierarchical_routed"
+    assert design.orchestration.complexity.score() > 0
 
 
 def test_swebench_orchestration_analysis(tmp_path: Path) -> None:
@@ -78,14 +75,23 @@ def test_meta_prompt_rendering(tmp_path: Path) -> None:
                 "dataset_name": "princeton-nlp/SWE-Bench_Verified",
                 "split": "test",
             },
+            "model_suite_policy": {
+                "mode": "practitioner_declared",
+                "default_workers_config": "workers.yaml",
+            },
             "worker_models": [{"alias": "qwen_coder_7b", "model_id": "Qwen/Qwen2.5-Coder-7B-Instruct"}],
+            "role_assignment_policy": {"roles_live_in_orchestration_spec": True},
             "allowed_tools": ["rg", "pytest"],
         },
         instances_path=instances,
         max_instances=None,
     )
     assert "Required orchestration output" in prompt
-    assert "Return exactly one orchestration" in prompt
+    assert "Return exactly one `orchestration` object" in prompt
+    assert "Model suite and worker-menu policy" in prompt
+    assert "practitioner_declared" in prompt
+    assert "Role assignment policy" in prompt
+    assert "roles_live_in_orchestration_spec" in prompt
     assert "Self-debug and self-optimization requirement" in prompt
     assert "--backend local" in prompt
     assert "demo/repo" in prompt
@@ -364,8 +370,7 @@ def test_codex_suite_single_orchestration_design() -> None:
     design = OrchestrationDesign.model_validate(json.loads(design_path.read_text(encoding="utf-8")))
     workers = load_worker_configs(workers_path)
 
-    assert len(design.orchestrations) == 1
-    orchestration = design.orchestrations[0]
+    orchestration = design.orchestration
     assert orchestration.orchestration_id == "codex_suite_single_self_optimizing_v1"
     assert orchestration.orchestration_type == "hierarchical_routed"
     assert {component.model for component in orchestration.components} <= set(workers)
@@ -378,11 +383,30 @@ def test_gpt55_baseline_design() -> None:
     design = OrchestrationDesign.model_validate(json.loads(design_path.read_text(encoding="utf-8")))
     workers = load_worker_configs(workers_path)
 
-    assert len(design.orchestrations) == 1
-    orchestration = design.orchestrations[0]
+    orchestration = design.orchestration
     assert orchestration.orchestration_id == "gpt55_single_worker_baseline_v1"
     assert {component.model for component in orchestration.components} == {"codex_gpt_5_5_baseline"}
     assert workers["codex_gpt_5_5_baseline"].model_id == "gpt-5.5"
+
+
+def test_neutral_codex_suite_worker_menu_has_no_role_aliases() -> None:
+    config_root = Path("swebench/studies/codex_suite_100_vs_gpt55/configs")
+    meta_config = yaml.safe_load(
+        (config_root / "swebench_orchestration_codex_suite_meta_design_neutral.yaml").read_text(encoding="utf-8")
+    )
+    runtime_config = yaml.safe_load((config_root / "swebench_codex_suite_workers_neutral.yaml").read_text(encoding="utf-8"))
+    forbidden = {"planner", "reviewer", "router", "patcher", "localizer", "fallback"}
+
+    meta_aliases = {item["alias"] for item in meta_config["worker_models"]}
+    runtime_aliases = set(runtime_config["workers"])
+
+    assert meta_aliases == runtime_aliases == {"worker_a", "worker_b", "worker_c", "worker_d", "worker_e", "worker_f"}
+    assert not any(term in alias for alias in meta_aliases for term in forbidden)
+    assert all("intended_use" not in item for item in meta_config["worker_models"])
+    assert all("intended_use" not in item for item in runtime_config["workers"].values())
+    assert meta_config["model_suite_policy"]["discovery_allowed"] is True
+    assert meta_config["model_suite_policy"]["worker_schema"]["alias_policy"] == "neutral_sequential"
+    assert meta_config["role_assignment_policy"]["roles_live_in_orchestration_spec"] is True
 
 
 def test_codex_suite_dry_run_config_with_checkout_fields(tmp_path: Path) -> None:
@@ -450,7 +474,7 @@ experiment:
 executor:
   design: {FIXTURES / "swebench_orchestration_design.json"}
   workers_config: {workers}
-  orchestration_id: O_all
+  orchestration_id: O_route
   output_dir: {output_dir}
   max_instances: 1
   parallel_workers: 1
@@ -488,7 +512,7 @@ experiment:
 executor:
   design: {FIXTURES / "swebench_orchestration_design.json"}
   workers_config: {workers}
-  orchestration_id: O_all
+  orchestration_id: O_route
   output_dir: {output_dir}
   max_instances: 1
   parallel_workers: 1

@@ -1,18 +1,26 @@
 You are the meta-designer for a SWE-bench distribution-aware orchestration experiment.
 
-You are not solving the individual issues now.  You are designing frozen
-orchestrations that will later be evaluated on the provided SWE-bench instances.
-The generated orchestration is the solver. It may contain one or more allowed
-coding models, prompts, routing rules, retrieval/test policies, patch proposal
-loops, reviewer steps, fallback rules, and stopping criteria.
+You are not solving the individual issues now. You are modeling the distribution
+represented by the provided SWE-bench instances. Infer latent, reusable
+structures in that distribution, then design one frozen orchestration that will
+later be evaluated on instances from the same distribution. The generated
+orchestration is the solver. It may contain one or more allowed coding models,
+prompts, routing rules, retrieval/test policies, patch proposal loops, reviewer
+steps, fallback rules, and stopping criteria.
 
 Design evidence level: {evidence_level}
 Benchmark dataset: {dataset_name}
 Split: {split}
+Model suite and worker-menu policy:
+{model_suite_policy}
+
 Allowed worker models:
 {allowed_models}
 
-Available tools for generated orchestrations:
+Role assignment policy:
+{role_assignment_policy}
+
+Available tools for the generated orchestration:
 {allowed_tools}
 
 Optimization objective:
@@ -33,18 +41,25 @@ Optimization objective:
    best known frontier for that mode is also harder.
 
 Required orchestration output:
-- Return exactly one orchestration in the `orchestrations` list.
+- Return exactly one `orchestration` object.
 - Prefer `orchestration_type: hierarchical_routed` unless the evidence strongly
   supports a simpler universal solver.
 - The single orchestration must include all routing, specialization, fallback,
   verification, and stopping behavior needed for deployment. Do not emit
   separate universal, specialist, and routed variants.
+- Treat the worker menu as a constraint, not as a set of pre-assigned roles.
+  If `worker_models` is non-empty, use only those aliases. If the policy allows
+  model discovery and `worker_models` is empty, consult only official provider
+  sources or model-listing endpoints, materialize a worker menu that follows the
+  declared worker schema, and reference only those materialized aliases in the
+  final orchestration.
 
 Mode guidance:
 You may use declared modes such as repo_family, test_localizable, semantic_api,
 multi_file, numeric_symbolic, dependency_config, and unknown.  You may also
 propose a different latent mode taxonomy if it is more useful for reducing
-verified patch time.
+verified patch time. The taxonomy should capture reusable structure in the
+distribution, not idiosyncratic knowledge of individual hidden solutions.
 
 Important leakage rule:
 The instances below do not include gold patches.  Do not ask for or assume gold

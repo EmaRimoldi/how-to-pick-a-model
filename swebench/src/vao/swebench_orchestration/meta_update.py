@@ -169,16 +169,11 @@ def materialize_updated_design(
 
     payload = design.model_dump(mode="json")
     replaced = False
-    orchestrations: list[dict[str, Any]] = []
-    for item in payload["orchestrations"]:
-        if item["orchestration_id"] == orchestration_id:
-            orchestrations.append(updated_orchestration.model_dump(mode="json"))
-            replaced = True
-        else:
-            orchestrations.append(item)
+    if payload["orchestration"]["orchestration_id"] == orchestration_id:
+        payload["orchestration"] = updated_orchestration.model_dump(mode="json")
+        replaced = True
     if not replaced:
         raise KeyError(f"Unknown orchestration_id {orchestration_id!r}")
-    payload["orchestrations"] = orchestrations
     payload["design_id"] = f"{payload['design_id']}__{_safe_id(proposal.design_update_id)}"
     payload["assumptions"] = [
         *payload.get("assumptions", []),
@@ -579,11 +574,11 @@ def _safe_public_instance(row: dict[str, Any]) -> dict[str, Any]:
 
 
 def _select_hierarchical(design: OrchestrationDesign, orchestration_id: str) -> OrchestrationSpec:
-    for orchestration in design.orchestrations:
-        if orchestration.orchestration_id == orchestration_id:
-            if orchestration.orchestration_type != "hierarchical_routed":
-                raise ValueError(f"{orchestration_id!r} is not hierarchical_routed.")
-            return orchestration
+    orchestration = design.orchestration
+    if orchestration.orchestration_id == orchestration_id:
+        if orchestration.orchestration_type != "hierarchical_routed":
+            raise ValueError(f"{orchestration_id!r} is not hierarchical_routed.")
+        return orchestration
     raise KeyError(f"Unknown orchestration_id {orchestration_id!r}")
 
 

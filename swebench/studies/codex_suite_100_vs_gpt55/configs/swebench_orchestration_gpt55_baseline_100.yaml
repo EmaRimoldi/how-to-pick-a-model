@@ -9,7 +9,7 @@ experiment:  # Metadata for the single-worker baseline 100-instance arm.
 executor:  # Parameters consumed by the runtime executor.
   design: swebench/studies/codex_suite_100_vs_gpt55/designs/gpt55_baseline/orchestration_design.json  # Frozen baseline design JSON.
   workers_config: swebench/studies/codex_suite_100_vs_gpt55/configs/swebench_gpt55_baseline_worker.yaml  # Worker menu with the baseline worker.
-  orchestration_id: gpt55_single_worker_baseline_v1  # Orchestration selected from the design JSON.
+  orchestration_id: gpt55_single_worker_baseline_v1  # Must match the single orchestration object in the design JSON.
   output_dir: swebench/studies/codex_suite_100_vs_gpt55/runs/gpt55_baseline_100/executor  # Executor output directory.
   max_instances: 100  # Maximum number of instances to process.
   parallel_workers: 1  # Number of instances/components that may run in parallel.

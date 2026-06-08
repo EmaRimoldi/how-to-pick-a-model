@@ -11,7 +11,7 @@
   "evidence_level": "E1_codex_suite_self_optimizing",
   "expected_tradeoffs": [
     "Using Codex workers increases API cost relative to local Qwen workers but reduces setup complexity for a small functional test.",
-    "A single hierarchical orchestration is easier to validate than a family of candidate orchestrations, but it gives less architecture diversity.",
+    "A single hierarchical orchestration is easier to validate than a candidate-policy menu, but it gives less architecture diversity.",
     "The local verifier is faster to iterate with than Docker but is less hermetic for instances with older Python or system dependencies."
   ],
   "logging_plan": [
@@ -68,103 +68,101 @@
     }
   ],
   "optimization_loss": "Minimize 100*unresolved + token_weight*tokens + wall_weight*wall_seconds + test_weight*test_seconds + api_cost + 0.05*verifier_calls + simplicity_penalty + imbalance_penalty + route_regret + wasted_effort.",
-  "orchestrations": [
-    {
-      "complexity": {
-        "agents": 5,
-        "context_budget_tokens": 120000,
-        "max_patch_proposals": 3,
-        "model_families": 1,
-        "prompt_templates": 5,
-        "routing_branches": 4,
-        "tool_policies": 4
+  "orchestration": {
+    "complexity": {
+      "agents": 5,
+      "context_budget_tokens": 120000,
+      "max_patch_proposals": 3,
+      "model_families": 1,
+      "prompt_templates": 5,
+      "routing_branches": 4,
+      "tool_policies": 4
+    },
+    "components": [
+      {
+        "component_id": "codex_triage_router",
+        "max_calls": 1,
+        "model": "codex_gpt_5_4_mini_router",
+        "output_contract": "Return mode, candidate files, minimal reproduction hints, and whether the instance is safe for local verifier smoke testing.",
+        "prompt_summary": "Classify the issue into the local mode taxonomy, identify likely files/tests with rg-style evidence, and choose cheap or escalated path.",
+        "role": "router",
+        "tools": [
+          "rg/search repository text",
+          "inspect file snippets"
+        ]
       },
-      "components": [
-        {
-          "component_id": "codex_triage_router",
-          "max_calls": 1,
-          "model": "codex_gpt_5_4_mini_router",
-          "output_contract": "Return mode, candidate files, minimal reproduction hints, and whether the instance is safe for local verifier smoke testing.",
-          "prompt_summary": "Classify the issue into the local mode taxonomy, identify likely files/tests with rg-style evidence, and choose cheap or escalated path.",
-          "role": "router",
-          "tools": [
-            "rg/search repository text",
-            "inspect file snippets"
-          ]
-        },
-        {
-          "component_id": "codex_fast_localizer",
-          "max_calls": 1,
-          "model": "codex_gpt_5_3_codex_spark_fast",
-          "output_contract": "Return concise localization notes, files to edit, tests to run, and patch risk flags.",
-          "prompt_summary": "Use the router output and public issue text to localize the smallest plausible edit surface.",
-          "role": "localizer",
-          "tools": [
-            "rg/search repository text",
-            "inspect file snippets"
-          ]
-        },
-        {
-          "component_id": "codex_primary_patcher",
-          "max_calls": 2,
-          "model": "codex_gpt_5_4_patcher",
-          "output_contract": "Return a single unified diff patch, summary, confidence, and targeted test command.",
-          "prompt_summary": "Generate the smallest unified diff that addresses the issue and avoids unrelated refactors.",
-          "role": "patcher",
-          "tools": [
-            "inspect file snippets",
-            "generate unified diff patches"
-          ]
-        },
-        {
-          "component_id": "codex_verifier_reviewer",
-          "max_calls": 1,
-          "model": "codex_gpt_5_4_reviewer",
-          "output_contract": "Return accept/reject/repair decision from patch diff, dry-run traces, local verifier report, and logs.",
-          "prompt_summary": "Inspect patch, local verifier manifest, patch-apply failures, and test output; request repair only when actionable.",
-          "role": "reviewer",
-          "tools": [
-            "run local no-Docker SWE-bench verifier with --backend local",
-            "inspect traces, manifests, verifier reports, and patch-apply logs"
-          ]
-        },
-        {
-          "component_id": "codex_hard_case_fallback",
-          "max_calls": 1,
-          "model": "codex_gpt_5_5_planner",
-          "output_contract": "Return final repaired patch or explicit stop reason with evidence.",
-          "prompt_summary": "Escalate only after verifier-negative or low-confidence primary patch; repair using logs and keep within one final proposal.",
-          "role": "fallback",
-          "tools": [
-            "rg/search repository text",
-            "inspect file snippets",
-            "generate unified diff patches",
-            "run local no-Docker SWE-bench verifier with --backend local"
-          ]
-        }
-      ],
-      "evidence_policy": "Use public issue text first, then repository search/snippets, then dry-run traces and local verifier feedback. Never use gold patches or private metadata in prompts.",
-      "expected_failure_modes": [
-        "local verifier incompatible with old Python or missing system dependency",
-        "patch applies but targeted test command is too narrow",
-        "router over-escalates simple literal fixes",
-        "reviewer spends tokens on non-actionable verifier failures"
-      ],
-      "fallback_policy": "Fallback is used only after an empty patch, malformed diff, patch-apply failure, local verifier failure with actionable logs, or router confidence below threshold.",
-      "name": "Codex Suite Single Self-Optimizing SWE-bench Orchestration",
-      "objective_summary": "One routed Codex-suite solver that generates, validates, locally verifies, repairs, and stops under a small patch budget.",
-      "orchestration_id": "codex_suite_single_self_optimizing_v1",
-      "orchestration_type": "hierarchical_routed",
-      "patch_policy": "Generate at most two primary patches plus one fallback repair. Prefer minimal diffs, one issue at a time, no formatting churn, and no unrelated tests.",
-      "routing_policy": "Router selects localized_small_fix, semantic_framework, numeric_symbolic_or_structure, or uncertain_complex; simple cases stay on Spark/patcher, hard or verifier-negative cases escalate to reviewer/planner.",
-      "stopping_rule": "Stop when local verifier resolves, when three patch proposals are exhausted, when verifier incompatibility is non-actionable, or when reviewer identifies excessive uncertainty.",
-      "target_modes": [
-        "localized_small_fix",
-        "semantic_framework",
-        "numeric_symbolic_or_structure",
-        "uncertain_complex"
-      ],
-      "verification_policy": "For each non-empty patch, run the local no-Docker verifier on the smallest configured instance subset. Use report.json resolved status, patch-apply failures, and test output to decide accept, repair, fallback, or stop."
-    }
-  ]
+      {
+        "component_id": "codex_fast_localizer",
+        "max_calls": 1,
+        "model": "codex_gpt_5_3_codex_spark_fast",
+        "output_contract": "Return concise localization notes, files to edit, tests to run, and patch risk flags.",
+        "prompt_summary": "Use the router output and public issue text to localize the smallest plausible edit surface.",
+        "role": "localizer",
+        "tools": [
+          "rg/search repository text",
+          "inspect file snippets"
+        ]
+      },
+      {
+        "component_id": "codex_primary_patcher",
+        "max_calls": 2,
+        "model": "codex_gpt_5_4_patcher",
+        "output_contract": "Return a single unified diff patch, summary, confidence, and targeted test command.",
+        "prompt_summary": "Generate the smallest unified diff that addresses the issue and avoids unrelated refactors.",
+        "role": "patcher",
+        "tools": [
+          "inspect file snippets",
+          "generate unified diff patches"
+        ]
+      },
+      {
+        "component_id": "codex_verifier_reviewer",
+        "max_calls": 1,
+        "model": "codex_gpt_5_4_reviewer",
+        "output_contract": "Return accept/reject/repair decision from patch diff, dry-run traces, local verifier report, and logs.",
+        "prompt_summary": "Inspect patch, local verifier manifest, patch-apply failures, and test output; request repair only when actionable.",
+        "role": "reviewer",
+        "tools": [
+          "run local no-Docker SWE-bench verifier with --backend local",
+          "inspect traces, manifests, verifier reports, and patch-apply logs"
+        ]
+      },
+      {
+        "component_id": "codex_hard_case_fallback",
+        "max_calls": 1,
+        "model": "codex_gpt_5_5_planner",
+        "output_contract": "Return final repaired patch or explicit stop reason with evidence.",
+        "prompt_summary": "Escalate only after verifier-negative or low-confidence primary patch; repair using logs and keep within one final proposal.",
+        "role": "fallback",
+        "tools": [
+          "rg/search repository text",
+          "inspect file snippets",
+          "generate unified diff patches",
+          "run local no-Docker SWE-bench verifier with --backend local"
+        ]
+      }
+    ],
+    "evidence_policy": "Use public issue text first, then repository search/snippets, then dry-run traces and local verifier feedback. Never use gold patches or private metadata in prompts.",
+    "expected_failure_modes": [
+      "local verifier incompatible with old Python or missing system dependency",
+      "patch applies but targeted test command is too narrow",
+      "router over-escalates simple literal fixes",
+      "reviewer spends tokens on non-actionable verifier failures"
+    ],
+    "fallback_policy": "Fallback is used only after an empty patch, malformed diff, patch-apply failure, local verifier failure with actionable logs, or router confidence below threshold.",
+    "name": "Codex Suite Single Self-Optimizing SWE-bench Orchestration",
+    "objective_summary": "One routed Codex-suite solver that generates, validates, locally verifies, repairs, and stops under a small patch budget.",
+    "orchestration_id": "codex_suite_single_self_optimizing_v1",
+    "orchestration_type": "hierarchical_routed",
+    "patch_policy": "Generate at most two primary patches plus one fallback repair. Prefer minimal diffs, one issue at a time, no formatting churn, and no unrelated tests.",
+    "routing_policy": "Router selects localized_small_fix, semantic_framework, numeric_symbolic_or_structure, or uncertain_complex; simple cases stay on Spark/patcher, hard or verifier-negative cases escalate to reviewer/planner.",
+    "stopping_rule": "Stop when local verifier resolves, when three patch proposals are exhausted, when verifier incompatibility is non-actionable, or when reviewer identifies excessive uncertainty.",
+    "target_modes": [
+      "localized_small_fix",
+      "semantic_framework",
+      "numeric_symbolic_or_structure",
+      "uncertain_complex"
+    ],
+    "verification_policy": "For each non-empty patch, run the local no-Docker verifier on the smallest configured instance subset. Use report.json resolved status, patch-apply failures, and test output to decide accept, repair, fallback, or stop."
+  }
 }

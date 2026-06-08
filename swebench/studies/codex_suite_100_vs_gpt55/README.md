@@ -25,6 +25,12 @@ Generated outputs:
 The generated-output directories are intentionally empty after cleanup. The next
 Slurm launch should recreate run-specific files there.
 
+For low-bias meta-design runs, start from the neutral config in
+`configs/swebench_orchestration_codex_suite_meta_design_neutral.yaml`. It treats
+worker aliases as available capabilities, not planner/reviewer/router roles; the
+meta-orchestrator must infer reusable latent structure from the instance
+distribution and return one deployable `orchestration`.
+
 ## Current Entrypoint
 
 ```bash

@@ -42,14 +42,18 @@ def render_prompt(
     instances = _read_jsonl(instances_path, limit=max_instances)
     experiment = config.get("experiment", {})
     meta = config.get("meta_designer", {})
+    model_suite_policy = config.get("model_suite_policy", {})
     workers = config.get("worker_models", [])
+    role_assignment_policy = config.get("role_assignment_policy", {})
     tools = config.get("allowed_tools", [])
     template = PROMPT_PATH.read_text(encoding="utf-8")
     return template.format(
         evidence_level=experiment.get("evidence_level", "E1"),
         dataset_name=experiment.get("dataset_name", "princeton-nlp/SWE-Bench_Verified"),
         split=experiment.get("split", "test"),
+        model_suite_policy=json.dumps(model_suite_policy, indent=2, sort_keys=True),
         allowed_models=json.dumps(workers, indent=2, sort_keys=True),
+        role_assignment_policy=json.dumps(role_assignment_policy, indent=2, sort_keys=True),
         allowed_tools=json.dumps(tools, indent=2, sort_keys=True),
         instances_json=json.dumps(instances, indent=2, sort_keys=True),
         meta_model=meta.get("model_id", "gpt-5.5"),

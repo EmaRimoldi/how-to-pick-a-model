@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 ModeKind = Literal[
@@ -113,20 +113,10 @@ class OrchestrationDesign(BaseModel):
     benchmark: str = "SWE-bench"
     assumptions: list[str]
     mode_taxonomy: list[ModeSpec]
-    orchestrations: list[OrchestrationSpec]
+    orchestration: OrchestrationSpec
     optimization_loss: str
     logging_plan: list[str]
     expected_tradeoffs: list[str] = Field(default_factory=list)
-
-    @model_validator(mode="after")
-    def validate_orchestrations(self) -> "OrchestrationDesign":
-        if not self.orchestrations:
-            raise ValueError("design must contain at least one orchestration")
-        orchestration_ids = [item.orchestration_id for item in self.orchestrations]
-        duplicates = sorted({item for item in orchestration_ids if orchestration_ids.count(item) > 1})
-        if duplicates:
-            raise ValueError(f"duplicate orchestration ids: {duplicates}")
-        return self
 
 
 class TraceStep(BaseModel):

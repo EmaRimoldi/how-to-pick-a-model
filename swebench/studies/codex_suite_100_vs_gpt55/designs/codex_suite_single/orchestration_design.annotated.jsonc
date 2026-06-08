@@ -32,7 +32,7 @@
   // behavior.
   "expected_tradeoffs": [
     "Using Codex workers increases API cost relative to local Qwen workers but reduces setup complexity for a small functional test.",
-    "A single hierarchical orchestration is easier to validate than a family of candidate orchestrations, but it gives less architecture diversity.",
+    "A single hierarchical orchestration is easier to validate than a candidate-policy menu, but it gives less architecture diversity.",
     "The local verifier is faster to iterate with than Docker but is less hermetic for instances with older Python or system dependencies."
   ],
 
@@ -110,10 +110,10 @@
   // imbalance across difficulty modes, and wasted effort.
   "optimization_loss": "Minimize 100*unresolved + token_weight*tokens + wall_weight*wall_seconds + test_weight*test_seconds + api_cost + 0.05*verifier_calls + simplicity_penalty + imbalance_penalty + route_regret + wasted_effort.",
 
-  // This design contains one executable orchestration. The executor will run
-  // this orchestration over the selected 100 SWE-bench instances.
-  "orchestrations": [
-    {
+  // This single object is the executable solver policy. The schema is singular
+  // on purpose: the meta-orchestrator must return one deployable policy, not a
+  // menu of candidate policies that we select after seeing results.
+  "orchestration": {
       // Complexity is logged so we can compare resolved rate against architecture
       // size. It is also part of the simplicity penalty in the loss.
       "complexity": {
@@ -248,6 +248,5 @@
       // fast iteration, but reports must distinguish verifier incompatibility
       // from genuine patch failure.
       "verification_policy": "For each non-empty patch, run the local no-Docker verifier on the smallest configured instance subset. Use report.json resolved status, patch-apply failures, and test output to decide accept, repair, fallback, or stop."
-    }
-  ]
+  }
 }

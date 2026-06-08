@@ -1,0 +1,67 @@
+workers:  # Neutral worker menu available to the executor; orchestration.components[].model assigns roles.
+  worker_a:  # Neutral alias; no planner/reviewer/patcher role is encoded in the name.
+    adapter: codex_cli  # Runtime adapter; uses the local Codex CLI.
+    model_id: gpt-5.5  # Model invoked through the adapter.
+    reasoning_effort: xhigh  # Requested qualitative reasoning budget.
+    sandbox: workspace-write  # Sandbox mode used while the worker runs.
+    timeout_seconds: 1800  # Maximum duration for one worker call, in seconds.
+    max_tokens_observe: 4096  # Token budget for observation and analysis phases.
+    max_tokens_patch: 16000  # Token budget for generating or repairing patches.
+    retries: 1  # Retries allowed after recoverable failures.
+    use_output_schema: true  # Request schema-constrained output when supported.
+    capability_profile: strongest reasoning, highest cost, largest escalation budget  # Capability descriptor, not a role assignment.
+  worker_b:  # Neutral alias; roles are assigned only by the frozen orchestration design.
+    adapter: codex_cli  # Runtime adapter; uses the local Codex CLI.
+    model_id: gpt-5.4  # Model invoked through the adapter.
+    reasoning_effort: high  # Requested qualitative reasoning budget.
+    sandbox: workspace-write  # Sandbox mode used while the worker runs.
+    timeout_seconds: 1200  # Maximum duration for one worker call, in seconds.
+    max_tokens_observe: 4096  # Token budget for observation and analysis phases.
+    max_tokens_patch: 12000  # Token budget for generating or repairing patches.
+    retries: 1  # Retries allowed after recoverable failures.
+    use_output_schema: true  # Request schema-constrained output when supported.
+    capability_profile: high reasoning, medium-high cost, strong synthesis budget  # Capability descriptor, not a role assignment.
+  worker_c:  # Neutral alias; roles are assigned only by the frozen orchestration design.
+    adapter: codex_cli  # Runtime adapter; uses the local Codex CLI.
+    model_id: gpt-5.4-mini  # Model invoked through the adapter.
+    reasoning_effort: medium  # Requested qualitative reasoning budget.
+    sandbox: workspace-write  # Sandbox mode used while the worker runs.
+    timeout_seconds: 900  # Maximum duration for one worker call, in seconds.
+    max_tokens_observe: 2048  # Token budget for observation and analysis phases.
+    max_tokens_patch: 8192  # Token budget for generating or repairing patches.
+    retries: 1  # Retries allowed after recoverable failures.
+    use_output_schema: true  # Request schema-constrained output when supported.
+    capability_profile: lower cost, faster turnaround, smaller reasoning budget  # Capability descriptor, not a role assignment.
+  worker_d:  # Neutral alias; roles are assigned only by the frozen orchestration design.
+    adapter: codex_cli  # Runtime adapter; uses the local Codex CLI.
+    model_id: gpt-5.4  # Model invoked through the adapter.
+    reasoning_effort: high  # Requested qualitative reasoning budget.
+    sandbox: workspace-write  # Sandbox mode used while the worker runs.
+    timeout_seconds: 1200  # Maximum duration for one worker call, in seconds.
+    max_tokens_observe: 4096  # Token budget for observation and analysis phases.
+    max_tokens_patch: 12000  # Token budget for generating or repairing patches.
+    retries: 1  # Retries allowed after recoverable failures.
+    use_output_schema: true  # Request schema-constrained output when supported.
+    capability_profile: high reasoning, medium-high cost, independent duplicate slot  # Capability descriptor, not a role assignment.
+  worker_e:  # Neutral alias; roles are assigned only by the frozen orchestration design.
+    adapter: codex_cli  # Runtime adapter; uses the local Codex CLI.
+    model_id: gpt-5.3-codex-spark  # Model invoked through the adapter.
+    reasoning_effort: medium  # Requested qualitative reasoning budget.
+    sandbox: workspace-write  # Sandbox mode used while the worker runs.
+    timeout_seconds: 900  # Maximum duration for one worker call, in seconds.
+    max_tokens_observe: 2048  # Token budget for observation and analysis phases.
+    max_tokens_patch: 8192  # Token budget for generating or repairing patches.
+    retries: 1  # Retries allowed after recoverable failures.
+    use_output_schema: true  # Request schema-constrained output when supported.
+    capability_profile: medium reasoning, faster turnaround, lower patch budget  # Capability descriptor, not a role assignment.
+  worker_f:  # Neutral alias; roles are assigned only by the frozen orchestration design.
+    adapter: codex_cli  # Runtime adapter; uses the local Codex CLI.
+    model_id: gpt-5.2-codex  # Model invoked through the adapter.
+    reasoning_effort: medium  # Requested qualitative reasoning budget.
+    sandbox: workspace-write  # Sandbox mode used while the worker runs.
+    timeout_seconds: 900  # Maximum duration for one worker call, in seconds.
+    max_tokens_observe: 2048  # Token budget for observation and analysis phases.
+    max_tokens_patch: 8192  # Token budget for generating or repairing patches.
+    retries: 1  # Retries allowed after recoverable failures.
+    use_output_schema: true  # Request schema-constrained output when supported.
+    capability_profile: medium reasoning, diversity slot, lower patch budget  # Capability descriptor, not a role assignment.

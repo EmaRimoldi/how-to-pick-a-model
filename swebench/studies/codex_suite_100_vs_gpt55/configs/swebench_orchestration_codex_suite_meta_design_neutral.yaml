@@ -1,9 +1,9 @@
-experiment:  # Metadata used by the meta-designer that produced the frozen design.
-  name: swebench_orchestration_codex_suite_single  # Stable name for the design-generation phase.
+experiment:  # Metadata used by the cleaner neutral meta-design run.
+  name: swebench_orchestration_codex_suite_neutral_single  # Stable name for this design-generation variant.
   dataset_name: princeton-nlp/SWE-Bench_Verified  # Dataset used to design the system.
   split: test  # Dataset split consulted during design.
-  evidence_level: E1_codex_suite_self_optimizing  # Declared evidence/protocol level.
-  output_dir: swebench/studies/codex_suite_100_vs_gpt55/runs/swebench_orchestration_codex_suite_single  # Meta-designer output directory.
+  evidence_level: E1_codex_suite_neutral_self_optimizing  # Declared evidence/protocol level.
+  output_dir: swebench/studies/codex_suite_100_vs_gpt55/runs/swebench_orchestration_codex_suite_neutral_single  # Meta-designer output directory.
   public_instances: swebench/studies/codex_suite_100_vs_gpt55/data/verified_100/instances_public.jsonl  # Prompt-safe public instances.
   private_instances: swebench/studies/codex_suite_100_vs_gpt55/data/verified_100/instances_private_metadata.jsonl  # Private metadata; not for runtime prompts.
   horizon_patch_proposals: 3  # Maximum number of patch proposals assumed by the design.
@@ -17,44 +17,53 @@ meta_designer:  # Model configuration for generating/optimizing the design.
   sandbox: workspace-write  # Sandbox mode used during design.
   timeout_seconds: 3600  # Maximum duration for the design call, in seconds.
   description: >  # Informational role description and anti-leakage constraints.
-    Meta-agent that reads leakage-safe SWE-bench instances, generates one frozen
-    Codex-suite orchestration, dry-runs/debugs it, tests trial patches with the
-    local no-Docker verifier when possible, and returns the optimized final
-    design. It does not see gold patches.
+    Meta-agent that reads leakage-safe SWE-bench instances and a neutral worker
+    menu, generates one frozen OrchestrationSpec, dry-runs/debugs it, tests
+    trial patches with the local no-Docker verifier when possible, and returns
+    the optimized final design. It does not see gold patches.
 
 model_suite_policy:  # Source of truth for the worker menu passed to the meta-designer.
-  mode: practitioner_declared  # Use the explicit worker_models list below; no model discovery for this historical design.
-  default_workers_config: swebench/studies/codex_suite_100_vs_gpt55/configs/swebench_codex_suite_workers.yaml  # Runtime worker YAML paired with this design.
-  discovery_allowed: false  # Keep this frozen provenance reproducible.
+  mode: practitioner_declared_default_with_official_discovery_fallback  # Use worker_models by default; discover only if no menu is provided.
+  default_workers_config: swebench/studies/codex_suite_100_vs_gpt55/configs/swebench_codex_suite_workers_neutral.yaml  # Practitioner-declared neutral runtime worker YAML.
+  provider_family: openai_codex  # Model family constraint for discovery if worker_models is empty.
+  discovery_allowed: true  # Permit official model discovery only when an explicit worker menu is absent.
+  discovery_sources: [official provider docs, official model listing endpoint]  # Non-official catalogs are not allowed as source of truth.
+  generated_workers_config: swebench/studies/codex_suite_100_vs_gpt55/configs/swebench_codex_suite_workers_neutral.generated.yaml  # Expected artifact path if discovery materializes workers.
   worker_schema:  # Fixed fields expected when a worker menu is declared or generated.
-    required_fields: [alias, adapter, model_id, capability_or_intended_use]  # Minimum fields needed to map components to workers.
-    alias_policy: historical_role_named  # This old design used role-bearing aliases and is kept only for provenance.
+    required_fields: [alias, adapter, model_id, reasoning_effort, sandbox, timeout_seconds, capability_profile]  # Minimum runtime and capability fields.
+    alias_policy: neutral_sequential  # Use neutral aliases such as worker_a, worker_b, and worker_c.
+    role_fields_forbidden: [intended_use]  # Avoid pre-assigning planner/reviewer/router/patcher/localizer/fallback roles.
 
-worker_models:  # Candidate worker menu offered to the meta-designer; the frozen design records the selected aliases.
-  - alias: codex_gpt_5_5_planner  # Candidate alias for global planning and escalation.
+worker_models:  # Neutral candidate menu; these are available workers, not pre-assigned roles.
+  - alias: worker_a  # Neutral alias; the meta-designer must assign any role in orchestration.components[].
     adapter: codex_cli  # Expected runtime adapter for this worker.
     model_id: gpt-5.5  # Candidate model associated with the alias.
-    intended_use: global planner, hard reviewer, and final escalation  # Intended role.
-  - alias: codex_gpt_5_4_reviewer  # Candidate alias for review and verifier analysis.
+    capability_profile: strongest reasoning, highest cost, largest escalation budget  # Capability descriptor, not a role label.
+  - alias: worker_b  # Neutral alias; the meta-designer must assign any role in orchestration.components[].
     adapter: codex_cli  # Expected runtime adapter for this worker.
     model_id: gpt-5.4  # Candidate model associated with the alias.
-    intended_use: reviewer, repair planner, and verifier-log interpreter  # Intended role.
-  - alias: codex_gpt_5_4_mini_router  # Candidate alias for lower-cost routing.
+    capability_profile: high reasoning, medium-high cost, strong synthesis budget  # Capability descriptor, not a role label.
+  - alias: worker_c  # Neutral alias; the meta-designer must assign any role in orchestration.components[].
     adapter: codex_cli  # Expected runtime adapter for this worker.
     model_id: gpt-5.4-mini  # Candidate model associated with the alias.
-    intended_use: cheap triage, repository search planning, and routing  # Intended role.
-  - alias: codex_gpt_5_4_patcher  # Candidate alias for standard patch generation.
+    capability_profile: lower cost, faster turnaround, smaller reasoning budget  # Capability descriptor, not a role label.
+  - alias: worker_d  # Neutral alias; the meta-designer must assign any role in orchestration.components[].
     adapter: codex_cli  # Expected runtime adapter for this worker.
     model_id: gpt-5.4  # Candidate model associated with the alias.
-    intended_use: default patch generation  # Intended role.
-  - alias: codex_gpt_5_3_codex_spark_fast  # Candidate alias for fast localization.
+    capability_profile: high reasoning, medium-high cost, independent duplicate slot  # Capability descriptor, not a role label.
+  - alias: worker_e  # Neutral alias; the meta-designer must assign any role in orchestration.components[].
     adapter: codex_cli  # Expected runtime adapter for this worker.
     model_id: gpt-5.3-codex-spark  # Candidate model associated with the alias.
-    intended_use: fast localization and simple patch attempts  # Intended role.
-  - alias: codex_gpt_5_2_codex_fallback  # Candidate alias for diversity/fallback.
+    capability_profile: medium reasoning, faster turnaround, lower patch budget  # Capability descriptor, not a role label.
+  - alias: worker_f  # Neutral alias; the meta-designer must assign any role in orchestration.components[].
     adapter: codex_cli  # Expected runtime adapter for this worker.
     model_id: gpt-5.2-codex  # Candidate model associated with the alias.
-    intended_use: diversity fallback for malformed or overfit patches  # Intended role.
+    capability_profile: medium reasoning, diversity slot, lower patch budget  # Capability descriptor, not a role label.
+
+role_assignment_policy:  # Guardrail for reducing role-label bias in the generated design.
+  worker_aliases_are_neutral: true  # Aliases should not encode planner, reviewer, router, patcher, localizer, or fallback labels.
+  roles_live_in_orchestration_spec: true  # Roles are defined only by OrchestrationSpec.components[].role and policies.
+  require_single_orchestration: true  # The meta-designer must return one orchestration object, not a candidate list.
 
 allowed_tools:  # Operations allowed to the meta-designer during design.
   - rg/search repository text  # Locate relevant code and symbols.
@@ -74,7 +83,7 @@ loss_weights:  # Loss weights used to prefer robust and economical designs.
   api_weight: 1.0  # Penalty per API cost in USD.
   verifier_call_weight: 0.05  # Penalty per verifier call.
   simplicity_weight: 0.25  # Global penalty for design complexity.
-  imbalance_weight: 1.0  # Penalty for imbalanced load across workers/roles.
+  imbalance_weight: 1.0  # Penalty for imbalanced load across assigned components.
   route_regret_weight: 1.0  # Penalty for suboptimal routing decisions.
   wasted_effort_weight: 0.5  # Penalty for wasted or redundant attempts.
 

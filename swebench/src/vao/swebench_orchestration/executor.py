@@ -158,10 +158,9 @@ def load_design(path: Path) -> OrchestrationDesign:
 
 def select_orchestration(design: OrchestrationDesign, orchestration_id: str | None) -> OrchestrationSpec:
     if orchestration_id is None:
-        return design.orchestrations[0]
-    for orchestration in design.orchestrations:
-        if orchestration.orchestration_id == orchestration_id:
-            return orchestration
+        return design.orchestration
+    if design.orchestration.orchestration_id == orchestration_id:
+        return design.orchestration
     raise KeyError(f"Unknown orchestration_id {orchestration_id!r}")
 
 

@@ -189,11 +189,10 @@ import yaml
 design = json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'))
 workers = (yaml.safe_load(Path(sys.argv[2]).read_text(encoding='utf-8')) or {}).get('workers', {})
 requested_orch = sys.argv[3] or None
-orchestrations = design.get('orchestrations', [])
-if not orchestrations:
-    raise SystemExit('No orchestrations found in design')
-orch = orchestrations[0] if requested_orch is None else next((o for o in orchestrations if o.get('orchestration_id') == requested_orch), None)
-if orch is None:
+orch = design.get('orchestration')
+if not orch:
+    raise SystemExit('No orchestration found in design')
+if requested_orch is not None and orch.get('orchestration_id') != requested_orch:
     raise SystemExit(f'Unknown orchestration_id: {requested_orch}')
 seen = []
 for component in orch.get('components', []):
