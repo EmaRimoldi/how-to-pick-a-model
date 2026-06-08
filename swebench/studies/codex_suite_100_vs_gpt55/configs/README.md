@@ -16,6 +16,9 @@ default is a YAML file in this folder. If a future meta-design config leaves
 `worker_models` empty and enables official discovery, the meta-orchestrator must
 consult only official provider sources, materialize a generated worker YAML, and
 then emit one `orchestration` object that references only aliases from that menu.
+Live official discovery is explicit: run the prompt renderer with
+`--allow-web-model-discovery`, or pass `--model-discovery-manifest` to replay a
+saved provider response without network access.
 
 The pilot/dry-run config was removed to reduce ambiguity: the current launcher
 uses the two `*_100.yaml` configs.

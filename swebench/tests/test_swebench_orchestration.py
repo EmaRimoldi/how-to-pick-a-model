@@ -15,7 +15,7 @@ from vao.swebench_orchestration.evaluate import (
     run_evaluation,
 )
 from vao.swebench_orchestration.executor import ExecutorConfig, load_worker_configs, main as executor_main, run_executor
-from vao.swebench_orchestration.prompt import render_prompt
+from vao.swebench_orchestration.prompt import prepare_meta_design_config, render_prompt
 from vao.swebench_orchestration.repo_context import safe_instance_payload
 from vao.swebench_orchestration.schemas import OrchestrationDesign, SWEInstancePublic, TraceStep
 
@@ -407,6 +407,86 @@ def test_neutral_codex_suite_worker_menu_has_no_role_aliases() -> None:
     assert meta_config["model_suite_policy"]["discovery_allowed"] is True
     assert meta_config["model_suite_policy"]["worker_schema"]["alias_policy"] == "neutral_sequential"
     assert meta_config["role_assignment_policy"]["roles_live_in_orchestration_spec"] is True
+
+
+def test_meta_design_config_loads_practitioner_worker_menu() -> None:
+    config = {
+        "model_suite_policy": {
+            "default_workers_config": "swebench/studies/codex_suite_100_vs_gpt55/configs/swebench_codex_suite_workers_neutral.yaml",
+            "discovery_allowed": True,
+        },
+        "worker_models": [],
+    }
+
+    prepared, artifacts = prepare_meta_design_config(config)
+
+    assert artifacts["worker_menu_source"] == "practitioner_declared_config"
+    assert {row["alias"] for row in prepared["worker_models"]} == {
+        "worker_a",
+        "worker_b",
+        "worker_c",
+        "worker_d",
+        "worker_e",
+        "worker_f",
+    }
+
+
+def test_meta_design_config_generates_worker_menu_from_discovery_manifest(tmp_path: Path) -> None:
+    manifest = tmp_path / "official_models.json"
+    generated = tmp_path / "workers.generated.yaml"
+    manifest.write_text(
+        json.dumps(
+            {
+                "data": [
+                    {"id": "gpt-test-large"},
+                    {"id": "gpt-test-mini"},
+                    {"id": "image-test"},
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    config = {
+        "model_suite_policy": {
+            "discovery_allowed": True,
+            "generated_workers_config": str(generated),
+            "discovery_selection": {
+                "include_patterns": ["^gpt-test"],
+                "exclude_patterns": ["mini$"],
+                "max_workers": 3,
+            },
+            "worker_schema": {
+                "alias_policy": "neutral_sequential",
+                "adapter": "codex_cli",
+                "reasoning_effort": "high",
+                "sandbox": "workspace-write",
+                "timeout_seconds": 900,
+            },
+        },
+        "worker_models": [],
+    }
+
+    prepared, artifacts = prepare_meta_design_config(
+        config,
+        output_dir=tmp_path,
+        model_discovery_manifest=manifest,
+    )
+
+    assert artifacts["worker_menu_source"].startswith("manifest:")
+    assert artifacts["model_ids"] == ["gpt-test-large"]
+    assert prepared["worker_models"] == [
+        {
+            "alias": "worker_a",
+            "adapter": "codex_cli",
+            "model_id": "gpt-test-large",
+            "reasoning_effort": "high",
+            "sandbox": "workspace-write",
+            "timeout_seconds": 900,
+            "capability_profile": "officially discovered model; assign roles only inside OrchestrationSpec.components",
+        }
+    ]
+    assert generated.exists()
+    assert (tmp_path / "model_discovery_snapshot.json").exists()
 
 
 def test_codex_suite_dry_run_config_with_checkout_fields(tmp_path: Path) -> None:

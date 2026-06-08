@@ -4,6 +4,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import re
+import urllib.request
 from pathlib import Path
 from typing import Any
 
@@ -13,6 +16,7 @@ from vao.agents.codex_cli_adapter import CodexCliAdapter
 from vao.swebench_orchestration.schemas import OrchestrationDesign
 
 PROMPT_PATH = Path(__file__).resolve().parent / "prompts" / "swebench_orchestration_meta_designer.txt"
+OPENAI_MODELS_URL = "https://api.openai.com/v1/models"
 
 
 def _read_jsonl(path: Path, *, limit: int | None = None) -> list[dict[str, Any]]:
@@ -31,6 +35,177 @@ def _load_config(path: Path | None) -> dict[str, Any]:
     if path is None:
         return {}
     return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+
+
+def prepare_meta_design_config(
+    config: dict[str, Any],
+    *,
+    output_dir: Path | None = None,
+    allow_web_model_discovery: bool = False,
+    model_discovery_manifest: Path | None = None,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Resolve the worker menu before rendering the meta-orchestrator prompt."""
+
+    prepared = json.loads(json.dumps(config))
+    artifacts: dict[str, Any] = {"worker_menu_source": "inline_worker_models"}
+    if prepared.get("worker_models"):
+        return prepared, artifacts
+
+    policy = prepared.get("model_suite_policy") or {}
+    default_config = policy.get("default_workers_config")
+    if default_config:
+        workers_path = Path(str(default_config))
+        prepared["worker_models"] = _worker_models_from_worker_yaml(workers_path)
+        artifacts.update(
+            {
+                "worker_menu_source": "practitioner_declared_config",
+                "workers_config_path": str(workers_path),
+            }
+        )
+        return prepared, artifacts
+
+    if not policy.get("discovery_allowed"):
+        raise ValueError("worker_models is empty and model_suite_policy.discovery_allowed is false")
+
+    discovered = _discover_worker_models(
+        policy=policy,
+        allow_web_model_discovery=allow_web_model_discovery,
+        model_discovery_manifest=model_discovery_manifest,
+    )
+    prepared["worker_models"] = discovered["worker_models"]
+    artifacts.update(
+        {
+            "worker_menu_source": discovered["source"],
+            "model_ids": discovered["model_ids"],
+        }
+    )
+    generated_workers_config = policy.get("generated_workers_config")
+    if generated_workers_config:
+        generated_path = Path(str(generated_workers_config))
+        _write_workers_config(generated_path, discovered["worker_models"])
+        artifacts["generated_workers_config"] = str(generated_path)
+    if output_dir is not None:
+        snapshot_path = output_dir / "model_discovery_snapshot.json"
+        snapshot_path.write_text(json.dumps(discovered, indent=2, sort_keys=True), encoding="utf-8")
+        artifacts["model_discovery_snapshot"] = str(snapshot_path)
+    return prepared, artifacts
+
+
+def _worker_models_from_worker_yaml(path: Path) -> list[dict[str, Any]]:
+    payload = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    raw_workers = payload.get("workers") or payload.get("models")
+    if not isinstance(raw_workers, dict):
+        raise ValueError(f"{path} must contain a workers or models mapping")
+    rows = []
+    for alias, config in raw_workers.items():
+        if not isinstance(config, dict):
+            raise ValueError(f"Worker {alias!r} in {path} must be a mapping")
+        row = {"alias": str(alias), **config}
+        rows.append(row)
+    return rows
+
+
+def _discover_worker_models(
+    *,
+    policy: dict[str, Any],
+    allow_web_model_discovery: bool,
+    model_discovery_manifest: Path | None,
+) -> dict[str, Any]:
+    model_ids = _load_model_ids_from_manifest(model_discovery_manifest) if model_discovery_manifest else None
+    source = f"manifest:{model_discovery_manifest}" if model_discovery_manifest else None
+    if model_ids is None:
+        if not allow_web_model_discovery:
+            raise ValueError("model discovery requires --allow-web-model-discovery or --model-discovery-manifest")
+        model_ids = _fetch_official_model_ids(policy)
+        source = str(policy.get("official_model_endpoint") or OPENAI_MODELS_URL)
+    selected = _select_model_ids(model_ids, policy)
+    worker_models = _worker_models_from_model_ids(selected, policy)
+    return {
+        "source": source,
+        "provider_family": policy.get("provider_family"),
+        "model_ids": selected,
+        "worker_models": worker_models,
+    }
+
+
+def _load_model_ids_from_manifest(path: Path) -> list[str]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if isinstance(payload, list):
+        return [str(item) for item in payload]
+    if isinstance(payload.get("model_ids"), list):
+        return [str(item) for item in payload["model_ids"]]
+    if isinstance(payload.get("data"), list):
+        return [str(item["id"]) for item in payload["data"] if isinstance(item, dict) and item.get("id")]
+    raise ValueError(f"{path} must contain model_ids or OpenAI-style data[].id")
+
+
+def _fetch_official_model_ids(policy: dict[str, Any]) -> list[str]:
+    endpoint = str(policy.get("official_model_endpoint") or OPENAI_MODELS_URL)
+    if endpoint != OPENAI_MODELS_URL:
+        raise ValueError("Only the official OpenAI model-listing endpoint is supported for live discovery")
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY is required for live official model discovery")
+    request = urllib.request.Request(endpoint, headers={"Authorization": f"Bearer {api_key}"})
+    with urllib.request.urlopen(request, timeout=30) as response:
+        payload = json.loads(response.read().decode("utf-8"))
+    return [str(item["id"]) for item in payload.get("data", []) if isinstance(item, dict) and item.get("id")]
+
+
+def _select_model_ids(model_ids: list[str], policy: dict[str, Any]) -> list[str]:
+    selection = policy.get("discovery_selection") or {}
+    include_patterns = [re.compile(str(item)) for item in selection.get("include_patterns", [".*"])]
+    exclude_patterns = [re.compile(str(item)) for item in selection.get("exclude_patterns", [])]
+    max_workers = int(selection.get("max_workers", policy.get("max_workers", 8)))
+    selected = []
+    for model_id in sorted(set(model_ids)):
+        if not any(pattern.search(model_id) for pattern in include_patterns):
+            continue
+        if any(pattern.search(model_id) for pattern in exclude_patterns):
+            continue
+        selected.append(model_id)
+    if not selected:
+        raise ValueError("model discovery did not select any models")
+    return selected[:max_workers]
+
+
+def _worker_models_from_model_ids(model_ids: list[str], policy: dict[str, Any]) -> list[dict[str, Any]]:
+    worker_schema = policy.get("worker_schema") or {}
+    adapter = str(worker_schema.get("adapter") or policy.get("adapter") or "codex_cli")
+    sandbox = str(worker_schema.get("sandbox") or policy.get("sandbox") or "workspace-write")
+    timeout_seconds = int(worker_schema.get("timeout_seconds") or policy.get("timeout_seconds") or 1200)
+    reasoning_effort = str(worker_schema.get("reasoning_effort") or policy.get("reasoning_effort") or "high")
+    rows = []
+    for index, model_id in enumerate(model_ids):
+        rows.append(
+            {
+                "alias": _neutral_alias(index),
+                "adapter": adapter,
+                "model_id": model_id,
+                "reasoning_effort": reasoning_effort,
+                "sandbox": sandbox,
+                "timeout_seconds": timeout_seconds,
+                "capability_profile": "officially discovered model; assign roles only inside OrchestrationSpec.components",
+            }
+        )
+    return rows
+
+
+def _neutral_alias(index: int) -> str:
+    letters = "abcdefghijklmnopqrstuvwxyz"
+    if index < len(letters):
+        return f"worker_{letters[index]}"
+    return f"worker_{index + 1}"
+
+
+def _write_workers_config(path: Path, worker_models: list[dict[str, Any]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    workers = {}
+    for row in worker_models:
+        config = dict(row)
+        alias = str(config.pop("alias"))
+        workers[alias] = config
+    path.write_text(yaml.safe_dump({"workers": workers}, sort_keys=False), encoding="utf-8")
 
 
 def render_prompt(
@@ -94,6 +269,8 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--model-id", default=None)
     parser.add_argument("--reasoning-effort", default=None)
     parser.add_argument("--timeout-seconds", type=int, default=None)
+    parser.add_argument("--allow-web-model-discovery", action="store_true")
+    parser.add_argument("--model-discovery-manifest", default=None)
     args = parser.parse_args(argv)
 
     config = _load_config(Path(args.config))
@@ -103,6 +280,12 @@ def main(argv: list[str] | None = None) -> None:
     output_dir = Path(args.output_dir or Path(experiment.get("output_dir", "swebench/studies/open_source_orchestration/runs/swebench_orchestration_meta_design")) / "meta_design")
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    config, worker_menu_artifacts = prepare_meta_design_config(
+        config,
+        output_dir=output_dir,
+        allow_web_model_discovery=args.allow_web_model_discovery,
+        model_discovery_manifest=Path(args.model_discovery_manifest) if args.model_discovery_manifest else None,
+    )
     prompt = render_prompt(config=config, instances_path=instances_path, max_instances=args.max_instances)
     prompt_path = output_dir / "meta_designer_prompt.md"
     schema_path = output_dir / "orchestration_design_schema.json"
@@ -115,6 +298,7 @@ def main(argv: list[str] | None = None) -> None:
         "prompt_path": str(prompt_path),
         "schema_path": str(schema_path),
         "invoke_codex": args.invoke_codex,
+        "worker_menu": worker_menu_artifacts,
     }
     if args.invoke_codex:
         raw_payload, usage = _invoke_codex(

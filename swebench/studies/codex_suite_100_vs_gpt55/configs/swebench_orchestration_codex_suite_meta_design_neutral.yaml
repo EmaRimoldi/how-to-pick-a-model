@@ -26,12 +26,22 @@ model_suite_policy:  # Source of truth for the worker menu passed to the meta-de
   mode: practitioner_declared_default_with_official_discovery_fallback  # Use worker_models by default; discover only if no menu is provided.
   default_workers_config: swebench/studies/codex_suite_100_vs_gpt55/configs/swebench_codex_suite_workers_neutral.yaml  # Practitioner-declared neutral runtime worker YAML.
   provider_family: openai_codex  # Model family constraint for discovery if worker_models is empty.
+  model_family_query: OpenAI Codex/GPT code-capable models  # Human-readable family passed to the meta-orchestrator.
   discovery_allowed: true  # Permit official model discovery only when an explicit worker menu is absent.
   discovery_sources: [official provider docs, official model listing endpoint]  # Non-official catalogs are not allowed as source of truth.
+  official_model_endpoint: https://api.openai.com/v1/models  # Live discovery endpoint; requires OPENAI_API_KEY.
   generated_workers_config: swebench/studies/codex_suite_100_vs_gpt55/configs/swebench_codex_suite_workers_neutral.generated.yaml  # Expected artifact path if discovery materializes workers.
+  discovery_selection:  # Filters applied to the official model list before materializing neutral workers.
+    include_patterns: ["^gpt-", "codex"]  # Keep the requested model family.
+    exclude_patterns: ["audio", "image", "realtime", "tts", "whisper", "embedding"]  # Exclude non-coding modalities.
+    max_workers: 6  # Keep the generated menu compact enough for one orchestration design pass.
   worker_schema:  # Fixed fields expected when a worker menu is declared or generated.
     required_fields: [alias, adapter, model_id, reasoning_effort, sandbox, timeout_seconds, capability_profile]  # Minimum runtime and capability fields.
     alias_policy: neutral_sequential  # Use neutral aliases such as worker_a, worker_b, and worker_c.
+    adapter: codex_cli  # Generated workers should use the same runtime adapter family as the study.
+    reasoning_effort: high  # Default reasoning budget for generated workers unless later overridden.
+    sandbox: workspace-write  # Runtime sandbox for generated workers.
+    timeout_seconds: 1200  # Default timeout for generated worker calls.
     role_fields_forbidden: [intended_use]  # Avoid pre-assigning planner/reviewer/router/patcher/localizer/fallback roles.
 
 worker_models:  # Neutral candidate menu; these are available workers, not pre-assigned roles.
