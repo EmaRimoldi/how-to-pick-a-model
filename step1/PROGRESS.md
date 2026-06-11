@@ -40,10 +40,18 @@ the HumanEval Step 1 plan and governs the implementation.
   - online-loop smoke on 3 instances completed and wrote raw traces
   - generated-test inference oracle accepts a correct candidate and rejects a
     dummy candidate; gold diagnostic accepts the canonical solution offline
+- Phase E: implemented `runners/routing.py`, regenerated
+  `artifact/orchestration.md` with DAAO thresholds and TDAG expansion policy,
+  and wrote `artifact/routing_calibration.json`.
+- Phase E validation passed:
+  - routing decision counts match profile clusters: easy=108, medium=49,
+    hard=7
+  - calibrated repair budgets are easy=0, medium=1, hard=2
+  - artifact routing YAML parses and contains the TDAG error-propagation policy
 
 ## Current Milestone
 
-Phase D commit.
+Phase E commit.
 
 ## Open Questions
 

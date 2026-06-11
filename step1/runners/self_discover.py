@@ -194,6 +194,23 @@ def _orchestration_yaml(dag: dict[str, Any], profile: dict[str, Any]) -> dict[st
             "edges": dag["implement"]["edges"],
         },
         "routing_rules": _routing_rules(profile),
+        "routing_calibration": {
+            "method": "DAAO difficulty estimator lifted to HumanEval distribution clusters",
+            "thresholds": profile["daao_distribution_estimator"]["thresholds"],
+            "cluster_counts": profile["clusters"]["difficulty_counts"],
+            "tdag_policy": {
+                "expand_when": [
+                    "difficulty == hard",
+                    "has_edge_cases == true",
+                    "public examples are missing or generated tests are needed for repair signal",
+                ],
+                "fixed_short_path_when": ["difficulty == easy", "public examples are present"],
+                "error_propagation_control": (
+                    "hard paths add generate_tests and bounded repair; easy paths skip those nodes "
+                    "to avoid unnecessary cost and static-decomposition failures"
+                ),
+            },
+        },
         "handoff_oracles": {
             node["id"]: {
                 "inference": node["oracle"]["inference"]["kind"],
@@ -287,4 +304,3 @@ def main(argv: list[str] | None = None) -> None:
 
 if __name__ == "__main__":
     main()
-

@@ -260,6 +260,26 @@ routing_rules:
     repair_rounds: 2
   rationale: TDAG-style conditional expansion with generated tests and two repair
     rounds
+routing_calibration:
+  method: DAAO difficulty estimator lifted to HumanEval distribution clusters
+  thresholds:
+    easy_max_score: 1
+    hard_min_score: 4
+    medium_max_score: 3
+  cluster_counts: &id001
+    easy: 108
+    hard: 7
+    medium: 49
+  tdag_policy:
+    expand_when:
+    - difficulty == hard
+    - has_edge_cases == true
+    - public examples are missing or generated tests are needed for repair signal
+    fixed_short_path_when:
+    - difficulty == easy
+    - public examples are present
+    error_propagation_control: hard paths add generate_tests and bounded repair; easy
+      paths skip those nodes to avoid unnecessary cost and static-decomposition failures
 handoff_oracles:
   route:
     inference: code
@@ -301,10 +321,7 @@ cost_success:
   criterion: "U(h) = R\xB71[pass] \u2212 c\xB7T(h), T(h) = \u03A3 T_k"
 provenance:
   profile_sample_size: 164
-  difficulty_counts:
-    easy: 108
-    hard: 7
-    medium: 49
+  difficulty_counts: *id001
   seed_ids: []
   inference_oracle_discriminating_fraction: null
 ```
