@@ -24,10 +24,15 @@ the HumanEval Step 1 plan and governs the implementation.
   - `step1/data/humaneval_public.jsonl` and
     `step1/data/humaneval_verifier.jsonl` contain 164 rows each and no
     canonical-solution content
+- Phase C: implemented `runners/self_discover.py`, wrote
+  `artifact/dag_candidate.json`, `artifact/orchestration.md`, and role prompts.
+- Phase C validation passed: DAG JSON parses, Markdown YAML parses, all selected
+  edges are in the Phase-A library, and utility notation is preserved as
+  `U(h) = R·1[pass] − c·T(h), T(h) = Σ T_k`.
 
 ## Current Milestone
 
-Phase B commit.
+Phase C commit.
 
 ## Open Questions
 
