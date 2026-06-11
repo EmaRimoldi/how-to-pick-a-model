@@ -523,7 +523,7 @@ def generate(
         "model": backend.model,
         "reasoning_effort": backend.reasoning_effort,
         "transport": "codex_cli",
-        "coverage": "limited_smoke" if limit is not None else "full_164",
+        "coverage": "full_164" if limit is None and len(rows) == 164 else "limited_smoke",
     }
 
 

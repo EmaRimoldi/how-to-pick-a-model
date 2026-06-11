@@ -250,13 +250,64 @@ the HumanEval Step 1 plan and governs the implementation.
     `step1/logs/seed_repair_diagnostic_*.json`.
   - Hold point: repair is verified for the observed true failing raw response,
     but the requested 8-10 instance mini-smoke has not been started.
+- First real per-node mini-smoke completed on 9 stratified instances:
+  - Subset ids: `HumanEval/0`, `HumanEval/1`, `HumanEval/2`,
+    `HumanEval/3`, `HumanEval/20`, `HumanEval/32`, `HumanEval/109`,
+    `HumanEval/115`, `HumanEval/127` (3 easy, 3 medium, 3 hard via
+    `task_profile.json`).
+  - Added `.gitignore` entries for reproducible smoke subset files under
+    `step1/data/`.
+  - Verified the shared normalizer fix on `implement` outputs from
+    `HumanEval/0-2`; normalization did not corrupt valid implement bodies.
+    Verdicts after replay were unchanged: `HumanEval/0` implement still failed
+    due to its own over-indent, while `HumanEval/1` and `HumanEval/2` remained
+    passing.
+  - Generated real per-node seed records with `SEED_MODEL=gpt-5.5`,
+    `SEED_REASONING_EFFORT=xhigh`: 9/9 records validated; `seed_solve` passed
+    9/9 with `mock_default_count=0`.
+  - Generated real per-node cheap/node records with `NODE_MODEL=gpt-5.4-mini`,
+    `NODE_REASONING_EFFORT=low`: 9/9 records validated; online loop completed
+    with `mock_default_count=0`.
+  - Cheap record repair statuses: 5 unchanged no-op repairs where implement
+    already passed, 4 model repair outputs
+    (`HumanEval/2`, `HumanEval/32`, `HumanEval/115`, `HumanEval/127`).
+  - Online orchestration pass@1: 9/9 = 1.0. Single-agent baseline pass@1:
+    8/9 = 0.8888888889. The orchestration rescued `HumanEval/127`, where the
+    baseline failed.
+  - Utility result: orchestration mean `E[U]=0.4447390867`; baseline mean
+    `E[U]=0.67630531`. Phase-F utility check is not passed because extra node
+    cost dominates the one additional solved instance on this subset.
+  - Inference oracle discrimination: `inference_oracle_discriminating_fraction=0.25`;
+    Case-1 code-oracle fraction `0.4`. Discriminating nodes:
+    `understand_spec` and `generate_tests`. Non-discriminating observed nodes:
+    `route` (always true), `implement` (all cheap implementations passed public
+    examples), `repair` (only one routed repair trace and it failed generated
+    self-tests), plus `plan` is rubric-only and `run_tests`/`aggregate` are
+    terminal/opaque by design.
+  - Gold diagnostic agreement: `understand_spec=1.0` over 9 observations;
+    `generate_tests=1.0` over 3 observations; no gold diagnostic
+    disagreements were observed.
+  - Cost concentration in the online traces by total `T_k`: `implement`
+    38.28%, `understand_spec` 27.93%, `plan` 18.96%,
+    `generate_tests` 9.95%, `repair` 4.88%, deterministic nodes negligible.
+    Codex CLI exposed total tokens only (`token_split_source=codex_total_only`),
+    so `prompt_tokens` carries the total and `completion_tokens=0`; `T_k` still
+    uses real total tokens, calls, and wall time.
+  - Metrics written to both smoke-specific and default files:
+    `step1/metrics/step1_report_smoke_real.json`,
+    `step1/metrics/adaptation_curve_smoke_real.json`,
+    `step1/metrics/step1_report.json`,
+    `step1/metrics/adaptation_curve.json`.
+  - Decision: discrimination is low but non-zero, gold agreement is clean, and
+    pass@1 improves, but the orchestration is not ready for the full 164-run
+    because it does not beat the single-agent baseline on `E[U]` under the
+    current cost model.
 
 ## Current Milestone
 
-Hold before the real 8-10 instance mini-smoke. The seed repair blocker was a
-parser bug and has been fixed/replayed on the only true failing repair case
-seen among `HumanEval/0-2`. No full 164-instance loop was run and no SLURM job
-was submitted.
+Hold after the first real 9-instance per-node mini-smoke. No full 164-instance
+loop was run and no SLURM job was submitted. Next work should reduce cost or
+routing breadth before launching the full run.
 
 ## Open Questions
 
@@ -268,10 +319,8 @@ was submitted.
   1. `python -m runners.seed_solve --completion-jsonl step1/logs/seed_solver_completions.jsonl`
   2. `python -m runners.online_loop --completion-jsonl step1/logs/cheap_node_completions.jsonl`
   3. `python -m metrics.compute_step1`
-- Real mini-smoke remains intentionally paused by the operator instruction:
-  start it only after review of the seed repair diagnosis. Current generator
-  still uses a bounded retry when repair returns an unchanged failing
-  completion.
+- Full run should wait until the cost/routing issue is addressed. The current
+  mini-smoke improves pass@1 but loses on expected utility.
 
 ## Real Mini-Smoke Command
 

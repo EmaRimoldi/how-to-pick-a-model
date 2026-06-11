@@ -30,3 +30,8 @@ campaigns/*/logs/
 campaigns/*/runs/
 artifacts/qwen_routing_lora/
 dist/
+
+# HumanEval Step 1 reproducible smoke subsets.
+step1/data/humaneval_public_smoke_*.jsonl
+step1/data/humaneval_verifier_smoke_*.jsonl
+step1/data/humaneval_smoke_*_ids.json
