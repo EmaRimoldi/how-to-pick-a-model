@@ -4,24 +4,18 @@ from __future__ import annotations
 
 import ast
 import doctest
-import re
 from typing import Any
 
 
-DEF_RE = re.compile(r"def\s+(?P<name>[A-Za-z_]\w*)\s*\((?P<args>[^)]*)\)\s*:")
-
-
 def function_signature(prompt: str) -> dict[str, Any]:
-    match = DEF_RE.search(prompt)
-    if not match:
+    try:
+        tree = ast.parse(prompt)
+    except SyntaxError:
         return {"name": None, "args": []}
-    args = []
-    for raw in match.group("args").split(","):
-        value = raw.strip()
-        if not value:
-            continue
-        args.append(value.split(":", 1)[0].split("=", 1)[0].strip())
-    return {"name": match.group("name"), "args": args}
+    for node in tree.body:
+        if isinstance(node, ast.FunctionDef):
+            return {"name": node.name, "args": [arg.arg for arg in node.args.args]}
+    return {"name": None, "args": []}
 
 
 def public_examples(prompt: str, entry_point: str) -> list[str]:
@@ -45,4 +39,3 @@ def ok(**extra: Any) -> dict[str, Any]:
 
 def fail(reason: str, **extra: Any) -> dict[str, Any]:
     return {"passed": False, "reason": reason, **extra}
-

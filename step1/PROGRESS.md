@@ -48,16 +48,33 @@ the HumanEval Step 1 plan and governs the implementation.
     hard=7
   - calibrated repair budgets are easy=0, medium=1, hard=2
   - artifact routing YAML parses and contains the TDAG error-propagation policy
+- Phase F: implemented `metrics/compute_step1.py`, regenerated the default
+  three-instance smoke logs, and wrote `metrics/step1_report.json` plus
+  `metrics/adaptation_curve.json`.
+- Phase F smoke validation:
+  - structural validity passed
+  - inference-oracle discrimination failed on the mock-completion smoke run
+    (`inference_oracle_discriminating_fraction=0.0`)
+  - `E[U]` did not beat the single-agent baseline on the mock-completion smoke
+    run (`orchestration_mean_U=-1.292e-05`,
+    `baseline_mean_U=-1.0926666666666667e-05`)
+  - this is expected for dummy completions; production Phase F must resume after
+    real cheap-node and seed-solver completions/model routing are available
 
 ## Current Milestone
 
-Phase E commit.
+Phase F commit.
 
 ## Open Questions
 
 - Concrete production model strings and credentials are not needed for the
   deterministic smoke path. Full LLM-backed SELECT/ADAPT/IMPLEMENT and live
   solving will require operator-provided model routing or environment variables.
+- Production Phase F is blocked on real model-backed completions or a concrete
+  model adapter configuration. Return at:
+  1. `python -m runners.seed_solve --completion-jsonl step1/logs/seed_solver_completions.jsonl`
+  2. `python -m runners.online_loop --completion-jsonl step1/logs/cheap_node_completions.jsonl`
+  3. `python -m metrics.compute_step1`
 
 ## Full-Run Command For Operator
 
@@ -65,10 +82,19 @@ Do not run this during implementation:
 
 ```bash
 source .venv/bin/activate
-PYTHONPATH=step1:. python -m runners.profile
-PYTHONPATH=step1:. python -m runners.self_discover --profile step1/profile/task_profile.json
-PYTHONPATH=step1:. python -m runners.online_loop
-PYTHONPATH=step1:. python -m metrics.compute_step1
+export PYTHONPATH=step1:.
+
+python -m runners.profile
+python -m runners.self_discover --profile step1/profile/task_profile.json
+python -m runners.routing --profile step1/profile/task_profile.json --output step1/artifact/routing_calibration.json
+python -m runners.seed_solve \
+  --completion-jsonl step1/logs/seed_solver_completions.jsonl \
+  --output step1/logs/seed_solve_traces.jsonl
+python -m runners.online_loop \
+  --completion-jsonl step1/logs/cheap_node_completions.jsonl \
+  --orchestration-output step1/logs/online_loop_traces.jsonl \
+  --baseline-output step1/logs/baseline_traces.jsonl
+python -m metrics.compute_step1
 ```
 
 SLURM template:
@@ -89,6 +115,13 @@ export PYTHONPATH=step1:.
 
 python -m runners.profile
 python -m runners.self_discover --profile step1/profile/task_profile.json
-python -m runners.online_loop
+python -m runners.routing --profile step1/profile/task_profile.json --output step1/artifact/routing_calibration.json
+python -m runners.seed_solve \
+  --completion-jsonl step1/logs/seed_solver_completions.jsonl \
+  --output step1/logs/seed_solve_traces.jsonl
+python -m runners.online_loop \
+  --completion-jsonl step1/logs/cheap_node_completions.jsonl \
+  --orchestration-output step1/logs/online_loop_traces.jsonl \
+  --baseline-output step1/logs/baseline_traces.jsonl
 python -m metrics.compute_step1
 ```

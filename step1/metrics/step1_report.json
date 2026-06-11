@@ -1,0 +1,93 @@
+{
+  "canonical_solution_usage_audit": {
+    "gold_diagnostics_are_offline_only": true,
+    "live_solving_uses_canonical_solution": false
+  },
+  "cost_success": {
+    "R": 1.0,
+    "U": "R * pass - c * sum(T_k)",
+    "c": 1e-05,
+    "notation": "U(h) = R\u00b71[pass] \u2212 c\u00b7T(h), T(h) = \u03a3 T_k"
+  },
+  "inference_oracle_discriminating_fraction": 0.0,
+  "note": "A mock-completion smoke run is expected not to satisfy performance checks. Run the operator command in PROGRESS.md with real completions for Phase-F production results.",
+  "orchestration": {
+    "instances": 3,
+    "mean_U": -1.292e-05,
+    "pass_at_1": 0.0
+  },
+  "phase": "F",
+  "phase_f_results": {
+    "beats_single_agent_baseline_on_EU": {
+      "baseline_mean_U": -1.0926666666666667e-05,
+      "orchestration_mean_U": -1.292e-05,
+      "passed": false
+    },
+    "inference_oracles_discriminate": {
+      "case1_code_nodes": [
+        "generate_tests",
+        "implement",
+        "repair",
+        "route",
+        "understand_spec"
+      ],
+      "case1_code_oracle_discriminating_fraction": 0.0,
+      "inference_oracle_discriminating_fraction": 0.0,
+      "node_statuses": {
+        "generate_tests": {
+          "discriminates": false,
+          "observed_count": 0,
+          "observed_values": []
+        },
+        "implement": {
+          "discriminates": false,
+          "observed_count": 3,
+          "observed_values": [
+            false
+          ]
+        },
+        "repair": {
+          "discriminates": false,
+          "observed_count": 0,
+          "observed_values": []
+        },
+        "route": {
+          "discriminates": false,
+          "observed_count": 3,
+          "observed_values": [
+            true
+          ]
+        },
+        "understand_spec": {
+          "discriminates": false,
+          "observed_count": 3,
+          "observed_values": [
+            true
+          ]
+        }
+      },
+      "passed": false
+    },
+    "structural_validity": {
+      "duplicate_nodes": [],
+      "edge_count": 10,
+      "invalid_edges": [],
+      "node_count": 8,
+      "passed": true,
+      "terminal_nodes": [
+        "run_tests",
+        "aggregate"
+      ]
+    }
+  },
+  "schema_version": 1,
+  "single_agent_baseline": {
+    "instances": 3,
+    "mean_U": -1.0926666666666667e-05,
+    "pass_at_1": 0.0
+  },
+  "source_logs": {
+    "baseline": "/home/erimoldi/openclaw_remote/projects/NeurIPS_2026/step1/logs/baseline_traces.jsonl",
+    "orchestration": "/home/erimoldi/openclaw_remote/projects/NeurIPS_2026/step1/logs/online_loop_traces.jsonl"
+  }
+}

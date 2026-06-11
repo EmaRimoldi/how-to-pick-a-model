@@ -1,0 +1,30 @@
+{
+  "points": [
+    {
+      "baseline_mean_U": -1.095e-05,
+      "baseline_pass_at_1": 0.0,
+      "instances_seen": 1,
+      "orchestration_mean_U": -1.2780000000000001e-05,
+      "orchestration_pass_at_1": 0.0
+    },
+    {
+      "baseline_mean_U": -1.093e-05,
+      "baseline_pass_at_1": 0.0,
+      "instances_seen": 2,
+      "orchestration_mean_U": -1.2755e-05,
+      "orchestration_pass_at_1": 0.0
+    },
+    {
+      "baseline_mean_U": -1.0926666666666667e-05,
+      "baseline_pass_at_1": 0.0,
+      "instances_seen": 3,
+      "orchestration_mean_U": -1.292e-05,
+      "orchestration_pass_at_1": 0.0
+    }
+  ],
+  "schema_version": 1,
+  "source_logs": {
+    "baseline": "/home/erimoldi/openclaw_remote/projects/NeurIPS_2026/step1/logs/baseline_traces.jsonl",
+    "orchestration": "/home/erimoldi/openclaw_remote/projects/NeurIPS_2026/step1/logs/online_loop_traces.jsonl"
+  }
+}

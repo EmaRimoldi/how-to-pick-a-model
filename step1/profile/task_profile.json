@@ -58,7 +58,7 @@
     },
     "estimator": "prompt_feature_heuristic_lifted_to_distribution",
     "thresholds": {
-      "easy_max_score": 1,
+      "easy_max_score": 2,
       "hard_min_score": 4,
       "medium_max_score": 3
     }
@@ -66,7 +66,7 @@
   "features": [
     {
       "difficulty": "easy",
-      "difficulty_score": 1,
+      "difficulty_score": 2,
       "docstring_examples": 2,
       "edge_case_terms": [],
       "entry_point": "has_close_elements",
@@ -86,8 +86,11 @@
         "if"
       ],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "numbers",
+          "threshold"
+        ],
+        "name": "has_close_elements"
       },
       "task_id": "HumanEval/0"
     },
@@ -110,8 +113,10 @@
       "prompt_sha256_16": "ba4d0641a184fb3c",
       "reasoning_terms": [],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "paren_string"
+        ],
+        "name": "separate_paren_groups"
       },
       "task_id": "HumanEval/1"
     },
@@ -137,8 +142,10 @@
       "prompt_sha256_16": "fecb9ddd4f103f1c",
       "reasoning_terms": [],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "number"
+        ],
+        "name": "truncate_number"
       },
       "task_id": "HumanEval/2"
     },
@@ -166,8 +173,10 @@
         "return true"
       ],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "operations"
+        ],
+        "name": "below_zero"
       },
       "task_id": "HumanEval/3"
     },
@@ -194,14 +203,16 @@
         "if"
       ],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "numbers"
+        ],
+        "name": "mean_absolute_deviation"
       },
       "task_id": "HumanEval/4"
     },
     {
       "difficulty": "easy",
-      "difficulty_score": 1,
+      "difficulty_score": 2,
       "docstring_examples": 2,
       "edge_case_terms": [],
       "entry_point": "intersperse",
@@ -219,8 +230,11 @@
       "prompt_sha256_16": "388474ac71e5b893",
       "reasoning_terms": [],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "numbers",
+          "delimeter"
+        ],
+        "name": "intersperse"
       },
       "task_id": "HumanEval/5"
     },
@@ -243,14 +257,16 @@
       "prompt_sha256_16": "39b4ae7cbb22820f",
       "reasoning_terms": [],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "paren_string"
+        ],
+        "name": "parse_nested_parens"
       },
       "task_id": "HumanEval/6"
     },
     {
       "difficulty": "easy",
-      "difficulty_score": 1,
+      "difficulty_score": 2,
       "docstring_examples": 2,
       "edge_case_terms": [],
       "entry_point": "filter_by_substring",
@@ -270,8 +286,11 @@
         "substring"
       ],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "strings",
+          "substring"
+        ],
+        "name": "filter_by_substring"
       },
       "task_id": "HumanEval/7"
     },
@@ -296,8 +315,10 @@
       "prompt_sha256_16": "84dc98e731928675",
       "reasoning_terms": [],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "numbers"
+        ],
+        "name": "sum_product"
       },
       "task_id": "HumanEval/8"
     },
@@ -320,8 +341,10 @@
       "prompt_sha256_16": "583b281fbe1bf261",
       "reasoning_terms": [],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "numbers"
+        ],
+        "name": "rolling_max"
       },
       "task_id": "HumanEval/9"
     },
@@ -347,14 +370,16 @@
         "palindrome"
       ],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "string"
+        ],
+        "name": "is_palindrome"
       },
       "task_id": "HumanEval/10"
     },
     {
       "difficulty": "easy",
-      "difficulty_score": 0,
+      "difficulty_score": 1,
       "docstring_examples": 1,
       "edge_case_terms": [],
       "entry_point": "string_xor",
@@ -371,8 +396,11 @@
       "prompt_sha256_16": "ab1ec5c88f83f3fd",
       "reasoning_terms": [],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "a",
+          "b"
+        ],
+        "name": "string_xor"
       },
       "task_id": "HumanEval/11"
     },
@@ -399,14 +427,16 @@
       "prompt_sha256_16": "aa62f2bdcae005c8",
       "reasoning_terms": [],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "strings"
+        ],
+        "name": "longest"
       },
       "task_id": "HumanEval/12"
     },
     {
       "difficulty": "easy",
-      "difficulty_score": 0,
+      "difficulty_score": 1,
       "docstring_examples": 2,
       "edge_case_terms": [],
       "entry_point": "greatest_common_divisor",
@@ -423,8 +453,11 @@
       "prompt_sha256_16": "a7946546bc3a483b",
       "reasoning_terms": [],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "a",
+          "b"
+        ],
+        "name": "greatest_common_divisor"
       },
       "task_id": "HumanEval/13"
     },
@@ -447,8 +480,10 @@
       "prompt_sha256_16": "f4eca2c1c9ceb5ca",
       "reasoning_terms": [],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "string"
+        ],
+        "name": "all_prefixes"
       },
       "task_id": "HumanEval/14"
     },
@@ -471,8 +506,10 @@
       "prompt_sha256_16": "1eb46648867a6e49",
       "reasoning_terms": [],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "n"
+        ],
+        "name": "string_sequence"
       },
       "task_id": "HumanEval/15"
     },
@@ -497,8 +534,10 @@
       "prompt_sha256_16": "33374da5d17599a9",
       "reasoning_terms": [],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "string"
+        ],
+        "name": "count_distinct_characters"
       },
       "task_id": "HumanEval/16"
     },
@@ -521,14 +560,16 @@
       "prompt_sha256_16": "713553ae9220b086",
       "reasoning_terms": [],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "music_string"
+        ],
+        "name": "parse_music"
       },
       "task_id": "HumanEval/17"
     },
     {
       "difficulty": "easy",
-      "difficulty_score": 1,
+      "difficulty_score": 2,
       "docstring_examples": 3,
       "edge_case_terms": [
         "case"
@@ -549,8 +590,11 @@
         "substring"
       ],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "string",
+          "substring"
+        ],
+        "name": "how_many_times"
       },
       "task_id": "HumanEval/18"
     },
@@ -580,8 +624,10 @@
         "sorted"
       ],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "numbers"
+        ],
+        "name": "sort_numbers"
       },
       "task_id": "HumanEval/19"
     },
@@ -607,8 +653,10 @@
       "prompt_sha256_16": "881d52f394307cce",
       "reasoning_terms": [],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "numbers"
+        ],
+        "name": "find_closest_elements"
       },
       "task_id": "HumanEval/20"
     },
@@ -634,8 +682,10 @@
       "prompt_sha256_16": "f5d1f07614da8dff",
       "reasoning_terms": [],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "numbers"
+        ],
+        "name": "rescale_to_unit"
       },
       "task_id": "HumanEval/21"
     },
@@ -658,8 +708,10 @@
       "prompt_sha256_16": "b7bde40423debe28",
       "reasoning_terms": [],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "values"
+        ],
+        "name": "filter_integers"
       },
       "task_id": "HumanEval/22"
     },
@@ -682,8 +734,10 @@
       "prompt_sha256_16": "18b94c4f616dccb5",
       "reasoning_terms": [],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "string"
+        ],
+        "name": "strlen"
       },
       "task_id": "HumanEval/23"
     },
@@ -709,8 +763,10 @@
       "prompt_sha256_16": "3bc8bf3f66a3b5e1",
       "reasoning_terms": [],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "n"
+        ],
+        "name": "largest_divisor"
       },
       "task_id": "HumanEval/24"
     },
@@ -738,8 +794,10 @@
         "prime"
       ],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "n"
+        ],
+        "name": "factorize"
       },
       "task_id": "HumanEval/25"
     },
@@ -764,8 +822,10 @@
       "prompt_sha256_16": "7823eea9be959956",
       "reasoning_terms": [],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "numbers"
+        ],
+        "name": "remove_duplicates"
       },
       "task_id": "HumanEval/26"
     },
@@ -790,8 +850,10 @@
       "prompt_sha256_16": "497a1ae9517dff88",
       "reasoning_terms": [],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "string"
+        ],
+        "name": "flip_case"
       },
       "task_id": "HumanEval/27"
     },
@@ -814,14 +876,16 @@
       "prompt_sha256_16": "9481906207fb44fe",
       "reasoning_terms": [],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "strings"
+        ],
+        "name": "concatenate"
       },
       "task_id": "HumanEval/28"
     },
     {
       "difficulty": "easy",
-      "difficulty_score": 1,
+      "difficulty_score": 2,
       "docstring_examples": 2,
       "edge_case_terms": [],
       "entry_point": "filter_by_prefix",
@@ -839,8 +903,11 @@
       "prompt_sha256_16": "a173ce6b1e3767ca",
       "reasoning_terms": [],
       "signature": {
-        "args": [],
-        "name": null
+        "args": [
+          "strings",
+          "prefix"
+        ],
+        "name": "filter_by_prefix"
       },
       "task_id": "HumanEval/29"
     },

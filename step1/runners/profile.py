@@ -32,7 +32,6 @@ from runners.common import (
 
 
 EXAMPLE_RE = re.compile(r"^\s*>>>\s*(?P<expr>.+?)\s*$", re.MULTILINE)
-DEF_RE = re.compile(r"def\s+(?P<name>[A-Za-z_]\w*)\s*\((?P<args>[^)]*)\)\s*:")
 EDGE_KEYWORDS = {
     "empty",
     "none",
@@ -124,16 +123,14 @@ def _example_return_type(expr: str) -> str:
 
 
 def _signature(prompt: str) -> dict[str, Any]:
-    match = DEF_RE.search(prompt)
-    if not match:
+    try:
+        tree = ast.parse(prompt)
+    except SyntaxError:
         return {"name": None, "args": []}
-    args = []
-    for raw in match.group("args").split(","):
-        name = raw.strip()
-        if not name:
-            continue
-        args.append(name.split(":", 1)[0].split("=", 1)[0].strip())
-    return {"name": match.group("name"), "args": args}
+    for node in tree.body:
+        if isinstance(node, ast.FunctionDef):
+            return {"name": node.name, "args": [arg.arg for arg in node.args.args]}
+    return {"name": None, "args": []}
 
 
 def extract_features(row: dict[str, Any]) -> dict[str, Any]:
@@ -283,4 +280,3 @@ def main(argv: list[str] | None = None) -> None:
 
 if __name__ == "__main__":
     main()
-

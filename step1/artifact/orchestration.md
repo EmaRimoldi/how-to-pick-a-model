@@ -263,7 +263,7 @@ routing_rules:
 routing_calibration:
   method: DAAO difficulty estimator lifted to HumanEval distribution clusters
   thresholds:
-    easy_max_score: 1
+    easy_max_score: 2
     hard_min_score: 4
     medium_max_score: 3
   cluster_counts: &id001
