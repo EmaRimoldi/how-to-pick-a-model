@@ -190,7 +190,7 @@ def _base_context(instance: dict[str, Any]) -> str:
         "HumanEval prompt, including signature and public docstring examples:\n"
         f"{instance['prompt']}\n\n"
         "Hard rule: use only this prompt and public examples. Do not use hidden tests, verifier code, "
-        "canonical_solution, or any gold answer."
+        "reference solutions, or ground-truth answers."
     )
 
 
@@ -227,16 +227,25 @@ def _node_prompt(node_id: str, instance: dict[str, Any], state: dict[str, Any]) 
             f"test_suite:\n{json.dumps(state['generate_tests'], indent=2, sort_keys=True)}"
         )
     if node_id == "repair":
+        retry_feedback = ""
+        if state.get("repair_retry_feedback"):
+            retry_feedback = (
+                "\n\nprevious_repair_feedback:\n"
+                f"{json.dumps(state['repair_retry_feedback'], indent=2, sort_keys=True)}"
+            )
         return (
             "Node: repair.\n"
             "Revise the candidate completion using only the prompt, public/generated test feedback, and previous "
-            "node outputs. Return a replacement function body completion.\n\n"
+            "node outputs. Return a replacement function body completion. If any provided feedback failed, the "
+            "replacement must differ from the candidate; return the same body only when the candidate already "
+            "passes all provided feedback.\n\n"
             f"{context}\n\nspec_struct:\n{json.dumps(state['understand_spec'], indent=2, sort_keys=True)}\n\n"
             f"plan_struct:\n{json.dumps(state['plan'], indent=2, sort_keys=True)}\n\n"
             f"test_suite:\n{json.dumps(state['generate_tests'], indent=2, sort_keys=True)}\n\n"
             f"candidate_completion:\n{state['implement']['completion']}\n\n"
             f"candidate_public_feedback:\n{json.dumps(state.get('candidate_public_feedback', {}), indent=2, sort_keys=True)}\n\n"
             f"candidate_generated_feedback:\n{json.dumps(state.get('candidate_generated_feedback', {}), indent=2, sort_keys=True)}"
+            f"{retry_feedback}"
         )
     raise KeyError(node_id)
 
@@ -332,6 +341,13 @@ def _token_usage(usage: dict[str, Any], *, wall_ms: int, model: str, reasoning_e
     }
 
 
+def _merge_usage(left: dict[str, Any], right: dict[str, Any]) -> dict[str, Any]:
+    merged = dict(left)
+    for key in ("calls", "prompt_tokens", "completion_tokens", "total_tokens", "wall_ms"):
+        merged[key] = int(left.get(key) or 0) + int(right.get(key) or 0)
+    return merged
+
+
 def _call_node(
     *,
     adapter: CodexCliAdapter,
@@ -367,10 +383,12 @@ def generate_record(
     role: Role,
     instance: dict[str, Any],
     max_tokens: int,
+    repair_retries: int = 1,
 ) -> dict[str, Any]:
     state: dict[str, Any] = {}
     node_usage: dict[str, Any] = {}
     raw_outputs: dict[str, str] = {}
+    repair_attempts: list[dict[str, Any]] = []
     for node_id in MODEL_NODE_IDS:
         if node_id == "repair":
             public_result = run_public_examples(instance, state["implement"]["completion"])
@@ -392,10 +410,33 @@ def generate_record(
         state[node_id] = payload
         node_usage[node_id] = usage
         raw_outputs[node_id] = raw
+        if node_id == "repair":
+            repair_attempts.append({"completion": payload["completion"], "raw": raw})
     candidate_passed_self_tests = bool(state.get("candidate_public_feedback", {}).get("passed")) and bool(
         state.get("candidate_generated_feedback", {}).get("passed")
     )
     repair_unchanged = state["implement"]["completion"] == state["repair"]["completion"]
+    retry_index = 0
+    while repair_unchanged and not candidate_passed_self_tests and retry_index < repair_retries:
+        retry_index += 1
+        state["repair_retry_feedback"] = {
+            "reason": "previous_repair_returned_unchanged_failing_completion",
+            "attempt": retry_index,
+            "required_change": "Return a replacement body that addresses the failing public/generated feedback.",
+        }
+        payload, usage, raw = _call_node(
+            adapter=adapter,
+            backend=backend,
+            node_id="repair",
+            instance=instance,
+            state=state,
+            max_tokens=max_tokens,
+        )
+        state["repair"] = payload
+        node_usage["repair"] = _merge_usage(node_usage["repair"], usage)
+        raw_outputs["repair"] = raw
+        repair_attempts.append({"completion": payload["completion"], "raw": raw, "retry": retry_index})
+        repair_unchanged = state["implement"]["completion"] == state["repair"]["completion"]
     if repair_unchanged and not candidate_passed_self_tests:
         raise ValueError(
             f"Repair node returned an unchanged completion for failing candidate {instance['task_id']!r}"
@@ -422,6 +463,7 @@ def generate_record(
         "selection_reason": "repair_node_output",
         "node_usage": node_usage,
         "raw_outputs": raw_outputs,
+        "repair_attempts": repair_attempts,
     }
 
 
@@ -433,6 +475,7 @@ def generate(
     config_path: str | None,
     limit: int | None,
     max_tokens: int,
+    repair_retries: int,
 ) -> dict[str, Any]:
     ensure_step1_dirs()
     backend = _resolve_backend(role, config_path)
@@ -448,6 +491,7 @@ def generate(
             role=role,
             instance=row,
             max_tokens=max_tokens,
+            repair_retries=repair_retries,
         )
         outputs.append(record)
         print(
@@ -489,6 +533,7 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--config", default=None, help="Optional JSON/YAML Codex backend config.")
     parser.add_argument("--limit", type=int, default=None, help="Limit for real mini-smoke only.")
     parser.add_argument("--max-tokens", type=int, default=2048)
+    parser.add_argument("--repair-retries", type=int, default=1, help="Bounded retry when repair returns an unchanged failing completion.")
     args = parser.parse_args(argv)
     output = Path(args.output) if args.output else DEFAULT_OUTPUTS[args.role]
     manifest = generate(
@@ -498,6 +543,7 @@ def main(argv: list[str] | None = None) -> None:
         config_path=args.config,
         limit=args.limit,
         max_tokens=args.max_tokens,
+        repair_retries=args.repair_retries,
     )
     print(json.dumps(manifest, indent=2, sort_keys=True))
 

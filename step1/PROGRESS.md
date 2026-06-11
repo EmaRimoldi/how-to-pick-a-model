@@ -193,31 +193,56 @@ the HumanEval Step 1 plan and governs the implementation.
     production model signal.
   - `runners.validate_node_records --records /tmp/approved_node_records_3.jsonl`
     passed.
-- Real mini-smoke remains blocked before model calls because `SEED_MODEL` and
-  `NODE_MODEL` are unset in this shell. `generate_completions --role cheap`
-  stops with: `Missing model configuration: set NODE_MODEL or pass --config
-  with node_model.`
+- Diagnostic Check 3 resolved:
+  - Rephrased the generator hard-rule prompt to forbid reference/ground-truth
+    solutions without naming the dataset gold field.
+  - On `HumanEval/0` and `HumanEval/1`, the generated base context is unchanged
+    except for that negative-rule wording.
+  - `rg -n "canonical_solution" step1/runners/generate_completions.py` now
+    returns no hits; remaining literal mentions are guards, offline diagnostics,
+    metadata/profiling reports, and documentation.
+- Codex-suite invocation status:
+  - Local CLI is callable through `CodexCliAdapter`.
+  - Used shared model IDs from `configs/models.yaml`: `SEED_MODEL=gpt-5.5`
+    with `SEED_REASONING_EFFORT=xhigh`, and `NODE_MODEL=gpt-5.4-mini` with
+    `NODE_REASONING_EFFORT=low`.
+  - Cheap one-instance handshake on `HumanEval/0` succeeded and
+    `runners.validate_node_records` passed. The generated record had distinct
+    `completion` and `repaired_completion`, `repair_status=model_repair_output`,
+    and real Codex usage on all model nodes.
+  - Codex CLI usage for that handshake exposed total tokens only; `T_k` is real,
+    but prompt/completion split provenance is `codex_total_only`, so
+    `completion_tokens` is `0` in the current record.
+  - Seed one-instance handshakes on `HumanEval/0` invoked `gpt-5.5` successfully
+    but failed the repair contract after one and then two bounded retries:
+    `ValueError: Repair node returned an unchanged completion for failing
+    candidate 'HumanEval/0'`.
+  - Tightened the repair prompt to state that identical output is allowed only
+    when the candidate passes all provided feedback. A final one-instance seed
+    handshake still failed with the same unchanged-failing-repair error.
+  - No 8-10 instance mini-smoke, 164-instance run, or SLURM job was launched.
 
 ## Current Milestone
 
-Blocked before real mini-smoke on missing Codex-suite model ids. No full
-164-instance loop was run and no SLURM job was submitted.
+Blocked before the real 8-10 instance mini-smoke on a seed model-output
+failure: the seed repair node returns an unchanged completion even when the
+candidate fails its public/generated self-tests. No full 164-instance loop was
+run and no SLURM job was submitted.
 
 ## Open Questions
 
-- Concrete production model strings and credentials are not needed for the
-  deterministic smoke path. Full LLM-backed SELECT/ADAPT/IMPLEMENT and live
-  solving will require operator-provided model routing or environment variables.
+- Concrete production model strings can be supplied through env/config. The
+  diagnostic handshakes used `gpt-5.5` and `gpt-5.4-mini` from the shared repo
+  model config.
 - Production Phase F is blocked on real model-backed completions or a concrete
   model adapter configuration. Return at:
   1. `python -m runners.seed_solve --completion-jsonl step1/logs/seed_solver_completions.jsonl`
   2. `python -m runners.online_loop --completion-jsonl step1/logs/cheap_node_completions.jsonl`
   3. `python -m metrics.compute_step1`
-- Real mini-smoke is blocked until the operator provides:
-  - `SEED_MODEL`
-  - `NODE_MODEL`
-  - optional: `SEED_REASONING_EFFORT`, `NODE_REASONING_EFFORT`,
-    `CODEX_TIMEOUT_SECONDS`, `CODEX_SANDBOX`
+- Real mini-smoke is blocked until the seed repair contract is adjusted or the
+  seed model/prompt choice is changed. Current generator uses a bounded retry
+  when repair returns an unchanged failing completion; `gpt-5.5` still failed
+  that guard on `HumanEval/0`.
 
 ## Real Mini-Smoke Command
 
