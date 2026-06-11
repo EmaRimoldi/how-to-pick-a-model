@@ -8,6 +8,7 @@ rerunning model or sandbox work.
 from __future__ import annotations
 
 import argparse
+import importlib
 import json
 import re
 import statistics
@@ -17,7 +18,13 @@ from typing import Any
 
 import yaml
 
-from runners.common import ARTIFACT_DIR, LOGS_DIR, METRICS_DIR, read_jsonl, write_json
+from runners.common import ARTIFACT_DIR, LOGS_DIR, METRICS_DIR, gold_instance, load_humaneval, read_jsonl, write_json
+
+
+GOLD_DIAGNOSTIC_MODULES = {
+    "understand_spec": "oracles.check_understand_spec_gold",
+    "generate_tests": "oracles.check_generate_tests_gold",
+}
 
 
 def _load_orchestration(path: Path) -> dict[str, Any]:
@@ -117,6 +124,42 @@ def _oracle_discrimination(payload: dict[str, Any], rows: list[dict[str, Any]]) 
     }
 
 
+def _gold_diagnostic_agreement(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    gold_rows = {row["task_id"]: gold_instance(row) for row in load_humaneval()}
+    modules = {
+        node_id: importlib.import_module(module_name)
+        for node_id, module_name in GOLD_DIAGNOSTIC_MODULES.items()
+    }
+    totals: dict[str, int] = {node_id: 0 for node_id in modules}
+    agreements: dict[str, int] = {node_id: 0 for node_id in modules}
+    errors: dict[str, list[str]] = {node_id: [] for node_id in modules}
+    for row in rows:
+        node_id = str(row.get("node_id"))
+        if node_id not in modules:
+            continue
+        inference_value = row.get("oracle_passed")
+        if inference_value is None:
+            continue
+        task_id = str(row["task_id"])
+        try:
+            diagnostic = modules[node_id].check(gold_rows[task_id], row.get("state", {}))
+            gold_value = bool(diagnostic.get("passed"))
+        except Exception as exc:  # pragma: no cover - diagnostics should not crash metrics.
+            errors[node_id].append(f"{task_id}:{type(exc).__name__}:{exc}")
+            continue
+        totals[node_id] += 1
+        agreements[node_id] += int(bool(inference_value) == gold_value)
+    return {
+        node_id: {
+            "available": True,
+            "count": totals[node_id],
+            "agreement_rate": agreements[node_id] / totals[node_id] if totals[node_id] else None,
+            "errors": errors[node_id][:10],
+        }
+        for node_id in sorted(modules)
+    }
+
+
 def _adaptation_curve(orchestration: list[dict[str, Any]], baseline: list[dict[str, Any]]) -> list[dict[str, Any]]:
     rows = []
     for index in range(1, len(orchestration) + 1):
@@ -150,6 +193,7 @@ def compute(
     orchestration_rows = read_jsonl(orchestration_traces_path)
     baseline_rows = read_jsonl(baseline_traces_path)
     oracle = _oracle_discrimination(payload, orchestration_rows)
+    gold_agreement = _gold_diagnostic_agreement(orchestration_rows)
     orch_summaries = _summaries(orchestration_rows, R=R, c=c)
     base_summaries = _summaries(baseline_rows, R=R, c=c)
     orch_mean_U = _mean([float(row["U"]) for row in orch_summaries])
@@ -178,6 +222,7 @@ def compute(
                 "orchestration_mean_U": orch_mean_U,
                 "baseline_mean_U": base_mean_U,
             },
+            "gold_diagnostic_agreement": gold_agreement,
         },
         "inference_oracle_discriminating_fraction": oracle["inference_oracle_discriminating_fraction"],
         "orchestration": {
@@ -238,4 +283,3 @@ def main(argv: list[str] | None = None) -> None:
 
 if __name__ == "__main__":
     main()
-

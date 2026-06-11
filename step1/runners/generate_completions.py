@@ -1,7 +1,7 @@
-"""Generate model-backed HumanEval completion JSONL files.
+"""Generate per-node HumanEval records with the local Codex CLI suite.
 
-All model/API access for Step 1 lives here. The seed and online-loop runners
-consume the resulting JSONL deterministically and never call a model.
+All model access for Step 1 lives in this file. Runners consume the resulting
+JSONL deterministically and never call models.
 """
 
 from __future__ import annotations
@@ -12,6 +12,7 @@ import hashlib
 import json
 import os
 import re
+import sys
 import textwrap
 import time
 from dataclasses import dataclass
@@ -19,11 +20,22 @@ from pathlib import Path
 from typing import Any, Literal
 
 import yaml
-from openai import OpenAI
 from tqdm import tqdm
 
-from runners.common import DATA_DIR, LOGS_DIR, ensure_step1_dirs, read_jsonl, write_jsonl
-from runners.workflow import assert_public_solving_instance, load_completion_map, validate_completion_coverage
+from runners.common import DATA_DIR, LOGS_DIR, REPO_ROOT, ensure_step1_dirs, read_jsonl, write_jsonl
+from runners.sandbox import run_generated_tests, run_public_examples
+from runners.workflow import (
+    MODEL_NODE_IDS,
+    assert_public_solving_instance,
+    load_node_record_map,
+    validate_node_record_coverage,
+)
+
+SRC_PATH = REPO_ROOT / "src"
+if str(SRC_PATH) not in sys.path:
+    sys.path.insert(0, str(SRC_PATH))
+
+from vao.agents.codex_cli_adapter import CodexCliAdapter  # noqa: E402
 
 
 Role = Literal["seed", "cheap"]
@@ -36,10 +48,10 @@ DEFAULT_OUTPUTS = {
 @dataclass(frozen=True)
 class BackendConfig:
     model: str
-    api_key: str
-    base_url: str
-    api_mode: str
-    timeout_seconds: float
+    reasoning_effort: str
+    timeout_seconds: int
+    sandbox: str
+    use_output_schema: bool
 
 
 def _load_config(path: str | None) -> dict[str, Any]:
@@ -66,73 +78,177 @@ def _resolve_backend(role: Role, config_path: str | None) -> BackendConfig:
     role_key = "seed_model" if role == "seed" else "node_model"
     model_env = "SEED_MODEL" if role == "seed" else "NODE_MODEL"
     model = os.environ.get(model_env) or _config_value(config, role_key) or _config_value(config, "models", role)
-    api_key = (
-        os.environ.get("OPENAI_API_KEY")
-        or os.environ.get("API_KEY")
-        or _config_value(config, "api_key")
-        or _config_value(config, "openai", "api_key")
-    )
-    base_url = (
-        os.environ.get("OPENAI_BASE_URL")
-        or os.environ.get("OPENAI_API_BASE")
-        or os.environ.get("API_BASE_URL")
-        or _config_value(config, "base_url")
-        or _config_value(config, "openai", "base_url")
-    )
-    api_mode = (
-        os.environ.get("OPENAI_API_MODE")
-        or _config_value(config, "api_mode")
-        or _config_value(config, "openai", "api_mode")
-        or "chat_completions"
-    )
-    timeout_seconds = float(
-        os.environ.get("OPENAI_TIMEOUT_SECONDS")
-        or _config_value(config, "timeout_seconds")
-        or _config_value(config, "openai", "timeout_seconds")
-        or 120
-    )
-    missing = []
     if not model:
-        missing.append(model_env)
-    if not api_key:
-        missing.append("OPENAI_API_KEY")
-    if not base_url:
-        missing.append("OPENAI_BASE_URL")
-    if missing:
-        raise SystemExit(
-            "Missing model backend configuration: "
-            + ", ".join(missing)
-            + ". Set environment variables or pass --config."
-        )
-    if api_mode not in {"chat_completions", "responses"}:
-        raise SystemExit(f"Unsupported OPENAI_API_MODE/API mode {api_mode!r}; use chat_completions or responses")
+        raise SystemExit(f"Missing model configuration: set {model_env} or pass --config with {role_key}.")
+
+    reasoning_env = "SEED_REASONING_EFFORT" if role == "seed" else "NODE_REASONING_EFFORT"
+    default_reasoning = "xhigh" if role == "seed" else "low"
+    reasoning_effort = (
+        os.environ.get(reasoning_env)
+        or _config_value(config, f"{role}_reasoning_effort")
+        or _config_value(config, "reasoning_effort", role)
+        or default_reasoning
+    )
+    timeout_seconds = int(
+        os.environ.get("CODEX_TIMEOUT_SECONDS")
+        or _config_value(config, "timeout_seconds")
+        or _config_value(config, "codex", "timeout_seconds")
+        or 900
+    )
+    sandbox = str(
+        os.environ.get("CODEX_SANDBOX")
+        or _config_value(config, "sandbox")
+        or _config_value(config, "codex", "sandbox")
+        or "read-only"
+    )
     return BackendConfig(
         model=str(model),
-        api_key=str(api_key),
-        base_url=str(base_url),
-        api_mode=str(api_mode),
+        reasoning_effort=str(reasoning_effort),
         timeout_seconds=timeout_seconds,
+        sandbox=sandbox,
+        use_output_schema=bool(_config_value(config, "use_output_schema") if "use_output_schema" in config else True),
     )
 
 
-def _system_prompt(role: Role) -> str:
-    tier = "strong seed solver" if role == "seed" else "cheap fast node agent"
-    return (
-        f"You are a {tier} for HumanEval. Return only the Python function body completion "
-        "that should be appended directly after the provided prompt. Do not return markdown, "
-        "imports, the function signature, explanations, tests, or any text outside the body. "
-        "Do not use hidden tests, canonical solutions, or verifier code."
+def _adapter(backend: BackendConfig) -> CodexCliAdapter:
+    return CodexCliAdapter(
+        model_id=backend.model,
+        reasoning_effort=backend.reasoning_effort,
+        timeout_seconds=backend.timeout_seconds,
+        sandbox=backend.sandbox,
+        use_output_schema=backend.use_output_schema,
+        working_dir=REPO_ROOT,
+        retries=0,
     )
 
 
-def _user_prompt(instance: dict[str, Any]) -> str:
+def _json_schema(properties: dict[str, Any], required: list[str]) -> dict[str, Any]:
+    return {
+        "type": "object",
+        "properties": properties,
+        "required": required,
+        "additionalProperties": False,
+    }
+
+
+SPEC_SCHEMA = _json_schema(
+    {
+        "signature": {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string"},
+                "args": {"type": "array", "items": {"type": "string"}},
+            },
+            "required": ["name", "args"],
+            "additionalProperties": False,
+        },
+        "docstring_summary": {"type": "string"},
+        "input_types": {"type": "array", "items": {"type": "string"}},
+        "output_type": {"type": "string"},
+        "examples": {"type": "array", "items": {"type": "string"}},
+        "edge_cases": {"type": "array", "items": {"type": "string"}},
+        "invariants": {"type": "array", "items": {"type": "string"}},
+    },
+    ["signature", "docstring_summary", "input_types", "output_type", "examples", "edge_cases", "invariants"],
+)
+PLAN_SCHEMA = _json_schema(
+    {
+        "algorithm": {"type": "string"},
+        "cases": {"type": "array", "items": {"type": "string"}},
+        "complexity": {"type": "string"},
+        "implementation_notes": {"type": "array", "items": {"type": "string"}},
+    },
+    ["algorithm", "cases", "complexity", "implementation_notes"],
+)
+TEST_SCHEMA = _json_schema(
+    {
+        "tests": {"type": "array", "items": {"type": "string"}},
+        "rationale": {"type": "string"},
+    },
+    ["tests", "rationale"],
+)
+IMPLEMENT_SCHEMA = _json_schema(
+    {
+        "completion": {"type": "string"},
+        "notes": {"type": "string"},
+    },
+    ["completion", "notes"],
+)
+REPAIR_SCHEMA = _json_schema(
+    {
+        "completion": {"type": "string"},
+        "repair_summary": {"type": "string"},
+    },
+    ["completion", "repair_summary"],
+)
+
+
+def _base_context(instance: dict[str, Any]) -> str:
     return (
-        "Complete this HumanEval function. The response must be only the indented function body.\n\n"
         f"task_id: {instance['task_id']}\n"
         f"entry_point: {instance['entry_point']}\n\n"
-        "PROMPT:\n"
-        f"{instance['prompt']}"
+        "HumanEval prompt, including signature and public docstring examples:\n"
+        f"{instance['prompt']}\n\n"
+        "Hard rule: use only this prompt and public examples. Do not use hidden tests, verifier code, "
+        "canonical_solution, or any gold answer."
     )
+
+
+def _node_prompt(node_id: str, instance: dict[str, Any], state: dict[str, Any]) -> str:
+    context = _base_context(instance)
+    if node_id == "understand_spec":
+        return (
+            "Node: understand_spec.\n"
+            "Extract the function signature, public examples, edge cases, and invariants. "
+            "Do not solve the task.\n\n"
+            f"{context}"
+        )
+    if node_id == "plan":
+        return (
+            "Node: plan.\n"
+            "Given the prompt-derived spec, write a concise implementation plan without code.\n\n"
+            f"{context}\n\nspec_struct:\n{json.dumps(state['understand_spec'], indent=2, sort_keys=True)}"
+        )
+    if node_id == "generate_tests":
+        return (
+            "Node: generate_tests.\n"
+            "Write Python assertion statements that call the entry point. Include public examples and a few "
+            "prompt-derived edge cases. These tests will run only on the candidate, never on gold during solving.\n\n"
+            f"{context}\n\nspec_struct:\n{json.dumps(state['understand_spec'], indent=2, sort_keys=True)}\n\n"
+            f"plan_struct:\n{json.dumps(state['plan'], indent=2, sort_keys=True)}"
+        )
+    if node_id == "implement":
+        return (
+            "Node: implement.\n"
+            "Return only the function body completion to append after the prompt. Do not include imports, "
+            "the function signature, markdown, explanations, or tests.\n\n"
+            f"{context}\n\nspec_struct:\n{json.dumps(state['understand_spec'], indent=2, sort_keys=True)}\n\n"
+            f"plan_struct:\n{json.dumps(state['plan'], indent=2, sort_keys=True)}\n\n"
+            f"test_suite:\n{json.dumps(state['generate_tests'], indent=2, sort_keys=True)}"
+        )
+    if node_id == "repair":
+        return (
+            "Node: repair.\n"
+            "Revise the candidate completion using only the prompt, public/generated test feedback, and previous "
+            "node outputs. Return a replacement function body completion.\n\n"
+            f"{context}\n\nspec_struct:\n{json.dumps(state['understand_spec'], indent=2, sort_keys=True)}\n\n"
+            f"plan_struct:\n{json.dumps(state['plan'], indent=2, sort_keys=True)}\n\n"
+            f"test_suite:\n{json.dumps(state['generate_tests'], indent=2, sort_keys=True)}\n\n"
+            f"candidate_completion:\n{state['implement']['completion']}\n\n"
+            f"candidate_public_feedback:\n{json.dumps(state.get('candidate_public_feedback', {}), indent=2, sort_keys=True)}\n\n"
+            f"candidate_generated_feedback:\n{json.dumps(state.get('candidate_generated_feedback', {}), indent=2, sort_keys=True)}"
+        )
+    raise KeyError(node_id)
+
+
+def _schema_for(node_id: str) -> dict[str, Any]:
+    return {
+        "understand_spec": SPEC_SCHEMA,
+        "plan": PLAN_SCHEMA,
+        "generate_tests": TEST_SCHEMA,
+        "implement": IMPLEMENT_SCHEMA,
+        "repair": REPAIR_SCHEMA,
+    }[node_id]
 
 
 def _strip_code_fence(text: str) -> str:
@@ -153,8 +269,7 @@ def _extract_full_function_body(text: str, entry_point: str) -> str | None:
         if isinstance(node, ast.FunctionDef) and node.name == entry_point and node.body:
             start = min(child.lineno for child in node.body) - 1
             end = max(getattr(child, "end_lineno", child.lineno) for child in node.body)
-            body = "\n".join(lines[start:end])
-            return body
+            return "\n".join(lines[start:end])
     return None
 
 
@@ -179,58 +294,115 @@ def normalize_completion(raw: str, *, prompt: str, entry_point: str) -> str:
     return normalized.rstrip() + "\n"
 
 
-def _usage_payload(usage: Any) -> dict[str, Any]:
-    if usage is None:
-        return {}
-    if hasattr(usage, "model_dump"):
-        return usage.model_dump()
-    if isinstance(usage, dict):
-        return dict(usage)
-    return {}
+def _parse_json_object(raw: str) -> dict[str, Any]:
+    text = raw.strip()
+    if text.startswith("```"):
+        text = _strip_code_fence(text)
+    try:
+        payload = json.loads(text)
+    except json.JSONDecodeError:
+        match = re.search(r"\{.*\}", text, re.S)
+        if not match:
+            raise
+        payload = json.loads(match.group(0))
+    if not isinstance(payload, dict):
+        raise ValueError("model output is not a JSON object")
+    return payload
 
 
-def _call_chat(client: OpenAI, backend: BackendConfig, messages: list[dict[str, str]], *, max_tokens: int, temperature: float) -> tuple[str, dict[str, Any]]:
-    response = client.chat.completions.create(
-        model=backend.model,
-        messages=messages,
-        max_tokens=max_tokens,
-        temperature=temperature,
-    )
-    content = response.choices[0].message.content or ""
-    return content, _usage_payload(response.usage)
+def _token_usage(usage: dict[str, Any], *, wall_ms: int, model: str, reasoning_effort: str) -> dict[str, Any]:
+    nested = usage.get("usage") if isinstance(usage.get("usage"), dict) else usage
+    total = int(nested.get("total_tokens") or nested.get("tokens_used") or 0)
+    input_tokens = int(nested.get("input_tokens") or nested.get("prompt_tokens") or 0)
+    output_tokens = int(nested.get("output_tokens") or nested.get("completion_tokens") or 0)
+    if total and not (input_tokens or output_tokens):
+        input_tokens = total
+    return {
+        "calls": 1,
+        "tokens_in": input_tokens,
+        "tokens_out": output_tokens,
+        "total_tokens": total or input_tokens + output_tokens,
+        "wall_ms": wall_ms,
+        "model": model,
+        "reasoning_effort": reasoning_effort,
+        "transport": usage.get("transport", "codex_cli"),
+    }
 
 
-def _call_responses(client: OpenAI, backend: BackendConfig, messages: list[dict[str, str]], *, max_tokens: int, temperature: float) -> tuple[str, dict[str, Any]]:
-    response = client.responses.create(
-        model=backend.model,
-        input=messages,
-        max_output_tokens=max_tokens,
-        temperature=temperature,
-    )
-    content = getattr(response, "output_text", "") or ""
-    return content, _usage_payload(getattr(response, "usage", None))
-
-
-def call_model(
+def _call_node(
     *,
-    client: OpenAI,
+    adapter: CodexCliAdapter,
     backend: BackendConfig,
-    role: Role,
+    node_id: str,
     instance: dict[str, Any],
+    state: dict[str, Any],
     max_tokens: int,
-    temperature: float,
-) -> tuple[str, dict[str, Any]]:
-    messages = [
-        {"role": "system", "content": _system_prompt(role)},
-        {"role": "user", "content": _user_prompt(instance)},
-    ]
-    if backend.api_mode == "responses":
-        return _call_responses(client, backend, messages, max_tokens=max_tokens, temperature=temperature)
-    return _call_chat(client, backend, messages, max_tokens=max_tokens, temperature=temperature)
+) -> tuple[dict[str, Any], dict[str, Any], str]:
+    prompt = _node_prompt(node_id, instance, state)
+    started = time.perf_counter()
+    raw, usage = adapter._complete(prompt, _schema_for(node_id), max_tokens=max_tokens)
+    wall_ms = int((time.perf_counter() - started) * 1000)
+    payload = _parse_json_object(raw)
+    if node_id in {"implement", "repair"}:
+        payload["completion"] = normalize_completion(
+            str(payload.get("completion", "")),
+            prompt=instance["prompt"],
+            entry_point=instance["entry_point"],
+        )
+    node_usage = _token_usage(usage, wall_ms=wall_ms, model=backend.model, reasoning_effort=backend.reasoning_effort)
+    return payload, node_usage, raw
 
 
 def _instance_hash(instance: dict[str, Any]) -> str:
     return hashlib.sha256(instance["prompt"].encode("utf-8")).hexdigest()[:16]
+
+
+def generate_record(
+    *,
+    adapter: CodexCliAdapter,
+    backend: BackendConfig,
+    role: Role,
+    instance: dict[str, Any],
+    max_tokens: int,
+) -> dict[str, Any]:
+    state: dict[str, Any] = {}
+    node_usage: dict[str, Any] = {}
+    raw_outputs: dict[str, str] = {}
+    for node_id in MODEL_NODE_IDS:
+        if node_id == "repair":
+            public_result = run_public_examples(instance, state["implement"]["completion"])
+            generated_result = run_generated_tests(
+                instance,
+                state["implement"]["completion"],
+                list(state["generate_tests"].get("tests", [])),
+            )
+            state["candidate_public_feedback"] = public_result.payload
+            state["candidate_generated_feedback"] = generated_result.payload
+        payload, usage, raw = _call_node(
+            adapter=adapter,
+            backend=backend,
+            node_id=node_id,
+            instance=instance,
+            state=state,
+            max_tokens=max_tokens,
+        )
+        state[node_id] = payload
+        node_usage[node_id] = usage
+        raw_outputs[node_id] = raw
+    return {
+        "task_id": instance["task_id"],
+        "role": role,
+        "model": backend.model,
+        "reasoning_effort": backend.reasoning_effort,
+        "prompt_sha256_16": _instance_hash(instance),
+        "understand_spec": state["understand_spec"],
+        "plan": state["plan"],
+        "generate_tests": state["generate_tests"],
+        "implement": state["implement"],
+        "repair": state["repair"],
+        "node_usage": node_usage,
+        "raw_outputs": raw_outputs,
+    }
 
 
 def generate(
@@ -241,67 +413,52 @@ def generate(
     config_path: str | None,
     limit: int | None,
     max_tokens: int,
-    temperature: float,
 ) -> dict[str, Any]:
     ensure_step1_dirs()
     backend = _resolve_backend(role, config_path)
     rows = read_jsonl(instances_path, limit=limit)
     for row in rows:
         assert_public_solving_instance(row, context="generate_completions input")
-    client = OpenAI(api_key=backend.api_key, base_url=backend.base_url, timeout=backend.timeout_seconds)
+    adapter = _adapter(backend)
     outputs: list[dict[str, Any]] = []
     for row in tqdm(rows, desc=f"generate_{role}", unit="task"):
-        started = time.perf_counter()
-        raw, usage = call_model(
-            client=client,
+        record = generate_record(
+            adapter=adapter,
             backend=backend,
             role=role,
             instance=row,
             max_tokens=max_tokens,
-            temperature=temperature,
         )
-        completion = normalize_completion(raw, prompt=row["prompt"], entry_point=row["entry_point"])
-        outputs.append(
-            {
-                "task_id": row["task_id"],
-                "completion": completion,
-                "role": role,
-                "model": backend.model,
-                "api_mode": backend.api_mode,
-                "prompt_sha256_16": _instance_hash(row),
-                "wall_ms": int((time.perf_counter() - started) * 1000),
-                "usage": usage,
-                "raw_completion": raw,
-            }
-        )
+        outputs.append(record)
         print(
             json.dumps(
                 {
                     "task_id": row["task_id"],
                     "role": role,
-                    "completion_chars": len(completion),
                     "model": backend.model,
+                    "implement_chars": len(record["implement"]["completion"]),
+                    "repair_chars": len(record["repair"]["completion"]),
                 },
                 sort_keys=True,
             )
         )
     write_jsonl(output_path, outputs)
-    completions = load_completion_map(str(output_path))
-    validate_completion_coverage(
+    records = load_node_record_map(str(output_path))
+    validate_node_record_coverage(
         instances=rows,
-        completions=completions,
-        completion_jsonl=str(output_path),
+        records=records,
+        record_jsonl=str(output_path),
         allow_mock=False,
     )
-    manifest = {
+    return {
         "output": str(output_path),
         "instances": len(rows),
         "role": role,
         "model": backend.model,
-        "api_mode": backend.api_mode,
+        "reasoning_effort": backend.reasoning_effort,
+        "transport": "codex_cli",
         "coverage": "limited_smoke" if limit is not None else "full_164",
     }
-    return manifest
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -309,10 +466,9 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--role", choices=["seed", "cheap"], required=True)
     parser.add_argument("--instances", default=str(DATA_DIR / "humaneval_public.jsonl"))
     parser.add_argument("--output", default=None)
-    parser.add_argument("--config", default=None, help="Optional JSON/YAML backend config.")
+    parser.add_argument("--config", default=None, help="Optional JSON/YAML Codex backend config.")
     parser.add_argument("--limit", type=int, default=None, help="Limit for real mini-smoke only.")
-    parser.add_argument("--max-tokens", type=int, default=512)
-    parser.add_argument("--temperature", type=float, default=0.2)
+    parser.add_argument("--max-tokens", type=int, default=2048)
     args = parser.parse_args(argv)
     output = Path(args.output) if args.output else DEFAULT_OUTPUTS[args.role]
     manifest = generate(
@@ -322,11 +478,9 @@ def main(argv: list[str] | None = None) -> None:
         config_path=args.config,
         limit=args.limit,
         max_tokens=args.max_tokens,
-        temperature=args.temperature,
     )
     print(json.dumps(manifest, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":
     main()
-

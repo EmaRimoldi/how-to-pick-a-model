@@ -17,6 +17,7 @@ from runners.sandbox import run_generated_tests, run_public_examples, run_termin
 
 
 FORBIDDEN_SOLVING_FIELDS = {"canonical_solution", "test"}
+MODEL_NODE_IDS = ("understand_spec", "plan", "generate_tests", "implement", "repair")
 
 
 def assert_public_solving_instance(instance: dict[str, Any], *, context: str) -> None:
@@ -58,6 +59,47 @@ def load_completion_map(path: str | None) -> dict[str, str]:
     return completions
 
 
+def load_node_record_map(path: str | None) -> dict[str, dict[str, Any]]:
+    if path is None:
+        return {}
+    import json
+    from pathlib import Path
+
+    records: dict[str, dict[str, Any]] = {}
+    with Path(path).open("r", encoding="utf-8") as handle:
+        for line in handle:
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            _validate_node_record(row)
+            task_id = str(row["task_id"])
+            if task_id in records:
+                raise ValueError(f"Duplicate per-node record for task_id {task_id!r}")
+            records[task_id] = row
+    return records
+
+
+def _validate_node_record(row: dict[str, Any]) -> None:
+    if "task_id" not in row:
+        raise ValueError(f"Per-node record is missing task_id: {row}")
+    missing = [node_id for node_id in MODEL_NODE_IDS if node_id not in row]
+    if missing:
+        raise ValueError(f"Per-node record for {row.get('task_id')!r} is missing node field(s): {missing}")
+    if not isinstance(row["understand_spec"], dict):
+        raise ValueError(f"understand_spec must be an object for {row['task_id']!r}")
+    if not isinstance(row["plan"], dict):
+        raise ValueError(f"plan must be an object for {row['task_id']!r}")
+    if not isinstance(row["generate_tests"], dict):
+        raise ValueError(f"generate_tests must be an object for {row['task_id']!r}")
+    for node_id in ("implement", "repair"):
+        node_payload = row[node_id]
+        if not isinstance(node_payload, dict):
+            raise ValueError(f"{node_id} must be an object for {row['task_id']!r}")
+        completion = node_payload.get("completion")
+        if not isinstance(completion, str) or not completion.strip():
+            raise ValueError(f"{node_id}.completion is empty or non-string for {row['task_id']!r}")
+
+
 def validate_completion_coverage(
     *,
     instances: list[dict[str, Any]],
@@ -83,8 +125,64 @@ def validate_completion_coverage(
         )
 
 
+def validate_node_record_coverage(
+    *,
+    instances: list[dict[str, Any]],
+    records: dict[str, dict[str, Any]],
+    record_jsonl: str | None,
+    allow_mock: bool,
+) -> None:
+    task_ids = [str(instance["task_id"]) for instance in instances]
+    missing = sorted(task_id for task_id in task_ids if task_id not in records)
+    extra = sorted(task_id for task_id in records if task_id not in set(task_ids))
+    if missing and not allow_mock:
+        raise ValueError(
+            "Per-node record coverage check failed: "
+            f"{len(missing)} missing task_id(s) in {record_jsonl!r}; first missing={missing[:10]}"
+        )
+    if extra:
+        print(
+            {
+                "warning": "per_node_jsonl_contains_extra_task_ids",
+                "extra_count": len(extra),
+                "first_extra": extra[:10],
+            }
+        )
+
+
 def default_completion() -> str:
     return "    pass\n"
+
+
+def default_node_record(task_id: str) -> dict[str, Any]:
+    return {
+        "task_id": task_id,
+        "understand_spec": {
+            "signature": {"name": None, "args": []},
+            "docstring_summary": "",
+            "input_types": [],
+            "output_type": "unknown",
+            "examples": [],
+            "edge_cases": [],
+            "invariants": [],
+        },
+        "plan": {"algorithm": "", "cases": [], "complexity": "", "implementation_notes": []},
+        "generate_tests": {"tests": [], "rationale": ""},
+        "implement": {"completion": default_completion(), "notes": "mock default"},
+        "repair": {"completion": default_completion(), "repair_summary": "mock default"},
+        "node_usage": {},
+    }
+
+
+def completion_from_record(record: dict[str, Any], *, prefer_repair: bool = False) -> str:
+    if prefer_repair:
+        repair = record.get("repair", {})
+        if isinstance(repair, dict) and isinstance(repair.get("completion"), str) and repair["completion"].strip():
+            return repair["completion"]
+    implement = record.get("implement", {})
+    if isinstance(implement, dict) and isinstance(implement.get("completion"), str) and implement["completion"].strip():
+        return implement["completion"]
+    return default_completion()
 
 
 def spec_from_prompt(instance: dict[str, Any], profile_feature: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -175,8 +273,9 @@ def _trace(
     tokens_in: int = 0,
     tokens_out: int = 0,
     calls: int = 0,
+    wall_ms_override: int | None = None,
 ) -> dict[str, Any]:
-    wall_ms = int((time.perf_counter() - started) * 1000)
+    wall_ms = int(wall_ms_override if wall_ms_override is not None else (time.perf_counter() - started) * 1000)
     return {
         "run_id": run_id,
         "task_id": task_id,
@@ -196,15 +295,39 @@ def _trace(
     }
 
 
+def _node_usage(record: dict[str, Any], node_id: str) -> dict[str, Any]:
+    usage = record.get("node_usage", {})
+    if not isinstance(usage, dict):
+        return {}
+    node_usage = usage.get(node_id, {})
+    return node_usage if isinstance(node_usage, dict) else {}
+
+
+def _usage_trace_kwargs(record: dict[str, Any], node_id: str, *, default_calls: int) -> dict[str, Any]:
+    usage = _node_usage(record, node_id)
+    tokens_in = int(usage.get("tokens_in") or usage.get("input_tokens") or usage.get("prompt_tokens") or 0)
+    tokens_out = int(usage.get("tokens_out") or usage.get("output_tokens") or usage.get("completion_tokens") or 0)
+    total_tokens = int(usage.get("total_tokens") or 0)
+    if total_tokens and not (tokens_in or tokens_out):
+        tokens_in = total_tokens
+    return {
+        "tokens_in": tokens_in,
+        "tokens_out": tokens_out,
+        "calls": int(usage.get("calls") or default_calls),
+        "wall_ms_override": int(usage["wall_ms"]) if "wall_ms" in usage else None,
+    }
+
+
 def run_baseline_instance(
     *,
     instance: dict[str, Any],
     verifier_test: str,
-    completion: str,
+    node_record: dict[str, Any],
     run_id: str,
 ) -> tuple[bool, list[dict[str, Any]]]:
     assert_public_solving_instance(instance, context="run_baseline_instance")
     started = time.perf_counter()
+    completion = completion_from_record(node_record, prefer_repair=False)
     terminal = run_terminal_verifier(verifier_instance_from_public(instance, verifier_test), completion)
     trace = _trace(
         run_id=run_id,
@@ -217,7 +340,7 @@ def run_baseline_instance(
         oracle=None,
         terminal_pass=terminal.passed,
         verifier_calls=1,
-        calls=1,
+        **_usage_trace_kwargs(node_record, "implement", default_calls=1),
     )
     trace["sandbox"] = terminal.payload
     return terminal.passed, [trace]
@@ -228,7 +351,7 @@ def run_orchestration_instance(
     instance: dict[str, Any],
     verifier_test: str,
     profile_feature: dict[str, Any],
-    completion: str,
+    node_record: dict[str, Any],
     run_id: str,
 ) -> tuple[bool, list[dict[str, Any]]]:
     assert_public_solving_instance(instance, context="run_orchestration_instance")
@@ -251,7 +374,7 @@ def run_orchestration_instance(
     )
 
     started = time.perf_counter()
-    spec = spec_from_prompt(instance, profile_feature)
+    spec = node_record["understand_spec"]
     spec_oracle = check_understand_spec(instance, {"spec_struct": spec})
     traces.append(
         _trace(
@@ -263,14 +386,14 @@ def run_orchestration_instance(
             started=started,
             state={"spec_struct": spec},
             oracle=spec_oracle,
-            calls=1,
+            **_usage_trace_kwargs(node_record, "understand_spec", default_calls=1),
         )
     )
 
     plan = {}
     if "plan" in route["path"]:
         started = time.perf_counter()
-        plan = plan_from_spec(spec)
+        plan = node_record["plan"]
         traces.append(
             _trace(
                 run_id=run_id,
@@ -281,14 +404,17 @@ def run_orchestration_instance(
                 started=started,
                 state={"plan_struct": plan},
                 oracle={"passed": None, "kind": "rubric", "reason": "not_scored_in_smoke"},
-                calls=1,
+                **_usage_trace_kwargs(node_record, "plan", default_calls=1),
             )
         )
 
     tests: list[str] = []
+    implementation = node_record["implement"]
+    completion = completion_from_record(node_record, prefer_repair=False)
     if "generate_tests" in route["path"]:
         started = time.perf_counter()
-        tests = generated_tests_from_prompt(instance)
+        generated_payload = node_record["generate_tests"]
+        tests = list(generated_payload.get("tests", [])) if isinstance(generated_payload, dict) else []
         test_oracle = check_generate_tests(
             instance,
             {"test_suite": {"tests": tests}, "candidate_completion": completion},
@@ -303,7 +429,7 @@ def run_orchestration_instance(
                 started=started,
                 state={"test_suite": {"tests": tests}},
                 oracle=test_oracle,
-                calls=1,
+                **_usage_trace_kwargs(node_record, "generate_tests", default_calls=1),
             )
         )
 
@@ -317,9 +443,9 @@ def run_orchestration_instance(
             node_type="llm",
             model_tier=route["model_tier"],
             started=started,
-            state={"completion_chars": len(completion)},
+            state={"candidate_completion": completion, "notes": implementation.get("notes", "")},
             oracle=implement_oracle,
-            calls=1,
+            **_usage_trace_kwargs(node_record, "implement", default_calls=1),
         )
     )
 
@@ -346,9 +472,13 @@ def run_orchestration_instance(
         )
     )
 
+    final_terminal_result = terminal_result
     repaired_completion = completion
     if (not terminal_result.passed) and "repair" in route["path"]:
         started = time.perf_counter()
+        repair_payload = node_record["repair"]
+        if isinstance(repair_payload, dict) and isinstance(repair_payload.get("completion"), str):
+            repaired_completion = repair_payload["completion"]
         repair_oracle = check_repair(
             instance,
             {"candidate_completion": repaired_completion, "test_suite": {"tests": tests}},
@@ -361,9 +491,35 @@ def run_orchestration_instance(
                 node_type="llm",
                 model_tier=route["model_tier"],
                 started=started,
-                state={"completion_chars": len(repaired_completion), "repair_summary": "mock path preserves completion"},
+                state={
+                    "candidate_completion": repaired_completion,
+                    "repair_summary": repair_payload.get("repair_summary", ""),
+                },
                 oracle=repair_oracle,
-                calls=1,
+                **_usage_trace_kwargs(node_record, "repair", default_calls=1),
+            )
+        )
+        started = time.perf_counter()
+        repair_public_result = run_public_examples(instance, repaired_completion)
+        repair_generated_result = run_generated_tests(instance, repaired_completion, tests) if tests else None
+        final_terminal_result = run_terminal_verifier(verifier_instance_from_public(instance, verifier_test), repaired_completion)
+        traces.append(
+            _trace(
+                run_id=run_id,
+                task_id=instance["task_id"],
+                node_id="run_tests",
+                node_type="code",
+                model_tier="deterministic",
+                started=started,
+                state={
+                    "public_examples_pass": repair_public_result.passed,
+                    "generated_tests_pass": None if repair_generated_result is None else repair_generated_result.passed,
+                    "terminal_pass": final_terminal_result.passed,
+                    "after_repair": True,
+                },
+                oracle=None,
+                terminal_pass=final_terminal_result.passed,
+                verifier_calls=1,
             )
         )
 
@@ -376,9 +532,12 @@ def run_orchestration_instance(
             node_type="code",
             model_tier="deterministic",
             started=started,
-            state={"selected_completion_chars": len(repaired_completion), "selection_reason": "only candidate"},
+            state={
+                "selected_completion_chars": len(repaired_completion),
+                "selection_reason": "repair" if repaired_completion != completion else "implement",
+            },
             oracle=None,
-            terminal_pass=terminal_result.passed,
+            terminal_pass=final_terminal_result.passed,
         )
     )
-    return terminal_result.passed, traces
+    return final_terminal_result.passed, traces

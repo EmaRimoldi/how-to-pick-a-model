@@ -15,11 +15,11 @@ from tqdm import tqdm
 from runners.common import DATA_DIR, LOGS_DIR, PROFILE_DIR, ensure_step1_dirs, read_json, read_jsonl, write_jsonl
 from runners.workflow import (
     assert_public_solving_instance,
-    default_completion,
-    load_completion_map,
+    default_node_record,
+    load_node_record_map,
     run_baseline_instance,
     run_orchestration_instance,
-    validate_completion_coverage,
+    validate_node_record_coverage,
 )
 
 
@@ -33,7 +33,7 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--verifier-instances", default=str(DATA_DIR / "humaneval_verifier.jsonl"))
     parser.add_argument("--profile", default=str(PROFILE_DIR / "task_profile.json"))
     parser.add_argument("--limit", type=int, default=None)
-    parser.add_argument("--completion-jsonl", default=None, help="Rows with task_id and completion from cheap node agents.")
+    parser.add_argument("--completion-jsonl", default=None, help="Rows with task_id and per-node fields from cheap node agents.")
     parser.add_argument("--allow-mock", action="store_true", help="Allow missing completions to use the mock default. Dev only.")
     parser.add_argument("--orchestration-output", default=str(LOGS_DIR / "online_loop_traces.jsonl"))
     parser.add_argument("--baseline-output", default=str(LOGS_DIR / "baseline_traces.jsonl"))
@@ -47,11 +47,11 @@ def main(argv: list[str] | None = None) -> None:
     verifier_tests = {str(row["task_id"]): str(row["test"]) for row in verifier_rows}
     profile = read_json(Path(args.profile))
     features = _feature_map(profile)
-    completions = load_completion_map(args.completion_jsonl)
-    validate_completion_coverage(
+    records = load_node_record_map(args.completion_jsonl)
+    validate_node_record_coverage(
         instances=rows,
-        completions=completions,
-        completion_jsonl=args.completion_jsonl,
+        records=records,
+        record_jsonl=args.completion_jsonl,
         allow_mock=args.allow_mock,
     )
 
@@ -61,11 +61,11 @@ def main(argv: list[str] | None = None) -> None:
     baseline_successes = 0
     mock_default_count = 0
     for index, instance in enumerate(tqdm(rows, desc="online_loop", unit="task")):
-        if instance["task_id"] in completions:
-            completion = completions[instance["task_id"]]
+        if instance["task_id"] in records:
+            node_record = records[instance["task_id"]]
             source = "completion_jsonl"
         else:
-            completion = default_completion()
+            node_record = default_node_record(instance["task_id"])
             source = "mock_default"
             mock_default_count += 1
         if instance["task_id"] not in verifier_tests:
@@ -74,7 +74,7 @@ def main(argv: list[str] | None = None) -> None:
         baseline_passed, baseline_instance_traces = run_baseline_instance(
             instance=instance,
             verifier_test=verifier_tests[instance["task_id"]],
-            completion=completion,
+            node_record=node_record,
             run_id=f"baseline_{index:03d}_{instance['task_id'].replace('/', '_')}",
         )
         baseline_successes += int(baseline_passed)
@@ -87,7 +87,7 @@ def main(argv: list[str] | None = None) -> None:
             instance=instance,
             verifier_test=verifier_tests[instance["task_id"]],
             profile_feature=features[instance["task_id"]],
-            completion=completion,
+            node_record=node_record,
             run_id=f"online_{index:03d}_{instance['task_id'].replace('/', '_')}",
         )
         orchestration_successes += int(orch_passed)

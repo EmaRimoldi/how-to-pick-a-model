@@ -139,11 +139,51 @@ the HumanEval Step 1 plan and governs the implementation.
     per-node attribution. Then `run_orchestration_instance` should consume
     those fields as `s_k`, run each `check_k` on its own handoff, and populate
     `T_k` from `node_usage` rather than synthetic wall time.
+- Per-node contract implemented after operator continuation.
+  - JSONL remains one row per instance.
+  - Required production schema:
+    `{task_id, understand_spec, plan, generate_tests, implement, repair,
+    node_usage}`.
+  - `understand_spec` is the model-produced `spec_struct`.
+  - `plan` is the model-produced `plan_struct`.
+  - `generate_tests` is the model-produced `test_suite` with `tests` and
+    `rationale`.
+  - `implement` is an object with at least `{completion, notes}`.
+  - `repair` is an object with at least `{completion, repair_summary}`.
+  - `node_usage` maps each model node to `{calls, tokens_in, tokens_out,
+    total_tokens, wall_ms, model, reasoning_effort, transport}` and is used for
+    `T_k`.
+  - `run_orchestration_instance` now feeds each node its own state:
+    `check_understand_spec` sees the model `understand_spec`, `check_generate_tests`
+    sees model tests run on the implement completion, `check_implement` sees the
+    implement completion, and `check_repair` sees the repair completion.
+  - `seed_solve` and `online_loop` now load per-node records via
+    `load_node_record_map`; flat `{task_id, completion}` rows are no longer the
+    production contract.
+- Codex-suite backend implemented.
+  - `runners/generate_completions.py` now uses the local `codex exec` transport
+    via `CodexCliAdapter`; no paid HTTP API client is used.
+  - Model identifiers are resolved only from env/config:
+    `SEED_MODEL` for `--role seed`, `NODE_MODEL` for `--role cheap`.
+  - Optional controls: `SEED_REASONING_EFFORT`, `NODE_REASONING_EFFORT`,
+    `CODEX_TIMEOUT_SECONDS`, `CODEX_SANDBOX`, or matching config keys.
+  - The local CLI is present: `codex-cli 0.137.0`.
+- Stratified mini-smoke support implemented:
+  - `runners/select_subset.py --limit 9` writes leakage-safe public/verifier
+    subset files.
+  - Synthetic per-node record validation passed with 3 covered ids and
+    `mock_default_count=0`.
+  - `metrics.compute_step1` now reports offline gold-diagnostic agreement for
+    nodes with `check_*_gold` diagnostics (`understand_spec`,
+    `generate_tests`).
+- Real mini-smoke remains blocked before model calls because `SEED_MODEL` and
+  `NODE_MODEL` are unset in this shell. `generate_completions --role seed`
+  stops with: `Missing model configuration: set SEED_MODEL or pass --config
+  with seed_model.`
 
 ## Current Milestone
 
-Blocked by Task-0 per-node state collapse. Awaiting operator confirmation
-before changing the completion contract.
+Blocked before real mini-smoke on missing Codex-suite model ids.
 
 ## Open Questions
 
@@ -158,38 +198,42 @@ before changing the completion contract.
 - Real mini-smoke is blocked until the operator provides:
   - `SEED_MODEL`
   - `NODE_MODEL`
-  - `OPENAI_API_KEY`
-  - `OPENAI_BASE_URL`
-  - optional: `OPENAI_API_MODE=chat_completions|responses`
-- Real mini-smoke should remain blocked even if credentials are present until
-  the operator confirms whether to change the generator/runners from single
-  final-completion rows to per-node handoff records.
+  - optional: `SEED_REASONING_EFFORT`, `NODE_REASONING_EFFORT`,
+    `CODEX_TIMEOUT_SECONDS`, `CODEX_SANDBOX`
 
 ## Real Mini-Smoke Command
 
-Run after setting backend environment variables:
+Run after setting Codex-suite model environment variables:
 
 ```bash
 source .venv/bin/activate
 export PYTHONPATH=step1:.
 
+python -m runners.select_subset \
+  --limit 9 \
+  --public-output step1/data/humaneval_public_smoke_stratified.jsonl \
+  --verifier-output step1/data/humaneval_verifier_smoke_stratified.jsonl \
+  --ids-output step1/data/humaneval_smoke_stratified_ids.json
+
 python -m runners.generate_completions \
   --role seed \
-  --limit 8 \
+  --instances step1/data/humaneval_public_smoke_stratified.jsonl \
   --output step1/logs/seed_solver_completions_smoke.jsonl
 
 python -m runners.generate_completions \
   --role cheap \
-  --limit 8 \
+  --instances step1/data/humaneval_public_smoke_stratified.jsonl \
   --output step1/logs/cheap_node_completions_smoke.jsonl
 
 python -m runners.seed_solve \
-  --limit 8 \
+  --instances step1/data/humaneval_public_smoke_stratified.jsonl \
+  --verifier-instances step1/data/humaneval_verifier_smoke_stratified.jsonl \
   --completion-jsonl step1/logs/seed_solver_completions_smoke.jsonl \
   --output step1/logs/seed_solve_smoke_real.jsonl
 
 python -m runners.online_loop \
-  --limit 8 \
+  --instances step1/data/humaneval_public_smoke_stratified.jsonl \
+  --verifier-instances step1/data/humaneval_verifier_smoke_stratified.jsonl \
   --completion-jsonl step1/logs/cheap_node_completions_smoke.jsonl \
   --orchestration-output step1/logs/online_loop_smoke_real.jsonl \
   --baseline-output step1/logs/baseline_smoke_real.jsonl
