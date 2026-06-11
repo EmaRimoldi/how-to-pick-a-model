@@ -14,10 +14,20 @@ the HumanEval Step 1 plan and governs the implementation.
 - Phase A: created `blocks/library.yaml` with typed orchestration operators,
   I/O contracts, model tier policies, valid edges, default routing paths, and
   `U(h) = R * pass - c * sum(T_k)` accounting.
+- Phase A validation passed: 9 required operators and 13 valid edges parsed.
+- Phase B: implemented `runners/profile.py` and generated
+  `profile/task_profile.json` over HumanEval-164 using prompt-only features.
+- Phase B validation passed:
+  - smoke profile on 3 instances completed with `canonical_solution_used=false`
+  - full prompt-only profile completed with 164 instances
+  - full profile clusters: easy=108, medium=49, hard=7
+  - `step1/data/humaneval_public.jsonl` and
+    `step1/data/humaneval_verifier.jsonl` contain 164 rows each and no
+    canonical-solution content
 
 ## Current Milestone
 
-Phase A validation.
+Phase B commit.
 
 ## Open Questions
 
