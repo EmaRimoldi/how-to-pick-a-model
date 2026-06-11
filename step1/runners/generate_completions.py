@@ -313,19 +313,22 @@ def _parse_json_object(raw: str) -> dict[str, Any]:
 def _token_usage(usage: dict[str, Any], *, wall_ms: int, model: str, reasoning_effort: str) -> dict[str, Any]:
     nested = usage.get("usage") if isinstance(usage.get("usage"), dict) else usage
     total = int(nested.get("total_tokens") or nested.get("tokens_used") or 0)
-    input_tokens = int(nested.get("input_tokens") or nested.get("prompt_tokens") or 0)
-    output_tokens = int(nested.get("output_tokens") or nested.get("completion_tokens") or 0)
-    if total and not (input_tokens or output_tokens):
-        input_tokens = total
+    prompt_tokens = int(nested.get("prompt_tokens") or nested.get("input_tokens") or 0)
+    completion_tokens = int(nested.get("completion_tokens") or nested.get("output_tokens") or 0)
+    if total and not (prompt_tokens or completion_tokens):
+        # Codex CLI may expose only total tokens. Keep the real total and mark
+        # the split source; T_k still uses the actual total token count.
+        prompt_tokens = total
     return {
         "calls": 1,
-        "tokens_in": input_tokens,
-        "tokens_out": output_tokens,
-        "total_tokens": total or input_tokens + output_tokens,
+        "prompt_tokens": prompt_tokens,
+        "completion_tokens": completion_tokens,
+        "total_tokens": total or prompt_tokens + completion_tokens,
         "wall_ms": wall_ms,
         "model": model,
         "reasoning_effort": reasoning_effort,
         "transport": usage.get("transport", "codex_cli"),
+        "token_split_source": "codex_usage" if completion_tokens else "codex_total_only",
     }
 
 
@@ -389,17 +392,34 @@ def generate_record(
         state[node_id] = payload
         node_usage[node_id] = usage
         raw_outputs[node_id] = raw
+    candidate_passed_self_tests = bool(state.get("candidate_public_feedback", {}).get("passed")) and bool(
+        state.get("candidate_generated_feedback", {}).get("passed")
+    )
+    repair_unchanged = state["implement"]["completion"] == state["repair"]["completion"]
+    if repair_unchanged and not candidate_passed_self_tests:
+        raise ValueError(
+            f"Repair node returned an unchanged completion for failing candidate {instance['task_id']!r}"
+        )
     return {
         "task_id": instance["task_id"],
         "role": role,
         "model": backend.model,
         "reasoning_effort": backend.reasoning_effort,
         "prompt_sha256_16": _instance_hash(instance),
-        "understand_spec": state["understand_spec"],
-        "plan": state["plan"],
-        "generate_tests": state["generate_tests"],
-        "implement": state["implement"],
-        "repair": state["repair"],
+        "spec_struct": state["understand_spec"],
+        "plan_struct": state["plan"],
+        "test_suite": state["generate_tests"],
+        "completion": state["implement"]["completion"],
+        "repaired_completion": state["repair"]["completion"],
+        "selected_completion": state["repair"]["completion"],
+        "completion_notes": state["implement"].get("notes", ""),
+        "repair_summary": state["repair"].get("repair_summary", ""),
+        "repair_status": (
+            "unchanged_candidate_passed_self_tests"
+            if repair_unchanged and candidate_passed_self_tests
+            else "model_repair_output"
+        ),
+        "selection_reason": "repair_node_output",
         "node_usage": node_usage,
         "raw_outputs": raw_outputs,
     }
@@ -436,8 +456,8 @@ def generate(
                     "task_id": row["task_id"],
                     "role": role,
                     "model": backend.model,
-                    "implement_chars": len(record["implement"]["completion"]),
-                    "repair_chars": len(record["repair"]["completion"]),
+                    "completion_chars": len(record["completion"]),
+                    "repaired_completion_chars": len(record["repaired_completion"]),
                 },
                 sort_keys=True,
             )

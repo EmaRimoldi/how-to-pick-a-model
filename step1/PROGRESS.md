@@ -83,15 +83,15 @@ the HumanEval Step 1 plan and governs the implementation.
   - Runner summaries report `mock_default_count`; production runs must be zero.
 - Continuation guard validation:
   - `generate_completions --role cheap --limit 1` stopped before API access
-    because `NODE_MODEL`, `OPENAI_API_KEY`, and `OPENAI_BASE_URL` are unset.
+    because `NODE_MODEL` is unset.
   - `seed_solve --limit 3 --allow-mock` and
     `online_loop --limit 3 --allow-mock` still work for dev-only smoke.
   - `online_loop --limit 3` without a completion file fails loudly.
   - `online_loop --limit 3 --completion-jsonl /tmp/completions_3.jsonl`
     completed with `mock_default_count=0`.
 - Task-0 per-node exercise audit completed before any model calls.
-  - Current completion contract is still one `{task_id, completion}` row per
-    instance.
+  - Historical finding at commit `f27678e`: the completion contract was one
+    `{task_id, completion}` row per instance.
   - Nodes do not all literally receive the same state, but all model-produced
     behavior collapses to the single final `completion` string. `route`,
     `understand_spec`, `plan`, and `generate_tests` receive deterministic
@@ -130,33 +130,34 @@ the HumanEval Step 1 plan and governs the implementation.
   - Diagnosis: per-node oracle discrimination and per-node cost attribution are
     structurally weak under the single-completion contract. A real mini-smoke
     would measure final-code quality, not distinct per-node handoff quality.
-  - Minimal proposed fix, not yet implemented: extend the generator output to a
-    per-instance record with node-specific fields, for example
+  - Minimal proposed fix, since approved and implemented: extend the generator
+    output to a per-instance record with node-specific fields:
     `{task_id, spec_struct, plan_struct, test_suite, completion,
-    repaired_completion, selected_completion, node_usage}`. Keep backward
-    compatibility by accepting legacy `{task_id, completion}` only for
-    baseline/final-code smoke, but require the richer record for Phase-F
-    per-node attribution. Then `run_orchestration_instance` should consume
-    those fields as `s_k`, run each `check_k` on its own handoff, and populate
-    `T_k` from `node_usage` rather than synthetic wall time.
+    repaired_completion, selected_completion, node_usage}`. Phase-F runners now
+    require the richer record for per-node attribution. `run_orchestration_instance`
+    consumes those fields as `s_k`, runs each `check_k` on its own handoff, and
+    populates `T_k` from `node_usage` rather than synthetic model placeholders.
 - Per-node contract implemented after operator continuation.
   - JSONL remains one row per instance.
   - Required production schema:
-    `{task_id, understand_spec, plan, generate_tests, implement, repair,
-    node_usage}`.
-  - `understand_spec` is the model-produced `spec_struct`.
-  - `plan` is the model-produced `plan_struct`.
-  - `generate_tests` is the model-produced `test_suite` with `tests` and
-    `rationale`.
-  - `implement` is an object with at least `{completion, notes}`.
-  - `repair` is an object with at least `{completion, repair_summary}`.
-  - `node_usage` maps each model node to `{calls, tokens_in, tokens_out,
-    total_tokens, wall_ms, model, reasoning_effort, transport}` and is used for
-    `T_k`.
+    `{task_id, spec_struct, plan_struct, test_suite, completion,
+    repaired_completion, selected_completion, node_usage}`.
+  - `spec_struct` is the model-produced `understand_spec` node output.
+  - `plan_struct` is the model-produced `plan` node output.
+  - `test_suite` is the model-produced `generate_tests` node output with
+    `tests` and `rationale`.
+  - `completion` is the model-produced `implement` node output.
+  - `repaired_completion` is the model-produced `repair` node output.
+  - `selected_completion` is the completion selected by the aggregate step.
+  - `node_usage` maps each model node to `{prompt_tokens,
+    completion_tokens, calls, wall_ms}` plus optional `total_tokens`, `model`,
+    `reasoning_effort`, `transport`, and token split provenance. Model-node
+    `T_k` is computed from the recorded tokens, real call count, and real wall
+    time; deterministic nodes report `calls=0` and real wall time.
   - `run_orchestration_instance` now feeds each node its own state:
-    `check_understand_spec` sees the model `understand_spec`, `check_generate_tests`
-    sees model tests run on the implement completion, `check_implement` sees the
-    implement completion, and `check_repair` sees the repair completion.
+    `check_understand_spec` sees `spec_struct`, `check_generate_tests` sees
+    `test_suite` run on `completion`, `check_implement` sees `completion`, and
+    `check_repair` sees `repaired_completion`.
   - `seed_solve` and `online_loop` now load per-node records via
     `load_node_record_map`; flat `{task_id, completion}` rows are no longer the
     production contract.
@@ -171,19 +172,36 @@ the HumanEval Step 1 plan and governs the implementation.
 - Stratified mini-smoke support implemented:
   - `runners/select_subset.py --limit 9` writes leakage-safe public/verifier
     subset files.
+  - `runners/validate_node_records.py` checks coverage, distinct handoff
+    states, unchanged-repair status, and non-placeholder `node_usage`.
   - Synthetic per-node record validation passed with 3 covered ids and
     `mock_default_count=0`.
   - `metrics.compute_step1` now reports offline gold-diagnostic agreement for
     nodes with `check_*_gold` diagnostics (`understand_spec`,
     `generate_tests`).
+- Approved-schema validation:
+  - Synthetic records with
+    `{task_id, spec_struct, plan_struct, test_suite, completion,
+    repaired_completion, selected_completion, node_usage}` load successfully.
+  - `online_loop --limit 3 --completion-jsonl /tmp/approved_node_records_3.jsonl`
+    completed with `mock_default_count=0`.
+  - After replacing model-node call placeholders with real `node_usage.calls`,
+    `metrics.compute_step1` on the synthetic traces reported per-node cost
+    summaries and non-zero oracle discrimination
+    (`inference_oracle_discriminating_fraction=0.125`) for the fixture,
+    confirming the plumbing can observe distinct handoff states. This is not a
+    production model signal.
+  - `runners.validate_node_records --records /tmp/approved_node_records_3.jsonl`
+    passed.
 - Real mini-smoke remains blocked before model calls because `SEED_MODEL` and
-  `NODE_MODEL` are unset in this shell. `generate_completions --role seed`
-  stops with: `Missing model configuration: set SEED_MODEL or pass --config
-  with seed_model.`
+  `NODE_MODEL` are unset in this shell. `generate_completions --role cheap`
+  stops with: `Missing model configuration: set NODE_MODEL or pass --config
+  with node_model.`
 
 ## Current Milestone
 
-Blocked before real mini-smoke on missing Codex-suite model ids.
+Blocked before real mini-smoke on missing Codex-suite model ids. No full
+164-instance loop was run and no SLURM job was submitted.
 
 ## Open Questions
 
@@ -220,10 +238,18 @@ python -m runners.generate_completions \
   --instances step1/data/humaneval_public_smoke_stratified.jsonl \
   --output step1/logs/seed_solver_completions_smoke.jsonl
 
+python -m runners.validate_node_records \
+  --instances step1/data/humaneval_public_smoke_stratified.jsonl \
+  --records step1/logs/seed_solver_completions_smoke.jsonl
+
 python -m runners.generate_completions \
   --role cheap \
   --instances step1/data/humaneval_public_smoke_stratified.jsonl \
   --output step1/logs/cheap_node_completions_smoke.jsonl
+
+python -m runners.validate_node_records \
+  --instances step1/data/humaneval_public_smoke_stratified.jsonl \
+  --records step1/logs/cheap_node_completions_smoke.jsonl
 
 python -m runners.seed_solve \
   --instances step1/data/humaneval_public_smoke_stratified.jsonl \
@@ -259,9 +285,13 @@ python -m runners.routing --profile step1/profile/task_profile.json --output ste
 python -m runners.generate_completions \
   --role seed \
   --output step1/logs/seed_solver_completions.jsonl
+python -m runners.validate_node_records \
+  --records step1/logs/seed_solver_completions.jsonl
 python -m runners.generate_completions \
   --role cheap \
   --output step1/logs/cheap_node_completions.jsonl
+python -m runners.validate_node_records \
+  --records step1/logs/cheap_node_completions.jsonl
 python -m runners.seed_solve \
   --completion-jsonl step1/logs/seed_solver_completions.jsonl \
   --output step1/logs/seed_solve_traces.jsonl
@@ -294,9 +324,13 @@ python -m runners.routing --profile step1/profile/task_profile.json --output ste
 python -m runners.generate_completions \
   --role seed \
   --output step1/logs/seed_solver_completions.jsonl
+python -m runners.validate_node_records \
+  --records step1/logs/seed_solver_completions.jsonl
 python -m runners.generate_completions \
   --role cheap \
   --output step1/logs/cheap_node_completions.jsonl
+python -m runners.validate_node_records \
+  --records step1/logs/cheap_node_completions.jsonl
 python -m runners.seed_solve \
   --completion-jsonl step1/logs/seed_solver_completions.jsonl \
   --output step1/logs/seed_solve_traces.jsonl

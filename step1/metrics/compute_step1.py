@@ -78,6 +78,23 @@ def _mean(values: list[float]) -> float:
     return statistics.fmean(values) if values else 0.0
 
 
+def _per_node_cost_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        grouped[str(row.get("node_id", "unknown"))].append(row)
+    summary: dict[str, Any] = {}
+    for node_id, node_rows in sorted(grouped.items()):
+        summary[node_id] = {
+            "observations": len(node_rows),
+            "mean_T_k": _mean([float(row.get("T_k", 0.0)) for row in node_rows]),
+            "mean_prompt_tokens": _mean([float(row.get("tokens_in", 0.0)) for row in node_rows]),
+            "mean_completion_tokens": _mean([float(row.get("tokens_out", 0.0)) for row in node_rows]),
+            "mean_calls": _mean([float(row.get("calls", 0.0)) for row in node_rows]),
+            "mean_wall_ms": _mean([float(row.get("wall_ms", 0.0)) for row in node_rows]),
+        }
+    return summary
+
+
 def _oracle_discrimination(payload: dict[str, Any], rows: list[dict[str, Any]]) -> dict[str, Any]:
     node_oracle_kind = {
         node["id"]: node["oracle"]["inference"]["kind"] for node in payload["roles_and_dag"]["nodes"]
@@ -229,11 +246,13 @@ def compute(
             "instances": len(orch_summaries),
             "pass_at_1": sum(1 for row in orch_summaries if row["pass"]) / len(orch_summaries) if orch_summaries else 0.0,
             "mean_U": orch_mean_U,
+            "per_node_cost": _per_node_cost_summary(orchestration_rows),
         },
         "single_agent_baseline": {
             "instances": len(base_summaries),
             "pass_at_1": sum(1 for row in base_summaries if row["pass"]) / len(base_summaries) if base_summaries else 0.0,
             "mean_U": base_mean_U,
+            "per_node_cost": _per_node_cost_summary(baseline_rows),
         },
         "canonical_solution_usage_audit": {
             "live_solving_uses_canonical_solution": False,

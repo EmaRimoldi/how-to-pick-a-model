@@ -18,6 +18,15 @@ from runners.sandbox import run_generated_tests, run_public_examples, run_termin
 
 FORBIDDEN_SOLVING_FIELDS = {"canonical_solution", "test"}
 MODEL_NODE_IDS = ("understand_spec", "plan", "generate_tests", "implement", "repair")
+REQUIRED_HANDOFF_FIELDS = (
+    "spec_struct",
+    "plan_struct",
+    "test_suite",
+    "completion",
+    "repaired_completion",
+    "selected_completion",
+    "node_usage",
+)
 
 
 def assert_public_solving_instance(instance: dict[str, Any], *, context: str) -> None:
@@ -82,22 +91,20 @@ def load_node_record_map(path: str | None) -> dict[str, dict[str, Any]]:
 def _validate_node_record(row: dict[str, Any]) -> None:
     if "task_id" not in row:
         raise ValueError(f"Per-node record is missing task_id: {row}")
-    missing = [node_id for node_id in MODEL_NODE_IDS if node_id not in row]
+    missing = [field for field in REQUIRED_HANDOFF_FIELDS if field not in row]
     if missing:
-        raise ValueError(f"Per-node record for {row.get('task_id')!r} is missing node field(s): {missing}")
-    if not isinstance(row["understand_spec"], dict):
-        raise ValueError(f"understand_spec must be an object for {row['task_id']!r}")
-    if not isinstance(row["plan"], dict):
-        raise ValueError(f"plan must be an object for {row['task_id']!r}")
-    if not isinstance(row["generate_tests"], dict):
-        raise ValueError(f"generate_tests must be an object for {row['task_id']!r}")
-    for node_id in ("implement", "repair"):
-        node_payload = row[node_id]
-        if not isinstance(node_payload, dict):
-            raise ValueError(f"{node_id} must be an object for {row['task_id']!r}")
-        completion = node_payload.get("completion")
-        if not isinstance(completion, str) or not completion.strip():
-            raise ValueError(f"{node_id}.completion is empty or non-string for {row['task_id']!r}")
+        raise ValueError(f"Per-node record for {row.get('task_id')!r} is missing handoff field(s): {missing}")
+    if not isinstance(row["spec_struct"], dict):
+        raise ValueError(f"spec_struct must be an object for {row['task_id']!r}")
+    if not isinstance(row["plan_struct"], dict):
+        raise ValueError(f"plan_struct must be an object for {row['task_id']!r}")
+    if not isinstance(row["test_suite"], dict):
+        raise ValueError(f"test_suite must be an object for {row['task_id']!r}")
+    for field in ("completion", "repaired_completion", "selected_completion"):
+        if not isinstance(row[field], str) or not row[field].strip():
+            raise ValueError(f"{field} is empty or non-string for {row['task_id']!r}")
+    if not isinstance(row["node_usage"], dict):
+        raise ValueError(f"node_usage must be an object for {row['task_id']!r}")
 
 
 def validate_completion_coverage(
@@ -157,7 +164,7 @@ def default_completion() -> str:
 def default_node_record(task_id: str) -> dict[str, Any]:
     return {
         "task_id": task_id,
-        "understand_spec": {
+        "spec_struct": {
             "signature": {"name": None, "args": []},
             "docstring_summary": "",
             "input_types": [],
@@ -166,22 +173,23 @@ def default_node_record(task_id: str) -> dict[str, Any]:
             "edge_cases": [],
             "invariants": [],
         },
-        "plan": {"algorithm": "", "cases": [], "complexity": "", "implementation_notes": []},
-        "generate_tests": {"tests": [], "rationale": ""},
-        "implement": {"completion": default_completion(), "notes": "mock default"},
-        "repair": {"completion": default_completion(), "repair_summary": "mock default"},
+        "plan_struct": {"algorithm": "", "cases": [], "complexity": "", "implementation_notes": []},
+        "test_suite": {"tests": [], "rationale": ""},
+        "completion": default_completion(),
+        "repaired_completion": default_completion(),
+        "selected_completion": default_completion(),
+        "repair_status": "mock_default",
+        "completion_notes": "mock default",
+        "repair_summary": "mock default",
         "node_usage": {},
     }
 
 
 def completion_from_record(record: dict[str, Any], *, prefer_repair: bool = False) -> str:
-    if prefer_repair:
-        repair = record.get("repair", {})
-        if isinstance(repair, dict) and isinstance(repair.get("completion"), str) and repair["completion"].strip():
-            return repair["completion"]
-    implement = record.get("implement", {})
-    if isinstance(implement, dict) and isinstance(implement.get("completion"), str) and implement["completion"].strip():
-        return implement["completion"]
+    if prefer_repair and isinstance(record.get("selected_completion"), str) and record["selected_completion"].strip():
+        return record["selected_completion"]
+    if isinstance(record.get("completion"), str) and record["completion"].strip():
+        return record["completion"]
     return default_completion()
 
 
@@ -287,7 +295,7 @@ def _trace(
         "calls": calls,
         "wall_ms": wall_ms,
         "verifier_calls": verifier_calls,
-        "T_k": tokens_in + tokens_out + verifier_calls + wall_ms / 1000.0,
+        "T_k": tokens_in + tokens_out + calls + verifier_calls + wall_ms / 1000.0,
         "oracle_passed": None if oracle is None else bool(oracle.get("passed")),
         "oracle": oracle,
         "terminal_pass": terminal_pass,
@@ -303,17 +311,17 @@ def _node_usage(record: dict[str, Any], node_id: str) -> dict[str, Any]:
     return node_usage if isinstance(node_usage, dict) else {}
 
 
-def _usage_trace_kwargs(record: dict[str, Any], node_id: str, *, default_calls: int) -> dict[str, Any]:
+def _usage_trace_kwargs(record: dict[str, Any], node_id: str) -> dict[str, Any]:
     usage = _node_usage(record, node_id)
-    tokens_in = int(usage.get("tokens_in") or usage.get("input_tokens") or usage.get("prompt_tokens") or 0)
-    tokens_out = int(usage.get("tokens_out") or usage.get("output_tokens") or usage.get("completion_tokens") or 0)
+    tokens_in = int(usage.get("prompt_tokens") or usage.get("tokens_in") or usage.get("input_tokens") or 0)
+    tokens_out = int(usage.get("completion_tokens") or usage.get("tokens_out") or usage.get("output_tokens") or 0)
     total_tokens = int(usage.get("total_tokens") or 0)
     if total_tokens and not (tokens_in or tokens_out):
         tokens_in = total_tokens
     return {
         "tokens_in": tokens_in,
         "tokens_out": tokens_out,
-        "calls": int(usage.get("calls") or default_calls),
+        "calls": int(usage.get("calls") or 0),
         "wall_ms_override": int(usage["wall_ms"]) if "wall_ms" in usage else None,
     }
 
@@ -340,7 +348,7 @@ def run_baseline_instance(
         oracle=None,
         terminal_pass=terminal.passed,
         verifier_calls=1,
-        **_usage_trace_kwargs(node_record, "implement", default_calls=1),
+        **_usage_trace_kwargs(node_record, "implement"),
     )
     trace["sandbox"] = terminal.payload
     return terminal.passed, [trace]
@@ -374,7 +382,7 @@ def run_orchestration_instance(
     )
 
     started = time.perf_counter()
-    spec = node_record["understand_spec"]
+    spec = node_record["spec_struct"]
     spec_oracle = check_understand_spec(instance, {"spec_struct": spec})
     traces.append(
         _trace(
@@ -386,14 +394,14 @@ def run_orchestration_instance(
             started=started,
             state={"spec_struct": spec},
             oracle=spec_oracle,
-            **_usage_trace_kwargs(node_record, "understand_spec", default_calls=1),
+            **_usage_trace_kwargs(node_record, "understand_spec"),
         )
     )
 
     plan = {}
     if "plan" in route["path"]:
         started = time.perf_counter()
-        plan = node_record["plan"]
+        plan = node_record["plan_struct"]
         traces.append(
             _trace(
                 run_id=run_id,
@@ -404,16 +412,15 @@ def run_orchestration_instance(
                 started=started,
                 state={"plan_struct": plan},
                 oracle={"passed": None, "kind": "rubric", "reason": "not_scored_in_smoke"},
-                **_usage_trace_kwargs(node_record, "plan", default_calls=1),
+                **_usage_trace_kwargs(node_record, "plan"),
             )
         )
 
     tests: list[str] = []
-    implementation = node_record["implement"]
     completion = completion_from_record(node_record, prefer_repair=False)
     if "generate_tests" in route["path"]:
         started = time.perf_counter()
-        generated_payload = node_record["generate_tests"]
+        generated_payload = node_record["test_suite"]
         tests = list(generated_payload.get("tests", [])) if isinstance(generated_payload, dict) else []
         test_oracle = check_generate_tests(
             instance,
@@ -429,7 +436,7 @@ def run_orchestration_instance(
                 started=started,
                 state={"test_suite": {"tests": tests}},
                 oracle=test_oracle,
-                **_usage_trace_kwargs(node_record, "generate_tests", default_calls=1),
+                **_usage_trace_kwargs(node_record, "generate_tests"),
             )
         )
 
@@ -443,9 +450,9 @@ def run_orchestration_instance(
             node_type="llm",
             model_tier=route["model_tier"],
             started=started,
-            state={"candidate_completion": completion, "notes": implementation.get("notes", "")},
+            state={"candidate_completion": completion, "notes": node_record.get("completion_notes", "")},
             oracle=implement_oracle,
-            **_usage_trace_kwargs(node_record, "implement", default_calls=1),
+            **_usage_trace_kwargs(node_record, "implement"),
         )
     )
 
@@ -476,9 +483,7 @@ def run_orchestration_instance(
     repaired_completion = completion
     if (not terminal_result.passed) and "repair" in route["path"]:
         started = time.perf_counter()
-        repair_payload = node_record["repair"]
-        if isinstance(repair_payload, dict) and isinstance(repair_payload.get("completion"), str):
-            repaired_completion = repair_payload["completion"]
+        repaired_completion = str(node_record["repaired_completion"])
         repair_oracle = check_repair(
             instance,
             {"candidate_completion": repaired_completion, "test_suite": {"tests": tests}},
@@ -493,10 +498,11 @@ def run_orchestration_instance(
                 started=started,
                 state={
                     "candidate_completion": repaired_completion,
-                    "repair_summary": repair_payload.get("repair_summary", ""),
+                    "repair_summary": node_record.get("repair_summary", ""),
+                    "repair_status": node_record.get("repair_status", "unknown"),
                 },
                 oracle=repair_oracle,
-                **_usage_trace_kwargs(node_record, "repair", default_calls=1),
+                **_usage_trace_kwargs(node_record, "repair"),
             )
         )
         started = time.perf_counter()
@@ -524,6 +530,7 @@ def run_orchestration_instance(
         )
 
     started = time.perf_counter()
+    selected_completion = str(node_record.get("selected_completion") or repaired_completion)
     traces.append(
         _trace(
             run_id=run_id,
@@ -533,8 +540,11 @@ def run_orchestration_instance(
             model_tier="deterministic",
             started=started,
             state={
-                "selected_completion_chars": len(repaired_completion),
-                "selection_reason": "repair" if repaired_completion != completion else "implement",
+                "selected_completion_chars": len(selected_completion),
+                "selection_reason": node_record.get(
+                    "selection_reason",
+                    "repair" if selected_completion != completion else "implement",
+                ),
             },
             oracle=None,
             terminal_pass=final_terminal_result.passed,
