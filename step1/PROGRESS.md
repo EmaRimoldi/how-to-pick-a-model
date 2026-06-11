@@ -1,0 +1,60 @@
+# Step 1 Progress
+
+Source of truth: `swebench/step_1_induction/PLAN.md`. The prompt requested a
+co-located `PLAN.md`; none exists at the repository root, but this file contains
+the HumanEval Step 1 plan and governs the implementation.
+
+## Done
+
+- Verified requested arXiv identifiers:
+  - FlowMind: `2602.11782`
+  - TDAG: `2402.10178`
+- Activated the existing project `.venv`.
+- Scaffolded `step1/{data,blocks,profile,artifact,oracles,runners,logs,metrics,prompts}`.
+- Phase A: created `blocks/library.yaml` with typed orchestration operators,
+  I/O contracts, model tier policies, valid edges, default routing paths, and
+  `U(h) = R * pass - c * sum(T_k)` accounting.
+
+## Current Milestone
+
+Phase A validation.
+
+## Open Questions
+
+- Concrete production model strings and credentials are not needed for the
+  deterministic smoke path. Full LLM-backed SELECT/ADAPT/IMPLEMENT and live
+  solving will require operator-provided model routing or environment variables.
+
+## Full-Run Command For Operator
+
+Do not run this during implementation:
+
+```bash
+source .venv/bin/activate
+PYTHONPATH=step1:. python -m runners.profile
+PYTHONPATH=step1:. python -m runners.self_discover --profile step1/profile/task_profile.json
+PYTHONPATH=step1:. python -m runners.online_loop
+PYTHONPATH=step1:. python -m metrics.compute_step1
+```
+
+SLURM template:
+
+```bash
+#!/usr/bin/env bash
+#SBATCH --job-name=humaneval-step1
+#SBATCH --output=step1/logs/slurm-%j.out
+#SBATCH --error=step1/logs/slurm-%j.err
+#SBATCH --time=04:00:00
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=16G
+
+set -euo pipefail
+cd /home/erimoldi/openclaw_remote/projects/NeurIPS_2026
+source .venv/bin/activate
+export PYTHONPATH=step1:.
+
+python -m runners.profile
+python -m runners.self_discover --profile step1/profile/task_profile.json
+python -m runners.online_loop
+python -m metrics.compute_step1
+```

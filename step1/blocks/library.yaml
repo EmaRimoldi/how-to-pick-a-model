@@ -1,0 +1,250 @@
+version: 1
+task: humaneval
+source_plan: swebench/step_1_induction/PLAN.md
+description: >
+  Closed typed operator library for inducing a reusable HumanEval orchestration.
+  The library is the Phase-A search space: later phases may select, adapt, route,
+  or prune these blocks, but should not invent untyped nodes.
+
+model_tiers:
+  meta_design:
+    intended_model: gpt-5.5
+    reasoning_effort: xhigh
+    allowed_volume: low
+    usage: SELECT, ADAPT, IMPLEMENT, oracle synthesis
+  seed_solver:
+    intended_model: top_or_mid
+    reasoning_effort: high
+    allowed_volume: low
+    usage: verifier-only successful traces for AWM induction
+  node_agent:
+    intended_model: cheap_fast
+    reasoning_effort: low
+    allowed_volume: high
+    usage: live per-instance orchestration and Phase-F baseline
+  node_agent_hard:
+    intended_model: mid
+    reasoning_effort: low
+    allowed_volume: routed_only
+    usage: hard-cluster instances selected by DAAO routing
+  deterministic:
+    intended_model: none
+    reasoning_effort: none
+    allowed_volume: high
+    usage: route, run_tests, aggregate
+
+common_inputs:
+  problem_prompt:
+    type: string
+    description: HumanEval prompt containing signature and docstring only.
+    leakage_policy: no canonical_solution
+  entry_point:
+    type: string
+    description: Name of the function to verify.
+  public_examples:
+    type: list
+    description: Doctest-style examples parsed from problem_prompt.
+  profile_features:
+    type: object
+    description: Leakage-safe features extracted from the prompt stream.
+
+operators:
+  - id: understand_spec
+    type: llm
+    role: spec_parser
+    model_tier: node_agent
+    io_contract:
+      inputs: [problem_prompt, entry_point, public_examples]
+      outputs: [spec_struct]
+      output_schema:
+        signature: string
+        docstring_summary: string
+        input_types: list
+        output_type: string
+        examples: list
+        edge_cases: list
+        invariants: list
+    allowed_signals: [problem_prompt, public_examples]
+    forbidden_signals: [canonical_solution]
+    oracle:
+      inference: {kind: code, ref: oracles/check_understand_spec.py}
+      diagnostic: {kind: code, ref: oracles/check_understand_spec_gold.py}
+    cost_keys: [tokens_in, tokens_out, calls, wall_ms]
+
+  - id: plan
+    type: llm
+    role: solution_planner
+    model_tier: node_agent
+    io_contract:
+      inputs: [spec_struct]
+      outputs: [plan_struct]
+      output_schema:
+        algorithm: string
+        cases: list
+        complexity: string
+        implementation_notes: list
+    allowed_signals: [problem_prompt, public_examples, spec_struct]
+    forbidden_signals: [canonical_solution]
+    oracle:
+      inference: {kind: rubric, ref: oracles/check_plan_rubric.yaml}
+      diagnostic: {kind: terminal}
+    cost_keys: [tokens_in, tokens_out, calls, wall_ms]
+
+  - id: generate_tests
+    type: llm
+    role: test_designer
+    model_tier: node_agent
+    io_contract:
+      inputs: [spec_struct, plan_struct, public_examples]
+      outputs: [test_suite]
+      output_schema:
+        tests: list
+        rationale: string
+    allowed_signals: [problem_prompt, public_examples, spec_struct, plan_struct]
+    forbidden_signals: [canonical_solution]
+    oracle:
+      inference: {kind: code, ref: oracles/check_generate_tests.py}
+      diagnostic: {kind: code, ref: oracles/check_generate_tests_gold.py}
+    cost_keys: [tokens_in, tokens_out, calls, wall_ms]
+
+  - id: implement
+    type: llm
+    role: coder
+    model_tier: node_agent
+    io_contract:
+      inputs: [problem_prompt, spec_struct, plan_struct, test_suite]
+      outputs: [candidate_completion]
+      output_schema:
+        completion: string
+        notes: string
+    allowed_signals: [problem_prompt, public_examples, spec_struct, plan_struct, test_suite]
+    forbidden_signals: [canonical_solution]
+    oracle:
+      inference: {kind: code, ref: oracles/check_implement.py}
+      diagnostic: {kind: terminal}
+    cost_keys: [tokens_in, tokens_out, calls, wall_ms]
+
+  - id: run_tests
+    type: code
+    role: verifier
+    model_tier: deterministic
+    io_contract:
+      inputs: [problem_prompt, candidate_completion, test_suite, entry_point]
+      outputs: [test_result]
+      output_schema:
+        public_examples_pass: boolean
+        generated_tests_pass: boolean
+        terminal_pass: boolean
+        failures: list
+    allowed_signals: [problem_prompt, public_examples, candidate_completion, test_suite]
+    forbidden_signals: [canonical_solution]
+    oracle:
+      inference: {kind: terminal}
+      diagnostic: {kind: terminal}
+    cost_keys: [wall_ms, verifier_calls]
+
+  - id: repair
+    type: llm
+    role: repairer
+    model_tier: node_agent_hard
+    io_contract:
+      inputs: [problem_prompt, spec_struct, plan_struct, candidate_completion, test_result]
+      outputs: [candidate_completion]
+      output_schema:
+        completion: string
+        repair_summary: string
+    allowed_signals: [problem_prompt, public_examples, spec_struct, plan_struct, candidate_completion, test_result]
+    forbidden_signals: [canonical_solution]
+    oracle:
+      inference: {kind: code, ref: oracles/check_repair.py}
+      diagnostic: {kind: terminal}
+    cost_keys: [tokens_in, tokens_out, calls, wall_ms]
+
+  - id: aggregate
+    type: code
+    role: selector
+    model_tier: deterministic
+    io_contract:
+      inputs: [candidate_completions, test_results]
+      outputs: [selected_completion]
+      output_schema:
+        completion: string
+        selection_reason: string
+    allowed_signals: [candidate_completions, test_results]
+    forbidden_signals: [canonical_solution]
+    oracle:
+      inference: {kind: terminal}
+      diagnostic: {kind: terminal}
+    cost_keys: [wall_ms]
+
+  - id: route
+    type: code
+    role: router
+    model_tier: deterministic
+    io_contract:
+      inputs: [profile_features, public_examples]
+      outputs: [route_decision]
+      output_schema:
+        difficulty: string
+        path: list
+        repair_rounds: integer
+        model_tier: string
+    allowed_signals: [problem_prompt, public_examples, profile_features]
+    forbidden_signals: [canonical_solution]
+    oracle:
+      inference: {kind: code, ref: oracles/check_route.py}
+      diagnostic: {kind: terminal}
+    cost_keys: [wall_ms]
+
+  - id: reflect_verify
+    type: llm
+    role: reviewer
+    model_tier: node_agent_hard
+    io_contract:
+      inputs: [problem_prompt, spec_struct, candidate_completion, test_result]
+      outputs: [review]
+      output_schema:
+        risk_flags: list
+        suggested_fix: string
+        confidence: number
+    allowed_signals: [problem_prompt, public_examples, spec_struct, candidate_completion, test_result]
+    forbidden_signals: [canonical_solution]
+    oracle:
+      inference: {kind: rubric, ref: oracles/check_reflect_verify_rubric.yaml}
+      diagnostic: {kind: terminal}
+    cost_keys: [tokens_in, tokens_out, calls, wall_ms]
+
+valid_edges:
+  - [route, understand_spec]
+  - [understand_spec, plan]
+  - [understand_spec, implement]
+  - [understand_spec, generate_tests]
+  - [plan, generate_tests]
+  - [plan, implement]
+  - [generate_tests, implement]
+  - [implement, run_tests]
+  - [run_tests, repair]
+  - [repair, run_tests]
+  - [run_tests, aggregate]
+  - [run_tests, reflect_verify]
+  - [reflect_verify, repair]
+
+default_paths:
+  easy:
+    path: [route, understand_spec, implement, run_tests]
+    repair_rounds: 0
+    model_tier: cheap_fast
+  medium:
+    path: [route, understand_spec, plan, implement, run_tests, repair]
+    repair_rounds: 1
+    model_tier: cheap_fast
+  hard:
+    path: [route, understand_spec, plan, generate_tests, implement, run_tests, repair]
+    repair_rounds: 2
+    model_tier: mid
+
+utility:
+  R: 1.0
+  c: 0.00001
+  U: "R * pass - c * sum(T_k)"
+  T: "sum(T_k)"
