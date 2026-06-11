@@ -16,6 +16,25 @@ from oracles.common import function_signature, public_examples
 from runners.sandbox import run_generated_tests, run_public_examples, run_terminal_verifier
 
 
+FORBIDDEN_SOLVING_FIELDS = {"canonical_solution", "test"}
+
+
+def assert_public_solving_instance(instance: dict[str, Any], *, context: str) -> None:
+    forbidden = sorted(FORBIDDEN_SOLVING_FIELDS.intersection(instance))
+    if forbidden:
+        raise ValueError(f"{context} received non-public solving fields: {forbidden}")
+
+
+def verifier_instance_from_public(instance: dict[str, Any], verifier_test: str) -> dict[str, Any]:
+    assert_public_solving_instance(instance, context="verifier_instance_from_public")
+    return {
+        "task_id": instance["task_id"],
+        "prompt": instance["prompt"],
+        "entry_point": instance["entry_point"],
+        "test": verifier_test,
+    }
+
+
 def load_completion_map(path: str | None) -> dict[str, str]:
     if path is None:
         return {}
@@ -28,8 +47,40 @@ def load_completion_map(path: str | None) -> dict[str, str]:
             if not line.strip():
                 continue
             row = json.loads(line)
+            if "task_id" not in row or "completion" not in row:
+                raise ValueError(f"Completion row must contain task_id and completion keys: {row}")
+            task_id = str(row["task_id"])
+            if task_id in completions:
+                raise ValueError(f"Duplicate completion row for task_id {task_id!r}")
+            if not isinstance(row["completion"], str) or not row["completion"].strip():
+                raise ValueError(f"Completion for task_id {task_id!r} is empty or non-string")
             completions[str(row["task_id"])] = str(row["completion"])
     return completions
+
+
+def validate_completion_coverage(
+    *,
+    instances: list[dict[str, Any]],
+    completions: dict[str, str],
+    completion_jsonl: str | None,
+    allow_mock: bool,
+) -> None:
+    task_ids = [str(instance["task_id"]) for instance in instances]
+    missing = sorted(task_id for task_id in task_ids if task_id not in completions)
+    extra = sorted(task_id for task_id in completions if task_id not in set(task_ids))
+    if missing and not allow_mock:
+        raise ValueError(
+            "Completion coverage check failed: "
+            f"{len(missing)} missing task_id(s) in {completion_jsonl!r}; first missing={missing[:10]}"
+        )
+    if extra:
+        print(
+            {
+                "warning": "completion_jsonl_contains_extra_task_ids",
+                "extra_count": len(extra),
+                "first_extra": extra[:10],
+            }
+        )
 
 
 def default_completion() -> str:
@@ -148,11 +199,13 @@ def _trace(
 def run_baseline_instance(
     *,
     instance: dict[str, Any],
+    verifier_test: str,
     completion: str,
     run_id: str,
 ) -> tuple[bool, list[dict[str, Any]]]:
+    assert_public_solving_instance(instance, context="run_baseline_instance")
     started = time.perf_counter()
-    terminal = run_terminal_verifier(instance, completion)
+    terminal = run_terminal_verifier(verifier_instance_from_public(instance, verifier_test), completion)
     trace = _trace(
         run_id=run_id,
         task_id=instance["task_id"],
@@ -173,10 +226,12 @@ def run_baseline_instance(
 def run_orchestration_instance(
     *,
     instance: dict[str, Any],
+    verifier_test: str,
     profile_feature: dict[str, Any],
     completion: str,
     run_id: str,
 ) -> tuple[bool, list[dict[str, Any]]]:
+    assert_public_solving_instance(instance, context="run_orchestration_instance")
     traces: list[dict[str, Any]] = []
 
     started = time.perf_counter()
@@ -271,7 +326,7 @@ def run_orchestration_instance(
     started = time.perf_counter()
     public_result = run_public_examples(instance, completion)
     generated_result = run_generated_tests(instance, completion, tests) if tests else None
-    terminal_result = run_terminal_verifier(instance, completion)
+    terminal_result = run_terminal_verifier(verifier_instance_from_public(instance, verifier_test), completion)
     traces.append(
         _trace(
             run_id=run_id,
@@ -327,4 +382,3 @@ def run_orchestration_instance(
         )
     )
     return terminal_result.passed, traces
-

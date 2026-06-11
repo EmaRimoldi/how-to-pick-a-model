@@ -60,10 +60,39 @@ the HumanEval Step 1 plan and governs the implementation.
     `baseline_mean_U=-1.0926666666666667e-05`)
   - this is expected for dummy completions; production Phase F must resume after
     real cheap-node and seed-solver completions/model routing are available
+- Continuation: confirmed the runner completion contract in
+  `runners/workflow.py`.
+  - JSONL schema is one object per line.
+  - Required keys: `task_id: str`, `completion: str`.
+  - `completion` is a single HumanEval function-body continuation string to
+    append directly after `prompt`; it is not a per-node dictionary.
+  - Extra keys such as `role`, `model`, `usage`, and `raw_completion` are
+    allowed and ignored by `load_completion_map`.
+- Continuation: added `runners/generate_completions.py`.
+  - This is the only Step-1 file that performs model/API access.
+  - It reads public instances from `step1/data/humaneval_public.jsonl`.
+  - It asserts public solving inputs do not contain `test` or
+    `canonical_solution`.
+  - It resolves model/backend settings from environment variables or an
+    optional JSON/YAML config; no model strings or credentials are hardcoded.
+- Continuation: enforced production coverage/no-mock guards.
+  - `seed_solve` and `online_loop` now default to public instances and take
+    verifier tests separately via `--verifier-instances`.
+  - Missing completion coverage now fails unless `--allow-mock` is explicitly
+    passed for development.
+  - Runner summaries report `mock_default_count`; production runs must be zero.
+- Continuation guard validation:
+  - `generate_completions --role cheap --limit 1` stopped before API access
+    because `NODE_MODEL`, `OPENAI_API_KEY`, and `OPENAI_BASE_URL` are unset.
+  - `seed_solve --limit 3 --allow-mock` and
+    `online_loop --limit 3 --allow-mock` still work for dev-only smoke.
+  - `online_loop --limit 3` without a completion file fails loudly.
+  - `online_loop --limit 3 --completion-jsonl /tmp/completions_3.jsonl`
+    completed with `mock_default_count=0`.
 
 ## Current Milestone
 
-Phase F commit.
+Blocked before real model-backed mini-smoke.
 
 ## Open Questions
 
@@ -75,6 +104,48 @@ Phase F commit.
   1. `python -m runners.seed_solve --completion-jsonl step1/logs/seed_solver_completions.jsonl`
   2. `python -m runners.online_loop --completion-jsonl step1/logs/cheap_node_completions.jsonl`
   3. `python -m metrics.compute_step1`
+- Real mini-smoke is blocked until the operator provides:
+  - `SEED_MODEL`
+  - `NODE_MODEL`
+  - `OPENAI_API_KEY`
+  - `OPENAI_BASE_URL`
+  - optional: `OPENAI_API_MODE=chat_completions|responses`
+
+## Real Mini-Smoke Command
+
+Run after setting backend environment variables:
+
+```bash
+source .venv/bin/activate
+export PYTHONPATH=step1:.
+
+python -m runners.generate_completions \
+  --role seed \
+  --limit 8 \
+  --output step1/logs/seed_solver_completions_smoke.jsonl
+
+python -m runners.generate_completions \
+  --role cheap \
+  --limit 8 \
+  --output step1/logs/cheap_node_completions_smoke.jsonl
+
+python -m runners.seed_solve \
+  --limit 8 \
+  --completion-jsonl step1/logs/seed_solver_completions_smoke.jsonl \
+  --output step1/logs/seed_solve_smoke_real.jsonl
+
+python -m runners.online_loop \
+  --limit 8 \
+  --completion-jsonl step1/logs/cheap_node_completions_smoke.jsonl \
+  --orchestration-output step1/logs/online_loop_smoke_real.jsonl \
+  --baseline-output step1/logs/baseline_smoke_real.jsonl
+
+python -m metrics.compute_step1 \
+  --orchestration-traces step1/logs/online_loop_smoke_real.jsonl \
+  --baseline-traces step1/logs/baseline_smoke_real.jsonl \
+  --report-output step1/metrics/step1_report_smoke_real.json \
+  --curve-output step1/metrics/adaptation_curve_smoke_real.json
+```
 
 ## Full-Run Command For Operator
 
@@ -87,6 +158,12 @@ export PYTHONPATH=step1:.
 python -m runners.profile
 python -m runners.self_discover --profile step1/profile/task_profile.json
 python -m runners.routing --profile step1/profile/task_profile.json --output step1/artifact/routing_calibration.json
+python -m runners.generate_completions \
+  --role seed \
+  --output step1/logs/seed_solver_completions.jsonl
+python -m runners.generate_completions \
+  --role cheap \
+  --output step1/logs/cheap_node_completions.jsonl
 python -m runners.seed_solve \
   --completion-jsonl step1/logs/seed_solver_completions.jsonl \
   --output step1/logs/seed_solve_traces.jsonl
@@ -116,6 +193,12 @@ export PYTHONPATH=step1:.
 python -m runners.profile
 python -m runners.self_discover --profile step1/profile/task_profile.json
 python -m runners.routing --profile step1/profile/task_profile.json --output step1/artifact/routing_calibration.json
+python -m runners.generate_completions \
+  --role seed \
+  --output step1/logs/seed_solver_completions.jsonl
+python -m runners.generate_completions \
+  --role cheap \
+  --output step1/logs/cheap_node_completions.jsonl
 python -m runners.seed_solve \
   --completion-jsonl step1/logs/seed_solver_completions.jsonl \
   --output step1/logs/seed_solve_traces.jsonl
