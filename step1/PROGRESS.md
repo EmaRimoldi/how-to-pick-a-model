@@ -221,13 +221,42 @@ the HumanEval Step 1 plan and governs the implementation.
     when the candidate passes all provided feedback. A final one-instance seed
     handshake still failed with the same unchanged-failing-repair error.
   - No 8-10 instance mini-smoke, 164-instance run, or SLURM job was launched.
+- Seed repair diagnosis:
+  - Scope stayed within `HumanEval/0`, `HumanEval/1`, and `HumanEval/2`.
+  - `HumanEval/0` is a valid repair exercise in the failing seed diagnostic:
+    the implement node produced an over-indented body, and both public and
+    generated self-tests failed with `IndentationError: unexpected indent`.
+  - The exact raw repair response from `gpt-5.5` contained a corrected body and
+    repair summary. Replaying the raw body directly passes both public examples
+    and generated self-tests.
+  - Root cause was parsing/normalization, not model behavior:
+    `_strip_code_fence()` used `text.strip()`, which removed the first line's
+    leading indentation from an unfenced function body. `normalize_completion()`
+    then indented the whole block and recreated the failing over-indented body.
+  - Fix: preserve leading indentation for unfenced completions and only strip
+    indentation-insensitive wrapper text when removing an actual Markdown code
+    fence. Also avoid consuming first-line indentation after a fence header.
+  - Before/after replay on the saved `HumanEval/0` raw repair:
+    before normalization produced indent levels `[4, 8, 12, 16, 8]` and failed;
+    after the fix it produces `[4, 4, 8, 12, 4]` and passes both public and
+    generated self-tests.
+  - End-to-end seed generation for `HumanEval/0` after the parser fix completed
+    and `runners.validate_node_records` passed. In that later sample the
+    implement node already passed self-tests, so unchanged repair was correctly
+    logged as `repair_status=unchanged_candidate_passed_self_tests`.
+  - `HumanEval/1` and `HumanEval/2` also had implement completions that passed
+    public/generated self-tests, so they did not exercise repair; unchanged
+    repair was the correct no-op for both. Diagnostic logs were written under
+    `step1/logs/seed_repair_diagnostic_*.json`.
+  - Hold point: repair is verified for the observed true failing raw response,
+    but the requested 8-10 instance mini-smoke has not been started.
 
 ## Current Milestone
 
-Blocked before the real 8-10 instance mini-smoke on a seed model-output
-failure: the seed repair node returns an unchanged completion even when the
-candidate fails its public/generated self-tests. No full 164-instance loop was
-run and no SLURM job was submitted.
+Hold before the real 8-10 instance mini-smoke. The seed repair blocker was a
+parser bug and has been fixed/replayed on the only true failing repair case
+seen among `HumanEval/0-2`. No full 164-instance loop was run and no SLURM job
+was submitted.
 
 ## Open Questions
 
@@ -239,10 +268,10 @@ run and no SLURM job was submitted.
   1. `python -m runners.seed_solve --completion-jsonl step1/logs/seed_solver_completions.jsonl`
   2. `python -m runners.online_loop --completion-jsonl step1/logs/cheap_node_completions.jsonl`
   3. `python -m metrics.compute_step1`
-- Real mini-smoke is blocked until the seed repair contract is adjusted or the
-  seed model/prompt choice is changed. Current generator uses a bounded retry
-  when repair returns an unchanged failing completion; `gpt-5.5` still failed
-  that guard on `HumanEval/0`.
+- Real mini-smoke remains intentionally paused by the operator instruction:
+  start it only after review of the seed repair diagnosis. Current generator
+  still uses a bounded retry when repair returns an unchanged failing
+  completion.
 
 ## Real Mini-Smoke Command
 

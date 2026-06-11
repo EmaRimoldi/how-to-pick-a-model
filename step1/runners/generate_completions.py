@@ -261,11 +261,13 @@ def _schema_for(node_id: str) -> dict[str, Any]:
 
 
 def _strip_code_fence(text: str) -> str:
-    stripped = text.strip()
-    if stripped.startswith("```"):
-        stripped = re.sub(r"^```[A-Za-z0-9_-]*\s*", "", stripped)
-        stripped = re.sub(r"\s*```$", "", stripped)
-    return stripped.strip("\n")
+    without_outer_newlines = text.strip("\n")
+    stripped_for_fence = without_outer_newlines.strip()
+    if stripped_for_fence.startswith("```"):
+        stripped_for_fence = re.sub(r"^```[A-Za-z0-9_-]*[ \t]*(?:\r?\n)?", "", stripped_for_fence)
+        stripped_for_fence = re.sub(r"\s*```$", "", stripped_for_fence)
+        return stripped_for_fence.strip("\n")
+    return without_outer_newlines
 
 
 def _extract_full_function_body(text: str, entry_point: str) -> str | None:
