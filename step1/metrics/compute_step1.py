@@ -78,6 +78,92 @@ def _mean(values: list[float]) -> float:
     return statistics.fmean(values) if values else 0.0
 
 
+def _proper_time(summaries: list[dict[str, Any]]) -> dict[str, Any]:
+    n = len(summaries)
+    solved_times = sorted(float(row["T"]) for row in summaries if row["pass"])
+    if not n:
+        return {
+            "instances": 0,
+            "tau_bar": None,
+            "Fbar_inf": 0.0,
+            "best_budget_t": None,
+            "curve": [],
+        }
+    curve = []
+    best: dict[str, Any] | None = None
+    unique_times = sorted(set(solved_times))
+    for t in unique_times:
+        solved_within = sum(1 for value in solved_times if value <= t)
+        fbar = solved_within / n
+        tau_candidate = t / fbar if fbar else None
+        row = {
+            "t": t,
+            "solved_within_budget": solved_within,
+            "Fbar_t": fbar,
+            "t_over_Fbar_t": tau_candidate,
+        }
+        curve.append(row)
+        if tau_candidate is not None and (best is None or tau_candidate < float(best["tau_bar"])):
+            best = {"tau_bar": tau_candidate, "best_budget_t": t, "Fbar_at_best_t": fbar}
+    return {
+        "instances": n,
+        "tau_bar": None if best is None else best["tau_bar"],
+        "Fbar_inf": len(solved_times) / n,
+        "best_budget_t": None if best is None else best["best_budget_t"],
+        "Fbar_at_best_t": None if best is None else best["Fbar_at_best_t"],
+        "curve": curve,
+    }
+
+
+def _utility_for_c(summaries: list[dict[str, Any]], *, R: float, c: float) -> float:
+    return _mean([R * int(row["pass"]) - c * float(row["T"]) for row in summaries])
+
+
+def _utility_c_sweep(
+    orchestration: list[dict[str, Any]],
+    baseline: list[dict[str, Any]],
+    *,
+    R: float,
+) -> dict[str, Any]:
+    c_values = [1e-6, 1e-5, 1e-4, 1e-3]
+    rows = []
+    for c_value in c_values:
+        orch_u = _utility_for_c(orchestration, R=R, c=c_value)
+        base_u = _utility_for_c(baseline, R=R, c=c_value)
+        if orch_u > base_u:
+            winner = "orchestration"
+        elif base_u > orch_u:
+            winner = "single_agent_baseline"
+        else:
+            winner = "tie"
+        rows.append(
+            {
+                "c": c_value,
+                "orchestration_mean_U": orch_u,
+                "baseline_mean_U": base_u,
+                "winner": winner,
+            }
+        )
+    orch_pass = _mean([float(row["pass"]) for row in orchestration])
+    base_pass = _mean([float(row["pass"]) for row in baseline])
+    orch_t = _mean([float(row["T"]) for row in orchestration])
+    base_t = _mean([float(row["T"]) for row in baseline])
+    delta_pass_reward = R * (orch_pass - base_pass)
+    delta_t = orch_t - base_t
+    flip_c = None
+    if delta_t:
+        candidate = delta_pass_reward / delta_t
+        if candidate > 0:
+            flip_c = candidate
+    return {
+        "rows": rows,
+        "flip_c": flip_c,
+        "delta_pass_reward": delta_pass_reward,
+        "delta_mean_T": delta_t,
+        "note": "flip_c is the positive c where orchestration and baseline mean U are equal, if it exists.",
+    }
+
+
 def _per_node_cost_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
     grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in rows:
@@ -215,6 +301,19 @@ def compute(
     base_summaries = _summaries(baseline_rows, R=R, c=c)
     orch_mean_U = _mean([float(row["U"]) for row in orch_summaries])
     base_mean_U = _mean([float(row["U"]) for row in base_summaries])
+    proper_time = {
+        "definition": "tau_bar = inf_t t / Fbar(t), where Fbar(t) is solved-within-budget fraction over logged runs.",
+        "canonical_solution_used": False,
+        "orchestration": _proper_time(orch_summaries),
+        "single_agent_baseline": _proper_time(base_summaries),
+    }
+    orch_tau = proper_time["orchestration"]["tau_bar"]
+    base_tau = proper_time["single_agent_baseline"]["tau_bar"]
+    if orch_tau is not None and base_tau is not None:
+        proper_time["winner_lower_tau_bar"] = "orchestration" if orch_tau < base_tau else "single_agent_baseline" if base_tau < orch_tau else "tie"
+    else:
+        proper_time["winner_lower_tau_bar"] = None
+    c_sweep = _utility_c_sweep(orch_summaries, base_summaries, R=R)
     report = {
         "schema_version": 1,
         "phase": "F",
@@ -254,6 +353,8 @@ def compute(
             "mean_U": base_mean_U,
             "per_node_cost": _per_node_cost_summary(baseline_rows),
         },
+        "proper_time_diagnostic": proper_time,
+        "utility_c_sweep": c_sweep,
         "canonical_solution_usage_audit": {
             "live_solving_uses_canonical_solution": False,
             "gold_diagnostics_are_offline_only": True,
@@ -293,6 +394,14 @@ def main(argv: list[str] | None = None) -> None:
             {
                 "inference_oracle_discriminating_fraction": report["inference_oracle_discriminating_fraction"],
                 "phase_f_results": report["phase_f_results"],
+                "proper_time_diagnostic": {
+                    "orchestration_tau_bar": report["proper_time_diagnostic"]["orchestration"]["tau_bar"],
+                    "baseline_tau_bar": report["proper_time_diagnostic"]["single_agent_baseline"]["tau_bar"],
+                    "winner_lower_tau_bar": report["proper_time_diagnostic"]["winner_lower_tau_bar"],
+                    "orchestration_Fbar_inf": report["proper_time_diagnostic"]["orchestration"]["Fbar_inf"],
+                    "baseline_Fbar_inf": report["proper_time_diagnostic"]["single_agent_baseline"]["Fbar_inf"],
+                },
+                "utility_c_sweep": report["utility_c_sweep"],
             },
             indent=2,
             sort_keys=True,

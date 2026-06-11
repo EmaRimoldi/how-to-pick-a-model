@@ -1,5 +1,53 @@
 # Step 1 Progress
 
+## Recovery Report - 2026-06-11 rep42
+
+Source of truth checked: `swebench/step_1_induction/PLAN.md`.
+
+Requested git state:
+- Latest commit from `git log --oneline -10`: `6113410 Record HumanEval real mini smoke`.
+- `git status --short step1`: `M step1/metrics/compute_step1.py`.
+- The rep42 data/log files are present but ignored scratch artifacts, not shown by the default
+  Step 1 status. `git status --short --ignored step1` shows the rep42 `step1/data` files and
+  `step1/logs/` as ignored.
+
+Coverage from disk, validated with `.venv` via `uv run --no-sync` and
+`runners.validate_node_records`:
+- Seed records: 42/42. Inputs:
+  `step1/logs/seed_solver_completions_smoke.jsonl` plus
+  `step1/logs/seed_solver_completions_rep42_missing.jsonl`. Validation passed, real
+  `node_usage` present, distinct handoffs passed, `mock_default_count=0`.
+- Node records: 9/42. Input:
+  `step1/logs/cheap_node_completions_smoke.jsonl`. Validation passed for those 9 records, real
+  `node_usage` present, distinct handoffs passed, `mock_default_count=0`.
+- Missing seed task_ids: none.
+- Missing node task_ids:
+  `HumanEval/4`, `HumanEval/5`, `HumanEval/6`, `HumanEval/7`, `HumanEval/8`, `HumanEval/9`,
+  `HumanEval/10`, `HumanEval/11`, `HumanEval/12`, `HumanEval/13`, `HumanEval/14`,
+  `HumanEval/15`, `HumanEval/16`, `HumanEval/17`, `HumanEval/18`, `HumanEval/19`,
+  `HumanEval/21`, `HumanEval/22`, `HumanEval/23`, `HumanEval/24`, `HumanEval/25`,
+  `HumanEval/26`, `HumanEval/27`, `HumanEval/40`, `HumanEval/43`, `HumanEval/52`,
+  `HumanEval/58`, `HumanEval/67`, `HumanEval/68`, `HumanEval/69`, `HumanEval/71`,
+  `HumanEval/72`, `HumanEval/73`.
+
+Diagnostics status:
+- Full rep42 deterministic diagnostics were not run because cheap-node coverage is partial
+  (9/42). No model generation, no 164-run, and no SLURM job were run during recovery.
+- Metrics patch status: present only in the working tree (`M step1/metrics/compute_step1.py`),
+  not committed. The patch contains offline `tau_bar`, `Fbar(t)`, `Fbar(inf)`, and
+  `utility_c_sweep`; `PYTHONPATH=step1:. uv run --no-sync python -m py_compile
+  step1/metrics/compute_step1.py` passed.
+- Results table: not available because diagnostics did not run.
+
+Exact resume command for missing records only:
+
+```bash
+PYTHONPATH=step1:. NODE_MODEL=gpt-5.4-mini NODE_REASONING_EFFORT=low uv run --no-sync python -m runners.generate_completions \
+  --role cheap \
+  --instances step1/data/humaneval_public_smoke_rep42_missing_cheap.jsonl \
+  --output step1/logs/cheap_node_completions_rep42_missing.jsonl
+```
+
 Source of truth: `swebench/step_1_induction/PLAN.md`. The prompt requested a
 co-located `PLAN.md`; none exists at the repository root, but this file contains
 the HumanEval Step 1 plan and governs the implementation.
