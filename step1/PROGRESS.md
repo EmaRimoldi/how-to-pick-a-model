@@ -89,10 +89,61 @@ the HumanEval Step 1 plan and governs the implementation.
   - `online_loop --limit 3` without a completion file fails loudly.
   - `online_loop --limit 3 --completion-jsonl /tmp/completions_3.jsonl`
     completed with `mock_default_count=0`.
+- Task-0 per-node exercise audit completed before any model calls.
+  - Current completion contract is still one `{task_id, completion}` row per
+    instance.
+  - Nodes do not all literally receive the same state, but all model-produced
+    behavior collapses to the single final `completion` string. `route`,
+    `understand_spec`, `plan`, and `generate_tests` receive deterministic
+    prompt/profile-derived states, not model-generated handoffs. `implement`
+    receives the final completion. `repair` receives the same final completion;
+    no repaired code is generated. `aggregate` selects the same only candidate.
+  - Node audit:
+    - `route`: state is `{"route_decision": route_from_feature(profile)}`.
+      `check_route` verifies difficulty and path are allowed. `T_k` is
+      wall-clock time in `_trace`; tokens are zero, calls are zero.
+    - `understand_spec`: state is `{"spec_struct": spec_from_prompt(...)}`.
+      `check_understand_spec` verifies prompt signature/example consistency.
+      `T_k` is wall-clock plus synthetic `calls=1`; token counts are zero.
+    - `plan`: state is `{"plan_struct": plan_from_spec(spec)}`. There is no
+      executable `check_plan`; the trace stores a rubric placeholder
+      `{"passed": None, "kind": "rubric"}`. `T_k` is wall-clock plus
+      synthetic `calls=1`; token counts are zero.
+    - `generate_tests`: state is prompt-derived doctest assertions from
+      `generated_tests_from_prompt`. `check_generate_tests` inspects those
+      tests and runs them on the final `completion`; it does not inspect a
+      model-generated test artifact. `T_k` is wall-clock plus synthetic
+      `calls=1`; token counts are zero.
+    - `implement`: state records only `completion_chars`; `check_implement`
+      runs the final `completion` on public examples. `T_k` is wall-clock plus
+      synthetic `calls=1`; token counts are zero.
+    - `run_tests`: state records public/generated/terminal pass booleans.
+      There is no local oracle; terminal verifier is the check. `T_k` is
+      wall-clock plus `verifier_calls=1`.
+    - `repair`: state records the same final completion length and a mock
+      repair summary. `check_repair` runs the same final `completion` on public
+      examples and generated tests. `T_k` is wall-clock plus synthetic
+      `calls=1`; token counts are zero.
+    - `aggregate`: state records selected completion length and
+      `selection_reason="only candidate"`. There is no local oracle. `T_k` is
+      wall-clock only.
+  - Diagnosis: per-node oracle discrimination and per-node cost attribution are
+    structurally weak under the single-completion contract. A real mini-smoke
+    would measure final-code quality, not distinct per-node handoff quality.
+  - Minimal proposed fix, not yet implemented: extend the generator output to a
+    per-instance record with node-specific fields, for example
+    `{task_id, spec_struct, plan_struct, test_suite, completion,
+    repaired_completion, selected_completion, node_usage}`. Keep backward
+    compatibility by accepting legacy `{task_id, completion}` only for
+    baseline/final-code smoke, but require the richer record for Phase-F
+    per-node attribution. Then `run_orchestration_instance` should consume
+    those fields as `s_k`, run each `check_k` on its own handoff, and populate
+    `T_k` from `node_usage` rather than synthetic wall time.
 
 ## Current Milestone
 
-Blocked before real model-backed mini-smoke.
+Blocked by Task-0 per-node state collapse. Awaiting operator confirmation
+before changing the completion contract.
 
 ## Open Questions
 
@@ -110,6 +161,9 @@ Blocked before real model-backed mini-smoke.
   - `OPENAI_API_KEY`
   - `OPENAI_BASE_URL`
   - optional: `OPENAI_API_MODE=chat_completions|responses`
+- Real mini-smoke should remain blocked even if credentials are present until
+  the operator confirms whether to change the generator/runners from single
+  final-completion rows to per-node handoff records.
 
 ## Real Mini-Smoke Command
 
