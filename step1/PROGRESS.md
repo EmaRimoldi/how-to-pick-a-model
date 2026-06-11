@@ -29,10 +29,21 @@ the HumanEval Step 1 plan and governs the implementation.
 - Phase C validation passed: DAG JSON parses, Markdown YAML parses, all selected
   edges are in the Phase-A library, and utility notation is preserved as
   `U(h) = R·1[pass] − c·T(h), T(h) = Σ T_k`.
+- Phase D: implemented sandboxed execution, seed-solve runner, online-loop
+  runner, deterministic workflow helpers, inference oracles, diagnostic gold
+  oracles where applicable, and AWM/oracle-synthesis prompts.
+- Phase D validation passed:
+  - sandbox positive check: HumanEval/0 canonical completion passes public
+    examples and terminal verifier
+  - sandbox negative check: dummy completion fails terminal verifier
+  - seed-solve smoke on 3 instances completed and wrote raw traces
+  - online-loop smoke on 3 instances completed and wrote raw traces
+  - generated-test inference oracle accepts a correct candidate and rejects a
+    dummy candidate; gold diagnostic accepts the canonical solution offline
 
 ## Current Milestone
 
-Phase C commit.
+Phase D commit.
 
 ## Open Questions
 
