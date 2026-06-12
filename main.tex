@@ -221,6 +221,7 @@ of \(M\) is
     \right\}.
 \]
 \end{definition}
+\textcolor{blue}{Emanuele: The estimator should be explicit: for runs \((X_i,r_i)\), set \(\tau_i=\inf\{t:V(X_i,M(X_i;r_i))=1\}\), \(\hat F_n(t)=n^{-1}\sum_i\mathbf 1\{\tau_i\le t\}\), and \(\hat T_M(\delta)=\inf\{t:\hat F_n(t)\ge1-\delta\}\). If the success rate is below \(1-\delta\), the estimate is infinite; with \(n\approx30\), high-quantile uncertainty should be reported, e.g. via DKW or bootstrap bands.}
 The certified log-speedup of \(M\) over a baseline \(M_0\) is
 \[
     \Delta(M_0,M)
@@ -250,10 +251,12 @@ There is a finite latent mode
     S\sim\pi,
 \]
 where \(S=s\) denotes the solver-relevant bottleneck of the instance.
+\textcolor{blue}{Emanuele: Define modes structurally, not through budget. A mode should be an intrinsic solver-relevant class of instances; \(t_0(M,s)\) and \(\kappa(M,s)\) are induced by the interaction between that structure and model \(M\).}
 A start-of-run signal \(Z\) induces the posterior
 \[
     \pi_z(s):=\Pr[S=s\mid Z=z].
 \]
+\textcolor{blue}{Emanuele: \(Z\) is better described as a routing covariate or pre-deployment feature map \(\phi(x)\), in the classical algorithm-selection sense. If the router learns from calibration trajectories in context, distinguish the true posterior \(\pi_z\) from the router estimate \(\hat\pi_z\).}
 Given \(z\), a packed scheduler chooses a share vector
 \[
     q_z\in\Delta(\cS),
@@ -272,6 +275,7 @@ The packed mode-conditioned time is
 \]
 \end{assumption}
 \textcolor{blue}{Emanuele: Main weakness: once this product form is assumed, the four-term theorem is mostly algebra. The \(1/q_z(s)\) factor is a time-sharing convention, not a derived certified-time law.}
+\textcolor{blue}{Emanuele: The product form is defensible only with the right lineage and caveats: unit cost \(\times\) focused Las-Vegas/restart scale \(\times\) Levin-style time-sharing overhead. It is exact under linear cost, approximately independent retries, and processor-sharing allocation; LLM agents can violate all three.}
 
 The finite mode dictionary is the modeling assumption.  The inverse-share factor is the
 time-sharing expansion of focused certified time: if the true bottleneck is \(s\), but only
@@ -367,6 +371,7 @@ For fixed \(z\), the allocation-dependent term averages to
     H(\pi_z)+\KL(\pi_z\|q_z).
 \]
 This is the source of the information and mismatch terms.
+\textcolor{blue}{Emanuele: Separate specialization from identifiability. Specialization asks whether different modes have different cost-adjusted winners \(a^\star(s)\); identifiability asks whether \(Z\) reveals \(S\). \(I(S;Z)\) supports only the second, while the first is what justifies a model pool.}
 
 For a prior-matched baseline \((M_0,\pi)\), the packed certified log-speedup of
 \((M,q)\) is
@@ -484,6 +489,7 @@ primitive certified-time object; the former is the allocation model whose logari
 the four-term accounting.  Finite-horizon first-hit losses, occupancy losses, and paired
 deployment losses are empirical diagnostics introduced later.
 \textcolor{blue}{Emanuele: I would state this more sharply: ``exact inside the packed model'' means true by construction under Assumption~\ref{ass:packed}. The theorem does not discover the structure; the assumption puts it in.}
+\textcolor{blue}{Emanuele: For pure hard-choice routing, \(q_z\) should disappear from the deployment rule. It becomes legitimate again only when the action menu implements actual budget splitting, such as repeated sampling or portfolio retries across actions.}
 
 
 \paragraph{Retry consequence.}
@@ -1647,6 +1653,7 @@ Recommended signal-conditioned deployment policy, reported accounting terms, pai
 
 \paragraph{Panel of fixed executable settings.}
 The main experiment is a repeated-trajectory panel of fixed executable settings rather than a population draw from \(\mu\).
+\textcolor{blue}{Emanuele: Then the reported quantiles are panel diagnostics, not population certified-time estimates over \(\mu\), unless the instance-generation process is explicitly randomized.}
 Each task mode \(s\) is represented by one executable setting
 \[
 \chi_s=(A_s,D,\mathrm{split},u,\eta_s,V,B_V,H,\delta),
@@ -1662,6 +1669,7 @@ The paper-facing task modes are named by the starting model family in the editab
 They are not different datasets or different workers.
 They are evaluator-defined variants of the same CIFAR-10 edit--verify task: the dataset, split, verifier, prompt harness, horizon, and success threshold are fixed, while the initial architecture family and associated template parameters change.
 This choice makes the mode variable operationally meaningful for the theory, because different starting artifacts can change both first-passage competence \(p(a,s)\) and cost \(\kappa(a,s)\) for the same worker.
+\textcolor{blue}{Emanuele: The operational test for whether these modes matter is whether the cost-adjusted frontier changes by mode. If the same action wins for every \(s\), the modes may be real but routing is irrelevant.}
 
 \paragraph{Progressive signal records.}
 The router sees one of four nested pre-deployment records.

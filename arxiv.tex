@@ -231,9 +231,11 @@ For confidence level \(\delta\in(0,1)\), the certified time-to-solution $\overli
 \]
 \end{definition}
 \textcolor{blue}{Emanuele: This definition needs a more mechanical object before it. I would define a time- or resource-indexed artifact process \(Y_c^M(x,r)\), a scalar resource clock \(c\) (wall-clock, tokens, dollars, or a declared weighted resource), and a first-passage time \(\tau_M^\gamma(x,r)=\inf\{c:V(x,Y_c^M(x,r))\ge\gamma\}\). Then \(\overline T_M(\delta)\) is the population \((1-\delta)\)-quantile of \(\tau_M^\gamma(X,r)\), with \(\infty\) for failures. Without this, ``time'' is doing too much work.}
+\textcolor{blue}{Emanuele: The estimator should also be explicit: for runs \((X_i,r_i)\), set \(\tau_i=\inf\{t:V(X_i,M(X_i;r_i))=1\}\), \(\hat F_n(t)=n^{-1}\sum_i\mathbf 1\{\tau_i\le t\}\), and \(\hat T_M(\delta)=\inf\{t:\hat F_n(t)\ge1-\delta\}\). If the empirical success rate is below \(1-\delta\), the estimate is infinite.}
 Certified time asks how much resource is needed to reach an externally accepted artifact with high probability.
 On SWE-bench, could be interpreted as the wall-clock, token, dollar, or verifier-call budget needed for the agent to produce a patch accepted by the evaluation harness with probability at least \(1-\delta_{\mathrm{cert}}\) over the distribution $\mu$ of the task instances and the randomness of the agent system run.
 \textcolor{blue}{Emanuele: We should also distinguish population certified time from per-instance reliability. Estimating \(\overline T_M(\delta)\) needs many runs over instances drawn from \(\mu\). Estimating a per-instance \(T_M(x,\delta)\) would require repeated rollouts on the same instance. Our experiments seem closer to finite-horizon, mode-conditioned first-passage estimates than to exact certified time.}
+\textcolor{blue}{Emanuele: With small cells, quantile uncertainty should be reported. A DKW band on \(\hat F_n\) gives a direct confidence band for \(T_M(\delta)\); for \(n\approx30\), high quantiles such as 0.95 are very noisy.}
 We will call certified log-speedup of \(M \in \cM \) over a baseline \(M_0 \in \cM\) the log-difference between their certified times
 \[
     \Delta(M_0,M)
@@ -262,10 +264,12 @@ There is a finite set of latent modes
 \]
 Each instance has one mode \(S\in\cS\), with \(S\sim\pi\), where \(\pi\in\Delta(\cS)\) is the deployment prior over modes.
 The event \(S=s\) means that the current instance belongs to a subproblem type on which candidate agent systems may require different resource budgets to achieve certified success.
+\textcolor{blue}{Emanuele: I would define modes structurally, not through required budget. A mode should be an intrinsic solver-relevant class of instances; \(t_0(M,s)\) and \(\kappa(M,s)\) are consequences of the interaction between that structure and model \(M\), not the definition of the mode.}
 A start-of-run signal \(Z\) induces the posterior
 \[
     \pi_z(s):=\Pr[S=s\mid Z=z].
 \]
+\textcolor{blue}{Emanuele: Terminology: \(Z\) is closer to a routing covariate or pre-deployment feature map \(\phi(x)\) in the algorithm-selection sense. If the router learns from calibration trajectories in context, distinguish the true posterior \(\pi_z\) from the router estimate \(\hat\pi_z\); the gap is router miscalibration.}
 Given \(z\), a packed allocation rule \(q\) returns a share vector
 \[
     q_z\in\Delta(\cS),
@@ -287,6 +291,7 @@ The packed mode-conditioned time is
 \end{assumption}
 \textcolor{blue}{Emanuele: Main weakness: once this product form is assumed, the four-term theorem is mostly algebra. The \(1/q_z(s)\) factor is a time-sharing convention, not a derived certified-time law.}
 \textcolor{blue}{Emanuele: Why is the \(1/q_z(s)\) law plausible? I see it as a time-sharing assumption: if only a fraction \(q_z(s)\) of useful effort is assigned to the true mode, the time to accumulate the same useful computation expands by \(1/q_z(s)\). But this is not grounded for every agent or hard router. We should say it is exact only for packed schedulers and diagnostic otherwise.}
+\textcolor{blue}{Emanuele: The product form has a defensible lineage if framed correctly: unit cost \(\times\) focused Las-Vegas/restart scale \(\times\) Levin-style time-sharing overhead. It is exact only under linear cost, approximately independent retries, and processor-sharing allocation; each condition has a clear failure mode for LLM agents.}
 
 In the experiments, \(t_0(M,s)\) is estimated from repeated runs as the empirical \(1-\delta_{\mathrm{cert}}\) quantile of the first step at which \(M\) reaches the declared success event on mode \(s\).
 The unit cost \(\kappa(M,s)\) is the median per-step resource of \(M\) on that mode; we use wall-clock seconds per step in the main table and normalize by \(c_{\mathrm{sim}}=1/1800\).
@@ -402,6 +407,7 @@ For fixed \(z\), the allocation-dependent term averages to
 \]
 This is the source of the information and mismatch terms.
 \textcolor{blue}{Emanuele: Operationally, the information term should be measured as how much \(Z\) helps infer the mode \(S\): entropy drop \(H(S)-H(S\mid Z)\), NLL \(-\log\pi_z(s_{\mathrm{true}})\), mode-prediction accuracy, or calibration. It is not yet evidence that routing is useful; it only says the signal contains mode information.}
+\textcolor{blue}{Emanuele: We should separate two conditions: specialization and identifiability. Specialization asks whether different modes have different cost-adjusted winners \(a^\star(s)\); identifiability asks whether \(Z\) reveals \(S\). \(I(S;Z)\) supports only the second, while the first is what justifies having a model pool at all.}
 
 The hard deployment choice is downstream of this accounting object.  Once
 \(C(M,s)=c_{\mathrm{sim}}\kappa(M,s)t_0(M,s)\) has been calibrated for every
@@ -414,6 +420,7 @@ only through a calibrated table linking modes to agent-system certified resource
 and \(q_z\) matters as a resource term only when the deployment mechanism
 implements or elicits an allocation over modes.
 \textcolor{blue}{Emanuele: The routing mismatch term should become an empirical regret diagnostic for hard routers. If the true mode is \(s\), define \(M^\star(s)=\argmin_M\ell(M,s)\). If the router chooses \(M_R(x)\), measure \(r(x)=\ell(M_R(x),s)-\min_M\ell(M,s)\). This separates ``the signal was informative'' from ``the router used it correctly''.}
+\textcolor{blue}{Emanuele: For pure hard-choice routing, \(q_z\) should probably disappear from the deployment rule. It becomes legitimate again when the action menu includes actual budget splitting, e.g. repeated sampling or portfolio retries across actions, where fractions of budget are physically implemented.}
 
 
 A useful special case is an uninformed baseline whose allocation matches the mode prior:
@@ -1795,6 +1802,7 @@ Recommended signal-conditioned deployment policy, reported accounting terms, pai
 
 \paragraph{Panel of fixed executable settings.}
 The main experiment is a repeated-trajectory panel of fixed executable settings rather than a population draw from \(\mu\).
+\textcolor{blue}{Emanuele: This distinction should be stated wherever certified time is estimated. The reported quantiles are panel diagnostics over fixed executable settings, not population quantiles over \(\mu\), unless the instance-generation process is explicitly randomized.}
 Each task mode \(s\) is represented by one executable setting
 \[
 \chi_s=(A_s,D,\mathrm{split},u,\eta_s,V,B_V,H,\delta),
@@ -1810,6 +1818,7 @@ The paper-facing task modes are named by the starting model family in the editab
 They are not different datasets or different workers.
 They are evaluator-defined variants of the same CIFAR-10 edit--verify task: the dataset, split, verifier, prompt harness, horizon, and success threshold are fixed, while the initial architecture family and associated template parameters change.
 This choice makes the mode variable operationally meaningful for the theory, because different starting artifacts can change both first-passage competence \(p(a,s)\) and cost \(\kappa(a,s)\) for the same worker.
+\textcolor{blue}{Emanuele: The operational test for whether these modes matter is whether the cost-adjusted frontier changes by mode. If the same action wins for every \(s\), the modes may be real but routing is irrelevant.}
 
 \paragraph{Progressive signal records.}
 The candidate-agent scout router audit uses three nested pre-deployment records.
