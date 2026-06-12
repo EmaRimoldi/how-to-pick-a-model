@@ -544,64 +544,6 @@ explicitly declared.  Because the benchmark records full trajectories to horizon
 also report persistence and final-quality diagnostics, but these do not change the
 first-passage convention in~\eqref{eq:deployment-loss}.
 
-\subsection{Progressive signals and paired router value}
-\label{subsec:paired}
-
-Let \(Z_j(X;\zeta_j)\) be the router-visible pre-deployment record under signal condition
-\(j\), and let \(Z_0\) be the static baseline record.  For any richer condition \(j\), the same
-router observes \(Z_j\), pays measurement/context cost, and selects
-\[
-    a_R^j(X)=R(Z_j(X;\zeta_j);U_R)\in\cA .
-\]
-Here \(U_R\) denotes router-side randomness; for deterministic routers it is fixed.
-The normalized measurement loss is
-\[
-    \ell_{\mathrm{meas}}(j,x;\zeta_j)
-    =
-    \lambda_{\mathrm{meas}}^\top d_j(x;\zeta_j),
-\]
-where \(d_j\) contains wall-clock, token, verifier-call, context, parsing, retry, and latency
-costs.  We set \(\ell_{\mathrm{meas}}(0,x)=0\).  Pre-deployment probes are charged through
-\(\ell_{\mathrm{meas}}\) but do not consume the later deployment horizon \(H\).
-
-The selected-action deployment objective is
-\begin{equation}
-    \J_R(j)
-    :=
-    \E\left[
-        \ell_{\mathrm{meas}}(j,X;\zeta_j)
-        +
-        \ell_{\mathrm{dep}}(a_R^j(X),X;\xi)
-    \right].
-\label{eq:router-objective}
-\end{equation}
-The router-facing value of signal condition \(j\) is the paired gain
-\begin{equation}
-\Delta_R(j)
-:=
-\J_R(0)-\J_R(j)
-=
-\E\!\left[
-    \ell_{\mathrm{dep}}(a_R^0(X),X)
-    -
-    \ell_{\mathrm{dep}}(a_R^j(X),X)
-    -
-    \ell_{\mathrm{meas}}(j,X)
-\right].
-\label{eq:router-gain}
-\end{equation}
-Positive \(\Delta_R(j)\) means that the richer signal improves net deployment loss for the
-same router on the same task distribution.  Allocation shift alone is insufficient:
-\[
-    \mathrm{Shift}_R(j)
-    =
-    \Pr[a_R^j(X)\neq a_R^0(X)]
-\]
-measures decision relevance, not benefit.
-Appendix~\ref{app:experiment-details} gives the finite-sample estimator and its
-unbiasedness conditions.
-
-
 \section{Experiments and analysis}
 \label{sec:experiments}
 
