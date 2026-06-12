@@ -300,7 +300,7 @@ run mode-specialized components in parallel, the corresponding calibrated choice
 \]
 This separates three roles: \(\pi_z\) says which mode is likely, \(q_z\) says how a packed orchestration allocates budget across modes, and \(d(z)\) is the final agent-system choice.  A router that reports only \(d(z)\) is a hard-choice router; it does not identify \(q_z\).  The allocation becomes observable only if the system allocates budget across modes, or if the router contract explicitly asks for the allocation vector.
 \textcolor{blue}{Emanuele: For our actual experimental story, I think the hard-choice rule is the central object. On a calibration split we estimate \(p(M,s)\) and \(c(M,s)\) for each model and mode. On each fresh instance \(x\), the router observes \(Z(x)\), estimates \(\pi_z(s)=P(S=s\mid Z(x))\), and chooses \(M^\star(x)=\argmin_M\sum_s\pi_z(s)\ell(M,s)\), e.g. \(\ell(M,s)=\log c(M,s)-\log p(M,s)\). This is done per fresh instance, not once for the whole test set.}
-\textcolor{blue}{Emanuele: In the experiments the packed allocation \(q_z\) is not implemented; deployment is a hard choice of one worker per instance. Then the empirical core is a calibrated \(C(M,s)\) lookup table plus a routing rule, while \(I(S;Z)\) and \(\KL(\pi_Z\|q_Z)\) are only diagnostic unless explicitly estimated.}
+\textcolor{blue}{Emanuele: In the experiments the packed allocation \(q_z\) is not implemented; deployment is a hard choice of one worker per instance. Then the empirical core is a calibrated \(C(M,s)\) table plus a routing rule, while \(I(S;Z)\) and \(\KL(\pi_Z\|q_Z)\) are only diagnostic unless explicitly estimated.}
 The packed mode-conditioned time is
 \[
     \mathsf T_{M,q}(s,z)
@@ -711,7 +711,7 @@ We instantiate this setting on CIFAR-10 training-program improvement.  Each inst
 
 The iterative optimization problem can be decomposed by the artifact being improved: editing an MLP, a compact CNN, or a small ResNet exposes different architectural bottlenecks and useful edit patterns.
 We therefore use the starting architecture as the predeclared mode schema.  The three modes are a flat multilayer perceptron (MLP), a compact convolutional neural network (CNN), and a small residual network (ResNet).
-\textcolor{blue}{Emanuele: These modes are not really latent here: they are visible starting architectures in \texttt{train.py}. If the router sees the architecture or the probe, \(I(S;Z)\) can be trivial, so we should not sell this as a hard latent-mode inference problem.}
+\textcolor{blue}{Emanuele: These modes are not really latent here: they are visible starting architectures in \texttt{train.py}. If the router sees the architecture/probe, \(I(S;Z)\) can be trivial, so we should not sell this as a hard latent-mode inference problem.}
 Across modes, the dataset, evaluator, horizon, success rule, and other experimental variables are held fixed; only the initial architecture and its parameterization change.
 This lets us test whether the best agent system is mode-conditional rather than a single global choice.
 
@@ -913,7 +913,7 @@ This is the mechanism predicted by the framework: richer information is useful w
 \sout{The candidate-scout result is positive but not yet a free-standing deployment recommendation.}
 First, Table~\ref{tab:candidate-scout-router} is a full-horizon best-loss audit on an existing balanced trajectory panel, not a fresh paired deployment experiment with independent selected-worker reruns.
 Second, the reported mean cost is the selected worker's full-run accounting cost; it does not yet include the measurement cost of running all candidate scouts before selection.
-\textcolor{blue}{Emanuele: If the abstract promises paired net gain after measurement cost, this must be the central executed estimand. If selected workers are not rerun independently and scout costs are not fully subtracted, the claim should be demoted to a diagnostic audit. Also, the central deployment-loss equation/reference must resolve cleanly in the submission.}
+\textcolor{blue}{Emanuele: If the abstract promises paired net gain after measurement cost, this must be the central executed estimand. If selected workers are not rerun independently and measurement/scout costs are not fully subtracted, the claim should be demoted to a diagnostic audit.}
 
 Third, the best routing setting improves quality relative to the best always-worker baseline while increasing selected-run cost.
 Therefore the result validates the information and allocation mechanism, but the final deployment claim still requires the paired net-gain estimand in~\eqref{eq:router-gain} with scout costs charged explicitly.
