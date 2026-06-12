@@ -274,31 +274,6 @@ Given \(z\), a packed allocation rule \(q\) returns a share vector
 \]
 We interpret \(q_z(s)\) as the fraction of the system's deployable budget assigned to work useful for mode \(s\).
 For example, \(q_z(s)=0.2\) means that only one fifth of the budget is effectively directed toward mode-\(s\) work.
-For each agent system \(M\) and mode \(s\), let \(t_0(M,s)>0\) be the resource scale required by \(M\) on mode \(s\) when all mode-relevant budget is assigned to that mode, and let \(\kappa(M,s)>0\) be its unit resource cost on that mode.
-Thus the calibrated mode--system table is \(C(M,s):=c_{\mathrm{sim}}\kappa(M,s)t_0(M,s)\).
-If the deployment mechanism runs a packed scheduler that shares budget according to \(q_z\),
-the calibrated system choice is
-\[
-    d_{\mathrm{alloc}}(z)
-    \in
-    \argmin_{M\in\cM}
-    \E_{S\sim\pi_z}
-    \left[
-        \frac{C(M,S)}{q_z(S)}
-    \right].
-\]
-If the deployment mechanism only makes a single hard agent-system choice and does not
-run mode-specialized components in parallel, the corresponding calibrated choice is instead
-\[
-    d_{\mathrm{hard}}(z)
-    \in
-    \argmin_{M\in\cM}
-    \E_{S\sim\pi_z}
-    \left[
-        C(M,S)
-    \right].
-\]
-This separates three roles: \(\pi_z\) says which mode is likely, \(q_z\) says how a packed orchestration allocates budget across modes, and \(d(z)\) is the final agent-system choice.  A router that reports only \(d(z)\) is a hard-choice router; it does not identify \(q_z\).  The allocation becomes observable only if the system allocates budget across modes, or if the router contract explicitly asks for the allocation vector.
 \textcolor{blue}{Emanuele: For our actual experimental story, I think the hard-choice rule is the central object. On a calibration split we estimate \(p(M,s)\) and \(c(M,s)\) for each model and mode. On each fresh instance \(x\), the router observes \(Z(x)\), estimates \(\pi_z(s)=P(S=s\mid Z(x))\), and chooses \(M^\star(x)=\argmin_M\sum_s\pi_z(s)\ell(M,s)\), e.g. \(\ell(M,s)=\log c(M,s)-\log p(M,s)\). This is done per fresh instance, not once for the whole test set.}
 \textcolor{blue}{Emanuele: In the experiments the packed allocation \(q_z\) is not implemented; deployment is a hard choice of one worker per instance. Then the empirical core is a calibrated \(C(M,s)\) table plus a routing rule, while \(I(S;Z)\) and \(\KL(\pi_Z\|q_Z)\) are only diagnostic unless explicitly estimated.}
 The packed mode-conditioned time is
