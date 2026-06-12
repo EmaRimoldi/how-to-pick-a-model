@@ -114,6 +114,8 @@ The objective is time to reach a required verified result: among actions that ma
 
 Indeed, Achille and Soatto \citep{achille2025agents} recently argued that time to solution, as formalized by their Proper Time, is a performance measure for comparing agents on verifiable tasks.
 
+\textcolor{blue}{Emanuele: I think this is the real novelty axis of the paper. We should explicitly say that we are not introducing proper time; we are operationalizing Achille--Soatto's proper-time principle for model selection. The contribution should be: from an ideal time-to-verified-solution object to a finite-sample protocol that estimates mode-conditioned cost--success profiles and uses them to pick a model on each fresh instance.}
+
 Building on this intuition, we operationalize a certified log-effort surrogate gap between two possible designs. We show that it mathematically decomposes into four components that isolate the mechanisms of choice mentioned above.
 
 On our final three-worker AutoResearch panel, benchmark-style summaries favor \texttt{gpt\_5\_4} on average, but deployment accounting exposes a mode-conditional frontier: \texttt{gpt\_5\_4} on \textit{MLP-flat}, \texttt{gpt\_5\_4\_mini} on \textit{compact CNN}, and \texttt{gpt\_5\_3\_codex} on \textit{micro ResNet}.
@@ -228,8 +230,10 @@ For confidence level \(\delta\in(0,1)\), the certified time-to-solution $\overli
     \right\}.
 \]
 \end{definition}
+\textcolor{blue}{Emanuele: This definition needs a more mechanical object before it. I would define a time- or resource-indexed artifact process \(Y_c^M(x,r)\), a scalar resource clock \(c\) (wall-clock, tokens, dollars, or a declared weighted resource), and a first-passage time \(\tau_M^\gamma(x,r)=\inf\{c:V(x,Y_c^M(x,r))\ge\gamma\}\). Then \(\overline T_M(\delta)\) is the population \((1-\delta)\)-quantile of \(\tau_M^\gamma(X,r)\), with \(\infty\) for failures. Without this, ``time'' is doing too much work.}
 Certified time asks how much resource is needed to reach an externally accepted artifact with high probability.
 On SWE-bench, could be interpreted as the wall-clock, token, dollar, or verifier-call budget needed for the agent to produce a patch accepted by the evaluation harness with probability at least \(1-\delta_{\mathrm{cert}}\) over the distribution $\mu$ of the task instances and the randomness of the agent system run.
+\textcolor{blue}{Emanuele: We should also distinguish population certified time from per-instance reliability. Estimating \(\overline T_M(\delta)\) needs many runs over instances drawn from \(\mu\). Estimating a per-instance \(T_M(x,\delta)\) would require repeated rollouts on the same instance. Our experiments seem closer to finite-horizon, mode-conditioned first-passage estimates than to exact certified time.}
 We will call certified log-speedup of \(M \in \cM \) over a baseline \(M_0 \in \cM\) the log-difference between their certified times
 \[
     \Delta(M_0,M)
@@ -244,7 +248,9 @@ We will call certified log-speedup of \(M \in \cM \) over a baseline \(M_0 \in \
 \label{subsec:packed-latent-modes}
 
 Certified time is defined for any agent system and can be estimated naturally by running the agent on the task a certain number of times and estimating the end-to-end runtime. A direct benchmark-style approach would estimate one pooled certified-time quantity for each candidate agent system, where ``pooled'' means aggregated over the target task distribution \(X\sim\mu\) without conditioning on the latent mode \(S\), and select the smallest. This answers which agent system is best on average under the chosen task distribution, but it does not explain whether the gain comes from lower unit cost, mode-specific competence, or useful start-of-run information.
+\textcolor{blue}{Emanuele: I would make the modeling story more explicit here. The task distribution is heterogeneous: instances belong to modes \(S\), different models have different cost--success profiles on different modes, and the goal is not to pick one globally best model but to pick the right model conditionally on the fresh instance. This is the core answer to ``how to pick a model''.}
 To make this comparison interpretable, we model certified resource on each mode as a product of unit cost, mode-specific certified scale, and allocation efficiency. Taking logarithms turns this product into an additive accounting identity. The allocation rule in this model is not itself the final choice of an agent system: it assigns deployable budget across modes or mode-specialized strategies. The inverse-allocation term is literal for systems that explicitly share resource across mode-specialized components. If the deployment mechanism instead makes a single hard choice of one agent system, the calibrated mode--system table and the mode posterior determine that hard choice, while \(q_z\) is a diagnostic allocation target rather than an implemented budget share.
+\textcolor{blue}{Emanuele: This paragraph is important but still risky. \(\mathsf T_{M,q}\) should not be presented as the definition of certified time. It is a packed surrogate or operational accounting model. We need one sentence saying: the primitive object is \(\overline T_M(\delta)\); \(\mathsf T_{M,q}\) is an assumed time-sharing approximation used to decompose the mechanisms.}
 
 \textcolor{blue}{For open-ended verified domains such as academic research, modes need not be preexisting benchmark labels. They can be practitioner-declared bottleneck classes, such as literature retrieval, mathematical proofing, experimental design, code implementation, or empirical analysis, where different agent systems may have different cost--competence profiles.}
 
@@ -293,6 +299,7 @@ run mode-specialized components in parallel, the corresponding calibrated choice
     \right].
 \]
 This separates three roles: \(\pi_z\) says which mode is likely, \(q_z\) says how a packed orchestration allocates budget across modes, and \(d(z)\) is the final agent-system choice.  A router that reports only \(d(z)\) is a hard-choice router; it does not identify \(q_z\).  The allocation becomes observable only if the system allocates budget across modes, or if the router contract explicitly asks for the allocation vector.
+\textcolor{blue}{Emanuele: For our actual experimental story, I think the hard-choice rule is the central object. On a calibration split we estimate \(p(M,s)\) and \(c(M,s)\) for each model and mode. On each fresh instance \(x\), the router observes \(Z(x)\), estimates \(\pi_z(s)=P(S=s\mid Z(x))\), and chooses \(M^\star(x)=\argmin_M\sum_s\pi_z(s)\ell(M,s)\), e.g. \(\ell(M,s)=\log c(M,s)-\log p(M,s)\). This is done per fresh instance, not once for the whole test set.}
 The packed mode-conditioned time is
 \[
     \mathsf T_{M,q}(s,z)
@@ -302,6 +309,7 @@ The packed mode-conditioned time is
     \frac{t_0(M,s)}{q_z(s)} .
 \]
 \end{assumption}
+\textcolor{blue}{Emanuele: Why is the \(1/q_z(s)\) law plausible? I see it as a time-sharing assumption: if only a fraction \(q_z(s)\) of useful effort is assigned to the true mode, the time to accumulate the same useful computation expands by \(1/q_z(s)\). But this is not grounded for every agent or hard router. We should say it is exact only for packed schedulers and diagnostic otherwise.}
 
 In the experiments, \(t_0(M,s)\) is estimated from repeated runs as the empirical \(1-\delta_{\mathrm{cert}}\) quantile of the first step at which \(M\) reaches the declared success event on mode \(s\).
 The unit cost \(\kappa(M,s)\) is the median per-step resource of \(M\) on that mode; we use wall-clock seconds per step in the main table and normalize by \(c_{\mathrm{sim}}=1/1800\).
@@ -416,6 +424,7 @@ For fixed \(z\), the allocation-dependent term averages to
     H(\pi_z)+\KL(\pi_z\|q_z).
 \]
 This is the source of the information and mismatch terms.
+\textcolor{blue}{Emanuele: Operationally, the information term should be measured as how much \(Z\) helps infer the mode \(S\): entropy drop \(H(S)-H(S\mid Z)\), NLL \(-\log\pi_z(s_{\mathrm{true}})\), mode-prediction accuracy, or calibration. It is not yet evidence that routing is useful; it only says the signal contains mode information.}
 
 The hard deployment choice is downstream of this accounting object.  Once
 \(C(M,s)=c_{\mathrm{sim}}\kappa(M,s)t_0(M,s)\) has been calibrated for every
@@ -427,6 +436,7 @@ across modes instead uses the posterior expected packed time
 only through a calibrated table linking modes to agent-system certified resource,
 and \(q_z\) matters as a resource term only when the deployment mechanism
 implements or elicits an allocation over modes.
+\textcolor{blue}{Emanuele: The routing mismatch term should become an empirical regret diagnostic for hard routers. If the true mode is \(s\), define \(M^\star(s)=\argmin_M\ell(M,s)\). If the router chooses \(M_R(x)\), measure \(r(x)=\ell(M_R(x),s)-\min_M\ell(M,s)\). This separates ``the signal was informative'' from ``the router used it correctly''.}
 
 
 A useful special case is an uninformed baseline whose allocation matches the mode prior:
@@ -557,6 +567,7 @@ model.  It should not be confused with the global quantile
 primitive certified-time object; the former is the allocation model whose logarithm admits
 the four-term accounting.  Finite-horizon first-hit losses, occupancy losses, and paired
 deployment losses are empirical diagnostics introduced later.
+\textcolor{blue}{Emanuele: This guardrail should probably move earlier and be repeated in the introduction. The theorem is not a decomposition of \(\log\overline T_M(\delta)\) in full generality. It is a decomposition of the packed log-effort surrogate. That is fine, but the wording should avoid overclaiming.}
 
 
 \paragraph{Retry consequence.}
@@ -1513,6 +1524,7 @@ identify which mode applies.
 
 In AutoResearch-style experiments, the geometric-trials model is only a motivating limit.
 We estimate finite-horizon quantities directly.
+\textcolor{blue}{Emanuele: This is where we can be very concrete about the operationalization of proper time. The measurable object is first-passage resource: pass@1 or success-before-horizon, plus time/token-to-first-pass. This is the experimental bridge from Achille--Soatto proper time to model choice.}
 
 For system \(M\), mode \(s\), and horizon \(H\), define
 \[
@@ -1668,6 +1680,7 @@ horizon, or router indicate that the finite packed abstraction is missing an int
 
 The identity above becomes useful only after each term is tied to quantities logged by the deployment protocol.
 The verifier-facing progress process is the common object used to operationalize competence, cost, information, and allocation diagnostics.
+\textcolor{blue}{Emanuele: This section should probably become the main methodological contribution. The four-term identity gives language, but the protocol is what tells the reader how to pick a model: estimate cost and success by mode, infer the mode distribution for each new instance, route by expected loss, and validate against always-model baselines after signal cost.}
 Fix a horizon $H$ and a task-normalized verified progress process $G_t(a,x)\in[0,1]$ for action $a$ on instance $x$.
 In the main experiment, the router acts once before deployment: after observing $Z$, it selects one action, and that action is used for the whole trajectory.
 The success and cost diagnostics below are therefore trajectory-level quantities computed from the step-wise verifier trace.
