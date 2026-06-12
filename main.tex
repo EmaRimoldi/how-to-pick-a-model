@@ -271,6 +271,7 @@ The packed mode-conditioned time is
     \frac{t_0(M,s)}{q_z(s)} .
 \]
 \end{assumption}
+\textcolor{blue}{Emanuele: Main weakness: once this product form is assumed, the four-term theorem is mostly algebra. The \(1/q_z(s)\) factor is a time-sharing convention, not a derived certified-time law.}
 
 The finite mode dictionary is the modeling assumption.  The inverse-share factor is the
 time-sharing expansion of focused certified time: if the true bottleneck is \(s\), but only
@@ -482,6 +483,7 @@ model.  It should not be confused with the global quantile
 primitive certified-time object; the former is the allocation model whose logarithm admits
 the four-term accounting.  Finite-horizon first-hit losses, occupancy losses, and paired
 deployment losses are empirical diagnostics introduced later.
+\textcolor{blue}{Emanuele: I would state this more sharply: ``exact inside the packed model'' means true by construction under Assumption~\ref{ass:packed}. The theorem does not discover the structure; the assumption puts it in.}
 
 
 \paragraph{Retry consequence.}
@@ -506,6 +508,7 @@ The empirical protocol is compact: freeze the mode schema, loss, cost normalizer
 router-visible records; estimate mode-conditioned success and first-passage cost; audit
 whether richer records expose modes and change allocation; then validate finalists by paired
 selected-action deployment after measurement cost.
+\textcolor{blue}{Emanuele: In the experiments the packed allocation \(q_z\) is not implemented; deployment is a hard choice of one worker per instance. Then the empirical core is a calibrated \(C(M,s)\) table plus a routing rule, while \(I(S;Z)\) and \(\KL(\pi_Z\|q_Z)\) are only diagnostic unless explicitly estimated.}
 
 For deployment validation we use a predeclared first-passage loss.  Given a verified
 progress trace \(G_1,\ldots,G_H\), let \(\gamma>0\) be the empirical success threshold and define
@@ -605,6 +608,7 @@ unbiasedness conditions.
 \paragraph{Setup.}
 We instantiate the framework on CIFAR-10 based Autoresereach.
 We consider as task modes the three starting artifact variants of the same verified task, i.e. optimizing the training of three different models (\(\cS=\{\text{\textit{MLP-flat}},\text{\textit{compact CNN}},\text{\textit{micro ResNet}}\}\) . The dataset, verifier, horizon, and success rule are fixed while the editable artifact's starting architecture and parameterization change, letting us test whether worker choice is mode-conditional rather than a single global ranking.
+\textcolor{blue}{Emanuele: These modes are not really latent here: they are visible starting architectures in \texttt{train.py}. If the router sees the architecture/probe, \(I(S;Z)\) can be trivial, so we should not sell this as a hard latent-mode inference problem.}
 The analyzed worker menu is \(\{\texttt{gpt\_5\_3\_codex},\texttt{gpt\_5\_4},\texttt{gpt\_5\_4\_mini}\}\).
 Each action is one worker under the common prompt and harness, so \(\cA=\cM\) in this experiment.
 For each task-mode--worker cell we use 34 independent AutoResearch trajectories for each of the three models tested. The router, whose goal is to pick the most suited model for a certain taks, is a prompt-only orchestrator evaluated under four nested pre-deployment records \(Z_0,\ldots,Z_3\). 
@@ -671,6 +675,7 @@ Averaged across modes, \texttt{gpt\_5\_4} has the lowest pooled deployment loss 
 Table~\ref{tab:worker-frontier-accounting} is the main diagnostic object: deployment-loss accounting selects \texttt{gpt\_5\_4} on \textit{MLP-flat}, \texttt{gpt\_5\_4\_mini} on \textit{compact CNN}, and \texttt{gpt\_5\_3\_codex} on \textit{micro ResNet}.
 Thus adding \texttt{gpt\_5\_4\_mini} changes the promoted mode-conditional recommendation for \textit{compact CNN}, but it does not become the global always-worker default.
 The mode oracle over the three-worker frontier has mean deployment loss 0.126, below the best always-worker policy.
+\textcolor{blue}{Emanuele: This is the empirically solid contribution: operationalize proper time as mode-conditioned cost-to-verified-success and use it to pick models. The novelty should lean on this calibration-and-routing protocol, not on the packed identity.}
 Table~\ref{tab:threshold-robustness} shows the operating-threshold audit.
 The primary recommendation is not completely threshold-invariant: at \(\gamma=0.02\) and \(\gamma=0.10\), \texttt{gpt\_5\_4} replaces Mini on \textit{compact CNN}, while at \(\gamma=0.20\) Mini becomes the deployment-loss winner on \textit{micro ResNet}.
 The balanced \(n=30\) sensitivity preserves the \(\gamma=0.05\) deployment winners \(4/m/C\), so the primary result is not an artifact of keeping 35 runs for the two existing workers.
@@ -741,6 +746,7 @@ The paired validation is still not a deployable routing improvement.
 Against \(Z_0\), \(Z_1\) has a tiny positive mean net gain of 0.005, but its bootstrap interval crosses zero \([-0.006,0.021]\) and one shifted pair increases loss.
 \(Z_2\) is essentially break-even after probe cost \([-0.008,0.015]\), while \(Z_3\) is negative after measurement cost \([-0.028,0.002]\).
 Thus adding Mini creates a real mode-conditional worker opportunity, but this prompt-only router does not exploit it: it improves retrospective regret while failing to choose Mini on the mode where Mini wins.
+\textcolor{blue}{Emanuele: If the abstract promises paired net gain after measurement cost, this must be the central executed estimand. If selected workers are not rerun independently and measurement/scout costs are not fully subtracted, the claim should be demoted to a diagnostic audit.}
 
 \paragraph{Experiment 5: Negative controls.}
 We repeat the router and paired-gain analyses with schema-preserving controls: shuffled probe records, wrong-mode probes, and synthetic noise records with matched field names and approximate context burden.
