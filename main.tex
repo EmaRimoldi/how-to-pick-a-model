@@ -110,21 +110,6 @@ On our final two-worker AutoResearch panel, benchmark-style summaries favor \tex
 After charging verified failure and normalized wall-clock cost in the deployment loss, however, \texttt{gpt\_5\_3\_codex} is selected in all three task modes.
 The routing audit gives the complementary result: richer pre-deployment records reveal the task-mode structure, but the evaluated prompt-only router remains biased toward the benchmark-favored worker and produces negative paired net gain after measurement cost.
 
-% Run a lower-cost worker and a higher-capability worker on held-out instances; choose the one with the best average score.
-% For externally verified agentic tasks, this can be the wrong unit of comparison.
-% A model that eventually succeeds after a long expensive search may be dominated by a lower-cost action that reaches a sufficient verified outcome earlier, or by a router that sends different instances to different workers.
-
-% This paper studies model and harness choice through \emph{performance accounting}.
-% The motivating regime includes code editing against unit tests, repository repair against continuous-integration checks, theorem search against a formal verifier, and AutoResearch-style loops in which an agent edits a training program and receives external validation feedback~\citep{jimenez2024swebench,karpathy2026autoresearch}.
-% These tasks are transductive in Vapnik's sense~\citep{vapnik1996structure}: the system is handed a concrete instance and must produce a concrete artifact.
-% They are also externally verified: progress is determined by a verifier or scoring procedure outside the model.
-% In this regime, the deployment object is not standalone accuracy.
-% It is the resource needed to reach, evaluate, and maintain verified progress, matching the time-centric view of agents as task solvers in \citet{achille2025agents}.
-
-% The central difficulty is that one benchmark score conflates mechanisms that imply different engineering decisions.
-% A system can win because its worker has lower per-step cost.
-% It can win because the selected worker is more competent on a solver-relevant task mode.
-% It can win because a pre-deployment signal reveals which mode the instance belongs to.
 \paragraph{Research questions and contributions.}
 We organize the paper around three questions, each paired with the contribution that answers it.
 
@@ -183,9 +168,6 @@ is the set of systems the builder is willing to compare and deploy.
 \end{definition}
 
 The harness can include, e.g., a single model call, a repeated-sampling loop, a tool-using code agent, or a fixed SKILL.md script.
-% In the main experimental setting, the router observes live signals before the run begins, chooses one model or subagent from the menu, and that chosen model performs the whole run; we do not use step-level model routing in the main paper.
-% When the menu has one element, the notation collapses to a single base model.
-% To keep the theorem algebra light, we write $M$ for the deployed model chosen by the routed design whenever the dependence on $(\mathcal M,q)$ is clear from context.
 
 \begin{definition}[Router and routed design]
 \label{def:router}
@@ -200,7 +182,6 @@ The no-routing baseline is the special case where \(R\) is constant.
 \end{definition}
 A start-of-run signal \(Z\) might contain the issue text, failing visible-test names, stack-trace features, file counts, dependency metadata, a cheap static-analysis report, or the result of a short smoke-test run.
 A router might use this information to choose between a local-edit worker, a long-context repository worker, a dependency-repair harness, or an expensive frontier model.
-
 
 \begin{definition}[Certified time-to-solution]
 \label{def:certified-time}
@@ -221,7 +202,7 @@ of \(M\) is
     \right\}.
 \]
 \end{definition}
-\textcolor{blue}{Emanuele: The estimator should be explicit: for runs \((X_i,r_i)\), set \(\tau_i=\inf\{t:V(X_i,M(X_i;r_i))=1\}\), \(\hat F_n(t)=n^{-1}\sum_i\mathbf 1\{\tau_i\le t\}\), and \(\hat T_M(\delta)=\inf\{t:\hat F_n(t)\ge1-\delta\}\). If the success rate is below \(1-\delta\), the estimate is infinite; with \(n\approx30\), high-quantile uncertainty should be reported, e.g. via DKW or bootstrap bands.}
+
 The certified log-speedup of \(M\) over a baseline \(M_0\) is
 \[
     \Delta(M_0,M)
@@ -232,7 +213,6 @@ The certified log-speedup of \(M\) over a baseline \(M_0\) is
 \]
 Certified time asks how much resource is needed to reach an externally accepted artifact with high probability.
 On SWE-bench, it is the wall-clock, token, dollar, or verifier-call budget needed for the agent to produce a patch accepted by the evaluation harness with probability at least \(1-\delta_{\mathrm{cert}}\) over deployment instances and run randomness.
-
 
 \subsection{Packed latent modes}
 \label{subsec:packed-latent-modes}
@@ -251,12 +231,12 @@ There is a finite latent mode
     S\sim\pi,
 \]
 where \(S=s\) denotes the solver-relevant bottleneck of the instance.
-\textcolor{blue}{Emanuele: Define modes structurally, not through budget. A mode should be an intrinsic solver-relevant class of instances; \(t_0(M,s)\) and \(\kappa(M,s)\) are induced by the interaction between that structure and model \(M\).}
+
 A start-of-run signal \(Z\) induces the posterior
 \[
     \pi_z(s):=\Pr[S=s\mid Z=z].
 \]
-\textcolor{blue}{Emanuele: \(Z\) is better described as a routing covariate or pre-deployment feature map \(\phi(x)\), in the classical algorithm-selection sense. If the router learns from calibration trajectories in context, distinguish the true posterior \(\pi_z\) from the router estimate \(\hat\pi_z\).}
+
 Given \(z\), a packed scheduler chooses a share vector
 \[
     q_z\in\Delta(\cS),
@@ -274,8 +254,6 @@ The packed mode-conditioned time is
     \frac{t_0(M,s)}{q_z(s)} .
 \]
 \end{assumption}
-\textcolor{blue}{Emanuele: Main weakness: once this product form is assumed, the four-term theorem is mostly algebra. The \(1/q_z(s)\) factor is a time-sharing convention, not a derived certified-time law.}
-\textcolor{blue}{Emanuele: The product form is defensible only with the right lineage and caveats: unit cost \(\times\) focused Las-Vegas/restart scale \(\times\) Levin-style time-sharing overhead. It is exact under linear cost, approximately independent retries, and processor-sharing allocation; LLM agents can violate all three.}
 
 The finite mode dictionary is the modeling assumption.  The inverse-share factor is the
 time-sharing expansion of focused certified time: if the true bottleneck is \(s\), but only
@@ -371,7 +349,6 @@ For fixed \(z\), the allocation-dependent term averages to
     H(\pi_z)+\KL(\pi_z\|q_z).
 \]
 This is the source of the information and mismatch terms.
-\textcolor{blue}{Emanuele: Separate specialization from identifiability. Specialization asks whether different modes have different cost-adjusted winners \(a^\star(s)\); identifiability asks whether \(Z\) reveals \(S\). \(I(S;Z)\) supports only the second, while the first is what justifies a model pool.}
 
 For a prior-matched baseline \((M_0,\pi)\), the packed certified log-speedup of
 \((M,q)\) is
@@ -488,9 +465,6 @@ model.  It should not be confused with the global quantile
 primitive certified-time object; the former is the allocation model whose logarithm admits
 the four-term accounting.  Finite-horizon first-hit losses, occupancy losses, and paired
 deployment losses are empirical diagnostics introduced later.
-\textcolor{blue}{Emanuele: I would state this more sharply: ``exact inside the packed model'' means true by construction under Assumption~\ref{ass:packed}. The theorem does not discover the structure; the assumption puts it in.}
-\textcolor{blue}{Emanuele: For pure hard-choice routing, \(q_z\) should disappear from the deployment rule. It becomes legitimate again only when the action menu implements actual budget splitting, such as repeated sampling or portfolio retries across actions.}
-
 
 \paragraph{Retry consequence.}
 The single-mode retry calculation is algebraically independent of the packed identity, so we defer it to Appendix~\ref{app:retry-crossover}.  It says that a lower-cost system with one-attempt success \(p_\ell\) matches a stronger system with success \(p_h\) after
@@ -514,7 +488,6 @@ The empirical protocol is compact: freeze the mode schema, loss, cost normalizer
 router-visible records; estimate mode-conditioned success and first-passage cost; audit
 whether richer records expose modes and change allocation; then validate finalists by paired
 selected-action deployment after measurement cost.
-\textcolor{blue}{Emanuele: In the experiments the packed allocation \(q_z\) is not implemented; deployment is a hard choice of one worker per instance. Then the empirical core is a calibrated \(C(M,s)\) table plus a routing rule, while \(I(S;Z)\) and \(\KL(\pi_Z\|q_Z)\) are only diagnostic unless explicitly estimated.}
 
 For deployment validation we use a predeclared first-passage loss.  Given a verified
 progress trace \(G_1,\ldots,G_H\), let \(\gamma>0\) be the empirical success threshold and define
@@ -556,17 +529,16 @@ first-passage convention in~\eqref{eq:deployment-loss}.
 \paragraph{Setup.}
 We instantiate the framework on CIFAR-10 based Autoresereach.
 We consider as task modes the three starting artifact variants of the same verified task, i.e. optimizing the training of three different models (\(\cS=\{\text{\textit{MLP-flat}},\text{\textit{compact CNN}},\text{\textit{micro ResNet}}\}\) . The dataset, verifier, horizon, and success rule are fixed while the editable artifact's starting architecture and parameterization change, letting us test whether worker choice is mode-conditional rather than a single global ranking.
-\textcolor{blue}{Emanuele: These modes are not really latent here: they are visible starting architectures in \texttt{train.py}. If the router sees the architecture/probe, \(I(S;Z)\) can be trivial, so we should not sell this as a hard latent-mode inference problem.}
+
 The analyzed worker menu is \(\{\texttt{gpt\_5\_3\_codex},\texttt{gpt\_5\_4},\texttt{gpt\_5\_4\_mini}\}\).
 Each action is one worker under the common prompt and harness, so \(\cA=\cM\) in this experiment.
-For each task-mode--worker cell we use 34 independent AutoResearch trajectories for each of the three models tested. The router, whose goal is to pick the most suited model for a certain taks, is a prompt-only orchestrator evaluated under four nested pre-deployment records \(Z_0,\ldots,Z_3\). 
+For each task-mode--worker cell we use 34 independent AutoResearch trajectories for each of the three models tested. The router, whose goal is to pick the most suited model for a certain taks, is a prompt-only orchestrator evaluated under four nested pre-deployment records \(Z_0,\ldots,Z_3\).
 The primary decision metric is the first-passage deployment loss in~\eqref{eq:deployment-loss}; full-horizon occupancy and final quality are audit metrics.
 Appendix~\ref{app:experiment-details} gives the frozen configuration, including horizon, verifier budget, training budget, success threshold, signal contents, measurement-cost convention, progress normalization, smoothing rule, and logging schema.
 
 \paragraph{Experiment 1: Worker frontier.}
 We run every [worker? Model? Harness?] on every task mode before routing, estimating fixed-setting analogues of \(p(a,s)\) and \(\kappa(a,s)\).
 These estimates instantiate the worker-side cost and competence terms in Theorem~\ref{thm:four-term}; the smoothed log-effort estimator is defined in Appendix~\ref{app:experiment-details}.
-
 
 \begin{table}[t]
 \centering
@@ -623,7 +595,7 @@ Averaged across modes, \texttt{gpt\_5\_4} has the lowest pooled deployment loss 
 Table~\ref{tab:worker-frontier-accounting} is the main diagnostic object: deployment-loss accounting selects \texttt{gpt\_5\_4} on \textit{MLP-flat}, \texttt{gpt\_5\_4\_mini} on \textit{compact CNN}, and \texttt{gpt\_5\_3\_codex} on \textit{micro ResNet}.
 Thus adding \texttt{gpt\_5\_4\_mini} changes the promoted mode-conditional recommendation for \textit{compact CNN}, but it does not become the global always-worker default.
 The mode oracle over the three-worker frontier has mean deployment loss 0.126, below the best always-worker policy.
-\textcolor{blue}{Emanuele: This is the empirically solid contribution: operationalize proper time as mode-conditioned cost-to-verified-success and use it to pick models. The novelty should lean on this calibration-and-routing protocol, not on the packed identity.}
+
 Table~\ref{tab:threshold-robustness} shows the operating-threshold audit.
 The primary recommendation is not completely threshold-invariant: at \(\gamma=0.02\) and \(\gamma=0.10\), \texttt{gpt\_5\_4} replaces Mini on \textit{compact CNN}, while at \(\gamma=0.20\) Mini becomes the deployment-loss winner on \textit{micro ResNet}.
 The balanced \(n=30\) sensitivity preserves the \(\gamma=0.05\) deployment winners \(4/m/C\), so the primary result is not an artifact of keeping 35 runs for the two existing workers.
@@ -638,7 +610,7 @@ In the current diagnostic, budget-only records recover the three task-mode label
 Thus the signals can expose mode structure; the remaining question is whether the router converts that structure into better actions.
 
 \paragraph{Experiment 3: Routing shift and action-frontier regret.}
-\textcolor{blue}{Perhaps, prompt optimization routing? }
+
 We measure this conversion with shift rate and action-frontier regret, the empirical analogue of allocation mismatch for a router that returns actions rather than mode distributions.
 Shift rate is the fraction of modes for which the richer signal changes the selected worker; action-frontier regret scores the selected action against the mode-conditional frontier from Experiment 1.
 Together, routing information and allocation regret answer whether orchestration is useful in this configuration: the former asks whether the signal contains exploitable structure, and the latter asks whether the actual router uses that structure to move toward the empirical cost--success frontier.
@@ -694,7 +666,6 @@ The paired validation is still not a deployable routing improvement.
 Against \(Z_0\), \(Z_1\) has a tiny positive mean net gain of 0.005, but its bootstrap interval crosses zero \([-0.006,0.021]\) and one shifted pair increases loss.
 \(Z_2\) is essentially break-even after probe cost \([-0.008,0.015]\), while \(Z_3\) is negative after measurement cost \([-0.028,0.002]\).
 Thus adding Mini creates a real mode-conditional worker opportunity, but this prompt-only router does not exploit it: it improves retrospective regret while failing to choose Mini on the mode where Mini wins.
-\textcolor{blue}{Emanuele: If the abstract promises paired net gain after measurement cost, this must be the central executed estimand. If selected workers are not rerun independently and measurement/scout costs are not fully subtracted, the claim should be demoted to a diagnostic audit.}
 
 \paragraph{Experiment 5: Negative controls.}
 We repeat the router and paired-gain analyses with schema-preserving controls: shuffled probe records, wrong-mode probes, and synthetic noise records with matched field names and approximate context burden.
@@ -767,11 +738,6 @@ that improves paired verified deployment loss under the declared resource conven
 \clearpage
 
 \appendix
-
-
-% ============================================================
-% APPENDIX PATCH
-% ============================================================
 
 \clearpage
 \section{Proofs: certified-time derivation of log-effort}
@@ -1304,8 +1270,6 @@ rational on one mode and irrational on another.  A router is useful only when di
 systems win the cost--success tradeoff on different modes and the start-of-run signal helps
 identify which mode applies.
 
-
-
 \subsection{Finite-horizon empirical surrogate}
 
 In AutoResearch-style experiments, the geometric-trials model is only a motivating limit.
@@ -1455,7 +1419,6 @@ The empirical residual
 \]
 is the practical test of approximate packedness.  Structured residuals by mode, system,
 horizon, or router indicate that the finite packed abstraction is missing an interaction.
-
 
 \section{Operational diagnostics}
 \label{subsec:bridge}
@@ -1653,7 +1616,7 @@ Recommended signal-conditioned deployment policy, reported accounting terms, pai
 
 \paragraph{Panel of fixed executable settings.}
 The main experiment is a repeated-trajectory panel of fixed executable settings rather than a population draw from \(\mu\).
-\textcolor{blue}{Emanuele: Then the reported quantiles are panel diagnostics, not population certified-time estimates over \(\mu\), unless the instance-generation process is explicitly randomized.}
+
 Each task mode \(s\) is represented by one executable setting
 \[
 \chi_s=(A_s,D,\mathrm{split},u,\eta_s,V,B_V,H,\delta),
@@ -1669,7 +1632,6 @@ The paper-facing task modes are named by the starting model family in the editab
 They are not different datasets or different workers.
 They are evaluator-defined variants of the same CIFAR-10 edit--verify task: the dataset, split, verifier, prompt harness, horizon, and success threshold are fixed, while the initial architecture family and associated template parameters change.
 This choice makes the mode variable operationally meaningful for the theory, because different starting artifacts can change both first-passage competence \(p(a,s)\) and cost \(\kappa(a,s)\) for the same worker.
-\textcolor{blue}{Emanuele: The operational test for whether these modes matter is whether the cost-adjusted frontier changes by mode. If the same action wins for every \(s\), the modes may be real but routing is irrelevant.}
 
 \paragraph{Progressive signal records.}
 The router sees one of four nested pre-deployment records.
