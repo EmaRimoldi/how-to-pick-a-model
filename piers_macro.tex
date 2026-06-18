@@ -1,7 +1,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% Standard Packages
 
-\usepackage{mathrsfs,amsthm,graphicx,xcolor,verbatim,bbm,amsmath,amsfonts,dsfont,amssymb,newclude,graphicx,enumitem,bm,mathtools}
+\usepackage{amsthm,graphicx,xcolor,verbatim,bbm,amsmath,amsfonts,amssymb,graphicx,enumitem,bm,mathtools,booktabs}
+\IfFileExists{dsfont.sty}{\usepackage{dsfont}}{}
+\IfFileExists{newclude.sty}{\usepackage{newclude}}{}
 
 
 
@@ -20,25 +22,26 @@
 
 
 % Ours imports
-\usepackage{fullpage}
+\IfFileExists{fullpage.sty}{\usepackage{fullpage}}{}
 
-\usepackage{pgfplots}
+\IfFileExists{pgfplots.sty}{\usepackage{pgfplots}}{}
 \usepackage{xcolor}
 \definecolor{PythonGreen}{HTML}{2ca02c}
 \usepackage{url}            % simple URL typesetting
-\usepackage{nicefrac}       % compact symbols for 1/2, etc.
-\usepackage{caption}
-\usepackage{float}
-\usepackage{mdframed}
-\usepackage{fontawesome5}
-\usepackage{wrapfig} 
+\IfFileExists{nicefrac.sty}{\usepackage{nicefrac}}{}
+\IfFileExists{caption.sty}{%
+  \usepackage{caption}
+  \captionsetup{font=small}
+}{}
+\IfFileExists{float.sty}{\usepackage{float}}{}
+\IfFileExists{mdframed.sty}{\usepackage{mdframed}}{}
+\IfFileExists{fontawesome5.sty}{\usepackage{fontawesome5}}{}
+\IfFileExists{wrapfig.sty}{\usepackage{wrapfig}}{}
 \usepackage[T1]{fontenc}    % To write the name of Jastrz\k{e}bski
 \usepackage[utf8]{inputenc}
 
-\usepackage{subcaption}
-\usepackage{overpic}
-
-\captionsetup{font=small}
+\IfFileExists{subcaption.sty}{\usepackage{subcaption}}{}
+\IfFileExists{overpic.sty}{\usepackage{overpic}}{}
 
 
 
@@ -200,18 +203,21 @@
 
 
 
-\usepackage[most]{tcolorbox}
-
-\newtcolorbox{summarybox}{
-  % colback=blue!5,          % light background
-  colframe=black!70,         % border color
-  boxrule=2pt,               % border thickness
-  arc=4pt,                   % rounded corners
-  left=2pt,
-  right=2pt,
-  top=3pt,
-  bottom=3pt,
-  halign=center,
+\IfFileExists{tcolorbox.sty}{%
+  \usepackage[most]{tcolorbox}
+  \newtcolorbox{summarybox}{
+    % colback=blue!5,          % light background
+    colframe=black!70,         % border color
+    boxrule=2pt,               % border thickness
+    arc=4pt,                   % rounded corners
+    left=2pt,
+    right=2pt,
+    top=3pt,
+    bottom=3pt,
+    halign=center,
+  }
+}{%
+  \newenvironment{summarybox}{\begin{center}\begin{minipage}{0.95\linewidth}}{\end{minipage}\end{center}}
 }
 
 

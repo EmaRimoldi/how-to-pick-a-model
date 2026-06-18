@@ -10,8 +10,10 @@
 \usepackage{graphicx}
 \usepackage{xcolor}
 \usepackage{tikz}
-\usepackage{pgfplots}
-\pgfplotsset{compat=1.18}
+\IfFileExists{pgfplots.sty}{%
+  \usepackage{pgfplots}
+  \pgfplotsset{compat=1.18}
+}{}
 
 
 % -------------------- Theorem extensions --------------------
@@ -39,6 +41,7 @@
 \newcommand{\cS}{\mathcal{S}}
 \newcommand{\cT}{\mathcal{T}}
 \newcommand{\cB}{\mathcal{B}}
+\newcommand{\cC}{\mathcal{C}}
 \newcommand{\cF}{\mathcal{F}}
 \newcommand{\cM}{\mathcal{M}}
 
@@ -50,10 +53,12 @@
 \newcommand{\pmin}{p_{\min}}
 \newcommand{\dacc}{\delta_{\mathrm{acc}}}
 \newcommand{\dconf}{\delta_{\mathrm{conf}}}
+\newcommand{\dtarget}{\delta_{\mathrm{target}}}
 
 \newcommand{\Dstar}{D^*}
 \newcommand{\Dcross}{D_{\mathrm{cross}}}
 \newcommand{\PD}{P_D}
+\newcommand{\qed}{\hfill\(\square\)}
 
 \newcommand{\kbig}{\kappa_{\mathrm{big}}}
 \newcommand{\ksmall}{\kappa_{\mathrm{small}}}

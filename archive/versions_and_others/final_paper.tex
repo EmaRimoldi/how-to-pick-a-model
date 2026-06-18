@@ -1,27 +1,50 @@
 \documentclass[twoside,11pt]{article}
 
-% JMLR style
+% JMLR style, with an article fallback for local archive builds.
 \PassOptionsToPackage{numbers}{natbib}
-\usepackage{jmlr2e}
-\bibpunct{[}{]}{,}{n}{,}{,}
-\setcitestyle{numbers}
+\IfFileExists{jmlr2e.sty}{%
+  \usepackage{jmlr2e}
+  \bibpunct{[}{]}{,}{n}{,}{,}
+  \setcitestyle{numbers}
+}{%
+  \usepackage[margin=1in]{geometry}
+  \usepackage{natbib}
+  \usepackage{amsthm}
+  \newcommand{\ShortHeadings}[2]{}
+  \newcommand{\firstpageno}[1]{}
+  \newcommand{\editor}[1]{}
+  \newtheorem{theorem}{Theorem}
+  \newtheorem{lemma}{Lemma}
+  \newtheorem{proposition}{Proposition}
+  \newtheorem{corollary}{Corollary}
+  \newtheorem{remark}{Remark}
+  \newtheorem{definition}{Definition}
+  \newenvironment{keywords}{\par\smallskip\noindent\textbf{Keywords: }}{\par\smallskip}
+}
 
 % Additional packages
 \usepackage{amsmath,amssymb,mathtools}
 \usepackage{booktabs}
 \usepackage{enumitem}
-\usepackage{microtype}
+\usepackage[expansion=false]{microtype}
 \usepackage{graphicx}
 \usepackage{xcolor}
 \usepackage{tikz}
-\usepackage{pgfplots}
-\pgfplotsset{compat=1.18}
+\IfFileExists{pgfplots.sty}{%
+  \usepackage{pgfplots}
+  \pgfplotsset{compat=1.18}
+}{}
 
 % Camera-ready typography stabilization
 \setlength{\emergencystretch}{2em}
 
 \setlist[itemize]{leftmargin=1.2em,itemsep=0.2em,topsep=0.2em}
 \setlist[enumerate]{leftmargin=1.3em,itemsep=0.2em,topsep=0.2em}
+
+% Let this archived entry point compile from either the repo root or this folder.
+\makeatletter
+\def\input@path{{archive/versions_and_others/}{archive/versions_and_others/sections/}}
+\makeatother
 
 % -------------------- Theorem extensions --------------------
 \newtheorem{assumption}[theorem]{Assumption}

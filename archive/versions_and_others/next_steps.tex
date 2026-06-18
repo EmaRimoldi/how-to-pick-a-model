@@ -8,58 +8,58 @@
 \usepackage{array}       % better column types
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}  % left-aligned p-column
 \newcommand{\tpath}[1]{\texttt{\small\hyphenchar\font=`\/ #1}}  % breakable path
-\usepackage{placeins}     % \FloatBarrier
+\IfFileExists{placeins.sty}{\usepackage{placeins}}{\newcommand{\FloatBarrier}{}}     % \FloatBarrier
 \tolerance=1000           % slightly more flexible line breaks
 \emergencystretch=1.5em   % last resort stretch
 
 
 % -------------------- Macros --------------------
-\newcommand{\poly}{\mathrm{poly}}
-\newcommand{\KL}{\mathrm{KL}}
-\newcommand{\I}{\mathrm{I}}
-\newcommand{\E}{\mathbb{E}}
-\newcommand{\Prb}{\mathbb{P}}
-\newcommand{\Var}{\mathrm{Var}}
+\providecommand{\poly}{\mathrm{poly}}
+\providecommand{\KL}{\mathrm{KL}}
+\providecommand{\I}{\mathrm{I}}
+\providecommand{\E}{\mathbb{E}}
+\providecommand{\Prb}{\mathbb{P}}
+\providecommand{\Var}{\mathrm{Var}}
 
-\newcommand{\cA}{\mathcal{A}}
-\newcommand{\cD}{\mathcal{D}}
-\newcommand{\cX}{\mathcal{X}}
-\newcommand{\cY}{\mathcal{Y}}
-\newcommand{\cS}{\mathcal{S}}
-\newcommand{\cT}{\mathcal{T}}
-\newcommand{\cB}{\mathcal{B}}
-\newcommand{\cF}{\mathcal{F}}
-\newcommand{\cM}{\mathcal{M}}
+\providecommand{\cA}{\mathcal{A}}
+\providecommand{\cD}{\mathcal{D}}
+\providecommand{\cX}{\mathcal{X}}
+\providecommand{\cY}{\mathcal{Y}}
+\providecommand{\cS}{\mathcal{S}}
+\providecommand{\cT}{\mathcal{T}}
+\providecommand{\cB}{\mathcal{B}}
+\providecommand{\cF}{\mathcal{F}}
+\providecommand{\cM}{\mathcal{M}}
 
-\newcommand{\fD}{\mathfrak{D}}
-\newcommand{\fT}{\mathfrak{T}}
+\providecommand{\fD}{\mathfrak{D}}
+\providecommand{\fT}{\mathfrak{T}}
 
-\newcommand{\Mn}{M_n}
-\newcommand{\Meff}{M_{\mathrm{eff}}}
-\newcommand{\pmin}{p_{\min}}
-\newcommand{\dacc}{\delta_{\mathrm{acc}}}
-\newcommand{\dconf}{\delta_{\mathrm{conf}}}
+\providecommand{\Mn}{M_n}
+\providecommand{\Meff}{M_{\mathrm{eff}}}
+\providecommand{\pmin}{p_{\min}}
+\providecommand{\dacc}{\delta_{\mathrm{acc}}}
+\providecommand{\dconf}{\delta_{\mathrm{conf}}}
 
-\newcommand{\Dstar}{D^*}
-\newcommand{\Dcross}{D_{\mathrm{cross}}}
-\newcommand{\PD}{P_D}
+\providecommand{\Dstar}{D^*}
+\providecommand{\Dcross}{D_{\mathrm{cross}}}
+\providecommand{\PD}{P_D}
 
-\newcommand{\kbig}{\kappa_{\mathrm{big}}}
-\newcommand{\ksmall}{\kappa_{\mathrm{small}}}
-\newcommand{\kappabig}{\kappa_{\mathrm{big}}}
+\providecommand{\kbig}{\kappa_{\mathrm{big}}}
+\providecommand{\ksmall}{\kappa_{\mathrm{small}}}
+\providecommand{\kappabig}{\kappa_{\mathrm{big}}}
 
 % Information-theoretic notation
-\newcommand{\MI}{\mathrm{I}}
-\newcommand{\Hent}{\mathrm{H}}
-\newcommand{\mismatch}{\varepsilon}
+\providecommand{\MI}{\mathrm{I}}
+\providecommand{\Hent}{\mathrm{H}}
+\providecommand{\mismatch}{\varepsilon}
 
 % Math operators
-\DeclareMathOperator*{\argmin}{arg\,min}
-\DeclareMathOperator*{\argmax}{arg\,max}
+\providecommand{\argmin}{\operatorname*{arg\,min}}
+\providecommand{\argmax}{\operatorname*{arg\,max}}
 
 % Cross-referencing shortcuts
-\newcommand{\appref}[1]{Appendix~\ref{#1}}
-\newcommand{\secref}[1]{Section~\ref{#1}}
+\providecommand{\appref}[1]{Appendix~\ref{#1}}
+\providecommand{\secref}[1]{Section~\ref{#1}}
 
 % -------------------- Document metadata --------------------
 
@@ -216,7 +216,6 @@ This is concrete, testable, and close to practice.
 
 \paragraph{New abstract skeleton.}
 A better abstract should say:
-\[
 \begin{quote}
 Agent builders often compare models by end-to-end benchmark racing, but a scalar pass
 rate hides cost, persistence, task heterogeneity, and routing failure.
@@ -235,11 +234,9 @@ continues to separate modes.
 The resulting accounting tells a builder whether to deploy the best single model, build a
 router, improve the diagnostic probe, or change the model/harness menu.
 \end{quote}
-\]
 
 \paragraph{New contribution list.}
 Replace the current contribution list with:
-\[
 \begin{enumerate}[leftmargin=1.25em,itemsep=0.15em]
     \item \textbf{Deployment-loss formulation.}
     We define finite-action model/harness selection under verifier-backed deployment loss,
@@ -259,7 +256,6 @@ Replace the current contribution list with:
     pass-rate versus certified-effort rank reversals, mode-dependent competence, cheap-signal
     value, dynamic post-failure routing, and selection-regret curves.
 \end{enumerate}
-\]
 
 \paragraph{What to demote.}
 Demote the old four-term theorem:
@@ -1984,10 +1980,10 @@ Do not promote a claim unless its gate passes:
     J(\hat r;Z)<J(a^\star_{\emptyset})
     \text{ and regret is small relative to opportunity},\\
     \textbf{Information-diagnostic claim} &
-    \(I\) versus VOI or KL versus regret shows meaningful decoupling,\\
+    \text{I versus VOI or KL versus regret shows meaningful decoupling},\\
     \textbf{Cheap-evaluation claim} &
     \mathcal R_{\mathrm{acct}}(N)<\mathcal R_{\mathrm{race}}(N)
-    \text{ for relevant \(N\)},\\
+    \text{ for relevant }N,\\
     \textbf{Robustness claim} &
     \text{selected design is stable under bootstrap, threshold, cost, and mode-taxonomy changes}.
 \end{array}
@@ -2267,7 +2263,6 @@ The student should avoid:
 
 \paragraph{Minimum viable final experiment package.}
 If time is limited, run only these:
-\[
 \begin{enumerate}[leftmargin=1.25em,itemsep=0.15em]
     \item \textbf{Pass rate vs certified effort.}
     Show rank reversals or entry/occupancy separation.
@@ -2281,12 +2276,10 @@ If time is limited, run only these:
     \item \textbf{Selection-regret curve.}
     Accounting versus black-box racing under equal evaluation budgets.
 \end{enumerate}
-\]
 This is enough to support the revised paper.
 
 \paragraph{Ambitious final experiment package.}
 If time permits, add:
-\[
 \begin{enumerate}[leftmargin=1.25em,itemsep=0.15em]
     \item post-failure posterior fallback \(Z_k\),
     \item difficulty sweep over \(\delta,H,\rho\),
@@ -2295,7 +2288,6 @@ If time permits, add:
     \item mode robustness via merges/shuffles/unsupervised clusters,
     \item price-change and new-model reuse experiment.
 \end{enumerate}
-\]
 
 \paragraph{Price-change and new-model reuse experiment.}
 After estimating \(\ell(a,s)\), perturb model prices:

@@ -98,30 +98,16 @@ The information gain under the small model is $G = 0.50$~nats---substantial, bec
 
 \begin{figure}[t]
   \centering
-  \begin{tikzpicture}
-    \begin{axis}[
-      ybar,
-      bar width=18pt,
-      width=0.78\textwidth,
-      height=5.5cm,
-      ylabel={Contribution (nats)},
-      symbolic x coords={Cost,Competence,Info Gain,Mismatch},
-      xtick=data,
-      ymin=-0.3,
-      ymax=0.75,
-      ytick={-0.2,0,0.2,0.4,0.6},
-      nodes near coords,
-      every node near coord/.append style={font=\footnotesize},
-      ymajorgrids=true,
-      grid style={gray!30},
-    ]
-    \addplot[fill=blue!40] coordinates {(Cost,-0.15)};
-    \addplot[fill=green!50!black!60] coordinates {(Competence,0.22)};
-    \addplot[fill=orange!70] coordinates {(Info Gain,0.50)};
-    \addplot[fill=red!55] coordinates {(Mismatch,0.58)};
-    \legend{}
-    \end{axis}
-  \end{tikzpicture}
+  \begin{tabular}{lr}
+    \toprule
+    Term & Contribution (nats) \\
+    \midrule
+    Cost & -0.15 \\
+    Competence & 0.22 \\
+    Info Gain & 0.50 \\
+    Mismatch & 0.58 \\
+    \bottomrule
+  \end{tabular}
   \caption{Four-term decomposition for the Ricardian scenario (EXP8 data).
   The dominant term is routing mismatch, not competence---indicating that the choice of routing policy matters more than the choice of model in this scenario.
   This is the regime where the full decomposition provides diagnostic value beyond a simple cost comparison.}
