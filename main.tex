@@ -218,6 +218,63 @@ candidates is still paid.  Likewise, if a sequential allocation tries a cheap
 worker before an expensive one, the verified time of the allocation includes
 every consumed attempt up to and including the first accepted artifact.
 
+\begin{definition}[Verified first-passage time]
+\label{def:first-passage}
+For a verified task \(\mathcal T\), action \(a\), budget \(B\), instance \(x\),
+and randomness \(r\), the first verified index is
+\[
+    J^a_B(x,r)
+    :=
+    \min\left\{
+        k\in\mathbb N:
+        k\le K^a_B(x,r),\
+        V\bigl(x,Y^a_k(x,r)\bigr)=1
+    \right\},
+\]
+with \(J^a_B(x,r)=\infty\) when the set is empty.  The verified
+first-passage time is
+\[
+    \tau^a_B(x,r)
+    :=
+    \begin{cases}
+    C^a_{J^a_B(x,r)}(x,r), & J^a_B(x,r)<\infty,\\
+    \infty, & J^a_B(x,r)=\infty.
+    \end{cases}
+\]
+\end{definition}
+
+Thus \(\tau^a_B(x,r)\) is the cumulative resource spent up to the first
+accepted artifact.  If no artifact is accepted within budget, the run is
+right-censored at \(B\) and represented by \(\tau^a_B=\infty\) for any finite
+resource threshold.
+
+\begin{definition}[Certified time-to-solution]
+\label{def:certified-time}
+For confidence level \(\delta\in(0,1)\), the certified time-to-solution of
+action \(a\) is the \((1-\delta)\)-success quantile of its verified
+first-passage time:
+\[
+    \overline T_a(\delta)
+    :=
+    \inf\left\{
+        t>0:
+        \Pr_{X\sim\mu,r}
+        \left[
+            \tau^a_B(X,r)\le t
+        \right]
+        \ge 1-\delta
+    \right\}.
+\]
+\end{definition}
+
+Equivalently, if
+\[
+    F_a(t):=\Pr_{X\sim\mu,r}\!\left[\tau^a_B(X,r)\le t\right],
+\]
+then \(\overline T_a(\delta)=\inf\{t>0:F_a(t)\ge 1-\delta\}\).  This is the
+quantile form of proper time.  It is infinite whenever the action's success
+probability within budget is below \(1-\delta\).
+
 \bibliographystyle{unsrtnat}
 \bibliography{references}
 
