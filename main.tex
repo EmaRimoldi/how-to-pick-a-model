@@ -184,42 +184,32 @@ is made relative to the same task distribution and the same frozen verifier.
 
 \begin{definition}[Deployment action and resource clock]
 \label{def:action-clock}
-Let \(\mathcal A\) be a finite set of deployment actions.  An action
-\(a\in\mathcal A\) is any fixed procedure that, given an instance \(x\) and
-internal randomness \(r\in\Omega\), produces candidate artifacts over time.
+Let \(\mathcal A\) be a finite set of deployment actions, and fix a deployment
+budget \(B\in(0,\infty]\).  An action \(a\in\mathcal A\) is any fixed
+procedure that, given an instance \(x\) and internal randomness \(r\in\Omega\),
+emits candidate artifacts before the budget is exhausted.  Its execution is the
+finite or countable sequence
+\[
+    \Gamma^a_B(x,r)
+    =
+    \bigl(C^a_k(x,r),Y^a_k(x,r)\bigr)_{k=1}^{K^a_B(x,r)},
+    \qquad
+    K^a_B(x,r)\in\mathbb N_0\cup\{\infty\},
+\]
+where \(K^a_B(x,r)\) is the number of candidate artifacts emitted within
+budget, \(Y^a_k(x,r)\in\mathcal Y\) is the \(k\)-th candidate artifact, and
+\(C^a_k(x,r)\) is the cumulative resource spent when that artifact becomes
+available.  When \(K^a_B(x,r)\ge 1\), the clock is cumulative:
+\[
+    0<C^a_1(x,r)\le C^a_2(x,r)\le\cdots,
+    \qquad
+    C^a_k(x,r)\le B \quad\text{for } 1\le k\le K^a_B(x,r).
+\]
+The resource may be wall-clock seconds, generated tokens, dollar cost,
+verifier calls, or a fixed weighted combination of these quantities.
 Examples include a single language-model call, a language model wrapped in a
 harness, a repeated-sampling policy, a sequential allocation across models, a
 multi-agent system, or a broader orchestration capable of solving the instance.
-
-A resource clock is a nondecreasing map
-\[
-    C^a_k(x,r)\in\mathbb R_{\ge 0}, \qquad k=1,2,\ldots,
-\]
-where \(C^a_k(x,r)\) is the cumulative resource spent by action \(a\) after its
-\(k\)-th candidate artifact on instance \(x\).  The resource may be wall-clock
-seconds, generated tokens, dollar cost, verifier calls, or a fixed weighted
-combination of these quantities.  We assume \(0<C^a_1\le C^a_2\le\cdots\).
-\end{definition}
-
-\begin{definition}[Resource-indexed trajectory]
-\label{def:resource-trajectory}
-For \(a\in\mathcal A\), instance \(x\), and randomness \(r\), write
-\[
-    \bigl(C^a_k(x,r),Y^a_k(x,r)\bigr)_{k\ge 1}
-\]
-for the sequence of cumulative resources and candidate artifacts produced by
-the action.  The associated resource-indexed artifact process is
-\[
-    Y^a_c(x,r)
-    :=
-    Y^a_{K_a(c;x,r)}(x,r),
-    \qquad
-    K_a(c;x,r)
-    :=
-    \max\{k:C^a_k(x,r)\le c\},
-\]
-with \(Y^a_c\) undefined when the set is empty.  Thus \(Y^a_c\) is the latest
-artifact available after spending resource \(c\).
 \end{definition}
 
 The cumulative convention is part of the definition.  If a repeated-sampling
