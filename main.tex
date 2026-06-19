@@ -275,6 +275,206 @@ then \(\overline T_a(\delta)=\inf\{t>0:F_a(t)\ge 1-\delta\}\).  This is the
 quantile form of proper time.  It is infinite whenever the action's success
 probability within budget is below \(1-\delta\).
 
+\begin{definition}[Success-by-budget curve]
+\label{def:success-curve}
+The success-by-budget curve of action \(a\) is
+\[
+    F_a(t)
+    :=
+    \Pr_{X\sim\mu,r}
+    \left[
+        \tau^a_B(X,r)\le t
+    \right],
+    \qquad 0\le t\le B.
+\]
+Given observed runs \(\{(x_i,r_i)\}_{i=1}^n\), its empirical estimate is
+\[
+    \widehat F_a(t)
+    :=
+    \frac{1}{n}
+    \sum_{i=1}^n
+    \mathbf 1\{\tau^a_B(x_i,r_i)\le t\}.
+\]
+Runs with no verified solution have \(\tau^a_B=\infty\); they remain in the
+denominator and contribute zero to the numerator for every finite \(t\).
+\end{definition}
+
+Thus benchmark accuracy at budget \(B\) is the single number \(F_a(B)\), while
+proper-time accounting uses the full first-passage curve \(F_a(t)\).
+
+\begin{definition}[Modes and mode-conditioned proper time]
+\label{def:modes}
+A mode schema is a finite set \(\mathcal S\) together with a predeclared map
+\[
+    \sigma:\mathcal X\to\mathcal S.
+\]
+We write \(S=\sigma(X)\) and \(\pi_s=\Pr[S=s]\).  For any mode with
+\(\pi_s>0\), the mode-conditioned success-by-budget curve is
+\[
+    F_{a,s}(t)
+    :=
+    \Pr\left[
+        \tau^a_B(X,r)\le t
+        \mid S=s
+    \right].
+\]
+The mode-conditioned operating proper time is
+\[
+    \tau^\star_{a,s}
+    :=
+    \inf_{t:F_{a,s}(t)>0}
+    \frac{t}{F_{a,s}(t)}.
+\]
+When the infimum is attained, let \(t^\star_{a,s}\) be an attaining resource
+and define \(p^\star_{a,s}:=F_{a,s}(t^\star_{a,s})\).  The log proper-time loss
+is
+\[
+    \ell(a,s)
+    :=
+    \log \tau^\star_{a,s}
+    =
+    \underbrace{\log t^\star_{a,s}}_{\text{cost}}
+    -
+    \underbrace{\log p^\star_{a,s}}_{\text{competence}}.
+\]
+\end{definition}
+
+Modes are not defined by whether a particular model succeeds.  They are
+predeclared task structure---difficulty strata, algorithmic categories,
+reasoning families, or other solver-relevant covariates---used to test whether
+different actions have different cost-success frontiers on different parts of
+the task distribution.
+
+\begin{definition}[Router and signal]
+\label{def:router}
+A router observes a pre-deployment signal \(Z=Z(X)\) and selects an action
+\[
+    \rho:\mathcal Z\to\mathcal A.
+\]
+Its proper-time loss is
+\[
+    L_\rho
+    :=
+    \mathbb E\!\left[\ell(\rho(Z),S)\right].
+\]
+The best single-action baseline is
+\[
+    L_{\mathrm{single}}
+    :=
+    \min_{a\in\mathcal A}
+    \mathbb E[\ell(a,S)].
+\]
+The best decision rule that can use signal \(Z\) has loss
+\[
+    L_Z^\star
+    :=
+    \mathbb E_Z
+    \left[
+        \min_{a\in\mathcal A}
+        \mathbb E[\ell(a,S)\mid Z]
+    \right].
+\]
+The value of information and router regret are
+\[
+    \mathrm{VOI}(Z)
+    :=
+    L_{\mathrm{single}}-L_Z^\star,
+    \qquad
+    \mathrm{Reg}(\rho;Z)
+    :=
+    L_\rho-L_Z^\star.
+\]
+\end{definition}
+
+\begin{theorem}[Operational four-term decomposition]
+\label{thm:operational-four-term}
+Assume the mode-conditioned operating points in Definition~\ref{def:modes}
+exist and have finite positive \(t^\star_{a,s}\) and \(p^\star_{a,s}\).  Fix a
+reference action \(a_0\), and let
+\[
+    a_{\mathrm{single}}^\star
+    \in
+    \operatorname*{arg\,min}_{a\in\mathcal A}
+    \mathbb E[\ell(a,S)]
+\]
+be a best single action.  Then any router \(\rho\) satisfies
+\[
+\begin{aligned}
+&\mathbb E[\ell(a_0,S)]-L_\rho
+\\
+&\quad =
+\underbrace{
+\mathbb E
+\left[
+    \log
+    \frac{t^\star_{a_0,S}}
+         {t^\star_{a_{\mathrm{single}}^\star,S}}
+\right]
+}_{\text{cost}}
++
+\underbrace{
+\mathbb E
+\left[
+    \log
+    \frac{p^\star_{a_{\mathrm{single}}^\star,S}}
+         {p^\star_{a_0,S}}
+\right]
+}_{\text{competence}}
++
+\underbrace{\mathrm{VOI}(Z)}_{\text{information}}
+-
+\underbrace{\mathrm{Reg}(\rho;Z)}_{\text{allocation regret}} .
+\end{aligned}
+\]
+\end{theorem}
+
+\begin{proof}
+By Definition~\ref{def:modes},
+\[
+    \ell(a,s)=\log t^\star_{a,s}-\log p^\star_{a,s}.
+\]
+Therefore
+\[
+\begin{aligned}
+\mathbb E[\ell(a_0,S)]-L_{\mathrm{single}}
+&=
+\mathbb E
+\left[
+    \log
+    \frac{t^\star_{a_0,S}}
+         {t^\star_{a_{\mathrm{single}}^\star,S}}
+\right]
++
+\mathbb E
+\left[
+    \log
+    \frac{p^\star_{a_{\mathrm{single}}^\star,S}}
+         {p^\star_{a_0,S}}
+\right].
+\end{aligned}
+\]
+Adding and subtracting \(L_{\mathrm{single}}\) and \(L_Z^\star\) gives
+\[
+\begin{aligned}
+\mathbb E[\ell(a_0,S)]-L_\rho
+&=
+\bigl(\mathbb E[\ell(a_0,S)]-L_{\mathrm{single}}\bigr)
++
+\bigl(L_{\mathrm{single}}-L_Z^\star\bigr)
+-
+\bigl(L_\rho-L_Z^\star\bigr),
+\end{aligned}
+\]
+which is exactly the stated decomposition.
+\end{proof}
+
+The packed latent-mode identity used later can be viewed as a stronger
+time-sharing surrogate for the same accounting principle: it replaces the
+action-level regret term with a KL mismatch between a posterior mode
+distribution and an allocated share vector.  The operational decomposition
+above is the one used for hard action selection, where routers output actions
+or allocations rather than probability shares over modes.
+
 \bibliographystyle{unsrtnat}
 \bibliography{references}
 
