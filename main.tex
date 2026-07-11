@@ -32,11 +32,8 @@
 \newcommand{\cT}{\mathcal{T}}
 \newcommand{\cB}{\mathcal{B}}
 \newcommand{\cF}{\mathcal{F}}
-\newcommand{\fD}{\mathfrak{D}}
-\newcommand{\fT}{\mathfrak{T}}
 \newcommand{\Sp}{\mathrm{Sp}}
 \newcommand{\Meff}{M_{\mathrm{eff}}}
-\newcommand{\Mn}{M_n}
 \newcommand{\Dlog}{\Delta_{\log}}
 \newcommand{\DlogM}{\Delta_{M,\log}}
 
@@ -75,24 +72,29 @@ The paper is organized in the same order as the formal dependencies: tasks and s
 
 \begin{definition}[Budgeted transductive task]
 \label{def:task}
-A \emph{budgeted transductive task} at scale~$n$ is a tuple $\fT = (\cX_n, \cY_n, V_n, \cB_n)$ where:
+A \emph{budgeted transductive task} is a tuple
+\[
+\cT = (\cX,\cY,V,\mu,\cB)
+\]
+where:
 \begin{itemize}
-\item $\cX_n$ is a set of instances and $\cY_n$ a set of candidate solutions;
-\item $V_n : \cX_n \times \cY_n \to \{0,1\}$ is a polynomial-time verifier;
-\item $\cB_n = (b_t, b_c, b_m)$ specifies budgets for time, cost, and memory.
+\item $\cX$ is a set of instances and $\cY$ a set of candidate solutions;
+\item $V : \cX \times \cY \to \{0,1\}$ is a polynomial-time verifier;
+\item $\mu$ is the deployment distribution over instances in $\cX$;
+\item $\cB = (b_t, b_c, b_m)$ specifies budgets for time, cost, and memory.
 \end{itemize}
-Success on instance $x$ means producing $y$ with $V_n(x,y)=1$ within $\cB_n$.
+Success on instance $x$ means producing $y$ with $V(x,y)=1$ within $\cB$.
 \end{definition}
 
 \begin{definition}[Task family]
 \label{def:task-family}
-A \emph{task family} is a sequence $\fT = (\fT_n)_{n \ge 1}$ of budgeted transductive tasks, together with a deployment distribution $\mu_n$ over instances $\cX_n$.
+A \emph{task family} is a sequence $(\cT_n)_{n \ge 1}$ of budgeted transductive tasks.
 The family captures a class of problems the builder expects to encounter repeatedly.
 \end{definition}
 
 \begin{definition}[Stochastic solver]
 \label{def:solver}
-A \emph{stochastic solver} $A$ for task family $\fT$ is a randomized algorithm that, given instance $x \in \cX_n$ and budgets $\cB_n$, produces a candidate $y$ (or reports failure) using a sequence of model calls, tool invocations, memory accesses, and branching decisions.
+A \emph{stochastic solver} $A$ for task family $\cT$ is a randomized algorithm that, given instance $x \in \cX$ and budgets $\cB$, produces a candidate $y$ (or reports failure) using a sequence of model calls, tool invocations, memory accesses, and branching decisions.
 A run of $A$ on $(x, r)$ (where $r$ denotes randomness) induces a \emph{run graph} $G_A(x;r)$---a DAG whose nodes are computational steps and whose edges encode data and control flow.
 \end{definition}
 
@@ -100,15 +102,15 @@ The graph is not the task. The task is the objective under budgets; the graph is
 
 \begin{definition}[Certified time-to-solution]
 \label{def:certified-time}
-For solver $A$ on task family $\fT$ at confidence level $\delta \in (0,1)$, the \emph{certified time-to-solution} is
+For solver $A$ on task family $\cT$ at confidence level $\delta \in (0,1)$, the \emph{certified time-to-solution} is
 \[
-\overline{T}_A(n,\delta) \;=\; \inf\!\left\{t > 0 : \Prb_{x \sim \mu_n, r}\!\left[A(x;r) \text{ succeeds within time } t\right] \ge 1-\delta\right\}.
+\overline{T}_A(\delta) \;=\; \inf\!\left\{t > 0 : \Prb_{x \sim \mu, r}\!\left[A(x;r) \text{ succeeds within time } t\right] \ge 1-\delta\right\}.
 \]
 \end{definition}
 
 \begin{definition}[Certified log-speedup]
 \label{def:speedup}
-Given a baseline solver $A_0$ and a deployed solver $A$, the certified log-speedup is $\Delta = \log \overline{T}_{A_0}(n,\delta) - \log \overline{T}_A(n,\delta)$.
+Given a baseline solver $A_0$ and a deployed solver $A$, the certified log-speedup is $\Delta = \log \overline{T}_{A_0}(\delta) - \log \overline{T}_A(\delta)$.
 Positive $\Delta$ means the deployed solver is faster.
 \end{definition}
 
@@ -123,29 +125,29 @@ This deployment-level definition is a quantile-time object. The exact packed-fam
 Fix a task family at scale~$n$.
 Assume:
 \begin{enumerate}
-\item \textbf{Latent modes.} There is a discrete latent variable $S \in [\Mn] := \{1,\ldots,\Mn\}$ with prior $\pi$, representing the solution strategy, and an observable $D \sim P(D \mid S)$ representing verifier feedback and partial execution traces, with posterior $\pi_D(s) := \Prb[S = s \mid D]$.
+\item \textbf{Latent modes.} There is a finite set of modes $\cS=\{1,\ldots,m\}$ and a latent variable $S \in \cS$ with prior $\pi$, representing the solution strategy. An observable signal $Z \sim P(Z \mid S)$ represents verifier feedback and partial execution traces, with posterior $\pi_z(s) := \Prb[S = s \mid Z=z]$.
 \item \textbf{One expert per mode.} Each mode $s$ has a specialized expert with certified internal scale $t_0(s)$.
-\item \textbf{Allocation determines time.} A routing policy chooses a share vector $q \in \Delta_{\Mn}$.
+\item \textbf{Allocation determines time.} A routing policy chooses a share vector $q \in \Delta(\cS)$.
 Under hidden mode~$s$, allocating share $q(s)$ yields certified time
 \[
 \overline{T}_q(s) \;=\; c_{\mathrm{sim}} \cdot \frac{t_0(s)}{q(s)},
 \]
 where $c_{\mathrm{sim}}$ is the simulation overhead.
-\item \textbf{Baseline and deployed schedulers.} The baseline chooses a fixed share vector $q_0 \in \Delta_{\Mn}$; the deployed system chooses a data-dependent map $D \mapsto q_D \in \Delta_{\Mn}$.
+\item \textbf{Baseline and deployed schedulers.} The baseline chooses a fixed share vector $q_0 \in \Delta(\cS)$; the deployed system chooses a data-dependent map $z \mapsto q_z \in \Delta(\cS)$.
 \end{enumerate}
 \end{assumption}
 
-All KL and logarithmic expressions below are understood under the standing support convention that the relevant allocations put positive mass on every mode in the posterior support; for continuous-reward extensions the corresponding reward rates are assumed positive. For a posterior $\pi_D$ over modes, define $\Meff(D) := \exp(H(\pi_D))$. In Lean tactic prediction, modes are proof strategy families; $D$ is partial execution trace; $q(s)$ is the fraction of attempt budget devoted to strategy $s$.
+All KL and logarithmic expressions below are understood under the standing support convention that the relevant allocations put positive mass on every mode in the posterior support; for continuous-reward extensions the corresponding reward rates are assumed positive. For a posterior $\pi_z$ over modes, define $\Meff(z) := \exp(H(\pi_z))$. In Lean tactic prediction, modes are proof strategy families; $Z$ is partial execution trace; $q(s)$ is the fraction of attempt budget devoted to strategy $s$.
 
 \section{Agent Building as a Deployment Optimization Problem}
 \label{sec:design}
 
 \begin{definition}[Agentic system design]
 \label{def:agentic-system-design}
-For a task family $\fT$, an \emph{agentic system design} is a tuple
+For a task family $\cT$, an \emph{agentic system design} is a tuple
 \begin{equation}
 \label{eq:design-tuple}
-d = (M, \rho, \Omega, W, K, p) \in \fD_n,
+d = (M, \rho, \Omega, W, K, p) \in \cD_n,
 \end{equation}
 where $M$ is the base model, $\rho$ is the orchestration/routing policy, $\Omega$ is the available tool library, $W$ denotes long-term memory resources, $K$ is the active context budget, and $p$ is the allowed degree of parallelism.
 The design induces a stochastic solver $A_d$ in the sense of Definition~\ref{def:solver}; this induced solver is the agentic system deployed on the task family.
@@ -155,7 +157,7 @@ For a confidence level $\delta \in (0,1)$ and a deployment loss $\Lambda_n$ over
 \begin{equation}
 \label{eq:master-design}
 \boxed{\;
-\min_{d \in \fD_n}\; \Lambda_n(t,c,m,p)
+\min_{d \in \cD_n}\; \Lambda_n(t,c,m,p)
 \qquad\text{subject to}\qquad
 (t,c,m,p) \in \cF^{\mathrm{dep}}_{A_d}(n,\delta)
 \;}
@@ -172,25 +174,25 @@ The framework identifies six decision variables. It does not solve their full jo
 
 \begin{lemma}[Conditional log-time decomposition]
 \label{lem:conditional}
-Under Assumption~\ref{ass:packed-family}, for any realized feedback $D$ and any share vector $q \in \Delta_{\Mn}$ with $\mathrm{supp}(\pi_D) \subseteq \mathrm{supp}(q)$,
+Under Assumption~\ref{ass:packed-family}, for any realized signal $z$ and any share vector $q \in \Delta(\cS)$ with $\mathrm{supp}(\pi_z) \subseteq \mathrm{supp}(q)$,
 \[
-\E_{S \sim \pi_D}\!\left[\log \overline{T}_q(S) \mid D\right]
+\E_{S \sim \pi_z}\!\left[\log \overline{T}_q(S) \mid Z=z\right]
 \;=\;
-\E_{S\sim\pi_D}[\log(c_{\mathrm{sim}}\, t_0(S))] + H(\pi_D) + \KL(\pi_D \| q).
+\E_{S\sim\pi_z}[\log(c_{\mathrm{sim}}\, t_0(S))] + H(\pi_z) + \KL(\pi_z \| q).
 \]
-The allocation $q = \pi_D$ uniquely minimizes conditional expected certified log-time.
-The excess over this optimum is exactly $\KL(\pi_D \| q)$.
+The allocation $q = \pi_z$ uniquely minimizes conditional expected certified log-time.
+The excess over this optimum is exactly $\KL(\pi_z \| q)$.
 \end{lemma}
 
 \begin{proof}
 Since $\log \overline{T}_q(s) = \log(c_{\mathrm{sim}}\, t_0(s)) - \log q(s)$,
 \[
 \begin{aligned}
-\E_{S \sim \pi_D}\!\left[\log \overline{T}_q(S) \mid D\right]
-&= \E_{S\sim\pi_D}[\log(c_{\mathrm{sim}}\, t_0(S))]
-   + \sum_s \pi_D(s) \log \frac{1}{q(s)} \\
-&= \E_{S\sim\pi_D}[\log(c_{\mathrm{sim}}\, t_0(S))]
-   + H(\pi_D) + \KL(\pi_D \| q),
+\E_{S \sim \pi_z}\!\left[\log \overline{T}_q(S) \mid Z=z\right]
+&= \E_{S\sim\pi_z}[\log(c_{\mathrm{sim}}\, t_0(S))]
+   + \sum_s \pi_z(s) \log \frac{1}{q(s)} \\
+&= \E_{S\sim\pi_z}[\log(c_{\mathrm{sim}}\, t_0(S))]
+   + H(\pi_z) + \KL(\pi_z \| q),
 \end{aligned}
 \]
 using the cross-entropy identity $\sum_s p(s)\log(1/q(s)) = H(p) + \KL(p\|q)$.
@@ -207,13 +209,13 @@ Under Assumption~\ref{ass:packed-family}, with a prior-matched baseline $q_0 = \
 \]
 where
 \begin{align}
-\Dlog &:= \E\!\left[\log \overline{T}_\pi(S)-\log \overline{T}_{q_D}(S)\right], \nonumber\\
-G &:= \I_\pi(S : D) = H(\pi) - \E_D[H(\pi_D)], \label{eq:G-def} \\
-\varepsilon &:= \E_D\!\left[\KL(\pi_D \| q_D)\right]. \label{eq:eps-def}
+\Dlog &:= \E\!\left[\log \overline{T}_\pi(S)-\log \overline{T}_{q_Z}(S)\right], \nonumber\\
+G &:= \I_\pi(S : Z) = H(\pi) - \E_Z[H(\pi_Z)], \label{eq:G-def} \\
+\varepsilon &:= \E_Z\!\left[\KL(\pi_Z \| q_Z)\right]. \label{eq:eps-def}
 \end{align}
 The term $G$ is the mutual information between the latent mode and the feedback---the \emph{information generation quality}.
 The term $\varepsilon$ is the expected KL divergence of the routing policy from the posterior---the \emph{routing mismatch}.
-Equivalently: $\Dlog \le G$, with equality if and only if $q_D = \pi_D$ almost surely.
+Equivalently: $\Dlog \le G$, with equality if and only if $q_Z = \pi_Z$ almost surely.
 One nat of routing mismatch costs exactly one nat of expected certified log-speedup.
 \end{theorem}
 
@@ -223,14 +225,14 @@ Apply Lemma~\ref{lem:conditional} to the baseline allocation $q_0 = \pi$:
 \E\!\left[\log \overline{T}_\pi(S)\right]
 = \E_\pi[\log(c_{\mathrm{sim}}\, t_0(S))] + H(\pi).
 \]
-Apply it to the deployed allocation $q_D$:
+Apply it to the deployed allocation $q_Z$:
 \[
-\E\!\left[\log \overline{T}_{q_D}(S)\right]
-= \E_\pi[\log(c_{\mathrm{sim}}\, t_0(S))] + \E_D[H(\pi_D)] + \E_D[\KL(\pi_D \| q_D)].
+\E\!\left[\log \overline{T}_{q_Z}(S)\right]
+= \E_\pi[\log(c_{\mathrm{sim}}\, t_0(S))] + \E_Z[H(\pi_Z)] + \E_Z[\KL(\pi_Z \| q_Z)].
 \]
 Subtract:
 \[
-\Dlog = H(\pi) - \E_D[H(\pi_D)] - \E_D[\KL(\pi_D \| q_D)]
+\Dlog = H(\pi) - \E_Z[H(\pi_Z)] - \E_Z[\KL(\pi_Z \| q_Z)]
 = G - \varepsilon.
 \]
 \end{proof}
@@ -242,7 +244,7 @@ For a non-prior-matched baseline $q_0 \ne \pi$, the identity becomes $\Dlog = G 
 
 \begin{assumption}[Model-dependent packed family]
 \label{ass:model-packed-family}
-Fix a task family and a shared latent mode variable $S \sim \pi$ over $[\Mn]$.
+Fix a task family and a shared latent mode variable $S \sim \pi$ over $\cS=\{1,\ldots,m\}$.
 For each model $M$:
 \begin{enumerate}
 \item The per-step cost is $\kappa(M)$.
@@ -250,8 +252,8 @@ For each model $M$:
 \[
 \overline{T}_q^{(M)}(s) = \kappa(M) \cdot c_{\mathrm{sim}} \cdot \frac{t_0(M,s)}{q(s)}.
 \]
-\item The feedback observable is $D \sim P_M(D \mid S)$, with posterior $\pi_D^M(s) := \Prb[S = s \mid D_M = D]$.
-\item The routing policy is $q_D^M \in \Delta_{\Mn}$.
+\item The feedback signal is $Z_M \sim P_M(Z \mid S)$, with posterior $\pi_z^M(s) := \Prb[S = s \mid Z_M = z]$ for a realization $z$.
+\item The routing policy is $q_z^M \in \Delta(\cS)$ for each realized signal $z$.
 \end{enumerate}
 \end{assumption}
 
@@ -273,11 +275,11 @@ Under Assumption~\ref{ass:model-packed-family}, comparing a prior-matched baseli
 \end{equation}
 where the four terms are:
 \begin{align}
-\DlogM &:= \E\!\left[\log \overline{T}_\pi^{(M_0)}(S)-\log \overline{T}_{q_D}^{(M)}(S)\right], \nonumber\\
+\DlogM &:= \E\!\left[\log \overline{T}_\pi^{(M_0)}(S)-\log \overline{T}_{q_Z}^{(M)}(S)\right], \nonumber\\
 \log\frac{\kappa(M_0)}{\kappa(M)} &\quad\text{(per-step cost advantage of }M\text{)}, \label{eq:kappa-term} \\
 \varphi(M_0,M) &:= \E_\pi\!\left[\log\frac{t_0(M_0,S)}{t_0(M,S)}\right] \quad\text{(within-mode competence advantage)}, \label{eq:phi-term} \\
-G(M) &:= \I_\pi(S : D_M) \quad\text{(information generation quality)}, \label{eq:G-term} \\
-\varepsilon(M) &:= \E_D\!\left[\KL(\pi_D^M \| q_D^M)\right] \quad\text{(routing mismatch)}. \label{eq:eps-term}
+G(M) &:= \I_\pi(S : Z_M) \quad\text{(information generation quality)}, \label{eq:G-term} \\
+\varepsilon(M) &:= \E_{Z_M}\!\left[\KL(\pi_Z^M \| q_Z^M)\right] \quad\text{(routing mismatch)}. \label{eq:eps-term}
 \end{align}
 \end{theorem}
 
@@ -293,17 +295,17 @@ For the prior-matched baseline with model $M_0$:
 \]
 For the deployed system with model $M$:
 \begin{align*}
-\E\!\left[\log \overline{T}_{q_D}^{(M)}(S)\right]
+\E\!\left[\log \overline{T}_{q_Z}^{(M)}(S)\right]
 &= \log\kappa(M) + \log c_{\mathrm{sim}} + \E_\pi[\log t_0(M,S)] \\
-&\quad + \E_D[H(\pi_D^M)] + \E_D[\KL(\pi_D^M \| q_D^M)],
+&\quad + \E_{Z_M}[H(\pi_Z^M)] + \E_{Z_M}[\KL(\pi_Z^M \| q_Z^M)],
 \end{align*}
 where the last two terms arise from the cross-entropy identity exactly as in Theorem~\ref{thm:ri-identity}.
 Subtracting and grouping:
 \begin{align*}
 \DlogM &= \log\frac{\kappa(M_0)}{\kappa(M)}
 + \E_\pi\!\left[\log\frac{t_0(M_0,S)}{t_0(M,S)}\right]
-+ \bigl(H(\pi) - \E_D[H(\pi_D^M)]\bigr)
-- \E_D[\KL(\pi_D^M \| q_D^M)] \\[4pt]
++ \bigl(H(\pi) - \E_{Z_M}[H(\pi_Z^M)]\bigr)
+- \E_{Z_M}[\KL(\pi_Z^M \| q_Z^M)] \\[4pt]
 &= \log\frac{\kappa(M_0)}{\kappa(M)} + \varphi(M_0,M) + G(M) - \varepsilon(M).
 \end{align*}
 \end{proof}
@@ -330,7 +332,7 @@ Here $H_n$ denotes reusable solver-side structure: proof tactics, repair templat
 \begin{assumption}[A1--A7: shared admissibility and aligned witness]\label{ass:upper-envelope}
 \leavevmode
 \begin{itemize}
-\item \textbf{A1} (verifiability): $V_n\in \mathrm{P}$.
+\item \textbf{A1} (verifiability): $V\in \mathrm{P}$.
 \item \textbf{A2} (prefix coding): $\cA_n$ is countable and prefix-free, and both $w(\cdot)$ and $w(\cdot\mid D_n)$ satisfy Kraft.
 \item \textbf{A3} (shared admissibility): the same nonempty set $\cA_n^\delta$ is used in the baseline and conditioned schedule objectives.
 \item \textbf{A4} (shared simulation): both schedules incur the same simulation overhead $c_{\mathrm{sim}}(n)\in\poly(n)$.
@@ -417,7 +419,7 @@ The main decomposition results refer to the left-hand-side type.
 \label{prop:approximation-guarantee}
 Suppose the packed-family assumptions (Assumption~\ref{ass:model-packed-family}) hold except for two relaxations:
 \begin{enumerate}
-\item \textup{(Soft modes.)} The posterior $\pi_D^M$ is $\delta$-approximately one-hot: there exists $s^*(D) \in [\Mn]$ with $\pi_D^M(s^*(D)) \ge 1-\delta$ for some $\delta \in [0,1)$.
+\item \textup{(Soft modes.)} The posterior $\pi_Z^M$ is $\delta$-approximately one-hot: there exists $s^*(Z) \in \cS$ with $\pi_Z^M(s^*(Z)) \ge 1-\delta$ for some $\delta \in [0,1)$.
 \item \textup{(Approximate log-linearity.)} The certified time satisfies $\log \overline{T}_q^{(M)}(s) = \log\kappa(M) + \log c_{\mathrm{sim}} + \log t_0(M,s) - \log q(s) + r(M,s,q)$ where $|r(M,s,q)| \le \eta$ uniformly.
 \end{enumerate}
 Then the four-term identity (Theorem~\ref{thm:four-term}) holds up to a remainder:
@@ -425,35 +427,35 @@ Then the four-term identity (Theorem~\ref{thm:four-term}) holds up to a remainde
 \begin{aligned}
 &\left|\,
 \E\!\left[\log \overline{T}_\pi^{(M_0)}(S)
-        - \log \overline{T}_{q_D}^{(M)}(S)\right] \right.\\
+        - \log \overline{T}_{q_Z}^{(M)}(S)\right] \right.\\
 &\left.\qquad
 - \left[\log\frac{\kappa(M_0)}{\kappa(M)}
         + \varphi(M_0,M) + G(M) - \varepsilon(M)\right]
 \right|
 \;\le\;
-R(\delta,\eta,\Mn),
+R(\delta,\eta,m),
 \end{aligned}
 \]
 where
 \[
-R(\delta,\eta,\Mn) \;\le\; 2h(\delta)+2\delta\log\Mn+2\eta,
+R(\delta,\eta,m) \;\le\; 2h(\delta)+2\delta\log m+2\eta,
 \]
-with $h(\delta)=-\delta\log\delta-(1-\delta)\log(1-\delta)$ and $h(0)=0$. In particular, if $\delta>0$ and $\Mn \ge \exp(h(\delta)/\delta)$, then $R(\delta,\eta,\Mn)\le 4\delta\log\Mn+2\eta$.
+with $h(\delta)=-\delta\log\delta-(1-\delta)\log(1-\delta)$ and $h(0)=0$. In particular, if $\delta>0$ and $m \ge \exp(h(\delta)/\delta)$, then $R(\delta,\eta,m)\le 4\delta\log m+2\eta$.
 \end{proposition}
 
 \begin{proof}
 The two relaxations contribute independently.
 
 \emph{Soft modes.}
-When $\pi_D^M$ is $\delta$-approximately one-hot, $H(\pi_D^M) \le h(\delta) + \delta\log(\Mn-1) \le h(\delta) + \delta\log\Mn$, where $h(\delta) = -\delta\log\delta-(1{-}\delta)\log(1{-}\delta)$.
-At most two entropy-type terms contribute, giving a routing correction bounded by $2h(\delta)+2\delta\log\Mn$.
-If $\delta>0$ and $\Mn \ge \exp(h(\delta)/\delta)$, then $h(\delta)\le \delta\log\Mn$, so this part is at most $4\delta\log\Mn$.
+When $\pi_Z^M$ is $\delta$-approximately one-hot, $H(\pi_Z^M) \le h(\delta) + \delta\log(m-1) \le h(\delta) + \delta\log m$, where $h(\delta) = -\delta\log\delta-(1{-}\delta)\log(1{-}\delta)$.
+At most two entropy-type terms contribute, giving a routing correction bounded by $2h(\delta)+2\delta\log m$.
+If $\delta>0$ and $m \ge \exp(h(\delta)/\delta)$, then $h(\delta)\le \delta\log m$, so this part is at most $4\delta\log m$.
 
 \emph{Approximate log-linearity.}
 The residual $r(M,s,q)$ enters additively into each log-time term.
-Since the identity subtracts two such terms, $|r(M,s,q_D) - r(M_0,s,\pi)| \le 2\eta$.
+Since the identity subtracts two such terms, $|r(M,s,q_Z) - r(M_0,s,\pi)| \le 2\eta$.
 
-Combining: $R(\delta,\eta,\Mn) \le 2h(\delta)+2\delta\log\Mn+2\eta$, with the stated simplified bound under the size condition.
+Combining: $R(\delta,\eta,m) \le 2h(\delta)+2\delta\log m+2\eta$, with the stated simplified bound under the size condition.
 \end{proof}
 
 \section{Consequences for Model Choice and System Design}
@@ -461,7 +463,7 @@ Combining: $R(\delta,\eta,\Mn) \le 2h(\delta)+2\delta\log\Mn+2\eta$, with the st
 
 \begin{proposition}[Benchmark racing can be suboptimal]
 \label{prop:graph-not-task}
-Under Assumption~\ref{ass:model-packed-family}, consider two models $M_A$ and $M_B$ with distinct posterior-matched optimal routing policies: $q^{*,A}_D=\pi_D^A$ and $q^{*,B}_D=\pi_D^B$, with $q^{*,A}_D \ne q^{*,B}_D$ on a set of instances of positive measure.
+Under Assumption~\ref{ass:model-packed-family}, consider two models $M_A$ and $M_B$ with distinct posterior-matched optimal routing policies: $q^{*,A}_Z=\pi_Z^A$ and $q^{*,B}_Z=\pi_Z^B$, with $q^{*,A}_Z \ne q^{*,B}_Z$ on a set of instances of positive measure.
 Then there exist cost, competence, and information terms for which evaluating both models under a single fixed workflow selects the wrong model: the model with lower win rate under the fixed workflow achieves lower expected certified log-time under its own optimal routing.
 \end{proposition}
 
@@ -469,7 +471,7 @@ Then there exist cost, competence, and information terms for which evaluating bo
 Model $M_A$ evaluated under its optimal routing has mismatch $\varepsilon_A(q^{*,A}) = 0$.
 Model $M_B$ evaluated under $M_A$'s routing has mismatch
 \[
-\varepsilon_B(q^{*,A}) = \E_D[\KL(\pi^B_D \| q^{*,A}_D)] > 0.
+\varepsilon_B(q^{*,A}) = \E_Z[\KL(\pi^B_Z \| q^{*,A}_Z)] > 0.
 \]
 Benchmark racing compares both under one workflow, penalizing $M_B$ by $\varepsilon_B(q^{*,A})$ nats.
 Under its own routing, $M_B$ recovers the full penalty.
@@ -478,7 +480,7 @@ If $M_B$'s other advantages exceed $M_A$'s by less than $\varepsilon_B(q^{*,A})$
 
 \begin{proposition}[Suboptimality of $M$-restricted optimization]
 \label{prop:m-restriction}
-Under Assumption~\ref{ass:model-packed-family}, consider two candidate models $M_A$ and $M_B$ with distinct posterior-matched optimal routing policies: $q^{*,A}_D=\pi_D^A$ and $q^{*,B}_D=\pi_D^B$, with $q^{*,A}_D \ne q^{*,B}_D$ on a set of instances of positive measure.
+Under Assumption~\ref{ass:model-packed-family}, consider two candidate models $M_A$ and $M_B$ with distinct posterior-matched optimal routing policies: $q^{*,A}_Z=\pi_Z^A$ and $q^{*,B}_Z=\pi_Z^B$, with $q^{*,A}_Z \ne q^{*,B}_Z$ on a set of instances of positive measure.
 If the builder restricts to $M$-variation alone---fixing $\rho = q^{*,A}$ and all other coordinates at model~$A$'s values---then the suboptimality gap relative to the unrestricted optimum is at least
 \[
 \varepsilon_B(q^{*,A}) - \varepsilon_B(q^{*,B}) \;=\; \varepsilon_B(q^{*,A}) \;>\; 0,
@@ -491,11 +493,11 @@ Under Theorem~\ref{thm:four-term}, the expected certified log-speedup for model 
 \[
 \Delta_{B,\log}(q) = \log(\kappa_0/\kappa_B) + \varphi_B + G_B - \varepsilon_B(q),
 \]
-where $\varepsilon_B(q) = \E_D[\KL(\pi^B_D \| q_D)]$.
-The unrestricted optimum uses $q = q^{*,B}_D$, achieving $\varepsilon_B(q^{*,B}) = 0$.
+where $\varepsilon_B(q) = \E_Z[\KL(\pi^B_Z \| q_Z)]$.
+The unrestricted optimum uses $q = q^{*,B}_Z$, achieving $\varepsilon_B(q^{*,B}) = 0$.
 Under $M$-restriction, the builder evaluates $M_B$ with $q^{*,A}$, incurring
 \[
-\varepsilon_B(q^{*,A}) = \E_D[\KL(\pi^B_D \| q^{*,A}_D)] > 0
+\varepsilon_B(q^{*,A}) = \E_Z[\KL(\pi^B_Z \| q^{*,A}_Z)] > 0
 \]
 since the policies differ on positive measure and KL divergence is zero if and only if the distributions agree almost surely.
 \end{proof}
@@ -542,7 +544,7 @@ A smaller model dominates when it is cheaper, comparably competent on effective 
 \label{prop:verifier-eq}
 Under Assumption~\ref{ass:model-packed-family}, suppose both models' residual posterior entropies are small:
 \[
-\E_D[H(\pi_D^{M_1})] \le \eta_1, \qquad \E_D[H(\pi_D^{M_2})] \le \eta_2.
+\E_Z[H(\pi_Z^{M_1})] \le \eta_1, \qquad \E_Z[H(\pi_Z^{M_2})] \le \eta_2.
 \]
 Then
 \[
@@ -551,14 +553,14 @@ Then
 \end{proposition}
 
 \begin{proof}
-$G(M) = H(\pi) - \E_D[H(\pi_D^M)]$.
-Since $H(\pi)$ is model-independent, $|G(M_1) - G(M_2)| = |\E_D[H(\pi_D^{M_2})] - \E_D[H(\pi_D^{M_1})]| \le \eta_1 + \eta_2$.
+$G(M) = H(\pi) - \E_Z[H(\pi_Z^M)]$.
+Since $H(\pi)$ is model-independent, $|G(M_1) - G(M_2)| = |\E_Z[H(\pi_Z^{M_2})] - \E_Z[H(\pi_Z^{M_1})]| \le \eta_1 + \eta_2$.
 \end{proof}
 
 \begin{definition}[Fine-tuning operator on the packed family]
 \label{def:finetuning-operator}
 Given a model $M$ and a dataset of $N$ labeled instances from the effective modes
-$\cS_{\mathrm{eff}} := \{s : \E_D[\pi_D(s)] > \eta\}$,
+$\cS_{\mathrm{eff}} := \{s : \E_Z[\pi_Z(s)] > \eta\}$,
 a fine-tuning operator $\mathrm{FT}$ produces a model
 $\widetilde M = \mathrm{FT}(M,\cS_{\mathrm{eff}},N)$ such that:
 \begin{enumerate}
@@ -608,7 +610,7 @@ The final claim combines these inequalities with the cost premise and the specia
 
 \begin{assumption}[Multi-agent packed family with coordination cost]
 \label{ass:multi-agent-packed}
-Consider a packed latent-mode family with $\Mn$ modes and prior $\pi$.
+Consider a packed latent-mode family with $m$ modes and prior $\pi$.
 A single-agent design uses model $M_g$ (generalist) with per-mode competence $t_0(M_g, s)$, per-step cost $\kappa(M_g)$, and routing allocation $q_g$.
 A $K$-agent specialist-team design assigns each of $K$ agents to a subset of modes.
 Agent $i$ has model $M_i$ with per-mode competence $t_0(M_i, s)$ and per-step cost $\kappa(M_i)$.
@@ -616,7 +618,7 @@ The team allocation is $q_{\mathrm{team}}$, and $\mathrm{team}(s) \in [K]$ denot
 The team incurs a coordination cost $c_{\mathrm{coord}}(K) \ge 0$ added to the expected log-time.
 The team's log-effective per-step cost is
 \[
-\ell_{\kappa,\mathrm{team}}:=\sum_{s=1}^{\Mn}\pi(s)\log \kappa(M_{\mathrm{team}(s)}).
+\ell_{\kappa,\mathrm{team}}:=\sum_{s=1}^{m}\pi(s)\log \kappa(M_{\mathrm{team}(s)}).
 \]
 \end{assumption}
 
@@ -671,7 +673,7 @@ From Theorem~\ref{thm:multi-agent-exact}, the team dominates iff the LHS exceeds
 Since $\gamma \le \eta$ by verifier equalization, the condition LHS $> c_{\mathrm{coord}}(K) + \eta \ge c_{\mathrm{coord}}(K) + \gamma$ is sufficient.
 \end{proof}
 
-The inner routing problem of the packed family is the same log-optimal allocation problem that appears in Kelly betting~\cite{kelly1956}, universal portfolio theory~\cite{cover-thomas2006}, and algorithm-portfolio scheduling~\cite{gomes-selman2001}. The optimal allocation is $q^*(\cdot \mid D)=\pi_D(\cdot)$; the mismatch $\varepsilon$ is the expected log-loss from suboptimal allocation.
+The inner routing problem of the packed family is the same log-optimal allocation problem that appears in Kelly betting~\cite{kelly1956}, universal portfolio theory~\cite{cover-thomas2006}, and algorithm-portfolio scheduling~\cite{gomes-selman2001}. The optimal allocation is $q^*(\cdot \mid Z)=\pi_Z(\cdot)$; the mismatch $\varepsilon$ is the expected log-loss from suboptimal allocation.
 
 \section{When Are Two Tasks the Same?}
 \label{sec:equivalence}
@@ -681,16 +683,16 @@ The inner routing problem of the packed family is the same log-optimal allocatio
 
 \begin{definition}[Budget-preserving reduction]
 \label{def:budget-preserving-reduction}
-A \emph{budget-preserving reduction} from task family $\fT^A$ to task family $\fT^B$ at scale~$n$ is a pair of maps $(f,g)$ where $f: \cX^A_n \to \cX^B_n$ maps instances and $g: \cY^B_n \to \cY^A_n$ maps solutions, such that:
+A \emph{budget-preserving reduction} from task family $\cT^A$ to task family $\cT^B$ at scale~$n$ is a pair of maps $(f,g)$ where $f: \cX^A_n \to \cX^B_n$ maps instances and $g: \cY^B_n \to \cY^A_n$ maps solutions, such that:
 \begin{enumerate}
 \item \textbf{Correctness preservation:} $V^B_n(f(x), y) = 1 \implies V^A_n(x, g(y)) = 1$.
-\item \textbf{Budget preservation:} the composition $x \mapsto g(A_d^B(f(x)))$ respects the budget constraints of $\fT^A$: the overhead of applying $f$ and $g$ is absorbed within $\cB^A_n$.
+\item \textbf{Budget preservation:} the composition $x \mapsto g(A_d^B(f(x)))$ respects the budget constraints of $\cT^A$: the overhead of applying $f$ and $g$ is absorbed within $\cB^A_n$.
 \end{enumerate}
 \end{definition}
 
 \begin{definition}[Strong and weak equivalence]
 \label{def:equivalence}
-Two task families $\fT^A$ and $\fT^B$ are:
+Two task families $\cT^A$ and $\cT^B$ are:
 \begin{itemize}
 \item \emph{Strongly equivalent} if budget-preserving reductions exist in both directions with overhead that is $o(1)$ relative to the budgets.
 \item \emph{$\alpha$-weakly equivalent} if for every design~$d$ the certified log-speedups satisfy $|\Delta^A(d) - \Delta^B(d)| \le \alpha$.
@@ -712,18 +714,18 @@ When $\eta_{A \to B} \approx 1$, training on $A$-data is almost as good as train
 
 \begin{theorem}[Post-training equivalence from task equivalence]
 \label{thm:post-training}
-In the packed-family expected-log regime, suppose both families share the same latent space $S \in [\Mn]$ with different observation channels $P_A(D|S)$ and $P_B(D|S)$, and suppose the denominator in the ratio below is positive.
+In the packed-family expected-log regime, suppose both families share the same latent space $S \in \cS$ with different observation channels $P_A(Z|S)$ and $P_B(Z|S)$, and suppose the denominator in the ratio below is positive.
 Then
 \begin{equation}
 \label{eq:post-training-ratio}
-\eta_{A \to B}(m) \;=\; \frac{I(S;D_A^{(m)}) - \varepsilon_{A \to B}}{I(S;D_B^{(m)}) - \varepsilon_{B \to B}}.
+\eta_{A \to B}(m) \;=\; \frac{I(S;Z_A^{(m)}) - \varepsilon_{A \to B}}{I(S;Z_B^{(m)}) - \varepsilon_{B \to B}}.
 \end{equation}
 In particular:
 \begin{enumerate}
 \item[\textup{(i)}] If both families share all latent structure and cross-family mismatch equals within-family mismatch, then $\eta_{A \to B} = 1$: training on $A$ is exactly as good as training on $B$.
 \item[\textup{(ii)}] If the families share $S$ but not the channel, then, when mismatch terms are small,
 \[
-\eta_{A \to B} \approx \frac{I(S;D_A)}{I(S;D_B)}.
+\eta_{A \to B} \approx \frac{I(S;Z_A)}{I(S;Z_B)}.
 \]
 The transfer ratio is governed by the information-quality ratio of the two channels.
 \end{enumerate}
@@ -731,42 +733,42 @@ The transfer ratio is governed by the information-quality ratio of the two chann
 
 \begin{proof}
 Apply the Routing-Information Identity (Theorem~\ref{thm:ri-identity}) to both transfer settings over the shared mode space.
-For the numerator, the side-information variable is $D_A^{(m)}$ drawn from the $A$-channel, applied to target family~$B$:
+For the numerator, the side-information variable is $Z_A^{(m)}$ drawn from the $A$-channel, applied to target family~$B$:
 \[
-\Delta_{A \to B} \;=\; I(S; D_A^{(m)}) - \varepsilon_{A \to B},
+\Delta_{A \to B} \;=\; I(S; Z_A^{(m)}) - \varepsilon_{A \to B},
 \quad\text{where }
-\varepsilon_{A \to B} := \E_{D_A}\!\left[\KL\bigl(\pi^B_{D_A} \| q_B(\cdot \mid D_A)\bigr)\right].
+\varepsilon_{A \to B} := \E_{Z_A}\!\left[\KL\bigl(\pi^B_{Z_A} \| q_B(\cdot \mid Z_A)\bigr)\right].
 \]
-Here $\pi^B_{D_A}(s) = \Prb[S = s \mid D_A]$ is the posterior over $B$-task modes given $A$-channel data.
-For the denominator, within-family data gives $\Delta_{B \to B} = I(S; D_B^{(m)}) - \varepsilon_{B \to B}$.
+Here $\pi^B_{Z_A}(s) = \Prb[S = s \mid Z_A]$ is the posterior over $B$-task modes given $A$-channel data.
+For the denominator, within-family data gives $\Delta_{B \to B} = I(S; Z_B^{(m)}) - \varepsilon_{B \to B}$.
 Dividing yields~\eqref{eq:post-training-ratio}.
 Claims~(i) and~(ii) follow by specialization.
 \end{proof}
 
-The mixed-source objective $\Delta_{\alpha \to B}(m) = I(S; D_\alpha^{(m)}) - \varepsilon_\alpha$ is a design heuristic. The mutual-information term is concave in $\alpha$ by standard arguments~\cite{cover-thomas2006}; the mismatch term is not generically convex. Whether the combined objective is concave under natural structural conditions remains open.
+The mixed-source objective $\Delta_{\alpha \to B}(m) = I(S; Z_\alpha^{(m)}) - \varepsilon_\alpha$ is a design heuristic. The mutual-information term is concave in $\alpha$ by standard arguments~\cite{cover-thomas2006}; the mismatch term is not generically convex. Whether the combined objective is concave under natural structural conditions remains open.
 
 \begin{proposition}[Transfer through target-relevant side information]
 \label{prop:transfer-side-info}
-Suppose the target family $\fT^B$ admits the packed-family representation with latent mode $S_B \sim \pi^B$, and suppose a joint law for $(S_B,Z_A)$ is fixed.
-Let adaptation on family $\fT^A$ produce a random representation $Z_A$, and let the transferred system choose allocation $q_B(\cdot \mid Z_A)$.
-Write $\pi^B_{Z_A}(s) := \Prb[S_B = s \mid Z_A]$.
-Then the packed-family certified-time gain on $\fT^B$ from using $Z_A$ is
+Suppose the target family $\cT^B$ admits the packed-family representation with latent mode $S_B \sim \pi^B$, and suppose a joint law for $(S_B,U_A)$ is fixed.
+Let adaptation on family $\cT^A$ produce a random representation $U_A$, and let the transferred system choose allocation $q_B(\cdot \mid U_A)$.
+Write $\pi^B_{U_A}(s) := \Prb[S_B = s \mid U_A]$.
+Then the packed-family certified-time gain on $\cT^B$ from using $U_A$ is
 \begin{equation}
 \label{eq:transfer-gain}
 \Delta^{\mathrm{packed}}_{A \to B}
-\;=\; \I_{\pi^B}(S_B : Z_A)
-\;-\; \E\!\left[\KL\bigl(\pi^B_{Z_A} \| q_B(\cdot \mid Z_A)\bigr)\right].
+\;=\; \I_{\pi^B}(S_B : U_A)
+\;-\; \E\!\left[\KL\bigl(\pi^B_{U_A} \| q_B(\cdot \mid U_A)\bigr)\right].
 \end{equation}
 \end{proposition}
 
 \begin{proof}
-Apply the packed-family decomposition to the target family $\fT^B$ with side-information variable $Z_A$ rather than within-family data.
+Apply the packed-family decomposition to the target family $\cT^B$ with side-information variable $U_A$ rather than within-family data.
 The proof is otherwise unchanged: the cross-entropy identity splits the allocation term into information and mismatch.
 \end{proof}
 
 \begin{remark}[DPI bound under joint latent structure]
 \label{rem:dpi-transfer}
-If additionally $D_A \leftarrow S_A \leftrightarrow S_B \rightarrow D_B$ is a Markov chain and $Z_A$ is a function of $(D_A, S_A)$, then by the data-processing inequality:
+If additionally $Z_A \leftarrow S_A \leftrightarrow S_B \rightarrow Z_B$ is a Markov chain and $U_A$ is a function of $(Z_A,S_A)$, then by the data-processing inequality:
 $\Delta^{\mathrm{packed}}_{A \to B} \le \I(S_A : S_B)$.
 Transfer is bounded by the mutual information between the latent mode spaces.
 The Markov chain assumption is appropriate when the families share a common underlying skill space; it is inappropriate when they share only surface features.
@@ -779,17 +781,17 @@ The transfer characterization yields three conditional prescriptions. If source 
 
 \begin{definition}[$\alpha$-Orchestration equivalence]
 \label{def:orch-equiv}
-Two packed-family task families $\cT^A$ and $\cT^B$ sharing a common mode bank $[\Mn]$, common observation space, and common marginal distribution for $D$ are \emph{$\alpha$-orchestration-equivalent} if
+Two packed-family task families $\cT^A$ and $\cT^B$ sharing a common mode bank $\cS$, common observation space, and common marginal distribution for $Z$ are \emph{$\alpha$-orchestration-equivalent} if
 \begin{equation}
 \label{eq:orch-equiv-def}
-\E_D\!\bigl[\KL\!\bigl(\pi^A_D \,\big\|\, \pi^B_D\bigr)\bigr] \;\le\; \alpha,
+\E_Z\!\bigl[\KL\!\bigl(\pi^A_Z \,\big\|\, \pi^B_Z\bigr)\bigr] \;\le\; \alpha,
 \end{equation}
-where $\pi^A_D, \pi^B_D \in \Delta_{\Mn-1}$ are the posterior mode distributions induced by side information $D$ under the two families, the expectation is over the common marginal distribution of~$D$, and the displayed KL is finite almost surely.
+where $\pi^A_Z, \pi^B_Z \in \Delta(\cS)$ are the posterior mode distributions induced by side information $Z$ under the two families, the expectation is over the common marginal distribution of~$Z$, and the displayed KL is finite almost surely.
 \end{definition}
 
 \begin{proposition}[Orchestration equivalence bounds]
 \label{prop:orch-equiv-bound}
-Suppose $\cT^A$ and $\cT^B$ are $\alpha$-orchestration-equivalent packed families with common mode bank $[\Mn]$ and common marginal distribution for $D$.
+Suppose $\cT^A$ and $\cT^B$ are $\alpha$-orchestration-equivalent packed families with common mode bank $\cS$ and common marginal distribution for $Z$.
 Then:
 
 \medskip
@@ -798,11 +800,11 @@ Then:
 \label{eq:orch-info-bound}
 |G_A - G_B|
 \;=\;
-\bigl|\E_D[H(\pi^A_D)] - \E_D[H(\pi^B_D)]\bigr|
+\bigl|\E_Z[H(\pi^A_Z)] - \E_Z[H(\pi^B_Z)]\bigr|
 \;\le\;
-\sqrt{2\alpha}\;\log\!\left(\frac{\Mn}{\sqrt{2\alpha}}\right),
+\sqrt{2\alpha}\;\log\!\left(\frac{m}{\sqrt{2\alpha}}\right),
 \end{equation}
-provided $\sqrt{2\alpha} \le 1 - 1/\Mn$.
+provided $\sqrt{2\alpha} \le 1 - 1/m$.
 
 \medskip
 \noindent\textbf{(b) Routing-mismatch bound} (depends on routing policy $q$)\textbf{.}
@@ -813,12 +815,12 @@ For any routing policy $q$ with $q_{\min} := \min_s q(s) > 0$:
 \;\le\;
 \sqrt{2\alpha}\;\log(1/q_{\min})
 \;+\;
-\sqrt{2\alpha}\;\log\!\left(\frac{\Mn}{\sqrt{2\alpha}}\right).
+\sqrt{2\alpha}\;\log\!\left(\frac{m}{\sqrt{2\alpha}}\right).
 \end{equation}
 
 \medskip
 \noindent\textbf{(c) Simplified bound under uniform-floor routing.}
-If $q_{\min} \ge 1/\Mn$, both bounds are $O(\sqrt{\alpha}\;\log \Mn)$.
+If $q_{\min} \ge 1/m$, both bounds are $O(\sqrt{\alpha}\;\log m)$.
 \end{proposition}
 
 \begin{proof}
@@ -900,12 +902,12 @@ The mode-discovery recipe is: collect successful traces; define a trace-level si
 \hat\varphi=\sum_s\hat\pi(s)\log(\hat t_0(M_0,s)/\hat t_0(M,s)),
 \]
 \[
-\hat G=H(\hat\pi)-\frac{1}{N}\sum_i H(\hat\pi_{D_i}^M),
+\hat G=H(\hat\pi)-\frac{1}{N}\sum_i H(\hat\pi_{Z_i}^M),
 \qquad
-\hat\varepsilon=\frac{1}{N}\sum_i\widehat{\KL}(\hat\pi_{D_i}^M\|\hat q_i^M),
+\hat\varepsilon=\frac{1}{N}\sum_i\widehat{\KL}(\hat\pi_{Z_i}^M\|\hat q_i^M),
 \]
 \[
-\overline M_{\mathrm{eff}}=\exp\!\left(\frac{1}{N}\sum_i H(\hat\pi_{D_i}^{M_{\mathrm{ref}}})\right).
+\overline M_{\mathrm{eff}}=\exp\!\left(\frac{1}{N}\sum_i H(\hat\pi_{Z_i}^{M_{\mathrm{ref}}})\right).
 \]
 Main error sources are token variance for $\kappa$, small samples per mode for $\varphi$, entropy-estimation bias for $G$, upward plug-in bias for $\varepsilon$, and propagation of mode-labeling uncertainty into $\Meff$. The source protocol uses medians for token cost, bootstrap confidence intervals, Miller--Madow entropy correction, and Laplace smoothing for KL estimates.
 
@@ -929,10 +931,10 @@ The claim is not priority on time, verifiability, search, routing, or graph work
 \section{Discussion and Conclusion}
 \label{sec:discussion}
 
-The framework rests on the packed latent-mode family and the geometric-trials scaling $\overline T_q(s)\propto t_0(s)/q(s)$. It does not model correlated strategies, where success on one approach gives partial information about another. It assumes externally verifiable tasks and does not cover open-ended generation without binary or continuous verification. Outside the packed family, the approximation guarantee has remainder $O(h(\delta)+\delta\log\Mn+\eta)$, which may dominate for many soft modes or nonlinear time scaling.
+The framework rests on the packed latent-mode family and the geometric-trials scaling $\overline T_q(s)\propto t_0(s)/q(s)$. It does not model correlated strategies, where success on one approach gives partial information about another. It assumes externally verifiable tasks and does not cover open-ended generation without binary or continuous verification. Outside the packed family, the approximation guarantee has remainder $O(h(\delta)+\delta\log m+\eta)$, which may dominate for many soft modes or nonlinear time scaling.
 The measurement protocol requires a pilot study; in the Lean study the estimated cost is \$725--\$775. The screening heuristic mitigates this by identifying when the pilot is worth running.
 
-Open questions include full joint optimization over all design coordinates, concavity of mixed-source post-training objectives, dynamic mode discovery, estimation of $\I(S_B;Z_A)$, and derivation of the coordination cost $c_{\mathrm{coord}}(K)$ from protocol structure.
+Open questions include full joint optimization over all design coordinates, concavity of mixed-source post-training objectives, dynamic mode discovery, estimation of $\I(S_B;U_A)$, and derivation of the coordination cost $c_{\mathrm{coord}}(K)$ from protocol structure.
 
 The framework gives a decomposable objective, a crossover formula, a transfer characterization, and a measurement protocol. It does not give a solved agent-design compiler; it replaces unstructured engineering judgment with structured judgment over named, estimable channels.
 
@@ -943,22 +945,22 @@ The framework gives a decomposable objective, a crossover formula, a transfer ch
 
 \begin{definition}[Continuous-reward task family]
 \label{def:continuous-reward-task}
-A \emph{continuous-reward task family} is a tuple $(\cX_n, \cY_n, R_n, \cB_n, P_n)$ where
-$\cX_n$ is the input space, $\cY_n$ is the output space,
-$R_n : \cX_n \times \cY_n \to [0, R_{\max}]$ is the reward function (measurable, bounded),
-$\cB_n$ is the budget, and $P_n$ is the task distribution over $\cX_n$.
-The binary case is recovered by setting $R_n = \mathbf{1}\{V_n = 1\}$ with $R_{\max} = 1$.
+A \emph{continuous-reward task family} is a tuple $(\cX, \cY, R, \mu, \cB)$ where
+$\cX$ is the input space, $\cY$ is the output space,
+$R : \cX \times \cY \to [0, R_{\max}]$ is the reward function (measurable, bounded),
+$\mu$ is the task distribution over $\cX$, and $\cB$ is the budget.
+The binary case is recovered by setting $R = \mathbf{1}\{V = 1\}$ with $R_{\max} = 1$.
 \end{definition}
 
 The binary case generalizes by replacing success probability with expected reward per mode, certified time with certified reward-time, and binary observations with reward observations. Assume throughout this appendix that the relevant mode reward rates satisfy $r_s(M)>0$:
 \[
 \log t_0^R(M,s):=-\log r_s(M),\qquad
-r_s(M):=\E[R_n(X,Y)\mid S=s,\text{model }M],
+r_s(M):=\E[R(X,Y)\mid S=s,\text{model }M],
 \]
 \[
 T_q^{R,M}(s):=\kappa(M)c_{\mathrm{sim}}/(q(s)r_s(M)),
 \qquad
-\pi_D^{R,M}(s)\propto \pi(s)\prod_{j\in D}p(R_j\mid S=s,M).
+\pi_Z^{R,M}(s)\propto \pi(s)\prod_{j\in Z}p(R_j\mid S=s,M).
 \]
 
 \begin{theorem}[Four-term decomposition under continuous rewards]
@@ -968,7 +970,7 @@ Under the packed-family assumption with continuous rewards (Modifications~1--3),
 \begin{aligned}
 \Delta^R
 &:= \E\!\left[\log T_\pi^{R,M_0}(S)
-          - \log T_{q_D}^{R,M}(S)\right] \\
+          - \log T_{q_Z}^{R,M}(S)\right] \\
 &= \log \frac{\kappa(M_0)}{\kappa(M)}
    + \varphi^R(M_0, M) + G^R(M) - \varepsilon^R(M),
 \end{aligned}
@@ -977,8 +979,8 @@ where
 \[
 \begin{aligned}
 \varphi^R(M_0, M) &:= \E_\pi[\log(r_S(M)/r_S(M_0))],\\
-G^R(M) &:= I_\pi(S : D^R_M),\\
-\varepsilon^R(M) &:= \E_D[\KL(\pi_D^{R,M} \| q_D)].
+G^R(M) &:= I_\pi(S : Z^R_M),\\
+\varepsilon^R(M) &:= \E_Z[\KL(\pi_Z^{R,M} \| q_Z)].
 \end{aligned}
 \]
 These are respectively the competence advantage, the information gain from reward observations, and the routing mismatch.
@@ -987,11 +989,11 @@ These are respectively the competence advantage, the information gain from rewar
 \begin{proof}
 The proof is identical in structure to the binary case (Theorem~\ref{thm:four-term}).
 The additive log-structure of certified reward-time ensures the cross-entropy identity applies.
-The tower property $\E_D[\E_{\pi_D^{R,M}}[\log t_0^R(M,S)]] = \E_\pi[\log t_0^R(M,S)]$ holds by the same argument as in the binary case.
+The tower property $\E_Z[\E_{\pi_Z^{R,M}}[\log t_0^R(M,S)]] = \E_\pi[\log t_0^R(M,S)]$ holds by the same argument as in the binary case.
 The four terms emerge identically.
 \end{proof}
 
-Setting $R_n=\mathbf 1\{V_n=1\}$ recovers the binary framework exactly. The continuous-reward routing problem connects to optimal stopping and anytime algorithms~\cite{weitzman1979,zilberstein_1996_anytime_systems}, but the paper does not prove a new optimal stopping theorem.
+Setting $R=\mathbf 1\{V=1\}$ recovers the binary framework exactly. The continuous-reward routing problem connects to optimal stopping and anytime algorithms~\cite{weitzman1979,zilberstein_1996_anytime_systems}, but the paper does not prove a new optimal stopping theorem.
 
 \section{Structural Graph-Compression Instantiation}
 \label{app:structural-compression}
@@ -1203,28 +1205,28 @@ Substitute the exact formulas from Proposition~\ref{prop:canonical-geometry} int
 \begin{proof}
 \emph{Step 0: Pinsker bound.}
 By Pinsker's inequality applied pointwise:
-$\delta_D := \|\pi^A_D - \pi^B_D\|_1 \le \sqrt{2\,\KL(\pi^A_D \| \pi^B_D)}$.
+$\delta_Z := \|\pi^A_Z - \pi^B_Z\|_1 \le \sqrt{2\,\KL(\pi^A_Z \| \pi^B_Z)}$.
 Taking expectations and applying Jensen (concavity of $\sqrt{\cdot}$):
-$\bar\delta := \E_D[\delta_D] \le \sqrt{2\alpha}$.
+$\bar\delta := \E_Z[\delta_Z] \le \sqrt{2\alpha}$.
 
 \emph{Proof of (a).}
-Recall $G_A - G_B = \E_D[H(\pi^B_D)] - \E_D[H(\pi^A_D)]$.
+Recall $G_A - G_B = \E_Z[H(\pi^B_Z)] - \E_Z[H(\pi^A_Z)]$.
 By Audenaert's entropy continuity applied pointwise:
-$|H(\pi^A_D) - H(\pi^B_D)| \le \delta_D \log(\Mn/\delta_D)$.
+$|H(\pi^A_Z) - H(\pi^B_Z)| \le \delta_Z \log(m/\delta_Z)$.
 Taking expectations:
-$|G_A - G_B| \le \E_D[\delta_D \log(\Mn/\delta_D)]$.
-Since $f(t) = t\log(\Mn/t)$ is concave on $(0, \Mn]$,
-Jensen gives $\E_D[f(\delta_D)] \le f(\bar\delta) \le \sqrt{2\alpha}\log(\Mn/\sqrt{2\alpha})$.
+$|G_A - G_B| \le \E_Z[\delta_Z \log(m/\delta_Z)]$.
+Since $f(t) = t\log(m/t)$ is concave on $(0, m]$,
+Jensen gives $\E_Z[f(\delta_Z)] \le f(\bar\delta) \le \sqrt{2\alpha}\log(m/\sqrt{2\alpha})$.
 
 \emph{Proof of (b).}
 Use the KL-difference decomposition:
 $\KL(p\|q) - \KL(r\|q) = [H(r) - H(p)] + \sum_s [p(s) - r(s)]\log(1/q(s))$.
-Apply with $p = \pi^A_D$, $r = \pi^B_D$, take expectations.
+Apply with $p = \pi^A_Z$, $r = \pi^B_Z$, take expectations.
 Bound the first term by part~(a) and the second by $\bar\delta \cdot \log(1/q_{\min}) \le \sqrt{2\alpha}\log(1/q_{\min})$.
 
 \emph{Proof of (c).}
-If $q_{\min} \ge 1/\Mn$, then $\log(1/q_{\min}) \le \log \Mn$.
-Parts~(a) and~(b) are both $O(\sqrt{\alpha}\log\Mn)$.
+If $q_{\min} \ge 1/m$, then $\log(1/q_{\min}) \le \log m$.
+Parts~(a) and~(b) are both $O(\sqrt{\alpha}\log m)$.
 \end{proof}
 
 \section{Scaling Laws}
@@ -1246,23 +1248,24 @@ grows exponentially with the cost ratio and competence advantage, and shrinks wi
 \toprule
 \textbf{Symbol} & \textbf{Definition} \\
 \midrule
-$\fT = (\cX_n, \cY_n, V_n, \cB_n)$ & Budgeted transductive task at scale $n$ \\
-$\overline{T}_A(n,\delta)$ & Certified time-to-solution at confidence $1-\delta$ \\
+$\cT = (\cX, \cY, V, \mu, \cB)$ & Budgeted transductive task \\
+$\overline{T}_A(\delta)$ & Certified time-to-solution at confidence $1-\delta$ \\
 $\Delta$ & Certified log-speedup: $\log \overline{T}_{A_0} - \log \overline{T}_A$ \\
 $\Dlog,\DlogM$ & Expected certified log-speedup functionals decomposed by the packed-family identities \\
-$S \in [\Mn]$ & Latent mode variable \\
-$\pi, \pi_D$ & Prior and posterior over modes \\
-$q, q_D$ & Baseline and deployed routing allocations \\
+$S \in \cS$ & Latent mode variable \\
+$\pi, \pi_Z$ & Prior and posterior over modes \\
+$q, q_Z$ & Baseline and deployed routing allocations \\
 $\kappa(M)$ & Per-step cost of model $M$ \\
 $t_0(M,s)$ & Within-mode certified scale for model $M$ on mode $s$ \\
 $\varphi(M_0,M)$ & $\E_\pi[\log(t_0(M_0,S)/t_0(M,S))]$: competence advantage \\
-$G(M)$ & $\I_\pi(S : D_M)$: information generation quality \\
-$\varepsilon(M)$ & $\E_D[\KL(\pi_D^M \| q_D^M)]$: routing mismatch \\
-$\Meff$ & $\exp(H(\pi_D))$: entropy-effective mode count \\
+$G(M)$ & $\I_\pi(S : Z_M)$: information generation quality \\
+$\varepsilon(M)$ & $\E_Z[\KL(\pi_Z^M \| q_Z^M)]$: routing mismatch \\
+$\Meff$ & $\exp(H(\pi_Z))$: entropy-effective mode count \\
 $\Meff^\star$ & Crossover threshold: specialist dominates below, generalist above \\
 $d = (M, \rho, \Omega, W, K, p)$ & Agentic system design tuple \\
-$\alpha$ & Orchestration-equivalence parameter: $\E_D[\KL(\pi^A_D \| \pi^B_D)]$ \\
+$\alpha$ & Orchestration-equivalence parameter: $\E_Z[\KL(\pi^A_Z \| \pi^B_Z)]$ \\
 $\eta_{A \to B}$ & Post-training efficiency: transfer ratio from family $A$ to $B$ \\
+$U_A$ & Source-adapted representation transferred to target family $B$ \\
 $c_{\mathrm{coord}}(K)$ & Coordination cost for $K$-agent team \\
 $\ell_{\kappa,\mathrm{team}}$ & $\sum_s\pi(s)\log\kappa(M_{\mathrm{team}(s)})$: team log-effective per-step cost \\
 $\phi_{\mathrm{spec}}$ & $\sum_s \pi(s)\log(t_0(M_g,s)/t_0(M_{\mathrm{team}(s)},s))$: specialization gain \\
@@ -1282,7 +1285,7 @@ $\chi_W,\chi_D$ & Work and critical-path compression ratios in the structural in
 RI Identity (Thm.~\ref{thm:ri-identity}) & Packed family (Asm.~\ref{ass:packed-family}), prior-matched baseline, expected-log functional \\
 Four-term decomposition (Thm.~\ref{thm:four-term}) & Model-dependent packed family (Asm.~\ref{ass:model-packed-family}), expected-log functional \\
 Upper envelope (Thm.~\ref{thm:upper-expectation}) & A1--A7 (Asm.~\ref{ass:upper-envelope}) \\
-Approximation guarantee (Prop.~\ref{prop:approximation-guarantee}) & Relaxed packed family ($\delta$-soft modes, $\eta$-approximate log-linearity), entropy remainder $h(\delta)+\delta\log\Mn$ \\
+Approximation guarantee (Prop.~\ref{prop:approximation-guarantee}) & Relaxed packed family ($\delta$-soft modes, $\eta$-approximate log-linearity), entropy remainder $h(\delta)+\delta\log m$ \\
 Crossover formula (Cor.~\ref{cor:model-selection}) & Model-dependent packed family \\
 Crossover threshold~\eqref{eq:meff-threshold} & Additionally (S1)--(S3): verifier equalization, linear mismatch scaling, constant competence \\
 Verifier equalization (Prop.~\ref{prop:verifier-eq}) & Model-dependent packed family, small residual posterior entropy \\
