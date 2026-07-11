@@ -10,6 +10,8 @@
 \usepackage[protrusion=true,expansion=false]{microtype}
 \usepackage[colorlinks=true,citecolor=blue,linkcolor=blue,urlcolor=blue]{hyperref}
 
+\DeclareMathOperator*{\argmin}{arg\,min}
+
 \newtheoremstyle{paperplain}
   {6pt}{6pt}{\itshape}{}{\bfseries}{.}{.5em}
   {\thmname{#1}\thmnumber{ #2}\thmnote{ \normalfont(#3)}}
@@ -51,6 +53,7 @@
 \newcommand{\cT}{\mathcal{T}}
 \newcommand{\cB}{\mathcal{B}}
 \newcommand{\cF}{\mathcal{F}}
+\newcommand{\cM}{\mathcal{M}}
 \newcommand{\Sp}{\mathrm{Sp}}
 \newcommand{\Meff}{M_{\mathrm{eff}}}
 \newcommand{\Dlog}{\Delta_{\log}}
@@ -65,7 +68,7 @@ Task-First Design, Equivalence, and Model Choice under Deployment Budgets}
 \maketitle
 
 \begin{abstract}
-Building an agent system is not merely the choice of a base model. It is a deployment optimization problem over models, routing policies, tools, memory, context, and parallelism under time, cost, memory, and reliability budgets. This paper develops a task-first mathematical framework for verifiable agentic workloads. The central object is certified time-to-solution. Under a packed latent-mode family, expected certified log-speedup decomposes exactly into information generation minus routing mismatch, $\Dlog=G-\varepsilon$. With model-dependent costs and competence, the identity becomes a four-term decomposition separating per-step cost, within-mode competence, information quality, and routing mismatch. These terms yield model-selection crossovers, fine-tuning value conditions, and multi-agent specialization thresholds. The framework also defines task equivalence, post-training transfer, and orchestration equivalence. Outside the packed family, an alignment-certified upper envelope and an approximation guarantee delimit what the exact decomposition can and cannot claim. The resulting theory is applied to formal theorem-proving agents and paired with a measurement protocol for estimating the decomposition terms.
+Building an agent system is not merely the choice of a base model. It is a deployment optimization problem over models, routing policies, tools, memory, context, and parallelism under time, cost, memory, and reliability budgets. This paper develops a task-first mathematical framework for verifiable agentic workloads. The central object is certified time-to-solution. Under a packed latent-mode family, expected certified log-speedup decomposes exactly into information generation minus routing mismatch, $\Dlog=G-\varepsilon$. With model-dependent costs and competence, the identity becomes a four-term decomposition separating per-step cost, within-mode competence, information quality, and routing mismatch. These terms yield model-selection crossovers, fine-tuning value conditions, and multi-agent specialization thresholds. The framework also defines task equivalence, post-training transfer, and orchestration equivalence. Outside the packed family, an alignment-certified upper envelope and a bounded residual delimit what the exact decomposition can and cannot claim. The resulting theory is applied to formal theorem-proving agents and paired with a measurement protocol for estimating the decomposition terms.
 \end{abstract}
 
 \section{Introduction}
@@ -80,7 +83,7 @@ The framework studies verifiable transductive workloads: code generation against
 
 The paper makes five contributions. First, it defines a task-first ontology for agent systems. Second, it casts agent building as a deployment optimization problem over design tuples. Third, it proves exact speed-accounting identities under a packed latent-mode family and an upper envelope outside it. Fourth, it derives model-choice, fine-tuning, multi-agent, transfer, and equivalence consequences. Fifth, it gives a measurement protocol for estimating the decomposition terms.
 
-The exact identities require the packed latent-mode family: each instance has a latent solution strategy, and certified time scales inversely with the compute share allocated to that strategy. The approximation guarantee quantifies degradation outside this stylized regime.
+The exact identities require the packed latent-mode family: each instance has a latent solver-relevant mode, and packed time scales inversely with the compute share allocated to that mode. The residual guarantee quantifies degradation when this inverse-share law is only approximate.
 
 The paper is organized in the same order as the formal dependencies: tasks and solvers; agentic system designs and deployment objectives; packed-family decompositions; consequences for model choice and system design; task equivalence and transfer; measurement; related work and limitations.
 
@@ -108,16 +111,25 @@ The family captures a class of problems the builder expects to encounter repeate
 \begin{definition}[Stochastic solver]
 \label{def:solver}
 A \emph{stochastic solver} $A$ for task family $\cT$ is a randomized algorithm that, given instance $x \in \cX$ and budgets $\cB$, produces a candidate $y$ (or reports failure) using a sequence of model calls, tool invocations, memory accesses, and branching decisions.
-A run of $A$ on $(x, r)$ (where $r$ denotes randomness) induces a \emph{run graph} $G_A(x;r)$---a DAG whose nodes are computational steps and whose edges encode data and control flow.
+A run of $A$ on $(x,r)$ (where $r$ denotes randomness) induces a resource-indexed artifact process $Y_A(t;x,r)$ and a \emph{run graph} $G_A(x;r)$---a DAG whose nodes are computational steps and whose edges encode data and control flow.
 \end{definition}
 
 The graph is not the task. The task is the objective under budgets; the graph is the realized execution induced by a solver, model, and orchestration on an instance.
 
 \begin{definition}[Certified time-to-solution]
 \label{def:certified-time}
-For solver $A$ on task family $\cT$ at confidence level $\delta \in (0,1)$, the \emph{certified time-to-solution} is
+For solver $A$ on task family $\cT$, define the first-passage time
 \[
-\overline{T}_A(\delta) \;=\; \inf\!\left\{t > 0 : \Prb_{x \sim \mu, r}\!\left[A(x;r) \text{ succeeds within time } t\right] \ge 1-\delta\right\}.
+\tau_A(x;r):=\inf\{t\ge 0:V(x,Y_A(t;x,r))=1\},
+\qquad \inf\varnothing:=\infty.
+\]
+For confidence level $\delta \in (0,1)$, the \emph{certified time-to-solution} is the population quantile
+\[
+\overline{T}_A(\delta)
+:=
+\inf\!\left\{t\ge 0:
+\Prb_{X\sim\mu,r}[\tau_A(X;r)\le t]\ge 1-\delta
+\right\}.
 \]
 \end{definition}
 
@@ -132,18 +144,27 @@ This deployment-level definition is a quantile-time object. The exact packed-fam
 \subsection{The Packed Latent-Mode Family}
 \label{subsec:packed-family-def}
 
+\begin{definition}[Routing policy and packed allocation]
+\label{def:routing-policy}
+Let $\cM=\{M_1,\ldots,M_K\}$ be a finite menu of agent systems, let $\cS$ be a finite mode set, and let $Z$ take values in a signal space $\mathcal Z$.
+A \emph{hard router} is a map $\rho_{\mathrm{hard}}:\mathcal Z\to\cM$ that selects one system.
+A \emph{packed allocation policy} is a map $\rho_{\mathrm{pack}}:\mathcal Z\to\Delta(\cS)$, written $z\mapsto q_z$, whose coordinate $q_z(s)$ is the fraction of deployable effort assigned to mode-$s$ work.
+The inverse-share law below applies only when the deployment mechanism actually implements this budget sharing; a hard model choice alone does not instantiate $q_z$.
+A no-routing baseline is constant in~$z$.
+\end{definition}
+
 \begin{assumption}[Packed latent-mode family]
 \label{def:packed-family}
 \label{ass:packed-family}
 Fix a task family at scale~$n$.
 Assume:
 \begin{enumerate}
-\item \textbf{Latent modes.} There is a finite set of modes $\cS=\{1,\ldots,m\}$ and a latent variable $S \in \cS$ with prior $\pi$, representing the solution strategy. An observable signal $Z \sim P(Z \mid S)$ represents verifier feedback and partial execution traces, with posterior $\pi_z(s) := \Prb[S = s \mid Z=z]$.
+\item \textbf{Latent modes.} There is a finite set of modes $\cS=\{1,\ldots,m\}$ and a latent variable $S \in \cS$ with prior $\pi$. A mode is a solver-relevant class of instances, defined independently of which model is deployed. An observable signal $Z \sim P(Z \mid S)$ represents admissible pre-deployment evidence or partial execution traces, with posterior $\pi_z(s) := \Prb[S = s \mid Z=z]$.
 \item \textbf{One expert per mode.} Each mode $s$ has a specialized expert with certified internal scale $t_0(s)$.
 \item \textbf{Allocation determines time.} A routing policy chooses a share vector $q \in \Delta(\cS)$.
 Under hidden mode~$s$, allocating share $q(s)$ yields certified time
 \[
-\overline{T}_q(s) \;=\; c_{\mathrm{sim}} \cdot \frac{t_0(s)}{q(s)},
+\mathsf{T}_q(s) \;=\; c_{\mathrm{sim}} \cdot \frac{t_0(s)}{q(s)},
 \]
 where $c_{\mathrm{sim}}$ is the simulation overhead.
 \item \textbf{Baseline and deployed schedulers.} The baseline chooses a fixed share vector $q_0 \in \Delta(\cS)$; the deployed system chooses a data-dependent map $z \mapsto q_z \in \Delta(\cS)$.
@@ -189,7 +210,7 @@ The framework identifies six decision variables. It does not solve their full jo
 \label{lem:conditional}
 Under Assumption~\ref{ass:packed-family}, for any realized signal $z$ and any share vector $q \in \Delta(\cS)$ with $\mathrm{supp}(\pi_z) \subseteq \mathrm{supp}(q)$,
 \[
-\E_{S \sim \pi_z}\!\left[\log \overline{T}_q(S) \mid Z=z\right]
+\E_{S \sim \pi_z}\!\left[\log \mathsf{T}_q(S) \mid Z=z\right]
 \;=\;
 \E_{S\sim\pi_z}[\log(c_{\mathrm{sim}}\, t_0(S))] + H(\pi_z) + \KL(\pi_z \| q).
 \]
@@ -210,7 +231,7 @@ Under Assumption~\ref{ass:packed-family}, with a prior-matched baseline $q_0 = \
 \]
 where
 \begin{align}
-\Dlog &:= \E\!\left[\log \overline{T}_\pi(S)-\log \overline{T}_{q_Z}(S)\right], \nonumber\\
+\Dlog &:= \E\!\left[\log \mathsf{T}_\pi(S)-\log \mathsf{T}_{q_Z}(S)\right], \nonumber\\
 G &:= \I_\pi(S : Z) = H(\pi) - \E_Z[H(\pi_Z)], \label{eq:G-def} \\
 \varepsilon &:= \E_Z\!\left[\KL(\pi_Z \| q_Z)\right]. \label{eq:eps-def}
 \end{align}
@@ -236,7 +257,7 @@ For each model $M$:
 \item The per-step cost is $\kappa(M)$.
 \item The within-mode certified scale is $t_0(M,s)$, so that certified time under mode~$s$ with allocation share $q(s)$ is
 \[
-\overline{T}_q^{(M)}(s) = \kappa(M) \cdot c_{\mathrm{sim}} \cdot \frac{t_0(M,s)}{q(s)}.
+\mathsf{T}_q^{(M)}(s) = \kappa(M) \cdot c_{\mathrm{sim}} \cdot \frac{t_0(M,s)}{q(s)}.
 \]
 \item The feedback signal is $Z_M \sim P_M(Z \mid S)$, with posterior $\pi_z^M(s) := \Prb[S = s \mid Z_M = z]$ for a realization $z$.
 \item The routing policy is $q_z^M \in \Delta(\cS)$ for each realized signal $z$.
@@ -261,7 +282,7 @@ Under Assumption~\ref{ass:model-packed-family}, comparing a prior-matched baseli
 \end{equation}
 where the four terms are:
 \begin{align}
-\DlogM &:= \E\!\left[\log \overline{T}_\pi^{(M_0)}(S)-\log \overline{T}_{q_Z}^{(M)}(S)\right], \nonumber\\
+\DlogM &:= \E\!\left[\log \mathsf{T}_\pi^{(M_0)}(S)-\log \mathsf{T}_{q_Z}^{(M)}(S)\right], \nonumber\\
 \log\frac{\kappa(M_0)}{\kappa(M)} &\quad\text{(per-step cost advantage of }M\text{)}, \label{eq:kappa-term} \\
 \varphi(M_0,M) &:= \E_\pi\!\left[\log\frac{t_0(M_0,S)}{t_0(M,S)}\right] \quad\text{(within-mode competence advantage)}, \label{eq:phi-term} \\
 G(M) &:= \I_\pi(S : Z_M) \quad\text{(information generation quality)}, \label{eq:G-term} \\
@@ -271,13 +292,15 @@ G(M) &:= \I_\pi(S : Z_M) \quad\text{(information generation quality)}, \label{eq
 
 \par\noindent\emph{Proof.} See Appendix~\ref{app:proof:thm:four-term}.\par
 
+Appendix Proposition~\ref{prop:mode-dependent-cost} gives the more general identity in which per-step cost may also vary by mode and the baseline allocation need not equal~$\pi$.
+
 
 Benchmark racing reports only an aggregate comparison. The decomposition reports why the expected log-time gain has its value.
 
 \subsection{Approximation and Guardrails}
 \label{subsec:upper-envelope-thm}
 
-The exact decompositions are identities only under the packed latent-mode assumptions. Appendix~\ref{app:upper-envelope} records the alignment-certified upper envelope for the broader resource-bounded schedule model. In the main text we keep the metric guardrail and the finite-mode approximation guarantee, since these are the constraints needed to interpret the model-choice results below.
+The exact decompositions are identities only under the packed latent-mode assumptions. Appendix~\ref{app:upper-envelope} records the alignment-certified upper envelope for the broader resource-bounded schedule model. In the main text we keep the metric guardrail and the approximate-packedness residual, since these are the constraints needed to interpret the model-choice results below.
 
 \begin{remark}[Metric guardrail]
 All speedup claims in this paper are about certified quantities and expected log-time improvements:
@@ -288,35 +311,9 @@ All speedup claims in this paper are about certified quantities and expected log
 The main decomposition results refer to the left-hand-side type.
 \end{remark}
 
-\begin{proposition}[Approximation guarantee]
-\label{prop:approximation-guarantee}
-Suppose the packed-family assumptions (Assumption~\ref{ass:model-packed-family}) hold except for two relaxations:
-\begin{enumerate}
-\item \textup{(Soft modes.)} The posterior $\pi_Z^M$ is $\delta$-approximately one-hot: there exists $s^*(Z) \in \cS$ with $\pi_Z^M(s^*(Z)) \ge 1-\delta$ for some $\delta \in [0,1)$.
-\item \textup{(Approximate log-linearity.)} The certified time satisfies $\log \overline{T}_q^{(M)}(s) = \log\kappa(M) + \log c_{\mathrm{sim}} + \log t_0(M,s) - \log q(s) + r(M,s,q)$ where $|r(M,s,q)| \le \eta$ uniformly.
-\end{enumerate}
-Then the four-term identity (Theorem~\ref{thm:four-term}) holds up to a remainder:
-\[
-\begin{aligned}
-&\left|\,
-\E\!\left[\log \overline{T}_\pi^{(M_0)}(S)
-        - \log \overline{T}_{q_Z}^{(M)}(S)\right] \right.\\
-&\left.\qquad
-- \left[\log\frac{\kappa(M_0)}{\kappa(M)}
-        + \varphi(M_0,M) + G(M) - \varepsilon(M)\right]
-\right|
-\;\le\;
-R(\delta,\eta,m),
-\end{aligned}
-\]
-where
-\[
-R(\delta,\eta,m) \;\le\; 2h(\delta)+2\delta\log m+2\eta,
-\]
-with $h(\delta)=-\delta\log\delta-(1-\delta)\log(1-\delta)$ and $h(0)=0$. In particular, if $\delta>0$ and $m \ge \exp(h(\delta)/\delta)$, then $R(\delta,\eta,m)\le 4\delta\log m+2\eta$.
-\end{proposition}
-
-\par\noindent\emph{Proof.} See Appendix~\ref{app:proof:prop:approximation-guarantee}.\par
+\paragraph{Approximate packedness.}
+If the additive log-time residual satisfies $|r_M|\le\eta$ uniformly, Proposition~\ref{prop:approximation-guarantee} shows that the complete decomposition acquires one term $R$ with $|R|\le2\eta$.
+No near-deterministic or one-hot posterior assumption is required.
 
 
 \section{Consequences for Model Choice and System Design}
@@ -366,6 +363,9 @@ Under Assumption~\ref{ass:model-packed-family}, model $M_1$ achieves lower expec
 \end{corollary}
 
 \par\noindent\emph{Proof.} See Appendix~\ref{app:proof:cor:model-selection}.\par
+
+The independent retry calculation yields a second model-choice crossover. Appendix~\ref{app:retry-and-validation} shows that $D$ independent attempts of a cheaper system match a stronger system's one-attempt reliability once
+$D\ge \log(1-p_h)/\log(1-p_\ell)$, and states the corresponding cost condition precisely.
 
 
 Under verifier equalization, linear routing-mismatch scaling, and approximately constant net competence advantage, the crossover condition becomes
@@ -713,6 +713,8 @@ The pilot compares DeepSeek-Prover-V1.5 against Claude Opus~4 on 300 Mathlib4 le
 
 Budget equalization is by total API cost, not attempt count. At $\kappa_A=\$0.001$/call and $\kappa_B=\$0.03$/call with \$0.064/problem, DeepSeek gets 64 attempts per problem, while Claude gets $\approx 2.1$ attempts per problem.
 
+For experiments comparing two signal-conditioned routers, Proposition~\ref{prop:paired-unbiased} gives a paired estimator that remains unbiased after explicitly charging signal-acquisition cost.
+
 If prediction accuracy in the contested library-heavy regime is near 50\%, the decomposition adds nothing beyond a cost-based rule of thumb and the paper reports this as a negative result.
 
 \section{Related Work and Positioning}
@@ -727,7 +729,7 @@ The claim is not priority on time, verifiability, search, routing, or graph work
 \section{Discussion and Conclusion}
 \label{sec:discussion}
 
-The framework rests on the packed latent-mode family and the geometric-trials scaling $\overline T_q(s)\propto t_0(s)/q(s)$. It does not model correlated strategies, where success on one approach gives partial information about another. It assumes externally verifiable tasks and does not cover open-ended generation without binary or continuous verification. Outside the packed family, the approximation guarantee has remainder $O(h(\delta)+\delta\log m+\eta)$, which may dominate for many soft modes or nonlinear time scaling.
+The framework rests on the packed latent-mode family and the inverse-share law $\mathsf{T}_q(s)\propto t_0(s)/q(s)$. It does not model correlated strategies, where success on one approach gives partial information about another. It assumes externally verifiable tasks and does not cover open-ended generation without binary or continuous verification. Under uniformly $\eta$-approximate log-linearity, the accounting residual is at most $2\eta$; without such control, the exact identity need not approximate deployment time.
 The measurement protocol requires a pilot study; in the Lean study the estimated cost is \$725--\$775. The screening heuristic mitigates this by identifying when the pilot is worth running.
 
 Open questions include full joint optimization over all design coordinates, concavity of mixed-source post-training objectives, dynamic mode discovery, estimation of $\I(S_B;U_A)$, and derivation of the coordination cost $c_{\mathrm{coord}}(K)$ from protocol structure.
@@ -753,6 +755,25 @@ The corresponding schedule times are
 and $\overline{\Sp}(D_n):=\log \overline T_U(n,\delta)-\log \overline T_{U_D}(n,\delta)$.
 Here $H_n$ denotes reusable solver-side structure: proof tactics, repair templates, retrieval schemas, strategy libraries, or other organization that can accelerate future instances.
 
+\begin{proposition}[Pointwise coding-gain bound]
+\label{prop:coding-gain}
+Suppose the conditioned infimum is attained at
+$a_D^\star\in\argmin_{a\in\cA_n^\delta}F_D(a)$, with $0<t_{a_D^\star}(n,\delta)<\infty$, $w(a_D^\star)>0$, and $w(a_D^\star\mid D_n)>0$. Then
+\[
+\overline{\Sp}(D_n)
+\le
+\log\frac{w(a_D^\star\mid D_n)}{w(a_D^\star)}.
+\]
+\end{proposition}
+
+\begin{proof}
+By optimality,
+$\overline T_{U_D}=c_{\mathrm{sim}}t_{a_D^\star}/w(a_D^\star\mid D_n)$.
+Evaluating the baseline infimum at the same candidate gives
+$\overline T_U\le c_{\mathrm{sim}}t_{a_D^\star}/w(a_D^\star)$.
+Divide the inequalities and take logarithms.
+\end{proof}
+
 \begin{assumption}[A1--A7: shared admissibility and aligned witness]\label{ass:upper-envelope}
 \leavevmode
 \begin{itemize}
@@ -762,16 +783,14 @@ Here $H_n$ denotes reusable solver-side structure: proof tactics, repair templat
 \item \textbf{A4} (shared simulation): both schedules incur the same simulation overhead $c_{\mathrm{sim}}(n)\in\poly(n)$.
 \item \textbf{A5} (resource-bounded conditioning): the map $D_n\mapsto w(\cdot\mid D_n)$ is computable or decodable in polynomial time.
 \item \textbf{A6} (structure witness class): there is a nonempty subclass $S(H_n)\subseteq \cA_n^\delta$ of admissible solvers that realize the reusable structure $H_n$.
-\item \textbf{A7} (aligned witness): there exists $a^\star\in S(H_n)$ and nonnegative slacks $(\rho_U,\rho_D,\kappa_U)$ such that
+\item \textbf{A7} (aligned witness): there exists $a^\star\in S(H_n)$ and nonnegative slacks $(\rho_D,\kappa_U)$ such that
 \[
-F_U(a^\star)\le e^{\rho_U}\inf_{a\in\cA_n^\delta}F_U(a),
-\qquad
 F_D(a^\star)\le e^{\rho_D}\inf_{a\in\cA_n^\delta}F_D(a),
 \]
 \[
 -\log w(a^\star)\le K^{\poly}(H_n)+\kappa_U,
 \]
-where $F_U$ and $F_D$ denote the baseline and conditioned schedule objectives, and
+where
 \[
 K^{\poly}(H_n):=\inf_{a\in S(H_n)}\{-\log w(a)\}
 \]
@@ -810,10 +829,10 @@ If the effective slacks are negligible on the deployment scale of interest, then
 \label{app:proof:lem:conditional}
 
 \begin{proof}
-Since $\log \overline{T}_q(s) = \log(c_{\mathrm{sim}}\, t_0(s)) - \log q(s)$,
+Since $\log \mathsf{T}_q(s) = \log(c_{\mathrm{sim}}\, t_0(s)) - \log q(s)$,
 \[
 \begin{aligned}
-\E_{S \sim \pi_z}\!\left[\log \overline{T}_q(S) \mid Z=z\right]
+\E_{S \sim \pi_z}\!\left[\log \mathsf{T}_q(S) \mid Z=z\right]
 &= \E_{S\sim\pi_z}[\log(c_{\mathrm{sim}}\, t_0(S))]
    + \sum_s \pi_z(s) \log \frac{1}{q(s)} \\
 &= \E_{S\sim\pi_z}[\log(c_{\mathrm{sim}}\, t_0(S))]
@@ -830,12 +849,12 @@ Nonnegativity of KL divergence gives the optimality claim.
 \begin{proof}
 Apply Lemma~\ref{lem:conditional} to the baseline allocation $q_0 = \pi$:
 \[
-\E\!\left[\log \overline{T}_\pi(S)\right]
+\E\!\left[\log \mathsf{T}_\pi(S)\right]
 = \E_\pi[\log(c_{\mathrm{sim}}\, t_0(S))] + H(\pi).
 \]
 Apply it to the deployed allocation $q_Z$:
 \[
-\E\!\left[\log \overline{T}_{q_Z}(S)\right]
+\E\!\left[\log \mathsf{T}_{q_Z}(S)\right]
 = \E_\pi[\log(c_{\mathrm{sim}}\, t_0(S))] + \E_Z[H(\pi_Z)] + \E_Z[\KL(\pi_Z \| q_Z)].
 \]
 Subtract:
@@ -851,16 +870,16 @@ Subtract:
 \begin{proof}
 Write out the log-time:
 \[
-\log \overline{T}_q^{(M)}(s) = \log \kappa(M) + \log c_{\mathrm{sim}} + \log t_0(M,s) - \log q(s).
+\log \mathsf{T}_q^{(M)}(s) = \log \kappa(M) + \log c_{\mathrm{sim}} + \log t_0(M,s) - \log q(s).
 \]
 For the prior-matched baseline with model $M_0$:
 \[
-\E\!\left[\log \overline{T}_\pi^{(M_0)}(S)\right]
+\E\!\left[\log \mathsf{T}_\pi^{(M_0)}(S)\right]
 = \log\kappa(M_0) + \log c_{\mathrm{sim}} + \E_\pi[\log t_0(M_0,S)] + H(\pi).
 \]
 For the deployed system with model $M$:
 \begin{align*}
-\E\!\left[\log \overline{T}_{q_Z}^{(M)}(S)\right]
+\E\!\left[\log \mathsf{T}_{q_Z}^{(M)}(S)\right]
 &= \log\kappa(M) + \log c_{\mathrm{sim}} + \E_\pi[\log t_0(M,S)] \\
 &\quad + \E_{Z_M}[H(\pi_Z^M)] + \E_{Z_M}[\KL(\pi_Z^M \| q_Z^M)],
 \end{align*}
@@ -873,6 +892,34 @@ Subtracting and grouping:
 - \E_{Z_M}[\KL(\pi_Z^M \| q_Z^M)] \\[4pt]
 &= \log\frac{\kappa(M_0)}{\kappa(M)} + \varphi(M_0,M) + G(M) - \varepsilon(M).
 \end{align*}
+\end{proof}
+
+\subsection{Mode-dependent cost extension}
+
+\begin{proposition}[Mode-dependent cost extension]
+\label{prop:mode-dependent-cost}
+Suppose $\kappa(M,s)>0$ may depend on both model and mode, and
+\[
+\mathsf{T}_q^{(M)}(s,z)
+=c_{\mathrm{sim}}\,\kappa(M,s)\frac{t_0(M,s)}{q_z(s)}.
+\]
+For a baseline $(M_0,q_0)$ and a routed system $(M,q_Z)$,
+\[
+\begin{aligned}
+&\E\!\left[\log\mathsf{T}_{q_0}^{(M_0)}(S)-\log\mathsf{T}_{q_Z}^{(M)}(S,Z)\right]\\
+&\quad=
+\E_{S\sim\pi}\!\left[\log\frac{\kappa(M_0,S)}{\kappa(M,S)}\right]
++\E_{S\sim\pi}\!\left[\log\frac{t_0(M_0,S)}{t_0(M,S)}\right]
++\I_\pi(S:Z)+\KL(\pi\|q_0)-\E_Z\KL(\pi_Z\|q_Z).
+\end{aligned}
+\]
+\end{proposition}
+
+\begin{proof}
+Apply the conditional cross-entropy identity to the allocation term. The tower property gives
+$\E_Z\E_{S\sim\pi_Z}[\log\kappa(M,S)]=\E_{S\sim\pi}[\log\kappa(M,S)]$
+and the analogous equality for $t_0$. Subtracting the baseline expression and using
+$H(\pi)-\E_ZH(\pi_Z)=\I_\pi(S:Z)$ yields the claim.
 \end{proof}
 
 \subsection{Proof of Theorem~\ref{thm:upper}: Alignment-certified upper envelope}
@@ -913,22 +960,45 @@ K^{\poly}(H_n)-K^{\poly}(H_n\mid D_n)+\rho_D+\kappa_U
 \]
 \end{proof}
 
-\subsection{Proof of Proposition~\ref{prop:approximation-guarantee}: Approximation guarantee}
+\subsection{Residual guarantee under approximate packedness}
 \label{app:proof:prop:approximation-guarantee}
 
+\begin{proposition}[Residual guarantee under approximate packedness]
+\label{prop:approximation-guarantee}
+Suppose the packed log-time law is only approximate, and represent the fixed baseline by a constant signal value $z_0$:
+\[
+\log \mathsf{T}_{q}^{(M)}(s,z)
+=\log\kappa(M)+\log c_{\mathrm{sim}}+\log t_0(M,s)-\log q_z(s)
++r_M(s,z,q),
+\]
+with $|r_M(s,z,q)|\le\eta$ uniformly over the evaluated systems, modes, signals, and allocations.
+For a fixed baseline allocation $q_0$ and a routed allocation $q_Z$,
+\[
+\begin{aligned}
+&\E\!\left[\log \mathsf{T}_{q_0}^{(M_0)}(S)-\log \mathsf{T}_{q_Z}^{(M)}(S,Z)\right]\\
+&\quad=
+\log\frac{\kappa(M_0)}{\kappa(M)}
++\varphi(M_0,M)+\I_\pi(S:Z)
++\KL(\pi\|q_0)-\E_Z\KL(\pi_Z^M\|q_Z^M)+R,
+\end{aligned}
+\]
+where
+\[
+R:=\E[r_{M_0}(S,z_0,q_0)-r_M(S,Z,q_Z)],
+\qquad |R|\le 2\eta.
+\]
+For $q_0=\pi$, this is Theorem~\ref{thm:four-term} plus a residual bounded by $2\eta$.
+\end{proposition}
+
 \begin{proof}
-The two relaxations contribute independently.
-
-\emph{Soft modes.}
-When $\pi_Z^M$ is $\delta$-approximately one-hot, $H(\pi_Z^M) \le h(\delta) + \delta\log(m-1) \le h(\delta) + \delta\log m$, where $h(\delta) = -\delta\log\delta-(1{-}\delta)\log(1{-}\delta)$.
-At most two entropy-type terms contribute, giving a routing correction bounded by $2h(\delta)+2\delta\log m$.
-If $\delta>0$ and $m \ge \exp(h(\delta)/\delta)$, then $h(\delta)\le \delta\log m$, so this part is at most $4\delta\log m$.
-
-\emph{Approximate log-linearity.}
-The residual $r(M,s,q)$ enters additively into each log-time term.
-Since the identity subtracts two such terms, $|r(M,s,q_Z) - r(M_0,s,\pi)| \le 2\eta$.
-
-Combining: $R(\delta,\eta,m) \le 2h(\delta)+2\delta\log m+2\eta$, with the stated simplified bound under the size condition.
+Substitute the approximate log-time law into the proof of Proposition~\ref{prop:mode-dependent-cost}, specialized to mode-independent $\kappa(M)$. The ideal terms decompose exactly as before. The remaining difference is
+\[
+R=\E[r_{M_0}(S,z_0,q_0)-r_M(S,Z,q_Z)].
+\]
+Therefore
+\[
+|R|\le \E|r_{M_0}(S,z_0,q_0)|+\E|r_M(S,Z,q_Z)|\le 2\eta.
+\]
 \end{proof}
 
 \subsection{Proof of Proposition~\ref{prop:graph-not-task}: Benchmark racing can be suboptimal}
@@ -1046,6 +1116,135 @@ Claims~(i) and~(ii) follow by specialization.
 \begin{proof}
 Apply the packed-family decomposition to the target family $\cT^B$ with side-information variable $U_A$ rather than within-family data.
 The proof is otherwise unchanged: the cross-entropy identity splits the allocation term into information and mismatch.
+\end{proof}
+
+\clearpage
+\section{Retry and Paired-Validation Results}
+\label{app:retry-and-validation}
+
+\begin{proposition}[Geometric-retry certified scale]
+\label{prop:geometric-certified-scale}
+Suppose independent attempts of system $M$ on mode $s$ succeed with probability $p_M(s)\in(0,1)$ and each complete attempt has duration $u_M(s)>0$.
+The minimum number of attempts needed to achieve failure probability at most $\delta\in(0,1)$ is
+\[
+N_M(s,\delta)
+=
+\left\lceil\frac{\log\delta}{\log(1-p_M(s))}\right\rceil,
+\]
+and the corresponding focused certified scale is $t_0(M,s,\delta)=u_M(s)N_M(s,\delta)$.
+Equivalently, the exact success hazard is $h_M(s):=-\log(1-p_M(s))$; replacing it by $p_M(s)$ is only a small-$p_M(s)$ approximation.
+\end{proposition}
+
+\begin{proof}
+After $N$ independent attempts, failure has probability $(1-p_M(s))^N$.
+Thus $(1-p_M(s))^N\le\delta$ if and only if
+$N\ge\log\delta/\log(1-p_M(s))$; taking the least integer proves the claim.
+\end{proof}
+
+\begin{theorem}[Single-mode retry crossover]
+\label{thm:retry-crossover}
+Fix one homogeneous mode and a common one-attempt horizon.
+Let a stronger system have success probability $p_h$ and complete-attempt cost $\kappa_h$, and let a cheaper system have $0<p_\ell<p_h<1$ and complete-attempt cost $0<\kappa_\ell<\kappa_h$.
+Assume retries of the cheaper system are conditionally independent and identically distributed.
+Then the smallest integer retry depth whose success probability is at least $p_h$ is
+\[
+D_{\mathrm{cross}}
+=
+\left\lceil
+\frac{\log(1-p_h)}{\log(1-p_\ell)}
+\right\rceil.
+\]
+A fixed-depth block that executes all $D_{\mathrm{cross}}$ attempts is cheaper than one stronger-system attempt if and only if
+\[
+D_{\mathrm{cross}}\kappa_\ell<\kappa_h.
+\]
+If the block stops after its first success, its expected cost is instead
+\[
+\kappa_\ell\sum_{d=1}^{D_{\mathrm{cross}}}(1-p_\ell)^{d-1}
+=
+\kappa_\ell\frac{1-(1-p_\ell)^{D_{\mathrm{cross}}}}{p_\ell}.
+\]
+\end{theorem}
+
+\begin{proof}
+The cheaper system succeeds at least once in $D$ attempts with probability
+$1-(1-p_\ell)^D$.
+Requiring this quantity to be at least $p_h$ and dividing by the negative number
+$\log(1-p_\ell)$ gives
+$D\ge\log(1-p_h)/\log(1-p_\ell)$.
+The ceiling is therefore the least feasible integer depth.
+The fixed-depth cost statement is immediate.
+For early stopping, attempt $d$ is reached with probability $(1-p_\ell)^{d-1}$; summing its expected cost gives the finite geometric series.
+\end{proof}
+
+\begin{definition}[Finite-horizon first-hit diagnostics]
+\label{def:first-hit-diagnostics}
+Fix a horizon $H$, action $a$, mode $s$, and censoring floor $p_{\min}\in(0,1)$.
+Let $\tau_a$ be first verified success and $C_t(a)$ accumulated deployment cost through time~$t$.
+Define
+\[
+F_a(s,H):=\Prb(\tau_a\le H\mid S=s),
+\qquad
+C_a(s,H):=\E[C_{\tau_a\wedge H}(a)\mid S=s],
+\]
+Assume $C_a(s,H)>0$ and define the finite-horizon log-effort diagnostic
+\[
+\ell_{\mathrm{hit}}(a,s;H)
+:=
+\log C_a(s,H)-\log(F_a(s,H)\vee p_{\min}).
+\]
+This empirical surrogate is neither the certified-time quantile $\overline T_A(\delta)$ nor the exact packed time $\mathsf T_q$.
+\end{definition}
+
+\begin{definition}[Hard-router allocation regret]
+\label{def:allocation-regret}
+Using the horizon and floor from Definition~\ref{def:first-hit-diagnostics}, define for a finite action menu $\cA$
+\[
+L(a,s):=\log\kappa(a,s)-\log(p(a,s)\vee p_{\min}),
+\qquad
+a^\star(s)\in\argmin_{a\in\cA}L(a,s),
+\]
+where $p(a,s):=F_a(s,H)$ and $\kappa(a,s):=C_a(s,H)>0$ use the same horizon convention.
+If a hard router selects $a_\rho(x)$ on an instance of mode $s$, its retrospective allocation regret is
+\[
+r_\rho(x):=L(a_\rho(x),s)-\min_{a\in\cA}L(a,s)\ge0.
+\]
+This diagnostic is reported instead of $\KL(\pi_Z\|q_Z)$ when no reproducible packed allocation $q_Z$ is implemented; it must be estimated on data not used to fit the router.
+\end{definition}
+
+\begin{proposition}[Unbiased paired router-gain estimator]
+\label{prop:paired-unbiased}
+Let $X_1,\ldots,X_N$ be i.i.d. from $\mu$.
+For signal condition $j$, a fixed router selects
+$a_i^j=\rho_j(Z_j(X_i))$.
+Let $\ell(a,x;\xi)$ be an integrable deployment loss, let $m_j(x)$ be the incremental cost of acquiring signal $Z_j$, and suppose $\widehat m_j(x)$ is unbiased for $m_j(x)$.
+Define
+\[
+\Delta_R(j)
+:=
+\E\!\left[
+\ell(a^0,X;\xi^0)-\ell(a^j,X;\xi^j)-m_j(X)
+\right].
+\]
+Here $a^k=\rho_k(Z_k(X))$ for $k\in\{0,j\}$.
+If, conditional on $(X_i,a_i^k)$, each of $Q$ repeats is distributed as the corresponding deployment run for $k\in\{0,j\}$, then
+\[
+\widehat\Delta_R(j)
+=
+\frac1N\sum_{i=1}^N
+\left[
+\frac1Q\sum_{q=1}^Q\ell(a_i^0,X_i;\xi_{i,q}^0)
+-\frac1Q\sum_{q=1}^Q\ell(a_i^j,X_i;\xi_{i,q}^j)
+-\widehat m_j(X_i)
+\right]
+\]
+satisfies $\E[\widehat\Delta_R(j)]=\Delta_R(j)$.
+\end{proposition}
+
+\begin{proof}
+Condition on each sampled instance and its two selected actions.
+Each repeated-run average has the corresponding conditional expected deployment loss, while $\widehat m_j$ has conditional expectation $m_j$.
+The tower property and linearity of expectation then give the stated equality.
 \end{proof}
 
 
@@ -1362,6 +1561,7 @@ grows exponentially with the cost ratio and competence advantage, and shrinks wi
 $\cT = (\cX, \cY, V, \mu, \cB)$ & Budgeted transductive task \\
 $\overline{T}_A(\delta)$ & Certified time-to-solution at confidence $1-\delta$ \\
 $\Delta$ & Certified log-speedup: $\log \overline{T}_{A_0} - \log \overline{T}_A$ \\
+$\mathsf{T}_q^{(M)}(s)$ & Packed mode-conditioned time-sharing surrogate; distinct from $\overline T_A(\delta)$ \\
 $\Dlog,\DlogM$ & Expected certified log-speedup functionals decomposed by the packed-family identities \\
 $S \in \cS$ & Latent mode variable \\
 $\pi, \pi_Z$ & Prior and posterior over modes \\
@@ -1396,7 +1596,11 @@ $\chi_W,\chi_D$ & Work and critical-path compression ratios in the structural in
 RI Identity (Thm.~\ref{thm:ri-identity}) & Packed family (Asm.~\ref{ass:packed-family}), prior-matched baseline, expected-log functional \\
 Four-term decomposition (Thm.~\ref{thm:four-term}) & Model-dependent packed family (Asm.~\ref{ass:model-packed-family}), expected-log functional \\
 Upper envelope (Thm.~\ref{thm:upper-expectation}) & A1--A7 (Asm.~\ref{ass:upper-envelope}) \\
-Approximation guarantee (Prop.~\ref{prop:approximation-guarantee}) & Relaxed packed family ($\delta$-soft modes, $\eta$-approximate log-linearity), entropy remainder $h(\delta)+\delta\log m$ \\
+Residual guarantee (Prop.~\ref{prop:approximation-guarantee}) & Uniform $\eta$-approximate packed log-linearity; residual at most $2\eta$ \\
+Mode-dependent cost extension (Prop.~\ref{prop:mode-dependent-cost}) & Positive mode-dependent costs, packed inverse-share law, common mode prior \\
+Coding-gain bound (Prop.~\ref{prop:coding-gain}) & Shared admissible class, attained conditioned optimum, positive coding weights \\
+Crossover under retries (Thm.~\ref{thm:retry-crossover}) & Homogeneous mode, i.i.d. retries, common horizon, fixed per-attempt costs \\
+Paired router estimator (Prop.~\ref{prop:paired-unbiased}) & I.i.d. instances, fixed routers, integrable loss, unbiased measurement-cost estimate \\
 Crossover formula (Cor.~\ref{cor:model-selection}) & Model-dependent packed family \\
 Crossover threshold~\eqref{eq:meff-threshold} & Additionally (S1)--(S3): verifier equalization, linear mismatch scaling, constant competence \\
 Verifier equalization (Prop.~\ref{prop:verifier-eq}) & Model-dependent packed family, small residual posterior entropy \\
