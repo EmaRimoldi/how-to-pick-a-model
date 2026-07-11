@@ -62,18 +62,11 @@ The framework studies verifiable transductive workloads: code generation against
 \text{cost},\qquad \text{competence},\qquad \text{information},\qquad \text{routing mismatch}.
 \]
 
-The paper makes five contributions. First, it defines a task-first ontology for agent systems. Second, it casts agent building as a deployment optimization problem over design tuples. Third, it formalizes task equivalence, post-training transfer, and orchestration equivalence. Fourth, it proves exact speed-accounting identities under a packed latent-mode family and an upper envelope outside it. Fifth, it derives model-choice, fine-tuning, and multi-agent consequences and gives a measurement protocol.
+The paper makes five contributions. First, it defines a task-first ontology for agent systems. Second, it casts agent building as a deployment optimization problem over design tuples. Third, it proves exact speed-accounting identities under a packed latent-mode family and an upper envelope outside it. Fourth, it derives model-choice, fine-tuning, multi-agent, transfer, and equivalence consequences. Fifth, it gives a measurement protocol for estimating the decomposition terms.
 
 The exact identities require the packed latent-mode family: each instance has a latent solution strategy, and certified time scales inversely with the compute share allocated to that strategy. The approximation guarantee quantifies degradation outside this stylized regime.
 
-\section{Related Work and Positioning}
-\label{sec:related}
-
-The conceptual starting point is Achille--Soatto~\cite{achille2026}, who make time-to-solution central for verifiable transductive agents. Older antecedents include Solomonoff induction, Levin search, and resource-bounded inference~\cite{solomonoff1964,levin1973,livitanyi2008,levin_1984_randomness_conservation,schmidhuber_2002_speed_prior}. Graph-like reasoning workflows include trees of thoughts, graphs of thoughts, and graph-structured workflow search~\cite{yao_2023_tree_of_thoughts,besta_2023_graph_of_thoughts,zhang_2024_aflow}.
-
-The routing problem connects to algorithm portfolios and per-instance selection~\cite{huberman_lukose_hogg_1997_economics_hard,xu_hutter_hoos_leytonbrown_2008_satzilla}, anytime algorithms and metareasoning~\cite{zilberstein_1996_anytime_systems,hansen_2001_monitoring_anytime,russell_wefald_1991_dotherightthing}, and sequential inspection~\cite{weitzman1979,wald1947,chernoff1959}. Multi-agent specialization is related to Radner team decision theory~\cite{radner1962,marschak_radner_1972}. Mixture-of-experts and conditional computation make routing quality a first-class architectural object~\cite{jordan_jacobs_1994_hme,shazeer_2017_moe,fedus_zoph_shazeer_2022_switch}. Task equivalence is adjacent to bisimulation metrics, MDP homomorphisms, behavioral similarity, and transfer learning~\cite{ferns2004,ravindran2003,agarwal2021,taylor2009}.
-
-The claim is not priority on time, verifiability, search, routing, or graph workflows in isolation. The claim is that these objects can be separated and recombined into theorem-level speed accounting and deployment-facing model choice.
+The paper is organized in the same order as the formal dependencies: tasks and solvers; agentic system designs and deployment objectives; packed-family decompositions; consequences for model choice and system design; task equivalence and transfer; measurement; related work and limitations.
 
 \section{A Mathematical Framework for Agentic Tasks}
 \label{sec:framework}
@@ -126,6 +119,7 @@ This deployment-level definition is a quantile-time object. The exact packed-fam
 
 \begin{assumption}[Packed latent-mode family]
 \label{def:packed-family}
+\label{ass:packed-family}
 Fix a task family at scale~$n$.
 Assume:
 \begin{enumerate}
@@ -143,30 +137,19 @@ where $c_{\mathrm{sim}}$ is the simulation overhead.
 
 All KL and logarithmic expressions below are understood under the standing support convention that the relevant allocations put positive mass on every mode in the posterior support; for continuous-reward extensions the corresponding reward rates are assumed positive. For a posterior $\pi_D$ over modes, define $\Meff(D) := \exp(H(\pi_D))$. In Lean tactic prediction, modes are proof strategy families; $D$ is partial execution trace; $q(s)$ is the fraction of attempt budget devoted to strategy $s$.
 
-\begin{proposition}[Benchmark racing can be suboptimal]
-\label{prop:graph-not-task}
-Under the packed-family assumption, consider two models $M_A$ and $M_B$ with distinct optimal routing policies: $\pi^{*,A}_D \ne \pi^{*,B}_D$ on a set of instances of positive measure.
-Then there exist cost, competence, and information terms for which evaluating both models under a single fixed workflow (as benchmark racing does) selects the wrong model: the model with lower win rate under the fixed workflow achieves lower expected certified log-time under its own optimal routing.
-\end{proposition}
-
-\begin{proof}
-Model $M_A$ evaluated under its optimal routing has mismatch $\varepsilon_A(\pi^{*,A}) = 0$.
-Model $M_B$ evaluated under $M_A$'s routing has mismatch $\varepsilon_B(\pi^{*,A}) = \E_D[\KL(\pi^{*,B}_D \| \pi^{*,A}_D)] > 0$.
-Benchmark racing compares both under $\pi^{*,A}$, penalizing $M_B$ by $\varepsilon_B(\pi^{*,A})$ nats.
-Under its own routing, $M_B$ recovers the full penalty.
-If $M_B$'s other advantages exceed $M_A$'s by less than $\varepsilon_B(\pi^{*,A})$ but more than zero, benchmark racing selects~$A$ while~$B$ with adapted routing is superior.
-\end{proof}
-
 \section{Agent Building as a Deployment Optimization Problem}
 \label{sec:design}
 
-A \emph{design point} is
+\begin{definition}[Agentic system design]
+\label{def:agentic-system-design}
+For a task family $\fT$, an \emph{agentic system design} is a tuple
 \begin{equation}
 \label{eq:design-tuple}
-d = (M, \pi, \Omega, W, K, p) \in \fD_n,
+d = (M, \rho, \Omega, W, K, p) \in \fD_n,
 \end{equation}
-where $M$ is the base model, $\pi$ is the orchestration/routing policy, $\Omega$ is the available tool library, $W$ denotes long-term memory resources, $K$ is the active context budget, and $p$ is the allowed degree of parallelism.
-Write $A_d$ for the solver induced by design~$d$.
+where $M$ is the base model, $\rho$ is the orchestration/routing policy, $\Omega$ is the available tool library, $W$ denotes long-term memory resources, $K$ is the active context budget, and $p$ is the allowed degree of parallelism.
+The design induces a stochastic solver $A_d$ in the sense of Definition~\ref{def:solver}; this induced solver is the agentic system deployed on the task family.
+\end{definition}
 
 For a confidence level $\delta \in (0,1)$ and a deployment loss $\Lambda_n$ over feasible time--cost--memory--parallelism tuples, the builder solves
 \begin{equation}
@@ -179,183 +162,7 @@ For a confidence level $\delta \in (0,1)$ and a deployment loss $\Lambda_n$ over
 \end{equation}
 where $\cF^{\mathrm{dep}}_{A_d}(n,\delta)$ is the deployment frontier: the set of time--cost--memory--parallelism tuples at which solver $A_d$ succeeds with probability $\ge 1-\delta$.
 
-\begin{proposition}[Suboptimality of $M$-restricted optimization]
-\label{prop:m-restriction}
-Under the model-dependent packed-family assumption (Assumption~\ref{ass:model-packed-family}), consider two candidate models $M_A$ and $M_B$ with distinct optimal routing policies: $\pi^{*,A}_D \ne \pi^{*,B}_D$ on a set of instances of positive measure.
-If the builder restricts to $M$-variation alone---fixing $\pi = \pi^{*,A}$ and all other coordinates at model~$A$'s values---then the suboptimality gap relative to the unrestricted optimum is at least
-\[
-\varepsilon_B(\pi^{*,A}) - \varepsilon_B(\pi^{*,B}) \;=\; \varepsilon_B(\pi^{*,A}) \;>\; 0,
-\]
-the routing-mismatch penalty from evaluating model~$B$ under the wrong routing policy.
-\end{proposition}
-
-\begin{proof}
-Under the four-term decomposition (Theorem~\ref{thm:four-term}), the expected certified log-speedup for model $M_B$ under routing policy $q$ is $\Dlog(M_B, q) = \log(\kappa_0/\kappa_B) + \varphi_B + G_B - \varepsilon_B(q)$, where $\varepsilon_B(q) = \E_D[\KL(\pi^{*,B}_D \| q_D)]$.
-The unrestricted optimum uses $q = \pi^{*,B}_D$, achieving $\varepsilon_B(\pi^{*,B}) = 0$.
-Under $M$-restriction, the builder evaluates $M_B$ with $\pi^{*,A}$, incurring $\varepsilon_B(\pi^{*,A}) = \E_D[\KL(\pi^{*,B}_D \| \pi^{*,A}_D)] > 0$ since the policies differ on positive measure and KL divergence is zero if and only if the distributions agree almost surely.
-\end{proof}
-
-\begin{corollary}[Benchmark racing eliminates routing-adaptive designs]
-\label{cor:binary-restriction}
-Benchmark racing can certify only the best model under one fixed routing policy,
-so it can miss routing-adaptive improvements.
-\end{corollary}
-
 The framework identifies six decision variables. It does not solve their full joint optimization. It provides a decomposable objective for model choice and restricted sub-problems, leaving full optimization over model, routing, tools, memory, context, and parallelism open.
-
-\section{When Are Two Tasks the Same?}
-\label{sec:equivalence}
-
-\subsection{Budget-Preserving Reductions and Equivalence}
-\label{subsec:task-equiv-def}
-
-\begin{definition}[Budget-preserving reduction]
-\label{def:budget-preserving-reduction}
-A \emph{budget-preserving reduction} from task family $\fT^A$ to task family $\fT^B$ at scale~$n$ is a pair of maps $(f,g)$ where $f: \cX^A_n \to \cX^B_n$ maps instances and $g: \cY^B_n \to \cY^A_n$ maps solutions, such that:
-\begin{enumerate}
-\item \textbf{Correctness preservation:} $V^B_n(f(x), y) = 1 \implies V^A_n(x, g(y)) = 1$.
-\item \textbf{Budget preservation:} the composition $x \mapsto g(A_d^B(f(x)))$ respects the budget constraints of $\fT^A$: the overhead of applying $f$ and $g$ is absorbed within $\cB^A_n$.
-\end{enumerate}
-\end{definition}
-
-\begin{definition}[Strong and weak equivalence]
-\label{def:equivalence}
-Two task families $\fT^A$ and $\fT^B$ are:
-\begin{itemize}
-\item \emph{Strongly equivalent} if budget-preserving reductions exist in both directions with overhead that is $o(1)$ relative to the budgets.
-\item \emph{$\alpha$-weakly equivalent} if for every design~$d$ the certified log-speedups satisfy $|\Delta^A(d) - \Delta^B(d)| \le \alpha$.
-\end{itemize}
-\end{definition}
-
-\subsection{Post-Training and Transfer}
-\label{subsec:post-training}
-
-\begin{definition}[Post-training efficiency]
-\label{def:post-training-eff}
-Fix a base solver $U^{(0)}$ and an update rule $\mathrm{Upd}$.
-For data budget~$m$, the \emph{post-training efficiency of $A$-data for task~$B$} is the transfer ratio
-\[
-\eta_{A \to B}(m) \;:=\; \frac{\Delta_{A \to B}(n,m,\delta)}{\Delta_{B \to B}(n,m,\delta)}.
-\]
-When $\eta_{A \to B} \approx 1$, training on $A$-data is almost as good as training on $B$-data for improving performance on~$B$.
-\end{definition}
-
-\begin{theorem}[Post-training equivalence from task equivalence]
-\label{thm:post-training}
-In the packed-family expected-log regime, suppose both families share the same latent space $S \in [\Mn]$ with different observation channels $P_A(D|S)$ and $P_B(D|S)$, and suppose the denominator in~\eqref{eq:post-training-ratio} is positive.
-Then
-\begin{equation}
-\label{eq:post-training-ratio}
-\eta_{A \to B}(m) \;=\; \frac{I(S;D_A^{(m)}) - \varepsilon_{A \to B}}{I(S;D_B^{(m)}) - \varepsilon_{B \to B}}.
-\end{equation}
-In particular:
-\begin{enumerate}
-\item[\textup{(i)}] If both families share all latent structure and cross-family mismatch equals within-family mismatch, then $\eta_{A \to B} = 1$: training on $A$ is exactly as good as training on $B$.
-\item[\textup{(ii)}] If the families share $S$ but not the channel, then, when mismatch terms are small,
-\[
-\eta_{A \to B} \approx \frac{I(S;D_A)}{I(S;D_B)}.
-\]
-The transfer ratio is governed by the information-quality ratio of the two channels.
-\end{enumerate}
-\end{theorem}
-
-\begin{proof}
-Apply the Routing-Information Identity (Theorem~\ref{thm:ri-identity}) to both transfer settings over the shared mode space.
-For the numerator, the side-information variable is $D_A^{(m)}$ drawn from the $A$-channel, applied to target family~$B$:
-\[
-\Delta_{A \to B} \;=\; I(S; D_A^{(m)}) - \varepsilon_{A \to B},
-\quad\text{where }
-\varepsilon_{A \to B} := \E_{D_A}\!\left[\KL\bigl(\pi^B_{D_A} \| q_B(\cdot \mid D_A)\bigr)\right].
-\]
-Here $\pi^B_{D_A}(s) = \Prb[S = s \mid D_A]$ is the posterior over $B$-task modes given $A$-channel data.
-For the denominator, within-family data gives $\Delta_{B \to B} = I(S; D_B^{(m)}) - \varepsilon_{B \to B}$.
-Dividing yields~\eqref{eq:post-training-ratio}.
-Claims~(i) and~(ii) follow by specialization.
-\end{proof}
-
-The mixed-source objective $\Delta_{\alpha \to B}(m) = I(S; D_\alpha^{(m)}) - \varepsilon_\alpha$ is a design heuristic. The mutual-information term is concave in $\alpha$ by standard arguments~\cite{cover-thomas2006}; the mismatch term is not generically convex. Whether the combined objective is concave under natural structural conditions remains open.
-
-\begin{proposition}[Transfer through target-relevant side information]
-\label{prop:transfer-side-info}
-Suppose the target family $\fT^B$ admits the packed-family representation with latent mode $S_B \sim \pi^B$, and suppose a joint law for $(S_B,Z_A)$ is fixed.
-Let adaptation on family $\fT^A$ produce a random representation $Z_A$, and let the transferred system choose allocation $q_B(\cdot \mid Z_A)$.
-Write $\pi^B_{Z_A}(s) := \Prb[S_B = s \mid Z_A]$.
-Then the packed-family certified-time gain on $\fT^B$ from using $Z_A$ is
-\begin{equation}
-\label{eq:transfer-gain}
-\Delta^{\mathrm{packed}}_{A \to B}
-\;=\; \I_{\pi^B}(S_B : Z_A)
-\;-\; \E\!\left[\KL\bigl(\pi^B_{Z_A} \| q_B(\cdot \mid Z_A)\bigr)\right].
-\end{equation}
-\end{proposition}
-
-\begin{proof}
-Apply the packed-family decomposition to the target family $\fT^B$ with side-information variable $Z_A$ rather than within-family data.
-The proof is otherwise unchanged: the cross-entropy identity splits the allocation term into information and mismatch.
-\end{proof}
-
-\begin{remark}[DPI bound under joint latent structure]
-\label{rem:dpi-transfer}
-If additionally $D_A \leftarrow S_A \leftrightarrow S_B \rightarrow D_B$ is a Markov chain and $Z_A$ is a function of $(D_A, S_A)$, then by the data-processing inequality:
-$\Delta^{\mathrm{packed}}_{A \to B} \le \I(S_A : S_B)$.
-Transfer is bounded by the mutual information between the latent mode spaces.
-The Markov chain assumption is appropriate when the families share a common underlying skill space; it is inappropriate when they share only surface features.
-\end{remark}
-
-The transfer characterization yields three conditional prescriptions. If source and target have shared dominant modes and similar orchestration, training benefit transfers and the source-trained model can be deployed with minor adaptation. If dominant modes are shared but orchestration differs, the base model can transfer while the routing policy should be retrained. If the target has modes absent from the source, broader pre-training matters more than source-task fine-tuning.
-
-\subsection{Orchestration Equivalence}
-\label{subsec:orch-equiv}
-
-\begin{definition}[$\alpha$-Orchestration equivalence]
-\label{def:orch-equiv}
-Two packed-family task families $\cT^A$ and $\cT^B$ sharing a common mode bank $[\Mn]$, common observation space, and common marginal distribution for $D$ are \emph{$\alpha$-orchestration-equivalent} if
-\begin{equation}
-\label{eq:orch-equiv-def}
-\E_D\!\bigl[\KL\!\bigl(\pi^A_D \,\big\|\, \pi^B_D\bigr)\bigr] \;\le\; \alpha,
-\end{equation}
-where $\pi^A_D, \pi^B_D \in \Delta_{\Mn-1}$ are the posterior mode distributions induced by side information $D$ under the two families, the expectation is over the common marginal distribution of~$D$, and the displayed KL is finite almost surely.
-\end{definition}
-
-\begin{proposition}[Orchestration equivalence bounds]
-\label{prop:orch-equiv-bound}
-Suppose $\cT^A$ and $\cT^B$ are $\alpha$-orchestration-equivalent packed families with common mode bank $[\Mn]$ and common marginal distribution for $D$.
-Then:
-
-\medskip
-\noindent\textbf{(a) Information-term bound} (independent of routing policy $q$)\textbf{.}
-\begin{equation}
-\label{eq:orch-info-bound}
-|G_A - G_B|
-\;=\;
-\bigl|\E_D[H(\pi^A_D)] - \E_D[H(\pi^B_D)]\bigr|
-\;\le\;
-\sqrt{2\alpha}\;\log\!\left(\frac{\Mn}{\sqrt{2\alpha}}\right),
-\end{equation}
-provided $\sqrt{2\alpha} \le 1 - 1/\Mn$.
-
-\medskip
-\noindent\textbf{(b) Routing-mismatch bound} (depends on routing policy $q$)\textbf{.}
-For any routing policy $q$ with $q_{\min} := \min_s q(s) > 0$:
-\begin{equation}
-\label{eq:orch-routing-bound}
-|\varepsilon_A(q) - \varepsilon_B(q)|
-\;\le\;
-\sqrt{2\alpha}\;\log(1/q_{\min})
-\;+\;
-\sqrt{2\alpha}\;\log\!\left(\frac{\Mn}{\sqrt{2\alpha}}\right).
-\end{equation}
-
-\medskip
-\noindent\textbf{(c) Simplified bound under uniform-floor routing.}
-If $q_{\min} \ge 1/\Mn$, both bounds are $O(\sqrt{\alpha}\;\log \Mn)$.
-\end{proposition}
-
-\begin{proof}
-See Appendix~\ref{app:proofs}.
-\end{proof}
-
-Post-training equivalence and orchestration equivalence are independent: two families may share trainable latent structure while requiring different routing policies, or may demand the same routing while requiring different base-model competence.
 
 \section{Information-Routing and Model-Aware Decompositions}
 \label{sec:decomposition}
@@ -365,7 +172,7 @@ Post-training equivalence and orchestration equivalence are independent: two fam
 
 \begin{lemma}[Conditional log-time decomposition]
 \label{lem:conditional}
-Under Assumption~\ref{def:packed-family}, for any realized feedback $D$ and any share vector $q \in \Delta_{\Mn}$ with $\mathrm{supp}(\pi_D) \subseteq \mathrm{supp}(q)$,
+Under Assumption~\ref{ass:packed-family}, for any realized feedback $D$ and any share vector $q \in \Delta_{\Mn}$ with $\mathrm{supp}(\pi_D) \subseteq \mathrm{supp}(q)$,
 \[
 \E_{S \sim \pi_D}\!\left[\log \overline{T}_q(S) \mid D\right]
 \;=\;
@@ -392,7 +199,7 @@ Nonnegativity of KL divergence gives the optimality claim.
 
 \begin{theorem}[Routing-Information Identity]
 \label{thm:ri-identity}
-Under Assumption~\ref{def:packed-family}, with a prior-matched baseline $q_0 = \pi$,
+Under Assumption~\ref{ass:packed-family}, with a prior-matched baseline $q_0 = \pi$,
 \[
 \boxed{\;
 \Dlog \;=\; G - \varepsilon
@@ -652,6 +459,53 @@ Combining: $R(\delta,\eta,\Mn) \le 2h(\delta)+2\delta\log\Mn+2\eta$, with the st
 \section{Consequences for Model Choice and System Design}
 \label{sec:consequences}
 
+\begin{proposition}[Benchmark racing can be suboptimal]
+\label{prop:graph-not-task}
+Under Assumption~\ref{ass:model-packed-family}, consider two models $M_A$ and $M_B$ with distinct posterior-matched optimal routing policies: $q^{*,A}_D=\pi_D^A$ and $q^{*,B}_D=\pi_D^B$, with $q^{*,A}_D \ne q^{*,B}_D$ on a set of instances of positive measure.
+Then there exist cost, competence, and information terms for which evaluating both models under a single fixed workflow selects the wrong model: the model with lower win rate under the fixed workflow achieves lower expected certified log-time under its own optimal routing.
+\end{proposition}
+
+\begin{proof}
+Model $M_A$ evaluated under its optimal routing has mismatch $\varepsilon_A(q^{*,A}) = 0$.
+Model $M_B$ evaluated under $M_A$'s routing has mismatch
+\[
+\varepsilon_B(q^{*,A}) = \E_D[\KL(\pi^B_D \| q^{*,A}_D)] > 0.
+\]
+Benchmark racing compares both under one workflow, penalizing $M_B$ by $\varepsilon_B(q^{*,A})$ nats.
+Under its own routing, $M_B$ recovers the full penalty.
+If $M_B$'s other advantages exceed $M_A$'s by less than $\varepsilon_B(q^{*,A})$ but more than zero, benchmark racing selects~$A$ while~$B$ with adapted routing is superior.
+\end{proof}
+
+\begin{proposition}[Suboptimality of $M$-restricted optimization]
+\label{prop:m-restriction}
+Under Assumption~\ref{ass:model-packed-family}, consider two candidate models $M_A$ and $M_B$ with distinct posterior-matched optimal routing policies: $q^{*,A}_D=\pi_D^A$ and $q^{*,B}_D=\pi_D^B$, with $q^{*,A}_D \ne q^{*,B}_D$ on a set of instances of positive measure.
+If the builder restricts to $M$-variation alone---fixing $\rho = q^{*,A}$ and all other coordinates at model~$A$'s values---then the suboptimality gap relative to the unrestricted optimum is at least
+\[
+\varepsilon_B(q^{*,A}) - \varepsilon_B(q^{*,B}) \;=\; \varepsilon_B(q^{*,A}) \;>\; 0,
+\]
+the routing-mismatch penalty from evaluating model~$B$ under the wrong routing policy.
+\end{proposition}
+
+\begin{proof}
+Under Theorem~\ref{thm:four-term}, the expected certified log-speedup for model $M_B$ under routing policy $q$ is
+\[
+\Delta_{B,\log}(q) = \log(\kappa_0/\kappa_B) + \varphi_B + G_B - \varepsilon_B(q),
+\]
+where $\varepsilon_B(q) = \E_D[\KL(\pi^B_D \| q_D)]$.
+The unrestricted optimum uses $q = q^{*,B}_D$, achieving $\varepsilon_B(q^{*,B}) = 0$.
+Under $M$-restriction, the builder evaluates $M_B$ with $q^{*,A}$, incurring
+\[
+\varepsilon_B(q^{*,A}) = \E_D[\KL(\pi^B_D \| q^{*,A}_D)] > 0
+\]
+since the policies differ on positive measure and KL divergence is zero if and only if the distributions agree almost surely.
+\end{proof}
+
+\begin{corollary}[Benchmark racing eliminates routing-adaptive designs]
+\label{cor:binary-restriction}
+Benchmark racing can certify only the best model under one fixed routing policy,
+so it can miss routing-adaptive improvements.
+\end{corollary}
+
 \begin{corollary}[Model-selection crossover]
 \label{cor:model-selection}
 Under Assumption~\ref{ass:model-packed-family}, model $M_1$ achieves lower expected certified log-time than model $M_2$ whenever
@@ -819,6 +673,160 @@ Since $\gamma \le \eta$ by verifier equalization, the condition LHS $> c_{\mathr
 
 The inner routing problem of the packed family is the same log-optimal allocation problem that appears in Kelly betting~\cite{kelly1956}, universal portfolio theory~\cite{cover-thomas2006}, and algorithm-portfolio scheduling~\cite{gomes-selman2001}. The optimal allocation is $q^*(\cdot \mid D)=\pi_D(\cdot)$; the mismatch $\varepsilon$ is the expected log-loss from suboptimal allocation.
 
+\section{When Are Two Tasks the Same?}
+\label{sec:equivalence}
+
+\subsection{Budget-Preserving Reductions and Equivalence}
+\label{subsec:task-equiv-def}
+
+\begin{definition}[Budget-preserving reduction]
+\label{def:budget-preserving-reduction}
+A \emph{budget-preserving reduction} from task family $\fT^A$ to task family $\fT^B$ at scale~$n$ is a pair of maps $(f,g)$ where $f: \cX^A_n \to \cX^B_n$ maps instances and $g: \cY^B_n \to \cY^A_n$ maps solutions, such that:
+\begin{enumerate}
+\item \textbf{Correctness preservation:} $V^B_n(f(x), y) = 1 \implies V^A_n(x, g(y)) = 1$.
+\item \textbf{Budget preservation:} the composition $x \mapsto g(A_d^B(f(x)))$ respects the budget constraints of $\fT^A$: the overhead of applying $f$ and $g$ is absorbed within $\cB^A_n$.
+\end{enumerate}
+\end{definition}
+
+\begin{definition}[Strong and weak equivalence]
+\label{def:equivalence}
+Two task families $\fT^A$ and $\fT^B$ are:
+\begin{itemize}
+\item \emph{Strongly equivalent} if budget-preserving reductions exist in both directions with overhead that is $o(1)$ relative to the budgets.
+\item \emph{$\alpha$-weakly equivalent} if for every design~$d$ the certified log-speedups satisfy $|\Delta^A(d) - \Delta^B(d)| \le \alpha$.
+\end{itemize}
+\end{definition}
+
+\subsection{Post-Training and Transfer}
+\label{subsec:post-training}
+
+\begin{definition}[Post-training efficiency]
+\label{def:post-training-eff}
+Fix a base solver $U^{(0)}$ and an update rule $\mathrm{Upd}$.
+For data budget~$m$, the \emph{post-training efficiency of $A$-data for task~$B$} is the transfer ratio
+\[
+\eta_{A \to B}(m) \;:=\; \frac{\Delta_{A \to B}(n,m,\delta)}{\Delta_{B \to B}(n,m,\delta)}.
+\]
+When $\eta_{A \to B} \approx 1$, training on $A$-data is almost as good as training on $B$-data for improving performance on~$B$.
+\end{definition}
+
+\begin{theorem}[Post-training equivalence from task equivalence]
+\label{thm:post-training}
+In the packed-family expected-log regime, suppose both families share the same latent space $S \in [\Mn]$ with different observation channels $P_A(D|S)$ and $P_B(D|S)$, and suppose the denominator in the ratio below is positive.
+Then
+\begin{equation}
+\label{eq:post-training-ratio}
+\eta_{A \to B}(m) \;=\; \frac{I(S;D_A^{(m)}) - \varepsilon_{A \to B}}{I(S;D_B^{(m)}) - \varepsilon_{B \to B}}.
+\end{equation}
+In particular:
+\begin{enumerate}
+\item[\textup{(i)}] If both families share all latent structure and cross-family mismatch equals within-family mismatch, then $\eta_{A \to B} = 1$: training on $A$ is exactly as good as training on $B$.
+\item[\textup{(ii)}] If the families share $S$ but not the channel, then, when mismatch terms are small,
+\[
+\eta_{A \to B} \approx \frac{I(S;D_A)}{I(S;D_B)}.
+\]
+The transfer ratio is governed by the information-quality ratio of the two channels.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Apply the Routing-Information Identity (Theorem~\ref{thm:ri-identity}) to both transfer settings over the shared mode space.
+For the numerator, the side-information variable is $D_A^{(m)}$ drawn from the $A$-channel, applied to target family~$B$:
+\[
+\Delta_{A \to B} \;=\; I(S; D_A^{(m)}) - \varepsilon_{A \to B},
+\quad\text{where }
+\varepsilon_{A \to B} := \E_{D_A}\!\left[\KL\bigl(\pi^B_{D_A} \| q_B(\cdot \mid D_A)\bigr)\right].
+\]
+Here $\pi^B_{D_A}(s) = \Prb[S = s \mid D_A]$ is the posterior over $B$-task modes given $A$-channel data.
+For the denominator, within-family data gives $\Delta_{B \to B} = I(S; D_B^{(m)}) - \varepsilon_{B \to B}$.
+Dividing yields~\eqref{eq:post-training-ratio}.
+Claims~(i) and~(ii) follow by specialization.
+\end{proof}
+
+The mixed-source objective $\Delta_{\alpha \to B}(m) = I(S; D_\alpha^{(m)}) - \varepsilon_\alpha$ is a design heuristic. The mutual-information term is concave in $\alpha$ by standard arguments~\cite{cover-thomas2006}; the mismatch term is not generically convex. Whether the combined objective is concave under natural structural conditions remains open.
+
+\begin{proposition}[Transfer through target-relevant side information]
+\label{prop:transfer-side-info}
+Suppose the target family $\fT^B$ admits the packed-family representation with latent mode $S_B \sim \pi^B$, and suppose a joint law for $(S_B,Z_A)$ is fixed.
+Let adaptation on family $\fT^A$ produce a random representation $Z_A$, and let the transferred system choose allocation $q_B(\cdot \mid Z_A)$.
+Write $\pi^B_{Z_A}(s) := \Prb[S_B = s \mid Z_A]$.
+Then the packed-family certified-time gain on $\fT^B$ from using $Z_A$ is
+\begin{equation}
+\label{eq:transfer-gain}
+\Delta^{\mathrm{packed}}_{A \to B}
+\;=\; \I_{\pi^B}(S_B : Z_A)
+\;-\; \E\!\left[\KL\bigl(\pi^B_{Z_A} \| q_B(\cdot \mid Z_A)\bigr)\right].
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+Apply the packed-family decomposition to the target family $\fT^B$ with side-information variable $Z_A$ rather than within-family data.
+The proof is otherwise unchanged: the cross-entropy identity splits the allocation term into information and mismatch.
+\end{proof}
+
+\begin{remark}[DPI bound under joint latent structure]
+\label{rem:dpi-transfer}
+If additionally $D_A \leftarrow S_A \leftrightarrow S_B \rightarrow D_B$ is a Markov chain and $Z_A$ is a function of $(D_A, S_A)$, then by the data-processing inequality:
+$\Delta^{\mathrm{packed}}_{A \to B} \le \I(S_A : S_B)$.
+Transfer is bounded by the mutual information between the latent mode spaces.
+The Markov chain assumption is appropriate when the families share a common underlying skill space; it is inappropriate when they share only surface features.
+\end{remark}
+
+The transfer characterization yields three conditional prescriptions. If source and target have shared dominant modes and similar orchestration, training benefit transfers and the source-trained model can be deployed with minor adaptation. If dominant modes are shared but orchestration differs, the base model can transfer while the routing policy should be retrained. If the target has modes absent from the source, broader pre-training matters more than source-task fine-tuning.
+
+\subsection{Orchestration Equivalence}
+\label{subsec:orch-equiv}
+
+\begin{definition}[$\alpha$-Orchestration equivalence]
+\label{def:orch-equiv}
+Two packed-family task families $\cT^A$ and $\cT^B$ sharing a common mode bank $[\Mn]$, common observation space, and common marginal distribution for $D$ are \emph{$\alpha$-orchestration-equivalent} if
+\begin{equation}
+\label{eq:orch-equiv-def}
+\E_D\!\bigl[\KL\!\bigl(\pi^A_D \,\big\|\, \pi^B_D\bigr)\bigr] \;\le\; \alpha,
+\end{equation}
+where $\pi^A_D, \pi^B_D \in \Delta_{\Mn-1}$ are the posterior mode distributions induced by side information $D$ under the two families, the expectation is over the common marginal distribution of~$D$, and the displayed KL is finite almost surely.
+\end{definition}
+
+\begin{proposition}[Orchestration equivalence bounds]
+\label{prop:orch-equiv-bound}
+Suppose $\cT^A$ and $\cT^B$ are $\alpha$-orchestration-equivalent packed families with common mode bank $[\Mn]$ and common marginal distribution for $D$.
+Then:
+
+\medskip
+\noindent\textbf{(a) Information-term bound} (independent of routing policy $q$)\textbf{.}
+\begin{equation}
+\label{eq:orch-info-bound}
+|G_A - G_B|
+\;=\;
+\bigl|\E_D[H(\pi^A_D)] - \E_D[H(\pi^B_D)]\bigr|
+\;\le\;
+\sqrt{2\alpha}\;\log\!\left(\frac{\Mn}{\sqrt{2\alpha}}\right),
+\end{equation}
+provided $\sqrt{2\alpha} \le 1 - 1/\Mn$.
+
+\medskip
+\noindent\textbf{(b) Routing-mismatch bound} (depends on routing policy $q$)\textbf{.}
+For any routing policy $q$ with $q_{\min} := \min_s q(s) > 0$:
+\begin{equation}
+\label{eq:orch-routing-bound}
+|\varepsilon_A(q) - \varepsilon_B(q)|
+\;\le\;
+\sqrt{2\alpha}\;\log(1/q_{\min})
+\;+\;
+\sqrt{2\alpha}\;\log\!\left(\frac{\Mn}{\sqrt{2\alpha}}\right).
+\end{equation}
+
+\medskip
+\noindent\textbf{(c) Simplified bound under uniform-floor routing.}
+If $q_{\min} \ge 1/\Mn$, both bounds are $O(\sqrt{\alpha}\;\log \Mn)$.
+\end{proposition}
+
+\begin{proof}
+See Appendix~\ref{app:proofs}.
+\end{proof}
+
+Post-training equivalence and orchestration equivalence are independent: two families may share trainable latent structure while requiring different routing policies, or may demand the same routing while requiring different base-model competence.
+
 \section{Application and Measurement}
 \label{sec:application}
 \label{sec:measurement}
@@ -908,6 +916,15 @@ The pilot compares DeepSeek-Prover-V1.5 against Claude Opus~4 on 300 Mathlib4 le
 Budget equalization is by total API cost, not attempt count. At $\kappa_A=\$0.001$/call and $\kappa_B=\$0.03$/call with \$0.064/problem, DeepSeek gets 64 attempts per problem, while Claude gets $\approx 2.1$ attempts per problem.
 
 If prediction accuracy in the contested library-heavy regime is near 50\%, the decomposition adds nothing beyond a cost-based rule of thumb and the paper reports this as a negative result.
+
+\section{Related Work and Positioning}
+\label{sec:related}
+
+The conceptual starting point is Achille--Soatto~\cite{achille2026}, who make time-to-solution central for verifiable transductive agents. Older antecedents include Solomonoff induction, Levin search, and resource-bounded inference~\cite{solomonoff1964,levin1973,livitanyi2008,levin_1984_randomness_conservation,schmidhuber_2002_speed_prior}. Graph-like reasoning workflows include trees of thoughts, graphs of thoughts, and graph-structured workflow search~\cite{yao_2023_tree_of_thoughts,besta_2023_graph_of_thoughts,zhang_2024_aflow}.
+
+The routing problem connects to algorithm portfolios and per-instance selection~\cite{huberman_lukose_hogg_1997_economics_hard,xu_hutter_hoos_leytonbrown_2008_satzilla}, anytime algorithms and metareasoning~\cite{zilberstein_1996_anytime_systems,hansen_2001_monitoring_anytime,russell_wefald_1991_dotherightthing}, and sequential inspection~\cite{weitzman1979,wald1947,chernoff1959}. Multi-agent specialization is related to Radner team decision theory~\cite{radner1962,marschak_radner_1972}. Mixture-of-experts and conditional computation make routing quality a first-class architectural object~\cite{jordan_jacobs_1994_hme,shazeer_2017_moe,fedus_zoph_shazeer_2022_switch}. Task equivalence is adjacent to bisimulation metrics, MDP homomorphisms, behavioral similarity, and transfer learning~\cite{ferns2004,ravindran2003,agarwal2021,taylor2009}.
+
+The claim is not priority on time, verifiability, search, routing, or graph workflows in isolation. The claim is that these objects can be separated and recombined into theorem-level speed accounting and deployment-facing model choice.
 
 \section{Discussion and Conclusion}
 \label{sec:discussion}
@@ -1243,7 +1260,7 @@ $G(M)$ & $\I_\pi(S : D_M)$: information generation quality \\
 $\varepsilon(M)$ & $\E_D[\KL(\pi_D^M \| q_D^M)]$: routing mismatch \\
 $\Meff$ & $\exp(H(\pi_D))$: entropy-effective mode count \\
 $\Meff^\star$ & Crossover threshold: specialist dominates below, generalist above \\
-$d = (M, \pi, \Omega, W, K, p)$ & Design tuple \\
+$d = (M, \rho, \Omega, W, K, p)$ & Agentic system design tuple \\
 $\alpha$ & Orchestration-equivalence parameter: $\E_D[\KL(\pi^A_D \| \pi^B_D)]$ \\
 $\eta_{A \to B}$ & Post-training efficiency: transfer ratio from family $A$ to $B$ \\
 $c_{\mathrm{coord}}(K)$ & Coordination cost for $K$-agent team \\
@@ -1262,7 +1279,7 @@ $\chi_W,\chi_D$ & Work and critical-path compression ratios in the structural in
 \toprule
 \textbf{Result} & \textbf{Assumptions Required} \\
 \midrule
-RI Identity (Thm.~\ref{thm:ri-identity}) & Packed family (Asm.~\ref{def:packed-family}), prior-matched baseline, expected-log functional \\
+RI Identity (Thm.~\ref{thm:ri-identity}) & Packed family (Asm.~\ref{ass:packed-family}), prior-matched baseline, expected-log functional \\
 Four-term decomposition (Thm.~\ref{thm:four-term}) & Model-dependent packed family (Asm.~\ref{ass:model-packed-family}), expected-log functional \\
 Upper envelope (Thm.~\ref{thm:upper-expectation}) & A1--A7 (Asm.~\ref{ass:upper-envelope}) \\
 Approximation guarantee (Prop.~\ref{prop:approximation-guarantee}) & Relaxed packed family ($\delta$-soft modes, $\eta$-approximate log-linearity), entropy remainder $h(\delta)+\delta\log\Mn$ \\
