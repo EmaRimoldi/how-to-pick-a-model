@@ -1,6 +1,8 @@
-\documentclass[11pt]{article}
+\documentclass[10pt]{article}
 
 \usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
 \usepackage{amsmath,amssymb,amsfonts,amsthm}
 \usepackage{booktabs}
 \usepackage{array}
@@ -8,16 +10,33 @@
 \usepackage[protrusion=true,expansion=false]{microtype}
 \usepackage[colorlinks=true,citecolor=blue,linkcolor=blue,urlcolor=blue]{hyperref}
 
+\newtheoremstyle{paperplain}
+  {6pt}{6pt}{\itshape}{}{\bfseries}{.}{.5em}
+  {\thmname{#1}\thmnumber{ #2}\thmnote{ \normalfont(#3)}}
+\newtheoremstyle{paperdefinition}
+  {6pt}{6pt}{\normalfont}{}{\bfseries}{.}{.5em}
+  {\thmname{#1}\thmnumber{ #2}\thmnote{ \normalfont(#3)}}
+\newtheoremstyle{paperremark}
+  {6pt}{6pt}{\normalfont}{}{\itshape}{.}{.5em}
+  {\thmname{#1}\thmnumber{ #2}\thmnote{ \normalfont(#3)}}
+
+\theoremstyle{paperplain}
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{proposition}[theorem]{Proposition}
 \newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{paperdefinition}
 \newtheorem{definition}[theorem]{Definition}
 \newtheorem{assumption}[theorem]{Assumption}
+
+\theoremstyle{paperremark}
 \newtheorem{remark}[theorem]{Remark}
 \newtheorem{example}[theorem]{Example}
 
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\setlist[itemize]{leftmargin=1.6em,itemsep=1pt,topsep=2pt,parsep=0pt}
+\setlist[enumerate]{leftmargin=1.8em,itemsep=1pt,topsep=2pt,parsep=0pt}
 
 \newcommand{\poly}{\mathrm{poly}}
 \newcommand{\KL}{\mathrm{KL}}
@@ -74,16 +93,10 @@ The paper is organized in the same order as the formal dependencies: tasks and s
 \label{def:task}
 A \emph{budgeted transductive task} is a tuple
 \[
-\cT = (\cX,\cY,V,\mu,\cB)
+\cT=(\cX,\cY,V,\mu,\cB),
 \]
-where:
-\begin{itemize}
-\item $\cX$ is a set of instances and $\cY$ a set of candidate solutions;
-\item $V : \cX \times \cY \to \{0,1\}$ is a polynomial-time verifier;
-\item $\mu$ is the deployment distribution over instances in $\cX$;
-\item $\cB = (b_t, b_c, b_m)$ specifies budgets for time, cost, and memory.
-\end{itemize}
-Success on instance $x$ means producing $y$ with $V(x,y)=1$ within $\cB$.
+where $\cX$ is the instance space, $\cY$ is the solution space, $V:\cX\times\cY\to\{0,1\}$ is a polynomial-time verifier, $\mu$ is the deployment distribution over $\cX$, and $\cB=(b_t,b_c,b_m)$ specifies time, cost, and memory budgets.
+Success on instance $x$ means producing $y$ such that $V(x,y)=1$ within $\cB$.
 \end{definition}
 
 \begin{definition}[Task family]
@@ -184,20 +197,8 @@ The allocation $q = \pi_z$ uniquely minimizes conditional expected certified log
 The excess over this optimum is exactly $\KL(\pi_z \| q)$.
 \end{lemma}
 
-\begin{proof}
-Since $\log \overline{T}_q(s) = \log(c_{\mathrm{sim}}\, t_0(s)) - \log q(s)$,
-\[
-\begin{aligned}
-\E_{S \sim \pi_z}\!\left[\log \overline{T}_q(S) \mid Z=z\right]
-&= \E_{S\sim\pi_z}[\log(c_{\mathrm{sim}}\, t_0(S))]
-   + \sum_s \pi_z(s) \log \frac{1}{q(s)} \\
-&= \E_{S\sim\pi_z}[\log(c_{\mathrm{sim}}\, t_0(S))]
-   + H(\pi_z) + \KL(\pi_z \| q),
-\end{aligned}
-\]
-using the cross-entropy identity $\sum_s p(s)\log(1/q(s)) = H(p) + \KL(p\|q)$.
-Nonnegativity of KL divergence gives the optimality claim.
-\end{proof}
+\par\noindent\emph{Proof.} See Appendix~\ref{app:proof:lem:conditional}.\par
+
 
 \begin{theorem}[Routing-Information Identity]
 \label{thm:ri-identity}
@@ -219,23 +220,8 @@ Equivalently: $\Dlog \le G$, with equality if and only if $q_Z = \pi_Z$ almost s
 One nat of routing mismatch costs exactly one nat of expected certified log-speedup.
 \end{theorem}
 
-\begin{proof}
-Apply Lemma~\ref{lem:conditional} to the baseline allocation $q_0 = \pi$:
-\[
-\E\!\left[\log \overline{T}_\pi(S)\right]
-= \E_\pi[\log(c_{\mathrm{sim}}\, t_0(S))] + H(\pi).
-\]
-Apply it to the deployed allocation $q_Z$:
-\[
-\E\!\left[\log \overline{T}_{q_Z}(S)\right]
-= \E_\pi[\log(c_{\mathrm{sim}}\, t_0(S))] + \E_Z[H(\pi_Z)] + \E_Z[\KL(\pi_Z \| q_Z)].
-\]
-Subtract:
-\[
-\Dlog = H(\pi) - \E_Z[H(\pi_Z)] - \E_Z[\KL(\pi_Z \| q_Z)]
-= G - \varepsilon.
-\]
-\end{proof}
+\par\noindent\emph{Proof.} See Appendix~\ref{app:proof:thm:ri-identity}.\par
+
 
 For a non-prior-matched baseline $q_0 \ne \pi$, the identity becomes $\Dlog = G + \KL(\pi \| q_0) - \varepsilon$, adding a baseline suboptimality bonus.
 
@@ -283,128 +269,15 @@ G(M) &:= \I_\pi(S : Z_M) \quad\text{(information generation quality)}, \label{eq
 \end{align}
 \end{theorem}
 
-\begin{proof}
-Write out the log-time:
-\[
-\log \overline{T}_q^{(M)}(s) = \log \kappa(M) + \log c_{\mathrm{sim}} + \log t_0(M,s) - \log q(s).
-\]
-For the prior-matched baseline with model $M_0$:
-\[
-\E\!\left[\log \overline{T}_\pi^{(M_0)}(S)\right]
-= \log\kappa(M_0) + \log c_{\mathrm{sim}} + \E_\pi[\log t_0(M_0,S)] + H(\pi).
-\]
-For the deployed system with model $M$:
-\begin{align*}
-\E\!\left[\log \overline{T}_{q_Z}^{(M)}(S)\right]
-&= \log\kappa(M) + \log c_{\mathrm{sim}} + \E_\pi[\log t_0(M,S)] \\
-&\quad + \E_{Z_M}[H(\pi_Z^M)] + \E_{Z_M}[\KL(\pi_Z^M \| q_Z^M)],
-\end{align*}
-where the last two terms arise from the cross-entropy identity exactly as in Theorem~\ref{thm:ri-identity}.
-Subtracting and grouping:
-\begin{align*}
-\DlogM &= \log\frac{\kappa(M_0)}{\kappa(M)}
-+ \E_\pi\!\left[\log\frac{t_0(M_0,S)}{t_0(M,S)}\right]
-+ \bigl(H(\pi) - \E_{Z_M}[H(\pi_Z^M)]\bigr)
-- \E_{Z_M}[\KL(\pi_Z^M \| q_Z^M)] \\[4pt]
-&= \log\frac{\kappa(M_0)}{\kappa(M)} + \varphi(M_0,M) + G(M) - \varepsilon(M).
-\end{align*}
-\end{proof}
+\par\noindent\emph{Proof.} See Appendix~\ref{app:proof:thm:four-term}.\par
+
 
 Benchmark racing reports only an aggregate comparison. The decomposition reports why the expected log-time gain has its value.
 
-\subsection{Upper Envelope and Approximation}
+\subsection{Approximation and Guardrails}
 \label{subsec:upper-envelope-thm}
 
-Fix a thresholded verifiable task family at scale $n$ and confidence level $\delta\in(0,1/2)$. Write
-\[
-F_U(a):=\frac{t_a(n,\delta)}{w(a)},\qquad
-F_D(a):=\frac{t_a(n,\delta)}{w(a\mid D_n)}.
-\]
-The corresponding schedule times are
-\[
-\overline T_U(n,\delta)=c_{\mathrm{sim}}(n)\inf_{a\in\cA_n^\delta}F_U(a),
-\qquad
-\overline T_{U_D}(n,\delta)=c_{\mathrm{sim}}(n)\inf_{a\in\cA_n^\delta}F_D(a),
-\]
-and $\overline{\Sp}(D_n):=\log \overline T_U(n,\delta)-\log \overline T_{U_D}(n,\delta)$.
-Here $H_n$ denotes reusable solver-side structure: proof tactics, repair templates, retrieval schemas, strategy libraries, or other organization that can accelerate future instances.
-
-\begin{assumption}[A1--A7: shared admissibility and aligned witness]\label{ass:upper-envelope}
-\leavevmode
-\begin{itemize}
-\item \textbf{A1} (verifiability): $V\in \mathrm{P}$.
-\item \textbf{A2} (prefix coding): $\cA_n$ is countable and prefix-free, and both $w(\cdot)$ and $w(\cdot\mid D_n)$ satisfy Kraft.
-\item \textbf{A3} (shared admissibility): the same nonempty set $\cA_n^\delta$ is used in the baseline and conditioned schedule objectives.
-\item \textbf{A4} (shared simulation): both schedules incur the same simulation overhead $c_{\mathrm{sim}}(n)\in\poly(n)$.
-\item \textbf{A5} (resource-bounded conditioning): the map $D_n\mapsto w(\cdot\mid D_n)$ is computable or decodable in polynomial time.
-\item \textbf{A6} (structure witness class): there is a nonempty subclass $S(H_n)\subseteq \cA_n^\delta$ of admissible solvers that realize the reusable structure $H_n$.
-\item \textbf{A7} (aligned witness): there exists $a^\star\in S(H_n)$ and nonnegative slacks $(\rho_U,\rho_D,\kappa_U)$ such that
-\[
-F_U(a^\star)\le e^{\rho_U}\inf_{a\in\cA_n^\delta}F_U(a),
-\qquad
-F_D(a^\star)\le e^{\rho_D}\inf_{a\in\cA_n^\delta}F_D(a),
-\]
-\[
--\log w(a^\star)\le K^{\poly}(H_n)+\kappa_U,
-\]
-where $F_U$ and $F_D$ denote the baseline and conditioned schedule objectives and $K^{\poly}(H_n):=\inf_{a\in S(H_n)}\{-\log w(a)\}$ is the resource-bounded Kolmogorov complexity of the reusable structure.
-\end{itemize}
-\end{assumption}
-
-Define
-\[
-K^{\poly}(H_n):=\inf_{a\in S(H_n)}\{-\log w(a)\},
-\qquad
-K^{\poly}(H_n\mid D_n):=\inf_{a\in S(H_n)}\{-\log w(a\mid D_n)\},
-\]
-\[
-\I_{\mathrm{poly}}(H_n:D_n):=K^{\poly}(H_n)-K^{\poly}(H_n\mid D_n).
-\]
-
-\begin{theorem}[Alignment-certified upper envelope]\label{thm:upper}\label{thm:upper-expectation}
-Under Assumption~\ref{ass:upper-envelope},
-\[
-\overline{\Sp}(D_n)
-\le
-\I_{\mathrm{poly}}(H_n:D_n)+\rho_D+\kappa_U.
-\]
-If the effective slacks are negligible on the deployment scale of interest, then certified log-speedup is upper-bounded by reusable resource-bounded information alone.
-\end{theorem}
-
-\begin{proof}
-Because $a^\star\in\cA_n^\delta$,
-\[
-\inf_{a\in\cA_n^\delta}F_U(a)\le F_U(a^\star).
-\]
-By the conditioned-side alignment inequality in A7,
-\[
-\inf_{a\in\cA_n^\delta}F_D(a)\ge e^{-\rho_D}F_D(a^\star).
-\]
-Therefore
-\[
-\frac{\overline T_U}{\overline T_{U_D}}
-\le
-e^{\rho_D}\frac{w(a^\star\mid D_n)}{w(a^\star)}.
-\]
-Taking logarithms gives
-\[
-\overline{\Sp}(D_n)
-\le
-\rho_D-\log w(a^\star)+\log w(a^\star\mid D_n).
-\]
-Now A7 yields
-$-\log w(a^\star)\le K^{\poly}(H_n)+\kappa_U$,
-while by the definition of conditional complexity,
-$\log w(a^\star\mid D_n)\le -K^{\poly}(H_n\mid D_n)$.
-Substituting both bounds gives
-\[
-\overline{\Sp}(D_n)
-\le
-K^{\poly}(H_n)-K^{\poly}(H_n\mid D_n)+\rho_D+\kappa_U
-=
-\I_{\mathrm{poly}}(H_n:D_n)+\rho_D+\kappa_U.
-\]
-\end{proof}
+The exact decompositions are identities only under the packed latent-mode assumptions. Appendix~\ref{app:upper-envelope} records the alignment-certified upper envelope for the broader resource-bounded schedule model. In the main text we keep the metric guardrail and the finite-mode approximation guarantee, since these are the constraints needed to interpret the model-choice results below.
 
 \begin{remark}[Metric guardrail]
 All speedup claims in this paper are about certified quantities and expected log-time improvements:
@@ -443,20 +316,8 @@ R(\delta,\eta,m) \;\le\; 2h(\delta)+2\delta\log m+2\eta,
 with $h(\delta)=-\delta\log\delta-(1-\delta)\log(1-\delta)$ and $h(0)=0$. In particular, if $\delta>0$ and $m \ge \exp(h(\delta)/\delta)$, then $R(\delta,\eta,m)\le 4\delta\log m+2\eta$.
 \end{proposition}
 
-\begin{proof}
-The two relaxations contribute independently.
+\par\noindent\emph{Proof.} See Appendix~\ref{app:proof:prop:approximation-guarantee}.\par
 
-\emph{Soft modes.}
-When $\pi_Z^M$ is $\delta$-approximately one-hot, $H(\pi_Z^M) \le h(\delta) + \delta\log(m-1) \le h(\delta) + \delta\log m$, where $h(\delta) = -\delta\log\delta-(1{-}\delta)\log(1{-}\delta)$.
-At most two entropy-type terms contribute, giving a routing correction bounded by $2h(\delta)+2\delta\log m$.
-If $\delta>0$ and $m \ge \exp(h(\delta)/\delta)$, then $h(\delta)\le \delta\log m$, so this part is at most $4\delta\log m$.
-
-\emph{Approximate log-linearity.}
-The residual $r(M,s,q)$ enters additively into each log-time term.
-Since the identity subtracts two such terms, $|r(M,s,q_Z) - r(M_0,s,\pi)| \le 2\eta$.
-
-Combining: $R(\delta,\eta,m) \le 2h(\delta)+2\delta\log m+2\eta$, with the stated simplified bound under the size condition.
-\end{proof}
 
 \section{Consequences for Model Choice and System Design}
 \label{sec:consequences}
@@ -467,16 +328,8 @@ Under Assumption~\ref{ass:model-packed-family}, consider two models $M_A$ and $M
 Then there exist cost, competence, and information terms for which evaluating both models under a single fixed workflow selects the wrong model: the model with lower win rate under the fixed workflow achieves lower expected certified log-time under its own optimal routing.
 \end{proposition}
 
-\begin{proof}
-Model $M_A$ evaluated under its optimal routing has mismatch $\varepsilon_A(q^{*,A}) = 0$.
-Model $M_B$ evaluated under $M_A$'s routing has mismatch
-\[
-\varepsilon_B(q^{*,A}) = \E_Z[\KL(\pi^B_Z \| q^{*,A}_Z)] > 0.
-\]
-Benchmark racing compares both under one workflow, penalizing $M_B$ by $\varepsilon_B(q^{*,A})$ nats.
-Under its own routing, $M_B$ recovers the full penalty.
-If $M_B$'s other advantages exceed $M_A$'s by less than $\varepsilon_B(q^{*,A})$ but more than zero, benchmark racing selects~$A$ while~$B$ with adapted routing is superior.
-\end{proof}
+\par\noindent\emph{Proof.} See Appendix~\ref{app:proof:prop:graph-not-task}.\par
+
 
 \begin{proposition}[Suboptimality of $M$-restricted optimization]
 \label{prop:m-restriction}
@@ -488,19 +341,8 @@ If the builder restricts to $M$-variation alone---fixing $\rho = q^{*,A}$ and al
 the routing-mismatch penalty from evaluating model~$B$ under the wrong routing policy.
 \end{proposition}
 
-\begin{proof}
-Under Theorem~\ref{thm:four-term}, the expected certified log-speedup for model $M_B$ under routing policy $q$ is
-\[
-\Delta_{B,\log}(q) = \log(\kappa_0/\kappa_B) + \varphi_B + G_B - \varepsilon_B(q),
-\]
-where $\varepsilon_B(q) = \E_Z[\KL(\pi^B_Z \| q_Z)]$.
-The unrestricted optimum uses $q = q^{*,B}_Z$, achieving $\varepsilon_B(q^{*,B}) = 0$.
-Under $M$-restriction, the builder evaluates $M_B$ with $q^{*,A}$, incurring
-\[
-\varepsilon_B(q^{*,A}) = \E_Z[\KL(\pi^B_Z \| q^{*,A}_Z)] > 0
-\]
-since the policies differ on positive measure and KL divergence is zero if and only if the distributions agree almost surely.
-\end{proof}
+\par\noindent\emph{Proof.} See Appendix~\ref{app:proof:prop:m-restriction}.\par
+
 
 \begin{corollary}[Benchmark racing eliminates routing-adaptive designs]
 \label{cor:binary-restriction}
@@ -523,10 +365,8 @@ Under Assumption~\ref{ass:model-packed-family}, model $M_1$ achieves lower expec
 \end{equation}
 \end{corollary}
 
-\begin{proof}
-Apply Theorem~\ref{thm:four-term} to both models with the same baseline; subtract.
-The baseline terms cancel.
-\end{proof}
+\par\noindent\emph{Proof.} See Appendix~\ref{app:proof:cor:model-selection}.\par
+
 
 Under verifier equalization, linear routing-mismatch scaling, and approximately constant net competence advantage, the crossover condition becomes
 \[
@@ -552,10 +392,8 @@ Then
 \]
 \end{proposition}
 
-\begin{proof}
-$G(M) = H(\pi) - \E_Z[H(\pi_Z^M)]$.
-Since $H(\pi)$ is model-independent, $|G(M_1) - G(M_2)| = |\E_Z[H(\pi_Z^{M_2})] - \E_Z[H(\pi_Z^{M_1})]| \le \eta_1 + \eta_2$.
-\end{proof}
+\par\noindent\emph{Proof.} See Appendix~\ref{app:proof:prop:verifier-eq}.\par
+
 
 \begin{definition}[Fine-tuning operator on the packed family]
 \label{def:finetuning-operator}
@@ -596,17 +434,8 @@ $\varepsilon_{M_{\mathrm{base}}}\le \varepsilon_{M_{\mathrm{gen}}}$,
 then the fine-tuned small model satisfies the specialization-dominance checklist above.
 \end{theorem}
 
-\begin{proof}
-Fine-tuning preserves $\kappa$ by Definition~\ref{def:finetuning-operator}, so the cost term is unchanged.
-Condition (ii) gives
-$\varphi(M_0,\widetilde M)\ge \varphi(M_0,M_{\mathrm{base}})$
-on the effective modes, and the stated off-support condition makes the full $\pi$-average nonnegative.
-Condition (iii) gives
-$\varepsilon_{\widetilde M}\le \varepsilon_{M_{\mathrm{base}}}$.
-Verifier equalization bounds the information-term change by $\eta$.
-The displayed inequality follows from Theorem~\ref{thm:four-term}.
-The final claim combines these inequalities with the cost premise and the specialization-dominance checklist.
-\end{proof}
+\par\noindent\emph{Proof.} See Appendix~\ref{app:proof:thm:finetuning-value}.\par
+
 
 \begin{assumption}[Multi-agent packed family with coordination cost]
 \label{ass:multi-agent-packed}
@@ -637,24 +466,8 @@ c_{\mathrm{coord}}(K) + \gamma.
 \]
 \end{theorem}
 
-\begin{proof}
-Apply Theorem~\ref{thm:four-term} to both designs with the same prior-matched baseline.
-For the generalist: $\Delta_{g,\log} = \log(\kappa_0/\kappa(M_g)) + \varphi(M_0, M_g) + G(M_g) - \varepsilon_g$.
-For the team, the log-effective per-step cost is $\ell_{\kappa,\mathrm{team}}$ and the effective competence is $\varphi(M_0, M_{\mathrm{team}}) = \sum_s \pi(s) \log(t_0(M_0,s)/t_0(M_{\mathrm{team}(s)},s))$.
-The team incurs additive coordination cost:
-$\Delta_{\mathrm{team},\log} = \log\kappa_0-\ell_{\kappa,\mathrm{team}} + \varphi(M_0, M_{\mathrm{team}}) + G_{\mathrm{team}} - \varepsilon_{\mathrm{team}} - c_{\mathrm{coord}}(K)$.
-Subtracting:
-\begin{align*}
-\Delta_{\mathrm{team},\log} - \Delta_{g,\log}
-&= \log\kappa(M_g)-\ell_{\kappa,\mathrm{team}}
-+ \phi_{\mathrm{spec}}
-- \gamma
-+ (\varepsilon_g - \varepsilon_{\mathrm{team}})
-- c_{\mathrm{coord}}(K),
-\end{align*}
-where $\phi_{\mathrm{spec}} = \sum_s \pi(s) \log(t_0(M_g,s)/t_0(M_{\mathrm{team}(s)},s))$ and the $M_0$ terms cancel.
-The biconditional follows because the four-term decomposition is an algebraic identity.
-\end{proof}
+\par\noindent\emph{Proof.} See Appendix~\ref{app:proof:thm:multi-agent-exact}.\par
+
 
 \begin{corollary}[Multi-agent threshold under verifier equalization]
 \label{cor:multi-agent-sufficient}
@@ -668,10 +481,8 @@ If verifier equalization holds, $|G(M_g) - G_{\mathrm{team}}| \le \eta$, then th
 This is a \emph{sufficient} condition: the team may dominate even when the left-hand side falls below $c_{\mathrm{coord}}(K) + \eta$, provided the actual information-gain difference $\gamma$ is less than $\eta$.
 \end{corollary}
 
-\begin{proof}
-From Theorem~\ref{thm:multi-agent-exact}, the team dominates iff the LHS exceeds $c_{\mathrm{coord}}(K) + \gamma$.
-Since $\gamma \le \eta$ by verifier equalization, the condition LHS $> c_{\mathrm{coord}}(K) + \eta \ge c_{\mathrm{coord}}(K) + \gamma$ is sufficient.
-\end{proof}
+\par\noindent\emph{Proof.} See Appendix~\ref{app:proof:cor:multi-agent-sufficient}.\par
+
 
 The inner routing problem of the packed family is the same log-optimal allocation problem that appears in Kelly betting~\cite{kelly1956}, universal portfolio theory~\cite{cover-thomas2006}, and algorithm-portfolio scheduling~\cite{gomes-selman2001}. The optimal allocation is $q^*(\cdot \mid Z)=\pi_Z(\cdot)$; the mismatch $\varepsilon$ is the expected log-loss from suboptimal allocation.
 
@@ -731,19 +542,8 @@ The transfer ratio is governed by the information-quality ratio of the two chann
 \end{enumerate}
 \end{theorem}
 
-\begin{proof}
-Apply the Routing-Information Identity (Theorem~\ref{thm:ri-identity}) to both transfer settings over the shared mode space.
-For the numerator, the side-information variable is $Z_A^{(m)}$ drawn from the $A$-channel, applied to target family~$B$:
-\[
-\Delta_{A \to B} \;=\; I(S; Z_A^{(m)}) - \varepsilon_{A \to B},
-\quad\text{where }
-\varepsilon_{A \to B} := \E_{Z_A}\!\left[\KL\bigl(\pi^B_{Z_A} \| q_B(\cdot \mid Z_A)\bigr)\right].
-\]
-Here $\pi^B_{Z_A}(s) = \Prb[S = s \mid Z_A]$ is the posterior over $B$-task modes given $A$-channel data.
-For the denominator, within-family data gives $\Delta_{B \to B} = I(S; Z_B^{(m)}) - \varepsilon_{B \to B}$.
-Dividing yields~\eqref{eq:post-training-ratio}.
-Claims~(i) and~(ii) follow by specialization.
-\end{proof}
+\par\noindent\emph{Proof.} See Appendix~\ref{app:proof:thm:post-training}.\par
+
 
 The mixed-source objective $\Delta_{\alpha \to B}(m) = I(S; Z_\alpha^{(m)}) - \varepsilon_\alpha$ is a design heuristic. The mutual-information term is concave in $\alpha$ by standard arguments~\cite{cover-thomas2006}; the mismatch term is not generically convex. Whether the combined objective is concave under natural structural conditions remains open.
 
@@ -761,10 +561,8 @@ Then the packed-family certified-time gain on $\cT^B$ from using $U_A$ is
 \end{equation}
 \end{proposition}
 
-\begin{proof}
-Apply the packed-family decomposition to the target family $\cT^B$ with side-information variable $U_A$ rather than within-family data.
-The proof is otherwise unchanged: the cross-entropy identity splits the allocation term into information and mismatch.
-\end{proof}
+\par\noindent\emph{Proof.} See Appendix~\ref{app:proof:prop:transfer-side-info}.\par
+
 
 \begin{remark}[DPI bound under joint latent structure]
 \label{rem:dpi-transfer}
@@ -823,9 +621,7 @@ For any routing policy $q$ with $q_{\min} := \min_s q(s) > 0$:
 If $q_{\min} \ge 1/m$, both bounds are $O(\sqrt{\alpha}\;\log m)$.
 \end{proposition}
 
-\begin{proof}
-See Appendix~\ref{app:proofs}.
-\end{proof}
+\par\noindent\emph{Proof.} See Appendix~\ref{app:proofs}.\par
 
 Post-training equivalence and orchestration equivalence are independent: two families may share trainable latent structure while requiring different routing policies, or may demand the same routing while requiring different base-model competence.
 
@@ -939,6 +735,319 @@ Open questions include full joint optimization over all design coordinates, conc
 The framework gives a decomposable objective, a crossover formula, a transfer characterization, and a measurement protocol. It does not give a solved agent-design compiler; it replaces unstructured engineering judgment with structured judgment over named, estimable channels.
 
 \appendix
+
+\section{Alignment-Certified Upper Envelope}
+\label{app:upper-envelope}
+
+Fix a thresholded verifiable task family at scale $n$ and confidence level $\delta\in(0,1/2)$. Write
+\[
+F_U(a):=\frac{t_a(n,\delta)}{w(a)},\qquad
+F_D(a):=\frac{t_a(n,\delta)}{w(a\mid D_n)}.
+\]
+The corresponding schedule times are
+\[
+\overline T_U(n,\delta)=c_{\mathrm{sim}}(n)\inf_{a\in\cA_n^\delta}F_U(a),
+\qquad
+\overline T_{U_D}(n,\delta)=c_{\mathrm{sim}}(n)\inf_{a\in\cA_n^\delta}F_D(a),
+\]
+and $\overline{\Sp}(D_n):=\log \overline T_U(n,\delta)-\log \overline T_{U_D}(n,\delta)$.
+Here $H_n$ denotes reusable solver-side structure: proof tactics, repair templates, retrieval schemas, strategy libraries, or other organization that can accelerate future instances.
+
+\begin{assumption}[A1--A7: shared admissibility and aligned witness]\label{ass:upper-envelope}
+\leavevmode
+\begin{itemize}
+\item \textbf{A1} (verifiability): $V\in \mathrm{P}$.
+\item \textbf{A2} (prefix coding): $\cA_n$ is countable and prefix-free, and both $w(\cdot)$ and $w(\cdot\mid D_n)$ satisfy Kraft.
+\item \textbf{A3} (shared admissibility): the same nonempty set $\cA_n^\delta$ is used in the baseline and conditioned schedule objectives.
+\item \textbf{A4} (shared simulation): both schedules incur the same simulation overhead $c_{\mathrm{sim}}(n)\in\poly(n)$.
+\item \textbf{A5} (resource-bounded conditioning): the map $D_n\mapsto w(\cdot\mid D_n)$ is computable or decodable in polynomial time.
+\item \textbf{A6} (structure witness class): there is a nonempty subclass $S(H_n)\subseteq \cA_n^\delta$ of admissible solvers that realize the reusable structure $H_n$.
+\item \textbf{A7} (aligned witness): there exists $a^\star\in S(H_n)$ and nonnegative slacks $(\rho_U,\rho_D,\kappa_U)$ such that
+\[
+F_U(a^\star)\le e^{\rho_U}\inf_{a\in\cA_n^\delta}F_U(a),
+\qquad
+F_D(a^\star)\le e^{\rho_D}\inf_{a\in\cA_n^\delta}F_D(a),
+\]
+\[
+-\log w(a^\star)\le K^{\poly}(H_n)+\kappa_U,
+\]
+where $F_U$ and $F_D$ denote the baseline and conditioned schedule objectives, and
+\[
+K^{\poly}(H_n):=\inf_{a\in S(H_n)}\{-\log w(a)\}
+\]
+is the resource-bounded Kolmogorov complexity of the reusable structure.
+\end{itemize}
+\end{assumption}
+
+Define
+\[
+K^{\poly}(H_n):=\inf_{a\in S(H_n)}\{-\log w(a)\},
+\qquad
+K^{\poly}(H_n\mid D_n):=\inf_{a\in S(H_n)}\{-\log w(a\mid D_n)\},
+\]
+\[
+\I_{\mathrm{poly}}(H_n:D_n):=K^{\poly}(H_n)-K^{\poly}(H_n\mid D_n).
+\]
+
+\begin{theorem}[Alignment-certified upper envelope]\label{thm:upper}\label{thm:upper-expectation}
+Under Assumption~\ref{ass:upper-envelope},
+\[
+\overline{\Sp}(D_n)
+\le
+\I_{\mathrm{poly}}(H_n:D_n)+\rho_D+\kappa_U.
+\]
+If the effective slacks are negligible on the deployment scale of interest, then certified log-speedup is upper-bounded by reusable resource-bounded information alone.
+\end{theorem}
+
+\par\noindent\emph{Proof.} See Appendix~\ref{app:proof:thm:upper}.\par
+
+
+
+\section{Proofs for the Main Text}
+\label{app:main-proofs}
+
+\subsection{Proof of Lemma~\ref{lem:conditional}: Conditional log-time decomposition}
+\label{app:proof:lem:conditional}
+
+\begin{proof}
+Since $\log \overline{T}_q(s) = \log(c_{\mathrm{sim}}\, t_0(s)) - \log q(s)$,
+\[
+\begin{aligned}
+\E_{S \sim \pi_z}\!\left[\log \overline{T}_q(S) \mid Z=z\right]
+&= \E_{S\sim\pi_z}[\log(c_{\mathrm{sim}}\, t_0(S))]
+   + \sum_s \pi_z(s) \log \frac{1}{q(s)} \\
+&= \E_{S\sim\pi_z}[\log(c_{\mathrm{sim}}\, t_0(S))]
+   + H(\pi_z) + \KL(\pi_z \| q),
+\end{aligned}
+\]
+using the cross-entropy identity $\sum_s p(s)\log(1/q(s)) = H(p) + \KL(p\|q)$.
+Nonnegativity of KL divergence gives the optimality claim.
+\end{proof}
+
+\subsection{Proof of Theorem~\ref{thm:ri-identity}: Routing-Information Identity}
+\label{app:proof:thm:ri-identity}
+
+\begin{proof}
+Apply Lemma~\ref{lem:conditional} to the baseline allocation $q_0 = \pi$:
+\[
+\E\!\left[\log \overline{T}_\pi(S)\right]
+= \E_\pi[\log(c_{\mathrm{sim}}\, t_0(S))] + H(\pi).
+\]
+Apply it to the deployed allocation $q_Z$:
+\[
+\E\!\left[\log \overline{T}_{q_Z}(S)\right]
+= \E_\pi[\log(c_{\mathrm{sim}}\, t_0(S))] + \E_Z[H(\pi_Z)] + \E_Z[\KL(\pi_Z \| q_Z)].
+\]
+Subtract:
+\[
+\Dlog = H(\pi) - \E_Z[H(\pi_Z)] - \E_Z[\KL(\pi_Z \| q_Z)]
+= G - \varepsilon.
+\]
+\end{proof}
+
+\subsection{Proof of Theorem~\ref{thm:four-term}: Model-Aware Decomposition}
+\label{app:proof:thm:four-term}
+
+\begin{proof}
+Write out the log-time:
+\[
+\log \overline{T}_q^{(M)}(s) = \log \kappa(M) + \log c_{\mathrm{sim}} + \log t_0(M,s) - \log q(s).
+\]
+For the prior-matched baseline with model $M_0$:
+\[
+\E\!\left[\log \overline{T}_\pi^{(M_0)}(S)\right]
+= \log\kappa(M_0) + \log c_{\mathrm{sim}} + \E_\pi[\log t_0(M_0,S)] + H(\pi).
+\]
+For the deployed system with model $M$:
+\begin{align*}
+\E\!\left[\log \overline{T}_{q_Z}^{(M)}(S)\right]
+&= \log\kappa(M) + \log c_{\mathrm{sim}} + \E_\pi[\log t_0(M,S)] \\
+&\quad + \E_{Z_M}[H(\pi_Z^M)] + \E_{Z_M}[\KL(\pi_Z^M \| q_Z^M)],
+\end{align*}
+where the last two terms arise from the cross-entropy identity exactly as in Theorem~\ref{thm:ri-identity}.
+Subtracting and grouping:
+\begin{align*}
+\DlogM &= \log\frac{\kappa(M_0)}{\kappa(M)}
++ \E_\pi\!\left[\log\frac{t_0(M_0,S)}{t_0(M,S)}\right]
++ \bigl(H(\pi) - \E_{Z_M}[H(\pi_Z^M)]\bigr)
+- \E_{Z_M}[\KL(\pi_Z^M \| q_Z^M)] \\[4pt]
+&= \log\frac{\kappa(M_0)}{\kappa(M)} + \varphi(M_0,M) + G(M) - \varepsilon(M).
+\end{align*}
+\end{proof}
+
+\subsection{Proof of Theorem~\ref{thm:upper}: Alignment-certified upper envelope}
+\label{app:proof:thm:upper}
+
+\begin{proof}
+Because $a^\star\in\cA_n^\delta$,
+\[
+\inf_{a\in\cA_n^\delta}F_U(a)\le F_U(a^\star).
+\]
+By the conditioned-side alignment inequality in A7,
+\[
+\inf_{a\in\cA_n^\delta}F_D(a)\ge e^{-\rho_D}F_D(a^\star).
+\]
+Therefore
+\[
+\frac{\overline T_U}{\overline T_{U_D}}
+\le
+e^{\rho_D}\frac{w(a^\star\mid D_n)}{w(a^\star)}.
+\]
+Taking logarithms gives
+\[
+\overline{\Sp}(D_n)
+\le
+\rho_D-\log w(a^\star)+\log w(a^\star\mid D_n).
+\]
+Now A7 yields
+$-\log w(a^\star)\le K^{\poly}(H_n)+\kappa_U$,
+while by the definition of conditional complexity,
+$\log w(a^\star\mid D_n)\le -K^{\poly}(H_n\mid D_n)$.
+Substituting both bounds gives
+\[
+\overline{\Sp}(D_n)
+\le
+K^{\poly}(H_n)-K^{\poly}(H_n\mid D_n)+\rho_D+\kappa_U
+=
+\I_{\mathrm{poly}}(H_n:D_n)+\rho_D+\kappa_U.
+\]
+\end{proof}
+
+\subsection{Proof of Proposition~\ref{prop:approximation-guarantee}: Approximation guarantee}
+\label{app:proof:prop:approximation-guarantee}
+
+\begin{proof}
+The two relaxations contribute independently.
+
+\emph{Soft modes.}
+When $\pi_Z^M$ is $\delta$-approximately one-hot, $H(\pi_Z^M) \le h(\delta) + \delta\log(m-1) \le h(\delta) + \delta\log m$, where $h(\delta) = -\delta\log\delta-(1{-}\delta)\log(1{-}\delta)$.
+At most two entropy-type terms contribute, giving a routing correction bounded by $2h(\delta)+2\delta\log m$.
+If $\delta>0$ and $m \ge \exp(h(\delta)/\delta)$, then $h(\delta)\le \delta\log m$, so this part is at most $4\delta\log m$.
+
+\emph{Approximate log-linearity.}
+The residual $r(M,s,q)$ enters additively into each log-time term.
+Since the identity subtracts two such terms, $|r(M,s,q_Z) - r(M_0,s,\pi)| \le 2\eta$.
+
+Combining: $R(\delta,\eta,m) \le 2h(\delta)+2\delta\log m+2\eta$, with the stated simplified bound under the size condition.
+\end{proof}
+
+\subsection{Proof of Proposition~\ref{prop:graph-not-task}: Benchmark racing can be suboptimal}
+\label{app:proof:prop:graph-not-task}
+
+\begin{proof}
+Model $M_A$ evaluated under its optimal routing has mismatch $\varepsilon_A(q^{*,A}) = 0$.
+Model $M_B$ evaluated under $M_A$'s routing has mismatch
+\[
+\varepsilon_B(q^{*,A}) = \E_Z[\KL(\pi^B_Z \| q^{*,A}_Z)] > 0.
+\]
+Benchmark racing compares both under one workflow, penalizing $M_B$ by $\varepsilon_B(q^{*,A})$ nats.
+Under its own routing, $M_B$ recovers the full penalty.
+If $M_B$'s other advantages exceed $M_A$'s by less than $\varepsilon_B(q^{*,A})$ but more than zero, benchmark racing selects~$A$ while~$B$ with adapted routing is superior.
+\end{proof}
+
+\subsection{Proof of Proposition~\ref{prop:m-restriction}: Suboptimality of M-restricted optimization}
+\label{app:proof:prop:m-restriction}
+
+\begin{proof}
+Under Theorem~\ref{thm:four-term}, the expected certified log-speedup for model $M_B$ under routing policy $q$ is
+\[
+\Delta_{B,\log}(q) = \log(\kappa_0/\kappa_B) + \varphi_B + G_B - \varepsilon_B(q),
+\]
+where $\varepsilon_B(q) = \E_Z[\KL(\pi^B_Z \| q_Z)]$.
+The unrestricted optimum uses $q = q^{*,B}_Z$, achieving $\varepsilon_B(q^{*,B}) = 0$.
+Under $M$-restriction, the builder evaluates $M_B$ with $q^{*,A}$, incurring
+\[
+\varepsilon_B(q^{*,A}) = \E_Z[\KL(\pi^B_Z \| q^{*,A}_Z)] > 0
+\]
+since the policies differ on positive measure and KL divergence is zero if and only if the distributions agree almost surely.
+\end{proof}
+
+\subsection{Proof of Corollary~\ref{cor:model-selection}: Model-selection crossover}
+\label{app:proof:cor:model-selection}
+
+\begin{proof}
+Apply Theorem~\ref{thm:four-term} to both models with the same baseline; subtract.
+The baseline terms cancel.
+\end{proof}
+
+\subsection{Proof of Proposition~\ref{prop:verifier-eq}: Verifier equalization}
+\label{app:proof:prop:verifier-eq}
+
+\begin{proof}
+$G(M) = H(\pi) - \E_Z[H(\pi_Z^M)]$.
+Since $H(\pi)$ is model-independent, $|G(M_1) - G(M_2)| = |\E_Z[H(\pi_Z^{M_2})] - \E_Z[H(\pi_Z^{M_1})]| \le \eta_1 + \eta_2$.
+\end{proof}
+
+\subsection{Proof of Theorem~\ref{thm:finetuning-value}: Value of task-specific fine-tuning}
+\label{app:proof:thm:finetuning-value}
+
+\begin{proof}
+Fine-tuning preserves $\kappa$ by Definition~\ref{def:finetuning-operator}, so the cost term is unchanged.
+Condition (ii) gives
+$\varphi(M_0,\widetilde M)\ge \varphi(M_0,M_{\mathrm{base}})$
+on the effective modes, and the stated off-support condition makes the full $\pi$-average nonnegative.
+Condition (iii) gives
+$\varepsilon_{\widetilde M}\le \varepsilon_{M_{\mathrm{base}}}$.
+Verifier equalization bounds the information-term change by $\eta$.
+The displayed inequality follows from Theorem~\ref{thm:four-term}.
+The final claim combines these inequalities with the cost premise and the specialization-dominance checklist.
+\end{proof}
+
+\subsection{Proof of Theorem~\ref{thm:multi-agent-exact}: Multi-agent specialization threshold}
+\label{app:proof:thm:multi-agent-exact}
+
+\begin{proof}
+Apply Theorem~\ref{thm:four-term} to both designs with the same prior-matched baseline.
+For the generalist: $\Delta_{g,\log} = \log(\kappa_0/\kappa(M_g)) + \varphi(M_0, M_g) + G(M_g) - \varepsilon_g$.
+For the team, the log-effective per-step cost is $\ell_{\kappa,\mathrm{team}}$ and the effective competence is $\varphi(M_0, M_{\mathrm{team}}) = \sum_s \pi(s) \log(t_0(M_0,s)/t_0(M_{\mathrm{team}(s)},s))$.
+The team incurs additive coordination cost:
+$\Delta_{\mathrm{team},\log} = \log\kappa_0-\ell_{\kappa,\mathrm{team}} + \varphi(M_0, M_{\mathrm{team}}) + G_{\mathrm{team}} - \varepsilon_{\mathrm{team}} - c_{\mathrm{coord}}(K)$.
+Subtracting:
+\begin{align*}
+\Delta_{\mathrm{team},\log} - \Delta_{g,\log}
+&= \log\kappa(M_g)-\ell_{\kappa,\mathrm{team}}
++ \phi_{\mathrm{spec}}
+- \gamma
++ (\varepsilon_g - \varepsilon_{\mathrm{team}})
+- c_{\mathrm{coord}}(K),
+\end{align*}
+where $\phi_{\mathrm{spec}} = \sum_s \pi(s) \log(t_0(M_g,s)/t_0(M_{\mathrm{team}(s)},s))$ and the $M_0$ terms cancel.
+The biconditional follows because the four-term decomposition is an algebraic identity.
+\end{proof}
+
+\subsection{Proof of Corollary~\ref{cor:multi-agent-sufficient}: Multi-agent threshold under verifier equalization}
+\label{app:proof:cor:multi-agent-sufficient}
+
+\begin{proof}
+From Theorem~\ref{thm:multi-agent-exact}, the team dominates iff the LHS exceeds $c_{\mathrm{coord}}(K) + \gamma$.
+Since $\gamma \le \eta$ by verifier equalization, the condition LHS $> c_{\mathrm{coord}}(K) + \eta \ge c_{\mathrm{coord}}(K) + \gamma$ is sufficient.
+\end{proof}
+
+\subsection{Proof of Theorem~\ref{thm:post-training}: Post-training equivalence from task equivalence}
+\label{app:proof:thm:post-training}
+
+\begin{proof}
+Apply the Routing-Information Identity (Theorem~\ref{thm:ri-identity}) to both transfer settings over the shared mode space.
+For the numerator, the side-information variable is $Z_A^{(m)}$ drawn from the $A$-channel, applied to target family~$B$:
+\[
+\Delta_{A \to B} \;=\; I(S; Z_A^{(m)}) - \varepsilon_{A \to B},
+\quad\text{where }
+\varepsilon_{A \to B} := \E_{Z_A}\!\left[\KL\bigl(\pi^B_{Z_A} \| q_B(\cdot \mid Z_A)\bigr)\right].
+\]
+Here $\pi^B_{Z_A}(s) = \Prb[S = s \mid Z_A]$ is the posterior over $B$-task modes given $A$-channel data.
+For the denominator, within-family data gives $\Delta_{B \to B} = I(S; Z_B^{(m)}) - \varepsilon_{B \to B}$.
+Dividing yields~\eqref{eq:post-training-ratio}.
+Claims~(i) and~(ii) follow by specialization.
+\end{proof}
+
+\subsection{Proof of Proposition~\ref{prop:transfer-side-info}: Transfer through target-relevant side information}
+\label{app:proof:prop:transfer-side-info}
+
+\begin{proof}
+Apply the packed-family decomposition to the target family $\cT^B$ with side-information variable $U_A$ rather than within-family data.
+The proof is otherwise unchanged: the cross-entropy identity splits the allocation term into information and mismatch.
+\end{proof}
+
 
 \section{Continuous-Reward Extension}
 \label{app:continuous-reward}
@@ -1205,7 +1314,9 @@ Substitute the exact formulas from Proposition~\ref{prop:canonical-geometry} int
 \begin{proof}
 \emph{Step 0: Pinsker bound.}
 By Pinsker's inequality applied pointwise:
-$\delta_Z := \|\pi^A_Z - \pi^B_Z\|_1 \le \sqrt{2\,\KL(\pi^A_Z \| \pi^B_Z)}$.
+\[
+\delta_Z := \|\pi^A_Z - \pi^B_Z\|_1 \le \sqrt{2\,\KL(\pi^A_Z \| \pi^B_Z)}.
+\]
 Taking expectations and applying Jensen (concavity of $\sqrt{\cdot}$):
 $\bar\delta := \E_Z[\delta_Z] \le \sqrt{2\alpha}$.
 
