@@ -1,0 +1,83 @@
+%% ====================================================================
+%%  APPENDIX B: ADDITIONAL EXPERIMENTS
+%% ====================================================================
+\section{Additional Experiments}
+\label{app:experiments}
+
+All experiments use synthetic Monte Carlo simulation under the geometric-trials model.
+This validates the theory's internal consistency; confirming that the geometric-trials assumption holds on real benchmarks is future work and a prerequisite for deployment-facing claims.
+
+\subsection{EXP1: Graph-Depth Model Validation}
+
+We generate 50 random packed-family scenarios with $\Mn \in \{3, 5, 7\}$ modes and compare the FOC-derived $\Dstar$ against brute-force grid search over $D \in [1, 10]$.
+The maximum absolute error in~$\Dstar$ is~$0.0012$; the maximum relative error in objective value is $8.4 \times 10^{-8}$.
+All FOC solutions fall within 0.5 of the brute-force optimum.
+Monotonicity predictions ($d\Dstar/dt_0 < 0$ and $d\Dstar/d(\kappabig/\kappa) > 0$) are confirmed with zero violations across 1{,}000 parameter combinations.
+
+\subsection{EXP2: Crossover Verification}
+
+Single-mode crossover (100~pairs): mean absolute error~$0.0008$, max~$0.004$.
+Multi-mode hardest-mode approximation (50~scenarios): always an upper bound; mean ratio to true crossover~$1.80$, within factor~$2$ in 68\% of cases.
+Cost-adjusted dominance prediction (200~scenarios): 99\% accuracy, with 2~mismatches occurring at the boundary where $\Dcross \approx R$.
+
+\subsection{EXP3: Four-Term Identity Verification}
+
+The four-term identity is verified to machine precision ($\sim 10^{-15}$) across 200 random scenarios.
+The information gain~$G$ is non-negative in all cases and equals zero when the mode distribution is homogeneous.
+Dominance attribution (which term is largest) is correct in all 3 diagnostic scenarios: competence-dominated, cost-dominated, and cost-offset.
+
+\subsection{EXP4: Sample Complexity Validation}
+
+The Hoeffding bound (Proposition~\ref{prop:sample-complexity}) provides valid coverage: at the theoretical sample size, all four terms are estimated within~$\dacc$ with probability~$\ge 1 - \dconf$ across 500~Monte Carlo trials.
+The bound is conservative by a factor of~$\sim 29$ at $\pmin = 0.05$: the empirical required sample size is approximately~$89$ per mode, versus the theoretical bound of $\sim 2{,}591$.
+
+The $\pmin$ scaling exponent: theory predicts $\pmin^{-2}$ (Hoeffding) or $\pmin^{-1}$ (Bernstein); empirical scaling is $\pmin^{-1.35}$.
+The gap arises from Lipschitz looseness (worst-case $1/\pmin$ vs.\ average over modes) and union-bound looseness.
+Tightening this gap is an open analytical question.
+
+\subsection{EXP6: Proxy Validity Details}
+
+Across 6 parameter combinations $(p, D)$, the proxy $-\log P_D$ overestimates $\E[\log T]$ by 8--44\%, with the gap decreasing as $p$ or $D$ increases, consistent with the Jensen-gap formula $(1-p)^D/2$.
+Model rankings are exactly preserved in all configurations.
+Depth optimization: the proxy recommends $\Dstar_{\mathrm{proxy}} \ge \Dstar_{\mathrm{true}}$ in all cases, with the difference at most~1 for $p \ge 0.1$ and $D \ge 3$.
+
+\subsection{EXP7: Bernstein vs.\ Hoeffding}
+
+\begin{table}[h]
+\centering
+\caption{Bernstein vs.\ Hoeffding sample complexity comparison.}
+\label{tab:bernstein}
+\begin{tabular}{rrrr}
+\toprule
+$\pmin$ & Hoeffding $n_0$ & Bernstein $n_0$ & Improvement \\
+\midrule
+0.50 & 589 & 1{,}059 & $0.6\times$ \\
+0.20 & 3{,}678 & 2{,}648 & $1.4\times$ \\
+0.10 & 14{,}710 & 5{,}295 & $2.8\times$ \\
+0.05 & 11{,}775 & 2{,}591 & $4.5\times$ \\
+0.02 & 73{,}588 & 6{,}476 & $11.4\times$ \\
+0.01 & 294{,}351 & 12{,}952 & $22.7\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The crossover where Bernstein dominates Hoeffding occurs at $\pmin \approx 0.17$ (theoretical prediction) to $\pmin \approx 0.23$ (empirical).
+The remaining gap between Bernstein bounds and empirical requirements is $\sim 29\times$ at $\pmin = 0.05$, arising from the same Lipschitz and union-bound looseness noted in EXP4.
+
+\subsection{EXP8: Routing Triviality}
+
+The sufficient condition (Part~a) correctly predicts routing triviality in 62\% of cases where it fires.
+The 38\% false-positive rate occurs near the boundary; for scenarios with $\Delta_{\mathrm{comp}}/\Delta_{\mathrm{cost}} < 0.5$, the accuracy rises to $\sim$100\%.
+The necessary condition (Part~c) is consistent in 100\% of 500~tests.
+The quantitative bound (Part~b) has zero violations and mean ratio $G/(\gamma \cdot \Hent(S)) = 0.10$.
+
+In the non-trivial scenario (EXP8 Test~6), models are assigned to different mode subsets (modes~1--3 to the small model, modes~4--5 to the large), with $\Delta_{\mathrm{comp}} = 3.0 > 1.1 = \Delta_{\mathrm{cost}}$ and $G = 0.50$~nats.
+
+\subsection{EXP9: Scaling Advantage}
+
+The decomposition's evaluation efficiency improves with design-menu size~$k$:
+at $k = 10$, racing uses fewer evaluations;
+at $k = 30$, the methods are comparable;
+at $k \ge 50$, the decomposition dominates.
+The efficiency ratio (racing evaluations / decomposition evaluations) grows approximately as $k^{0.7\text{--}1.0}$.
+The break-even at $k \approx 30\text{--}50$ is robust across parameter settings.

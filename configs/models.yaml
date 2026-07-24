@@ -1,0 +1,210 @@
+models:
+  local_stub:
+    adapter: local_stub
+    model_id: local-stub-v1
+    temperature: 0.0
+    timeout_seconds: 30
+  leakage_probe:
+    adapter: leakage_probe
+    model_id: leakage-probe-v1
+    temperature: 0.0
+    timeout_seconds: 30
+  autoresearch_local_stub:
+    adapter: autoresearch_local_stub
+    model_id: autoresearch-local-stub-v1
+    temperature: 0.0
+    timeout_seconds: 30
+
+  claude_haiku: &claude_haiku
+    adapter: claude_haiku
+    model_id: haiku
+    transport: cli
+    edit_protocol: structured_edits
+    temperature: 0.2
+    timeout_seconds: 420
+    max_budget_usd: 0.8
+    max_tokens_distribution: 2048
+    max_tokens_edit: 4096
+    max_tokens_batch: 12000
+    retries: 1
+    allow_batch_repair: false
+  claude_haiku_batch_strict: *claude_haiku
+
+  claude_sonnet: &claude_sonnet
+    adapter: claude_haiku
+    model_id: sonnet
+    transport: cli
+    edit_protocol: structured_edits
+    temperature: 0.2
+    timeout_seconds: 1200
+    max_budget_usd: 1.2
+    max_tokens_distribution: 2048
+    max_tokens_edit: 4096
+    max_tokens_batch: 12000
+    retries: 1
+    allow_batch_repair: false
+  claude_sonnet_batch_strict: *claude_sonnet
+
+  claude_opus_4_6: &claude_opus_4_6
+    adapter: claude_haiku
+    model_id: opus
+    transport: cli
+    edit_protocol: structured_edits
+    temperature: 0.2
+    timeout_seconds: 900
+    max_budget_usd: 2.5
+    max_tokens_distribution: 2048
+    max_tokens_edit: 4096
+    max_tokens_batch: 12000
+    retries: 1
+    allow_batch_repair: false
+  claude_opus_4_6_batch_strict: *claude_opus_4_6
+
+  weak_qwen: &weak_qwen
+    adapter: openai_compatible
+    model_id: Qwen/Qwen2.5-Coder-1.5B-Instruct
+    base_url: http://localhost:8000/v1
+    edit_protocol: structured_edits
+    temperature: 0.2
+    timeout_seconds: 900
+    max_tokens_distribution: 2048
+    max_tokens_edit: 4096
+    max_tokens_batch: 12000
+    retries: 1
+    use_response_format: true
+    allow_response_format_retry: false
+    allow_batch_repair: false
+  weak_qwen_batch_strict: *weak_qwen
+
+  qwen_coder: &qwen_coder
+    adapter: openai_compatible
+    model_id: Qwen/Qwen2.5-Coder-1.5B-Instruct
+    base_url: http://localhost:8000/v1
+    edit_protocol: structured_edits
+    temperature: 0.2
+    timeout_seconds: 900
+    max_tokens_distribution: 2048
+    max_tokens_edit: 4096
+    max_tokens_batch: 12000
+    retries: 1
+    use_response_format: true
+    allow_response_format_retry: false
+    allow_batch_repair: false
+  qwen_coder_batch_strict: *qwen_coder
+
+  gpt_5_4: &gpt_5_4
+    adapter: codex_cli
+    model_id: gpt-5.4
+    edit_protocol: structured_edits
+    timeout_seconds: 900
+    max_tokens_distribution: 2048
+    max_tokens_edit: 4096
+    max_tokens_batch: 12000
+    retries: 2
+    use_json_schema: true
+    include_temperature: false
+    reasoning_effort: medium
+    allow_batch_repair: false
+  gpt_5_4_batch_strict: *gpt_5_4
+
+  gpt_5_5_router_xhigh:
+    adapter: codex_cli
+    model_id: gpt-5.5
+    edit_protocol: structured_edits
+    timeout_seconds: 1800
+    max_tokens_distribution: 2048
+    max_tokens_edit: 4096
+    max_tokens_batch: 12000
+    retries: 2
+    use_json_schema: true
+    include_temperature: false
+    reasoning_effort: xhigh
+    allow_batch_repair: false
+
+  gpt_5_4_router_xhigh:
+    adapter: codex_cli
+    model_id: gpt-5.4
+    edit_protocol: structured_edits
+    timeout_seconds: 1800
+    max_tokens_distribution: 2048
+    max_tokens_edit: 4096
+    max_tokens_batch: 12000
+    retries: 2
+    use_json_schema: true
+    include_temperature: false
+    reasoning_effort: xhigh
+    allow_batch_repair: false
+
+  gpt_5_4_mini: &gpt_5_4_mini
+    adapter: codex_cli
+    model_id: gpt-5.4-mini
+    edit_protocol: structured_edits
+    timeout_seconds: 900
+    max_tokens_distribution: 2048
+    max_tokens_edit: 4096
+    max_tokens_batch: 12000
+    retries: 2
+    use_json_schema: true
+    include_temperature: false
+    reasoning_effort: medium
+    allow_batch_repair: false
+  gpt_5_4_mini_batch_strict: *gpt_5_4_mini
+
+  gpt_5_4_mini_router_xhigh:
+    adapter: codex_cli
+    model_id: gpt-5.4-mini
+    edit_protocol: structured_edits
+    timeout_seconds: 1800
+    max_tokens_distribution: 2048
+    max_tokens_edit: 4096
+    max_tokens_batch: 12000
+    retries: 2
+    use_json_schema: true
+    include_temperature: false
+    reasoning_effort: xhigh
+    allow_batch_repair: false
+
+  gpt_5_3_codex: &gpt_5_3_codex
+    adapter: codex_cli
+    model_id: gpt-5.3-codex
+    edit_protocol: structured_edits
+    timeout_seconds: 900
+    max_tokens_distribution: 2048
+    max_tokens_edit: 4096
+    max_tokens_batch: 12000
+    retries: 2
+    use_json_schema: true
+    include_temperature: false
+    reasoning_effort: medium
+    allow_batch_repair: false
+  gpt_5_3_codex_batch_strict: *gpt_5_3_codex
+
+  gpt_5_3_codex_spark: &gpt_5_3_codex_spark
+    adapter: codex_cli
+    model_id: gpt-5.3-codex-spark
+    edit_protocol: structured_edits
+    timeout_seconds: 900
+    max_tokens_distribution: 2048
+    max_tokens_edit: 4096
+    max_tokens_batch: 12000
+    retries: 2
+    use_json_schema: true
+    include_temperature: false
+    reasoning_effort: medium
+    allow_batch_repair: false
+  gpt_5_3_codex_spark_batch_strict: *gpt_5_3_codex_spark
+
+  gpt_5_2_codex: &gpt_5_2_codex
+    adapter: codex_cli
+    model_id: gpt-5.2-codex
+    edit_protocol: structured_edits
+    timeout_seconds: 900
+    max_tokens_distribution: 2048
+    max_tokens_edit: 4096
+    max_tokens_batch: 12000
+    retries: 2
+    use_json_schema: true
+    include_temperature: false
+    reasoning_effort: medium
+    allow_batch_repair: false
+  gpt_5_2_codex_batch_strict: *gpt_5_2_codex

@@ -1,0 +1,56 @@
+# Example: custom Claude Code agent roster.
+#
+# Run with:
+#   uv run agent-workflow parallel-shared --config configs/agent_roster_example.yaml
+#
+# The framework is open-source and local. Live Claude Code capacity still depends
+# on your subscription, provider quota, and available CPU/GPU resources.
+
+experiment:
+  id: custom_roster_smoke
+  mode: parallel_shared
+  runs_dir: runs
+
+agents:
+  # Defaults used by any roster entry that does not set the field explicitly.
+  time_budget_minutes: 30
+  train_time_budget_seconds: 300
+  model: claude-haiku-4-5-20251001
+  temperature: null
+  cuda_devices: ["0", "1", "2"]
+  use_shared_memory: true
+
+  roster:
+    - id: explorer
+      role: broad architecture and hyperparameter search; prefer diverse hypotheses
+      model: claude-sonnet-4-6
+      temperature: 1.2
+      cuda_device: "0"
+
+    - id: optimizer
+      role: conservative refinement of the current best candidate; avoid risky rewrites
+      model: claude-haiku-4-5-20251001
+      temperature: 0.3
+      cuda_device: "1"
+
+    - id: regularizer
+      role: regularization and data-pipeline search; focus on changes that reduce overfitting
+      model: claude-haiku-4-5-20251001
+      temperature: 0.8
+      cuda_device: "2"
+
+evaluator:
+  train_max_steps: 1170
+  concurrency: serialized
+  target_val_bpb: null
+  success_confidence: 0.80
+
+slurm:
+  enabled: true
+  partition: pi_tpoggio
+  gres: gpu:1
+  time: "00:10:00"
+
+prompts:
+  system_prompt: prompts/agent_system_prompt.md
+  first_message: prompts/agent_first_message.md

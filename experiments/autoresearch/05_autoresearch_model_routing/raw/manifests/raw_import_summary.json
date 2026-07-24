@@ -1,0 +1,25 @@
+{
+  "raw_source": "engaging:/home/erimoldi/openclaw_remote/projects/NeurIPS_2026/autoresearch/campaigns/h20_delta005_20260505/runs/worker_confirmation",
+  "imported_raw_run_count": 250,
+  "imported_raw_file_count_excluding_manifests": 1750,
+  "balanced_n30_manifest_rows": 270,
+  "balanced_n30_raw_present": 180,
+  "balanced_n30_raw_missing": 90,
+  "missing_sources": [
+    "worker_pilot"
+  ],
+  "imported_file_types_per_run": [
+    "config_resolved.yaml",
+    "run_manifest.json",
+    "baseline_verification.json",
+    "interactive_initial_prompt.txt",
+    "interactive_session.json",
+    "evaluations.jsonl",
+    "run_summary.json"
+  ],
+  "notes": [
+    "Raw import is minimal: run-level metadata, prompt/session, baseline verification, evaluations, and summary are preserved.",
+    "Intermediate workspaces, verifier_raw directories, proposed_solution.py files, and cluster logs are not imported.",
+    "The balanced n=30 manifest references 90 worker_pilot runs that were not present in the inspected remote workspace."
+  ]
+}

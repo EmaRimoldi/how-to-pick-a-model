@@ -1,0 +1,23 @@
+study:
+  id: neutral_swebench_trial_100
+  title: Neutral SWE-bench Verified 100 design trial
+  dataset_name: princeton-nlp/SWE-Bench_Verified
+  split: test
+  instance_slice: data/verified_100/instances_public.jsonl
+  private_metadata: data/verified_100/instances_private_metadata.jsonl
+  loss_config: loss_config.yaml
+
+next_trial:
+  meta_design_config: configs/swebench_meta_design_neutral.yaml
+  workers_config: configs/swebench_neutral_workers.yaml
+  generated_design_dir: designs/next_trial
+
+prompts:
+  meta_designer_template: prompts/meta_designer_prompt_template.txt
+  runtime_component_template: prompts/runtime_component_prompt_template.md
+
+artifacts:
+  runs_dir: runs
+  evaluations_dir: evaluations
+  slurm_dir: slurm
+  checkout_policy: ephemeral_delete_after_summary

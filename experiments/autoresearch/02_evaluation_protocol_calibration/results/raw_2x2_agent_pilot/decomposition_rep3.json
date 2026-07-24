@@ -1,0 +1,79 @@
+{
+  "decompositions": {
+    "d10": {
+      "cost_term_token": 5.20819770435736e-05,
+      "cost_term_wall": 0.12437647346427366,
+      "phi": 0.0,
+      "G": 0.0,
+      "epsilon": 0.0,
+      "delta_token": 5.20819770435736e-05,
+      "delta_wall": 0.12437647346427366,
+      "kappa_token": 2400.0,
+      "kappa_wall": 98.99444380783501
+    },
+    "d01": {
+      "cost_term_token": 0.018371642893365774,
+      "cost_term_wall": -0.06019612021522068,
+      "phi": 0.0,
+      "G": 0.0,
+      "epsilon": 0.0,
+      "delta_token": 0.018371642893365774,
+      "delta_wall": -0.06019612021522068,
+      "kappa_token": 2356.4333333333334,
+      "kappa_wall": 119.0610419415636
+    },
+    "d11": {
+      "cost_term_token": 0.0065964381436711675,
+      "cost_term_wall": -0.0928953856048067,
+      "phi": 0.0,
+      "G": 0.0,
+      "epsilon": 0.0,
+      "delta_token": 0.0065964381436711675,
+      "delta_wall": -0.0928953856048067,
+      "kappa_token": 2384.344827586207,
+      "kappa_wall": 123.01860258627306
+    }
+  },
+  "hypotheses": {
+    "H1_wall_positive": false,
+    "H1_token_nonpositive": false,
+    "H1_holds": false,
+    "H2_token_positive": true,
+    "H2_wall_positive": true,
+    "H2_holds": true,
+    "H3_epsilon_d11_lt_d01": false,
+    "H3_holds": false,
+    "H4_epsilon_exceeds_log2": false,
+    "H5_note": "Check kappa_by_context_bin for monotone increase",
+    "H6_wall_positive": false,
+    "H6_token_positive": true,
+    "H6_holds": false
+  },
+  "prior": {},
+  "context_bins": {
+    "d00": {
+      "0%-25%": 2400.125,
+      "25%-50%": null,
+      "50%-75%": null,
+      "75%-100%": null
+    },
+    "d10": {
+      "0%-25%": 2400.0,
+      "25%-50%": null,
+      "50%-75%": null,
+      "75%-100%": null
+    },
+    "d01": {
+      "0%-25%": 2356.4333333333334,
+      "25%-50%": null,
+      "50%-75%": null,
+      "75%-100%": null
+    },
+    "d11": {
+      "0%-25%": 2384.344827586207,
+      "25%-50%": null,
+      "50%-75%": null,
+      "75%-100%": null
+    }
+  }
+}

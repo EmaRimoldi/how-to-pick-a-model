@@ -1,0 +1,76 @@
+[
+  {
+    "id": "lr_1e3",
+    "category": "optimizer_lr",
+    "description": "Set LR to the original 1e-3 value.",
+    "changes": {
+      "LEARNING_RATE": 0.001
+    }
+  },
+  {
+    "id": "lr_1p5e3",
+    "category": "optimizer_lr",
+    "description": "Set LR to the previously observed fast-improvement region.",
+    "changes": {
+      "LEARNING_RATE": 0.0015
+    }
+  },
+  {
+    "id": "adamw_1e3",
+    "category": "optimizer_lr",
+    "description": "Switch to AdamW at LR 1e-3.",
+    "changes": {
+      "OPTIMIZER": "adamw",
+      "LEARNING_RATE": 0.001
+    }
+  },
+  {
+    "id": "schedule_on",
+    "category": "scheduler",
+    "description": "Enable cosine schedule.",
+    "changes": {
+      "USE_LR_SCHEDULE": true
+    }
+  },
+  {
+    "id": "width32",
+    "category": "normalization_capacity",
+    "description": "Set base width to 32.",
+    "changes": {
+      "BASE_CHANNELS": 32
+    }
+  },
+  {
+    "id": "fc128",
+    "category": "normalization_capacity",
+    "description": "Set classifier hidden size to 128.",
+    "changes": {
+      "FC_HIDDEN": 128
+    }
+  },
+  {
+    "id": "dropout0_wd1e4",
+    "category": "regularization",
+    "description": "Restore no dropout and weight decay 1e-4.",
+    "changes": {
+      "DROPOUT_RATE": 0.0,
+      "WEIGHT_DECAY": 0.0001
+    }
+  },
+  {
+    "id": "batch192",
+    "category": "data_batch",
+    "description": "Use an intermediate larger batch size.",
+    "changes": {
+      "BATCH_SIZE": 192
+    }
+  },
+  {
+    "id": "batch256",
+    "category": "data_batch",
+    "description": "Use larger batches.",
+    "changes": {
+      "BATCH_SIZE": 256
+    }
+  }
+]

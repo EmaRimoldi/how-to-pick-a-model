@@ -1,0 +1,172 @@
+%% ====================================================================
+%%  ACT II: THE DECOMPOSITION ENGINE (~5pp)
+%% ====================================================================
+\section{The Decomposition Engine}
+\label{sec:decomposition}
+
+This section contains the paper's mathematical core: the Routing-Information Identity, its four-term specialization under the packed-family assumption, the Lagrangian non-connection, and finite-sample guarantees.
+
+\subsection{The Routing-Information Identity}
+\label{sec:ri-identity}
+
+% SOURCE_CLAIM: C17
+\begin{theorem}[Routing-Information Identity]
+\label{thm:ri-identity}
+For any two designs $(M_1, \pi_1)$ and $(M_2, \pi_2)$ operating on the same task distribution with $p(s,M) \in (0,1]$ for all modes and models, the log-performance gap decomposes as:
+\begin{equation}
+\label{eq:ri-identity}
+  \Delta(M_1, \pi_1 \to M_2, \pi_2) = G(M_2, \pi_2) - G(M_1, \pi_1)
+  - \bigl[\mismatch(M_2, \pi_2) - \mismatch(M_1, \pi_1)\bigr],
+\end{equation}
+where $G(M, \pi) = \MI(S; D \mid M)$ is the information gain from routing (the mutual information between mode identity and design decisions given the model) and $\mismatch(M, \pi) = \E_D[\KL(\pi_D^M \| q_D)]$ is the routing mismatch (the expected KL divergence between the posterior-optimal and actual routing allocations).
+
+The identity is exact under measurability and positivity of per-mode success probabilities, and holds at every feasible design point---not only at the optimum.
+The proof is a direct algebraic expansion of the mutual information and KL divergence terms in the packed-family parametrization; the full derivation appears in \citet{beneventano2026framework}.
+\end{theorem}
+
+The identity says: performance improves when information gain increases or routing mismatch decreases.  A design is better to the extent that it knows more about task structure and wastes less of what it knows.
+
+\subsection{Four-Term Decomposition under the Packed Family}
+\label{sec:four-term}
+
+% SOURCE_CLAIM: C31
+Under the packed-family assumption (Assumption~\ref{ass:packed-family}), the identity specializes to a four-term decomposition that separates cost from competence from information structure:
+
+\begin{theorem}[Four-term model-aware decomposition]
+\label{thm:four-term}
+Under the packed latent-mode family with geometric trials (Assumption~\ref{ass:packed-family}), the log-performance gap between designs $(M_0, q_0)$ and $(M, q)$ decomposes as:
+\begin{equation}
+\label{eq:four-term}
+  \Delta = \underbrace{\log\frac{\kappa_0}{\kappa(M)}}_{\text{cost}}
+  + \underbrace{\sum_s \pi_s \log\frac{p(s, M)}{p(s, M_0)}}_{\varphi\;\text{(competence)}}
+  + \underbrace{\MI_\pi(S; D_M)}_{G\;\text{(info gain)}}
+  - \underbrace{\E_D\bigl[\KL(\pi_D^M \| q_D)\bigr]}_{\mismatch\;\text{(mismatch)}}.
+\end{equation}
+Each term is independently estimable from pilot data.
+\end{theorem}
+
+The four terms have clean interpretations.
+The \textbf{cost term} measures the per-step price difference.
+The \textbf{competence term}~$\varphi$ measures how much better (or worse) model~$M$ is at each mode, averaged over the task distribution.
+The \textbf{information-gain term}~$G$ measures how much the routing policy can exploit knowledge of task-mode identity.
+The \textbf{routing-mismatch term}~$\mismatch$ measures how far the actual routing deviates from the posterior-optimal allocation.
+
+The decomposition is complete under the packed-family assumption.
+Outside the packed family, the four terms remain well-defined but the identity holds only up to a bounded residual~\citep{beneventano2026framework}.
+
+\subsection{Expectation vs.\ Quantile Objectives}
+\label{sec:quantile-scoping}
+
+% SOURCE_CLAIM: T4 (scoping remark, not proof)
+\begin{remark}[Scope: expectation-level objectives]
+\label{rem:quantile-scoping}
+The four-term decomposition operates on expected log certified time.
+A practitioner may instead care about quantile objectives---the $\delta$-quantile of certified time for a service-level agreement.
+Under geometric trials, the $\delta$-quantile satisfies $T_\delta = \log(1/\delta) / \log(1/(1-q(S)))$.
+For fixed~$\delta$, the design-dependent term is monotonically related to the expectation-level objective, so the four-term decomposition preserves design rankings for fixed deployment parameters.
+Outside the geometric-trials regime, the expectation and quantile objectives can diverge, and quantile-level analysis is an open direction.
+\end{remark}
+
+\subsection{The Lagrangian Non-Connection}
+\label{sec:lagrangian}
+
+% SM4: Lagrangian non-connection surprise marker
+The temptation to interpret these four terms as shadow prices is real.
+Each appears to measure the sensitivity of performance to one design dimension; the operations-research framing invites a Lagrangian interpretation; and analogies to column generation and flow decomposition are standard in the field.
+A natural expectation, given the algebraic structure, is that the four terms are dual variables of a Lagrangian relaxation.
+We show that this expectation is precisely wrong.
+
+% SOURCE_CLAIM: C57
+\begin{proposition}[Lagrangian non-connection]
+\label{prop:lagrangian}
+Consider the packed-family optimization problem with $\Mn = 2$ modes, two candidate models, and a cost budget~$B$.
+\begin{enumerate}[label=(\alph*)]
+  \item The Lagrangian dual has a single scalar multiplier $\lambda \ge 0$, not four multipliers corresponding to the four decomposition terms.
+  \item The four information-theoretic terms are components of the primal objective value evaluated at any feasible design point, not dual variables of constraints.
+  \item No linear combination of the single shadow price~$\lambda^*$ reproduces the four-term decomposition, except in degenerate cases.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}[Proof sketch]
+The KKT conditions for the inner routing problem yield $q_s^* = \pi_s$ (posterior-matched allocation) with $\lambda^*$ as the single shadow price of the cost constraint.
+The optimal objective equals $\Hent(\pi)$---the mode entropy, independent of~$M$.
+The structural reason is that the decomposition is a pointwise algebraic identity valid at any $(M, q)$, not a first-order optimality condition valid only at the optimum.
+Shadow prices measure sensitivity to constraint relaxation (a first-order envelope property); the four terms measure objective components (a zeroth-order algebraic property).
+Full proof in \appref{app:lagrangian}.
+\end{proof}
+
+The decomposition's value to optimization is not as a dual decomposition but as a separable objective evaluator: each term can be estimated independently from pilot data, enabling modular enumeration of the design space.
+
+\subsection{Sample Complexity}
+\label{sec:sample-complexity}
+
+How much pilot data does the decomposition require?
+We answer with a practical rule first, then the formal bound.
+
+\begin{center}
+\fbox{\parbox{0.85\textwidth}{%
+\textbf{Pilot sizing rule of thumb.}
+For $\Mn$ modes with minimum per-mode success probability $\pmin$:
+\begin{itemize}[nosep]
+  \item Easy tasks ($\pmin > 0.5$): $\sim$25 instances per mode.
+  \item Moderate tasks ($\pmin \in [0.1, 0.5]$): $\sim$100 instances per mode.
+  \item Hard tasks ($\pmin < 0.1$): $\sim$1{,}500 instances per mode (use Bernstein, not Hoeffding).
+\end{itemize}
+These are empirical guidelines; the formal bounds below are conservative by a factor of $\sim$29 at $\pmin = 0.05$.
+}}
+\end{center}
+
+% SOURCE_CLAIM: C56
+\begin{proposition}[Hoeffding sample complexity]
+\label{prop:sample-complexity}
+Under the packed-family assumption with geometric trials and $\Mn$ modes, if
+\begin{equation}
+\label{eq:hoeffding-sample}
+  n_0 = \frac{\log(2\Mn / \dconf)}{2\,\dacc^2\,\pmin^2}
+\end{equation}
+pilot instances are collected per mode, then with probability at least $1 - \dconf$, each of the four estimated terms is within $\dacc$~nats of its population value.
+The total pilot size is $N = \Mn \cdot n_0 = O(\Mn \log(\Mn/\dconf) / (\dacc^2 \pmin^2))$.
+\end{proposition}
+
+The $\pmin^{-2}$ factor is the dominant cost driver: modes on which the model rarely succeeds provide very noisy information-gain estimates.
+
+\subsection{The Bernstein Corollary}
+\label{sec:bernstein}
+
+% SOURCE_CLAIM: C59
+For hard tasks, Hoeffding's bound is needlessly conservative.
+Replacing it with Bernstein's inequality---which exploits the low variance of Bernoulli random variables when $p$ is small---yields an improved bound:
+
+\begin{corollary}[Bernstein sample complexity]
+\label{cor:bernstein}
+Under the same assumptions as Proposition~\ref{prop:sample-complexity}, the Bernstein-based per-mode sample complexity is:
+\begin{equation}
+\label{eq:bernstein-sample}
+  n_0^{\mathrm{Bern}} = \frac{3\log(2\Mn/\dconf)}{\dacc^2\,\pmin},
+\end{equation}
+scaling as $\pmin^{-1}$ instead of $\pmin^{-2}$.
+The improvement factor is $1/(6\pmin)$: at $\pmin = 0.05$, Bernstein requires $3.3\times$ fewer samples; at $\pmin = 0.01$, the improvement is $\sim$17$\times$.
+The crossover where Bernstein dominates Hoeffding occurs at $\pmin \approx 0.17$.
+\end{corollary}
+
+% SM2: Bernstein emergence surprise marker
+The Bernstein corollary was not in our original plan---the Hoeffding bound seemed sufficient for a first analysis.
+For tasks where the hardest mode succeeds one percent of the time, the Bernstein bound reduces the required pilot by an order of magnitude relative to Hoeffding, transforming the framework from theoretically attractive to practically feasible in precisely the regime where it is most needed.
+
+Full proofs of both bounds are in \appref{app:sample-complexity} and \appref{app:bernstein}.
+
+\subsection{Kelly--Cover Framing of the Information-Gain Term}
+\label{sec:kelly-cover}
+
+% SOURCE_CLAIM: C36
+The information-gain term $G = \MI(S; D \mid M)$ admits an interpretation as the \emph{value of routing information}, directly analogous to Kelly's~\citeyearpar{kelly1956new} result that mutual information quantifies the value of a noisy side channel for log-optimal betting.
+
+In Kelly's setting, a gambler bets on horse races.
+With no side information, the optimal log-wealth growth rate is~$W_0$.
+With a noisy tip~$Y$ correlated with the race outcome~$X$, the optimal growth rate is $W_0 + \MI(X; Y)$.
+In our setting, the gambler is the routing policy, the horse race is the task mode~$S$, and the noisy tip is the side information used for routing.
+With no routing ($q = \pi$, uniform allocation), the expected log certified time is~$\Hent(\pi)$.
+With optimal routing ($q = \pi_D$, posterior-matched), it improves by exactly~$G$.
+
+The packed-family assumption plays the role of the horse-race market assumption in \citet{cover2006elements}, Chapter~16: it is the regime where the information-gain term~$G$ has an exact, closed-form interpretation.
+Outside this regime, $G$ becomes a bound rather than an identity.

@@ -1,0 +1,49 @@
+backend: transformers
+dataset: humanevalplus
+mode_proxy: ref_solution_length
+n_modes: 3
+
+models:
+  1.5b: Qwen/Qwen2.5-Coder-1.5B-Instruct
+  7b: Qwen/Qwen2.5-Coder-7B-Instruct
+  32b: Qwen/Qwen2.5-Coder-32B-Instruct
+
+strategies:
+  mode1_direct: direct
+  mode2_structured: structured
+  mode3_robust: robust
+
+mode_strategy_map:
+  easy: mode1_direct
+  medium: mode2_structured
+  hard: mode3_robust
+
+sampling:
+  temperature: 0.6
+  top_p: 0.95
+  max_new_tokens: 1024
+  attempts_per_task: 20
+  seed: 20260711
+
+execution:
+  timeout_seconds: 10
+
+allocation:
+  retry_budget: 20
+  smoothing: 0.001
+  sweep_step: 0.1
+
+router:
+  backend: codex-cli
+  model_id: gpt-5.4
+  reasoning_effort: high
+  folds: 5
+  seed: 20260711
+  context_examples: [0, 5, 20]
+
+paths:
+  raw: data/strategy_raw
+  derived: data/strategy_derived
+  figures: figures/strategy_experiment
+  modes: modes.json
+  modes_meta: modes_meta.json

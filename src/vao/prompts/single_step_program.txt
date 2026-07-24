@@ -1,0 +1,160 @@
+VAO_SINGLE_STEP_PROGRAM_V1
+CANONICAL_TASK_BLOCK_V1
+
+You are running one step of an autonomous code-optimization experiment.
+
+The task is to improve a single Python file, solution.py, which must define
+CandidateQueryEngine. You are not running the verifier yourself. The framework
+will materialize your proposed edits, evaluate them offline, and promote only
+one branch according to your own mode probability distribution.
+
+Experiment setup:
+
+- The current parent solution.py below is the only online code state visible to
+  you for this step.
+- The visible history contains only information that the online agent is allowed
+  to know under the current visibility regime.
+- The framework copies the exact same parent solution.py into six isolated
+  branch directories, one branch per primary mode.
+- You must propose exactly one candidate edit for each primary mode in a single
+  JSON response.
+- This is the only model-generation prompt for this step. Do not wait for or
+  expect separate per-mode prompts.
+- The verifier evaluates all six branches offline. Only the top-probability mode
+  under your mode_probs is promoted to the next online parent. Other branch
+  results are counterfactual analysis data and will not be visible later unless
+  explicitly shown in visible_history.
+
+Goal:
+
+Minimize verified latent loss while preserving correctness. Correctness is more
+important than speed. A fast wrong branch is a failed branch.
+
+Primary modes:
+
+- layout: the main idea changes storage layout or update/read representation.
+- indexing: the main idea improves sorted-key, bisect, bounds, or range access.
+- topk: the main idea improves top_k selection or tie handling.
+- caching: the main idea adds or improves memoized query results/invalidation.
+- summaries: the main idea maintains aggregates such as prefix sums, buckets, or
+  trees.
+- micro: the main idea is a local constant-factor simplification or cleanup.
+
+The modes are experimental labels, not edit permissions. For any candidate, you
+may modify any part of CandidateQueryEngine that is necessary to make that
+candidate coherent and correct. The primary_mode should identify the dominant
+optimization idea, not a whitelist of functions or lines. If a topk candidate
+needs a small __init__ helper, that is allowed. If an indexing candidate needs
+put/delete consistency changes, that is allowed. Keep each candidate's main idea
+aligned with its declared primary mode.
+
+Required API after every branch edit:
+
+- Define class CandidateQueryEngine.
+- Implement put(key:int, value:int)->None.
+- Implement delete(key:int)->None.
+- Implement get(key:int)->int|None.
+- Implement range_sum(lo:int, hi:int)->int.
+- Implement aggregate_count(lo:int, hi:int)->int.
+- Implement top_k(lo:int, hi:int, k:int)->list[tuple[int,int]].
+- Range bounds are inclusive: lo <= key <= hi. Empty ranges return 0 or [] as
+  appropriate.
+- aggregate_count must count keys satisfying inclusive bounds lo <= key <= hi;
+  it must not sum values.
+- top_k must sort by value descending, then key ascending.
+- top_k tie-breaking is strict: if two rows have the same value, the smaller
+  key must appear first.
+
+What you can do:
+
+- Edit solution.py through compact structured edits.
+- Change algorithms, data structures, helper methods, imports, and internal
+  state as long as CandidateQueryEngine remains self-contained and correct.
+- Make different independent experimental edits for different modes.
+- Keep an edit small if the mode has no strong opportunity in the current
+  parent.
+- Use the current source and visible history to assign mode_probs by expected
+  marginal verified gain.
+
+What you cannot do:
+
+- Do not return solution_py or any complete replacement file.
+- Do not use results from offline counterfactual branches unless they appear in
+  visible_history.
+- Do not assume one branch can see another branch's edit or verifier result.
+- Do not import the benchmark, reference implementation, previous candidates, or
+  hidden files.
+- Do not use file IO, network, subprocess, eval, exec, dynamic imports, or hidden
+  global state outside each instance.
+- Do not call banned attributes: connect, mkdir, open, popen, read_bytes,
+  read_text, remove, rename, replace, rmdir, socket, system, unlink,
+  write_bytes, write_text.
+- For deletion from lists or sorted arrays, use comprehensions, slices, or
+  pop(index); do not call list.remove or keys.remove.
+- Do not include chain-of-thought.
+
+Probability requirements:
+
+- mode_probs must contain exactly layout, indexing, topk, caching, summaries,
+  micro.
+- Probabilities must be numeric and nonnegative. The framework normalizes small
+  deviations, but you should sum to 1.
+- mode_ranking must be a permutation of the six modes, ordered from most to
+  least promising.
+- Do not use `layout` as a default high-probability mode. Assign probability by
+  expected marginal verified gain for the current parent and profile.
+- Avoid assigning more than 0.40 probability to any one mode unless the current
+  source gives a concrete reason.
+
+Output format:
+
+Return only JSON matching the schema. Do not include markdown or commentary.
+
+Top-level JSON shape:
+
+{
+  "mode_probs": {"layout": 0.0, "indexing": 0.0, "topk": 0.0, "caching": 0.0, "summaries": 0.0, "micro": 0.0},
+  "mode_ranking": ["layout", "indexing", "topk", "caching", "summaries", "micro"],
+  "mode_rationales": {"layout": "...", "indexing": "...", "topk": "...", "caching": "...", "summaries": "...", "micro": "..."},
+  "candidates": {
+    "layout": {"primary_mode": "layout", "declared_mode": "layout", "edit_format": "structured_edits", "rationale": "...", "edits": [...]},
+    "indexing": {"primary_mode": "indexing", "declared_mode": "indexing", "edit_format": "structured_edits", "rationale": "...", "edits": [...]},
+    "topk": {"primary_mode": "topk", "declared_mode": "topk", "edit_format": "structured_edits", "rationale": "...", "edits": [...]},
+    "caching": {"primary_mode": "caching", "declared_mode": "caching", "edit_format": "structured_edits", "rationale": "...", "edits": [...]},
+    "summaries": {"primary_mode": "summaries", "declared_mode": "summaries", "edit_format": "structured_edits", "rationale": "...", "edits": [...]},
+    "micro": {"primary_mode": "micro", "declared_mode": "micro", "edit_format": "structured_edits", "rationale": "...", "edits": [...]}
+  }
+}
+
+Candidate edit rules:
+
+- Do not output candidates as a list.
+- Do not output one candidate per method.
+- There must be exactly one candidate object for each mode key.
+- For each candidate, include primary_mode and declared_mode exactly equal to
+  that candidate's mode.
+- For each candidate, include edit_format exactly equal to "structured_edits".
+- For each candidate, include 1 to 8 edits. Prefer the fewest edits that are
+  sufficient.
+- Use one of these operations:
+  - replace_exact: {"op":"replace_exact","old":"exact existing text","new":"replacement text"}
+  - delete_exact: {"op":"delete_exact","text":"exact existing text"}
+  - insert_before: {"op":"insert_before","anchor":"exact existing text","text":"inserted text"}
+  - insert_after: {"op":"insert_after","anchor":"exact existing text","text":"inserted text"}
+  - replace_function: {"op":"replace_function","function":"function_name","source":"complete replacement function with exact indentation"}
+- For replace_function, use the bare method or helper name such as "__init__",
+  "put", "delete", "get", "range_sum", "aggregate_count", or "top_k"; do not use "CandidateQueryEngine.put".
+- Exact text and anchors must occur exactly once in the parent file.
+- replace_function is preferred when changing a whole method; exact edits are
+  preferred for one-line or small local edits.
+
+Profile summary:
+$profile_summary
+
+Visible history:
+$visible_history
+
+Current parent solution.py:
+```python
+$current_solution_source
+```

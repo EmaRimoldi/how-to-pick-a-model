@@ -1,0 +1,514 @@
+\documentclass[10pt,twocolumn]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[letterpaper,margin=0.75in,columnsep=0.24in]{geometry}
+\usepackage{times}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{microtype}
+\usepackage{natbib}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{enumitem}
+
+\setlength{\parindent}{1em}
+\setlength{\parskip}{0pt}
+\setlength{\abovedisplayskip}{6pt plus 2pt minus 3pt}
+\setlength{\belowdisplayskip}{6pt plus 2pt minus 3pt}
+\setlength{\abovedisplayshortskip}{4pt plus 2pt minus 2pt}
+\setlength{\belowdisplayshortskip}{4pt plus 2pt minus 2pt}
+\allowdisplaybreaks
+\raggedbottom
+\emergencystretch=1em
+
+\setlist{leftmargin=*,itemsep=2pt,topsep=3pt,parsep=0pt,partopsep=0pt}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{assumption}{Assumption}
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\title{Proper Time for Verified Model Selection}
+
+\author{%
+  Anonymous Authors \\
+  \texttt{}
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\end{abstract}
+
+\section{Introduction}
+
+Achille and Soatto argue that agents should be understood as task solvers whose
+performance is measured by \emph{time to solution}: the resource required to
+produce a verified artifact, not the model's self-assessment of progress
+\citep{achille2025agents}.  This perspective changes a basic practical
+question.  Modern model choice is usually treated as a leaderboard problem: run
+each candidate on a benchmark and pick the one with the highest average score.
+For verified tasks, this is often the wrong unit of comparison.  In code
+generation, repository repair, formal reasoning, and exact-answer reasoning
+benchmarks, a system is useful only when it produces an artifact accepted by an
+external verifier.  The deployment question is therefore not merely whether a
+model can eventually solve an instance, but how much wall-clock time, token
+budget, and sampling effort must be spent before a verified solution appears.
+
+This distinction matters because verified performance is trajectory-valued.  A
+small model may be cheap enough that several retries are preferable to one call
+to a larger model.  A larger model may be slower but decisive on modes where
+smaller models repeatedly fail.  A router may observe enough information about a
+fresh instance to select the right worker, or it may waste that information by
+choosing an action that is not on the mode-conditioned frontier.  Average
+accuracy collapses these mechanisms into one number, even though they imply
+different engineering decisions.
+
+The scientific reason to introduce task modes is the same reason algorithm
+selection and portfolio methods exist: instance structure can change which
+solver is cost-effective.  In Rice's algorithm-selection formulation, one
+chooses an algorithm using observable features of the problem instance
+\citep{rice1976algorithm}; SATzilla and AutoFolio made this idea practical by
+learning when different solvers dominate on different regions of a task
+distribution \citep{xu2012satzilla,lindauer2015autofolio}.  In machine
+learning, transferability and task-embedding work similarly treats tasks as
+structured objects rather than interchangeable samples
+\citep{achille2019task2vec}.  Our modes play this role for verified language
+model deployment.  They are not post-hoc names for success or failure.  They
+are predeclared, solver-relevant partitions or covariates---for example
+difficulty strata, algorithmic categories, or reasoning families---under which
+different models may have different cost--success curves.
+
+This makes a concrete prediction.  If one model has the best cost-adjusted
+first-passage profile in every mode, routing is trivial: no mode label can make
+a different model worth running.  If the frontier crosses across modes, then
+model choice becomes conditional.  A smaller or cheaper model can be optimal
+under a wall-clock, token, or price budget on modes where its success rate is
+high enough; a larger model can be optimal on modes where the smaller model's
+retry curve saturates below the required reliability.  This is the verified
+model-selection analogue of comparative advantage.
+
+We do not introduce proper time as a new philosophical object.  Instead, we
+make the Achille--Soatto principle empirical.  Given a fixed verifier, a
+resource clock, and repeated stochastic runs, we estimate the first-passage
+curve
+\[
+    F_M(t)
+    =
+    \Pr[\text{\(M\) verifies by resource } t],
+\]
+keeping unsolved instances as right-censored observations.  From this curve we
+study the operating frontier
+\[
+    \tau^\star_M = \inf_t \frac{t}{F_M(t)},
+\]
+which asks how much resource must be paid per unit of verified success at the
+best operating point.  This turns model selection into verified first-passage
+accounting rather than benchmark racing.
+
+The main observation is that proper-time differences are not monolithic.  A
+system can improve because its attempts are cheaper, because its worker has
+higher verified competence on a task mode, because the instance exposes
+information about which mode it belongs to, or because a router allocates that
+information well.  We therefore organize verified model selection around four
+diagnostic quantities:
+\begin{enumerate}
+  \item \textbf{Cost}: the resource consumed by an attempt or by a
+  stop-at-first-success trajectory.
+  \item \textbf{Competence}: the mode-conditioned first-passage success curve of
+  a worker under a fixed verifier.
+  \item \textbf{Information}: the value of knowing a mode or router-visible
+  signal before deployment.
+  \item \textbf{Allocation regret}: the loss of the implemented router relative
+  to the best action available under the same information.
+\end{enumerate}
+The resulting decomposition separates two questions that are often conflated:
+whether there is useful specialization in the model menu, and whether a router
+actually exploits it.
+
+We instantiate this protocol on verified coding and reasoning tasks.  For each
+worker model we log every sampling attempt, the per-attempt resource usage, the
+verifier outcome, and the cumulative resource to the first passing attempt; runs
+that never pass remain in the data as censored observations.  This trace format
+lets us evaluate single-model frontiers, retry policies, oracle allocations,
+statistical oracles that learn from held-out folds, and prompt-only LLM routers
+without rerunning workers.  The router never writes a solution; it only chooses
+an allocation over already logged worker attempts, and is judged by the verified
+time-to-solution that allocation would have incurred.
+
+Our contributions are:
+\begin{enumerate}
+  \item We operationalize proper time for verified model selection as an
+  estimable first-passage object with wall-clock and token clocks.
+  \item We give a diagnostic decomposition of proper-time gains into cost,
+  competence, information value, and allocation regret.
+  \item We test the retry-crossover prediction empirically, distinguishing the
+  closed-form Bernoulli approximation from the heterogeneous first-passage
+  curves observed in real task sets.
+  \item We evaluate when routing is non-trivial: a router can beat the best
+  single model only when task modes induce cost-adjusted frontier crossings, and
+  only if the router uses the available information well.
+\end{enumerate}
+
+The paper's central message is simple: accuracy tells us whether a model can
+solve; proper time tells us whether it is worth running.
+
+\section{Verified Tasks and First Passage}
+\label{sec:formalism}
+
+We begin with the object on which proper time is measured.  The task must have
+an external success condition: the model may propose artifacts, but the
+acceptance event is determined by a verifier outside the model.
+
+\begin{definition}[Verified task]
+\label{def:verified-task}
+A verified task is a tuple
+\[
+    \mathcal T = (\mathcal X,\mathcal Y,\mu,V),
+\]
+where \(\mathcal X\) is an instance space, \(\mathcal Y\) is an artifact space,
+\(\mu\) is a distribution over instances, and
+\[
+    V:\mathcal X\times\mathcal Y\to\{0,1\}
+\]
+is an external verifier.  For an instance \(x\in\mathcal X\) and candidate
+artifact \(y\in\mathcal Y\), the event \(V(x,y)=1\) means that \(y\) is accepted
+as a verified solution to \(x\).
+\end{definition}
+
+The definition is intentionally agnostic about the kind of artifact.  In a code
+task, \(x\) is a programming problem and \(y\) is a generated program; the
+verifier runs the declared tests.  In an exact-answer reasoning task, \(x\) is a
+question and \(y\) is the model's final answer; the verifier applies a frozen
+extraction and normalization rule and checks exact match.  Scalar evaluators can
+be included by thresholding: if \(R(x,y)\in\mathbb R\) is an external reward or
+loss, then \(V_\gamma(x,y)=\mathbf 1\{R(x,y)\ge\gamma\}\) for a predeclared
+threshold \(\gamma\).
+
+Two points are important.  First, verification is external: success is not the
+model's claim that the answer is correct.  Second, the verifier defines the
+unit of progress.  Any comparison of models, retries, or routers in this paper
+is made relative to the same task distribution and the same frozen verifier.
+
+\begin{definition}[Deployment action and resource clock]
+\label{def:action-clock}
+Let \(\mathcal A\) be a finite set of deployment actions, and fix a deployment
+budget \(B\in(0,\infty]\).  An action \(a\in\mathcal A\) is any fixed
+procedure that, given an instance \(x\) and internal randomness \(r\in\Omega\),
+emits candidate artifacts before the budget is exhausted.  Its execution is the
+finite or countable sequence
+\[
+    \begin{aligned}
+    \Gamma^a_B(x,r)
+    &=
+    \bigl(C^a_k(x,r),Y^a_k(x,r)\bigr)_
+    {k=1}^{K^a_B(x,r)},\\
+    K^a_B(x,r)
+    &\in\mathbb N_0\cup\{\infty\},
+    \end{aligned}
+\]
+where \(K^a_B(x,r)\) is the number of candidate artifacts emitted within
+budget, \(Y^a_k(x,r)\in\mathcal Y\) is the \(k\)-th candidate artifact, and
+\(C^a_k(x,r)\) is the cumulative resource spent when that artifact becomes
+available.  When \(K^a_B(x,r)\ge 1\), the clock is cumulative:
+\[
+    \begin{aligned}
+    0&<C^a_1(x,r)\le C^a_2(x,r)\le\cdots,\\
+    C^a_k(x,r)&\le B
+    \quad\text{for }1\le k\le K^a_B(x,r).
+    \end{aligned}
+\]
+The resource may be wall-clock seconds, generated tokens, dollar cost,
+verifier calls, or a fixed weighted combination of these quantities.
+Examples include a single language-model call, a language model wrapped in a
+harness, a repeated-sampling policy, a sequential allocation across models, a
+multi-agent system, or a broader orchestration capable of solving the instance.
+\end{definition}
+
+The cumulative convention is part of the definition.  If a repeated-sampling
+action succeeds on its third candidate, the cost of the first two failed
+candidates is still paid.  Likewise, if a sequential allocation tries a cheap
+worker before an expensive one, the verified time of the allocation includes
+every consumed attempt up to and including the first accepted artifact.
+
+\begin{definition}[Verified first-passage time]
+\label{def:first-passage}
+For a verified task \(\mathcal T\), action \(a\), budget \(B\), instance \(x\),
+and randomness \(r\), the first verified index is
+\[
+    J^a_B(x,r)
+    :=
+    \min\left\{
+        \begin{array}{l}
+        k\in\mathbb N:
+        k\le K^a_B(x,r),\\
+        V\bigl(x,Y^a_k(x,r)\bigr)=1
+        \end{array}
+    \right\},
+\]
+with \(J^a_B(x,r)=\infty\) when the set is empty.  The verified
+first-passage time is
+\[
+    \tau^a_B(x,r)
+    :=
+    \begin{cases}
+    C^a_{J^a_B(x,r)}(x,r), & J^a_B(x,r)<\infty,\\
+    \infty, & J^a_B(x,r)=\infty.
+    \end{cases}
+\]
+\end{definition}
+
+Thus \(\tau^a_B(x,r)\) is the cumulative resource spent up to the first
+accepted artifact.  If no artifact is accepted within budget, the run is
+right-censored at \(B\) and represented by \(\tau^a_B=\infty\) for any finite
+resource threshold.
+
+\begin{definition}[Certified time-to-solution]
+\label{def:certified-time}
+For confidence level \(\delta\in(0,1)\), the certified time-to-solution of
+action \(a\) is the \((1-\delta)\)-success quantile of its verified
+first-passage time:
+\[
+    \overline T_a(\delta)
+    :=
+    \inf\left\{
+        t>0:
+        \Pr_{X\sim\mu,r}
+        \left[
+            \tau^a_B(X,r)\le t
+        \right]
+        \ge 1-\delta
+    \right\}.
+\]
+\end{definition}
+
+Equivalently, if
+\[
+    F_a(t):=\Pr_{X\sim\mu,r}\!\left[\tau^a_B(X,r)\le t\right],
+\]
+then \(\overline T_a(\delta)=\inf\{t>0:F_a(t)\ge 1-\delta\}\).  This is the
+quantile form of proper time.  It is infinite whenever the action's success
+probability within budget is below \(1-\delta\).
+
+\begin{definition}[Success-by-budget curve]
+\label{def:success-curve}
+The success-by-budget curve of action \(a\) is
+\[
+    F_a(t)
+    :=
+    \Pr_{X\sim\mu,r}
+    \left[
+        \tau^a_B(X,r)\le t
+    \right],
+    \qquad 0\le t\le B.
+\]
+Given observed runs \(\{(x_i,r_i)\}_{i=1}^n\), its empirical estimate is
+\[
+    \widehat F_a(t)
+    :=
+    \frac{1}{n}
+    \sum_{i=1}^n
+    \mathbf 1\{\tau^a_B(x_i,r_i)\le t\}.
+\]
+Runs with no verified solution have \(\tau^a_B=\infty\); they remain in the
+denominator and contribute zero to the numerator for every finite \(t\).
+\end{definition}
+
+Thus benchmark accuracy at budget \(B\) is the single number \(F_a(B)\), while
+proper-time accounting uses the full first-passage curve \(F_a(t)\).
+
+\begin{definition}[Modes and mode-conditioned proper time]
+\label{def:modes}
+A mode schema is a finite set \(\mathcal S\) together with a predeclared map
+\[
+    \sigma:\mathcal X\to\mathcal S.
+\]
+We write \(S=\sigma(X)\) and \(\pi_s=\Pr[S=s]\).  For any mode with
+\(\pi_s>0\), the mode-conditioned success-by-budget curve is
+\[
+    F_{a,s}(t)
+    :=
+    \Pr\left[
+        \tau^a_B(X,r)\le t
+        \mid S=s
+    \right].
+\]
+The mode-conditioned operating proper time is
+\[
+    \tau^\star_{a,s}
+    :=
+    \inf_{t:F_{a,s}(t)>0}
+    \frac{t}{F_{a,s}(t)}.
+\]
+When the infimum is attained, let \(t^\star_{a,s}\) be an attaining resource
+and define \(p^\star_{a,s}:=F_{a,s}(t^\star_{a,s})\).  The log proper-time loss
+is
+\[
+    \ell(a,s)
+    :=
+    \log \tau^\star_{a,s}
+    =
+    \underbrace{\log t^\star_{a,s}}_{\text{cost}}
+    -
+    \underbrace{\log p^\star_{a,s}}_{\text{competence}}.
+\]
+\end{definition}
+
+Modes are not defined by whether a particular model succeeds.  They are
+predeclared task structure---difficulty strata, algorithmic categories,
+reasoning families, or other solver-relevant covariates---used to test whether
+different actions have different cost-success frontiers on different parts of
+the task distribution.
+
+\begin{definition}[Router and signal]
+\label{def:router}
+A router observes a pre-deployment signal \(Z=Z(X)\) and selects an action
+\[
+    \rho:\mathcal Z\to\mathcal A.
+\]
+Its proper-time loss is
+\[
+    L_\rho
+    :=
+    \mathbb E\!\left[\ell(\rho(Z),S)\right].
+\]
+The best single-action baseline is
+\[
+    L_{\mathrm{single}}
+    :=
+    \min_{a\in\mathcal A}
+    \mathbb E[\ell(a,S)].
+\]
+The best decision rule that can use signal \(Z\) has loss
+\[
+    L_Z^\star
+    :=
+    \mathbb E_Z
+    \left[
+        \min_{a\in\mathcal A}
+        \mathbb E[\ell(a,S)\mid Z]
+    \right].
+\]
+The value of information and router regret are
+\[
+    \mathrm{VOI}(Z)
+    :=
+    L_{\mathrm{single}}-L_Z^\star,
+    \qquad
+    \mathrm{Reg}(\rho;Z)
+    :=
+    L_\rho-L_Z^\star.
+\]
+\end{definition}
+
+\begin{theorem}[Operational four-term decomposition]
+\label{thm:operational-four-term}
+Assume the mode-conditioned operating points in Definition~\ref{def:modes}
+exist and have finite positive \(t^\star_{a,s}\) and \(p^\star_{a,s}\).  Fix a
+reference action \(a_0\), and let
+\[
+    a_{\mathrm{single}}^\star
+    \in
+    \operatorname*{arg\,min}_{a\in\mathcal A}
+    \mathbb E[\ell(a,S)]
+\]
+be a best single action.  Then any router \(\rho\) satisfies
+\[
+\begin{aligned}
+&\mathbb E[\ell(a_0,S)]-L_\rho
+\\
+&=
+\underbrace{
+  \mathbb E
+  \!\left[
+      \log
+      \frac{t^\star_{a_0,S}}
+           {t^\star_{a_{\mathrm{single}}^\star,S}}
+  \right]
+}_{\text{cost}}
+\\
+&\quad+
+\underbrace{
+  \mathbb E
+  \!\left[
+      \log
+      \frac{p^\star_{a_{\mathrm{single}}^\star,S}}
+           {p^\star_{a_0,S}}
+  \right]
+}_{\text{competence}}
+\\
+&\quad+
+\underbrace{\mathrm{VOI}(Z)}_{\text{information}}
+-
+\underbrace{\mathrm{Reg}(\rho;Z)}_{\text{allocation regret}} .
+\end{aligned}
+\]
+\end{theorem}
+
+\begin{proof}
+By Definition~\ref{def:modes},
+\[
+    \ell(a,s)=\log t^\star_{a,s}-\log p^\star_{a,s}.
+\]
+Therefore
+\[
+\begin{aligned}
+\mathbb E[\ell(a_0,S)]-L_{\mathrm{single}}
+&=
+\mathbb E
+\!\left[
+    \log
+    \frac{t^\star_{a_0,S}}
+         {t^\star_{a_{\mathrm{single}}^\star,S}}
+\right]
+\\
+&\quad
++
+\mathbb E
+\!\left[
+    \log
+    \frac{p^\star_{a_{\mathrm{single}}^\star,S}}
+         {p^\star_{a_0,S}}
+\right].
+\end{aligned}
+\]
+Adding and subtracting \(L_{\mathrm{single}}\) and \(L_Z^\star\) gives
+\[
+\begin{aligned}
+\mathbb E[\ell(a_0,S)]-L_\rho
+&=
+\bigl(\mathbb E[\ell(a_0,S)]-L_{\mathrm{single}}\bigr)
+\\
+&\quad
++
+\bigl(L_{\mathrm{single}}-L_Z^\star\bigr)
+-
+\bigl(L_\rho-L_Z^\star\bigr),
+\end{aligned}
+\]
+which is exactly the stated decomposition.
+\end{proof}
+
+The packed latent-mode identity used later can be viewed as a stronger
+time-sharing surrogate for the same accounting principle: it replaces the
+action-level regret term with a KL mismatch between a posterior mode
+distribution and an allocated share vector.  The operational decomposition
+above is the one used for hard action selection, where routers output actions
+or allocations rather than probability shares over modes.
+
+\bibliographystyle{unsrtnat}
+\bibliography{report/references}
+
+\end{document}

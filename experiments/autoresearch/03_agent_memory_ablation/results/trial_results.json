@@ -1,0 +1,139 @@
+{
+  "experiment": "agent_memory_ablation",
+  "baseline_val_bpb": 0.925845,
+  "note": "Canonical public dataset. Historical corrupted or non-executed cells were removed before renumbering.",
+  "trials": [
+    {
+      "trial_id": "T01",
+      "condition": "parallel, mixed search styles",
+      "group": "no_memory",
+      "memory": "none",
+      "search_style": "mixed",
+      "budget_minutes": 15,
+      "training_attempts": 14,
+      "best_val_bpb": 0.979568,
+      "mean_val_bpb": 1.136,
+      "worst_val_bpb": 1.314253
+    },
+    {
+      "trial_id": "T02",
+      "condition": "single-agent control",
+      "group": "no_memory",
+      "memory": "none",
+      "search_style": "default",
+      "budget_minutes": 15,
+      "training_attempts": 8,
+      "best_val_bpb": 0.935578,
+      "mean_val_bpb": 1.07,
+      "worst_val_bpb": 1.222648
+    },
+    {
+      "trial_id": "T03",
+      "condition": "single agent, 30-second train",
+      "group": "no_memory",
+      "memory": "none",
+      "search_style": "default",
+      "budget_minutes": 15,
+      "training_attempts": 10,
+      "best_val_bpb": 1.103296,
+      "mean_val_bpb": 1.447,
+      "worst_val_bpb": 1.87917
+    },
+    {
+      "trial_id": "T04",
+      "condition": "parallel, mixed search styles",
+      "group": "no_memory",
+      "memory": "none",
+      "search_style": "mixed",
+      "budget_minutes": 30,
+      "training_attempts": 29,
+      "best_val_bpb": 0.971015,
+      "mean_val_bpb": 1.19,
+      "worst_val_bpb": 1.471516
+    },
+    {
+      "trial_id": "T05",
+      "condition": "parallel, same search style",
+      "group": "no_memory",
+      "memory": "none",
+      "search_style": "same",
+      "budget_minutes": 15,
+      "training_attempts": 14,
+      "best_val_bpb": 0.959791,
+      "mean_val_bpb": 1.09,
+      "worst_val_bpb": 1.241214
+    },
+    {
+      "trial_id": "T06",
+      "condition": "exploratory, no memory",
+      "group": "no_memory",
+      "memory": "none",
+      "search_style": "exploratory",
+      "budget_minutes": 45,
+      "training_attempts": 21,
+      "best_val_bpb": 0.933486,
+      "mean_val_bpb": 1.816,
+      "worst_val_bpb": 2.305029
+    },
+    {
+      "trial_id": "T07",
+      "condition": "exploratory + shared memory",
+      "group": "shared_memory",
+      "memory": "shared",
+      "search_style": "exploratory",
+      "budget_minutes": 45,
+      "training_attempts": 41,
+      "best_val_bpb": 0.914051,
+      "mean_val_bpb": 1.049,
+      "worst_val_bpb": 1.4621
+    },
+    {
+      "trial_id": "T08",
+      "condition": "two exploratory agents",
+      "group": "no_memory",
+      "memory": "none",
+      "search_style": "exploratory",
+      "budget_minutes": 45,
+      "training_attempts": 44,
+      "best_val_bpb": 0.961317,
+      "mean_val_bpb": 1.852,
+      "worst_val_bpb": 7.876028
+    },
+    {
+      "trial_id": "T09",
+      "condition": "seeded learning-rate hint",
+      "group": "seeded",
+      "memory": "none",
+      "search_style": "exploratory",
+      "budget_minutes": 45,
+      "training_attempts": 13,
+      "best_val_bpb": 0.880473,
+      "mean_val_bpb": 1.501,
+      "worst_val_bpb": 1.823382
+    },
+    {
+      "trial_id": "T10",
+      "condition": "start from seeded baseline",
+      "group": "seeded",
+      "memory": "none",
+      "search_style": "default",
+      "budget_minutes": 45,
+      "training_attempts": 21,
+      "best_val_bpb": 0.962103,
+      "mean_val_bpb": 1.216,
+      "worst_val_bpb": 1.49694
+    },
+    {
+      "trial_id": "T11",
+      "condition": "shared + private memory",
+      "group": "shared_private",
+      "memory": "shared_and_private",
+      "search_style": "mixed",
+      "budget_minutes": 45,
+      "training_attempts": 32,
+      "best_val_bpb": 0.955079,
+      "mean_val_bpb": 1.064,
+      "worst_val_bpb": 1.689639
+    }
+  ]
+}

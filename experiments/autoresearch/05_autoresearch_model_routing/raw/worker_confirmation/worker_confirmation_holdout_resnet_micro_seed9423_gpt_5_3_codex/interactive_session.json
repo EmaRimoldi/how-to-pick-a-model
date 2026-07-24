@@ -1,0 +1,24 @@
+{
+  "initial_meta": {
+    "cost_usd": null,
+    "elapsed_wall_seconds": 13.584774954011664,
+    "max_tokens_requested": 4096,
+    "model": "gpt-5.3-codex",
+    "raw_cli_result": {
+      "stderr_tail": "",
+      "stdout_tail": "_message\",\"text\":\"{\\\"declared_mode\\\":\\\"summaries\\\",\\\"edit_format\\\":\\\"structured_edits\\\",\\\"edits\\\":[{\\\"anchor\\\":\\\"\\\",\\\"function\\\":\\\"\\\",\\\"new\\\":\\\"LEARNING_RATE = 1e-3\\\",\\\"old\\\":\\\"LEARNING_RATE = 5e-4\\\",\\\"op\\\":\\\"replace_exact\\\",\\\"source\\\":\\\"\\\",\\\"text\\\":\\\"\\\"},{\\\"anchor\\\":\\\"\\\",\\\"function\\\":\\\"\\\",\\\"new\\\":\\\"OPTIMIZER = \\\\\\\"adamw\\\\\\\"\\\",\\\"old\\\":\\\"OPTIMIZER = \\\\\\\"adam\\\\\\\"\\\",\\\"op\\\":\\\"replace_exact\\\",\\\"source\\\":\\\"\\\",\\\"text\\\":\\\"\\\"},{\\\"anchor\\\":\\\"\\\",\\\"function\\\":\\\"\\\",\\\"new\\\":\\\"USE_LR_SCHEDULE = True\\\",\\\"old\\\":\\\"USE_LR_SCHEDULE = False\\\",\\\"op\\\":\\\"replace_exact\\\",\\\"source\\\":\\\"\\\",\\\"text\\\":\\\"\\\"}],\\\"primary_mode\\\":\\\"summaries\\\",\\\"rationale\\\":\\\"Enable a scheduler-driven optimization profile under the fixed 256-step budget while pairing it with AdamW and a moderately higher LR for faster early progress and better final loss.\\\",\\\"secondary_modes\\\":[\\\"indexing\\\",\\\"topk\\\"]}\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":26234,\"cached_input_tokens\":23936,\"output_tokens\":534,\"reasoning_output_tokens\":340}}\n"
+    },
+    "reasoning_effort": "medium",
+    "session_id": "019dfdf5-b77c-7343-bcdc-14e80bfc286d",
+    "transport": "codex_cli_persistent",
+    "usage": {
+      "cached_input_tokens": 23936,
+      "input_tokens": 26234,
+      "output_tokens": 534,
+      "reasoning_output_tokens": 340,
+      "total_tokens": 26768
+    }
+  },
+  "prompt_path": "/home/erimoldi/openclaw_remote/projects/NeurIPS_2026/autoresearch/campaigns/h20_delta005_20260505/runs/worker_confirmation/worker_confirmation_holdout_resnet_micro_seed9423_gpt_5_3_codex/interactive_initial_prompt.txt",
+  "session_id": "019dfdf5-b77c-7343-bcdc-14e80bfc286d"
+}

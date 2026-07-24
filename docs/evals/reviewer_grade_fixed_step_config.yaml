@@ -1,0 +1,44 @@
+# Reviewer-grade prompt for confirmatory BP runs.
+# Use this as a starting point, but set a concrete experiment.id per replicate:
+# rg_d00_rep01, rg_d10_rep01, rg_d01_rep01, rg_d11_rep01, etc.
+experiment:
+  id: null
+  mode: parallel_shared
+  runs_dir: runs
+
+evaluator:
+  # Fixed-step quality evaluation; train_time_budget_seconds is a timeout guard.
+  train_max_steps: 1170
+  # Serialize train.py evaluations across agents to remove hardware contention.
+  concurrency: serialized
+  # q* and confidence for `agent-workflow certified-time`.
+  target_val_bpb: 0.824
+  success_confidence: 0.80
+  # Cost proxy defaults to token units. Set evaluator_hour_price for dollar accounting.
+  llm_token_price: 1.0
+  evaluator_hour_price: 0.0
+
+agents:
+  n: 2
+  model: claude-haiku-4-5-20251001
+  time_budget_minutes: 90
+  train_time_budget_seconds: 300
+  temperature: null
+  cuda_devices: null
+  use_external_memory: false
+  use_shared_memory: true
+  overrides:
+    - agent_id: agent_0
+      temperature: 0.5
+    - agent_id: agent_1
+      temperature: 1.2
+
+slurm:
+  enabled: false
+  partition: pi_tpoggio
+  gres: gpu:1
+  time: "00:10:00"
+
+prompts:
+  system_prompt: prompts/agent_system_prompt.md
+  first_message: prompts/agent_first_message.md

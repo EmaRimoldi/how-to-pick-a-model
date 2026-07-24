@@ -1,0 +1,99 @@
+%% ====================================================================
+%%  APPENDIX C: PRACTITIONER GUIDE
+%% ====================================================================
+\section{Practitioner Guide}
+\label{app:practitioner}
+
+This appendix distills the paper's results into actionable guidance.
+
+\subsection{Decision Flowchart}
+
+\begin{figure}[h]
+\centering
+\fbox{\parbox{0.85\textwidth}{\centering\vspace{0.5cm}
+\textbf{Framework at a Glance}\\[10pt]
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{Check applicability.}
+  Is the task externally verifiable? Are there $\ge 3$ modes? Is pilot data obtainable? Is $k > 30$?
+  If any answer is ``no,'' consider a simpler approach (A/B testing or benchmark racing).
+
+  \item \textbf{Run pilot study.}
+  Collect $\sim$100 instances per mode (moderate tasks) or $\sim$1{,}500 per mode (hard tasks, $\pmin < 0.1$).
+  Use the Bernstein bound to check if piloting is sufficient; if so, stop.
+
+  \item \textbf{Check routing triviality.}
+  Compute $\Delta_{\mathrm{cost}}$ and $\Delta_{\mathrm{comp}}$.
+  If $\Delta_{\mathrm{comp}} < \Delta_{\mathrm{cost}}$: use the cheapest model. Done.
+
+  \item \textbf{Estimate the four terms.}
+  From pilot data, compute cost, competence, information gain, and routing mismatch for each design in the menu.
+
+  \item \textbf{Compute the crossover.}
+  For each model pair, compute $\Dcross$ and compare with the cost ratio~$R$.
+  If $\Dcross \le R$: the cheaper model with retries dominates.
+
+  \item \textbf{Select design.}
+  Pick the design with the best four-term score.
+  The dominant term tells you \emph{why}---and what to improve next.
+
+  \item \textbf{Validate.}
+  Run the selected design on a held-out test set to confirm performance.
+\end{enumerate}
+\vspace{0.5cm}}}
+\caption{Decision flowchart for applying the four-term decomposition to agent design.}
+\label{fig:flowchart}
+\end{figure}
+
+\subsection{Pilot-Sizing Table}
+
+\begin{table}[h]
+\centering
+\caption{Recommended pilot sizes per mode.}
+\label{tab:pilot-sizing}
+\begin{tabular}{llrr}
+\toprule
+Difficulty & $\pmin$ range & Hoeffding $n_0$ & Bernstein $n_0$ \\
+\midrule
+Easy & $> 0.5$ & 25--50 & (use Hoeffding) \\
+Moderate & $0.1$--$0.5$ & 100--750 & 100--500 \\
+Hard & $0.05$--$0.1$ & 3{,}000--12{,}000 & 1{,}000--3{,}500 \\
+Very hard & $< 0.05$ & $> 12{,}000$ & 3{,}500--13{,}000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The practical pilot sizes are $\sim$25--100$\times$ smaller than the theoretical bounds.
+We recommend using the empirical guidelines (``25/mode easy, 100/mode moderate, 1{,}500/mode hard'') and validating with the Bernstein bound post hoc.
+
+\subsection{When to Use and When Not To}
+
+\begin{table}[h]
+\centering
+\caption{Applicability checklist.}
+\label{tab:applicability}
+\begin{tabular}{lll}
+\toprule
+Condition & Recommendation & Reason \\
+\midrule
+$\Meff \approx 1$ & A/B test & Decomposition is trivially cost + competence \\
+No pilot data & Benchmark racing & Framework requires mode estimates \\
+$k \le 30$ & Benchmark racing & Overhead not justified \\
+$\Delta_{\mathrm{comp}} < \Delta_{\mathrm{cost}}$ & Cheapest model & Routing is provably trivial \\
+Shifting distribution & Caution & Static decomposition may be stale \\
+$\Meff > 3$, $k > 50$ & Full framework & Maximum value regime \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Framework Overhead Estimate}
+
+For a typical scenario with 5~models, 8~modes, and 100~instances per mode:
+\begin{itemize}[nosep]
+  \item Pilot cost: $5 \times 8 \times 100 = 4{,}000$ API calls.
+  \item At \$0.20/call average: $\sim$\$800.
+  \item Wall-clock time (parallelized): $\sim$4 hours.
+  \item Decomposition computation: $< 1$ minute.
+  \item Total: $\sim$\$800, $\sim$4 hours.
+\end{itemize}
+
+This is justified when benchmark racing over the full $k$-design menu would cost $k \times 8 \times 100 = 80{,}000$ calls ($\sim$\$16{,}000) at $k = 100$.

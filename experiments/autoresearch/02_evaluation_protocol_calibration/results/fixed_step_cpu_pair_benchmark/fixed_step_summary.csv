@@ -1,0 +1,5 @@
+condition,n,threads,parallel,group_wall_seconds,mean_worker_wall_seconds,total_steps,mean_val_bpb,speedup_vs_seq2_t4,worker_slowdown_vs_seq2_t4
+single_t4,1,4,false,86.989025,85.881173,300,1.267963,,
+seq2_t4,2,4,false,172.442487,85.097636,"300;300",1.267963,1.000000,1.000000
+par2_t4,2,4,true,98.479366,97.148843,"300;300",1.267963,1.751052,1.141616
+par2_t2,2,2,true,125.860975,124.600057,"300;300",1.267963,1.370103,1.464201

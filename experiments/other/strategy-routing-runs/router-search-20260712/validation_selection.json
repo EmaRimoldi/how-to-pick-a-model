@@ -1,0 +1,818 @@
+{
+  "baseline_allocation": {
+    "mode1_direct": 7,
+    "mode2_structured": 6,
+    "mode3_robust": 7
+  },
+  "phase": "validation",
+  "results": {
+    "1.5b": {
+      "gpt-5.4|n=0": {
+        "direct_floor": {
+          "baseline_success_rate": 0.9024390243902439,
+          "baseline_successes": 37,
+          "mean_log_speedup": -0.040400833561482455,
+          "multiplicative_speedup": 0.9604043996731212,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8780487804878049,
+          "routed_successes": 36,
+          "speedup_95ci": [
+            0.8116538647829338,
+            1.1364785930690116
+          ]
+        },
+        "performance_aware": {
+          "baseline_success_rate": 0.9024390243902439,
+          "baseline_successes": 37,
+          "mean_log_speedup": -0.08433660073434227,
+          "multiplicative_speedup": 0.9191218269391079,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8536585365853658,
+          "routed_successes": 35,
+          "speedup_95ci": [
+            0.737748255620542,
+            1.1501188748663356
+          ]
+        },
+        "posterior_floor": {
+          "baseline_success_rate": 0.9024390243902439,
+          "baseline_successes": 37,
+          "mean_log_speedup": -0.04459904378901618,
+          "multiplicative_speedup": 0.9563808718172871,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8780487804878049,
+          "routed_successes": 36,
+          "speedup_95ci": [
+            0.8107133059508578,
+            1.1289582276785164
+          ]
+        }
+      },
+      "gpt-5.4|n=20": {
+        "direct_floor": {
+          "baseline_success_rate": 0.9024390243902439,
+          "baseline_successes": 37,
+          "mean_log_speedup": -0.11298427439376059,
+          "multiplicative_speedup": 0.8931647055620453,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8536585365853658,
+          "routed_successes": 35,
+          "speedup_95ci": [
+            0.7311280116716831,
+            1.0874456414471405
+          ]
+        },
+        "performance_aware": {
+          "baseline_success_rate": 0.9024390243902439,
+          "baseline_successes": 37,
+          "mean_log_speedup": -0.10388681209642245,
+          "multiplicative_speedup": 0.9013273109965134,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8536585365853658,
+          "routed_successes": 35,
+          "speedup_95ci": [
+            0.7203705313659168,
+            1.1255573733291384
+          ]
+        },
+        "posterior_floor": {
+          "baseline_success_rate": 0.9024390243902439,
+          "baseline_successes": 37,
+          "mean_log_speedup": -0.09604728718365124,
+          "multiplicative_speedup": 0.9084210583796198,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8780487804878049,
+          "routed_successes": 36,
+          "speedup_95ci": [
+            0.7562031343513215,
+            1.0805426627730648
+          ]
+        }
+      },
+      "gpt-5.4|n=5": {
+        "direct_floor": {
+          "baseline_success_rate": 0.9024390243902439,
+          "baseline_successes": 37,
+          "mean_log_speedup": -0.07763838204917962,
+          "multiplicative_speedup": 0.9252989707690007,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8780487804878049,
+          "routed_successes": 36,
+          "speedup_95ci": [
+            0.7741875091228061,
+            1.107638125110958
+          ]
+        },
+        "performance_aware": {
+          "baseline_success_rate": 0.9024390243902439,
+          "baseline_successes": 37,
+          "mean_log_speedup": -0.10343624470512537,
+          "multiplicative_speedup": 0.9017335111951439,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8536585365853658,
+          "routed_successes": 35,
+          "speedup_95ci": [
+            0.7222007412750939,
+            1.124795391814556
+          ]
+        },
+        "posterior_floor": {
+          "baseline_success_rate": 0.9024390243902439,
+          "baseline_successes": 37,
+          "mean_log_speedup": -0.0946531947689476,
+          "multiplicative_speedup": 0.9096883644521052,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8780487804878049,
+          "routed_successes": 36,
+          "speedup_95ci": [
+            0.765013777505064,
+            1.0834577221824415
+          ]
+        }
+      },
+      "gpt-5.5|n=0": {
+        "direct_floor": {
+          "baseline_success_rate": 0.9024390243902439,
+          "baseline_successes": 37,
+          "mean_log_speedup": -0.09575001647412246,
+          "multiplicative_speedup": 0.9086911454947004,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8780487804878049,
+          "routed_successes": 36,
+          "speedup_95ci": [
+            0.7548523126020581,
+            1.0900240981333136
+          ]
+        },
+        "performance_aware": {
+          "baseline_success_rate": 0.9024390243902439,
+          "baseline_successes": 37,
+          "mean_log_speedup": -0.1420601366456604,
+          "multiplicative_speedup": 0.8675690822226536,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8536585365853658,
+          "routed_successes": 35,
+          "speedup_95ci": [
+            0.6784375208143419,
+            1.1055673800153987
+          ]
+        },
+        "posterior_floor": {
+          "baseline_success_rate": 0.9024390243902439,
+          "baseline_successes": 37,
+          "mean_log_speedup": -0.03123831150975829,
+          "multiplicative_speedup": 0.9692445634157562,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8780487804878049,
+          "routed_successes": 36,
+          "speedup_95ci": [
+            0.8305593599567809,
+            1.1202423027637802
+          ]
+        }
+      },
+      "gpt-5.5|n=20": {
+        "direct_floor": {
+          "baseline_success_rate": 0.9024390243902439,
+          "baseline_successes": 37,
+          "mean_log_speedup": -0.13255552222026823,
+          "multiplicative_speedup": 0.8758543033806175,
+          "n_tasks": 41,
+          "routed_success_rate": 0.9024390243902439,
+          "routed_successes": 37,
+          "speedup_95ci": [
+            0.7039801020377792,
+            1.0604427626804083
+          ]
+        },
+        "performance_aware": {
+          "baseline_success_rate": 0.9024390243902439,
+          "baseline_successes": 37,
+          "mean_log_speedup": -0.12933740128814508,
+          "multiplicative_speedup": 0.8786774486227709,
+          "n_tasks": 41,
+          "routed_success_rate": 0.9024390243902439,
+          "routed_successes": 37,
+          "speedup_95ci": [
+            0.6841438452900787,
+            1.113710492758053
+          ]
+        },
+        "posterior_floor": {
+          "baseline_success_rate": 0.9024390243902439,
+          "baseline_successes": 37,
+          "mean_log_speedup": -0.14132677809498903,
+          "multiplicative_speedup": 0.8682055547801705,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8780487804878049,
+          "routed_successes": 36,
+          "speedup_95ci": [
+            0.7107918543689987,
+            1.0389578526079113
+          ]
+        }
+      },
+      "gpt-5.5|n=5": {
+        "direct_floor": {
+          "baseline_success_rate": 0.9024390243902439,
+          "baseline_successes": 37,
+          "mean_log_speedup": -0.15664409789640354,
+          "multiplicative_speedup": 0.8550083039276966,
+          "n_tasks": 41,
+          "routed_success_rate": 0.9024390243902439,
+          "routed_successes": 37,
+          "speedup_95ci": [
+            0.6981501536414775,
+            1.0360968276299234
+          ]
+        },
+        "performance_aware": {
+          "baseline_success_rate": 0.9024390243902439,
+          "baseline_successes": 37,
+          "mean_log_speedup": -0.17882858039798266,
+          "multiplicative_speedup": 0.8362492366226086,
+          "n_tasks": 41,
+          "routed_success_rate": 0.9024390243902439,
+          "routed_successes": 37,
+          "speedup_95ci": [
+            0.6393607887675937,
+            1.0749824897371028
+          ]
+        },
+        "posterior_floor": {
+          "baseline_success_rate": 0.9024390243902439,
+          "baseline_successes": 37,
+          "mean_log_speedup": -0.11508231252513762,
+          "multiplicative_speedup": 0.891292776328281,
+          "n_tasks": 41,
+          "routed_success_rate": 0.9024390243902439,
+          "routed_successes": 37,
+          "speedup_95ci": [
+            0.7480740914008396,
+            1.0581260304812257
+          ]
+        }
+      }
+    },
+    "32b": {
+      "gpt-5.4|n=0": {
+        "direct_floor": {
+          "baseline_success_rate": 0.8292682926829268,
+          "baseline_successes": 34,
+          "mean_log_speedup": -0.126459110079726,
+          "multiplicative_speedup": 0.8812101814209031,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8048780487804879,
+          "routed_successes": 33,
+          "speedup_95ci": [
+            0.7546265783712839,
+            1.0153965511627996
+          ]
+        },
+        "performance_aware": {
+          "baseline_success_rate": 0.8292682926829268,
+          "baseline_successes": 34,
+          "mean_log_speedup": -0.07107180813079085,
+          "multiplicative_speedup": 0.9313950079916566,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8780487804878049,
+          "routed_successes": 36,
+          "speedup_95ci": [
+            0.790300493956006,
+            1.080644144543804
+          ]
+        },
+        "posterior_floor": {
+          "baseline_success_rate": 0.8292682926829268,
+          "baseline_successes": 34,
+          "mean_log_speedup": -0.08589303212908476,
+          "multiplicative_speedup": 0.91769238957123,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8292682926829268,
+          "routed_successes": 34,
+          "speedup_95ci": [
+            0.7972730116930489,
+            1.0452251568242523
+          ]
+        }
+      },
+      "gpt-5.4|n=20": {
+        "direct_floor": {
+          "baseline_success_rate": 0.8292682926829268,
+          "baseline_successes": 34,
+          "mean_log_speedup": -0.21494314823088734,
+          "multiplicative_speedup": 0.8065872947885092,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8048780487804879,
+          "routed_successes": 33,
+          "speedup_95ci": [
+            0.6727842470995363,
+            0.952969819534146
+          ]
+        },
+        "performance_aware": {
+          "baseline_success_rate": 0.8292682926829268,
+          "baseline_successes": 34,
+          "mean_log_speedup": 0.06289632547687364,
+          "multiplicative_speedup": 1.0649164288051045,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8780487804878049,
+          "routed_successes": 36,
+          "speedup_95ci": [
+            0.9577124970917843,
+            1.1867207251765994
+          ]
+        },
+        "posterior_floor": {
+          "baseline_success_rate": 0.8292682926829268,
+          "baseline_successes": 34,
+          "mean_log_speedup": -0.12618243841403065,
+          "multiplicative_speedup": 0.8814540210398258,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8292682926829268,
+          "routed_successes": 34,
+          "speedup_95ci": [
+            0.7668114279676005,
+            1.0072911022118327
+          ]
+        }
+      },
+      "gpt-5.4|n=5": {
+        "direct_floor": {
+          "baseline_success_rate": 0.8292682926829268,
+          "baseline_successes": 34,
+          "mean_log_speedup": -0.1817008186398877,
+          "multiplicative_speedup": 0.8338507757098871,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8048780487804879,
+          "routed_successes": 33,
+          "speedup_95ci": [
+            0.7117252018738506,
+            0.9642880890115811
+          ]
+        },
+        "performance_aware": {
+          "baseline_success_rate": 0.8292682926829268,
+          "baseline_successes": 34,
+          "mean_log_speedup": -0.052704370063396774,
+          "multiplicative_speedup": 0.9486604234521605,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8536585365853658,
+          "routed_successes": 35,
+          "speedup_95ci": [
+            0.825828838629868,
+            1.0716902690123424
+          ]
+        },
+        "posterior_floor": {
+          "baseline_success_rate": 0.8292682926829268,
+          "baseline_successes": 34,
+          "mean_log_speedup": -0.12976510268503327,
+          "multiplicative_speedup": 0.8783017174066915,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8292682926829268,
+          "routed_successes": 34,
+          "speedup_95ci": [
+            0.764828828424089,
+            0.9972200968968223
+          ]
+        }
+      },
+      "gpt-5.5|n=0": {
+        "direct_floor": {
+          "baseline_success_rate": 0.8292682926829268,
+          "baseline_successes": 34,
+          "mean_log_speedup": -0.13688023942310656,
+          "multiplicative_speedup": 0.8720746600428327,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8048780487804879,
+          "routed_successes": 33,
+          "speedup_95ci": [
+            0.7326981755516911,
+            1.025367344548553
+          ]
+        },
+        "performance_aware": {
+          "baseline_success_rate": 0.8292682926829268,
+          "baseline_successes": 34,
+          "mean_log_speedup": -0.06252267689946515,
+          "multiplicative_speedup": 0.939391760079435,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8536585365853658,
+          "routed_successes": 35,
+          "speedup_95ci": [
+            0.8244961516335972,
+            1.0619017120911793
+          ]
+        },
+        "posterior_floor": {
+          "baseline_success_rate": 0.8292682926829268,
+          "baseline_successes": 34,
+          "mean_log_speedup": -0.11954558216812299,
+          "multiplicative_speedup": 0.887323560765499,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8292682926829268,
+          "routed_successes": 34,
+          "speedup_95ci": [
+            0.7783120585342598,
+            1.0058710705762164
+          ]
+        }
+      },
+      "gpt-5.5|n=20": {
+        "direct_floor": {
+          "baseline_success_rate": 0.8292682926829268,
+          "baseline_successes": 34,
+          "mean_log_speedup": -0.1939672540973335,
+          "multiplicative_speedup": 0.8236848761317471,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8048780487804879,
+          "routed_successes": 33,
+          "speedup_95ci": [
+            0.6906561126854309,
+            0.9505730679604953
+          ]
+        },
+        "performance_aware": {
+          "baseline_success_rate": 0.8292682926829268,
+          "baseline_successes": 34,
+          "mean_log_speedup": 0.04003863394461694,
+          "multiplicative_speedup": 1.0408509855949526,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8780487804878049,
+          "routed_successes": 36,
+          "speedup_95ci": [
+            0.9270027216481533,
+            1.1659450277725028
+          ]
+        },
+        "posterior_floor": {
+          "baseline_success_rate": 0.8292682926829268,
+          "baseline_successes": 34,
+          "mean_log_speedup": -0.15658217915328898,
+          "multiplicative_speedup": 0.8550612466062835,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8292682926829268,
+          "routed_successes": 34,
+          "speedup_95ci": [
+            0.7407725592315286,
+            0.9623886319017024
+          ]
+        }
+      },
+      "gpt-5.5|n=5": {
+        "direct_floor": {
+          "baseline_success_rate": 0.8292682926829268,
+          "baseline_successes": 34,
+          "mean_log_speedup": -0.1426629765317226,
+          "multiplicative_speedup": 0.8670462345885138,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8048780487804879,
+          "routed_successes": 33,
+          "speedup_95ci": [
+            0.7291035367682513,
+            1.011349919503
+          ]
+        },
+        "performance_aware": {
+          "baseline_success_rate": 0.8292682926829268,
+          "baseline_successes": 34,
+          "mean_log_speedup": -0.0010980955916024197,
+          "multiplicative_speedup": 0.9989025070947392,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8780487804878049,
+          "routed_successes": 36,
+          "speedup_95ci": [
+            0.8895642173022399,
+            1.1191805826627208
+          ]
+        },
+        "posterior_floor": {
+          "baseline_success_rate": 0.8292682926829268,
+          "baseline_successes": 34,
+          "mean_log_speedup": -0.1335140525037462,
+          "multiplicative_speedup": 0.8750151727372275,
+          "n_tasks": 41,
+          "routed_success_rate": 0.8292682926829268,
+          "routed_successes": 34,
+          "speedup_95ci": [
+            0.7582300721089444,
+            0.9863924779502917
+          ]
+        }
+      }
+    },
+    "7b": {
+      "gpt-5.4|n=0": {
+        "direct_floor": {
+          "baseline_success_rate": 0.975609756097561,
+          "baseline_successes": 40,
+          "mean_log_speedup": -0.13879257347691054,
+          "multiplicative_speedup": 0.8704085555548964,
+          "n_tasks": 41,
+          "routed_success_rate": 0.975609756097561,
+          "routed_successes": 40,
+          "speedup_95ci": [
+            0.7240902292109229,
+            1.0363033310108614
+          ]
+        },
+        "performance_aware": {
+          "baseline_success_rate": 0.975609756097561,
+          "baseline_successes": 40,
+          "mean_log_speedup": -0.04031230418240646,
+          "multiplicative_speedup": 0.9604894274419584,
+          "n_tasks": 41,
+          "routed_success_rate": 0.975609756097561,
+          "routed_successes": 40,
+          "speedup_95ci": [
+            0.8923257445358179,
+            1.0303793738990703
+          ]
+        },
+        "posterior_floor": {
+          "baseline_success_rate": 0.975609756097561,
+          "baseline_successes": 40,
+          "mean_log_speedup": -0.1156484181203436,
+          "multiplicative_speedup": 0.8907883532924575,
+          "n_tasks": 41,
+          "routed_success_rate": 0.975609756097561,
+          "routed_successes": 40,
+          "speedup_95ci": [
+            0.7490089447610832,
+            1.0565891526630746
+          ]
+        }
+      },
+      "gpt-5.4|n=20": {
+        "direct_floor": {
+          "baseline_success_rate": 0.975609756097561,
+          "baseline_successes": 40,
+          "mean_log_speedup": -0.37243619697632313,
+          "multiplicative_speedup": 0.6890536138594417,
+          "n_tasks": 41,
+          "routed_success_rate": 0.975609756097561,
+          "routed_successes": 40,
+          "speedup_95ci": [
+            0.5534644486168921,
+            0.853196967364383
+          ]
+        },
+        "performance_aware": {
+          "baseline_success_rate": 0.975609756097561,
+          "baseline_successes": 40,
+          "mean_log_speedup": -0.12891121376893025,
+          "multiplicative_speedup": 0.8790520097957686,
+          "n_tasks": 41,
+          "routed_success_rate": 0.975609756097561,
+          "routed_successes": 40,
+          "speedup_95ci": [
+            0.7956218657597752,
+            0.9678513507639831
+          ]
+        },
+        "posterior_floor": {
+          "baseline_success_rate": 0.975609756097561,
+          "baseline_successes": 40,
+          "mean_log_speedup": -0.2728303198546722,
+          "multiplicative_speedup": 0.7612219409208119,
+          "n_tasks": 41,
+          "routed_success_rate": 0.975609756097561,
+          "routed_successes": 40,
+          "speedup_95ci": [
+            0.6225923155110953,
+            0.9319554121288556
+          ]
+        }
+      },
+      "gpt-5.4|n=5": {
+        "direct_floor": {
+          "baseline_success_rate": 0.975609756097561,
+          "baseline_successes": 40,
+          "mean_log_speedup": -0.2521945855632104,
+          "multiplicative_speedup": 0.7770935121775014,
+          "n_tasks": 41,
+          "routed_success_rate": 0.975609756097561,
+          "routed_successes": 40,
+          "speedup_95ci": [
+            0.6183635274482646,
+            0.9711042958648912
+          ]
+        },
+        "performance_aware": {
+          "baseline_success_rate": 0.975609756097561,
+          "baseline_successes": 40,
+          "mean_log_speedup": -0.03374841795958678,
+          "multiplicative_speedup": 0.9668147072602719,
+          "n_tasks": 41,
+          "routed_success_rate": 0.975609756097561,
+          "routed_successes": 40,
+          "speedup_95ci": [
+            0.8923617940294672,
+            1.0452558154985747
+          ]
+        },
+        "posterior_floor": {
+          "baseline_success_rate": 0.975609756097561,
+          "baseline_successes": 40,
+          "mean_log_speedup": -0.22279376221829045,
+          "multiplicative_speedup": 0.8002798802234069,
+          "n_tasks": 41,
+          "routed_success_rate": 0.975609756097561,
+          "routed_successes": 40,
+          "speedup_95ci": [
+            0.6467603653532683,
+            0.9784241896339937
+          ]
+        }
+      },
+      "gpt-5.5|n=0": {
+        "direct_floor": {
+          "baseline_success_rate": 0.975609756097561,
+          "baseline_successes": 40,
+          "mean_log_speedup": -0.2784485297437726,
+          "multiplicative_speedup": 0.7569572275297166,
+          "n_tasks": 41,
+          "routed_success_rate": 0.975609756097561,
+          "routed_successes": 40,
+          "speedup_95ci": [
+            0.6170688499005699,
+            0.9220956375825062
+          ]
+        },
+        "performance_aware": {
+          "baseline_success_rate": 0.975609756097561,
+          "baseline_successes": 40,
+          "mean_log_speedup": -0.03434575612256749,
+          "multiplicative_speedup": 0.9662373643907258,
+          "n_tasks": 41,
+          "routed_success_rate": 0.975609756097561,
+          "routed_successes": 40,
+          "speedup_95ci": [
+            0.8982196174060963,
+            1.035764094967727
+          ]
+        },
+        "posterior_floor": {
+          "baseline_success_rate": 0.975609756097561,
+          "baseline_successes": 40,
+          "mean_log_speedup": -0.18517803206522765,
+          "multiplicative_speedup": 0.8309563338103685,
+          "n_tasks": 41,
+          "routed_success_rate": 0.975609756097561,
+          "routed_successes": 40,
+          "speedup_95ci": [
+            0.677049927125281,
+            1.0108087123774665
+          ]
+        }
+      },
+      "gpt-5.5|n=20": {
+        "direct_floor": {
+          "baseline_success_rate": 0.975609756097561,
+          "baseline_successes": 40,
+          "mean_log_speedup": -0.2818645745423981,
+          "multiplicative_speedup": 0.7543758393089964,
+          "n_tasks": 41,
+          "routed_success_rate": 0.975609756097561,
+          "routed_successes": 40,
+          "speedup_95ci": [
+            0.5976403813043862,
+            0.9571039263045552
+          ]
+        },
+        "performance_aware": {
+          "baseline_success_rate": 0.975609756097561,
+          "baseline_successes": 40,
+          "mean_log_speedup": -0.23895040620026628,
+          "multiplicative_speedup": 0.7874539342370288,
+          "n_tasks": 41,
+          "routed_success_rate": 0.975609756097561,
+          "routed_successes": 40,
+          "speedup_95ci": [
+            0.6665172790295776,
+            0.9242754703290257
+          ]
+        },
+        "posterior_floor": {
+          "baseline_success_rate": 0.975609756097561,
+          "baseline_successes": 40,
+          "mean_log_speedup": -0.28028592407748865,
+          "multiplicative_speedup": 0.7555676755773593,
+          "n_tasks": 41,
+          "routed_success_rate": 0.975609756097561,
+          "routed_successes": 40,
+          "speedup_95ci": [
+            0.5996011948046476,
+            0.9578730026520302
+          ]
+        }
+      },
+      "gpt-5.5|n=5": {
+        "direct_floor": {
+          "baseline_success_rate": 0.975609756097561,
+          "baseline_successes": 40,
+          "mean_log_speedup": -0.3515991159752858,
+          "multiplicative_speedup": 0.7035621122610639,
+          "n_tasks": 41,
+          "routed_success_rate": 0.975609756097561,
+          "routed_successes": 40,
+          "speedup_95ci": [
+            0.5560721425641342,
+            0.8952725909048439
+          ]
+        },
+        "performance_aware": {
+          "baseline_success_rate": 0.975609756097561,
+          "baseline_successes": 40,
+          "mean_log_speedup": -0.03198590352980058,
+          "multiplicative_speedup": 0.9685202346995965,
+          "n_tasks": 41,
+          "routed_success_rate": 0.975609756097561,
+          "routed_successes": 40,
+          "speedup_95ci": [
+            0.8991157324854087,
+            1.0374959695539974
+          ]
+        },
+        "posterior_floor": {
+          "baseline_success_rate": 0.975609756097561,
+          "baseline_successes": 40,
+          "mean_log_speedup": -0.2717296901144201,
+          "multiplicative_speedup": 0.7620602256638574,
+          "n_tasks": 41,
+          "routed_success_rate": 0.975609756097561,
+          "routed_successes": 40,
+          "speedup_95ci": [
+            0.6078583529372076,
+            0.9536045604145144
+          ]
+        }
+      }
+    }
+  },
+  "schema_version": 1,
+  "selected": {
+    "1.5b": {
+      "allocation_head": "posterior_floor",
+      "router_configuration": "gpt-5.5|n=0",
+      "validation_metrics": {
+        "baseline_success_rate": 0.9024390243902439,
+        "baseline_successes": 37,
+        "mean_log_speedup": -0.03123831150975829,
+        "multiplicative_speedup": 0.9692445634157562,
+        "n_tasks": 41,
+        "routed_success_rate": 0.8780487804878049,
+        "routed_successes": 36,
+        "speedup_95ci": [
+          0.8305593599567809,
+          1.1202423027637802
+        ]
+      }
+    },
+    "32b": {
+      "allocation_head": "performance_aware",
+      "router_configuration": "gpt-5.4|n=20",
+      "validation_metrics": {
+        "baseline_success_rate": 0.8292682926829268,
+        "baseline_successes": 34,
+        "mean_log_speedup": 0.06289632547687364,
+        "multiplicative_speedup": 1.0649164288051045,
+        "n_tasks": 41,
+        "routed_success_rate": 0.8780487804878049,
+        "routed_successes": 36,
+        "speedup_95ci": [
+          0.9577124970917843,
+          1.1867207251765994
+        ]
+      }
+    },
+    "7b": {
+      "allocation_head": "performance_aware",
+      "router_configuration": "gpt-5.5|n=5",
+      "validation_metrics": {
+        "baseline_success_rate": 0.975609756097561,
+        "baseline_successes": 40,
+        "mean_log_speedup": -0.03198590352980058,
+        "multiplicative_speedup": 0.9685202346995965,
+        "n_tasks": 41,
+        "routed_success_rate": 0.975609756097561,
+        "routed_successes": 40,
+        "speedup_95ci": [
+          0.8991157324854087,
+          1.0374959695539974
+        ]
+      }
+    }
+  },
+  "selection_rule": "maximize paired operational log-speedup subject to at most one fewer validation success",
+  "temperatures": {
+    "gpt-5.4|0": 2.1918200747795344,
+    "gpt-5.4|20": 1.8481634012274502,
+    "gpt-5.4|5": 2.089099611971101,
+    "gpt-5.5|0": 1.39257991061072,
+    "gpt-5.5|20": 0.899918290461217,
+    "gpt-5.5|5": 1.4186481895119165
+  },
+  "worker_run_id": "full-20260711T201122Z"
+}

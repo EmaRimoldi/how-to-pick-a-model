@@ -1,0 +1,2900 @@
+{
+  "borrowed_allocation_matrix": {
+    "1.5b": {
+      "1.5b": {
+        "geometric_mean_certified_seconds": 6.4138340372897105,
+        "mean_log_certified_time": 1.8584572258644345,
+        "verified_success_rate": 0.8536585365853658
+      },
+      "32b": {
+        "geometric_mean_certified_seconds": 6.73034746285678,
+        "mean_log_certified_time": 1.906626771277367,
+        "verified_success_rate": 0.8475609756097561
+      },
+      "7b": {
+        "geometric_mean_certified_seconds": 6.55048276871897,
+        "mean_log_certified_time": 1.879538752079004,
+        "verified_success_rate": 0.8536585365853658
+      }
+    },
+    "32b": {
+      "1.5b": {
+        "geometric_mean_certified_seconds": 5.924695997509159,
+        "mean_log_certified_time": 1.7791293772675991,
+        "verified_success_rate": 0.8475609756097561
+      },
+      "32b": {
+        "geometric_mean_certified_seconds": 6.171647224467846,
+        "mean_log_certified_time": 1.8199657754577507,
+        "verified_success_rate": 0.8414634146341463
+      },
+      "7b": {
+        "geometric_mean_certified_seconds": 5.9999260441884275,
+        "mean_log_certified_time": 1.7917471431834942,
+        "verified_success_rate": 0.8475609756097561
+      }
+    },
+    "7b": {
+      "1.5b": {
+        "geometric_mean_certified_seconds": 4.096433934180354,
+        "mean_log_certified_time": 1.4101168230878596,
+        "verified_success_rate": 0.9390243902439024
+      },
+      "32b": {
+        "geometric_mean_certified_seconds": 4.374758967756129,
+        "mean_log_certified_time": 1.4758514252075847,
+        "verified_success_rate": 0.9329268292682927
+      },
+      "7b": {
+        "geometric_mean_certified_seconds": 4.246479300015841,
+        "mean_log_certified_time": 1.4460902396271627,
+        "verified_success_rate": 0.9329268292682927
+      }
+    }
+  },
+  "context_examples": 20,
+  "matched_strategy_model_winners_at_depth_20": {
+    "easy": {
+      "by_model": {
+        "1.5b": {
+          "depth": 20,
+          "geometric_mean_certified_seconds": 4.024866322195915,
+          "verified_success_rate": 0.8363636363636363
+        },
+        "32b": {
+          "depth": 20,
+          "geometric_mean_certified_seconds": 5.007981150725634,
+          "verified_success_rate": 0.7090909090909091
+        },
+        "7b": {
+          "depth": 20,
+          "geometric_mean_certified_seconds": 3.7872522046772907,
+          "verified_success_rate": 0.8181818181818182
+        }
+      },
+      "winner": "7b"
+    },
+    "hard": {
+      "by_model": {
+        "1.5b": {
+          "depth": 20,
+          "geometric_mean_certified_seconds": 12.884145810656518,
+          "verified_success_rate": 0.7454545454545455
+        },
+        "32b": {
+          "depth": 20,
+          "geometric_mean_certified_seconds": 10.424628605795293,
+          "verified_success_rate": 0.8181818181818182
+        },
+        "7b": {
+          "depth": 20,
+          "geometric_mean_certified_seconds": 6.319702968059032,
+          "verified_success_rate": 0.8363636363636363
+        }
+      },
+      "winner": "7b"
+    },
+    "medium": {
+      "by_model": {
+        "1.5b": {
+          "depth": 20,
+          "geometric_mean_certified_seconds": 7.677723098726738,
+          "verified_success_rate": 0.9259259259259259
+        },
+        "32b": {
+          "depth": 20,
+          "geometric_mean_certified_seconds": 6.086646403498246,
+          "verified_success_rate": 0.8703703703703703
+        },
+        "7b": {
+          "depth": 20,
+          "geometric_mean_certified_seconds": 6.405871108435887,
+          "verified_success_rate": 0.9259259259259259
+        }
+      },
+      "winner": "32b"
+    }
+  },
+  "retry_curves": {
+    "1.5b": {
+      "easy": {
+        "mode1_direct": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 1.4392718967571894,
+            "verified_success_rate": 0.4909090909090909
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 2.062319228362902,
+            "verified_success_rate": 0.5818181818181818
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 2.444944419552208,
+            "verified_success_rate": 0.6363636363636364
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 2.7140459821371965,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 2.886962387211135,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 3.0639156615945806,
+            "verified_success_rate": 0.7272727272727273
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 3.18881851110601,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 3.300226717889625,
+            "verified_success_rate": 0.7636363636363637
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 3.383619868934475,
+            "verified_success_rate": 0.7636363636363637
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 3.4656625845261013,
+            "verified_success_rate": 0.7818181818181819
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 3.538922089327309,
+            "verified_success_rate": 0.7818181818181819
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 3.6033830146643475,
+            "verified_success_rate": 0.7818181818181819
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 3.66169840481053,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 3.7168883879316206,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 3.7742726012608543,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 3.832172772541007,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 3.8871352192985626,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 3.940086803123206,
+            "verified_success_rate": 0.8363636363636363
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 3.982968683932709,
+            "verified_success_rate": 0.8363636363636363
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 4.024866322195915,
+            "verified_success_rate": 0.8363636363636363
+          }
+        ],
+        "mode2_structured": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 2.152705685216288,
+            "verified_success_rate": 0.6363636363636364
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 2.873153892916021,
+            "verified_success_rate": 0.7272727272727273
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 3.2691393423840975,
+            "verified_success_rate": 0.7818181818181819
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 3.475285772778026,
+            "verified_success_rate": 0.8909090909090909
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 3.5442155169233023,
+            "verified_success_rate": 0.8909090909090909
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 3.6110801493962414,
+            "verified_success_rate": 0.8909090909090909
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 3.6868968593850813,
+            "verified_success_rate": 0.8909090909090909
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 3.730865419787782,
+            "verified_success_rate": 0.9090909090909091
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 3.7771223679662187,
+            "verified_success_rate": 0.9272727272727272
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 3.7948377558788167,
+            "verified_success_rate": 0.9272727272727272
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 3.8159320336904683,
+            "verified_success_rate": 0.9272727272727272
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 3.835782688885764,
+            "verified_success_rate": 0.9272727272727272
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 3.8654006817744735,
+            "verified_success_rate": 0.9272727272727272
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 3.88222398810796,
+            "verified_success_rate": 0.9272727272727272
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 3.899885326032321,
+            "verified_success_rate": 0.9272727272727272
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 3.9151264023520294,
+            "verified_success_rate": 0.9272727272727272
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 3.9324084670667814,
+            "verified_success_rate": 0.9272727272727272
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 3.9560301415103374,
+            "verified_success_rate": 0.9272727272727272
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 3.9812091204894386,
+            "verified_success_rate": 0.9272727272727272
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 3.992706939965073,
+            "verified_success_rate": 0.9272727272727272
+          }
+        ],
+        "mode3_robust": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 2.24063372109739,
+            "verified_success_rate": 0.5454545454545454
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 3.1838369241812257,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 3.503629586694295,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 3.6926144877240574,
+            "verified_success_rate": 0.8545454545454545
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 3.8069555976809526,
+            "verified_success_rate": 0.8545454545454545
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 3.9340472066021883,
+            "verified_success_rate": 0.8909090909090909
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 4.009608352356577,
+            "verified_success_rate": 0.8909090909090909
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 4.073546603144527,
+            "verified_success_rate": 0.8909090909090909
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 4.1249577290562955,
+            "verified_success_rate": 0.9272727272727272
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 4.156341413790507,
+            "verified_success_rate": 0.9454545454545454
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 4.173838938700242,
+            "verified_success_rate": 0.9454545454545454
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 4.195034099796486,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 4.208047650908125,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 4.218084682573012,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 4.226227447892777,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 4.234680995015811,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 4.246986455105209,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 4.2545975056583165,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 4.26470968882134,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 4.271176566071383,
+            "verified_success_rate": 0.9636363636363636
+          }
+        ]
+      },
+      "hard": {
+        "mode1_direct": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 2.166561020343646,
+            "verified_success_rate": 0.2909090909090909
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 3.5687750480215583,
+            "verified_success_rate": 0.4
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 4.549228249521954,
+            "verified_success_rate": 0.4727272727272727
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 5.219006532234179,
+            "verified_success_rate": 0.5272727272727272
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 5.777442826808791,
+            "verified_success_rate": 0.5454545454545454
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 6.263720848445235,
+            "verified_success_rate": 0.5636363636363636
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 6.665191393212313,
+            "verified_success_rate": 0.5636363636363636
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 7.092683151724936,
+            "verified_success_rate": 0.6
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 7.440265009365838,
+            "verified_success_rate": 0.6181818181818182
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 7.74695402780969,
+            "verified_success_rate": 0.6181818181818182
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 8.03179991393305,
+            "verified_success_rate": 0.6181818181818182
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 8.297711590861072,
+            "verified_success_rate": 0.6181818181818182
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 8.552733067801697,
+            "verified_success_rate": 0.6181818181818182
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 8.806060830934213,
+            "verified_success_rate": 0.6181818181818182
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 9.029005351264937,
+            "verified_success_rate": 0.6363636363636364
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 9.257094761137369,
+            "verified_success_rate": 0.6363636363636364
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 9.464536938474355,
+            "verified_success_rate": 0.6363636363636364
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 9.670545376923311,
+            "verified_success_rate": 0.6363636363636364
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 9.850673908708412,
+            "verified_success_rate": 0.6363636363636364
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 10.04847190577911,
+            "verified_success_rate": 0.6363636363636364
+          }
+        ],
+        "mode2_structured": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 3.431297845496284,
+            "verified_success_rate": 0.34545454545454546
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 5.339196912283924,
+            "verified_success_rate": 0.45454545454545453
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 6.79683263055272,
+            "verified_success_rate": 0.509090909090909
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 7.758680261796373,
+            "verified_success_rate": 0.6363636363636364
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 8.446925121623714,
+            "verified_success_rate": 0.6545454545454545
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 9.075608238783776,
+            "verified_success_rate": 0.6727272727272727
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 9.562891262370478,
+            "verified_success_rate": 0.6909090909090909
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 9.880157215738075,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 10.241305844181692,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 10.603603544060988,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 10.891369550574675,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 11.154659213115016,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 11.449176155036877,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 11.690752539754099,
+            "verified_success_rate": 0.7272727272727273
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 11.896957403907905,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 12.094781430600849,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 12.300854758827668,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 12.458482204049302,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 12.620143575416057,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 12.806623660296264,
+            "verified_success_rate": 0.7454545454545455
+          }
+        ],
+        "mode3_robust": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 3.1676370588862834,
+            "verified_success_rate": 0.34545454545454546
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 5.190624642004622,
+            "verified_success_rate": 0.41818181818181815
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 6.4797231847883445,
+            "verified_success_rate": 0.4909090909090909
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 7.414673842804406,
+            "verified_success_rate": 0.5272727272727272
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 8.317522311112878,
+            "verified_success_rate": 0.6181818181818182
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 8.934614854041708,
+            "verified_success_rate": 0.6545454545454545
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 9.48832375266258,
+            "verified_success_rate": 0.6727272727272727
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 9.917406960452578,
+            "verified_success_rate": 0.6727272727272727
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 10.287708451637204,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 10.655503939469677,
+            "verified_success_rate": 0.7272727272727273
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 10.909104118246947,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 11.147299618619492,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 11.402654345716389,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 11.666810522968978,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 11.872784001340229,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 12.142746351042558,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 12.334773044299373,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 12.51503023413405,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 12.70051554995335,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 12.884145810656518,
+            "verified_success_rate": 0.7454545454545455
+          }
+        ]
+      },
+      "medium": {
+        "mode1_direct": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 1.8094454467227041,
+            "verified_success_rate": 0.42592592592592593
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 2.7544744239001604,
+            "verified_success_rate": 0.5
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 3.3339051270474567,
+            "verified_success_rate": 0.5740740740740741
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 3.7438324091373327,
+            "verified_success_rate": 0.5925925925925926
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 4.100205474999063,
+            "verified_success_rate": 0.5925925925925926
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 4.414561268996427,
+            "verified_success_rate": 0.6481481481481481
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 4.6599610888937155,
+            "verified_success_rate": 0.6666666666666666
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 4.8580608902881925,
+            "verified_success_rate": 0.6666666666666666
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 5.050794921182397,
+            "verified_success_rate": 0.6666666666666666
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 5.246716585067291,
+            "verified_success_rate": 0.6851851851851852
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 5.396228120722451,
+            "verified_success_rate": 0.6851851851851852
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 5.545640925290635,
+            "verified_success_rate": 0.7407407407407407
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 5.674230325673663,
+            "verified_success_rate": 0.7592592592592593
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 5.768676899573439,
+            "verified_success_rate": 0.7592592592592593
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 5.865020769794812,
+            "verified_success_rate": 0.7592592592592593
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 5.950830281997215,
+            "verified_success_rate": 0.7777777777777778
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 6.029856174336299,
+            "verified_success_rate": 0.7777777777777778
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 6.097289538676098,
+            "verified_success_rate": 0.7777777777777778
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 6.165854119667184,
+            "verified_success_rate": 0.7777777777777778
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 6.235168230774095,
+            "verified_success_rate": 0.7777777777777778
+          }
+        ],
+        "mode2_structured": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 3.04513939465081,
+            "verified_success_rate": 0.4444444444444444
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 4.688514925401564,
+            "verified_success_rate": 0.6296296296296297
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 5.429613854622948,
+            "verified_success_rate": 0.7037037037037037
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 5.927129982182911,
+            "verified_success_rate": 0.7222222222222222
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 6.254449890913346,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 6.46048853568302,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 6.648133631446074,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 6.8360353560612666,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 6.987444041448739,
+            "verified_success_rate": 0.8518518518518519
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 7.076495895507485,
+            "verified_success_rate": 0.8518518518518519
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 7.178780548601579,
+            "verified_success_rate": 0.8703703703703703
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 7.252852784376148,
+            "verified_success_rate": 0.8703703703703703
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 7.320382104255496,
+            "verified_success_rate": 0.8703703703703703
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 7.3949660904530266,
+            "verified_success_rate": 0.8703703703703703
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 7.47195496284663,
+            "verified_success_rate": 0.8703703703703703
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 7.52989214902872,
+            "verified_success_rate": 0.8888888888888888
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 7.567620230490052,
+            "verified_success_rate": 0.9074074074074074
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 7.611955278674106,
+            "verified_success_rate": 0.9074074074074074
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 7.64592850161457,
+            "verified_success_rate": 0.9259259259259259
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 7.677723098726738,
+            "verified_success_rate": 0.9259259259259259
+          }
+        ],
+        "mode3_robust": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 2.845431399859895,
+            "verified_success_rate": 0.48148148148148145
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 4.17402953947107,
+            "verified_success_rate": 0.5555555555555556
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 4.915212828910628,
+            "verified_success_rate": 0.6851851851851852
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 5.354226601705825,
+            "verified_success_rate": 0.7592592592592593
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 5.675243498609525,
+            "verified_success_rate": 0.7777777777777778
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 5.886232698589241,
+            "verified_success_rate": 0.7777777777777778
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 6.067299921996501,
+            "verified_success_rate": 0.7962962962962963
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 6.223912834039131,
+            "verified_success_rate": 0.7962962962962963
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 6.366554038977408,
+            "verified_success_rate": 0.7962962962962963
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 6.526458954225701,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 6.659647494429222,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 6.792633454708905,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 6.909422191710204,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 7.014805900494197,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 7.105673905698557,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 7.180886111893072,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 7.254038299401877,
+            "verified_success_rate": 0.8333333333333334
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 7.3217012452546575,
+            "verified_success_rate": 0.8518518518518519
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 7.376639648926668,
+            "verified_success_rate": 0.8518518518518519
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 7.427227403299416,
+            "verified_success_rate": 0.8518518518518519
+          }
+        ]
+      }
+    },
+    "32b": {
+      "easy": {
+        "mode1_direct": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 2.021219524960139,
+            "verified_success_rate": 0.6909090909090909
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 2.512587178469866,
+            "verified_success_rate": 0.6909090909090909
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 2.8332669524657144,
+            "verified_success_rate": 0.6909090909090909
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 3.0908018417493626,
+            "verified_success_rate": 0.6909090909090909
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 3.312773408740275,
+            "verified_success_rate": 0.6909090909090909
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 3.520880929258168,
+            "verified_success_rate": 0.6909090909090909
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 3.6888592189360496,
+            "verified_success_rate": 0.6909090909090909
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 3.848680100060986,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 3.979504807377889,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 4.102608375748997,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 4.227596013073332,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 4.333597230204961,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 4.4316061220738705,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 4.52510531916234,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 4.611608744836644,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 4.6983187467002265,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 4.779514978606934,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 4.857851392128847,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 4.933468374176153,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 5.007981150725634,
+            "verified_success_rate": 0.7090909090909091
+          }
+        ],
+        "mode2_structured": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 2.605362470163419,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 3.0860933246408777,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 3.4046384621300945,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 3.658047523496891,
+            "verified_success_rate": 0.7636363636363637
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 3.856594404720254,
+            "verified_success_rate": 0.7636363636363637
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 4.02904694638106,
+            "verified_success_rate": 0.7818181818181819
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 4.164541913803377,
+            "verified_success_rate": 0.7818181818181819
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 4.288031862289608,
+            "verified_success_rate": 0.7818181818181819
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 4.396905097546305,
+            "verified_success_rate": 0.7818181818181819
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 4.50190528261181,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 4.590274569338007,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 4.67188194363731,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 4.74440529923147,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 4.815059213114387,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 4.881979953387037,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 4.945285668374006,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 5.005621521855724,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 5.0621501747833735,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 5.117264418504192,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 5.170064362198123,
+            "verified_success_rate": 0.8
+          }
+        ],
+        "mode3_robust": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 3.013108536845556,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 3.436421488701494,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 3.7581268981077556,
+            "verified_success_rate": 0.8545454545454545
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 3.913711339148813,
+            "verified_success_rate": 0.8545454545454545
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 4.049105708836267,
+            "verified_success_rate": 0.8545454545454545
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 4.160064424328335,
+            "verified_success_rate": 0.8545454545454545
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 4.2504594374185345,
+            "verified_success_rate": 0.8727272727272727
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 4.3209147657119225,
+            "verified_success_rate": 0.8727272727272727
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 4.38366257021894,
+            "verified_success_rate": 0.8727272727272727
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 4.449986871354539,
+            "verified_success_rate": 0.8909090909090909
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 4.497783071323137,
+            "verified_success_rate": 0.8909090909090909
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 4.546579430358044,
+            "verified_success_rate": 0.8909090909090909
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 4.58697921510645,
+            "verified_success_rate": 0.8909090909090909
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 4.625127943735469,
+            "verified_success_rate": 0.8909090909090909
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 4.661263062350088,
+            "verified_success_rate": 0.8909090909090909
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 4.6932954890055045,
+            "verified_success_rate": 0.8909090909090909
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 4.723128321770506,
+            "verified_success_rate": 0.8909090909090909
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 4.755311213033112,
+            "verified_success_rate": 0.9272727272727272
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 4.774587913411062,
+            "verified_success_rate": 0.9272727272727272
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 4.792480712834789,
+            "verified_success_rate": 0.9272727272727272
+          }
+        ]
+      },
+      "hard": {
+        "mode1_direct": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 3.4888818776462585,
+            "verified_success_rate": 0.6545454545454545
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 4.405247672075166,
+            "verified_success_rate": 0.6727272727272727
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 5.028956576691666,
+            "verified_success_rate": 0.6727272727272727
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 5.51745113983802,
+            "verified_success_rate": 0.6727272727272727
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 5.941819225977173,
+            "verified_success_rate": 0.6727272727272727
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 6.301640247693351,
+            "verified_success_rate": 0.6727272727272727
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 6.613518624384189,
+            "verified_success_rate": 0.6727272727272727
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 6.901734617361707,
+            "verified_success_rate": 0.6727272727272727
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 7.170482628229405,
+            "verified_success_rate": 0.6727272727272727
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 7.417204270671639,
+            "verified_success_rate": 0.6727272727272727
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 7.660680707727786,
+            "verified_success_rate": 0.6727272727272727
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 7.912470756262187,
+            "verified_success_rate": 0.6727272727272727
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 8.119789553757863,
+            "verified_success_rate": 0.6727272727272727
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 8.326331052239565,
+            "verified_success_rate": 0.6727272727272727
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 8.524741669869654,
+            "verified_success_rate": 0.6727272727272727
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 8.713345694863113,
+            "verified_success_rate": 0.6727272727272727
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 8.890171932341865,
+            "verified_success_rate": 0.6727272727272727
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 9.06026690560196,
+            "verified_success_rate": 0.6727272727272727
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 9.220832852147295,
+            "verified_success_rate": 0.6727272727272727
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 9.381374342789611,
+            "verified_success_rate": 0.6727272727272727
+          }
+        ],
+        "mode2_structured": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 4.550874080868886,
+            "verified_success_rate": 0.6909090909090909
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 5.61960273569225,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 6.44130640469891,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 7.081696193732462,
+            "verified_success_rate": 0.7272727272727273
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 7.518988689712917,
+            "verified_success_rate": 0.7272727272727273
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 7.923341220065381,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 8.187480410712224,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 8.450824940086969,
+            "verified_success_rate": 0.7636363636363637
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 8.680234176162054,
+            "verified_success_rate": 0.7636363636363637
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 8.910002734256116,
+            "verified_success_rate": 0.7636363636363637
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 9.109561949976415,
+            "verified_success_rate": 0.7636363636363637
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 9.29094126997741,
+            "verified_success_rate": 0.7818181818181819
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 9.46905756873268,
+            "verified_success_rate": 0.7818181818181819
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 9.623197614801317,
+            "verified_success_rate": 0.7818181818181819
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 9.767162206249182,
+            "verified_success_rate": 0.7818181818181819
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 9.914278309442587,
+            "verified_success_rate": 0.7818181818181819
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 10.05746083878907,
+            "verified_success_rate": 0.7818181818181819
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 10.194065559107614,
+            "verified_success_rate": 0.7818181818181819
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 10.319022170793446,
+            "verified_success_rate": 0.7818181818181819
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 10.455324561575713,
+            "verified_success_rate": 0.7818181818181819
+          }
+        ],
+        "mode3_robust": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 4.64698625107919,
+            "verified_success_rate": 0.6545454545454545
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 5.9690059404146165,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 6.687116397330168,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 7.352074466712393,
+            "verified_success_rate": 0.7272727272727273
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 7.797083801577239,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 8.142825978131082,
+            "verified_success_rate": 0.7818181818181819
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 8.439904575866256,
+            "verified_success_rate": 0.7818181818181819
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 8.67687453343162,
+            "verified_success_rate": 0.7818181818181819
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 8.91795242707291,
+            "verified_success_rate": 0.7818181818181819
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 9.123856093561425,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 9.305278225865733,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 9.486484451315263,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 9.614216984787058,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 9.753036259693593,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 9.884427627060466,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 10.007678196038594,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 10.117625428955467,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 10.216847301919792,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 10.318159996652055,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 10.424628605795293,
+            "verified_success_rate": 0.8181818181818182
+          }
+        ]
+      },
+      "medium": {
+        "mode1_direct": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 2.605670618922831,
+            "verified_success_rate": 0.7592592592592593
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 3.062574815895173,
+            "verified_success_rate": 0.7592592592592593
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 3.378284059978858,
+            "verified_success_rate": 0.7592592592592593
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 3.617604545530512,
+            "verified_success_rate": 0.7592592592592593
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 3.820250571044506,
+            "verified_success_rate": 0.7777777777777778
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 3.9797901366746595,
+            "verified_success_rate": 0.7962962962962963
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 4.11641736371415,
+            "verified_success_rate": 0.7962962962962963
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 4.229656802784352,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 4.342489471044144,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 4.427070938683658,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 4.503957834144659,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 4.586515283277147,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 4.652862224395987,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 4.7147600208413545,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 4.77931842698106,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 4.843784704398564,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 4.89584932802509,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 4.947851863487101,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 4.996454427518038,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 5.0469874833182455,
+            "verified_success_rate": 0.8148148148148148
+          }
+        ],
+        "mode2_structured": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 3.3664455563176983,
+            "verified_success_rate": 0.7777777777777778
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 3.8979712442774086,
+            "verified_success_rate": 0.7777777777777778
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 4.262579793520149,
+            "verified_success_rate": 0.7777777777777778
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 4.541594581414327,
+            "verified_success_rate": 0.7962962962962963
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 4.7573947760792965,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 4.923835030222318,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 5.062200179744589,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 5.186407601025785,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 5.314960028839187,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 5.4162352426133324,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 5.514465093314349,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 5.604876230735665,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 5.686094502818577,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 5.76595353575328,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 5.842421885631538,
+            "verified_success_rate": 0.8333333333333334
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 5.903230489939644,
+            "verified_success_rate": 0.8518518518518519
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 5.962402621555408,
+            "verified_success_rate": 0.8518518518518519
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 6.010638297685037,
+            "verified_success_rate": 0.8703703703703703
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 6.048504080042486,
+            "verified_success_rate": 0.8703703703703703
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 6.086646403498246,
+            "verified_success_rate": 0.8703703703703703
+          }
+        ],
+        "mode3_robust": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 3.4011409427678996,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 3.9533275212791605,
+            "verified_success_rate": 0.8703703703703703
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 4.151946238388408,
+            "verified_success_rate": 0.8703703703703703
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 4.307201579930931,
+            "verified_success_rate": 0.8703703703703703
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 4.430655102147158,
+            "verified_success_rate": 0.8703703703703703
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 4.542993009199296,
+            "verified_success_rate": 0.8703703703703703
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 4.6373111545832275,
+            "verified_success_rate": 0.8888888888888888
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 4.704945323591439,
+            "verified_success_rate": 0.8888888888888888
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 4.761671503272643,
+            "verified_success_rate": 0.9074074074074074
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 4.803774031537178,
+            "verified_success_rate": 0.9074074074074074
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 4.8474711790421825,
+            "verified_success_rate": 0.9074074074074074
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 4.88696842537211,
+            "verified_success_rate": 0.9074074074074074
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 4.923114487843405,
+            "verified_success_rate": 0.9074074074074074
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 4.95498296878454,
+            "verified_success_rate": 0.9074074074074074
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 4.983698692043706,
+            "verified_success_rate": 0.9074074074074074
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 5.014208769162089,
+            "verified_success_rate": 0.9074074074074074
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 5.043627665687019,
+            "verified_success_rate": 0.9074074074074074
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 5.070809286978422,
+            "verified_success_rate": 0.9074074074074074
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 5.095758418506339,
+            "verified_success_rate": 0.9074074074074074
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 5.120242340846909,
+            "verified_success_rate": 0.9074074074074074
+          }
+        ]
+      }
+    },
+    "7b": {
+      "easy": {
+        "mode1_direct": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 1.4778184091644724,
+            "verified_success_rate": 0.5272727272727272
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 2.064807068754745,
+            "verified_success_rate": 0.6727272727272727
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 2.410699901440923,
+            "verified_success_rate": 0.7272727272727273
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 2.632292159009468,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 2.77843388730926,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 2.9146019535439582,
+            "verified_success_rate": 0.7636363636363637
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 3.0174091780210284,
+            "verified_success_rate": 0.7636363636363637
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 3.1089155491425857,
+            "verified_success_rate": 0.7636363636363637
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 3.1932935298181517,
+            "verified_success_rate": 0.7636363636363637
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 3.268000232243209,
+            "verified_success_rate": 0.7636363636363637
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 3.3409557787726305,
+            "verified_success_rate": 0.7636363636363637
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 3.409417759291993,
+            "verified_success_rate": 0.7818181818181819
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 3.4643238388546744,
+            "verified_success_rate": 0.7818181818181819
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 3.5244573937336465,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 3.5740500837127676,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 3.620348489571467,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 3.662034310030585,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 3.709545083311161,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 3.749444806471874,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 3.7872522046772907,
+            "verified_success_rate": 0.8181818181818182
+          }
+        ],
+        "mode2_structured": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 3.131576788030871,
+            "verified_success_rate": 0.8727272727272727
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 3.3768588677572633,
+            "verified_success_rate": 0.9454545454545454
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 3.5160317436840702,
+            "verified_success_rate": 0.9454545454545454
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 3.5962531804040285,
+            "verified_success_rate": 0.9454545454545454
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 3.647578866126649,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 3.6656464714430705,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 3.6822658327347386,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 3.6982527233830433,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 3.7122117291011856,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 3.7227110782578197,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 3.7358713798144527,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 3.7449381733248264,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 3.754634810256704,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 3.7666102962263373,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 3.77509038114639,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 3.7852289793117304,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 3.790510954702036,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 3.798718602748907,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 3.8038602756414064,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 3.8135200595110033,
+            "verified_success_rate": 0.9636363636363636
+          }
+        ],
+        "mode3_robust": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 2.2582625916491095,
+            "verified_success_rate": 0.8545454545454545
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 2.4361117478154948,
+            "verified_success_rate": 0.9272727272727272
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 2.5024154027716494,
+            "verified_success_rate": 0.9272727272727272
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 2.566099118502756,
+            "verified_success_rate": 0.9454545454545454
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 2.5986530835729718,
+            "verified_success_rate": 0.9454545454545454
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 2.6200875811259374,
+            "verified_success_rate": 0.9454545454545454
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 2.642216641630529,
+            "verified_success_rate": 0.9454545454545454
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 2.66290546875754,
+            "verified_success_rate": 0.9454545454545454
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 2.6808055373961324,
+            "verified_success_rate": 0.9454545454545454
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 2.694106058700578,
+            "verified_success_rate": 0.9454545454545454
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 2.7077418438880314,
+            "verified_success_rate": 0.9454545454545454
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 2.7315178865755625,
+            "verified_success_rate": 0.9454545454545454
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 2.7554485249431724,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 2.7622099953670003,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 2.7689481039469444,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 2.7743403167452403,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 2.781532754519637,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 2.7872173236146325,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 2.7918494859157024,
+            "verified_success_rate": 0.9636363636363636
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 2.8006579136193928,
+            "verified_success_rate": 0.9636363636363636
+          }
+        ]
+      },
+      "hard": {
+        "mode1_direct": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 2.041192335277834,
+            "verified_success_rate": 0.5636363636363636
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 2.77762538462024,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 3.134192062207951,
+            "verified_success_rate": 0.7272727272727273
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 3.375041850761474,
+            "verified_success_rate": 0.7272727272727273
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 3.5811085856579976,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 3.7413763912749958,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 3.8813323375588835,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 4.018301103938335,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 4.138815155669931,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 4.246594279639237,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 4.347986653519921,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 4.440276173413008,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 4.529305724277414,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 4.6127713121890626,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 4.7012389823392695,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 4.776725418373583,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 4.849593674007584,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 4.923606042586149,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 4.9959432610078665,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 5.064404059575759,
+            "verified_success_rate": 0.7454545454545455
+          }
+        ],
+        "mode2_structured": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 4.291869653458474,
+            "verified_success_rate": 0.7272727272727273
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 5.216955763440015,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 5.6176781326616005,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 5.983047351642397,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 6.17994996924041,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 6.383324358782496,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 6.530034851974541,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 6.66398113701975,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 6.812008690862088,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 6.926442856528608,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 7.062026790144374,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 7.19086216513229,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 7.312102532733174,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 7.424121982485161,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 7.505955842068438,
+            "verified_success_rate": 0.8181818181818182
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 7.5761287536447695,
+            "verified_success_rate": 0.8363636363636363
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 7.641324660490028,
+            "verified_success_rate": 0.8363636363636363
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 7.728515986930337,
+            "verified_success_rate": 0.8363636363636363
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 7.813957385440422,
+            "verified_success_rate": 0.8545454545454545
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 7.873005485304297,
+            "verified_success_rate": 0.8545454545454545
+          }
+        ],
+        "mode3_robust": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 3.3051824704368515,
+            "verified_success_rate": 0.7090909090909091
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 4.083279952732561,
+            "verified_success_rate": 0.7454545454545455
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 4.590986564892595,
+            "verified_success_rate": 0.7818181818181819
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 4.855540134511666,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 5.075289118063051,
+            "verified_success_rate": 0.8
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 5.231745507194593,
+            "verified_success_rate": 0.8363636363636363
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 5.334122352505573,
+            "verified_success_rate": 0.8363636363636363
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 5.441097838163852,
+            "verified_success_rate": 0.8363636363636363
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 5.526553455732357,
+            "verified_success_rate": 0.8363636363636363
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 5.635077831514171,
+            "verified_success_rate": 0.8363636363636363
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 5.72351376792558,
+            "verified_success_rate": 0.8363636363636363
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 5.803795118050118,
+            "verified_success_rate": 0.8363636363636363
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 5.886875443232802,
+            "verified_success_rate": 0.8363636363636363
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 5.958021722043916,
+            "verified_success_rate": 0.8363636363636363
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 6.0265768422581925,
+            "verified_success_rate": 0.8363636363636363
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 6.088360863341178,
+            "verified_success_rate": 0.8363636363636363
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 6.140943626018408,
+            "verified_success_rate": 0.8363636363636363
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 6.196236032984375,
+            "verified_success_rate": 0.8363636363636363
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 6.262158383817666,
+            "verified_success_rate": 0.8363636363636363
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 6.319702968059032,
+            "verified_success_rate": 0.8363636363636363
+          }
+        ]
+      },
+      "medium": {
+        "mode1_direct": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 1.84570367024847,
+            "verified_success_rate": 0.6851851851851852
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 2.232843309880622,
+            "verified_success_rate": 0.7407407407407407
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 2.4810939714435727,
+            "verified_success_rate": 0.7962962962962963
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 2.6329768011202845,
+            "verified_success_rate": 0.7962962962962963
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 2.7541233942649375,
+            "verified_success_rate": 0.8333333333333334
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 2.839663369397393,
+            "verified_success_rate": 0.8333333333333334
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 2.9131328229651268,
+            "verified_success_rate": 0.8333333333333334
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 2.977611006300242,
+            "verified_success_rate": 0.8333333333333334
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 3.0364681004704828,
+            "verified_success_rate": 0.8518518518518519
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 3.07746388497678,
+            "verified_success_rate": 0.8518518518518519
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 3.125943395845698,
+            "verified_success_rate": 0.8518518518518519
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 3.1677939614926878,
+            "verified_success_rate": 0.8518518518518519
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 3.2050609792865328,
+            "verified_success_rate": 0.8518518518518519
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 3.245357218000247,
+            "verified_success_rate": 0.8518518518518519
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 3.277540102391538,
+            "verified_success_rate": 0.8518518518518519
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 3.307772984361138,
+            "verified_success_rate": 0.8518518518518519
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 3.3326766635814424,
+            "verified_success_rate": 0.8518518518518519
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 3.356620216248205,
+            "verified_success_rate": 0.8518518518518519
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 3.3822703125618396,
+            "verified_success_rate": 0.8518518518518519
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 3.4045674857294363,
+            "verified_success_rate": 0.8518518518518519
+          }
+        ],
+        "mode2_structured": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 4.170646440583728,
+            "verified_success_rate": 0.7777777777777778
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 4.785883930492898,
+            "verified_success_rate": 0.8148148148148148
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 5.250744317128588,
+            "verified_success_rate": 0.8333333333333334
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 5.477402178920328,
+            "verified_success_rate": 0.8518518518518519
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 5.627108852899437,
+            "verified_success_rate": 0.8888888888888888
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 5.721549168092645,
+            "verified_success_rate": 0.8888888888888888
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 5.813035931003649,
+            "verified_success_rate": 0.8888888888888888
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 5.918662902084491,
+            "verified_success_rate": 0.9074074074074074
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 5.994262376037431,
+            "verified_success_rate": 0.9074074074074074
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 6.051260317527034,
+            "verified_success_rate": 0.9259259259259259
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 6.100017280231421,
+            "verified_success_rate": 0.9259259259259259
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 6.143455649792782,
+            "verified_success_rate": 0.9259259259259259
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 6.17182973006082,
+            "verified_success_rate": 0.9259259259259259
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 6.217205842401386,
+            "verified_success_rate": 0.9259259259259259
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 6.257138550458746,
+            "verified_success_rate": 0.9259259259259259
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 6.286797009954663,
+            "verified_success_rate": 0.9259259259259259
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 6.321300857368797,
+            "verified_success_rate": 0.9259259259259259
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 6.348564131621832,
+            "verified_success_rate": 0.9259259259259259
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 6.374584771078022,
+            "verified_success_rate": 0.9259259259259259
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 6.405871108435887,
+            "verified_success_rate": 0.9259259259259259
+          }
+        ],
+        "mode3_robust": [
+          {
+            "depth": 1,
+            "geometric_mean_certified_seconds": 2.7671183586116337,
+            "verified_success_rate": 0.7222222222222222
+          },
+          {
+            "depth": 2,
+            "geometric_mean_certified_seconds": 3.2127790422053315,
+            "verified_success_rate": 0.8518518518518519
+          },
+          {
+            "depth": 3,
+            "geometric_mean_certified_seconds": 3.4040071400765073,
+            "verified_success_rate": 0.8518518518518519
+          },
+          {
+            "depth": 4,
+            "geometric_mean_certified_seconds": 3.5826099551541364,
+            "verified_success_rate": 0.8703703703703703
+          },
+          {
+            "depth": 5,
+            "geometric_mean_certified_seconds": 3.7061635670117608,
+            "verified_success_rate": 0.8703703703703703
+          },
+          {
+            "depth": 6,
+            "geometric_mean_certified_seconds": 3.794895801033027,
+            "verified_success_rate": 0.9074074074074074
+          },
+          {
+            "depth": 7,
+            "geometric_mean_certified_seconds": 3.8505807381645885,
+            "verified_success_rate": 0.9074074074074074
+          },
+          {
+            "depth": 8,
+            "geometric_mean_certified_seconds": 3.887696072409442,
+            "verified_success_rate": 0.9074074074074074
+          },
+          {
+            "depth": 9,
+            "geometric_mean_certified_seconds": 3.9285143011036356,
+            "verified_success_rate": 0.9074074074074074
+          },
+          {
+            "depth": 10,
+            "geometric_mean_certified_seconds": 3.965776639602444,
+            "verified_success_rate": 0.9074074074074074
+          },
+          {
+            "depth": 11,
+            "geometric_mean_certified_seconds": 4.008560138423728,
+            "verified_success_rate": 0.9074074074074074
+          },
+          {
+            "depth": 12,
+            "geometric_mean_certified_seconds": 4.051780315419629,
+            "verified_success_rate": 0.9074074074074074
+          },
+          {
+            "depth": 13,
+            "geometric_mean_certified_seconds": 4.080123420174169,
+            "verified_success_rate": 0.9074074074074074
+          },
+          {
+            "depth": 14,
+            "geometric_mean_certified_seconds": 4.114441333650236,
+            "verified_success_rate": 0.9259259259259259
+          },
+          {
+            "depth": 15,
+            "geometric_mean_certified_seconds": 4.140201337013435,
+            "verified_success_rate": 0.9259259259259259
+          },
+          {
+            "depth": 16,
+            "geometric_mean_certified_seconds": 4.154969940980333,
+            "verified_success_rate": 0.9259259259259259
+          },
+          {
+            "depth": 17,
+            "geometric_mean_certified_seconds": 4.170645486355703,
+            "verified_success_rate": 0.9259259259259259
+          },
+          {
+            "depth": 18,
+            "geometric_mean_certified_seconds": 4.187888838053858,
+            "verified_success_rate": 0.9259259259259259
+          },
+          {
+            "depth": 19,
+            "geometric_mean_certified_seconds": 4.202556028867416,
+            "verified_success_rate": 0.9259259259259259
+          },
+          {
+            "depth": 20,
+            "geometric_mean_certified_seconds": 4.216745436552591,
+            "verified_success_rate": 0.9259259259259259
+          }
+        ]
+      }
+    }
+  },
+  "run_id": "full-20260711T201122Z",
+  "schema_version": 1
+}

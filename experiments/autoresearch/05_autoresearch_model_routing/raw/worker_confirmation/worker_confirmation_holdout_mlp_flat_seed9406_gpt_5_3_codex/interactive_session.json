@@ -1,0 +1,24 @@
+{
+  "initial_meta": {
+    "cost_usd": null,
+    "elapsed_wall_seconds": 28.116586622025352,
+    "max_tokens_requested": 4096,
+    "model": "gpt-5.3-codex",
+    "raw_cli_result": {
+      "stderr_tail": "",
+      "stdout_tail": "E_LR_SCHEDULE:\\\\n        return None\\\\n    total_steps = TRAIN_MAX_STEPS if TRAIN_MAX_STEPS is not None else steps_per_epoch * 10\\\\n    warmup_steps = max(1, min(32, total_steps // 10))\\\\n\\\\n    def lr_lambda(current_step: int) -> float:\\\\n        if current_step < warmup_steps:\\\\n            return float(current_step + 1) / float(warmup_steps)\\\\n        progress = (current_step - warmup_steps) / float(max(1, total_steps - warmup_steps))\\\\n        return 0.5 * (1.0 + np.cos(np.pi * progress))\\\\n\\\\n    return optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lr_lambda)\\\",\\\"text\\\":\\\"\\\"}],\\\"primary_mode\\\":\\\"summaries\\\",\\\"rationale\\\":\\\"Use the fixed-step budget more effectively with warmup+cosine decay keyed to TRAIN_MAX_STEPS, plus a moderately higher base LR for faster early optimization in the short training horizon.\\\",\\\"secondary_modes\\\":[\\\"topk\\\"]}\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":26550,\"cached_input_tokens\":23936,\"output_tokens\":1237,\"reasoning_output_tokens\":894}}\n"
+    },
+    "reasoning_effort": "medium",
+    "session_id": "019dfcd6-fa5b-7fc1-b57a-3aaefd5acc2e",
+    "transport": "codex_cli_persistent",
+    "usage": {
+      "cached_input_tokens": 23936,
+      "input_tokens": 26550,
+      "output_tokens": 1237,
+      "reasoning_output_tokens": 894,
+      "total_tokens": 27787
+    }
+  },
+  "prompt_path": "/home/erimoldi/openclaw_remote/projects/NeurIPS_2026/autoresearch/campaigns/h20_delta005_20260505/runs/worker_confirmation/worker_confirmation_holdout_mlp_flat_seed9406_gpt_5_3_codex/interactive_initial_prompt.txt",
+  "session_id": "019dfcd6-fa5b-7fc1-b57a-3aaefd5acc2e"
+}

@@ -1,0 +1,24 @@
+{
+  "initial_meta": {
+    "cost_usd": null,
+    "elapsed_wall_seconds": 14.507525906985393,
+    "max_tokens_requested": 4096,
+    "model": "gpt-5.3-codex",
+    "raw_cli_result": {
+      "stderr_tail": "",
+      "stdout_tail": ":\"{\\\"declared_mode\\\":\\\"summaries\\\",\\\"edit_format\\\":\\\"structured_edits\\\",\\\"edits\\\":[{\\\"anchor\\\":\\\"\\\",\\\"function\\\":\\\"\\\",\\\"new\\\":\\\"USE_LR_SCHEDULE = True\\\",\\\"old\\\":\\\"USE_LR_SCHEDULE = False\\\",\\\"op\\\":\\\"replace_exact\\\",\\\"source\\\":\\\"\\\",\\\"text\\\":\\\"\\\"},{\\\"anchor\\\":\\\"\\\",\\\"function\\\":\\\"\\\",\\\"new\\\":\\\"LEARNING_RATE = 1e-3\\\",\\\"old\\\":\\\"LEARNING_RATE = 5e-4\\\",\\\"op\\\":\\\"replace_exact\\\",\\\"source\\\":\\\"\\\",\\\"text\\\":\\\"\\\"},{\\\"anchor\\\":\\\"\\\",\\\"function\\\":\\\"\\\",\\\"new\\\":\\\"BATCH_SIZE = 128\\\",\\\"old\\\":\\\"BATCH_SIZE = 64\\\",\\\"op\\\":\\\"replace_exact\\\",\\\"source\\\":\\\"\\\",\\\"text\\\":\\\"\\\"}],\\\"primary_mode\\\":\\\"summaries\\\",\\\"rationale\\\":\\\"Under a fixed 256-step budget, enable LR decay and increase throughput per step. A modest LR increase plus cosine schedule and larger batch should improve early-training progress without adding architectural complexity.\\\",\\\"secondary_modes\\\":[\\\"topk\\\",\\\"micro\\\"]}\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":26234,\"cached_input_tokens\":23936,\"output_tokens\":560,\"reasoning_output_tokens\":366}}\n"
+    },
+    "reasoning_effort": "medium",
+    "session_id": "019dfdda-4b86-7db2-ad36-f512714a64ee",
+    "transport": "codex_cli_persistent",
+    "usage": {
+      "cached_input_tokens": 23936,
+      "input_tokens": 26234,
+      "output_tokens": 560,
+      "reasoning_output_tokens": 366,
+      "total_tokens": 26794
+    }
+  },
+  "prompt_path": "/home/erimoldi/openclaw_remote/projects/NeurIPS_2026/autoresearch/campaigns/h20_delta005_20260505/runs/worker_confirmation/worker_confirmation_holdout_resnet_micro_seed9415_gpt_5_3_codex/interactive_initial_prompt.txt",
+  "session_id": "019dfdda-4b86-7db2-ad36-f512714a64ee"
+}
