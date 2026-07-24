@@ -1,0 +1,55 @@
+%% ====================================================================
+%%  PRELIMINARIES (~1.5pp)
+%% ====================================================================
+\section{Preliminaries}
+\label{sec:prelim}
+
+We summarize the formal objects from \citet{achille2025agents} and the prior framework~\citep{beneventano2026framework}, fixing notation for the remainder of the paper.
+
+\paragraph{Budgeted transductive tasks.}
+% SOURCE_CLAIM: C01
+A \emph{budgeted transductive task} consists of:
+(i)~an instance space~$\cX$;
+(ii)~a solution space~$\cY$ with an external verifier $v\colon \cX \times \cY \to \{0,1\}$;
+(iii)~a resource budget~$B$ (compute, cost, or wall-clock time).
+The agent receives an instance $x \in \cX$ and must produce a verified solution $y$ with $v(x,y) = 1$ within budget~$B$.
+Examples include code repair against test suites, formal proofs against proof assistants, and plans against constraint checkers.
+We restrict attention to this verifiable regime throughout.
+
+\paragraph{Task families and modes.}
+% SOURCE_CLAIM: C02, C15
+A \emph{task family} is a distribution~$\cD$ over instances.
+Under the \emph{packed latent-mode family} assumption, each instance $x$ has a latent mode $S(x) \in \{1, \ldots, \Mn\}$ representing its dominant solution strategy.
+The mode distribution is $\pi_s = \Prb(S = s)$.
+Conditional on mode~$s$, the time to verified solution for model~$M$ follows a geometric distribution with success probability $p(s, M)$ per attempt:
+\begin{equation}
+\label{eq:geometric-trials}
+  T(s, M) \sim \mathrm{Geometric}(p(s, M)), \quad \E[T(s,M)] = 1/p(s,M).
+\end{equation}
+The packed-family structure means each instance has a single dominant mode, and certified time scales inversely with the compute share allocated to that mode's strategy.
+
+\paragraph{Stochastic solvers and certified time.}
+% SOURCE_CLAIM: C03
+A \emph{stochastic solver} is an agent system specified by a design tuple $d = (M, \pi, \Omega, W, K, p)$, where $M$ is the model, $\pi$ the routing policy mapping instances to modes, $\Omega$ the orchestration graph, $W$ the memory/tool configuration, $K$ the context budget, and $p$ the verification protocol.
+The \emph{certified time} $T(x, d)$ is the time until the agent produces a solution that passes the external verifier.
+
+For this paper, the design space reduces to three key variables: model~$M$, routing policy~$\pi$ (a distribution over modes), and orchestration depth~$D$ (number of sequential attempts).
+Cost per step is $\kappa(M)$.
+
+\paragraph{The packed-family assumption.}
+% SOURCE_CLAIM: C15, C30
+\begin{assumption}[Packed latent-mode family]
+\label{ass:packed-family}
+The task distribution~$\cD$ admits a latent partition into $\Mn$ modes such that:
+\begin{enumerate}[label=(\roman*)]
+  \item Each instance has a unique dominant mode $S(x)$.
+  \item Conditional on mode~$s$, certified time under model~$M$ with routing allocation~$q$ satisfies $\E[-\log T \mid S = s] = \log q(s) + \log p(s, M) + c$ for a constant~$c$ independent of~$s$.
+  \item The mode distribution~$\pi$ is exogenous: it does not shift with model choice.
+\end{enumerate}
+\end{assumption}
+
+Outside the packed family, the four-term decomposition holds with a bounded residual of order $O(\delta \log \Mn + \eta)$, where $\delta$ measures departure from the packed structure and $\eta$ captures non-geometric time distributions~\citep{beneventano2026framework}.
+
+\paragraph{Notation.}
+Throughout, $\Mn$ denotes the number of modes, $\Meff = \exp(\Hent(\pi))$ the entropy-effective mode count, $r_s = 1 - p(s, M)$ the per-attempt failure probability, and $\kappa(M)$ the per-step cost of model~$M$.
+For two designs $(M_1, \pi_1)$ and $(M_2, \pi_2)$, we write $\Delta$ for the log-performance gap.

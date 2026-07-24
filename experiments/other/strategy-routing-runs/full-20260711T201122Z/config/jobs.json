@@ -1,0 +1,20 @@
+{
+  "run_id": "full-20260711T201122Z",
+  "submitted_utc": "2026-07-11T20:15:26.811353+00:00",
+  "partition": "ou_bcs_low",
+  "num_shards": 8,
+  "array_limit_per_model": 1,
+  "worker_jobs": {
+    "1.5b": "17715233",
+    "7b": "17715234",
+    "32b": "17715235"
+  },
+  "analysis_job": "17715236",
+  "supervisor_job": "17717336",
+  "supervisor_max_retries": 2,
+  "model_revisions": {
+    "1.5b": "2e1fd397ee46e1388853d2af2c993145b0f1098a",
+    "7b": "c03e6d358207e414f1eca0bb1891e29f1db0e242",
+    "32b": "381fc969f78efac66bc87ff7ddeadb7e73c218a7"
+  }
+}

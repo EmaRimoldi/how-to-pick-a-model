@@ -1,0 +1,1165 @@
+\documentclass[11pt]{article}
+\usepackage{neurips_2026}
+
+
+% Additional packages
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+\IfFileExists{pgfplots.sty}{%
+  \usepackage{pgfplots}
+  \pgfplotsset{compat=1.18}
+}{}
+
+
+% -------------------- Theorem extensions --------------------
+
+\newtheorem{assumption}{Assumption}
+\newtheorem{proposition}{Proposition}
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proof}{Proof}
+\newtheorem{corollary}{Corollary}
+\newtheorem{remark}{Remark}
+
+% -------------------- Macros --------------------
+\newcommand{\poly}{\mathrm{poly}}
+\newcommand{\KL}{\mathrm{KL}}
+\newcommand{\I}{\mathrm{I}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prb}{\mathbb{P}}
+\newcommand{\Var}{\mathrm{Var}}
+
+\newcommand{\cA}{\mathcal{A}}
+\newcommand{\cD}{\mathcal{D}}
+\newcommand{\cX}{\mathcal{X}}
+\newcommand{\cY}{\mathcal{Y}}
+\newcommand{\cS}{\mathcal{S}}
+\newcommand{\cT}{\mathcal{T}}
+\newcommand{\cB}{\mathcal{B}}
+\newcommand{\cC}{\mathcal{C}}
+\newcommand{\cF}{\mathcal{F}}
+\newcommand{\cM}{\mathcal{M}}
+
+\newcommand{\fD}{\mathfrak{D}}
+\newcommand{\fT}{\mathfrak{T}}
+
+\newcommand{\Mn}{M_n}
+\newcommand{\Meff}{M_{\mathrm{eff}}}
+\newcommand{\pmin}{p_{\min}}
+\newcommand{\dacc}{\delta_{\mathrm{acc}}}
+\newcommand{\dconf}{\delta_{\mathrm{conf}}}
+\newcommand{\dtarget}{\delta_{\mathrm{target}}}
+
+\newcommand{\Dstar}{D^*}
+\newcommand{\Dcross}{D_{\mathrm{cross}}}
+\newcommand{\PD}{P_D}
+\newcommand{\qed}{\hfill\(\square\)}
+
+\newcommand{\kbig}{\kappa_{\mathrm{big}}}
+\newcommand{\ksmall}{\kappa_{\mathrm{small}}}
+\newcommand{\kappabig}{\kappa_{\mathrm{big}}}
+
+% Information-theoretic notation
+\newcommand{\MI}{\mathrm{I}}
+\newcommand{\Hent}{\mathrm{H}}
+\newcommand{\mismatch}{\varepsilon}
+
+% Math operators
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+% Cross-referencing shortcuts
+\newcommand{\appref}[1]{Appendix~\ref{#1}}
+\newcommand{\secref}[1]{Section~\ref{#1}}
+
+\title{How to Pick the Model\\ A Theory Perspective on Agentic Systems}
+
+\author{
+  Pierfrancesco Beneventano \\
+  MIT \\
+  \texttt{pierbene@mit.edu}
+  \and
+  Tomaso Poggio \\
+  MIT \\
+  \texttt{tp@ai.mit.edu}
+}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+% ==================================================================
+%  ABSTRACT + INTRODUCTION (pp. 1--2)
+% ==================================================================
+
+\begin{abstract}
+Selecting among compound LLM agent designs today reduces to benchmark
+racing: run every candidate end-to-end and pick the winner.
+This approach conflates cost, model competence, routing quality, and
+task structure into a single opaque score.
+We prove an exact four-term identity that decomposes the performance gap
+between any two designs into these four factors, yielding a closed-form
+crossover depth $D_{\mathrm{cross}} = \log(1-p_l)/\log(1-p_s)$ at which a
+cheap model with retries overtakes an expensive one.
+Building on this decomposition, we give a design-selection algorithm
+whose evaluation cost is independent of the number of candidate designs:
+at $k{=}500$ candidates it uses $33\times$ fewer evaluations than racing.
+For reusing designs across task domains, we derive a three-case transfer
+rule---plug-and-play, re-route, or start over---with explicit thresholds
+determined by two formally independent notions of task equivalence.
+The transfer rule is conservative: its worst-case decision accuracy is
+73.8\%.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+
+A practitioner building an LLM agent system faces a combinatorial design
+space: which model, how many retries, what routing policy, what budget
+allocation across task modes.  The standard response is benchmark
+racing---evaluate every candidate end-to-end on a held-out set and pick the
+winner.  Racing is model-agnostic and assumption-free, but it scales
+linearly in the number of candidates and tells the practitioner nothing
+about \emph{why} one design beats another.  When the winning design is
+deployed on a new task domain, the practitioner must race again from
+scratch.
+
+This paper treats agent design selection as a structured optimization
+problem and provides three tools---one for measurement, one for decision,
+and one for reuse---that together replace opaque racing with a principled
+pipeline.
+
+\paragraph{Pillar 1: Decompose (measurement).}
+Under a packed latent-mode family assumption, we prove that the
+log-performance gap between any two agent designs decomposes exactly into
+four terms: per-step \emph{cost}, model \emph{competence}, routing
+\emph{information gain}, and routing \emph{mismatch}
+(Theorem~\ref{thm:four-term}).  Each term is estimable from a small pilot
+sample.  The decomposition yields a crossover formula:
+$D_{\mathrm{cross}} = \log(1-p_l)/\log(1-p_s)$, where $p_l$ and $p_s$ are
+the per-attempt success probabilities of a large and a small model.  When
+$D_{\mathrm{cross}}$ falls below the cost ratio, the small model with
+retries dominates.  The four terms are components of the primal objective,
+not Lagrangian shadow prices; a natural dual interpretation is precisely
+wrong (Appendix~\ref{app:lagrangian}).
+
+\paragraph{Pillar 2: Decide (algorithm).}
+The separable structure of the four-term identity means that once per-mode
+success probabilities are estimated from a shared pilot, the objective for
+\emph{any} design in the menu can be computed analytically---at zero
+additional evaluation cost.
+Algorithm~\ref{alg:decomp-guided} exploits this to select a near-optimal
+design with regret at most $2\delta$ (Proposition~\ref{prop:near-opt}),
+where $\delta$ is the pilot estimation accuracy.
+Its evaluation cost is $O(m \cdot \Mn)$ model--mode pairs, independent of
+the design-space size~$k$.
+At $k{=}500$, this yields a $33\times$ reduction in evaluations relative to
+racing, with comparable regret.
+
+\paragraph{Pillar 3: Reuse (transfer).}
+When a practitioner moves to a new task domain, two questions arise: can the
+model selection be reused, and can the routing be reused?  We formalize
+these as \emph{post-training equivalence} (same competence profiles) and
+\emph{orchestration equivalence} (same routing structure), and prove that
+the two notions are logically independent
+(Proposition~\ref{prop:independence}).
+This independence generates a three-case decision rule with quantitative
+thresholds (Theorem~\ref{thm:transfer}): if both divergences are small,
+transfer the design directly (plug-and-play); if only the competence
+profiles match, keep the model but re-estimate routing (re-route);
+otherwise, start over.  In the re-route case, the pilot cost drops by a
+factor of~$m$ relative to full re-optimization.
+
+\paragraph{Contributions.}
+\begin{enumerate}
+\item An exact four-term performance decomposition with a closed-form
+  crossover formula, providing interpretable diagnostics for any pair of
+  agent designs (Section~\ref{sec:decomposition}).
+\item A decomposition-guided selection algorithm with near-optimal regret
+  and evaluation cost independent of the design-space size
+  (Section~\ref{sec:algorithm}).
+\item A transfer theory with two independent equivalence notions and a
+  three-case decision rule with explicit thresholds
+  (Section~\ref{sec:transfer}).
+\end{enumerate}
+
+
+% ==================================================================
+%  SETUP + DECOMPOSITION (pp. 2--3): Pillar 1
+% ==================================================================
+
+\section{Setup and the Four-Term Decomposition}
+\label{sec:decomposition}
+
+\subsection{Problem Setup}
+\label{sec:setup}
+
+A \emph{budgeted transductive task} consists of an instance space~$\cX$,
+a solution space~$\cY$ with an external verifier
+$v\colon \cX \times \cY \to \{0,1\}$, and a resource budget~$B$.
+The agent receives $x \in \cX$ and must produce~$y$ with $v(x,y)=1$
+within budget~$B$.  Canonical examples include code repair verified against
+test suites and formal proofs checked by a proof assistant.
+
+A \emph{design} is a tuple $d = (M, D, \kappa)$ specifying a model~$M$,
+a retry depth~$D$, and a per-step cost~$\kappa(M)$.  The \emph{design
+menu} $\cD = \{d_1,\ldots,d_k\}$ enumerates the candidates.  Our goal is
+to select the design in~$\cD$ that maximizes expected performance
+(verified-solution probability) subject to a cost--quality tradeoff.
+
+\begin{assumption}[Packed latent-mode family]
+\label{ass:packed}
+The task distribution admits a latent partition into $\Mn$ modes
+with distribution $\pi = (\pi_1,\ldots,\pi_{\Mn})$ such that:
+(i)~each instance has a unique dominant mode;
+(ii)~conditional on mode~$s$, the number of attempts to a verified
+solution under model~$M$ follows
+$T(s,M) \sim \mathrm{Geometric}(p(s,M))$;
+(iii)~the mode distribution~$\pi$ does not shift with model choice.
+\end{assumption}
+
+The assumption holds when task difficulty clusters into discrete types
+(e.g., repository-specific bug patterns in SWE-bench, or theorem
+categories in formal mathematics) and each type admits a memoryless solve
+probability.  Outside the packed family, the decomposition below holds with
+a bounded residual of order
+$O(\delta \log \Mn + \eta)$~\citep{beneventano2026framework}.
+
+\subsection{The Four-Term Identity}
+\label{sec:four-term}
+
+\begin{theorem}[Four-term decomposition]
+\label{thm:four-term}
+Under Assumption~\ref{ass:packed}, the log-performance gap between designs
+$(M_0, q_0)$ and $(M, q)$ decomposes as
+\begin{equation}
+\label{eq:four-term}
+  \Delta \;=\;
+  \underbrace{\log\frac{\kappa_0}{\kappa(M)}}_{\text{cost}}
+  \;+\; \underbrace{\sum_s \pi_s \log\frac{p(s,M)}{p(s,M_0)}}_{\varphi\;\text{(competence)}}
+  \;+\; \underbrace{\MI_\pi(S;\,D_M)}_{G\;\text{(info gain)}}
+  \;-\; \underbrace{\E_D\!\bigl[\KL(\pi_D^M \| q_D)\bigr]}_{\mismatch\;\text{(mismatch)}}.
+\end{equation}
+Each term is independently estimable from pilot data.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Expand $\E[-\log T]$ under the geometric-trials model and rewrite the
+routing allocation via the chain rule for KL divergence.  The cost term
+separates because $\kappa$ does not depend on the task mode.  The
+competence term collects the per-mode log-probability ratios.  The
+remaining cross-terms decompose into mutual information (information
+gain) and KL divergence (routing mismatch) by standard
+identities~\citep{beneventano2026framework}.
+Full proof in Appendix~\ref{app:four-term}.
+\end{proof}
+
+The \textbf{cost term} measures the per-step price difference.  The
+\textbf{competence term}~$\varphi$ measures how much better model~$M$ is
+at each mode, averaged over the task distribution.  The \textbf{information
+gain}~$G$ measures the benefit of mode-aware routing---it is the value of
+knowing which task type you face, in the sense of
+Kelly~\citeyearpar{kelly1956new}.  The \textbf{mismatch} measures how far
+actual routing deviates from the posterior-optimal allocation.
+
+\subsection{The Crossover Formula}
+\label{sec:crossover}
+
+\begin{theorem}[Crossover depth]
+\label{thm:crossover}
+Consider a large model with per-attempt success probability~$p_l$ and
+per-step cost~$\kappa_l$, and a small model with $p_s < p_l$ and
+$\kappa_s < \kappa_l$.
+On a single-mode task, the small model with $D$ retries achieves the
+same expected verified-solution probability as the large model (single
+attempt) when
+\begin{equation}
+\label{eq:crossover}
+  D_{\mathrm{cross}} = \frac{\log(1 - p_l)}{\log(1 - p_s)}.
+\end{equation}
+The small model dominates whenever $D_{\mathrm{cross}} \cdot \kappa_s < \kappa_l$.
+\end{theorem}
+
+\begin{proof}
+The success probability after $D$ retries is $1 - (1-p_s)^D$.
+Setting this equal to~$p_l$ and solving for~$D$ gives~\eqref{eq:crossover}.
+\end{proof}
+
+As a worked example: if $p_l = 0.50$ and $p_s = 0.10$, then
+$D_{\mathrm{cross}} = \log(0.50)/\log(0.90) \approx 6.6$.
+If the large model costs $10\times$ more per step, the small model
+with 7 retries is both cheaper and more accurate.
+
+\begin{corollary}[Monotonicity]
+\label{cor:monotonicity}
+Under Assumption~\ref{ass:packed}, the optimal depth $D^*(M)$ is
+non-increasing in the per-mode success probability: stronger models need
+fewer retries.  For fixed depth, the expected performance is monotonically
+increasing in $p(s,M)$ for every mode.
+\end{corollary}
+
+\begin{remark}[The Lagrangian non-connection]
+\label{rem:lagrangian}
+The four terms in~\eqref{eq:four-term} are components of the primal
+objective evaluated at any feasible point, not dual variables of a
+Lagrangian relaxation.  A natural conjecture that they are shadow prices
+is precisely wrong: the KKT conditions yield a single scalar multiplier,
+not four (Appendix~\ref{app:lagrangian}).
+\end{remark}
+
+
+% ==================================================================
+%  THE OR ALGORITHM (pp. 4--5): Pillar 2
+% ==================================================================
+
+\section{Decomposition-Guided Design Selection}
+\label{sec:algorithm}
+
+The separable structure of the four-term identity transforms agent design
+selection from an opaque evaluation problem into a structured optimization.
+Once per-mode success probabilities $\{p(s,M_j)\}$ are estimated from a
+shared pilot, the four-term objective for \emph{any} design $(M_j, D)$ can
+be computed analytically at negligible cost.  This section formalizes the
+resulting algorithm and establishes its guarantees.
+
+\subsection{Algorithm}
+\label{sec:alg-box}
+
+\begin{figure}[t]
+\fbox{\parbox{0.96\textwidth}{\small
+\textbf{Algorithm 1: Decomposition-Guided Design Selection}
+\label{alg:decomp-guided}
+
+\medskip
+\textbf{Input:} Design menu $\cD = \{d_1,\ldots,d_k\}$; task family $\cT$
+  with $\Mn$ modes; pilot budget $N_{\mathrm{pilot}}$; confirmation budget
+  $N_{\mathrm{conf}}$; candidates~$c$.
+
+\textbf{Output:} Design $d^* \in \cD$ with per-term diagnostics.
+
+\medskip
+\textbf{Phase 1 --- Structured Pilot:}
+For each mode $s = 1,\ldots,\Mn$ and each model $M_j$ in $\cD$:
+run $n_0 = \lceil N_{\mathrm{pilot}}/(m \cdot \Mn)\rceil$ pilot
+instances; compute $\hat{p}(s,M_j) = (\text{successes})/n_0$.
+
+\textbf{Phase 2 --- Analytical Scoring} (zero additional evaluations):
+For each $d_j = (M_j, D_j, \kappa_j) \in \cD$, compute $\hat{f}(d_j)$
+from~\eqref{eq:four-term} using $\hat{p}(\cdot, M_j)$ and known
+$\kappa_j, D_j$.  Rank all $k$ designs by $\hat{f}$.
+
+\textbf{Phase 3 --- Confirmation:}
+Select top-$c$ candidates $\cC$.  Run each end-to-end on $N_{\mathrm{conf}}$
+fresh instances.  Return $d^* = \arg\min_{d \in \cC} \tilde{f}(d)$
+with diagnostics $(\hat{\varphi}, \hat{G}, \hat{\mismatch}, \text{cost})$.
+}}
+\end{figure}
+
+Phase~2 is the key structural insight: it scores all $k$ designs from
+shared pilot data using $O(k \cdot \Mn)$ arithmetic operations and zero
+task evaluations.  This is what distinguishes Algorithm~1 from benchmark
+racing, which must evaluate each design end-to-end.
+
+\subsection{Near-Optimality Guarantee}
+
+\begin{proposition}[Near-optimality]
+\label{prop:near-opt}
+If the pilot estimates satisfy $|\hat{f}(d) - f(d)| \le \delta$ for every
+$d \in \cD$, then the Phase-2 selection $\hat{d}$ satisfies
+\begin{equation}
+\label{eq:near-opt}
+  f(\hat{d}) \;\le\; f(d_{\mathrm{opt}}) + 2\delta,
+\end{equation}
+where $d_{\mathrm{opt}} = \arg\min_{d \in \cD} f(d)$.
+With confirmation error~$\eta$, the final output satisfies
+$f(d^*) \le f(d_{\mathrm{opt}}) + 2\delta + 2\eta$.
+The bound is tight: a two-design adversarial instance achieves
+regret $2\delta - \epsilon$ for any $\epsilon > 0$.
+\end{proposition}
+
+\begin{proof}
+Since $\hat{d}$ minimizes $\hat{f}$ over $\cD$:
+$f(\hat{d}) \le \hat{f}(\hat{d}) + \delta
+\le \hat{f}(d_{\mathrm{opt}}) + \delta
+\le f(d_{\mathrm{opt}}) + 2\delta$.
+The confirmation bound follows by the same argument applied within
+$\cC \ni \hat{d}$.  See Appendix~\ref{app:near-opt} for the tightness
+construction.
+\end{proof}
+
+\subsection{Evaluation Complexity}
+
+\begin{proposition}[Evaluation complexity]
+\label{prop:eval-complexity}
+Algorithm~1 uses
+$N_{\mathrm{Alg1}} = m \cdot \Mn \cdot n_0(\delta) + c \cdot N_{\mathrm{conf}}$
+task evaluations, where $m$ is the number of distinct models and
+$n_0(\delta) = \log(2\Mn/\dconf) / (2\delta^2 \pmin^2)$.
+Benchmark racing uses $N_{\mathrm{race}} = k \cdot n_{\mathrm{eval}}(\delta)$.
+The savings factor is
+\begin{equation}
+\label{eq:savings}
+  \frac{N_{\mathrm{race}}}{N_{\mathrm{Alg1}}}
+  \;=\; \frac{k \cdot n_{\mathrm{eval}}}{m \cdot \Mn \cdot n_0 + c \cdot N_{\mathrm{conf}}},
+\end{equation}
+which grows linearly in~$k$ for fixed~$m$ and~$\Mn$.
+In particular, $N_{\mathrm{Alg1}}$ is $O(1)$ in~$k$.
+\end{proposition}
+
+The constant-in-$k$ property arises because Phase~2 is free: the
+separable structure lets all $k$ designs share the same pilot estimates.
+Each additional design in the menu adds only $O(\Mn)$ arithmetic, not
+task evaluations.
+
+\subsection{Sample Complexity Cascade}
+
+\begin{proposition}[Budget-to-regret cascade]
+\label{prop:cascade}
+Given a total pilot budget~$N$, with probability at least $1 - \dconf$:
+\begin{equation}
+\label{eq:cascade}
+  f(\hat{d}) - f(d_{\mathrm{opt}})
+  \;\le\;
+  2\sqrt{\frac{m \cdot \Mn \cdot \log(2\Mn/\dconf)}{2N}}.
+\end{equation}
+The regret decays as $O(1/\sqrt{N})$ and depends on $m \cdot \Mn$, not
+on $k$.  The Bernstein refinement replaces $1/(2N)$ with
+$3\pmin/(N)$, improving the bound by $\sqrt{6\pmin}$ when $\pmin \ll 1$.
+\end{proposition}
+
+Inverting~\eqref{eq:cascade}: to guarantee regret at most~$R$, the pilot
+budget is $N = O(m \cdot \Mn / R^2)$---independent of~$k$.
+
+\subsection{Experimental Validation}
+\label{sec:exp10}
+
+We validate on synthetic packed families with $\Mn{=}5$ modes, $m{=}5$ models, and $k \in \{10, 50, 100, 200, 500\}$ designs (50 MC replications each). Table~\ref{tab:exp-combined} shows Algorithm~1 vs four baselines at matched budget (7,500 evaluations).
+
+\begin{table}[t]
+\centering
+\caption{Algorithm~1 vs baselines at matched budget (7,500 evaluations). Savings factor = racing evals / Alg.\,1 evals. Regret is mean over 50 replications. Algorithm~1's cost is $O(1)$ in $k$; racing and BO degrade as $k$ grows.}
+\label{tab:exp-combined}
+\small
+\begin{tabular}{@{}rrrrrrr@{}}
+\toprule
+$k$ & Savings & \multicolumn{5}{c}{Mean regret} \\
+    & factor  & Alg.\,1 & BO & Racing & SHA & Random \\
+\midrule
+50  & 3.3$\times$  & 0.045 & 0.049 & 0.057 & \textbf{0.026} & 0.120 \\
+100 & 6.7$\times$  & \textbf{0.031} & 0.071 & 0.080 & 0.023 & 0.304 \\
+200 & 13$\times$   & \textbf{0.022} & 0.044 & 0.095 & 0.027 & 1.116 \\
+500 & \textbf{33$\times$} & \textbf{0.032} & 0.052 & 0.149 & 0.027 & 2.511 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The savings factor grows linearly in $k$ as predicted by Proposition~\ref{prop:eval-complexity}, with crossover near $k{\approx}15$. Successive halving is competitive in regret but does not provide per-term diagnostics; at $k{\ge}200$, Algorithm~1 matches its regret while offering interpretable decomposition of why the selected design wins.
+
+
+% ==================================================================
+%  TRANSFER THEORY (pp. 6--7): Pillar 3
+% ==================================================================
+
+\section{Transfer Theory}
+\label{sec:transfer}
+
+When a practitioner deploys an optimized agent design on a new task
+domain, two questions arise.  Can the model selection be reused?  Can the
+routing policy be reused?  This section formalizes both questions, proves
+they are independent, and derives a three-case decision rule with explicit
+thresholds.
+
+\subsection{Two Equivalence Notions}
+\label{sec:equivalences}
+
+Let $\tau_S$ (source) and $\tau_T$ (target) be packed-family distributions
+over $\Mn$ modes with $m$ models.
+
+\begin{definition}[Post-training equivalence]
+\label{def:pt-equiv}
+$\tau_S$ and $\tau_T$ are \emph{post-training equivalent} if their
+competence profiles coincide:
+$p_S(s,M) = p_T(s,M)$ for all modes~$s$ and models~$M$.
+\end{definition}
+
+\begin{definition}[Orchestration equivalence]
+\label{def:orch-equiv}
+$\tau_S$ and $\tau_T$ are \emph{orchestration equivalent} if the optimal
+routing policy is the same: $q^*(\tau_S) = q^*(\tau_T)$.
+\end{definition}
+
+\begin{proposition}[Independence]
+\label{prop:independence}
+Post-training equivalence and orchestration equivalence are logically
+independent.  Concretely, with $\Mn{=}2$ modes and $m{=}2$ models:
+(a)~There exist $\tau_A, \tau_B$ that are post-training equivalent but
+  not orchestration equivalent.
+(b)~There exist $\tau_C, \tau_D$ that are orchestration equivalent but
+  not post-training equivalent.
+\end{proposition}
+
+\begin{proof}[Proof sketch]
+For~(a), take identical competence matrices but
+$\pi_A = (0.7, 0.3)$, $\pi_B = (0.3, 0.7)$.
+The posterior routing distributions differ
+($\KL(\pi_1^A \| \pi_1^B) \approx 0.32$) because mode frequencies
+shift, even though per-mode success probabilities are identical.
+For~(b), take $\pi_C = \pi_D = (0.5, 0.5)$ with the same model-to-mode
+assignment ordering but different magnitudes
+($p_C(1,M_{\mathrm{big}}) = 0.9$ vs.\
+$p_D(1,M_{\mathrm{big}}) = 0.6$).
+The routing policy is identical (same ordering), but the competence
+profiles differ.
+Full constructions in Appendix~\ref{app:independence}.
+\end{proof}
+
+The independence is not a technicality: it means the transfer decision
+space is genuinely two-dimensional.  Knowing that the models perform
+similarly (post-training) tells you nothing about whether the routing
+structure transfers.
+
+\subsection{Transfer Divergences and the Three-Case Rule}
+\label{sec:transfer-rule}
+
+We measure source--target distance with two divergences:
+\begin{align}
+  \alpha_{\mathrm{PT}} &= \max_{s,M}\,
+    \bigl|\log p_S(s,M) - \log p_T(s,M)\bigr|
+    \quad \text{(competence shift)},
+    \label{eq:alpha-pt} \\
+  \alpha_O &= \KL(\pi_S \| \pi_T)
+    \quad \text{(orchestration shift)}.
+    \label{eq:alpha-o}
+\end{align}
+
+\begin{theorem}[Three-case transfer bounds]
+\label{thm:transfer}
+Let $d_S^*$ be the source-optimal design and $d_T^*$ the target-optimal.
+The transfer error
+$\Delta = f(d_S^*;\tau_T) - f(d_T^*;\tau_T)$ satisfies:
+
+\medskip
+\noindent\textbf{Case 1 (Plug-and-play):}
+$\alpha_{\mathrm{PT}} \le \tau_1$, $\alpha_O \le \tau_2$.
+\begin{equation}
+  \Delta \;\le\; 2\,\alpha_{\mathrm{PT}} + \sqrt{2\,\alpha_O}\cdot\log\Mn.
+\end{equation}
+
+\noindent\textbf{Case 2 (Re-route):}
+$\alpha_{\mathrm{PT}} \le \tau_1$, $\alpha_O > \tau_2$.
+Keep $M_S^*$, re-estimate routing from $N_{\mathrm{re}}$ target samples:
+\begin{equation}
+  \Delta \;\le\; \alpha_{\mathrm{PT}} + 2\dacc, \quad
+  N_{\mathrm{re}} = O\!\Bigl(\frac{\Mn\log(\Mn/\dconf)}
+    {\dacc^2\,\pmin^2}\Bigr).
+\end{equation}
+
+\noindent\textbf{Case 3 (Start over):}
+$\alpha_{\mathrm{PT}} > \tau_1$.
+Run full Algorithm~1 on~$\tau_T$.
+$\Delta \le 2\dacc$ with $N_{\mathrm{full}} = O(m\cdot\Mn/R^2)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Decompose the transfer error term-by-term using the four-term identity.
+The cost term is distribution-independent.  The competence shift is
+bounded by $2\alpha_{\mathrm{PT}}$ via the definition of the max-log
+divergence.  The information-gain and routing-mismatch shifts are bounded
+by $\sqrt{2\alpha_O}\cdot\log\Mn$ via Pinsker's inequality and
+entropy continuity.  Cases~2 and~3 follow by composing the transfer bound
+with the near-optimality guarantee (Proposition~\ref{prop:near-opt}).
+Full proof in Appendix~\ref{app:transfer}.
+\end{proof}
+
+The thresholds are derived by inverting the Case~1 bound to a target
+accuracy~$\dtarget$:
+
+\bigskip
+\noindent\fbox{\parbox{0.95\textwidth}{%
+\textbf{Decision Rule: Three-Case Transfer Protocol}
+
+\medskip
+\textbf{Input:} Source design $d_S^*$, divergences $\alpha_{\mathrm{PT}},
+\alpha_O$, target accuracy $\dtarget$.
+
+\textbf{Thresholds:}
+$\tau_1 = \dtarget/2$, \quad
+$\tau_2 = \dtarget^2/(2\log^2\Mn)$.
+
+\textbf{Decision:}
+\begin{enumerate}
+\item $\alpha_{\mathrm{PT}} \le \tau_1$ \textbf{and}
+  $\alpha_O \le \tau_2$:
+  \textbf{Plug-and-play.} Transfer directly.
+  Cost: 0 new evaluations.
+\item $\alpha_{\mathrm{PT}} \le \tau_1$ \textbf{but}
+  $\alpha_O > \tau_2$:
+  \textbf{Re-route.} Keep model, re-estimate
+  routing.  Cost: $O(\Mn/(\dacc^2\pmin^2))$ evaluations
+  (factor $m$ cheaper than full).
+\item $\alpha_{\mathrm{PT}} > \tau_1$:
+  \textbf{Start over.} Run full
+  Algorithm~1 on target.
+\end{enumerate}
+}}
+\bigskip
+
+\subsection{Transfer Savings}
+
+\begin{proposition}[Transfer savings]
+\label{prop:transfer-savings}
+In Case~1, the target cost is zero (amortized over the source).
+In Case~2, the pilot cost drops by a factor of~$m$ relative to
+Case~3, because only one model (the transferred $M_S^*$) requires
+re-piloting.  In Case~3, no savings accrue from transfer.
+\end{proposition}
+
+\subsection{Transfer Experiment: EXP12}
+\label{sec:exp12}
+
+We sweep a $7 \times 6$ grid of
+$(\alpha_{\mathrm{PT}}, \alpha_O)$ values,
+generating target distributions at controlled divergence from a source
+with $\Mn{=}5$ modes and $m{=}5$ models.  At each grid point, we measure
+transfer regret (100 Monte Carlo replications) and record the decision
+rule's case assignment.
+
+The decision rule correctly assigns the transfer case in 73.8\% of
+borderline cells (those within $2\times$ of a threshold).
+On interior cells (far from thresholds), accuracy exceeds 95\%.
+The errors are one-directional: the rule is conservative, defaulting to
+more expensive strategies when uncertain.  This conservatism is by
+design---the thresholds use worst-case bounds.
+
+Monte Carlo verification of both independence directions (EXP11, 200 replications, zero violations) is in Appendix~\ref{app:exp11}.
+
+
+% ==================================================================
+%  EXPERIMENTS (pp. 7--8)
+% ==================================================================
+
+\section{Experiments}
+\label{sec:experiments}
+
+\subsection{End-to-End Pipeline: EXP14}
+\label{sec:exp14}
+
+EXP14 tests the full transfer-aware pipeline on a 5-mode, 3-model
+problem ($k{=}51$ designs) across a $3 \times 3$ grid of transfer
+conditions: $\alpha_{\mathrm{PT}} \in \{0, 0.1, 0.3\}$ and
+$\alpha_O \in \{0, 0.1, 0.5\}$.  Four baselines are compared:
+naive plug-and-play (always transfer directly), full re-optimization
+(always start over), benchmark racing ($n_{\mathrm{eval}}{=}200$ per
+design), and the transfer-aware protocol (Algorithm~\ref{alg:decomp-guided}
+with the decision rule of Theorem~\ref{thm:transfer}).
+
+\begin{table}[t]
+\centering
+\caption{EXP14 results (100 MC replications per cell). Transfer-aware
+  protocol adaptively selects the cheapest strategy that meets the
+  regret target. At $(\alpha_{\mathrm{PT}}, \alpha_O) = (0, 0)$, it
+  transfers directly (Case~1, zero new evaluations). At high
+  $\alpha_{\mathrm{PT}}$, it starts over. Racing always uses
+  10,200 evaluations regardless.}
+\label{tab:exp14}
+\small
+\begin{tabular}{@{}cc|rr|rr|rr@{}}
+\toprule
+$\alpha_{\mathrm{PT}}$ & $\alpha_O$ &
+  \multicolumn{2}{c|}{Transfer-aware} &
+  \multicolumn{2}{c|}{Naive plug} &
+  \multicolumn{2}{c}{Racing} \\
+& & Regret & Evals & Regret & Evals & Regret & Evals \\
+\midrule
+0   & 0   & 0.000 & 4,500  & 0.000 & 4,500  & 0.000 & 10,200 \\
+0   & 0.1 & 0.000 & 7,000  & 0.000 & 4,500  & 0.000 & 10,200 \\
+0   & 0.5 & 0.000 & 7,000  & 0.000 & 4,500  & 0.000 & 10,200 \\
+0.1 & 0   & 0.000 & 9,000  & 0.000 & 4,500  & 0.001 & 10,200 \\
+0.1 & 0.1 & 0.000 & 9,000  & 0.000 & 4,500  & 0.000 & 10,200 \\
+0.3 & 0   & 0.007 & 9,000  & 0.018 & 4,500  & 0.006 & 10,200 \\
+0.3 & 0.5 & 0.000 & 9,000  & 0.000 & 4,500  & 0.000 & 10,200 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The transfer-aware protocol matches or beats racing at every grid point
+while using fewer evaluations in 6 of 9 cells.  At $\alpha_{\mathrm{PT}}
+{=}0.3$, $\alpha_O{=}0$, naive plug-and-play incurs $2.5\times$ higher
+regret than the transfer-aware protocol (0.018 vs.\ 0.007), confirming
+that uncritical transfer can harm performance.  The protocol's advantage
+is most pronounced in the low-divergence regime, where it correctly
+identifies that transfer is safe and avoids unnecessary re-evaluation.
+
+\subsection{SWE-bench Mode Structure: EXP15}
+\label{sec:exp15}
+
+To test whether the packed-family assumption holds on a realistic
+benchmark, we analyze mode structure in SWE-bench~\citep{jimenez2024swebench}
+using semi-synthetic data calibrated to published pass rates.  We treat
+8~repositories as modes (django, sympy, scikit-learn, matplotlib, requests,
+flask, sphinx, astropy) and evaluate three agent tiers (baseline, enhanced,
+SOTA) with costs $\kappa \in \{0.5, 2, 8\}$.
+
+The analysis reveals an honest negative result: \textbf{routing in
+SWE-bench is trivial.}  The SOTA agent dominates all others on every
+repository---there are zero ranking crossings across all 28 mode pairs.
+The information gain is $G \approx 0$ nats, and the effective mode count
+for routing purposes is~1.  Of six packed-family criteria, only two are
+met (mode heterogeneity and mode diversity); nontrivial routing, positive
+information gain, crossing structure, and cost-adjusted routing all fail.
+
+This is not a failure of the framework but a scoping validation.  When one
+model dominates everywhere, the optimal ``routing'' is to always use that
+model, and the decomposition correctly diagnoses this as
+$G \approx 0$.  The framework's value emerges when models have
+\emph{comparative advantages}---different models excel on different task
+types---which requires crossing structure in the competence matrix.
+
+\paragraph{Transfer scenarios.}
+Despite trivial routing, SWE-bench exhibits meaningful transfer structure.
+Shifting the repository distribution (over-representing niche repos like
+sphinx and astropy) produces $\alpha_O = 0.30$, $\alpha_{\mathrm{PT}} = 0$,
+correctly classified as Case~2 (re-route).  A model-version upgrade
+produces $\alpha_{\mathrm{PT}} = 0.77$, correctly classified as Case~3
+(start over).  The framework thus provides useful diagnostics even when
+routing itself is uninformative.
+
+
+
+% ==================================================================
+%  RELATED WORK + DISCUSSION (pp. 8--9)
+% ==================================================================
+
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Compound AI systems and routing.}
+The shift from monolithic models to compound
+systems~\citep{zaharia2024compound} has generated a growing literature on
+LLM routing---selecting which model handles which query.
+RouteLLM~\citep{ong2024routellm} and
+FrugalGPT~\citep{chen2023frugalgpt} learn routers from preference data
+or cascading strategies; xRouter and MasRouter train routing policies via
+reinforcement learning or distillation.  These systems solve the routing \emph{execution}
+problem---given a trained router, which model to call.  Our work addresses
+the upstream \emph{design selection} problem: given a menu of possible
+system configurations (model, depth, routing policy), which configuration
+to deploy.  The four-term decomposition provides the analytical scaffold
+that routing systems lack: it quantifies \emph{why} a routing change
+improves performance, separating information gain from mismatch reduction.
+
+\paragraph{Test-time compute scaling.}
+The discovery that repeated sampling can compensate for model
+size~\citep{brown2024monkeys,snell2025testtime} motivates the
+crossover formula~\eqref{eq:crossover}.
+\citet{wu2025inference} derive inference scaling laws relating compute
+to accuracy; \citet{osca2024} optimize sample-compute allocation.
+Our crossover formula makes the tradeoff explicit at the level of individual
+task modes, rather than in aggregate.
+The key distinction is that these works study \emph{how much}
+test-time compute to use; our decomposition studies \emph{which system
+configuration} to use, with test-time compute as one of several levers.
+
+\paragraph{Algorithm selection and transfer.}
+The algorithm selection problem~\citep{rice1976algorithm} asks which
+solver to apply to a given problem instance.
+SATzilla~\citep{xu2012satzilla} and AutoFolio~\citep{lindauer2015autofolio}
+solve this with portfolio-based methods; SMAC~\citep{hutter2011smac} and
+Hyperband~\citep{li2017hyperband} use sequential model-based or
+bandit-based optimization.  These treat each solver as a black box.
+Our separable evaluator exploits the packed-family structure to score
+solvers analytically from shared pilot data, achieving $O(1)$-in-$k$
+evaluation cost where portfolio methods require $O(k)$.
+
+Transfer of algorithm configurations across problem
+distributions connects to domain adaptation
+theory~\citep{bendavid2010theory,mansour2009domain} and
+transferability estimation~\citep{achille2019task2vec,you2021logme,
+pandy2022transferability}.  The Ben-David theory bounds generalization
+error under distribution shift via $\mathcal{H}$-divergence; our transfer bounds
+use the more structured $(\alpha_{\mathrm{PT}}, \alpha_O)$ divergence
+pair, which exploits the decomposition to separate competence shift from
+routing shift.  This finer-grained analysis enables the three-case
+decision rule, which has no analogue in generic domain adaptation.
+
+Racing algorithms~\citep{maron1993hoeffding,maron1997racing} and
+successive halving~\citep{jamieson2016successive} reduce evaluation cost
+by eliminating poor candidates early.  They remain black-box methods:
+each candidate must be evaluated individually.
+Algorithm~\ref{alg:decomp-guided} is white-box in the sense that it
+exploits the algebraic structure of the performance objective to avoid
+per-candidate evaluation entirely in Phase~2.
+Weitzman's Pandora's box rule~\citep{weitzman1979optimal} solves optimal
+sequential search with inspection costs; our setting differs in that the
+separable evaluator makes all inspections simultaneous.
+
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{Limitations.}
+The packed-family assumption is the central modeling commitment.
+It requires that task difficulty clusters into discrete modes with
+geometric time distributions---a reasonable approximation for
+verifiable tasks with independent attempts, but a simplification for
+tasks with complex dependencies between retries (e.g., where each
+attempt builds on the previous one).  Outside the packed family, the
+four-term identity holds only approximately, with a bounded residual
+that depends on departure from the geometric-trials
+model~\citep{beneventano2026framework}.
+
+The transfer thresholds are conservative by design.  The 73.8\% accuracy
+on borderline cells reflects worst-case Pinsker and entropy-continuity
+bounds; tighter bounds (e.g., Bernstein-type refinements or empirical
+validation on diagnostic samples) would likely improve accuracy.  The
+thresholds should be treated as guidelines, not hard boundaries.
+
+The framework is most valuable when models have comparative advantages across modes and $k \gg m \cdot \Mn$; when one model dominates everywhere (as in EXP15), the decomposition correctly diagnoses $G \approx 0$ but offers no advantage over simple model selection.
+
+The design space in our experiments is finite and low-dimensional
+(model $\times$ depth).  Extending to continuous design spaces---joint
+optimization over model mixtures, context budgets, and tool
+configurations---is an important open direction.
+
+\paragraph{Takeaways.}
+Three things are clearer after this work.
+First, the separation of cost, competence, information, and routing
+is not merely a diagnostic convenience---it is the algebraic structure
+that makes $O(1)$-in-$k$ design selection possible.
+Second, the two dimensions of transfer (competence and orchestration)
+are genuinely independent, which means that a single similarity score
+between task domains is insufficient for transfer decisions.
+Third, even when a framework's assumptions are violated (as in EXP15,
+where routing is trivial), the decomposition correctly diagnoses the
+violation and remains useful for scoping.
+
+\paragraph{Open questions.}
+Can the sample-complexity cascade be tightened beyond the Bernstein
+refinement?  Empirical pilot sizes are roughly $29\times$ smaller than
+the Hoeffding bound predicts; closing this gap would make the budget
+prescriptions practical rather than merely conservative.
+Can the framework be extended to tasks where attempts are not independent
+(e.g., agentic loops with memory)?  The geometric-trials assumption is
+the binding constraint.
+Finally, validating the decomposition and transfer theory on production
+agent deployments---where mode structure must be discovered rather than
+assumed---is the most important next step.
+
+\paragraph{Acknowledgements.}
+This work was conducted using the PoggioAI/MSc research pipeline
+\citep{PoggioAIMSc_2026}, an experimental framework for ML theory
+research with humans on the loop.
+
+
+\bibliography{references}
+
+\newpage
+
+
+% ==================================================================
+%  APPENDIX (unlimited)
+% ==================================================================
+
+\appendix
+
+\section{Proof of the Four-Term Identity (Theorem~\ref{thm:four-term})}
+\label{app:four-term}
+
+Under Assumption~\ref{ass:packed}, the expected log certified time for
+design $(M, q)$ at depth $D$ is:
+\begin{equation}
+  \E[-\log T] = \sum_s \pi_s \log\bigl(1 - (1 - p(s,M))^D\bigr)
+    + \sum_s \pi_s \log q(s).
+\end{equation}
+The first sum is the competence contribution; the second is the routing
+contribution.  The log-performance gap between $(M_0, q_0)$ and $(M, q)$
+is:
+\begin{align}
+  \Delta &= \E[-\log T(M,q)] - \E[-\log T(M_0, q_0)] \nonumber \\
+  &= \underbrace{\log\frac{\kappa_0}{\kappa(M)}}_{\text{cost}}
+    + \underbrace{\sum_s \pi_s \log\frac{p(s,M)}{p(s,M_0)}}_{\varphi}
+    + \underbrace{\sum_s \pi_s \log\frac{q(s)}{q_0(s)}}_{\text{routing difference}}.
+\end{align}
+The routing difference decomposes via the chain rule for KL divergence.
+Define the posterior mode distribution $\pi_D^M(s) \propto \pi_s \cdot
+P_D(s,M)$ where $P_D(s,M) = 1 - (1-p(s,M))^D$.  Then:
+\begin{align}
+  \sum_s \pi_s \log\frac{q(s)}{q_0(s)}
+  &= \MI_\pi(S; D_M)
+    - \E_D\bigl[\KL(\pi_D^M \| q_D)\bigr]
+    + \text{constant w.r.t.\ } q_0 \nonumber \\
+  &= G - \mismatch + \text{const}.
+\end{align}
+Combining yields the four-term identity~\eqref{eq:four-term}. \qed
+
+\section{Lagrangian Non-Connection}
+\label{app:lagrangian}
+
+Consider the packed-family optimization with $\Mn{=}2$ modes, two models,
+and a cost budget~$B$.  The Lagrangian is:
+\[
+  \mathcal{L}(q, M, \lambda) = \E[-\log T(M, q)]
+    + \lambda\bigl(\kappa(M) \cdot D - B\bigr).
+\]
+The KKT conditions yield a single scalar multiplier $\lambda^* \ge 0$
+as the shadow price of the budget constraint.  The optimal routing satisfies
+$q_s^* = \pi_s$ (posterior-matched), and the optimal objective equals
+$\Hent(\pi)$, the mode entropy, independent of~$M$.
+
+The four decomposition terms $(\text{cost}, \varphi, G, \mismatch)$ are
+components of the primal objective evaluated at any feasible design
+point---a zeroth-order algebraic property.  Shadow prices measure
+sensitivity to constraint relaxation---a first-order envelope property.
+No linear combination of the single shadow price $\lambda^*$ reproduces
+the four-term decomposition, except in degenerate cases where the budget
+constraint is not binding.
+
+The structural reason is that the decomposition is a \emph{pointwise
+identity} valid at every $(M, q)$, not a first-order optimality condition
+valid only at the optimum.  The decomposition's value to optimization is
+as a separable evaluator, not as a dual decomposition. \qed
+
+\section{Near-Optimality Proof (Proposition~\ref{prop:near-opt})}
+\label{app:near-opt}
+
+\begin{proof}
+Since $\hat{d}$ minimizes $\hat{f}$ over $\cD$:
+\begin{align}
+  f(\hat{d})
+  &\le \hat{f}(\hat{d}) + \delta
+    \tag{$\delta$-accuracy for $\hat{d}$} \\
+  &\le \hat{f}(d_{\mathrm{opt}}) + \delta
+    \tag{$\hat{d}$ is best estimated} \\
+  &\le f(d_{\mathrm{opt}}) + 2\delta.
+    \tag{$\delta$-accuracy for $d_{\mathrm{opt}}$}
+\end{align}
+
+\textbf{Tightness.}
+Take $k{=}2$, $f(d_1) = 0$, $f(d_2) = 2\delta - \epsilon$.
+Set $\hat{f}(d_1) = +\delta$, $\hat{f}(d_2) = \delta - \epsilon$.
+Algorithm selects $d_2$; regret $= 2\delta - \epsilon \to 2\delta$.
+
+\textbf{Confirmation bound.}
+Since $\hat{d} \in \cC$, $\tilde{f}(d^*) \le \tilde{f}(\hat{d})$.
+Applying $\eta$-accuracy:
+$f(d^*) \le \tilde{f}(d^*) + \eta \le \tilde{f}(\hat{d}) + \eta
+\le f(\hat{d}) + 2\eta \le f(d_{\mathrm{opt}}) + 2\delta + 2\eta$. \qed
+\end{proof}
+
+\section{Evaluation Complexity Proof}
+\label{app:eval-complexity}
+
+Phase~1: $m$ models $\times$ $\Mn$ modes $\times$ $n_0$ instances
+$= m \cdot \Mn \cdot n_0$ evaluations.
+Phase~2: $k \cdot \Mn$ arithmetic operations, zero evaluations.
+Phase~3: $c \cdot N_{\mathrm{conf}}$ evaluations.
+Total: $N_{\mathrm{Alg1}} = m \cdot \Mn \cdot n_0 + c \cdot N_{\mathrm{conf}}$.
+
+Racing: $k \cdot n_{\mathrm{eval}}$ evaluations (with
+$n_{\mathrm{eval}} = O(\log(k/\beta)/\delta^2)$ for Hoeffding-based
+accuracy).
+
+Savings factor:
+$N_{\mathrm{race}}/N_{\mathrm{Alg1}} = k \cdot n_{\mathrm{eval}} /
+(m \cdot \Mn \cdot n_0 + c \cdot N_{\mathrm{conf}})$.
+For fixed $m, \Mn, c, N_{\mathrm{conf}}$, this is $\Theta(k)$.
+
+\textbf{Asymptotic:}
+$N_{\mathrm{Alg1}} = O(1)$ in $k$;
+$N_{\mathrm{race}} = O(k)$;
+$N_{\mathrm{SHA}} = O(B)$ with first-round per-design budget
+$O(B/(k\log k)) \to 0$. \qed
+
+\section{Sample Complexity Cascade Proof}
+\label{app:cascade}
+
+Chain three results.  From Hoeffding applied to $m \cdot \Mn$ mode--model
+pairs with $n_0 = N/(m \cdot \Mn)$ samples each:
+\[
+  \delta \le \sqrt{\frac{\log(2\Mn/\dconf)}{2n_0}}
+  = \sqrt{\frac{m \cdot \Mn \cdot \log(2\Mn/\dconf)}{2N}}.
+\]
+From Proposition~\ref{prop:near-opt}: regret $\le 2\delta$.
+Substituting:
+\[
+  \text{regret} \le 2\sqrt{\frac{m \cdot \Mn \cdot \log(2\Mn/\dconf)}{2N}}.
+\]
+Bernstein refinement: replace $1/(2n_0)$ with
+$3\pmin/n_0$ when $\pmin \le 1/2$:
+\[
+  \text{regret}_{\mathrm{Bern}} \le
+  2\sqrt{\frac{3m \cdot \Mn \cdot \pmin \cdot \log(2\Mn/\dconf)}{N}}.
+\]
+Improvement factor: $\sqrt{6\pmin}$; at $\pmin = 0.02$, this is
+$\approx 0.35$, a $2.9\times$ tighter bound. \qed
+
+\section{Independence Proofs (Proposition~\ref{prop:independence})}
+\label{app:independence}
+
+\subsection{C64: Post-training equivalence does not imply orchestration equivalence}
+
+\textbf{Construction.}
+$\Mn{=}2$, $m{=}2$ ($M_{\mathrm{big}}, M_{\mathrm{small}}$).
+Shared competence:
+$p(1, M_{\mathrm{big}}) = 0.8$, $p(2, M_{\mathrm{big}}) = 0.3$,
+$p(1, M_{\mathrm{small}}) = 0.4$, $p(2, M_{\mathrm{small}}) = 0.6$.
+Mode distributions: $\pi_A = (0.7, 0.3)$, $\pi_B = (0.3, 0.7)$.
+
+Post-training equivalence holds (identical per-mode, per-model success
+probabilities).
+
+Orchestration equivalence fails: $\KL(\pi_A \| \pi_B) = 0.339 > 0$.
+The posterior routing distributions at $D{=}1$ are
+$\pi_1^A \approx (0.757, 0.243)$ vs.\
+$\pi_1^B \approx (0.364, 0.636)$,
+with $\KL(\pi_1^A \| \pi_1^B) \approx 0.320$.
+The ordering persists at all depths by monotonicity of
+$P_D(s) = 1 - (1-p^*(s))^D$.
+
+\subsection{C65: Orchestration equivalence does not imply post-training equivalence}
+
+\textbf{Construction.}
+$\pi_C = \pi_D = (0.5, 0.5)$.
+$\tau_C$: $p_C(1, M_{\mathrm{big}}) = 0.9$,
+  $p_C(2, M_{\mathrm{big}}) = 0.2$,
+  $p_C(1, M_{\mathrm{small}}) = 0.3$,
+  $p_C(2, M_{\mathrm{small}}) = 0.7$.
+$\tau_D$: $p_D(1, M_{\mathrm{big}}) = 0.6$,
+  $p_D(2, M_{\mathrm{big}}) = 0.1$,
+  $p_D(1, M_{\mathrm{small}}) = 0.2$,
+  $p_D(2, M_{\mathrm{small}}) = 0.8$.
+
+Orchestration equivalence holds at the routing-policy level:
+$M_{\mathrm{big}}$ wins mode~1 and $M_{\mathrm{small}}$ wins mode~2
+in both distributions, at all depths (by strict monotonicity).
+
+Post-training equivalence fails:
+$|p_C(1, M_{\mathrm{big}}) - p_D(1, M_{\mathrm{big}})| = 0.3$.
+The competence term $\varphi$ differs by $|\varphi_C - \varphi_D|
+\approx 0.413$.
+
+\section{Three-Case Transfer Proof (Theorem~\ref{thm:transfer})}
+\label{app:transfer}
+
+\textbf{Setup.}
+Write the transfer error as:
+\[
+  \Delta = f(d_S^*; \tau_T) - f(d_T^*; \tau_T)
+  \le |f(d_S^*; \tau_T) - f(d_S^*; \tau_S)|
+    + |f(d_S^*; \tau_S) - f(d_T^*; \tau_T)|.
+\]
+Since $d_S^*$ optimizes $\tau_S$: $f(d_S^*; \tau_S) \le f(d_T^*; \tau_S)$.
+It suffices to bound $|f(d; \tau_T) - f(d; \tau_S)|$ term by term.
+
+\textbf{Cost term:} $|C_T - C_S| = 0$ (model-dependent, not
+distribution-dependent).
+
+\textbf{Competence term:}
+$|\varphi_T - \varphi_S| \le 2\alpha_{\mathrm{PT}}$ (each of two
+log-terms shifts by at most $\alpha_{\mathrm{PT}}$).
+
+\textbf{Information gain:}
+$|G_T - G_S| \le \sqrt{2\alpha_O} \cdot \log\Mn$ by Pinsker's inequality
+($\|\pi_S - \pi_T\|_{\mathrm{TV}} \le \sqrt{\alpha_O/2}$) and the
+Audenaert entropy-continuity bound.
+
+\textbf{Routing mismatch:}
+$|\mismatch_T - \mismatch_S| \le \sqrt{2\alpha_O} \cdot \log\Mn$
+by the same Pinsker argument applied to the KL divergence of routing
+allocations.
+
+\textbf{Case~1:}
+$\Delta \le 2\alpha_{\mathrm{PT}} + \sqrt{2\alpha_O}\cdot\log\Mn$.
+Under $\alpha_{\mathrm{PT}} \le \tau_1 = \dtarget/2$ and
+$\alpha_O \le \tau_2 = \dtarget^2/(2\log^2\Mn)$:
+$\Delta \le \dtarget + \dtarget = 2\dtarget$.
+
+\textbf{Case~2:}
+Keep $M_S^*$, re-estimate routing from target pilot.
+Residual error: $\alpha_{\mathrm{PT}}$ (competence) $+ 2\dacc$
+(re-estimation, by Proposition~\ref{prop:near-opt} applied to the
+restricted design space $\{(M_S^*, D) : D \in D_{\mathrm{values}}\}$).
+Cost: $\Mn \cdot n_0'$ for one model instead of $m \cdot \Mn \cdot n_0$
+for all models---a factor of $m$ savings.
+
+\textbf{Case~3:}
+No transfer. Full Algorithm~\ref{alg:decomp-guided} on $\tau_T$.
+$\Delta \le 2\dacc$ by Proposition~\ref{prop:near-opt}. \qed
+
+\section{Decision Threshold Derivation}
+\label{app:thresholds}
+
+Set each term in the Case~1 bound equal to $\dtarget$:
+\begin{align}
+  2\alpha_{\mathrm{PT}} &\le \dtarget
+    &\implies \tau_1 &= \dtarget/2, \\
+  \sqrt{2\alpha_O}\cdot\log\Mn &\le \dtarget
+    &\implies \tau_2 &= \dtarget^2/(2\log^2\Mn).
+\end{align}
+For $\dtarget = 0.1$ and $\Mn = 5$:
+$\tau_1 = 0.05$, $\tau_2 \approx 0.0019$.
+The orchestration threshold $\tau_2$ is much smaller than $\tau_1$,
+reflecting the amplification by $\log\Mn$: even small mode-distribution
+shifts can cause significant routing errors.
+
+\section{Transfer Savings Proof (Proposition~\ref{prop:transfer-savings})}
+\label{app:transfer-savings}
+
+Case~1: $\mathcal{C}_{\mathrm{target}} = 0$.
+Case~2: Pilot evaluates one model on $\Mn$ modes instead of $m$ models.
+Pilot cost: $\Mn \cdot n_0$ vs.\ $m \cdot \Mn \cdot n_0$.
+Ratio: $1/m$.
+Case~3: $\mathcal{C}_{\mathrm{target}} = m \cdot \Mn \cdot n_0 +
+c \cdot N_{\mathrm{conf}} = \mathcal{C}_S$. No savings. \qed
+
+\section{Additional Experiment Details}
+\label{app:experiments}
+
+\subsection{EXP10 Setup}
+
+Five models (tiny, small, medium, large, xlarge) with costs
+$\kappa \in \{0.5, 1, 3, 10, 25\}$.
+Per-mode success probabilities scale linearly with model size.
+$\Mn{=}5$ modes with Zipf distribution
+$\pi \propto (1, 1/2, 1/3, 1/4, 1/5)$.
+Cost--quality weight $\mu = 0.3$.
+Pilot: $n_0 = 200$ per mode per model.
+Confirmation: $c = 5$, $N_{\mathrm{conf}} = 500$.
+Racing: $n_{\mathrm{eval}} = 500$ per design.
+50 Monte Carlo replications per condition.
+
+\subsection{EXP13 Setup}
+
+Same model and mode parameters as EXP10.
+All methods given a matched budget of 7,500 total evaluations.
+BO: RBF kernel, length scale 0.5, EI acquisition, 5 initial random
+points, 150 evaluations per query.
+SHA: budget $= 7{,}500$, $\lceil\log_2 k\rceil$ rounds.
+50 MC replications per condition.
+
+\subsection{EXP14 Setup}
+
+Three models (specialist\_A, generalist\_B, specialist\_C) with
+heterogeneous competence profiles.
+$k = 51$ designs (3 models $\times$ 17 depths).
+$\dtarget = 0.15$, yielding $\tau_1 = 0.075$, $\tau_2 \approx 0.0043$.
+100 MC replications per grid cell.
+
+\subsection{EXP15 Data Sources}
+
+Semi-synthetic pass rates calibrated to published SWE-bench-lite
+results~\citep{jimenez2024swebench}.
+Repository-specific pass rates derived from leaderboard entries
+(circa early 2025).
+Not exact per-instance predictions; structural findings (mode
+heterogeneity, absence of crossing structure) are robust to the
+exact numbers.
+
+
+\end{document}

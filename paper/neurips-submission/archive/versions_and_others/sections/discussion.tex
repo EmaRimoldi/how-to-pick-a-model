@@ -1,0 +1,88 @@
+%% ====================================================================
+%%  SECTION 11 --- DISCUSSION AND CONCLUSION (~1.5pp)
+%% ====================================================================
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{What We Learned}
+
+The four-term decomposition turns out to be useful not because it is an optimization algorithm---it is not---but because it converts the builder's vague question (``why is my system slow?'') into four specific diagnostics with different remedies.
+The crossover theorem converts ``which model should I use?'' into arithmetic.
+Perhaps most importantly, the Lagrangian non-connection pre-empts the most tempting misinterpretation and correctly positions the decomposition as performance accounting rather than dual decomposition.
+
+\subsection{Limitations}
+
+\paragraph{1. Synthetic-only validation.}
+All nine experiments use geometric-trials Monte Carlo.
+No real-benchmark validation has been performed.
+The packed-family assumption may not hold in practice; the geometric-trials model is a first approximation.
+This is the single largest weakness.
+
+\paragraph{2. Packed-family assumption.}
+The four-term decomposition is exact only under packed families.
+Outside this regime, the approximation guarantee $O(\delta \log \Mn + \eta)$ applies, but $\eta$ is uncharacterized on real data.
+The paper does not claim generality beyond this assumption.
+
+\paragraph{3. Independent-attempts model.}
+The graph-depth model assumes $D$ independent sequential attempts.
+Real orchestration has inter-step dependence.
+Independence is conservative (a lower bound on the benefit of depth), but the prediction gap under dependence is uncharacterized.
+
+\paragraph{4. Transfer theory is incomplete.}
+The three transfer regimes (Section~\ref{sec:transfer}) are a qualitative framework, not formal theorems.
+Constructive examples demonstrating independence of the two equivalence notions, and quantitative transfer bounds with named thresholds, remain future work.
+
+\paragraph{5. Missing BO baseline.}
+The evaluation efficiency comparison is two-way (decomposition vs.\ racing), not three-way.
+A Bayesian optimization baseline would strengthen the efficiency claim and is planned for a future version.
+
+\paragraph{6. MC discrepancies.}
+Three specific deviations from theoretical predictions are documented in Section~\ref{sec:validation}: the Bernstein improvement ratio (4.5x empirical vs.\ 3.3x formula at $p = 0.05$), the Bernstein--Hoeffding crossover ($p \approx 0.23$ vs.\ predicted $0.17$), and the routing-triviality sufficient condition (62\% accuracy near boundary).
+None threatens the paper's claims, but all constrain the precision of practical guidance.
+
+\subsection{Open Questions}
+
+\begin{enumerate}
+\item \textbf{Optimal pilot-to-confirmation budget split.}
+The over-piloting penalty is real but theoretically unexplained.
+What is the bias-variance tradeoff governing this split?
+We suspect the penalty arises from estimation noise in the competence term~$\varphi$ propagating through the design ranking, but a formal analysis would require characterizing the sensitivity of the argmax to estimation error in each of the four terms.
+
+\item \textbf{Tighter sample complexity bounds.}
+The gap between Bernstein's $\pmin^{-1}$ and the empirical $\pmin^{-1.35}$ suggests room for a distribution-dependent analysis.
+
+\item \textbf{Non-geometric distributions.}
+How does the decomposition degrade when certified time is not geometric?
+The packed-family assumption with geometric trials is a first approximation; the right generalization is open.
+
+\item \textbf{Inter-step dependence.}
+Can the graph-depth characterization be extended to Markovian or conditionally independent attempts?
+
+\item \textbf{Real-benchmark validation.}
+Applying the framework to SWE-bench and Lean/Mathlib tasks, with real pilot data and real model APIs, is the most important next step for establishing practical credibility.
+\end{enumerate}
+
+\subsection{Conjectures}
+
+Two conjectures, each clearly marked as such:
+
+\begin{enumerate}
+\item \emph{We conjecture that the evaluation efficiency advantage scales as $\Theta(k^{0.7})$ with design-space size, based on EXP9 analytical predictions.
+Monte Carlo confirmation is pending.}
+
+\item \emph{We conjecture that the optimal pilot budget fraction is monotonically decreasing in the design-menu size~$k$ and increasing in the difficulty of the hardest mode, but a formal characterization remains open.}
+\end{enumerate}
+
+\subsection{Conclusion}
+
+What we did not expect at the outset was how much of the paper's value would come from negative and scoping results.
+The Lagrangian non-connection closes a door that would otherwise waste the field's time.
+The routing-triviality condition saves practitioners from building infrastructure that provably adds nothing.
+The over-piloting finding contradicts the natural assumption that more data always helps.
+These three results are less quotable than the crossover formula, but they may prove more useful: knowing what not to do is often worth more than a formula for what to do.
+
+The framework's main open problem is empirical validation.
+All nine experiments operate within the geometric-trials model that the theory assumes, so the experiments confirm internal consistency, not external validity.
+Applying the decomposition to real agent pipelines---code generation against test suites, theorem proving against proof assistants---is the essential next step.
+If the packed-family structure holds on real tasks, the four-term decomposition becomes a practical diagnostic.
+If it does not, the bounded-residual guarantee tells us how far off the accounting will be.
