@@ -1,0 +1,94 @@
+# ─────────────────────────────────────────────────────────────────
+#  Experiment Configuration
+#  Pass to launcher with: uv run agent-workflow parallel --config configs/experiment.yaml
+# ─────────────────────────────────────────────────────────────────
+
+experiment:
+  # Unique identifier for this run. null = auto-generate timestamp-based ID.
+  id: null
+  # Execution mode: parallel | parallel_shared | single_long | single_memory
+  #   parallel        — N isolated agents running simultaneously
+  #   parallel_shared — N agents running simultaneously with a shared result log
+  #   single_long     — 1 agent with the configured wall-clock budget
+  #   single_memory   — 1 agent with external memory enabled
+  mode: parallel
+  # Directory under which run outputs are written (relative to repo root).
+  runs_dir: runs
+
+# ── Agent settings ────────────────────────────────────────────────
+agents:
+  # Compact mode: spawn N agents with the same default settings.
+  # Ignored when agents.roster is non-empty.
+  n: 3
+
+  # Claude model used for every sub-agent.
+  # Options: claude-haiku-4-5-20251001 | claude-sonnet-4-6 | claude-opus-4-6
+  model: claude-haiku-4-5-20251001
+
+  # Wall-clock budget per agent in minutes.
+  # In single_long mode the one agent receives 2× this value.
+  time_budget_minutes: 30
+
+  # Maximum seconds allowed for a single SLURM training job.
+  # Controls the --time flag on SLURM via train_budget_seconds arg to create_workspace.
+  train_time_budget_seconds: 300
+
+  # Temperature approximation (claude CLI has no --temperature flag).
+  # The value controls the [SEARCH STYLE] directive injected into the system prompt:
+  #   null         → no directive (default Claude behaviour)
+  #   >= 1.0       → exploratory: bold/diverse hyperparameter changes
+  #   0.5 .. 0.99  → no directive
+  #   < 0.5        → conservative: small incremental changes
+  temperature: null
+
+  # CUDA device assignment. null = auto-assign [0, 1, …, n-1].
+  # Provide an explicit list to pin agents to specific devices.
+  # Must have at least n entries if provided.
+  cuda_devices: null
+  # Example: cuda_devices: ["0", "1", "2"]
+
+  # Per-agent overrides — only listed fields are overridden for that agent.
+  # agent_id follows the pattern agent_0, agent_1, …, agent_{n-1}.
+  overrides: []
+  # Example — mix temperatures across agents for diverse search:
+  # overrides:
+  #   - agent_id: agent_0
+  #     temperature: 1.5        # exploratory
+  #     model: claude-opus-4-6
+  #   - agent_id: agent_1
+  #     temperature: null       # default
+  #   - agent_id: agent_2
+  #     temperature: 0.3        # conservative
+
+  # Roster mode: explicitly design each agent.
+  # When this list is non-empty it replaces n and overrides.
+  # Use this when you want different roles, models, temperatures, or devices.
+  roster: []
+  # Example:
+  # roster:
+  #   - id: explorer
+  #     role: broad architecture and hyperparameter search
+  #     model: claude-sonnet-4-6
+  #     temperature: 1.2
+  #     cuda_device: "0"
+  #   - id: optimizer
+  #     role: conservative refinement of the best known candidate
+  #     model: claude-haiku-4-5-20251001
+  #     temperature: 0.3
+  #     cuda_device: "1"
+
+# ── SLURM settings ────────────────────────────────────────────────
+slurm:
+  # SLURM partition name.
+  partition: pi_tpoggio
+  # GPU resource string passed to --gres.
+  gres: gpu:1
+  # Wall-time limit per training job (HH:MM:SS).
+  # Must be long enough for train_time_budget_seconds + ~2 min overhead.
+  time: "00:10:00"
+
+# ── Prompt files ────────────────────────────────────────────────
+# Paths are relative to the repo root.
+prompts:
+  system_prompt: prompts/agent_system_prompt.md
+  first_message: prompts/agent_first_message.md

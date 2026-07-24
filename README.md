@@ -1,105 +1,85 @@
-# Theory of Agents
+# How to Pick a Model
 
-Empirical proper-time and retry-allocation experiments for evaluating when
-multiple local language models should be routed, retried, or ignored.
+Theory, executable benchmarks, and empirical evidence for deployment-aware
+model and agent selection.
 
-This repository contains three related experiment tracks:
+This repository unifies the former `theory-of-agents`, `agentops-lab-public`,
+and Overleaf manuscript histories. It keeps the paper, AutoResearch evidence,
+and the HumanEval+/MBPP+/BBH strategy-routing work in one place while preserving
+clear experimental boundaries.
 
-- **HumanEval+ proper-time frontier:** Qwen2.5-Coder 1.5B, 7B, and 32B on
-  HumanEval+, with repeated sampling until verified pass or censoring.
-- **Retry-allocation router:** a Codex/LLM router allocates a fixed retry budget
-  across workers using saved traces, then execution is simulated from logs.
-- **Dataset extensions:** MBPP+ and BBH variants reuse the same worker-log,
-  allocation, router, estimator, and plotting pipeline.
+## Repository map
 
-## Quick Setup
+- `paper/`: submitted manuscript, LaTeX sources, historical drafts, references,
+  and paper figures.
+- `autoresearch/`: runnable CIFAR-10 edit--verify benchmark and analysis code.
+- `experiments/autoresearch/`: AutoResearch-only experiments and evidence.
+- `experiments/other/`: strategy-routing, SWE-bench, and other non-AutoResearch
+  experiment artifacts.
+- `src/agent_workflow/` and `src/vao/`: orchestration runtime imported from
+  `agentops-lab-public`.
+- `src/*.py`, `config/`, and `data/`: HumanEval+, MBPP+, BBH, and retry-routing
+  pipeline inherited from `theory-of-agents`.
+- `configs/`: orchestration and AutoResearch runtime configuration.
+- `tests/`: runtime and AutoResearch reproduction tests.
 
-Use the project-local virtual environment. The local `.venv/` is intentionally
-not committed; recreate it from the pinned requirements file.
+The experiment index is in [`experiments/README.md`](experiments/README.md).
 
-```bash
-uv venv .venv --python 3.13
-uv pip install --python .venv/bin/python -r requirements.txt
-.venv/bin/python -m compileall -q src
-```
+## Quick setup
 
-External tools for live runs:
-
-```bash
-ollama pull qwen2.5-coder:1.5b
-ollama pull qwen2.5-coder:7b
-ollama pull qwen2.5-coder:32b
-ollama pull qwen2.5:1.5b
-ollama pull qwen2.5:7b
-ollama pull qwen2.5:32b
-```
-
-Router/category experiments that use Codex CLI also require:
+The unified Python package is named `how-to-pick-a-model`. The historical
+`agent-workflow` CLI name remains available for compatibility.
 
 ```bash
-export ROUTER_MODEL=<codex-model-id>
+uv sync --dev --frozen
+uv run agent-workflow --help
+uv run pytest -q
 ```
 
-## What Is Reproducible From Tracked Files
-
-Read [`docs/reproducibility.md`](docs/reproducibility.md) for the exact
-experiment-by-experiment matrix.
-
-Safe read-only checks:
+Install optional experiment dependencies only when needed:
 
 ```bash
-.venv/bin/python -m src.load_traces --config config/router_experiment.yaml
-.venv/bin/python -m src.load_traces --config config/router_experiment_mbpp_2models.yaml
-.venv/bin/python -m src.load_traces --config config/router_experiment_bbh.yaml
+uv sync --dev --extra autoresearch --frozen
+uv sync --dev --extra other-experiments --frozen
+uv sync --dev --extra all-experiments --frozen
 ```
 
-Figure and estimator scripts are separated from live model calls. Some smoke
-scripts intentionally delete/regenerate local smoke outputs; run them only from a
-clean worktree or after reading the reproducibility guide.
+## Safe reproduction checks
 
-## Main Commands
-
-HumanEval+ worker frontier:
+Regenerate the reader-facing AutoResearch figures from processed evidence:
 
 ```bash
-scripts/smoke_test.sh
-scripts/full_run.sh
+uv run python -m autoresearch.scripts.reproduce_main_figures_from_processed \
+  --input experiments/autoresearch/05_autoresearch_model_routing/results/accounting/threeworker_final_analysis.json \
+  --out-dir /tmp/how_to_pick_a_model_autoresearch
 ```
 
-HumanEval+ retry-allocation router:
+Inspect the non-AutoResearch worker traces without live model calls:
 
 ```bash
-scripts/smoke_router.sh
-scripts/full_router_run.sh
+uv run python -m src.load_traces --config config/router_experiment.yaml
+uv run python -m src.load_traces --config config/router_experiment_mbpp_2models.yaml
+uv run python -m src.load_traces --config config/router_experiment_bbh.yaml
 ```
 
-MBPP+ worker/router variants:
+See [`docs/reproducibility.md`](docs/reproducibility.md) for the complete
+environment and evidence matrix.
 
-```bash
-scripts/smoke_mbpp_worker.sh
-scripts/full_run_mbpp_2models.sh
-scripts/full_run_mbpp_32b.sh
-scripts/full_category_run.sh
-```
+The original repository roots and path mapping are documented in
+[`docs/history-merge.md`](docs/history-merge.md).
 
-BBH worker/router variants:
+## Manuscript status
 
-```bash
-scripts/smoke_bbh.sh
-scripts/full_run_bbh.sh
-scripts/full_router_run_bbh.sh
-```
+The original submitted PDF is
+[`paper/submitted-manuscript.pdf`](paper/submitted-manuscript.pdf). The
+reproducibility audit found that its promoted deployment-loss table used a
+legacy full-horizon composite loss rather than the first-passage loss stated in
+the text. The corrected accounting and later three-worker analysis are the
+canonical computational results in this repository. Details are recorded in
+[`docs/audits/manuscript-reproducibility.md`](docs/audits/manuscript-reproducibility.md).
 
-## Repository Map
+## Historical names
 
-- `src/`: reusable Python modules for datasets, workers, evaluation, routing,
-  estimation, and plotting.
-- `config/`: YAML configurations for HumanEval+, MBPP+, BBH, and router runs.
-- `scripts/`: smoke and full-run launch scripts.
-- `data/raw/`: tracked full worker logs used as empirical evidence.
-- `data/derived/`: tracked derived summaries, folds, modes, and router outputs.
-- `docs/specs/`: original implementation specifications and protocol notes.
-- `NOTES.md`: operational notes from the historical runs.
-
-Ignored local artifacts include `.venv/`, `figures/`, `report/`, LaTeX build
-outputs, smoke outputs, and local archive material.
+The package/CLI compatibility surface still uses `agent_workflow` and
+`agent-workflow`; experiment paths and documentation use the unified
+`how-to-pick-a-model` project name.

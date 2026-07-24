@@ -1,0 +1,23 @@
+{
+  "baseline_correctness": true,
+  "baseline_loss": 2.020082,
+  "best_counterfactual_loss": 1.533407,
+  "best_counterfactual_relative_improvement": 0.24091843796439946,
+  "best_visible_loss": 1.533407,
+  "best_visible_relative_improvement": 0.24091843796439946,
+  "branch_evaluations": 20,
+  "candidate_generation": "interactive_session",
+  "completed_at": "2026-05-06T15:12:32.759784+00:00",
+  "elapsed_wall_seconds": 1620.9746160507202,
+  "model_id": "gpt-5.3-codex",
+  "profile_id": "autoresearch_cifar10",
+  "run_id": "worker_confirmation_holdout_resnet_micro_seed9407_gpt_5_3_codex",
+  "selected_accounting_cost": 928.3,
+  "steps_completed": 20,
+  "stop_on_success": false,
+  "success": true,
+  "success_threshold_relative": 0.05,
+  "tau_step": 1,
+  "total_branch_accounting_cost": 928.3,
+  "visibility_regime": "top1_only"
+}

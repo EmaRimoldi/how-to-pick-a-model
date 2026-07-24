@@ -1,0 +1,9 @@
+condition,n,policy,wall_seconds,speedup,efficiency,mean_steps,mean_val_bpb
+single_sequential,1,single,9.34,1.00,1.00,19.0,1.945
+single_parallel_control,1,parallel_control,10.08,0.93,0.93,21.0,1.947
+n2_default,2,default,11.18,1.69,0.85,17.0,1.986
+n2_partitioned,2,partitioned,10.16,1.86,0.93,19.0,1.945
+n4_default,4,default,14.28,2.63,0.66,12.0,2.059
+n4_partitioned,4,partitioned,14.26,2.63,0.66,15.0,2.018
+n8_default,8,default,23.54,3.15,0.39,7.1,2.207
+n8_partitioned,8,partitioned,22.58,3.29,0.41,10.0,2.113

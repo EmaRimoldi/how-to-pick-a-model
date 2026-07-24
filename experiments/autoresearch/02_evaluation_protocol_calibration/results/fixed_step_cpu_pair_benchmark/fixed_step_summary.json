@@ -1,0 +1,65 @@
+{
+  "created_at": "2026-04-13T18:58:14.089256",
+  "purpose": "Fixed-step CPU pair benchmark for compute-allocation calibration.",
+  "source_workspace": "experiments/calibration_design/runs/calibration__2x2-diversity-memory__superseded/d00/rep1/mode_single_long/agent_0/workspace",
+  "device": "cpu",
+  "max_steps": 300,
+  "conditions": [
+    {
+      "name": "single_t4",
+      "n": 1,
+      "threads": 4,
+      "parallel": false,
+      "group_wall_seconds": 86.989025,
+      "mean_worker_wall_seconds": 85.881173,
+      "steps": [300],
+      "mean_val_bpb": 1.267963,
+      "val_accuracy": 0.5295
+    },
+    {
+      "name": "seq2_t4",
+      "n": 2,
+      "threads": 4,
+      "parallel": false,
+      "group_wall_seconds": 172.442487,
+      "mean_worker_wall_seconds": 85.097636,
+      "steps": [300, 300],
+      "mean_val_bpb": 1.267963,
+      "val_accuracy": 0.5295
+    },
+    {
+      "name": "par2_t4",
+      "n": 2,
+      "threads": 4,
+      "parallel": true,
+      "group_wall_seconds": 98.479366,
+      "mean_worker_wall_seconds": 97.148843,
+      "steps": [300, 300],
+      "mean_val_bpb": 1.267963,
+      "val_accuracy": 0.5295,
+      "speedup_vs_seq2_t4": 1.751052,
+      "worker_slowdown_vs_seq2_t4": 1.141616
+    },
+    {
+      "name": "par2_t2",
+      "n": 2,
+      "threads": 2,
+      "parallel": true,
+      "group_wall_seconds": 125.860975,
+      "mean_worker_wall_seconds": 124.600057,
+      "steps": [300, 300],
+      "mean_val_bpb": 1.267963,
+      "val_accuracy": 0.5295,
+      "speedup_vs_seq2_t4": 1.370103,
+      "worker_slowdown_vs_seq2_t4": 1.464201
+    }
+  ],
+  "interpretation": {
+    "main_result": "At fixed 300-step training length, two concurrent CPU training jobs reached the same validation loss as sequential jobs, so contention appeared as wall-clock slowdown rather than fewer gradient updates.",
+    "best_tested_cpu_parallel_setting": "par2_t4",
+    "par2_t4_group_speedup_vs_seq2_t4": 1.751052,
+    "par2_t4_worker_slowdown_vs_seq2_t4": 1.141616,
+    "par2_t2_group_speedup_vs_seq2_t4": 1.370103,
+    "par2_t2_worker_slowdown_vs_seq2_t4": 1.464201
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "result": "Done.",
+  "structured_output": {
+    "primary_mode": "layout",
+    "declared_mode": "layout",
+    "edit_format": "unified_diff",
+    "secondary_modes": [],
+    "rationale": "Make a small layout-scoped class metadata edit without changing behavior.",
+    "unified_diff": "--- parent_solution.py\n+++ proposed_solution.py\n@@ -9,7 +9,7 @@\n \n \n class CandidateQueryEngine:\n-    \"\"\"Correct list-backed baseline implementation.\"\"\"\n+    \"\"\"Layout candidate retaining the list-backed baseline.\"\"\"\n \n     def __init__(self, items: dict[int, int] | None = None):\n         self._items: list[tuple[int, int]] = []\n"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "initial_meta": {
+    "cost_usd": null,
+    "elapsed_wall_seconds": 20.76540739898337,
+    "max_tokens_requested": 4096,
+    "model": "gpt-5.4",
+    "raw_cli_result": {
+      "stderr_tail": "",
+      "stdout_tail": "SCHEDULE:\\\\n        return None\\\\n    total_steps = TRAIN_MAX_STEPS if TRAIN_MAX_STEPS is not None else steps_per_epoch * 12\\\\n    warmup_steps = min(max(steps_per_epoch // 2, 1), max(total_steps // 10, 1))\\\\n\\\\n    def lr_lambda(step: int) -> float:\\\\n        if step < warmup_steps:\\\\n            return float(step + 1) / float(warmup_steps)\\\\n        progress = (step - warmup_steps) / float(max(total_steps - warmup_steps, 1))\\\\n        return 0.1 + 0.9 * 0.5 * (1.0 + np.cos(np.pi * progress))\\\\n\\\\n    return optim.lr_scheduler.LambdaLR(optimizer, lr_lambda)\\\",\\\"text\\\":\\\"\\\"}],\\\"primary_mode\\\":\\\"summaries\\\",\\\"rationale\\\":\\\"Use the fixed 256-step budget more effectively by pairing AdamW with a short warmup plus cosine decay over the actual training horizon instead of an effectively flat 100-epoch schedule.\\\",\\\"secondary_modes\\\":[\\\"indexing\\\",\\\"topk\\\"]}\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":26534,\"cached_input_tokens\":2432,\"output_tokens\":931,\"reasoning_output_tokens\":516}}\n"
+    },
+    "reasoning_effort": "medium",
+    "session_id": "019dfc57-d118-7a43-b397-d5b7d0a15d9a",
+    "transport": "codex_cli_persistent",
+    "usage": {
+      "cached_input_tokens": 2432,
+      "input_tokens": 26534,
+      "output_tokens": 931,
+      "reasoning_output_tokens": 516,
+      "total_tokens": 27465
+    }
+  },
+  "prompt_path": "/home/erimoldi/openclaw_remote/projects/NeurIPS_2026/autoresearch/campaigns/h20_delta005_20260505/runs/worker_confirmation/worker_confirmation_holdout_cnn_compact_seed9412_gpt_5_4/interactive_initial_prompt.txt",
+  "session_id": "019dfc57-d118-7a43-b397-d5b7d0a15d9a"
+}

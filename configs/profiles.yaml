@@ -1,0 +1,13 @@
+profiles:
+  dev:
+    - hard_balanced_dev
+    - hard_range_dev
+    - hard_churn_dev
+  holdout:
+    - hard_balanced_holdout
+    - hard_range_holdout
+    - hard_churn_holdout
+  smoke:
+    - hard_balanced_dev
+  legacy:
+    - hard_optimization
