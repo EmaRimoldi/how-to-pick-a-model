@@ -1,0 +1,120 @@
+{
+  "profiles": {
+    "hard_balanced_dev": {
+      "seed": 510100,
+      "initial_size": 2600,
+      "key_space": 120000,
+      "trace_length": 1200,
+      "traces_per_family": 1,
+      "families": ["uniform_read_heavy", "zipf_hot_key", "bursty_mixed", "range_local_scans", "distribution_shift", "wide_range_churn", "temporal_repeat_windows", "topk_stress", "negative_lookup_churn"],
+      "repetitions": 2,
+      "warmup_prefix": 120,
+      "value_max": 1000
+    },
+    "hard_balanced_holdout": {
+      "seed": 910100,
+      "initial_size": 3000,
+      "key_space": 150000,
+      "trace_length": 1400,
+      "traces_per_family": 1,
+      "families": ["uniform_read_heavy", "zipf_hot_key", "bursty_mixed", "range_local_scans", "distribution_shift", "wide_range_churn", "temporal_repeat_windows", "topk_stress", "negative_lookup_churn"],
+      "repetitions": 2,
+      "warmup_prefix": 140,
+      "value_max": 1000
+    },
+    "hard_range_dev": {
+      "seed": 520100,
+      "initial_size": 2800,
+      "key_space": 140000,
+      "trace_length": 1300,
+      "traces_per_family": 1,
+      "families": ["range_local_scans", "wide_range_churn", "temporal_repeat_windows", "distribution_shift", "uniform_read_heavy", "bursty_mixed", "negative_lookup_churn"],
+      "repetitions": 2,
+      "warmup_prefix": 130,
+      "value_max": 1000
+    },
+    "hard_range_holdout": {
+      "seed": 920100,
+      "initial_size": 3200,
+      "key_space": 180000,
+      "trace_length": 1500,
+      "traces_per_family": 1,
+      "families": ["range_local_scans", "wide_range_churn", "temporal_repeat_windows", "distribution_shift", "zipf_hot_key", "bursty_mixed", "negative_lookup_churn"],
+      "repetitions": 2,
+      "warmup_prefix": 150,
+      "value_max": 1000
+    },
+    "hard_churn_dev": {
+      "seed": 530100,
+      "initial_size": 2400,
+      "key_space": 100000,
+      "trace_length": 1300,
+      "traces_per_family": 1,
+      "families": ["bursty_mixed", "topk_stress", "negative_lookup_churn", "zipf_hot_key", "distribution_shift", "wide_range_churn", "uniform_read_heavy"],
+      "repetitions": 2,
+      "warmup_prefix": 130,
+      "value_max": 1000
+    },
+    "hard_churn_holdout": {
+      "seed": 930100,
+      "initial_size": 3000,
+      "key_space": 160000,
+      "trace_length": 1500,
+      "traces_per_family": 1,
+      "families": ["bursty_mixed", "topk_stress", "negative_lookup_churn", "zipf_hot_key", "distribution_shift", "wide_range_churn", "temporal_repeat_windows"],
+      "repetitions": 2,
+      "warmup_prefix": 150,
+      "value_max": 1000
+    },
+    "hard_optimization": {
+      "seed": 424200,
+      "initial_size": 2600,
+      "key_space": 120000,
+      "trace_length": 1200,
+      "traces_per_family": 1,
+      "families": ["uniform_read_heavy", "zipf_hot_key", "bursty_mixed", "range_local_scans", "distribution_shift", "wide_range_churn", "temporal_repeat_windows", "topk_stress", "negative_lookup_churn"],
+      "repetitions": 2,
+      "warmup_prefix": 120,
+      "value_max": 1000
+    }
+  },
+  "score": {
+    "latency_weight": 0.95,
+    "memory_weight": 0.05
+  },
+  "measurement": {
+    "context_ceiling_tokens": 200000
+  },
+  "cost_model": {
+    "eval_call": 1.0,
+    "memory_op": 0.1,
+    "context_token": 0.00001,
+    "trace_op": 0.000001
+  },
+  "architectures": {
+    "d00": {
+      "description": "single path, no external memory",
+      "agent_ids": ["agent_0"],
+      "external_memory": false,
+      "shared_memory": false
+    },
+    "d10": {
+      "description": "single path, external memory",
+      "agent_ids": ["agent_0"],
+      "external_memory": true,
+      "shared_memory": false
+    },
+    "d01": {
+      "description": "two independent paths, no shared memory",
+      "agent_ids": ["agent_0", "agent_1"],
+      "external_memory": false,
+      "shared_memory": false
+    },
+    "d11": {
+      "description": "two paths with shared external memory",
+      "agent_ids": ["agent_0", "agent_1"],
+      "external_memory": true,
+      "shared_memory": true
+    }
+  }
+}

@@ -1,0 +1,79 @@
+experiment:
+  name: swebench_orchestration_full_verified_applylocal
+  dataset_name: princeton-nlp/SWE-Bench_Verified
+  split: test
+  evidence_level: E2_full_verified
+  public_instances: swebench/studies/open_source_orchestration/data/verified_full/instances_public.jsonl
+  output_dir: swebench/studies/open_source_orchestration/runs/full_verified
+  transductive: false
+
+meta_designer:
+  adapter: codex_cli
+  model_id: gpt-5.5
+  reasoning_effort: xhigh
+  timeout_seconds: 1800
+  description: >
+    Meta-agent that reads leakage-safe SWE-bench instances and generates a frozen
+    orchestration spec plus model-role assignments. Runtime execution must use only
+    open-source GPU-served workers.
+
+worker_models:
+  - alias: qwen3_4b_instruct
+    model_id: Qwen/Qwen3-4B-Instruct-2507
+    endpoint: http://127.0.0.1:8000/v1
+    intended_use: cheap controller, localizer, and short observation passes
+    hf_url: https://hf.co/Qwen/Qwen3-4B-Instruct-2507
+  - alias: qwen2_5_7b_instruct
+    model_id: Qwen/Qwen2.5-7B-Instruct
+    endpoint: http://127.0.0.1:8001/v1
+    intended_use: general reasoning, reviewer, and routing backup
+    hf_url: https://hf.co/Qwen/Qwen2.5-7B-Instruct
+  - alias: qwen2_5_coder_7b
+    model_id: Qwen/Qwen2.5-Coder-7B-Instruct
+    endpoint: http://127.0.0.1:8002/v1
+    intended_use: default patch generation on code-heavy instances
+    hf_url: https://hf.co/Qwen/Qwen2.5-Coder-7B-Instruct
+  - alias: qwen2_5_coder_14b
+    model_id: Qwen/Qwen2.5-Coder-14B-Instruct
+    endpoint: http://127.0.0.1:8003/v1
+    intended_use: stronger escalation path for hard patch generation
+    hf_url: https://hf.co/Qwen/Qwen2.5-Coder-14B-Instruct
+
+allowed_tools:
+  - rg/search repository text
+  - inspect file snippets
+  - generate unified diff patches
+  - maintain JSONL trace logs
+
+loss_weights:
+  alpha_fail: 100.0
+  token_weight: 0.00001
+  wall_weight: 0.0002777777777777778
+  test_weight: 0.0002777777777777778
+  api_weight: 1.0
+  verifier_call_weight: 0.05
+  simplicity_weight: 0.25
+  imbalance_weight: 1.0
+  route_regret_weight: 1.0
+  wasted_effort_weight: 0.5
+
+complexity_weights:
+  agents: 1.0
+  model_families: 1.0
+  prompt_templates: 0.5
+  routing_branches: 0.75
+  tool_policies: 0.5
+  max_patch_proposals: 0.25
+  context_budget_tokens_per_100k: 1.0
+
+executor:
+  workers_config: swebench/studies/open_source_orchestration/configs/swebench_open_source_workers_slurm_pilot.yaml
+  design: swebench/studies/open_source_orchestration/runs/single50_updated_20260607_112356/meta_update_apply_local_v2/orchestration_design_updated.json
+  orchestration_id: swev_e250_routed_onepass_escalator_20260607_b4c1
+  output_dir: swebench/studies/open_source_orchestration/runs/full_verified/executor
+  max_instances: 500
+  parallel_workers: 4
+  max_calls_per_component: null
+  patch_repair_attempts: 3
+  public_literal_repair_enabled: true
+  dry_run: false

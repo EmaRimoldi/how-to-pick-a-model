@@ -1,0 +1,103 @@
+{
+  "error_class_counts": {
+    "context_budget_exceeded": 3,
+    "none": 3,
+    "verifier_not_run": 1
+  },
+  "nonempty_patch_count": 0,
+  "patch_empty_reason_counts": {
+    "worker_error": 3
+  },
+  "phase_outcome_counts": {
+    "observe:ok": 1,
+    "patch:error": 3,
+    "review:ok": 1,
+    "verify:error": 1,
+    "verify:ok": 1
+  },
+  "predictions": [
+    {
+      "instance_id": "astropy__astropy-7671",
+      "model_name_or_path": "universal_u14_minimal_loop",
+      "patch_chars": 0,
+      "patch_nonempty": false,
+      "run_name": "swebench_real_patch_15537314"
+    }
+  ],
+  "prompt_budget_rows": [
+    {
+      "agent_id": "u_localize_patch",
+      "context_window_tokens": 16384,
+      "effective_max_tokens": 0,
+      "input_tokens": 11459,
+      "instance_id": "astropy__astropy-7671",
+      "level": "http_error_parsed",
+      "requested_max_tokens": 12000,
+      "run_name": "swebench_real_patch_15537314",
+      "step": 2
+    },
+    {
+      "agent_id": "u_localize_patch",
+      "context_window_tokens": 16384,
+      "effective_max_tokens": 0,
+      "input_tokens": 11459,
+      "instance_id": "astropy__astropy-7671",
+      "level": "http_error_parsed",
+      "requested_max_tokens": 12000,
+      "run_name": "swebench_real_patch_15537314",
+      "step": 3
+    },
+    {
+      "agent_id": "u_localize_patch",
+      "context_window_tokens": 16384,
+      "effective_max_tokens": 0,
+      "input_tokens": 11459,
+      "instance_id": "astropy__astropy-7671",
+      "level": "http_error_parsed",
+      "requested_max_tokens": 12000,
+      "run_name": "swebench_real_patch_15537314",
+      "step": 4
+    }
+  ],
+  "repo_context_rows": [
+    {
+      "candidate_files": 8,
+      "instance_id": "astropy__astropy-7671",
+      "run_name": "swebench_real_patch_15537314",
+      "search_hits": 28,
+      "snippet_chars": 18000,
+      "snippets": 5,
+      "status": "ready",
+      "tree_entries": 160
+    }
+  ],
+  "runs": [
+    {
+      "executor_dir": "swebench/runs/swebench_real_patch_15537314/executor",
+      "manifest": {
+        "design_path": "/tmp/erimoldi/swebench_real_patch_15537314/design_onegpu.json",
+        "dry_run": false,
+        "instances": 1,
+        "instances_path": "experiments/swebench_orchestration/data/smoke/instances_public.jsonl",
+        "limitations": [
+          "This executor materializes leakage-safe repository checkouts at base_commit when repo context is enabled.",
+          "This executor does not run target tests or the official SWE-bench verifier.",
+          "Predictions are patch-generation-only and are emitted as unverified candidates."
+        ],
+        "max_calls_per_component": 3,
+        "orchestration_id": "universal_u14_minimal_loop",
+        "parallel_workers": 1,
+        "predictions_path": "/home/erimoldi/openclaw_remote/projects/.worktrees/swebench-real-20260606-103655/swebench/runs/swebench_real_patch_15537314/executor/predictions.jsonl",
+        "repo_cache_dir": "/home/erimoldi/openclaw_remote/projects/.worktrees/swebench-real-20260606-103655/swebench/repos/cache",
+        "repo_context_enabled": true,
+        "repo_work_dir": "/tmp/swebench_runtime/repo_checkouts/swebench_orchestration_slurm_pilot_20260606_112534",
+        "run_id": "swebench_orchestration_slurm_pilot_20260606_112534",
+        "traces_path": "/home/erimoldi/openclaw_remote/projects/.worktrees/swebench-real-20260606-103655/swebench/runs/swebench_real_patch_15537314/executor/traces.jsonl",
+        "workers_config_path": "/tmp/erimoldi/swebench_real_patch_15537314/workers_onegpu.yaml"
+      },
+      "predictions": 1,
+      "run_name": "swebench_real_patch_15537314",
+      "trace_steps": 7
+    }
+  ]
+}

@@ -1,0 +1,365 @@
+{
+  "error_class_counts": {
+    "none": 17,
+    "patch_apply_check_failed:error:_patch_failed:_sympy_crypto_crypto.py:1522_error:": 5,
+    "verifier_not_run": 3
+  },
+  "nonempty_patch_count": 2,
+  "patch_empty_reason_counts": {
+    "patch_field_null": 3
+  },
+  "phase_outcome_counts": {
+    "fallback:error": 5,
+    "fallback:ok": 2,
+    "localize:ok": 3,
+    "observe:ok": 3,
+    "other:ok": 3,
+    "patch:ok": 3,
+    "review:ok": 3,
+    "verify:error": 3
+  },
+  "predictions": [
+    {
+      "instance_id": "sympy__sympy-16886",
+      "model_name_or_path": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "patch_chars": 438,
+      "patch_nonempty": true,
+      "run_name": "initial"
+    },
+    {
+      "instance_id": "sympy__sympy-16886",
+      "model_name_or_path": "hierarchical_h1_distribution_router",
+      "patch_chars": 0,
+      "patch_nonempty": false,
+      "run_name": "updated"
+    },
+    {
+      "instance_id": "sympy__sympy-16886",
+      "model_name_or_path": "hierarchical_h1_distribution_router:public_literal_repair",
+      "patch_chars": 396,
+      "patch_nonempty": true,
+      "run_name": "updated_context_v2"
+    }
+  ],
+  "prompt_budget_rows": [
+    {
+      "agent_id": "h1_router",
+      "context_window_tokens": 16384,
+      "effective_max_tokens": 2048,
+      "input_tokens": 5992,
+      "instance_id": "sympy__sympy-16886",
+      "level": "observe_role_shaped",
+      "requested_max_tokens": 2048,
+      "run_name": "initial",
+      "step": 2
+    },
+    {
+      "agent_id": "h1_budget_guard",
+      "context_window_tokens": 16384,
+      "effective_max_tokens": 2048,
+      "input_tokens": 6251,
+      "instance_id": "sympy__sympy-16886",
+      "level": "observe_role_shaped",
+      "requested_max_tokens": 2048,
+      "run_name": "initial",
+      "step": 3
+    },
+    {
+      "agent_id": "h1_specialist_executor",
+      "context_window_tokens": 16384,
+      "effective_max_tokens": 8452,
+      "input_tokens": 7420,
+      "instance_id": "sympy__sympy-16886",
+      "level": "patch_role_shaped",
+      "requested_max_tokens": 12000,
+      "run_name": "initial",
+      "step": 4
+    },
+    {
+      "agent_id": "h1_reviewer",
+      "context_window_tokens": 16384,
+      "effective_max_tokens": 2048,
+      "input_tokens": 6730,
+      "instance_id": "sympy__sympy-16886",
+      "level": "observe_role_shaped",
+      "requested_max_tokens": 2048,
+      "run_name": "initial",
+      "step": 5
+    },
+    {
+      "agent_id": "h1_escalation_patcher",
+      "context_window_tokens": 16384,
+      "effective_max_tokens": 7974,
+      "input_tokens": 7898,
+      "instance_id": "sympy__sympy-16886",
+      "level": "patch_role_shaped",
+      "requested_max_tokens": 16000,
+      "run_name": "initial",
+      "step": 6
+    },
+    {
+      "agent_id": "h1_router",
+      "context_window_tokens": 16384,
+      "effective_max_tokens": 2048,
+      "input_tokens": 6378,
+      "instance_id": "sympy__sympy-16886",
+      "level": "observe_role_shaped",
+      "requested_max_tokens": 2048,
+      "run_name": "updated",
+      "step": 2
+    },
+    {
+      "agent_id": "h1_budget_guard",
+      "context_window_tokens": 16384,
+      "effective_max_tokens": 2048,
+      "input_tokens": 6645,
+      "instance_id": "sympy__sympy-16886",
+      "level": "observe_role_shaped",
+      "requested_max_tokens": 2048,
+      "run_name": "updated",
+      "step": 3
+    },
+    {
+      "agent_id": "h1_specialist_executor",
+      "context_window_tokens": 16384,
+      "effective_max_tokens": 7983,
+      "input_tokens": 7889,
+      "instance_id": "sympy__sympy-16886",
+      "level": "patch_role_shaped",
+      "requested_max_tokens": 12000,
+      "run_name": "updated",
+      "step": 4
+    },
+    {
+      "agent_id": "h1_reviewer",
+      "context_window_tokens": 16384,
+      "effective_max_tokens": 2048,
+      "input_tokens": 7143,
+      "instance_id": "sympy__sympy-16886",
+      "level": "observe_role_shaped",
+      "requested_max_tokens": 2048,
+      "run_name": "updated",
+      "step": 5
+    },
+    {
+      "agent_id": "h1_escalation_patcher",
+      "context_window_tokens": 16384,
+      "effective_max_tokens": 7576,
+      "input_tokens": 8296,
+      "instance_id": "sympy__sympy-16886",
+      "level": "patch_role_shaped",
+      "requested_max_tokens": 16000,
+      "run_name": "updated",
+      "step": 6
+    },
+    {
+      "agent_id": "h1_escalation_patcher",
+      "context_window_tokens": 16384,
+      "effective_max_tokens": 7660,
+      "input_tokens": 8212,
+      "instance_id": "sympy__sympy-16886",
+      "level": "patch_role_shaped",
+      "requested_max_tokens": 16000,
+      "run_name": "updated",
+      "step": 7
+    },
+    {
+      "agent_id": "h1_router",
+      "context_window_tokens": 16384,
+      "effective_max_tokens": 2048,
+      "input_tokens": 6288,
+      "instance_id": "sympy__sympy-16886",
+      "level": "observe_role_shaped",
+      "requested_max_tokens": 2048,
+      "run_name": "updated_context_v2",
+      "step": 2
+    },
+    {
+      "agent_id": "h1_budget_guard",
+      "context_window_tokens": 16384,
+      "effective_max_tokens": 2048,
+      "input_tokens": 6575,
+      "instance_id": "sympy__sympy-16886",
+      "level": "observe_role_shaped",
+      "requested_max_tokens": 2048,
+      "run_name": "updated_context_v2",
+      "step": 3
+    },
+    {
+      "agent_id": "h1_specialist_executor",
+      "context_window_tokens": 16384,
+      "effective_max_tokens": 8069,
+      "input_tokens": 7803,
+      "instance_id": "sympy__sympy-16886",
+      "level": "patch_role_shaped",
+      "requested_max_tokens": 12000,
+      "run_name": "updated_context_v2",
+      "step": 4
+    },
+    {
+      "agent_id": "h1_reviewer",
+      "context_window_tokens": 16384,
+      "effective_max_tokens": 2048,
+      "input_tokens": 7131,
+      "instance_id": "sympy__sympy-16886",
+      "level": "observe_role_shaped",
+      "requested_max_tokens": 2048,
+      "run_name": "updated_context_v2",
+      "step": 5
+    },
+    {
+      "agent_id": "h1_escalation_patcher",
+      "context_window_tokens": 16384,
+      "effective_max_tokens": 7559,
+      "input_tokens": 8313,
+      "instance_id": "sympy__sympy-16886",
+      "level": "patch_role_shaped",
+      "requested_max_tokens": 16000,
+      "run_name": "updated_context_v2",
+      "step": 6
+    },
+    {
+      "agent_id": "h1_escalation_patcher",
+      "context_window_tokens": 16384,
+      "effective_max_tokens": 7669,
+      "input_tokens": 8203,
+      "instance_id": "sympy__sympy-16886",
+      "level": "patch_role_shaped",
+      "requested_max_tokens": 16000,
+      "run_name": "updated_context_v2",
+      "step": 7
+    },
+    {
+      "agent_id": "h1_escalation_patcher",
+      "context_window_tokens": 16384,
+      "effective_max_tokens": 7760,
+      "input_tokens": 8112,
+      "instance_id": "sympy__sympy-16886",
+      "level": "patch_role_shaped",
+      "requested_max_tokens": 16000,
+      "run_name": "updated_context_v2",
+      "step": 8
+    }
+  ],
+  "repo_context_rows": [
+    {
+      "candidate_files": 8,
+      "instance_id": "sympy__sympy-16886",
+      "run_name": "initial",
+      "search_hits": 28,
+      "snippet_chars": 18000,
+      "snippets": 5,
+      "status": "ready",
+      "tree_entries": 160
+    },
+    {
+      "candidate_files": 8,
+      "instance_id": "sympy__sympy-16886",
+      "run_name": "updated",
+      "search_hits": 28,
+      "snippet_chars": 18000,
+      "snippets": 5,
+      "status": "ready",
+      "tree_entries": 160
+    },
+    {
+      "candidate_files": 8,
+      "instance_id": "sympy__sympy-16886",
+      "run_name": "updated_context_v2",
+      "search_hits": 28,
+      "snippet_chars": 18000,
+      "snippets": 5,
+      "status": "ready",
+      "tree_entries": 160
+    }
+  ],
+  "runs": [
+    {
+      "executor_dir": "swebench/runs/hierarchical_meta_loop_20260607_013249/initial/executor",
+      "manifest": {
+        "design_path": "experiments/swebench_orchestration/slurm_pilot/meta_design/orchestration_design.json",
+        "dry_run": false,
+        "instances": 1,
+        "instances_path": "/tmp/swebench_runtime/target_instances/hierarchical_meta_loop_20260607_013249_initial/instances_sympy__sympy-16886.jsonl",
+        "limitations": [
+          "This executor materializes leakage-safe repository checkouts at base_commit when repo context is enabled.",
+          "This executor does not run target tests or the official SWE-bench verifier.",
+          "Predictions are patch-generation-only and are emitted as unverified candidates."
+        ],
+        "max_calls_per_component": 1,
+        "orchestration_id": "hierarchical_h1_distribution_router",
+        "parallel_workers": 1,
+        "patch_repair_attempts": 1,
+        "predictions_path": "swebench/runs/hierarchical_meta_loop_20260607_013249/initial/executor/predictions.jsonl",
+        "public_literal_repair_enabled": false,
+        "repo_cache_dir": "/home/erimoldi/openclaw_remote/projects/.worktrees/swebench-real-20260606-103655/swebench/repos/cache",
+        "repo_context_enabled": true,
+        "repo_work_dir": "/tmp/swebench_runtime/repo_checkouts/hierarchical_meta_loop_20260607_013249_initial",
+        "run_id": "hierarchical_meta_loop_20260607_013249_initial",
+        "traces_path": "swebench/runs/hierarchical_meta_loop_20260607_013249/initial/executor/traces.jsonl",
+        "workers_config_path": "configs/swebench_open_source_workers_slurm_pilot.yaml"
+      },
+      "predictions": 1,
+      "run_name": "initial",
+      "trace_steps": 7
+    },
+    {
+      "executor_dir": "swebench/runs/hierarchical_meta_loop_20260607_013249/updated/executor",
+      "manifest": {
+        "design_path": "swebench/runs/hierarchical_meta_loop_20260607_013249/meta_update/orchestration_design_updated.json",
+        "dry_run": false,
+        "instances": 1,
+        "instances_path": "/tmp/swebench_runtime/target_instances/hierarchical_meta_loop_20260607_013249_updated/instances_sympy__sympy-16886.jsonl",
+        "limitations": [
+          "This executor materializes leakage-safe repository checkouts at base_commit when repo context is enabled.",
+          "This executor does not run target tests or the official SWE-bench verifier.",
+          "Predictions are patch-generation-only and are emitted as unverified candidates."
+        ],
+        "max_calls_per_component": 1,
+        "orchestration_id": "hierarchical_h1_distribution_router",
+        "parallel_workers": 1,
+        "patch_repair_attempts": 1,
+        "predictions_path": "swebench/runs/hierarchical_meta_loop_20260607_013249/updated/executor/predictions.jsonl",
+        "public_literal_repair_enabled": false,
+        "repo_cache_dir": "/home/erimoldi/openclaw_remote/projects/.worktrees/swebench-real-20260606-103655/swebench/repos/cache",
+        "repo_context_enabled": true,
+        "repo_work_dir": "/tmp/swebench_runtime/repo_checkouts/hierarchical_meta_loop_20260607_013249_updated",
+        "run_id": "hierarchical_meta_loop_20260607_013249_updated",
+        "traces_path": "swebench/runs/hierarchical_meta_loop_20260607_013249/updated/executor/traces.jsonl",
+        "workers_config_path": "configs/swebench_open_source_workers_slurm_pilot.yaml"
+      },
+      "predictions": 1,
+      "run_name": "updated",
+      "trace_steps": 8
+    },
+    {
+      "executor_dir": "swebench/runs/hierarchical_meta_loop_20260607_013249/updated_context_v2/executor",
+      "manifest": {
+        "design_path": "swebench/runs/hierarchical_meta_loop_20260607_013249/meta_update_context_v2/orchestration_design_updated.json",
+        "dry_run": false,
+        "instances": 1,
+        "instances_path": "/tmp/swebench_runtime/target_instances/hierarchical_meta_loop_20260607_013249_updated_context_v2/instances_sympy__sympy-16886.jsonl",
+        "limitations": [
+          "This executor materializes leakage-safe repository checkouts at base_commit when repo context is enabled.",
+          "This executor does not run target tests or the official SWE-bench verifier.",
+          "Predictions are patch-generation-only and are emitted as unverified candidates."
+        ],
+        "max_calls_per_component": 1,
+        "orchestration_id": "hierarchical_h1_distribution_router",
+        "parallel_workers": 1,
+        "patch_repair_attempts": 2,
+        "predictions_path": "swebench/runs/hierarchical_meta_loop_20260607_013249/updated_context_v2/executor/predictions.jsonl",
+        "public_literal_repair_enabled": true,
+        "repo_cache_dir": "/home/erimoldi/openclaw_remote/projects/.worktrees/swebench-real-20260606-103655/swebench/repos/cache",
+        "repo_context_enabled": true,
+        "repo_work_dir": "/tmp/swebench_runtime/repo_checkouts/hierarchical_meta_loop_20260607_013249_updated_context_v2",
+        "run_id": "hierarchical_meta_loop_20260607_013249_updated_context_v2",
+        "traces_path": "swebench/runs/hierarchical_meta_loop_20260607_013249/updated_context_v2/executor/traces.jsonl",
+        "workers_config_path": "configs/swebench_open_source_workers_slurm_pilot.yaml"
+      },
+      "predictions": 1,
+      "run_name": "updated_context_v2",
+      "trace_steps": 10
+    }
+  ]
+}

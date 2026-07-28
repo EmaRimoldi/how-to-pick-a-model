@@ -1,0 +1,90 @@
+experiment:
+  name: oracle_family_5model_campaign
+  steps: 1
+  task_mode_split: pilot
+benchmark:
+  profiles:
+    - hard_optimization
+  template_path: benchmarks/stateful_query_engine/solution_template.py
+models:
+  include:
+    - claude_haiku_batch_strict
+    - claude_sonnet_batch_strict
+    - gpt_5_3_codex_spark_batch_strict
+    - gpt_5_3_codex_batch_strict
+    - gpt_5_4_mini_batch_strict
+output:
+  root: runs/oracle_family_5model
+campaign:
+  task_modes:
+    - range_local_scans
+    - topk_stress
+  pilot_seeds:
+    - 7301
+    - 7302
+    - 7303
+    - 7304
+    - 7305
+    - 7306
+    - 7307
+    - 7308
+    - 7309
+    - 7310
+    - 7311
+    - 7312
+    - 7313
+    - 7314
+    - 7315
+    - 7316
+    - 7317
+    - 7318
+    - 7319
+    - 7320
+    - 7321
+    - 7322
+    - 7323
+    - 7324
+    - 7325
+    - 7326
+    - 7327
+    - 7328
+    - 7329
+    - 7330
+  holdout_seeds:
+    - 7401
+    - 7402
+    - 7403
+    - 7404
+    - 7405
+    - 7406
+    - 7407
+    - 7408
+    - 7409
+    - 7410
+    - 7411
+    - 7412
+    - 7413
+    - 7414
+    - 7415
+    - 7416
+    - 7417
+    - 7418
+    - 7419
+    - 7420
+    - 7421
+    - 7422
+    - 7423
+    - 7424
+    - 7425
+    - 7426
+    - 7427
+    - 7428
+    - 7429
+    - 7430
+  target_trials_per_cell: 30
+  success_mode: relative_improvement
+  success_threshold: 0.95
+  improvement_threshold: 0.05
+  target_half_width: 0.15
+  delta_acc: 0.25
+  delta_conf: 0.05

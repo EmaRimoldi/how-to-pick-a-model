@@ -1,0 +1,225 @@
+{
+  "assumptions": [
+    "Evaluation uses SWE-Bench_Verified test instances at each base_commit with no gold patch access.",
+    "Runtime workers are limited to the provided Qwen endpoints and aliases.",
+    "Official verifier feedback may be unavailable on the first pass or may be expensive, so local git apply checks always precede verifier calls.",
+    "Public issue text, repository context, local tool output, apply-check output, verifier feedback, and retry traces are the only allowed evidence sources.",
+    "Hierarchical policy was updated by a meta-orchestrator pass using executor traces and verifier feedback.",
+    "Hierarchical policy was updated by a meta-orchestrator pass using executor traces and verifier feedback."
+  ],
+  "benchmark": "princeton-nlp/SWE-Bench_Verified:test",
+  "design_id": "e2_50_stratified_swe_verified_distaware_20260607_01__meta_update_single50_fresh_20260607_empty_patch_contract_fix_v1__meta_update_swev_e250_routed_onepass_escalator_20260607_localpatch_v2",
+  "evidence_level": "E2_50_stratified",
+  "expected_tradeoffs": [],
+  "logging_plan": [
+    "Write one JSONL event for public instance metadata, including dataset, split, instance_id, base_commit, repo, declared_mode, and public count fields.",
+    "Write router events with extracted public signals, selected internal mode, confidence, routing branch, and expensive_path_allowed.",
+    "Write localization events with rg queries, snippet references, ranked and rejected locations, and compact invariants.",
+    "Write patch events with model alias, touched files, diff hash, output token estimate, and rationale tied to evidence_refs.",
+    "Write reviewer events with accept or reject verdict, compatibility risks, missing evidence, and recommended verification priority.",
+    "Write tester events with local git apply --check status, official verifier status when used, failure excerpts, retry category, and wall-time estimate.",
+    "Write final controller event with stop reason, number of model calls, patch proposal count, verifier attempt count, and diagnosis tags for the four optimization terms.",
+    "Record meta_update.json, executor_config_patch.json, and updated hierarchical design for each update cycle.",
+    "Record meta_update.json, executor_config_patch.json, and updated hierarchical design for each update cycle."
+  ],
+  "mode_taxonomy": [
+    {
+      "description": "Issue text names a specific symbol, file, regex, argument, exception, or one-line semantic condition.",
+      "expected_difficulty": "low",
+      "expected_strategy": "Cheap routing, targeted rg, narrow snippet inspection, one minimal patch proposal, local apply check before verification.",
+      "mode_id": "literal_local_fix",
+      "observable_signals": [
+        "explicit function or class name",
+        "small FAIL_TO_PASS_count",
+        "reproduction points to one failing behavior",
+        "single repository search hit cluster"
+      ]
+    },
+    {
+      "description": "Public behavior or signature must change while preserving backwards compatibility and tests across many call sites.",
+      "expected_difficulty": "medium",
+      "expected_strategy": "Use cheap localizer plus coder patcher; reviewer checks compatibility, docs or warning needs, and regression-test shape before verification.",
+      "mode_id": "api_semantics",
+      "observable_signals": [
+        "mentions API inconsistency, deprecation, warning, parameter exposure, or documented behavior",
+        "PASS_TO_PASS_count is large",
+        "issue text gives expected public contract"
+      ]
+    },
+    {
+      "description": "Bug depends on numeric, SQL, regex-boundary, dtype, geometry, or symbolic edge logic where a small expression can have broad effects.",
+      "expected_difficulty": "medium",
+      "expected_strategy": "Localize exact transform or expression, require reviewer invariant check, prefer minimal algebraic change with explicit regression case.",
+      "mode_id": "numeric_symbolic_logic",
+      "observable_signals": [
+        "mentions formula, dtype, regex anchors, SQL generation, thresholds, signedness, shape, cast, or dimensions",
+        "reproduction has concrete expected values"
+      ]
+    },
+    {
+      "description": "Behavior follows a framework convention spread across related helpers or inherited machinery.",
+      "expected_difficulty": "medium",
+      "expected_strategy": "Router builds a compact family map; localizer chooses the narrow hook; reviewer checks sibling behavior consistency before verifier use.",
+      "mode_id": "repo_family_behavior",
+      "observable_signals": [
+        "mentions family-level behavior such as renderer, transform graph, artist parenting, copy semantics, or inherited validators",
+        "search reveals related implementations across modules"
+      ]
+    },
+    {
+      "description": "Patch likely touches coupled implementation and tests or multiple modules due to migrations, admin, plotting, indexing, or response handling.",
+      "expected_difficulty": "high",
+      "expected_strategy": "Spend extra localization budget, generate one integrated patch, then escalate to stronger coder only if apply or verifier feedback shows structural miss.",
+      "mode_id": "multi_file_integration",
+      "observable_signals": [
+        "issue involves state propagation, migration/schema operations, indexes, coordinates, plotting lifecycle, or multiple public surfaces",
+        "search returns several plausible files"
+      ]
+    },
+    {
+      "description": "Failure depends on defaults, environment-sensitive behavior, protocol headers, permissions, formatter settings, or backend/engine differences.",
+      "expected_difficulty": "medium",
+      "expected_strategy": "Use deterministic extraction of config/default names, patch the boundary where default is interpreted, and require reviewer to reject hidden environment assumptions.",
+      "mode_id": "dependency_config_boundary",
+      "observable_signals": [
+        "mentions defaults, permissions, backend-specific behavior, rcParams, engine, temporary files, headers, or formatter offset",
+        "reproduction is configuration-like rather than algorithmic"
+      ]
+    }
+  ],
+  "optimization_loss": "Minimize expected loss L = 0.30*solution_generation_cost + 0.25*retries_to_verified_success + 0.25*information_loss + 0.20*mode_allocation_mismatch, with hard constraints forbidding gold-patch or hidden-test leakage and capping official verifier attempts to primary plus one justified fallback.",
+  "orchestrations": [
+    {
+      "complexity": {
+        "agents": 7,
+        "context_budget_tokens": 58000,
+        "max_patch_proposals": 3,
+        "model_families": 1,
+        "prompt_templates": 7,
+        "routing_branches": 7,
+        "tool_policies": 9
+      },
+      "components": [
+        {
+          "component_id": "controller_trace_budget",
+          "max_calls": 2,
+          "model": "qwen3_4b_instruct",
+          "output_contract": "Strict JSON object with budget_state, source_patchability_state, evidence_refs, selected_mode, next_action, best_non_empty_patch_id, best_apply_passed_patch_id, selected_patch_status, verifier_deferred_reason, final_model_name_or_path, and stop_reason when applicable. final_model_name_or_path must always equal the orchestration_id.",
+          "prompt_summary": "Maintain the instance trace and enforce a local-patchability-first run. Track public issue digest, source-snippet availability, selected mode, best non-empty candidate, best apply-check-passed candidate, repair attempts, verifier deferral, and final prediction attribution. Do not allow reviewer, tester, fallback, or tool-null outputs to overwrite a preserved non-empty candidate in trace state.",
+          "role": "controller",
+          "tools": [
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "mode_router",
+          "max_calls": 1,
+          "model": "qwen3_4b_instruct",
+          "output_contract": "Strict JSON object with mode_id, confidence, key_signals, search_terms, derived_source_modules, required_context_kinds, patchability_plan, public_literal_repair_allowed, expensive_path_allowed, and attribution_policy. attribution_policy must state that final predictions use only the target orchestration_id.",
+          "prompt_summary": "Classify the public issue into one internal mode and produce a patchability plan. Extract public literals, exact imports, fully qualified symbols, traceback frames, error strings, expected values, and reproduction snippets. Derive likely source modules from imports and symbols before routing; source/test hits outrank docs unless the issue is explicitly documentation-only.",
+          "role": "router",
+          "tools": [
+            "rg/search repository text",
+            "deterministic leakage-safe transforms from public issue text and repo context when explicitly justified",
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "target_localizer",
+          "max_calls": 3,
+          "model": "qwen3_4b_instruct",
+          "output_contract": "Strict JSON object with ranked_implementation_snippets, ranked_test_snippets, rejected_locations, source_module_searches, invariants, test_targets, public_literals_used, minimal_context_summary, and missing_source_reason. ranked_implementation_snippets must include file, start_line, end_line, symbol_or_import_source, and why the snippet is patch-relevant. Returning no implementation snippet is valid only with a concrete missing_source_reason after second search.",
+          "prompt_summary": "Run focused repository search from public issue symbols, derived source modules, traceback terms, public literals, and mode signals. If initial candidate files are only docs, changelogs, examples, or tests while a source module can be derived, run a second implementation search before returning. Always inspect the implementation module for exact public imports or callable names when present.",
+          "role": "localizer",
+          "tools": [
+            "rg/search repository text",
+            "inspect file snippets",
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "primary_patcher",
+          "max_calls": 1,
+          "model": "qwen2_5_coder_7b",
+          "output_contract": "Strict JSON object with model_patch, touched_files, intended_behavior_change, public_evidence_used, regression_test_rationale, diff_format_self_check, and abstain_reason. model_patch must be non-empty when ranked_implementation_snippets is non-empty. The first diff file section must include diff --git or ---/+++ file headers, every hunk must have an @@ header, and touched_files must match the diff paths.",
+          "prompt_summary": "Generate one minimal applyable unified diff from ranked implementation snippets and public issue evidence. If implementation snippets exist, a null patch is invalid; produce a focused implementation patch even when test context is thin. Avoid broad refactors and docs churn. Return strict JSON only, with the diff stored in model_patch as an escaped string and no markdown fences.",
+          "role": "patcher",
+          "tools": [
+            "generate unified diff patches",
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "compat_reviewer",
+          "max_calls": 1,
+          "model": "qwen2_5_7b_instruct",
+          "output_contract": "Strict JSON verdict with accept, revise, risk_notes, missing_context, apply_risk, format_risk, public_literal_safety, verifier_priority, and requested_repair_kind. accept can be true only for non-empty patches with complete file headers and a plausible source-level behavior change.",
+          "prompt_summary": "Review the selected non-empty patch against public issue evidence, mode invariants, localized source snippets, leakage constraints, likely regression surface, and diff-format sanity. Reject null patches when implementation snippets exist. If the patch is hunk-only, lacks file headers, touches files absent from localization without justification, or contradicts public literals, request format repair or fallback rather than accepting.",
+          "role": "reviewer",
+          "tools": [
+            "inspect file snippets",
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "apply_and_verify_tester",
+          "max_calls": 3,
+          "model": "qwen3_4b_instruct",
+          "output_contract": "Strict JSON object with candidate_patch_id, apply_check_status, repaired_patch_status, repaired_patch_id, failure_excerpt, retry_signal, preserve_last_non_empty, local_quality_gate_status, verifier_status, and verifier_deferred_reason. If repair succeeds, repaired_patch_id must point to a complete apply-check-passed diff. If repair fails, preserve_last_non_empty must be true.",
+          "prompt_summary": "Run local git apply --check on the selected non-empty patch. If it fails, perform bounded repair using only the failed diff, localized snippets, public literals, and apply-check stderr. Prioritize mechanical repairs for missing file headers, hunk-only output, stale line numbers, and whitespace/context drift. Do not request official Modal verification during the local-quality improvement pass unless the patch applies and the reviewer accepts.",
+          "role": "tester",
+          "tools": [
+            "local git apply --check",
+            "generate unified diff patches",
+            "public_literal_repair",
+            "official SWE-bench Modal verifier feedback",
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "structural_fallback_patcher",
+          "max_calls": 1,
+          "model": "qwen2_5_coder_14b",
+          "output_contract": "Strict JSON object with model_patch, touched_files, addressed_failure, public_evidence_used, apply_failure_used, no_gold_information_used, diff_format_self_check, preserve_prior_non_empty_candidate_id, and abstain_reason. model_patch must be a complete unified diff when a failed non-empty patch and implementation snippet are present; abstention must preserve the prior non-empty candidate id.",
+          "prompt_summary": "Escalate only after null primary despite implementation snippets, reviewer format or semantic rejection, failed apply repair, multi-file coupling, or local apply-check failure with a preserved non-empty patch. Use compressed trace evidence, exact ranked source snippets, the failed diff, apply-check stderr, public literals, and reviewer requested_repair_kind to produce one stronger applyable diff. Do not abstain merely because hidden tests are unavailable when public source snippets and a failed patch identify a concrete edit target.",
+          "role": "fallback",
+          "tools": [
+            "inspect file snippets",
+            "generate unified diff patches",
+            "local git apply --check",
+            "public_literal_repair",
+            "maintain JSONL trace logs"
+          ]
+        }
+      ],
+      "evidence_policy": "For each instance, log public issue digest, extracted symbols, derived source modules, public literals, search terms, source-module search decisions, inspected implementation and test snippets with file and line windows, rejected docs/test-only locations, mode decision, patchability state, model prompt summaries, generated diffs, diff-format self-checks, local apply-check output, repair rationale, verifier deferral or feedback, and candidate selection state. Do not log or request gold patches, hidden tests, or non-public artifacts. Deterministic transforms and public_literal_repair are allowed only for public issue text and leakage-safe repository context, must record input and output hashes, and must emit complete unified diffs. Final prediction attribution must use only the target orchestration_id; component and tool provenance belongs only in traces.",
+      "expected_failure_modes": [
+        "Source-module derivation may still miss dynamic or generated implementation files when public imports are absent or misleading.",
+        "A stricter non-null patch contract may increase low-quality but applyable patches until reviewer and apply-check filters improve semantic quality.",
+        "Local apply check can pass while hidden regression tests fail because the next pass intentionally defers official Modal calls until local candidate quality improves.",
+        "public_literal_repair can overfit public examples if the reviewer does not require a general implementation invariant.",
+        "The 14B fallback can still abstain on genuinely underlocalized issues, but it must preserve prior non-empty candidates rather than collapse final trace state.",
+        "Large PASS_TO_PASS suites can hide subtle public API regressions not visible in inspected snippets.",
+        "Prediction rows may still need executor-side enforcement to keep model_name_or_path equal to the single active orchestration id."
+      ],
+      "fallback_policy": "Fallback is a bounded repair path inside the same hierarchical orchestration, not a separate model family or specialist orchestration. Trigger fallback after any of these: null primary patch despite ranked implementation snippets, missing diff headers or hunk-only output after one repair, failed local apply repair, reviewer high-risk semantic rejection, multi-file coupling requiring a stronger coder, or prior non-empty candidate lost to apply failure. The fallback receives compressed trace evidence, ranked implementation snippets, failed non-empty patch, local apply-check stderr, public literals, and reviewer requested_repair_kind. It must produce one complete unified diff or abstain while preserving the prior non-empty candidate id in trace state. public_literal_repair may be used only for direct public literal old/new or literal insertion/removal edits grounded in repository context.",
+      "name": "Stratified One-Patch Escalator - Local Patchability Gate",
+      "objective_summary": "A single hierarchical routed policy that first improves local candidate quality by forcing source-snippet-backed non-empty patches, repairing malformed diffs before verifier use, preserving candidate provenance, and deferring official Modal verification until patches are non-empty, reviewer-accepted, and local git apply --check passes.",
+      "orchestration_id": "swev_e250_routed_onepass_escalator_20260607_b4c1",
+      "orchestration_type": "hierarchical_routed",
+      "patch_policy": "Generate a minimal unified diff targeting the localized root cause. The primary patcher must emit a non-empty complete unified diff whenever the localizer provides at least one ranked implementation snippet; abstention is valid only after the localizer records a concrete missing_source_reason. The diff must include file headers, hunk headers, and paths matching touched_files. Prefer one implementation change and add a focused regression test only when public context and nearby test snippets support it. Do not produce docs churn, broad refactors, or unrelated cleanup. Preserve the last non-empty candidate across review, apply-check, and fallback. If local apply check fails, repair syntax, headers, line context, or whitespace drift using only the failed diff, localized snippets, public literals, and apply output. public_literal_repair is explicitly enabled only for direct public literal repairs and must output a full unified diff with hashes recorded.",
+      "routing_policy": "The router assigns exactly one internal mode and a patchability plan. It must derive source-module candidates from public imports, qualified symbols, traceback frames, and reproduction snippets before ranking repository hits. Source implementation files outrank tests, docs, changelogs, and examples unless the issue is explicitly documentation-only. If candidate context contains no implementation snippet but public imports or callables exist, routing mandates a second source search before patching. Expensive 14B fallback is enabled only for multi-file integration, repo-family behavior, semantic API surface, large regression risk, null primary patch despite source snippets, failed local apply repair, or reviewer-requested structural repair. Routing never selects a different orchestration; it only changes context budget, reviewer strictness, public_literal_repair eligibility, fallback permission, and verifier deferral.",
+      "stopping_rule": "Stop immediately if an officially verified patch is available, but the next local-quality pass should usually defer official verification until local apply-check passes and reviewer accepts. Stop without official verifier when no ranked implementation snippet can be found after mandatory second source search and one fallback abstention. Stop without official verifier when no non-empty complete unified diff can be produced after primary and fallback. Stop without official verifier when local apply check cannot be made to pass after the bounded repair budget, while preserving and logging the last non-empty rejected candidate. Stop after one verifier-driven fallback attempt if official verification is later enabled. Also stop when controller budget detects insufficient public evidence to justify further changes without leakage risk.",
+      "target_modes": [
+        "literal_local_fix",
+        "test_localizable",
+        "api_semantics",
+        "numeric_symbolic_logic",
+        "repo_family_behavior",
+        "multi_file_integration",
+        "dependency_config_boundary"
+      ],
+      "verification_policy": "Always run local git apply --check on a non-empty selected patch before any official verification. If apply check fails, do not call the official verifier; attempt bounded repair using only the patch, public snippets, public literals, and apply-check output. During the next executor pass, treat official SWE-bench Modal calls as deferred unless the patch is non-empty, complete, local apply-check-passed, and reviewer-accepted; log verifier_deferred_reason instead of spending Modal calls for empty, malformed, or unreviewed patches. Treat future verifier success as terminal. Treat future verifier failure as structured feedback categorized as patch-application, import/runtime, expected-test failure, or regression, allowing at most one feedback-driven fallback attempt."
+    }
+  ]
+}

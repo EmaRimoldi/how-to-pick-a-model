@@ -1,0 +1,57 @@
+workers:
+  qwen3_4b_instruct:
+    adapter: openai_compatible
+    open_source: true
+    model_id: Qwen/Qwen3-4B-Instruct-2507
+    base_url: http://127.0.0.1:8000/v1
+    served_by: vllm_on_slurm
+    hf_url: https://hf.co/Qwen/Qwen3-4B-Instruct-2507
+    temperature: 0.2
+    timeout_seconds: 900
+    max_tokens_observe: 2048
+    max_tokens_patch: 8192
+    retries: 1
+    use_response_format: true
+    allow_response_format_retry: true
+  qwen2_5_7b_instruct:
+    adapter: openai_compatible
+    open_source: true
+    model_id: Qwen/Qwen2.5-7B-Instruct
+    base_url: http://127.0.0.1:8001/v1
+    served_by: vllm_on_slurm
+    hf_url: https://hf.co/Qwen/Qwen2.5-7B-Instruct
+    temperature: 0.2
+    timeout_seconds: 900
+    max_tokens_observe: 2048
+    max_tokens_patch: 8192
+    retries: 1
+    use_response_format: true
+    allow_response_format_retry: true
+  qwen2_5_coder_7b:
+    adapter: openai_compatible
+    open_source: true
+    model_id: Qwen/Qwen2.5-Coder-7B-Instruct
+    base_url: http://127.0.0.1:8002/v1
+    served_by: vllm_on_slurm
+    hf_url: https://hf.co/Qwen/Qwen2.5-Coder-7B-Instruct
+    temperature: 0.2
+    timeout_seconds: 1200
+    max_tokens_observe: 2048
+    max_tokens_patch: 12000
+    retries: 1
+    use_response_format: true
+    allow_response_format_retry: true
+  qwen2_5_coder_14b:
+    adapter: openai_compatible
+    open_source: true
+    model_id: Qwen/Qwen2.5-Coder-14B-Instruct
+    base_url: http://127.0.0.1:8003/v1
+    served_by: vllm_on_slurm
+    hf_url: https://hf.co/Qwen/Qwen2.5-Coder-14B-Instruct
+    temperature: 0.2
+    timeout_seconds: 1800
+    max_tokens_observe: 2048
+    max_tokens_patch: 16000
+    retries: 1
+    use_response_format: true
+    allow_response_format_retry: true

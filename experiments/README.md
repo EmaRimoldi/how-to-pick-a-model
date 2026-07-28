@@ -22,7 +22,15 @@ The runnable substrate lives at the repository root in `autoresearch/`,
 
 - completed strategy-routing and router-search runs;
 - MBPP category-routing smoke figures;
-- the SWE-bench experimental scaffold.
+- the original SWE-bench experimental scaffold;
+- the later distribution-aware orchestration archive, Step 1 induction work,
+  and SWE-bench studies imported from the cluster checkout `NeurIPS_2026`.
+
+The cluster import is rooted at
+[`other/distribution-aware-orchestration/`](other/distribution-aware-orchestration/).
+Its AutoResearch code and evidence remain in the root `autoresearch/` package
+and this directory's `autoresearch/` experiment family, so the non-AutoResearch
+snapshot does not duplicate them.
 
 The tracked HumanEval+, MBPP+, and BBH worker logs remain in `data/` because the
 legacy `config/` and `src/*.py` pipeline addresses them directly. They are
