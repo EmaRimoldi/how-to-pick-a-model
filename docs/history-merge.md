@@ -17,7 +17,6 @@ normalized as follows:
 | `agentops-lab-public/experiments/06_swebench_experimental_scaffold` | `experiments/other/swebench-experimental-scaffold/` |
 | `theory-of-agents/experiment_runs` | `experiments/other/strategy-routing-runs/` |
 | nested Overleaf checkout `fluid-theory-notes` | `paper/neurips-submission/` |
-| older Overleaf checkout `report` | `paper/legacy-report/` |
 | `NeurIPS_2026/Archive` | `experiments/other/distribution-aware-orchestration/Archive/` |
 | `NeurIPS_2026/step1` | `experiments/other/distribution-aware-orchestration/step1/` |
 | `NeurIPS_2026/swebench` | `experiments/other/distribution-aware-orchestration/swebench/` |

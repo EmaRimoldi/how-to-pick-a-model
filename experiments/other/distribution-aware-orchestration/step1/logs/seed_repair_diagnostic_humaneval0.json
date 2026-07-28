@@ -1,0 +1,95 @@
+{
+  "candidate_passed_self_tests": false,
+  "generated_feedback": {
+    "error": "unexpected indent (<string>, line 13)",
+    "error_type": "IndentationError",
+    "mode": "generated",
+    "passed": false,
+    "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 104, in <module>\n  File \"<string>\", line 51, in run_payload\n  File \"<string>\", line 13\n    for i in range(len(sorted_numbers) - 1):\nIndentationError: unexpected indent\n"
+  },
+  "generated_tests": [
+    "assert has_close_elements([1.0, 2.0, 3.0], 0.5) is False",
+    "assert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) is True",
+    "assert has_close_elements([], 1.0) is False",
+    "assert has_close_elements([1.0], 0.1) is False",
+    "assert has_close_elements([1.0, 1.5, 2.0], 0.5) is False",
+    "assert has_close_elements([1.0, 1.0], 0.1) is True",
+    "assert has_close_elements([5.0, 1.0, 3.0, 3.2], 0.25) is True",
+    "assert has_close_elements([10.0, -1.0, 4.0, 7.0], 2.0) is False"
+  ],
+  "implement_completion": "    sorted_numbers = sorted(numbers)\n        for i in range(len(sorted_numbers) - 1):\n            if sorted_numbers[i + 1] - sorted_numbers[i] < threshold:\n                return True\n        return False\n",
+  "model": "gpt-5.5",
+  "node_usage": {
+    "generate_tests": {
+      "calls": 1,
+      "completion_tokens": 0,
+      "model": "gpt-5.5",
+      "prompt_tokens": 25551,
+      "reasoning_effort": "xhigh",
+      "token_split_source": "codex_total_only",
+      "total_tokens": 25551,
+      "transport": "codex_cli",
+      "wall_ms": 24382
+    },
+    "implement": {
+      "calls": 1,
+      "completion_tokens": 0,
+      "model": "gpt-5.5",
+      "prompt_tokens": 25231,
+      "reasoning_effort": "xhigh",
+      "token_split_source": "codex_total_only",
+      "total_tokens": 25231,
+      "transport": "codex_cli",
+      "wall_ms": 12718
+    },
+    "plan": {
+      "calls": 1,
+      "completion_tokens": 0,
+      "model": "gpt-5.5",
+      "prompt_tokens": 25272,
+      "reasoning_effort": "xhigh",
+      "token_split_source": "codex_total_only",
+      "total_tokens": 25272,
+      "transport": "codex_cli",
+      "wall_ms": 24274
+    },
+    "repair": {
+      "calls": 1,
+      "completion_tokens": 0,
+      "model": "gpt-5.5",
+      "prompt_tokens": 2153,
+      "reasoning_effort": "xhigh",
+      "token_split_source": "codex_total_only",
+      "total_tokens": 2153,
+      "transport": "codex_cli",
+      "wall_ms": 16616
+    },
+    "understand_spec": {
+      "calls": 1,
+      "completion_tokens": 0,
+      "model": "gpt-5.5",
+      "prompt_tokens": 27181,
+      "reasoning_effort": "xhigh",
+      "token_split_source": "codex_total_only",
+      "total_tokens": 27181,
+      "transport": "codex_cli",
+      "wall_ms": 34401
+    }
+  },
+  "normalized_raw_equals_candidate": true,
+  "public_feedback": {
+    "error": "unexpected indent (<string>, line 13)",
+    "error_type": "IndentationError",
+    "mode": "public",
+    "passed": false,
+    "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 104, in <module>\n  File \"<string>\", line 51, in run_payload\n  File \"<string>\", line 13\n    for i in range(len(sorted_numbers) - 1):\nIndentationError: unexpected indent\n"
+  },
+  "raw_completion_equals_candidate": false,
+  "reasoning_effort": "xhigh",
+  "repair_normalized_completion": "    sorted_numbers = sorted(numbers)\n        for i in range(len(sorted_numbers) - 1):\n            if sorted_numbers[i + 1] - sorted_numbers[i] < threshold:\n                return True\n        return False\n",
+  "repair_prompt": "Node: repair.\nRevise the candidate completion using only the prompt, public/generated test feedback, and previous node outputs. Return a replacement function body completion. If any provided feedback failed, the replacement must differ from the candidate; return the same body only when the candidate already passes all provided feedback.\n\ntask_id: HumanEval/0\nentry_point: has_close_elements\n\nHumanEval prompt, including signature and public docstring examples:\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    \"\"\" Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)\n    False\n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)\n    True\n    \"\"\"\n\n\nHard rule: use only this prompt and public examples. Do not use hidden tests, verifier code, reference solutions, or ground-truth answers.\n\nspec_struct:\n{\n  \"docstring_summary\": \"Check whether any two distinct numbers in the input list are closer to each other than the given threshold. Public examples: has_close_elements([1.0, 2.0, 3.0], 0.5) -> False; has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) -> True.\",\n  \"edge_cases\": [\n    \"Lists with fewer than two numbers have no pair to compare.\",\n    \"Pairs whose distance is exactly equal to the threshold are not described as closer than the threshold; the wording indicates a strict comparison.\",\n    \"Duplicate or very close numeric values may satisfy the condition if their distance is less than the threshold.\",\n    \"Input order should not affect the existence of a close pair.\"\n  ],\n  \"examples\": [\n    \"has_close_elements([1.0, 2.0, 3.0], 0.5) -> False\",\n    \"has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) -> True\"\n  ],\n  \"input_types\": [\n    \"numbers: List[float]\",\n    \"threshold: float\"\n  ],\n  \"invariants\": [\n    \"Only distinct elements from the list form a pair.\",\n    \"The function returns True iff at least one pair of numbers is closer to each other than threshold.\",\n    \"The closeness relation is based on numeric distance between the two values.\",\n    \"The result is boolean and does not depend on the original ordering of the list.\"\n  ],\n  \"output_type\": \"bool\",\n  \"signature\": {\n    \"args\": [\n      \"numbers: List[float]\",\n      \"threshold: float\"\n    ],\n    \"name\": \"has_close_elements\"\n  }\n}\n\nplan_struct:\n{\n  \"algorithm\": \"Sort a copy of the input numbers, then scan neighboring values. If any adjacent difference is strictly less than threshold, return True immediately; otherwise return False after the scan. Sorting is sufficient because the minimum distance pair in a numeric list must appear adjacent in sorted order.\",\n  \"cases\": [\n    \"If the list has fewer than two elements, return False.\",\n    \"Use a strict comparison: distance < threshold, so distance exactly equal to threshold returns False.\",\n    \"Duplicate values have distance 0 and satisfy the condition only when 0 < threshold.\",\n    \"Input order is irrelevant because the check is based on numeric distance.\"\n  ],\n  \"complexity\": \"O(n log n) time for sorting plus O(n) scan; O(n) extra space if sorting a copy to avoid mutating the input.\",\n  \"implementation_notes\": [\n    \"Preserve the public signature has_close_elements(numbers: List[float], threshold: float) -> bool.\",\n    \"Compare adjacent sorted values using their numeric difference.\",\n    \"Return a boolean only, with early return on the first close pair.\"\n  ]\n}\n\ntest_suite:\n{\n  \"rationale\": \"Covers both public docstring examples plus prompt-derived edge cases: no comparable pair, strict threshold equality, duplicate values, and order independence.\",\n  \"tests\": [\n    \"assert has_close_elements([1.0, 2.0, 3.0], 0.5) is False\",\n    \"assert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) is True\",\n    \"assert has_close_elements([], 1.0) is False\",\n    \"assert has_close_elements([1.0], 0.1) is False\",\n    \"assert has_close_elements([1.0, 1.5, 2.0], 0.5) is False\",\n    \"assert has_close_elements([1.0, 1.0], 0.1) is True\",\n    \"assert has_close_elements([5.0, 1.0, 3.0, 3.2], 0.25) is True\",\n    \"assert has_close_elements([10.0, -1.0, 4.0, 7.0], 2.0) is False\"\n  ]\n}\n\ncandidate_completion:\n    sorted_numbers = sorted(numbers)\n        for i in range(len(sorted_numbers) - 1):\n            if sorted_numbers[i + 1] - sorted_numbers[i] < threshold:\n                return True\n        return False\n\n\ncandidate_public_feedback:\n{\n  \"error\": \"unexpected indent (<string>, line 13)\",\n  \"error_type\": \"IndentationError\",\n  \"mode\": \"public\",\n  \"passed\": false,\n  \"traceback\": \"Traceback (most recent call last):\\n  File \\\"<string>\\\", line 104, in <module>\\n  File \\\"<string>\\\", line 51, in run_payload\\n  File \\\"<string>\\\", line 13\\n    for i in range(len(sorted_numbers) - 1):\\nIndentationError: unexpected indent\\n\"\n}\n\ncandidate_generated_feedback:\n{\n  \"error\": \"unexpected indent (<string>, line 13)\",\n  \"error_type\": \"IndentationError\",\n  \"mode\": \"generated\",\n  \"passed\": false,\n  \"traceback\": \"Traceback (most recent call last):\\n  File \\\"<string>\\\", line 104, in <module>\\n  File \\\"<string>\\\", line 51, in run_payload\\n  File \\\"<string>\\\", line 13\\n    for i in range(len(sorted_numbers) - 1):\\nIndentationError: unexpected indent\\n\"\n}",
+  "repair_raw_completion_field": "    sorted_numbers = sorted(numbers)\n    for i in range(len(sorted_numbers) - 1):\n        if sorted_numbers[i + 1] - sorted_numbers[i] < threshold:\n            return True\n    return False",
+  "repair_raw_response": "{\"completion\":\"    sorted_numbers = sorted(numbers)\\n    for i in range(len(sorted_numbers) - 1):\\n        if sorted_numbers[i + 1] - sorted_numbers[i] < threshold:\\n            return True\\n    return False\",\"repair_summary\":\"Fixed the candidate's unexpected indentation while preserving the planned adjacent-scan logic and strict threshold comparison.\"}",
+  "repair_unchanged_after_normalize": true,
+  "task_id": "HumanEval/0"
+}

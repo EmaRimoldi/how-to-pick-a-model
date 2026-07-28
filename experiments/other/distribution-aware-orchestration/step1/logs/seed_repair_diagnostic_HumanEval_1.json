@@ -1,0 +1,104 @@
+{
+  "candidate_generated_feedback": {
+    "failures": [],
+    "mode": "generated",
+    "passed": true
+  },
+  "candidate_passed_self_tests": true,
+  "candidate_public_feedback": {
+    "failures": [],
+    "mode": "public",
+    "passed": true
+  },
+  "entry_point": "separate_paren_groups",
+  "generated_tests": [
+    "assert separate_paren_groups('( ) (( )) (( )( ))') == ['()', '(())', '(()())']",
+    "assert separate_paren_groups('()()') == ['()', '()']",
+    "assert separate_paren_groups('  (())   ()  ') == ['(())', '()']",
+    "assert separate_paren_groups('((()))') == ['((()))']",
+    "assert separate_paren_groups('(()())(())') == ['(()())', '(())']",
+    "assert separate_paren_groups(' ( ( ) ) ( ( ( ) ) ) ') == ['(())', '((()))']"
+  ],
+  "implement_completion": "    groups = []\n    current = []\n    depth = 0\n\n    for ch in paren_string:\n        if ch == ' ':\n            continue\n        if ch == '(':\n            current.append(ch)\n            depth += 1\n        elif ch == ')':\n            current.append(ch)\n            depth -= 1\n            if depth == 0:\n                groups.append(''.join(current))\n                current = []\n\n    return groups\n",
+  "node_usage": {
+    "generate_tests": {
+      "calls": 1,
+      "completion_tokens": 0,
+      "model": "gpt-5.5",
+      "prompt_tokens": 25448,
+      "reasoning_effort": "xhigh",
+      "token_split_source": "codex_total_only",
+      "total_tokens": 25448,
+      "transport": "codex_cli",
+      "wall_ms": 22171
+    },
+    "implement": {
+      "calls": 1,
+      "completion_tokens": 0,
+      "model": "gpt-5.5",
+      "prompt_tokens": 25339,
+      "reasoning_effort": "xhigh",
+      "token_split_source": "codex_total_only",
+      "total_tokens": 25339,
+      "transport": "codex_cli",
+      "wall_ms": 16704
+    },
+    "plan": {
+      "calls": 1,
+      "completion_tokens": 0,
+      "model": "gpt-5.5",
+      "prompt_tokens": 24991,
+      "reasoning_effort": "xhigh",
+      "token_split_source": "codex_total_only",
+      "total_tokens": 24991,
+      "transport": "codex_cli",
+      "wall_ms": 20925
+    },
+    "repair": {
+      "calls": 1,
+      "completion_tokens": 0,
+      "model": "gpt-5.5",
+      "prompt_tokens": 25376,
+      "reasoning_effort": "xhigh",
+      "token_split_source": "codex_total_only",
+      "total_tokens": 25376,
+      "transport": "codex_cli",
+      "wall_ms": 15558
+    },
+    "understand_spec": {
+      "calls": 1,
+      "completion_tokens": 0,
+      "model": "gpt-5.5",
+      "prompt_tokens": 24943,
+      "reasoning_effort": "xhigh",
+      "token_split_source": "codex_total_only",
+      "total_tokens": 24943,
+      "transport": "codex_cli",
+      "wall_ms": 23036
+    }
+  },
+  "raw_outputs": {
+    "generate_tests": "{\"rationale\":\"Prompt-derived tests cover the public example plus valid balanced inputs for adjacent groups, nested groups, spaces between/inside groups, and multiple child pairs within one top-level group. They avoid malformed, empty, or non-parenthesis cases because those are unspecified.\",\"tests\":[\"assert separate_paren_groups('( ) (( )) (( )( ))') == ['()', '(())', '(()())']\",\"assert separate_paren_groups('()()') == ['()', '()']\",\"assert separate_paren_groups('  (())   ()  ') == ['(())', '()']\",\"assert separate_paren_groups('((()))') == ['((()))']\",\"assert separate_paren_groups('(()())(())') == ['(()())', '(())']\",\"assert separate_paren_groups(' ( ( ) ) ( ( ( ) ) ) ') == ['(())', '((()))']\"]}",
+    "implement": "{\"completion\":\"    groups = []\\n    current = []\\n    depth = 0\\n\\n    for ch in paren_string:\\n        if ch == ' ':\\n            continue\\n        if ch == '(':\\n            current.append(ch)\\n            depth += 1\\n        elif ch == ')':\\n            current.append(ch)\\n            depth -= 1\\n            if depth == 0:\\n                groups.append(''.join(current))\\n                current = []\\n\\n    return groups\",\"notes\":\"\"}",
+    "plan": "{\"algorithm\":\"Scan the input from left to right, ignoring spaces. Maintain a current group buffer and a nesting depth counter. When a non-space '(' is seen, start or continue the current buffer, append it, and increment depth. When a non-space ')' is seen, append it, decrement depth, and if depth becomes zero, the current top-level group is complete: add it to the result list and clear the buffer. Return the collected groups in order.\",\"cases\":[\"Spaces inside or between groups are skipped, so they never appear in output.\",\"Adjacent top-level groups are separated whenever nesting depth returns to zero.\",\"Nested groups remain inside the current buffer until the outermost group closes.\",\"Multiple child pairs inside one outer group stay in the same output string.\",\"Malformed, unbalanced, empty, or non-parenthesis input behavior is unspecified by the prompt, so do not add special behavior beyond the straightforward scan.\"],\"complexity\":\"Time O(n) over the input string; space O(n) for the returned groups and current buffer.\",\"implementation_notes\":[\"Use only '(' and ')' characters after ignoring spaces.\",\"Append completed groups only when depth transitions back to zero.\",\"Preserve input order exactly among completed groups.\",\"Avoid validation or error handling not requested by the prompt.\"]}",
+    "repair": "{\"completion\":\"    groups = []\\n    current = []\\n    depth = 0\\n\\n    for ch in paren_string:\\n        if ch == ' ':\\n            continue\\n        if ch == '(':\\n            current.append(ch)\\n            depth += 1\\n        elif ch == ')':\\n            current.append(ch)\\n            depth -= 1\\n            if depth == 0:\\n                groups.append(''.join(current))\\n                current = []\\n\\n    return groups\\n\",\"repair_summary\":\"Candidate passed all provided public and generated feedback, so the function body is unchanged.\"}",
+    "understand_spec": "{\"docstring_summary\":\"Given a string containing multiple balanced groups of nested parentheses, split it into the separate top-level balanced groups while ignoring spaces. Public example: separate_paren_groups('( ) (( )) (( )( ))') returns ['()', '(())', '(()())'].\",\"edge_cases\":[\"Spaces may appear between parentheses or groups and should not affect the returned strings.\",\"Multiple balanced groups can appear adjacent to each other in the input.\",\"A group may contain nested parentheses.\",\"A group may contain multiple balanced child pairs, as in the public example producing '(()())'.\",\"Behavior for malformed, unbalanced, empty, or non-parenthesis-containing inputs is not specified by the prompt.\"],\"examples\":[\"separate_paren_groups('( ) (( )) (( )( ))') -> ['()', '(())', '(()())']\"],\"input_types\":[\"paren_string: str\"],\"invariants\":[\"The order of groups in the output matches their order in the input.\",\"Spaces are ignored and do not appear in returned group strings.\",\"Each output element represents one balanced top-level parenthesis group.\",\"Top-level output groups are separated from each other rather than merged.\",\"The function returns a list of strings.\"],\"output_type\":\"List[str]\",\"signature\":{\"args\":[\"paren_string: str\"],\"name\":\"separate_paren_groups\"}}"
+  },
+  "repair_changed": false,
+  "repair_generated_feedback": {
+    "failures": [],
+    "mode": "generated",
+    "passed": true
+  },
+  "repair_normalized_completion": "    groups = []\n    current = []\n    depth = 0\n\n    for ch in paren_string:\n        if ch == ' ':\n            continue\n        if ch == '(':\n            current.append(ch)\n            depth += 1\n        elif ch == ')':\n            current.append(ch)\n            depth -= 1\n            if depth == 0:\n                groups.append(''.join(current))\n                current = []\n\n    return groups\n",
+  "repair_passed_self_tests": true,
+  "repair_prompt": "Node: repair.\nRevise the candidate completion using only the prompt, public/generated test feedback, and previous node outputs. Return a replacement function body completion. If any provided feedback failed, the replacement must differ from the candidate; return the same body only when the candidate already passes all provided feedback.\n\ntask_id: HumanEval/1\nentry_point: separate_paren_groups\n\nHumanEval prompt, including signature and public docstring examples:\nfrom typing import List\n\n\ndef separate_paren_groups(paren_string: str) -> List[str]:\n    \"\"\" Input to this function is a string containing multiple groups of nested parentheses. Your goal is to\n    separate those group into separate strings and return the list of those.\n    Separate groups are balanced (each open brace is properly closed) and not nested within each other\n    Ignore any spaces in the input string.\n    >>> separate_paren_groups('( ) (( )) (( )( ))')\n    ['()', '(())', '(()())']\n    \"\"\"\n\n\nHard rule: use only this prompt and public examples. Do not use hidden tests, verifier code, reference solutions, or ground-truth answers.\n\nspec_struct:\n{\n  \"docstring_summary\": \"Given a string containing multiple balanced groups of nested parentheses, split it into the separate top-level balanced groups while ignoring spaces. Public example: separate_paren_groups('( ) (( )) (( )( ))') returns ['()', '(())', '(()())'].\",\n  \"edge_cases\": [\n    \"Spaces may appear between parentheses or groups and should not affect the returned strings.\",\n    \"Multiple balanced groups can appear adjacent to each other in the input.\",\n    \"A group may contain nested parentheses.\",\n    \"A group may contain multiple balanced child pairs, as in the public example producing '(()())'.\",\n    \"Behavior for malformed, unbalanced, empty, or non-parenthesis-containing inputs is not specified by the prompt.\"\n  ],\n  \"examples\": [\n    \"separate_paren_groups('( ) (( )) (( )( ))') -> ['()', '(())', '(()())']\"\n  ],\n  \"input_types\": [\n    \"paren_string: str\"\n  ],\n  \"invariants\": [\n    \"The order of groups in the output matches their order in the input.\",\n    \"Spaces are ignored and do not appear in returned group strings.\",\n    \"Each output element represents one balanced top-level parenthesis group.\",\n    \"Top-level output groups are separated from each other rather than merged.\",\n    \"The function returns a list of strings.\"\n  ],\n  \"output_type\": \"List[str]\",\n  \"signature\": {\n    \"args\": [\n      \"paren_string: str\"\n    ],\n    \"name\": \"separate_paren_groups\"\n  }\n}\n\nplan_struct:\n{\n  \"algorithm\": \"Scan the input from left to right, ignoring spaces. Maintain a current group buffer and a nesting depth counter. When a non-space '(' is seen, start or continue the current buffer, append it, and increment depth. When a non-space ')' is seen, append it, decrement depth, and if depth becomes zero, the current top-level group is complete: add it to the result list and clear the buffer. Return the collected groups in order.\",\n  \"cases\": [\n    \"Spaces inside or between groups are skipped, so they never appear in output.\",\n    \"Adjacent top-level groups are separated whenever nesting depth returns to zero.\",\n    \"Nested groups remain inside the current buffer until the outermost group closes.\",\n    \"Multiple child pairs inside one outer group stay in the same output string.\",\n    \"Malformed, unbalanced, empty, or non-parenthesis input behavior is unspecified by the prompt, so do not add special behavior beyond the straightforward scan.\"\n  ],\n  \"complexity\": \"Time O(n) over the input string; space O(n) for the returned groups and current buffer.\",\n  \"implementation_notes\": [\n    \"Use only '(' and ')' characters after ignoring spaces.\",\n    \"Append completed groups only when depth transitions back to zero.\",\n    \"Preserve input order exactly among completed groups.\",\n    \"Avoid validation or error handling not requested by the prompt.\"\n  ]\n}\n\ntest_suite:\n{\n  \"rationale\": \"Prompt-derived tests cover the public example plus valid balanced inputs for adjacent groups, nested groups, spaces between/inside groups, and multiple child pairs within one top-level group. They avoid malformed, empty, or non-parenthesis cases because those are unspecified.\",\n  \"tests\": [\n    \"assert separate_paren_groups('( ) (( )) (( )( ))') == ['()', '(())', '(()())']\",\n    \"assert separate_paren_groups('()()') == ['()', '()']\",\n    \"assert separate_paren_groups('  (())   ()  ') == ['(())', '()']\",\n    \"assert separate_paren_groups('((()))') == ['((()))']\",\n    \"assert separate_paren_groups('(()())(())') == ['(()())', '(())']\",\n    \"assert separate_paren_groups(' ( ( ) ) ( ( ( ) ) ) ') == ['(())', '((()))']\"\n  ]\n}\n\ncandidate_completion:\n    groups = []\n    current = []\n    depth = 0\n\n    for ch in paren_string:\n        if ch == ' ':\n            continue\n        if ch == '(':\n            current.append(ch)\n            depth += 1\n        elif ch == ')':\n            current.append(ch)\n            depth -= 1\n            if depth == 0:\n                groups.append(''.join(current))\n                current = []\n\n    return groups\n\n\ncandidate_public_feedback:\n{\n  \"failures\": [],\n  \"mode\": \"public\",\n  \"passed\": true\n}\n\ncandidate_generated_feedback:\n{\n  \"failures\": [],\n  \"mode\": \"generated\",\n  \"passed\": true\n}",
+  "repair_public_feedback": {
+    "failures": [],
+    "mode": "public",
+    "passed": true
+  },
+  "repair_raw_completion_field": "    groups = []\n    current = []\n    depth = 0\n\n    for ch in paren_string:\n        if ch == ' ':\n            continue\n        if ch == '(':\n            current.append(ch)\n            depth += 1\n        elif ch == ')':\n            current.append(ch)\n            depth -= 1\n            if depth == 0:\n                groups.append(''.join(current))\n                current = []\n\n    return groups\n",
+  "repair_raw_response": "{\"completion\":\"    groups = []\\n    current = []\\n    depth = 0\\n\\n    for ch in paren_string:\\n        if ch == ' ':\\n            continue\\n        if ch == '(':\\n            current.append(ch)\\n            depth += 1\\n        elif ch == ')':\\n            current.append(ch)\\n            depth -= 1\\n            if depth == 0:\\n                groups.append(''.join(current))\\n                current = []\\n\\n    return groups\\n\",\"repair_summary\":\"Candidate passed all provided public and generated feedback, so the function body is unchanged.\"}",
+  "task_id": "HumanEval/1"
+}

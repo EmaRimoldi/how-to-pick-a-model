@@ -19,6 +19,8 @@ clear experimental boundaries.
 - `experiments/other/distribution-aware-orchestration/`: the non-AutoResearch
   archive, Step 1 induction work, and later SWE-bench studies imported from the
   former cluster checkout `NeurIPS_2026`.
+- `artifacts/raw/` and `artifacts/source-snapshots/`: Git LFS archives and exact
+  working-tree files retained from the source folders for provenance.
 - `src/agent_workflow/` and `src/vao/`: orchestration runtime imported from
   `agentops-lab-public`.
 - `src/*.py`, `config/`, and `data/`: HumanEval+, MBPP+, BBH, and retry-routing
@@ -75,6 +77,8 @@ The original repository roots and path mapping are documented in
 
 The original submitted PDF is
 [`paper/submitted-manuscript.pdf`](paper/submitted-manuscript.pdf). The
+archival wrapper [`manuscript.tex`](manuscript.tex) compiles that exact
+35-page PDF into a standalone manuscript. The
 reproducibility audit found that its promoted deployment-loss table used a
 legacy full-horizon composite loss rather than the first-passage loss stated in
 the text. The corrected accounting and later three-worker analysis are the

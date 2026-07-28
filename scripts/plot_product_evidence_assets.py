@@ -227,7 +227,6 @@ def render_frame(
     if save_static:
         PRODUCT_DIR.mkdir(parents=True, exist_ok=True)
         fig.savefig(PRODUCT_DIR / "autoresearch-orchestration-loss.png", bbox_inches="tight", pad_inches=0.14)
-        fig.savefig(PRODUCT_DIR / "autoresearch-orchestration-loss.pdf", bbox_inches="tight", pad_inches=0.14)
     buf = io.BytesIO()
     fig.savefig(buf, format="png", bbox_inches="tight", pad_inches=0.14)
     plt.close(fig)
