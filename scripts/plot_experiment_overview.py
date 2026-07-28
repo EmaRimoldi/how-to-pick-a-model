@@ -114,7 +114,6 @@ def main() -> None:
     )
 
     fig.savefig(FIGURES / "experiment-map.png", dpi=260)
-    fig.savefig(FIGURES / "experiment-map.pdf")
     plt.close(fig)
 
 

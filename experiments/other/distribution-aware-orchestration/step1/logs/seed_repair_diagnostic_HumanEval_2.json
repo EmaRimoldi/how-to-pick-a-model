@@ -1,0 +1,103 @@
+{
+  "candidate_generated_feedback": {
+    "failures": [],
+    "mode": "generated",
+    "passed": true
+  },
+  "candidate_passed_self_tests": true,
+  "candidate_public_feedback": {
+    "failures": [],
+    "mode": "public",
+    "passed": true
+  },
+  "entry_point": "truncate_number",
+  "generated_tests": [
+    "assert abs(truncate_number(3.5) - 0.5) < 1e-9",
+    "assert abs(truncate_number(0.75) - 0.75) < 1e-9",
+    "assert abs(truncate_number(10.0) - 0.0) < 1e-9",
+    "assert abs(truncate_number(123.999999) - 0.999999) < 1e-9",
+    "assert abs(truncate_number(4.000001) - 0.000001) < 1e-9"
+  ],
+  "implement_completion": "    return number - int(number)\n",
+  "node_usage": {
+    "generate_tests": {
+      "calls": 1,
+      "completion_tokens": 0,
+      "model": "gpt-5.5",
+      "prompt_tokens": 1733,
+      "reasoning_effort": "xhigh",
+      "token_split_source": "codex_total_only",
+      "total_tokens": 1733,
+      "transport": "codex_cli",
+      "wall_ms": 22176
+    },
+    "implement": {
+      "calls": 1,
+      "completion_tokens": 0,
+      "model": "gpt-5.5",
+      "prompt_tokens": 24947,
+      "reasoning_effort": "xhigh",
+      "token_split_source": "codex_total_only",
+      "total_tokens": 24947,
+      "transport": "codex_cli",
+      "wall_ms": 12345
+    },
+    "plan": {
+      "calls": 1,
+      "completion_tokens": 0,
+      "model": "gpt-5.5",
+      "prompt_tokens": 25086,
+      "reasoning_effort": "xhigh",
+      "token_split_source": "codex_total_only",
+      "total_tokens": 25086,
+      "transport": "codex_cli",
+      "wall_ms": 23540
+    },
+    "repair": {
+      "calls": 1,
+      "completion_tokens": 0,
+      "model": "gpt-5.5",
+      "prompt_tokens": 25194,
+      "reasoning_effort": "xhigh",
+      "token_split_source": "codex_total_only",
+      "total_tokens": 25194,
+      "transport": "codex_cli",
+      "wall_ms": 15137
+    },
+    "understand_spec": {
+      "calls": 1,
+      "completion_tokens": 0,
+      "model": "gpt-5.5",
+      "prompt_tokens": 24896,
+      "reasoning_effort": "xhigh",
+      "token_split_source": "codex_total_only",
+      "total_tokens": 24896,
+      "transport": "codex_cli",
+      "wall_ms": 26532
+    }
+  },
+  "raw_outputs": {
+    "generate_tests": "{\"rationale\":\"Covers the public example plus prompt-derived positive-float cases: fractional values below 1, whole-number floats, and values close to integer boundaries. Float comparisons use a small tolerance to avoid representation noise.\",\"tests\":[\"assert abs(truncate_number(3.5) - 0.5) < 1e-9\",\"assert abs(truncate_number(0.75) - 0.75) < 1e-9\",\"assert abs(truncate_number(10.0) - 0.0) < 1e-9\",\"assert abs(truncate_number(123.999999) - 0.999999) < 1e-9\",\"assert abs(truncate_number(4.000001) - 0.000001) < 1e-9\"]}",
+    "implement": "{\"completion\":\"    return number - int(number)\\n\",\"notes\":\"\"}",
+    "plan": "{\"algorithm\":\"For the positive input float, identify its integer part using the standard floor/truncate-to-integer behavior for positive numbers, then return the leftover amount obtained by subtracting that integer part from the original number.\",\"cases\":[\"For `3.5`, integer part is `3`, so the returned decimal part is `0.5`.\",\"For a positive value between `0` and `1`, the integer part is `0`, so return the original value.\",\"For a whole-number float, the leftover decimal part is `0`.\",\"For values close to an integer boundary, rely on normal floating-point subtraction to produce the leftover part smaller than `1`.\"],\"complexity\":\"O(1) time and O(1) extra space.\",\"implementation_notes\":[\"Input is assumed positive as stated in the prompt.\",\"Return a float representing only the decimal part.\",\"No negative-number behavior needs to be defined from this prompt.\"]}",
+    "repair": "{\"completion\":\"    return number - int(number)\",\"repair_summary\":\"Candidate passed all provided feedback, so it was returned unchanged.\"}",
+    "understand_spec": "{\"docstring_summary\":\"Given a positive floating point number, decompose it into an integer part and a decimal part, and return the decimal part. Public example: truncate_number(3.5) returns 0.5.\",\"edge_cases\":[\"Positive inputs between 0 and 1, where the integer part would be 0 and the decimal part is the original number.\",\"Positive inputs that are whole-number floats, where the decimal part would be 0.\",\"Positive inputs very close to an integer boundary, as the decimal part is defined as the leftover part smaller than 1.\"],\"examples\":[\"truncate_number(3.5) -> 0.5\"],\"input_types\":[\"number: float, described as a positive floating point number\"],\"invariants\":[\"Input is positive according to the prompt.\",\"The decimal part is always smaller than 1.\",\"The integer part is described as the largest integer smaller than the given number.\",\"The return value is the decimal part of the input number.\"],\"output_type\":\"float\",\"signature\":{\"args\":[\"number: float\"],\"name\":\"truncate_number\"}}"
+  },
+  "repair_changed": false,
+  "repair_generated_feedback": {
+    "failures": [],
+    "mode": "generated",
+    "passed": true
+  },
+  "repair_normalized_completion": "    return number - int(number)\n",
+  "repair_passed_self_tests": true,
+  "repair_prompt": "Node: repair.\nRevise the candidate completion using only the prompt, public/generated test feedback, and previous node outputs. Return a replacement function body completion. If any provided feedback failed, the replacement must differ from the candidate; return the same body only when the candidate already passes all provided feedback.\n\ntask_id: HumanEval/2\nentry_point: truncate_number\n\nHumanEval prompt, including signature and public docstring examples:\n\n\ndef truncate_number(number: float) -> float:\n    \"\"\" Given a positive floating point number, it can be decomposed into\n    and integer part (largest integer smaller than given number) and decimals\n    (leftover part always smaller than 1).\n\n    Return the decimal part of the number.\n    >>> truncate_number(3.5)\n    0.5\n    \"\"\"\n\n\nHard rule: use only this prompt and public examples. Do not use hidden tests, verifier code, reference solutions, or ground-truth answers.\n\nspec_struct:\n{\n  \"docstring_summary\": \"Given a positive floating point number, decompose it into an integer part and a decimal part, and return the decimal part. Public example: truncate_number(3.5) returns 0.5.\",\n  \"edge_cases\": [\n    \"Positive inputs between 0 and 1, where the integer part would be 0 and the decimal part is the original number.\",\n    \"Positive inputs that are whole-number floats, where the decimal part would be 0.\",\n    \"Positive inputs very close to an integer boundary, as the decimal part is defined as the leftover part smaller than 1.\"\n  ],\n  \"examples\": [\n    \"truncate_number(3.5) -> 0.5\"\n  ],\n  \"input_types\": [\n    \"number: float, described as a positive floating point number\"\n  ],\n  \"invariants\": [\n    \"Input is positive according to the prompt.\",\n    \"The decimal part is always smaller than 1.\",\n    \"The integer part is described as the largest integer smaller than the given number.\",\n    \"The return value is the decimal part of the input number.\"\n  ],\n  \"output_type\": \"float\",\n  \"signature\": {\n    \"args\": [\n      \"number: float\"\n    ],\n    \"name\": \"truncate_number\"\n  }\n}\n\nplan_struct:\n{\n  \"algorithm\": \"For the positive input float, identify its integer part using the standard floor/truncate-to-integer behavior for positive numbers, then return the leftover amount obtained by subtracting that integer part from the original number.\",\n  \"cases\": [\n    \"For `3.5`, integer part is `3`, so the returned decimal part is `0.5`.\",\n    \"For a positive value between `0` and `1`, the integer part is `0`, so return the original value.\",\n    \"For a whole-number float, the leftover decimal part is `0`.\",\n    \"For values close to an integer boundary, rely on normal floating-point subtraction to produce the leftover part smaller than `1`.\"\n  ],\n  \"complexity\": \"O(1) time and O(1) extra space.\",\n  \"implementation_notes\": [\n    \"Input is assumed positive as stated in the prompt.\",\n    \"Return a float representing only the decimal part.\",\n    \"No negative-number behavior needs to be defined from this prompt.\"\n  ]\n}\n\ntest_suite:\n{\n  \"rationale\": \"Covers the public example plus prompt-derived positive-float cases: fractional values below 1, whole-number floats, and values close to integer boundaries. Float comparisons use a small tolerance to avoid representation noise.\",\n  \"tests\": [\n    \"assert abs(truncate_number(3.5) - 0.5) < 1e-9\",\n    \"assert abs(truncate_number(0.75) - 0.75) < 1e-9\",\n    \"assert abs(truncate_number(10.0) - 0.0) < 1e-9\",\n    \"assert abs(truncate_number(123.999999) - 0.999999) < 1e-9\",\n    \"assert abs(truncate_number(4.000001) - 0.000001) < 1e-9\"\n  ]\n}\n\ncandidate_completion:\n    return number - int(number)\n\n\ncandidate_public_feedback:\n{\n  \"failures\": [],\n  \"mode\": \"public\",\n  \"passed\": true\n}\n\ncandidate_generated_feedback:\n{\n  \"failures\": [],\n  \"mode\": \"generated\",\n  \"passed\": true\n}",
+  "repair_public_feedback": {
+    "failures": [],
+    "mode": "public",
+    "passed": true
+  },
+  "repair_raw_completion_field": "    return number - int(number)",
+  "repair_raw_response": "{\"completion\":\"    return number - int(number)\",\"repair_summary\":\"Candidate passed all provided feedback, so it was returned unchanged.\"}",
+  "task_id": "HumanEval/2"
+}

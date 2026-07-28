@@ -1,0 +1,22 @@
+{
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.venv/**": true,
+    "**/artifacts/**": true,
+    "**/campaigns/**": true,
+    "**/runs/**": true
+  },
+  "python.analysis.exclude": [
+    "**/.venv",
+    "**/campaigns",
+    "**/runs",
+    "**/artifacts"
+  ],
+  "search.exclude": {
+    "**/.git/objects/**": true,
+    "**/.venv/**": true,
+    "**/artifacts/**": true,
+    "**/campaigns/**": true,
+    "**/runs/**": true
+  }
+}
