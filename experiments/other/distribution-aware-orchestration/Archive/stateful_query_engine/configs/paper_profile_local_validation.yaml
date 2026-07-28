@@ -1,0 +1,36 @@
+experiment:
+  name: paper_profile_local_validation
+  visibility_regime: top1_only
+  candidate_generation: batched
+  modes: [layout, indexing, topk, caching, summaries, micro]
+  steps: 1
+  wall_budget_seconds: 1800
+  branch_timeout_seconds: 120
+  incorrect_penalty: -1.0
+  productive_proxy_fallback: uniform
+  history_policy: full_visible_history
+  seed: 6101
+
+benchmark:
+  template_path: benchmarks/stateful_query_engine/solution_template.py
+  profiles:
+    - hard_balanced_dev
+    - hard_range_dev
+    - hard_churn_dev
+    - hard_balanced_holdout
+    - hard_range_holdout
+    - hard_churn_holdout
+  instance_overrides:
+    initial_size: 120
+    key_space: 3000
+    trace_length: 120
+    traces_per_family: 1
+    repetitions: 1
+    warmup_prefix: 10
+    value_max: 1000
+
+models:
+  include: [local_stub]
+
+output:
+  root: runs/paper_profile_validation/local

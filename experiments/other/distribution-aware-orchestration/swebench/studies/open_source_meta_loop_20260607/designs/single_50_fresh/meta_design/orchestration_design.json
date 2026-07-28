@@ -1,0 +1,214 @@
+{
+  "assumptions": [
+    "Evaluation uses SWE-Bench_Verified test instances at each base_commit with no gold patch access.",
+    "Runtime workers are limited to the provided Qwen endpoints and aliases.",
+    "Official verifier feedback may be unavailable on the first pass or may be expensive, so local git apply checks always precede verifier calls.",
+    "Public issue text, repository context, local tool output, apply-check output, verifier feedback, and retry traces are the only allowed evidence sources."
+  ],
+  "benchmark": "princeton-nlp/SWE-Bench_Verified:test",
+  "design_id": "e2_50_stratified_swe_verified_distaware_20260607_01",
+  "evidence_level": "E2_50_stratified",
+  "expected_tradeoffs": [],
+  "logging_plan": [
+    "Write one JSONL event for public instance metadata, including dataset, split, instance_id, base_commit, repo, declared_mode, and public count fields.",
+    "Write router events with extracted public signals, selected internal mode, confidence, routing branch, and expensive_path_allowed.",
+    "Write localization events with rg queries, snippet references, ranked and rejected locations, and compact invariants.",
+    "Write patch events with model alias, touched files, diff hash, output token estimate, and rationale tied to evidence_refs.",
+    "Write reviewer events with accept or reject verdict, compatibility risks, missing evidence, and recommended verification priority.",
+    "Write tester events with local git apply --check status, official verifier status when used, failure excerpts, retry category, and wall-time estimate.",
+    "Write final controller event with stop reason, number of model calls, patch proposal count, verifier attempt count, and diagnosis tags for the four optimization terms."
+  ],
+  "mode_taxonomy": [
+    {
+      "description": "Issue text names a specific symbol, file, regex, argument, exception, or one-line semantic condition.",
+      "expected_difficulty": "low",
+      "expected_strategy": "Cheap routing, targeted rg, narrow snippet inspection, one minimal patch proposal, local apply check before verification.",
+      "mode_id": "literal_local_fix",
+      "observable_signals": [
+        "explicit function or class name",
+        "small FAIL_TO_PASS_count",
+        "reproduction points to one failing behavior",
+        "single repository search hit cluster"
+      ]
+    },
+    {
+      "description": "Public behavior or signature must change while preserving backwards compatibility and tests across many call sites.",
+      "expected_difficulty": "medium",
+      "expected_strategy": "Use cheap localizer plus coder patcher; reviewer checks compatibility, docs or warning needs, and regression-test shape before verification.",
+      "mode_id": "api_semantics",
+      "observable_signals": [
+        "mentions API inconsistency, deprecation, warning, parameter exposure, or documented behavior",
+        "PASS_TO_PASS_count is large",
+        "issue text gives expected public contract"
+      ]
+    },
+    {
+      "description": "Bug depends on numeric, SQL, regex-boundary, dtype, geometry, or symbolic edge logic where a small expression can have broad effects.",
+      "expected_difficulty": "medium",
+      "expected_strategy": "Localize exact transform or expression, require reviewer invariant check, prefer minimal algebraic change with explicit regression case.",
+      "mode_id": "numeric_symbolic_logic",
+      "observable_signals": [
+        "mentions formula, dtype, regex anchors, SQL generation, thresholds, signedness, shape, cast, or dimensions",
+        "reproduction has concrete expected values"
+      ]
+    },
+    {
+      "description": "Behavior follows a framework convention spread across related helpers or inherited machinery.",
+      "expected_difficulty": "medium",
+      "expected_strategy": "Router builds a compact family map; localizer chooses the narrow hook; reviewer checks sibling behavior consistency before verifier use.",
+      "mode_id": "repo_family_behavior",
+      "observable_signals": [
+        "mentions family-level behavior such as renderer, transform graph, artist parenting, copy semantics, or inherited validators",
+        "search reveals related implementations across modules"
+      ]
+    },
+    {
+      "description": "Patch likely touches coupled implementation and tests or multiple modules due to migrations, admin, plotting, indexing, or response handling.",
+      "expected_difficulty": "high",
+      "expected_strategy": "Spend extra localization budget, generate one integrated patch, then escalate to stronger coder only if apply or verifier feedback shows structural miss.",
+      "mode_id": "multi_file_integration",
+      "observable_signals": [
+        "issue involves state propagation, migration/schema operations, indexes, coordinates, plotting lifecycle, or multiple public surfaces",
+        "search returns several plausible files"
+      ]
+    },
+    {
+      "description": "Failure depends on defaults, environment-sensitive behavior, protocol headers, permissions, formatter settings, or backend/engine differences.",
+      "expected_difficulty": "medium",
+      "expected_strategy": "Use deterministic extraction of config/default names, patch the boundary where default is interpreted, and require reviewer to reject hidden environment assumptions.",
+      "mode_id": "dependency_config_boundary",
+      "observable_signals": [
+        "mentions defaults, permissions, backend-specific behavior, rcParams, engine, temporary files, headers, or formatter offset",
+        "reproduction is configuration-like rather than algorithmic"
+      ]
+    }
+  ],
+  "optimization_loss": "Minimize expected loss L = 0.30*solution_generation_cost + 0.25*retries_to_verified_success + 0.25*information_loss + 0.20*mode_allocation_mismatch, with hard constraints forbidding gold-patch or hidden-test leakage and capping official verifier attempts to primary plus one justified fallback.",
+  "orchestrations": [
+    {
+      "complexity": {
+        "agents": 7,
+        "context_budget_tokens": 52000,
+        "max_patch_proposals": 2,
+        "model_families": 1,
+        "prompt_templates": 6,
+        "routing_branches": 6,
+        "tool_policies": 7
+      },
+      "components": [
+        {
+          "component_id": "controller_trace_budget",
+          "max_calls": 3,
+          "model": "qwen3_4b_instruct",
+          "output_contract": "JSON object with budget_state, evidence_refs, selected_mode, next_action, and stop_reason when applicable.",
+          "prompt_summary": "Maintain the instance trace, enforce leakage rules, track budget, and decide whether to continue after local apply or verifier feedback.",
+          "role": "controller",
+          "tools": [
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "mode_router",
+          "max_calls": 1,
+          "model": "qwen3_4b_instruct",
+          "output_contract": "JSON object with mode_id, confidence, key_signals, search_terms, and expensive_path_allowed boolean.",
+          "prompt_summary": "Classify the issue into one internal mode using only public issue text, public fields, and deterministic repository-search summaries; output confidence and escalation triggers.",
+          "role": "router",
+          "tools": [
+            "rg/search repository text",
+            "deterministic leakage-safe transforms from public issue text and repo context when explicitly justified"
+          ]
+        },
+        {
+          "component_id": "target_localizer",
+          "max_calls": 2,
+          "model": "qwen3_4b_instruct",
+          "output_contract": "JSON object with ranked_locations, rejected_locations, invariants, and minimal_context_summary.",
+          "prompt_summary": "Run focused repository search and inspect only high-signal snippets; return a compact ranked map of files, functions, tests, and invariants needed for patching.",
+          "role": "localizer",
+          "tools": [
+            "rg/search repository text",
+            "inspect file snippets",
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "primary_patcher",
+          "max_calls": 2,
+          "model": "qwen2_5_coder_7b",
+          "output_contract": "Unified diff plus JSON sidecar listing touched files, intended behavior change, and regression-test rationale.",
+          "prompt_summary": "Generate one minimal unified diff patch from the localized context, preserving public API compatibility unless the issue explicitly requests a change.",
+          "role": "patcher",
+          "tools": [
+            "generate unified diff patches",
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "compat_reviewer",
+          "max_calls": 2,
+          "model": "qwen2_5_7b_instruct",
+          "output_contract": "JSON verdict with accept, revise, risk_notes, missing_context, and verifier_priority.",
+          "prompt_summary": "Review the proposed patch against issue evidence, mode-specific invariants, leakage constraints, likely regression surface, and output-token budget before testing.",
+          "role": "reviewer",
+          "tools": [
+            "inspect file snippets",
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "apply_and_verify_tester",
+          "max_calls": 2,
+          "model": "qwen3_4b_instruct",
+          "output_contract": "JSON object with apply_check_status, verifier_status, failure_excerpt, and retry_signal.",
+          "prompt_summary": "Perform local git apply --check and, only if it passes and reviewer accepts, request official SWE-bench Modal verifier feedback when available.",
+          "role": "tester",
+          "tools": [
+            "local git apply --check",
+            "official SWE-bench Modal verifier feedback",
+            "maintain JSONL trace logs"
+          ]
+        },
+        {
+          "component_id": "structural_fallback_patcher",
+          "max_calls": 1,
+          "model": "qwen2_5_coder_14b",
+          "output_contract": "Unified diff repair plus JSON sidecar explaining which feedback item it addresses and why no extra gold information was used.",
+          "prompt_summary": "Use only summarized trace, failed patch, apply-check output, and verifier feedback to make one stronger repair when the primary patch fails for structural, multi-file, or semantic reasons.",
+          "role": "fallback",
+          "tools": [
+            "inspect file snippets",
+            "generate unified diff patches",
+            "local git apply --check",
+            "maintain JSONL trace logs"
+          ]
+        }
+      ],
+      "evidence_policy": "For each instance, log public issue digest, extracted symbols, search terms, inspected snippets with file and line windows, rejected locations, mode decision, model prompts summaries, generated diffs, local apply-check output, verifier feedback, and retry rationale. Do not log or request gold patches, hidden tests, or non-public artifacts. Deterministic transforms are allowed only for public issue text and repository context, and must record input and output hashes.",
+      "expected_failure_modes": [
+        "Router may under-classify repo-family or multi-file issues as literal fixes and miss coupled behavior.",
+        "Local apply check can pass while hidden regression tests fail because semantic compatibility was under-modeled.",
+        "Verifier feedback may be too coarse to identify the exact failed invariant within one fallback attempt.",
+        "14B fallback may overfit to verifier failure text and broaden the patch unless reviewer risk constraints are enforced.",
+        "Large PASS_TO_PASS suites can hide subtle public API or backend-specific regressions not visible in inspected snippets."
+      ],
+      "fallback_policy": "Fallback is a bounded escalation, not a separate policy. It is triggered only by reviewer high-risk flags, multi-file or semantic mode, repeated localization ambiguity, or official verifier feedback showing the primary patch addressed the wrong layer. The fallback receives compressed trace evidence and must produce one final patch or abstain with a logged reason.",
+      "name": "Stratified One-Patch Escalator",
+      "objective_summary": "A single adaptive routed policy that minimizes calls by using cheap deterministic search and small Qwen workers for classification and localization, produces at most one primary patch plus one feedback-driven repair, and reserves the 14B coder only for multi-file, semantic, or verifier-indicated structural failures.",
+      "orchestration_id": "swev_e250_routed_onepass_escalator_20260607_b4c1",
+      "orchestration_type": "hierarchical_routed",
+      "patch_policy": "Generate a minimal unified diff targeting the localized root cause. Prefer one implementation change plus a focused regression test when local context supports it; omit speculative broad refactors, docs churn, or unrelated cleanup. The primary patcher emits one candidate. If reviewer rejects for missing evidence, localizer may do one extra snippet pass before patch revision. If local apply check fails, repair syntax or context with the same 7B coder once; if official verifier fails and fallback is justified, the 14B fallback produces one final diff using only feedback and trace evidence.",
+      "routing_policy": "The router assigns exactly one internal mode. Low-confidence literal/config cases still start cheap: deterministic rg terms from symbols, error strings, and public examples, then qwen3_4b localization. The expensive path is enabled only when signals indicate multi-file integration, repo-family behavior, semantic API surface, large PASS_TO_PASS risk, or failed primary verification. Routing never selects a different orchestration; it only changes context budget, reviewer strictness, and whether the 14B fallback may be called.",
+      "stopping_rule": "Stop immediately on first officially verified patch. Stop without verifier when local apply check cannot be made to pass after one repair. Stop after one verifier-driven fallback attempt even if it fails. Also stop when controller budget detects insufficient public evidence to justify further changes without leakage risk.",
+      "target_modes": [
+        "literal_local_fix",
+        "api_semantics",
+        "numeric_symbolic_logic",
+        "repo_family_behavior",
+        "multi_file_integration",
+        "dependency_config_boundary"
+      ],
+      "verification_policy": "Always run local git apply --check before official verification. If apply check fails, do not call the official verifier. If apply check passes and reviewer accepts, call the official SWE-bench Modal verifier when available. Treat verifier success as terminal. Treat verifier failure as structured feedback: categorize as patch-application, import/runtime, expected-test failure, or regression, then allow at most one feedback-driven fallback attempt."
+    }
+  ]
+}

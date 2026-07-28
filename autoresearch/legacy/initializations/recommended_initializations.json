@@ -1,0 +1,42 @@
+{
+  "capacity-sensitive": {
+    "recommended_candidate": "narrow",
+    "replacements": {
+      "BASE_CHANNELS = 12": "BASE_CHANNELS = 8",
+      "FC_HIDDEN = 48": "FC_HIDDEN = 24"
+    }
+  },
+  "data-skew-sensitive": {
+    "recommended_candidate": "adam_lr5e-4_b128",
+    "replacements": {
+      "BATCH_SIZE = 64": "BATCH_SIZE = 128",
+      "WEIGHT_DECAY = 1e-4": "WEIGHT_DECAY = 0.0"
+    }
+  },
+  "lr-sensitive": {
+    "recommended_candidate": "lr_1e-5",
+    "replacements": {
+      "LEARNING_RATE = 5e-4": "LEARNING_RATE = 1e-5"
+    }
+  },
+  "optimizer-sensitive": {
+    "recommended_candidate": "adam_lr1e-4",
+    "replacements": {
+      "LEARNING_RATE = 5e-4": "LEARNING_RATE = 1e-4"
+    }
+  },
+  "regularization-sensitive": {
+    "recommended_candidate": "wd0_drop005",
+    "replacements": {
+      "DROPOUT_RATE = 0.0": "DROPOUT_RATE = 0.05",
+      "WEIGHT_DECAY = 1e-4": "WEIGHT_DECAY = 0.0"
+    }
+  },
+  "schedule-sensitive": {
+    "recommended_candidate": "nosched_lr2e-3",
+    "replacements": {
+      "LEARNING_RATE = 5e-4": "LEARNING_RATE = 2e-3",
+      "WARMUP_EPOCHS = 2": "WARMUP_EPOCHS = 0"
+    }
+  }
+}

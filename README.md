@@ -16,6 +16,9 @@ clear experimental boundaries.
 - `experiments/autoresearch/`: AutoResearch-only experiments and evidence.
 - `experiments/other/`: strategy-routing, SWE-bench, and other non-AutoResearch
   experiment artifacts.
+- `experiments/other/distribution-aware-orchestration/`: the non-AutoResearch
+  archive, Step 1 induction work, and later SWE-bench studies imported from the
+  former cluster checkout `NeurIPS_2026`.
 - `src/agent_workflow/` and `src/vao/`: orchestration runtime imported from
   `agentops-lab-public`.
 - `src/*.py`, `config/`, and `data/`: HumanEval+, MBPP+, BBH, and retry-routing

@@ -1,0 +1,27 @@
+experiment:
+  name: oracle_family_iterative_fixed_mode
+  visibility_regime: top1_only
+  candidate_generation: batched
+  modes: [layout, indexing, topk, caching, summaries, micro]
+  steps: 10
+  selection_policy: fixed_mode
+  selected_mode: micro
+  wall_budget_seconds: 14400
+  branch_timeout_seconds: 180
+  incorrect_penalty: -1.0
+  productive_proxy_fallback: uniform
+  history_policy: full_visible_history
+  seed: 8101
+
+benchmark:
+  template_path: benchmarks/stateful_query_engine/solution_template.py
+  profiles:
+    - hard_optimization
+
+models:
+  include:
+    - gpt_5_3_codex_spark_batch_strict
+    - gpt_5_3_codex_batch_strict
+
+output:
+  root: runs/oracle_family_iterative_fixed_mode
