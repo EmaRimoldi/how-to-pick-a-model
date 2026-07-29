@@ -215,7 +215,7 @@ def build_frontier(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Estimate proper-time frontier from raw logs.")
-    parser.add_argument("--config", default="config/experiment.yaml")
+    parser.add_argument("--config", default="experiments/humaneval-plus/qwen-model-size-frontier/configs/experiment.yaml")
     parser.add_argument("--run-id", default=None)
     parser.add_argument("--bootstrap-B", type=int, default=None)
     return parser.parse_args()

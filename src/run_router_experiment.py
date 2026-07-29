@@ -108,7 +108,7 @@ def mode_order_from_config(config: dict[str, Any]) -> list[str]:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run retry-allocation router experiment.")
-    parser.add_argument("--config", default="config/router_experiment.yaml")
+    parser.add_argument("--config", default="experiments/humaneval-plus/retry-allocation-router/configs/router.yaml")
     parser.add_argument("--folds", default=None, help="Comma-separated fold ids to run.")
     parser.add_argument("--limit-test-problems", type=int, default=None)
     parser.add_argument("--mock-router", action="store_true")

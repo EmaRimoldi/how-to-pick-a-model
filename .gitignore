@@ -15,6 +15,7 @@ dist/
 # Local secrets and editor/OS state
 .env
 .DS_Store
+.vscode/
 *.swp
 *.tmp
 *.bak
@@ -42,26 +43,24 @@ studies/*/runs/
 studies/*/logs/
 autoresearch/data/
 
-# Local run state and diagnostic output for the non-AutoResearch tracks
-data/raw/.*
-data/raw/*.log
-data/raw/nohup_*.log
-data/raw/pull_*.log
-data/raw/*smoke*.jsonl
-data/raw/*gate*.jsonl
-data/raw/*probe*.jsonl
-data/raw/*.bak*
-data/raw/*before_*.jsonl
-data/raw/*removed_*.jsonl
-data/raw/*pre_sleep_prune*.jsonl
-data/raw/bbh_discarded_*/
-data/raw/bbh_sleep_checkpoint_*/
+# Local run state and diagnostic output for benchmark bundles
+experiments/**/data/raw/.*
+experiments/**/data/raw/*.log
+experiments/**/data/raw/nohup_*.log
+experiments/**/data/raw/pull_*.log
+experiments/**/data/raw/*smoke*.jsonl
+experiments/**/data/raw/*gate*.jsonl
+experiments/**/data/raw/*probe*.jsonl
+experiments/**/data/raw/*.bak*
+experiments/**/data/raw/*before_*.jsonl
+experiments/**/data/raw/*removed_*.jsonl
+experiments/**/data/raw/*pre_sleep_prune*.jsonl
+experiments/**/data/raw/bbh_discarded_*/
+experiments/**/data/raw/bbh_sleep_checkpoint_*/
 
 # Regenerable diagnostic / smoke derived artifacts
-data/derived/*smoke*
-data/derived/*dryrun*
-data/derived/*sanity*
-data/derived/*retry_gate*
-data/derived/mbpp_router_results_2models.jsonl
-data/derived/mbpp_router_summary_2models.json
-data/derived/dataset_comparison.*
+experiments/**/results/processed/*smoke*
+experiments/**/results/processed/*dryrun*
+experiments/**/results/processed/*sanity*
+experiments/**/results/processed/*retry_gate*
+experiments/**/results/figures-smoke/

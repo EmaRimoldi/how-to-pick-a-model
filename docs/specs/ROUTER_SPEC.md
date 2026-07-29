@@ -77,7 +77,7 @@ traces[task_id][model] = {
 
 Models keyed by short name `"1.5b"`, `"7b"`, `"32b"`. Recompute `solved` from
 `attempt_statuses` under the strict threshold (§2). Read mode from
-`data/derived/modes.json`.
+`experiments/humaneval-plus/qwen-model-size-frontier/results/processed/modes.json`.
 
 ---
 
@@ -161,13 +161,13 @@ Only live component. Contract:
 ## 7. k-fold protocol — MAIN (`src/run_router_experiment.py`)
 
 - **5-fold, stratified by mode**, preserving easy/medium/hard proportions. Freeze
-  to `data/derived/folds.json` before running. seed 0.
+  to `experiments/humaneval-plus/retry-allocation-router/results/processed/folds.json` before running. seed 0.
 - Per fold: training material = other 4 folds' traces; test = this fold. For each
   test problem: call router -> allocation -> simulate execution (§4) -> record;
   also compute all baselines + both oracles (§5) for the same problem.
 - No leakage: each problem in exactly one test fold; router never sees a test
   problem's own outcomes.
-- **Output** `data/derived/router_results.jsonl`, one record per (fold, problem):
+- **Output** `experiments/humaneval-plus/retry-allocation-router/results/processed/router_results.jsonl`, one record per (fold, problem):
 
 ```json
 {
@@ -189,7 +189,7 @@ tqdm over (fold, problem); log running solved-rate and mean router time.
 
 ## 8. Aggregation (`src/estimate_router.py`)
 
-Reads `router_results.jsonl`, writes `data/derived/router_summary.json`. No API
+Reads `router_results.jsonl`, writes `experiments/humaneval-plus/retry-allocation-router/results/processed/router_summary.json`. No API
 calls. Pooled over all 164 decisions and per mode:
 
 - **Solved rate** of router, each always-model, best-single-model, oracle,
@@ -219,14 +219,14 @@ PNG 130 dpi + PDF, minimal style.
 
 ---
 
-## 10. Config (`config/router_experiment.yaml`)
+## 10. Config (`experiments/humaneval-plus/retry-allocation-router/configs/router.yaml`)
 
 ```yaml
 worker_logs:
-  - data/raw/runs_qwen2.5-coder_1.5b_full_20260616T0640Z.jsonl
-  - data/raw/runs_qwen2.5-coder_7b_full_20260616T0640Z.jsonl
-  - data/raw/runs_qwen2.5-coder_32b_full_20260616T0640Z.jsonl
-modes_file: data/derived/modes.json
+  - experiments/humaneval-plus/qwen-model-size-frontier/data/raw/runs_qwen2.5-coder_1.5b_full_20260616T0640Z.jsonl
+  - experiments/humaneval-plus/qwen-model-size-frontier/data/raw/runs_qwen2.5-coder_7b_full_20260616T0640Z.jsonl
+  - experiments/humaneval-plus/qwen-model-size-frontier/data/raw/runs_qwen2.5-coder_32b_full_20260616T0640Z.jsonl
+modes_file: experiments/humaneval-plus/qwen-model-size-frontier/results/processed/modes.json
 success_threshold: strict
 budget_attempts: 10
 execution_order: ["1.5b", "7b", "32b"]
@@ -243,14 +243,14 @@ router:
 estimation:
   bootstrap_B: 1000
 paths:
-  results: data/derived/router_results.jsonl
-  summary: data/derived/router_summary.json
-  figures: figures/router
+  results: experiments/humaneval-plus/retry-allocation-router/results/processed/router_results.jsonl
+  summary: experiments/humaneval-plus/retry-allocation-router/results/processed/router_summary.json
+  figures: experiments/humaneval-plus/retry-allocation-router/results/figures
 ```
 
 ---
 
-## 11. Smoke test (`scripts/smoke_router.sh`)
+## 11. Smoke test (`experiments/humaneval-plus/retry-allocation-router/scripts/smoke_router.sh`)
 
 - Fold 0 only, 5 test problems.
 - **MOCK router** (local function returning a fixed allocation, e.g. always-7b) —
@@ -262,7 +262,7 @@ paths:
   3.525122543 s, solved true, first_pass_model "1.5b".
 - The agent runs this.
 
-## 12. Full run (`scripts/full_router_run.sh`)
+## 12. Full run (`experiments/humaneval-plus/retry-allocation-router/scripts/full_router_run.sh`)
 
 - All 5 folds, 164 decisions, real LLM router via API.
 - Print estimated API-call count (164) and stop for the human to launch (costs

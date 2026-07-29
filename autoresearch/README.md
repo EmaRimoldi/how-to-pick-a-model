@@ -1,7 +1,7 @@
 # AutoResearch CIFAR-10 Infrastructure
 
 This directory contains the runnable AutoResearch infrastructure used by the
-model-routing experiment in `experiments/autoresearch/05_autoresearch_model_routing/`.
+model-routing experiment in `experiments/autoresearch-cifar10/three-worker-model-routing/`.
 
 ## Canonical Reproduction Surface
 
@@ -37,7 +37,7 @@ rerunning expensive training:
 ```bash
 PYTHONPATH=src:. uv run pytest tests/vao_runtime tests/autoresearch_reproduction -q
 PYTHONPATH=src:. uv run python -m autoresearch.scripts.reproduce_main_figures_from_processed \
-  --input experiments/autoresearch/05_autoresearch_model_routing/results/accounting/threeworker_final_analysis.json \
+  --input experiments/autoresearch-cifar10/three-worker-model-routing/results/accounting/threeworker_final_analysis.json \
   --out-dir /tmp/agent_workflow_autoresearch_reproduced
 ```
 

@@ -22,7 +22,7 @@ This gives the repo a concrete experimental question:
 ## Fastest Reading Path
 
 1. Read the selected benchmark baseline:
-   [`experiments/autoresearch/01_baseline/README.md`](../experiments/autoresearch/01_baseline/README.md).
+   [`experiments/autoresearch-cifar10/starting-model-calibration/README.md`](../experiments/autoresearch-cifar10/starting-model-calibration/README.md).
 
    The current baseline was chosen after 161 controlled non-agentic evaluations.
    The selected starting model is "width 30, lower learning rate" (internal ID
@@ -30,7 +30,7 @@ This gives the repo a concrete experimental question:
    `target_val_bpb = 0.824`.
 
 2. Read the strongest agent-workflow finding:
-   [`experiments/autoresearch/03_agent_memory_ablation/README.md`](../experiments/autoresearch/03_agent_memory_ablation/README.md).
+   [`experiments/autoresearch-cifar10/shared-memory-ablation/README.md`](../experiments/autoresearch-cifar10/shared-memory-ablation/README.md).
 
    The most informative comparison is `T06` vs `T07`:
 
@@ -43,7 +43,7 @@ This gives the repo a concrete experimental question:
    like a random walk, while shared memory reduces catastrophic repeats.
 
 3. Read why the evaluation protocol had to be calibrated:
-   [`experiments/autoresearch/02_evaluation_protocol_calibration/README.md`](../experiments/autoresearch/02_evaluation_protocol_calibration/README.md).
+   [`experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/README.md`](../experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/README.md).
 
    This experiment combines the two protocol checks that make later comparisons
    interpretable: repeated baseline runs must match exactly, and training should
@@ -55,13 +55,13 @@ This gives the repo a concrete experimental question:
 The most useful result figures are:
 
 - [`docs/assets/experiments/experiment-map.png`](../docs/assets/experiments/experiment-map.png)
-- [`experiments/autoresearch/01_baseline/results/figures/figure-04-recommended-baseline-detail.png`](../experiments/autoresearch/01_baseline/results/figures/figure-04-recommended-baseline-detail.png)
-- [`experiments/autoresearch/03_agent_memory_ablation/results/figures/figure-01-trial-outcomes.png`](../experiments/autoresearch/03_agent_memory_ablation/results/figures/figure-01-trial-outcomes.png)
-- [`experiments/autoresearch/03_agent_memory_ablation/results/figures/figure-02-memory-stabilization.png`](../experiments/autoresearch/03_agent_memory_ablation/results/figures/figure-02-memory-stabilization.png)
-- [`experiments/autoresearch/02_evaluation_protocol_calibration/results/figures/figure-01-fixed-time-compute-loss.png`](../experiments/autoresearch/02_evaluation_protocol_calibration/results/figures/figure-01-fixed-time-compute-loss.png)
-- [`experiments/autoresearch/02_evaluation_protocol_calibration/results/figures/figure-02-fixed-step-latency-cost.png`](../experiments/autoresearch/02_evaluation_protocol_calibration/results/figures/figure-02-fixed-step-latency-cost.png)
-- [`experiments/autoresearch/04_swarm_baselines/results/figures/figure-01-validation-bpb-over-time.png`](../experiments/autoresearch/04_swarm_baselines/results/figures/figure-01-validation-bpb-over-time.png)
-- [`experiments/autoresearch/04_swarm_baselines/results/figures/figure-04-swarm-memory-architecture.png`](../experiments/autoresearch/04_swarm_baselines/results/figures/figure-04-swarm-memory-architecture.png)
+- [`experiments/autoresearch-cifar10/starting-model-calibration/results/figures/figure-04-recommended-baseline-detail.png`](../experiments/autoresearch-cifar10/starting-model-calibration/results/figures/figure-04-recommended-baseline-detail.png)
+- [`experiments/autoresearch-cifar10/shared-memory-ablation/results/figures/figure-01-trial-outcomes.png`](../experiments/autoresearch-cifar10/shared-memory-ablation/results/figures/figure-01-trial-outcomes.png)
+- [`experiments/autoresearch-cifar10/shared-memory-ablation/results/figures/figure-02-memory-stabilization.png`](../experiments/autoresearch-cifar10/shared-memory-ablation/results/figures/figure-02-memory-stabilization.png)
+- [`experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/results/figures/figure-01-fixed-time-compute-loss.png`](../experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/results/figures/figure-01-fixed-time-compute-loss.png)
+- [`experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/results/figures/figure-02-fixed-step-latency-cost.png`](../experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/results/figures/figure-02-fixed-step-latency-cost.png)
+- [`experiments/autoresearch-cifar10/swarm-vs-independent-agents/results/figures/figure-01-validation-bpb-over-time.png`](../experiments/autoresearch-cifar10/swarm-vs-independent-agents/results/figures/figure-01-validation-bpb-over-time.png)
+- [`experiments/autoresearch-cifar10/swarm-vs-independent-agents/results/figures/figure-04-swarm-memory-architecture.png`](../experiments/autoresearch-cifar10/swarm-vs-independent-agents/results/figures/figure-04-swarm-memory-architecture.png)
 
 ## Runnable Surface
 

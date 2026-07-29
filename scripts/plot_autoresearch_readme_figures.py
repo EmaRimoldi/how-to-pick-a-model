@@ -12,7 +12,7 @@ import numpy as np
 
 
 ROOT = Path(__file__).resolve().parents[1]
-STUDY = ROOT / "experiments" / "autoresearch" / "05_autoresearch_model_routing"
+STUDY = ROOT / "experiments" / "autoresearch-cifar10" / "three-worker-model-routing"
 RAW = STUDY / "raw"
 INVENTORY = RAW / "manifests" / "raw_run_inventory.csv"
 RUNS = RAW / "worker_confirmation"

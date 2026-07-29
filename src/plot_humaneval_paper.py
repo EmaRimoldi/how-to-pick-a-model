@@ -782,13 +782,13 @@ def main() -> None:
     root = args.root.resolve()
     output_dir = args.output_dir.resolve()
     configure_style()
-    summary = read_json(root / "data/derived/router_summary.json")
-    records = read_jsonl(root / "data/derived/router_results.jsonl")
-    tau = read_json(root / "data/derived/tau_star.json")
+    summary = read_json(root / "experiments/humaneval-plus/retry-allocation-router/results/processed/router_summary.json")
+    records = read_jsonl(root / "experiments/humaneval-plus/retry-allocation-router/results/processed/router_results.jsonl")
+    tau = read_json(root / "experiments/humaneval-plus/qwen-model-size-frontier/results/processed/tau_star.json")
     raw_paths = {
-        "1.5b": root / "data/raw/runs_qwen2.5-coder_1.5b_full_20260616T0640Z.jsonl",
-        "7b": root / "data/raw/runs_qwen2.5-coder_7b_full_20260616T0640Z.jsonl",
-        "32b": root / "data/raw/runs_qwen2.5-coder_32b_full_20260616T0640Z.jsonl",
+        "1.5b": root / "experiments/humaneval-plus/qwen-model-size-frontier/data/raw/runs_qwen2.5-coder_1.5b_full_20260616T0640Z.jsonl",
+        "7b": root / "experiments/humaneval-plus/qwen-model-size-frontier/data/raw/runs_qwen2.5-coder_7b_full_20260616T0640Z.jsonl",
+        "32b": root / "experiments/humaneval-plus/qwen-model-size-frontier/data/raw/runs_qwen2.5-coder_32b_full_20260616T0640Z.jsonl",
     }
     plot_speed_accounting(summary, output_dir)
     plot_retry_and_frontier(raw_paths, tau, output_dir)

@@ -16,8 +16,8 @@ than used as the canonical runnable source.
 
 The cluster `.vscode/settings.json` is retained at the repository root. The 22
 generated Step 1 outputs are retained in
-`experiments/other/distribution-aware-orchestration/step1/` at their natural
-`data/` and `logs/` paths.
+`experiments/humaneval-plus/verifier-guided-dag-induction-smoke/` at their
+natural `data/` and `logs/` paths.
 
 The raw AutoResearch campaigns are stored separately as Git LFS archives under
 `artifacts/raw/autoresearch-campaigns/`.

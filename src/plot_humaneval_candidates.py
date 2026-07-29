@@ -91,9 +91,9 @@ def clean_axis(ax: plt.Axes, *, grid_axis: str = "both") -> None:
 
 def load_trace_bank(root: Path) -> dict[str, dict[str, dict[str, Any]]]:
     paths = {
-        "1.5b": root / "data/raw/runs_qwen2.5-coder_1.5b_full_20260616T0640Z.jsonl",
-        "7b": root / "data/raw/runs_qwen2.5-coder_7b_full_20260616T0640Z.jsonl",
-        "32b": root / "data/raw/runs_qwen2.5-coder_32b_full_20260616T0640Z.jsonl",
+        "1.5b": root / "experiments/humaneval-plus/qwen-model-size-frontier/data/raw/runs_qwen2.5-coder_1.5b_full_20260616T0640Z.jsonl",
+        "7b": root / "experiments/humaneval-plus/qwen-model-size-frontier/data/raw/runs_qwen2.5-coder_7b_full_20260616T0640Z.jsonl",
+        "32b": root / "experiments/humaneval-plus/qwen-model-size-frontier/data/raw/runs_qwen2.5-coder_32b_full_20260616T0640Z.jsonl",
     }
     bank: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
     for model, path in paths.items():
@@ -637,8 +637,8 @@ def main() -> None:
     output_dir = args.output_dir.resolve()
     configure_style()
     bank = load_trace_bank(root)
-    records = read_jsonl(root / "data/derived/router_results.jsonl")
-    summary = read_json(root / "data/derived/router_summary.json")
+    records = read_jsonl(root / "experiments/humaneval-plus/retry-allocation-router/results/processed/router_results.jsonl")
+    summary = read_json(root / "experiments/humaneval-plus/retry-allocation-router/results/processed/router_summary.json")
     plot_ternary_landscape(bank, records, output_dir)
     plot_raincloud(records, output_dir)
     plot_pareto(bank, records, summary, output_dir)

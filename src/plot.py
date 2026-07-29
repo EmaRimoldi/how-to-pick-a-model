@@ -163,7 +163,7 @@ def plot_success_curves(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Plot figures from derived estimates only.")
-    parser.add_argument("--config", default="config/experiment.yaml")
+    parser.add_argument("--config", default="experiments/humaneval-plus/qwen-model-size-frontier/configs/experiment.yaml")
     return parser.parse_args()
 
 

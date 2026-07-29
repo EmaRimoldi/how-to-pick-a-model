@@ -103,7 +103,7 @@ def router_prompt(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the posterior-and-allocation strategy router")
-    parser.add_argument("--config", default="config/strategy_experiment.yaml")
+    parser.add_argument("--config", default="experiments/humaneval-plus/strategy-by-difficulty-grid/configs/strategy_experiment.yaml")
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--limit-problems", type=int, default=None)
     parser.add_argument("--context-sizes", default=None)

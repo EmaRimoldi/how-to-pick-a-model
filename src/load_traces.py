@@ -140,7 +140,7 @@ def load_traces(config: dict[str, Any]) -> dict[str, dict[str, Any]]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Inspect router worker traces.")
-    parser.add_argument("--config", default="config/router_experiment.yaml")
+    parser.add_argument("--config", default="experiments/humaneval-plus/retry-allocation-router/configs/router.yaml")
     args = parser.parse_args()
     config = load_config(args.config)
     model_order = configured_model_order(config)

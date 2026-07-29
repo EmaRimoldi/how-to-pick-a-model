@@ -204,7 +204,7 @@ def build_summary(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Aggregate router experiment results.")
-    parser.add_argument("--config", default="config/router_experiment.yaml")
+    parser.add_argument("--config", default="experiments/humaneval-plus/retry-allocation-router/configs/router.yaml")
     parser.add_argument("--results-path", default=None)
     parser.add_argument("--summary-path", default=None)
     parser.add_argument("--bootstrap-B", type=int, default=None)

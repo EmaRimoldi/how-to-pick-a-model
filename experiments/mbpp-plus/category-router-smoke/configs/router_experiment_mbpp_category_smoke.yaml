@@ -1,0 +1,34 @@
+worker_logs:
+  - experiments/mbpp-plus/qwen-model-size-frontier/data/raw/runs_qwen2.5-coder_1.5b_full_mbpp_2models_20260617T114444Z.jsonl
+  - experiments/mbpp-plus/qwen-model-size-frontier/data/raw/runs_qwen2.5-coder_7b_full_mbpp_2models_20260617T114444Z.jsonl
+  - experiments/mbpp-plus/qwen-model-size-frontier/data/raw/runs_qwen2.5-coder_32b_full_mbpp_32b_20260617T1335Z.jsonl
+modes_file: experiments/mbpp-plus/category-router-smoke/results/processed/mbpp_modes_category_smoke.json
+allow_partial_modes: true
+mode_order: ["string", "math", "list_ds", "logic_control"]
+success_threshold: strict
+budget_attempts: 10
+execution_order: ["1.5b", "7b", "32b"]
+kfold:
+  n_folds: 1
+  stratify_by: mode
+  seed: 0
+router:
+  backend: codex_cli
+  model_env: ROUTER_MODEL
+  reasoning_effort: medium
+  temperature: 0
+  in_context: full_traces
+  parse_fail_default: {"n_1.5b": 0, "n_7b": 10, "n_32b": 0}
+estimation:
+  bootstrap_B: 100
+frontier:
+  clock: seconds
+  censoring_floor: 1.0e-3
+  bootstrap_B: 100
+paths:
+  folds: experiments/mbpp-plus/category-router-smoke/results/processed/mbpp_folds_category_smoke.json
+  results: experiments/mbpp-plus/category-router-smoke/results/processed/mbpp_router_results_category_smoke.jsonl
+  summary: experiments/mbpp-plus/category-router-smoke/results/processed/mbpp_router_summary_category_smoke.json
+  figures: experiments/mbpp-plus/category-router-smoke/results/figures-smoke
+  category_frontier: experiments/mbpp-plus/category-router-smoke/results/processed/category_frontier_smoke.json
+  category_frontier_figures: experiments/mbpp-plus/category-router-smoke/results/figures-smoke

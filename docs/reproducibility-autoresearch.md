@@ -44,7 +44,7 @@ uv sync --dev --extra all-experiments --frozen # all optional profiles
 ## AutoResearch Model-Routing Reproduction
 
 The AutoResearch model-routing results live under
-`experiments/autoresearch/05_autoresearch_model_routing/`. The runnable infrastructure lives
+`experiments/autoresearch-cifar10/three-worker-model-routing/`. The runnable infrastructure lives
 under:
 
 - `autoresearch/benchmark/cifar10/`: CIFAR-10 benchmark, workload templates,
@@ -66,7 +66,7 @@ Regenerate compact figures from the processed analysis JSON:
 
 ```bash
 uv run python -m autoresearch.scripts.reproduce_main_figures_from_processed \
-  --input experiments/autoresearch/05_autoresearch_model_routing/results/accounting/threeworker_final_analysis.json \
+  --input experiments/autoresearch-cifar10/three-worker-model-routing/results/accounting/threeworker_final_analysis.json \
   --out-dir /tmp/agent_workflow_autoresearch_reproduced
 ```
 

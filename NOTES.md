@@ -20,15 +20,15 @@
 - Router backend: `codex_cli` by default, using local Codex ChatGPT subscription auth. `ROUTER_MODEL=gpt-5.4` with `reasoning_effort: medium` is the selected full-run router configuration.
 - Router prompt: real router calls prefer full training traces. If the serialized prompt exceeds the internal character guard, the router falls back to a per-mode summary; the smoke path uses only the mock router.
 - Codex CLI router isolation: each router call runs from a temporary directory with workspace-write sandboxing and receives the training traces in the prompt. This avoids giving the router filesystem access to held-out worker logs.
-- Full router run: `scripts/full_router_run.sh` estimates 164 total router calls before execution.
+- Full router run: `experiments/humaneval-plus/retry-allocation-router/scripts/full_router_run.sh` estimates 164 total router calls before execution.
 
 ## MBPP+ category extension notes
 
 - Category labels are a second MBPP+ mode schema and are namespaced under `mbpp_*_category*` and `router_mbpp_category*`; HumanEval+ difficulty-mode outputs are untouched.
 - Categories are fixed to `string`, `math`, `list_ds`, and `logic_control`; the LLM prompt embeds the precedence rule from `docs/specs/CATEGORY_SPEC.md`.
 - The category tagger uses Codex CLI subscription auth by default through `ROUTER_MODEL`, temperature 0 by contract, and `reasoning_effort=medium`.
-- The tagger writes a resumable audit trail to `data/derived/mbpp_category_label_records.jsonl`; the frozen analysis labels are `data/derived/mbpp_modes_category.json`.
-- The 2-category high-power view is frozen to `data/derived/mbpp_modes_mathnot.json`.
+- The tagger writes a resumable audit trail to `experiments/mbpp-plus/category-router-smoke/results/processed/mbpp_category_label_records.jsonl`; the frozen analysis labels are `experiments/mbpp-plus/category-router-smoke/results/processed/mbpp_modes_category.json`.
+- The 2-category high-power view is frozen to `experiments/mbpp-plus/category-router-smoke/results/processed/mbpp_modes_mathnot.json`.
 - `frontier_by_category.py` defaults to wall-clock seconds for tau* because the retry-allocation question is time-to-verified-solution. The same script supports `--clock tokens` if token-budget frontier diagnostics are needed later.
 - The public repository keeps the canonical MBPP+ split worker traces for `1.5b`, `7b`, and `32b`; intermediate/pruned variants are local-only because broad globs can duplicate task/model traces.
 
@@ -36,15 +36,15 @@
 
 - MBPP+ is loaded through EvalPlus as `mbppplus`, with checker dataset `mbpp` and strict base+plus checking.
 - MBPP+ expected-output generation must use EvalPlus `MBPP_OUTPUT_NOT_NONE_TASKS`; using the HumanEval empty list can create unpickleable regex match oracle outputs.
-- MBPP+ difficulty modes are frozen to `data/derived/mbpp_modes.json` using the same `ref_solution_length` tertile method as HumanEval+, recomputed on MBPP+ itself. Cutoffs: `[21, 34]`; counts: `easy=126`, `medium=126`, `hard=126`.
-- The worker smoke artifact is `data/raw/runs_qwen2.5-coder_1.5b_smoke_mbpp.jsonl` with 5 rows. A separate diagnostic gate artifact, `data/raw/runs_qwen2.5-coder_1.5b_gate_mbpp.jsonl`, was used only to find attempt-2 passes for cumulative-clock verification.
-- Reduced MBPP+ worker run: `scripts/full_run_mbpp_2models.sh` runs only `qwen2.5-coder:1.5b` and `qwen2.5-coder:7b`, with run ids prefixed `full_mbpp_2models_`. Two-model downstream configs use `execution_order: ["1.5b", "7b"]` and namespaced outputs ending in `_2models`.
+- MBPP+ difficulty modes are frozen to `experiments/mbpp-plus/qwen-model-size-frontier/results/processed/mbpp_modes.json` using the same `ref_solution_length` tertile method as HumanEval+, recomputed on MBPP+ itself. Cutoffs: `[21, 34]`; counts: `easy=126`, `medium=126`, `hard=126`.
+- The worker smoke artifact is `experiments/mbpp-plus/qwen-model-size-frontier/data/raw/runs_qwen2.5-coder_1.5b_smoke_mbpp.jsonl` with 5 rows. A separate diagnostic gate artifact with the same bundle prefix and `gate_mbpp` suffix was used only to find attempt-2 passes for cumulative-clock verification.
+- Reduced MBPP+ worker run: `experiments/mbpp-plus/qwen-model-size-frontier/scripts/full_run_mbpp_2models.sh` runs only `qwen2.5-coder:1.5b` and `qwen2.5-coder:7b`, with run ids prefixed `full_mbpp_2models_`. Two-model downstream configs use `execution_order: ["1.5b", "7b"]` and namespaced outputs ending in `_2models`.
 - The old all-in-one `scripts/full_run_mbpp.sh` path is intentionally not part of the public workflow; the current reproducible path is the two-model worker run plus the separate 32B worker run.
 
 ## BBH reasoning experiment notes
 
 - BBH source is Hugging Face `lukaemon/bbh`, split `test`. The implementation iterates over the actual configs exposed by the dataset package.
-- Deviation from `docs/specs/BBH_SPEC.md`: the resolved `lukaemon/bbh` source exposes 27 BBH subtasks, not 23. The implementation uses all 27 available configs and records `actual_subtask_count` in `data/derived/bbh_modes_meta.json`.
+- Deviation from `docs/specs/BBH_SPEC.md`: the resolved `lukaemon/bbh` source exposes 27 BBH subtasks, not 23. The implementation uses all 27 available configs and records `actual_subtask_count` in `experiments/bbh/qwen-model-size-frontier/results/processed/bbh_modes_meta.json`.
 - Default cap is `max_examples_per_subtask: 100`, so the full worker menu covers up to 2700 BBH examples.
 - After the initial serial run exposed very slow `dyck_languages` behavior for `qwen2.5:1.5b`, the active BBH worker config was reduced to a diverse 12-subtask panel while preserving already completed valid rows. The selected subtasks are `boolean_expressions`, `causal_judgement`, `date_understanding`, `disambiguation_qa`, `dyck_languages`, `formal_fallacies`, `geometric_shapes`, `hyperbaton`, `multistep_arithmetic_two`, `navigate`, `object_counting`, and `word_sorting` for 1200 examples total.
 - Workers are generalist Ollama models, not coder models: `qwen2.5:1.5b`, `qwen2.5:7b`, `qwen2.5:32b`.
@@ -57,5 +57,5 @@
   - `language`: `disambiguation_qa`, `hyperbaton`, `movie_recommendation`, `ruin_names`, `salient_translation_error_detection`, `snarks`, `sports_understanding`.
   - `spatial_temporal`: `date_understanding`, `geometric_shapes`, `navigate`, `temporal_sequences`, `tracking_shuffled_objects_three_objects`, `tracking_shuffled_objects_five_objects`, `tracking_shuffled_objects_seven_objects`.
   - `algorithmic`: `dyck_languages`, `penguins_in_a_table`, `reasoning_about_colored_objects`, `word_sorting`.
-- `scripts/smoke_bbh.sh` freezes `bbh_modes.json`, runs 5 examples with 2 attempts on `qwen2.5:1.5b`, checks retry sanity, then runs a mock-router smoke using `config/router_experiment_bbh_smoke.yaml`.
-- `scripts/full_run_bbh.sh` and `scripts/full_router_run_bbh.sh` are written but not auto-launched by the agent.
+- `experiments/bbh/family-and-subtask-router/scripts/smoke_bbh.sh` freezes `bbh_modes.json`, runs 5 examples with 2 attempts on `qwen2.5:1.5b`, checks retry sanity, then runs a mock-router smoke using `experiments/bbh/family-and-subtask-router/configs/router_experiment_bbh_smoke.yaml`.
+- `experiments/bbh/qwen-model-size-frontier/scripts/full_run_bbh.sh` and `experiments/bbh/family-and-subtask-router/scripts/full_router_run_bbh.sh` are written but not auto-launched by the agent.

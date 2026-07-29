@@ -8,7 +8,7 @@ The manuscript source and all twelve paper-facing AutoResearch figures were
 located in `paper/neurips-submission/` and in the imported Overleaf history. The
 runtime, processed evidence, and available raw traces were located in
 `autoresearch/` and
-`experiments/autoresearch/05_autoresearch_model_routing/`.
+`experiments/autoresearch-cifar10/three-worker-model-routing/`.
 
 ## Main accounting discrepancy
 

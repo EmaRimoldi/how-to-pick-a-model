@@ -363,12 +363,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--timeout-seconds", type=int, default=300)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--thin-threshold", type=int, default=50)
-    parser.add_argument("--records-path", default="data/derived/mbpp_category_label_records.jsonl")
-    parser.add_argument("--modes-path", default="data/derived/mbpp_modes_category.json")
-    parser.add_argument("--meta-path", default="data/derived/mbpp_modes_category_meta.json")
-    parser.add_argument("--sample-path", default="data/derived/category_label_sample.json")
-    parser.add_argument("--mathnot-path", default="data/derived/mbpp_modes_mathnot.json")
-    parser.add_argument("--mathnot-meta-path", default="data/derived/mbpp_modes_mathnot_meta.json")
+    parser.add_argument("--records-path", default="experiments/mbpp-plus/category-router-smoke/results/processed/mbpp_category_label_records.jsonl")
+    parser.add_argument("--modes-path", default="experiments/mbpp-plus/category-router-smoke/results/processed/mbpp_modes_category.json")
+    parser.add_argument("--meta-path", default="experiments/mbpp-plus/category-router-smoke/results/processed/mbpp_modes_category_meta.json")
+    parser.add_argument("--sample-path", default="experiments/mbpp-plus/category-router-smoke/results/processed/category_label_sample.json")
+    parser.add_argument("--mathnot-path", default="experiments/mbpp-plus/category-router-smoke/results/processed/mbpp_modes_mathnot.json")
+    parser.add_argument("--mathnot-meta-path", default="experiments/mbpp-plus/category-router-smoke/results/processed/mbpp_modes_mathnot_meta.json")
     return parser.parse_args()
 
 

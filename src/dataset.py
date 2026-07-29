@@ -239,7 +239,7 @@ def ensure_modes(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Load HumanEval+ and freeze modes.")
-    parser.add_argument("--config", default="config/experiment.yaml")
+    parser.add_argument("--config", default="experiments/humaneval-plus/qwen-model-size-frontier/configs/experiment.yaml")
     args = parser.parse_args()
 
     config = load_config(args.config)

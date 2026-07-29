@@ -31,9 +31,9 @@ to know whether AutoResearch Orchestration is real, inspectable, and honest abou
 
 | Claim | Evidence | Status |
 |---|---|---|
-| The benchmark starting model was calibrated before agent claims. | `experiments/autoresearch/01_baseline/README.md` | 161 controlled evaluations; 1170-update runs are the decision evidence. |
-| Evaluation protocol confounds are documented. | `experiments/autoresearch/02_evaluation_protocol_calibration/README.md` | Fixed-step determinism and fixed-time compute contention are both covered. |
-| Shared memory can reduce destructive exploration in this substrate. | `experiments/autoresearch/03_agent_memory_ablation/README.md` | `T07` beats `T06` on best and mean `val_bpb`, with `p < 0.001`. |
+| The benchmark starting model was calibrated before agent claims. | `experiments/autoresearch-cifar10/starting-model-calibration/README.md` | 161 controlled evaluations; 1170-update runs are the decision evidence. |
+| Evaluation protocol confounds are documented. | `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/README.md` | Fixed-step determinism and fixed-time compute contention are both covered. |
+| Shared memory can reduce destructive exploration in this substrate. | `experiments/autoresearch-cifar10/shared-memory-ablation/README.md` | `T07` beats `T06` on best and mean `val_bpb`, with `p < 0.001`. |
 
 ## Reproducibility
 

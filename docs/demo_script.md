@@ -69,9 +69,9 @@ are still present for deeper inspection, but the canonical route is
 Files:
 
 - `experiments/README.md`
-- `experiments/autoresearch/01_baseline/README.md`
-- `experiments/autoresearch/02_evaluation_protocol_calibration/README.md`
-- `experiments/autoresearch/03_agent_memory_ablation/README.md`
+- `experiments/autoresearch-cifar10/starting-model-calibration/README.md`
+- `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/README.md`
+- `experiments/autoresearch-cifar10/shared-memory-ablation/README.md`
 
 What to say:
 
@@ -82,7 +82,7 @@ question, what was run, the result, the caveat, and the first file to read.
 
 File:
 
-- `experiments/autoresearch/03_agent_memory_ablation/README.md`
+- `experiments/autoresearch-cifar10/shared-memory-ablation/README.md`
 
 Key numbers:
 

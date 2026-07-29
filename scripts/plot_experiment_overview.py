@@ -23,28 +23,28 @@ FILL = "#f8fafc"
 EXPERIMENTS = [
     {
         "name": "Baseline",
-        "folder": "01_baseline/",
+        "folder": "starting-model-calibration/",
         "role": "Choose the common starting train.py",
         "result": "161 controlled evaluations; selected val_bpb 0.841",
         "color": BLUE,
     },
     {
         "name": "Evaluation protocol",
-        "folder": "02_evaluation_protocol_calibration/",
+        "folder": "evaluation-protocol-and-compute-calibration/",
         "role": "Make evaluation deterministic and hardware-aware",
         "result": "Fixed steps remove noise; fixed time exposes contention",
         "color": ORANGE,
     },
     {
         "name": "Agent memory ablation",
-        "folder": "03_agent_memory_ablation/",
+        "folder": "shared-memory-ablation/",
         "role": "Test memory and exploration",
         "result": "T07 was better and more stable than T06",
         "color": PURPLE,
     },
     {
         "name": "Swarm baselines",
-        "folder": "04_swarm_baselines/",
+        "folder": "swarm-vs-independent-agents/",
         "role": "Preserve blackboard coordination evidence",
         "result": "Historical swarm runs beat independent parallel baseline",
         "color": RED,

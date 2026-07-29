@@ -177,7 +177,7 @@ def append_jsonl(path: Path, row: dict[str, Any]) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run the GPT-5.4 high-reasoning cross-fit router")
-    parser.add_argument("--config", default="config/strategy_experiment.yaml")
+    parser.add_argument("--config", default="experiments/humaneval-plus/strategy-by-difficulty-grid/configs/strategy_experiment.yaml")
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--context-sizes", default=None)

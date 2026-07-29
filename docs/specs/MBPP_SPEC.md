@@ -63,7 +63,7 @@ replicate on a second, larger code dataset?
   length of the canonical solution).
 - Recompute the tertile cutoffs ON MBPP+ (its length distribution differs from
   HumanEval+). Three modes easy/medium/hard by tertiles, balanced counts.
-- Freeze to `data/derived/mbpp_modes.json` and `data/derived/mbpp_modes_meta.json`
+- Freeze to `experiments/mbpp-plus/qwen-model-size-frontier/results/processed/mbpp_modes.json` and `experiments/mbpp-plus/qwen-model-size-frontier/results/processed/mbpp_modes_meta.json`
   (same format as the HumanEval+ files), recording the proxy and the new cutoffs.
 - Document in NOTES.md that the mode SCHEMA is identical (same proxy, same tertile
   method) but the CUTOFFS are MBPP+-specific, so "mode" is a transferable notion.
@@ -74,7 +74,7 @@ replicate on a second, larger code dataset?
 
 - Reuse the existing worker eval entry point; point it at MBPP+ via config.
 - Output raw logs with the SAME schema as HumanEval+, to new files:
-  `data/raw/runs_qwen2.5-coder_<size>_full_mbpp_<timestamp>.jsonl` for sizes
+  `experiments/mbpp-plus/qwen-model-size-frontier/data/raw/runs_qwen2.5-coder_<size>_full_mbpp_<timestamp>.jsonl` for sizes
   1.5b, 7b, 32b.
 - Same sampling params as HumanEval+ (temperature 0.6, top_p 0.95,
   max_attempts 10, max_new_tokens 1024, seed 0) so the two datasets are
@@ -96,17 +96,17 @@ REUSE without logic changes:
   returns allocation JSON only, never code; never sees test-problem outcomes),
 - `src/run_router_experiment.py` (k-fold; see below).
 
-k-fold: 5 folds, stratified by mode, frozen to `data/derived/mbpp_folds.json`,
+k-fold: 5 folds, stratified by mode, frozen to `experiments/mbpp-plus/two-model-retry-router/results/processed/mbpp_folds_2models.json`,
 seed 0. With ~378 problems each fold has ~75 test problems — much more power than
 HumanEval+. No leakage. Router sees only training-fold traces + the held-out
 problem's mode.
 
 Outputs to MBPP+-namespaced files so the HumanEval+ results are not overwritten:
-- `data/derived/mbpp_router_results.jsonl`
-- `data/derived/mbpp_router_summary.json`
-- `figures/router_mbpp/`
+- `experiments/mbpp-plus/two-model-retry-router/results/processed/mbpp_router_results_2models.jsonl`
+- `experiments/mbpp-plus/two-model-retry-router/results/processed/mbpp_router_summary_2models.json`
+- `experiments/mbpp-plus/two-model-retry-router/results/figures/`
 
-Config: add a parallel `config/router_experiment_mbpp.yaml` mirroring the
+Config: add a parallel `experiments/mbpp-plus/two-model-retry-router/configs/router.yaml` mirroring the
 HumanEval+ one but with MBPP+ logs, mbpp_modes.json, mbpp_folds.json, and the
 MBPP+ output paths. Do NOT edit the HumanEval+ config.
 
@@ -119,7 +119,7 @@ MBPP+ output paths. Do NOT edit the HumanEval+ config.
   rate of router / each always-model / best-single / oracle / stat-oracle; mean
   wall-clock time each; time saved vs best-single (bootstrap CI, B=1000);
   router-vs-stat_oracle gap (bootstrap CI); allocation distribution by mode.
-- `src/plot_router.py`: same four figures into `figures/router_mbpp/`:
+- `src/plot_router.py`: same four figures into `experiments/mbpp-plus/two-model-retry-router/results/figures/`:
   time-vs-accuracy, time-saved-by-mode, alloc-distribution (router vs
   stat-oracle), gap-to-oracle.
 
@@ -132,7 +132,7 @@ Add `src/compare_datasets.py` that reads BOTH summaries
 table: for each dataset, the router/best-single/stat-oracle solved rate and mean
 time, the time saved (with CI), the router-vs-stat_oracle gap (with CI), and the
 matched-accuracy verdict. This is the robustness check: do the two datasets tell
-the same story? Write `data/derived/dataset_comparison.json` and a short Markdown
+the same story? Write `artifacts/generated/cross-benchmark-comparison/dataset_comparison.json` and a short Markdown
 summary. No model or API calls.
 
 ---
@@ -150,10 +150,12 @@ summary. No model or API calls.
 
 ## 8. Full-run scripts (written, not auto-launched)
 
-- `scripts/full_run_mbpp.sh`: the three Qwen workers on all MBPP+ problems. Print
-  an ETA (the 32B is the bottleneck; ~378 problems). Human launches.
-- `scripts/full_router_run_mbpp.sh`: the k-fold router over all MBPP+ test
-  decisions. Print the API-call estimate (~378). Resumable. Human launches.
+- `experiments/mbpp-plus/qwen-model-size-frontier/scripts/full_run_mbpp_2models.sh`
+  and `full_run_mbpp_32b.sh`: the worker runs are split so the 32B bottleneck
+  can be resumed independently.
+- The two-model router is launched through `src.run_router_experiment` with
+  `experiments/mbpp-plus/two-model-retry-router/configs/router.yaml`; no
+  dedicated full-router wrapper is currently tracked.
 
 ---
 

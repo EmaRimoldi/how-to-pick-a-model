@@ -156,7 +156,7 @@ def plot_gap_to_oracle(summary: dict[str, Any], figures_dir: Path) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Plot router figures from derived data only.")
-    parser.add_argument("--config", default="config/router_experiment.yaml")
+    parser.add_argument("--config", default="experiments/humaneval-plus/retry-allocation-router/configs/router.yaml")
     parser.add_argument("--summary-path", default=None)
     return parser.parse_args()
 

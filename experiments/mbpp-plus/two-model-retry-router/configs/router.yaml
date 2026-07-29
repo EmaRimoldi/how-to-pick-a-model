@@ -1,0 +1,32 @@
+worker_logs:
+  - experiments/mbpp-plus/qwen-model-size-frontier/data/raw/runs_qwen2.5-coder_1.5b_full_mbpp_2models_*.jsonl
+  - experiments/mbpp-plus/qwen-model-size-frontier/data/raw/runs_qwen2.5-coder_7b_full_mbpp_2models_*.jsonl
+modes_file: experiments/mbpp-plus/qwen-model-size-frontier/results/processed/mbpp_modes.json
+mode_order: ["easy", "medium", "hard"]
+success_threshold: strict
+budget_attempts: 10
+execution_order: ["1.5b", "7b"]
+kfold:
+  n_folds: 5
+  stratify_by: mode
+  seed: 0
+router:
+  backend: codex_cli
+  model_env: ROUTER_MODEL
+  reasoning_effort: medium
+  temperature: 0
+  in_context: full_traces
+  parse_fail_default: {"n_1.5b": 0, "n_7b": 10}
+estimation:
+  bootstrap_B: 1000
+frontier:
+  clock: seconds
+  censoring_floor: 1.0e-3
+  bootstrap_B: 1000
+paths:
+  folds: experiments/mbpp-plus/two-model-retry-router/results/processed/mbpp_folds_2models.json
+  results: experiments/mbpp-plus/two-model-retry-router/results/processed/mbpp_router_results_2models.jsonl
+  summary: experiments/mbpp-plus/two-model-retry-router/results/processed/mbpp_router_summary_2models.json
+  figures: experiments/mbpp-plus/two-model-retry-router/results/figures
+  category_frontier: experiments/mbpp-plus/two-model-retry-router/results/processed/difficulty_frontier_2models.json
+  category_frontier_figures: experiments/mbpp-plus/two-model-retry-router/results/figures

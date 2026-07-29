@@ -48,7 +48,7 @@ def append_jsonl(path: Path, row: dict[str, Any]) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the mode-specialized strategy experiment")
-    parser.add_argument("--config", default="config/strategy_experiment.yaml")
+    parser.add_argument("--config", default="experiments/humaneval-plus/strategy-by-difficulty-grid/configs/strategy_experiment.yaml")
     parser.add_argument("--model-key", required=True)
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--strategies", default=None, help="Comma-separated strategy names")

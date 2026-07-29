@@ -63,7 +63,7 @@ Held-out tasks:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run leakage-free router validation or test search")
-    parser.add_argument("--config", default="config/strategy_experiment.yaml")
+    parser.add_argument("--config", default="experiments/humaneval-plus/strategy-by-difficulty-grid/configs/strategy_experiment.yaml")
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--router-model", choices=("gpt-5.4", "gpt-5.5"), required=True)

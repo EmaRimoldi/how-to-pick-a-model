@@ -1,5 +1,10 @@
 # Verifiable Agentic Optimization for AutoResearch Routing
 
+> Historical source README. Paths below describe the former standalone tree.
+> The `stateful_query_engine` directory now lives at
+> `experiments/archive/stateful-query-engine/` because it contains no
+> experimental result, report, or run evidence.
+
 This repository contains the active benchmark harness and analysis code for
 **verifiable agentic optimization on AutoResearch-style CIFAR-10 training
 scripts**.
@@ -10,8 +15,8 @@ The active experimental question is now:
 > choose the most appropriate model or harness action using only cheap signals
 > available before the expensive run?
 
-The old QueryState / Stateful Query Engine benchmark has been archived under
-`Archive/stateful_query_engine/` and is no longer part of the active mainline.
+The old source repository described QueryState / Stateful Query Engine as an
+archive. The unified tree retains it only under `experiments/archive/`.
 
 ## Active benchmark surface
 
@@ -164,10 +169,7 @@ submodule pointer.
 
 ## Archive
 
-Archived material is preserved under `Archive/`.
-
-- `Archive/stateful_query_engine/` contains the older QueryState / Stateful
-  Query Engine benchmark, configs, artifacts, and theorem-facing analysis code.
-
-Use the archive only for historical comparison or reproduction of the older
-experiments; do not treat it as the active benchmark surface.
+In the former source tree, `Archive/stateful_query_engine/` contained the older
+QueryState benchmark implementation. The current repository relocates those
+files to `experiments/archive/stateful-query-engine/` and does not treat them as
+active experimental evidence.

@@ -164,10 +164,16 @@ def render_markdown(comparison: dict[str, Any]) -> str:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Compare HumanEval+ and MBPP+ router summaries.")
-    parser.add_argument("--humaneval-summary", default="data/derived/router_summary.json")
-    parser.add_argument("--mbpp-summary", default="data/derived/mbpp_router_summary_2models.json")
-    parser.add_argument("--output-json", default="data/derived/dataset_comparison.json")
-    parser.add_argument("--output-md", default="data/derived/dataset_comparison.md")
+    parser.add_argument("--humaneval-summary", default="experiments/humaneval-plus/retry-allocation-router/results/processed/router_summary.json")
+    parser.add_argument("--mbpp-summary", default="experiments/mbpp-plus/two-model-retry-router/results/processed/mbpp_router_summary_2models.json")
+    parser.add_argument(
+        "--output-json",
+        default="artifacts/generated/cross-benchmark-comparison/dataset_comparison.json",
+    )
+    parser.add_argument(
+        "--output-md",
+        default="artifacts/generated/cross-benchmark-comparison/dataset_comparison.md",
+    )
     return parser.parse_args()
 
 

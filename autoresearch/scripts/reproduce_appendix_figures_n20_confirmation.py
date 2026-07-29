@@ -1,7 +1,7 @@
 """Reproduce appendix AutoResearch figures from official n=20 confirmation runs.
 
 This script uses only the raw runs listed as present in
-experiments/autoresearch/05_autoresearch_model_routing/raw/manifests/
+experiments/autoresearch-cifar10/three-worker-model-routing/raw/manifests/
 balanced_n30_raw_coverage.csv. Those are the 20 official confirmation trials per
 mode-worker cell; missing pilot trials are intentionally excluded.
 """
@@ -28,7 +28,7 @@ from autoresearch.scripts import plot_autoresearch_certified_resource as certifi
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_EXPERIMENT_ROOT = (
-    REPO_ROOT / "experiments" / "autoresearch" / "05_autoresearch_model_routing"
+    REPO_ROOT / "experiments" / "autoresearch-cifar10" / "three-worker-model-routing"
 )
 DEFAULT_OUT_DIR = DEFAULT_EXPERIMENT_ROOT / "results" / "figures_n20_confirmation"
 DEFAULT_ACCOUNTING_DIR = DEFAULT_EXPERIMENT_ROOT / "results" / "accounting_n20_confirmation"

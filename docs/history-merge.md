@@ -13,15 +13,15 @@ normalized as follows:
 
 | Former path | Unified path |
 | --- | --- |
-| `agentops-lab-public/experiments/01_*` through `05_*` | `experiments/autoresearch/` |
-| `agentops-lab-public/experiments/06_swebench_experimental_scaffold` | `experiments/other/swebench-experimental-scaffold/` |
-| `theory-of-agents/experiment_runs` | `experiments/other/strategy-routing-runs/` |
+| `agentops-lab-public/experiments/01_*` through `05_*` | five question-named bundles under `experiments/autoresearch-cifar10/` |
+| `agentops-lab-public/experiments/06_swebench_experimental_scaffold` | deduplicated into `experiments/swebench-verified/neutral-100-meta-design-scaffold/` and `shared-runtime/` |
+| `theory-of-agents/experiment_runs` | `experiments/humaneval-plus/strategy-by-difficulty-grid/` and `llm-router-context-search/` |
 | nested Overleaf checkout `fluid-theory-notes` | `paper/neurips-submission/` |
-| `NeurIPS_2026/Archive` | `experiments/other/distribution-aware-orchestration/Archive/` |
-| `NeurIPS_2026/step1` | `experiments/other/distribution-aware-orchestration/step1/` |
-| `NeurIPS_2026/swebench` | `experiments/other/distribution-aware-orchestration/swebench/` |
+| `NeurIPS_2026/Archive/stateful_query_engine` | `experiments/archive/stateful-query-engine/`, labelled as a historical implementation with no result, report, or run artifacts |
+| `NeurIPS_2026/step1` | `experiments/humaneval-plus/verifier-guided-dag-induction-smoke/` |
+| `NeurIPS_2026/swebench` | four named bundles under `experiments/swebench-verified/` |
 | unique `NeurIPS_2026/autoresearch` support code | root `autoresearch/` package |
-| unique historical AutoResearch figures | `experiments/autoresearch/05_autoresearch_model_routing/results/figures/archive/distribution-aware-orchestration/` |
+| unique historical AutoResearch figures | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/archive/distribution-aware-orchestration/` |
 
 The historical `agent-workflow` CLI and Python module names remain unchanged to
 avoid breaking scripts. The distributable project and repository identity are

@@ -15,8 +15,9 @@ AutoResearch orchestration track.
   `--train-max-steps 1170 --serialized-evaluator`.
 - Keep generated run artifacts under `runs/` and preserve `config.json`,
   logs, trajectory files, snapshots, and reports.
-- Keep AutoResearch evidence under `experiments/autoresearch/` and all other
-  experiment bundles under `experiments/other/`.
+- Keep each experiment under its benchmark family in `experiments/`; use
+  `autoresearch-cifar10`, `humaneval-plus`, `mbpp-plus`, `bbh`, or
+  `swebench-verified` and give each bundle a question-specific name.
 
 ## Product Surface
 

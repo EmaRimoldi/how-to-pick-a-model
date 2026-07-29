@@ -37,8 +37,13 @@ files describe the combined project rather than the former standalone package.
   root `autoresearch/` package.
 - Six unique historical router figures were added to the AutoResearch figure
   archive.
-- `Archive`, `step1`, and `swebench` were placed under
-  `experiments/other/distribution-aware-orchestration/`.
+- `step1` became
+  `experiments/humaneval-plus/verifier-guided-dag-induction-smoke/`.
+- SWE-bench code, scaffolds, and dated evidence were split into the four named
+  bundles under `experiments/swebench-verified/`.
+- `Archive/stateful_query_engine` was moved to
+  `experiments/archive/stateful-query-engine/` and labelled as a historical
+  benchmark implementation because it contains no result, report, or run artifacts.
 - The original source README and diagnostic memo were copied to `docs/archive/`.
 
 ## Deliberate exclusions

@@ -48,9 +48,9 @@ experiment-by-experiment matrix.
 Safe read-only checks:
 
 ```bash
-.venv/bin/python -m src.load_traces --config config/router_experiment.yaml
-.venv/bin/python -m src.load_traces --config config/router_experiment_mbpp_2models.yaml
-.venv/bin/python -m src.load_traces --config config/router_experiment_bbh.yaml
+.venv/bin/python -m src.load_traces --config experiments/humaneval-plus/retry-allocation-router/configs/router.yaml
+.venv/bin/python -m src.load_traces --config experiments/mbpp-plus/two-model-retry-router/configs/router.yaml
+.venv/bin/python -m src.load_traces --config experiments/bbh/family-and-subtask-router/configs/router_experiment_bbh.yaml
 ```
 
 Figure and estimator scripts are separated from live model calls. Some smoke

@@ -98,7 +98,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Check BBH retry sanity from raw worker logs.")
     parser.add_argument("--raw-file", required=True)
     parser.add_argument("--max-attempts", type=int, default=2)
-    parser.add_argument("--output", default="data/derived/bbh_retry_sanity_smoke.json")
+    parser.add_argument("--output", default="experiments/bbh/family-and-subtask-router/results/processed/bbh_retry_sanity_smoke.json")
     parser.add_argument("--require-rise", action="store_true")
     return parser.parse_args()
 

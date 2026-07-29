@@ -98,9 +98,9 @@ can be longer than code completions), seed 0.
 
 The mode of an example is its reasoning TYPE, not its difficulty. Using all 23
 subtasks as modes gives thin cells; group them into 5 cognitive families for
-better-populated cells. Freeze the grouping to `data/derived/bbh_modes.json`
+better-populated cells. Freeze the grouping to `experiments/bbh/qwen-model-size-frontier/results/processed/bbh_modes.json`
 (`{example_id: family}`) and the mapping subtask->family to
-`data/derived/bbh_mode_groups.json`.
+`experiments/bbh/qwen-model-size-frontier/results/processed/bbh_mode_groups.json`.
 
 Proposed grouping (the agent assigns each BBH subtask to exactly one family; if a
 subtask is ambiguous, pick the dominant cognitive demand and record the choice):
@@ -122,7 +122,7 @@ subtask is ambiguous, pick the dominant cognitive demand and record the choice):
 > cap). Record the full mapping in NOTES.md. If a cleaner mapping is obvious from
 > the actual subtask list, use it and document the deviation.
 
-Also produce, for robustness, the ungrouped view (`data/derived/bbh_modes_raw.json`)
+Also produce, for robustness, the ungrouped view (`experiments/bbh/qwen-model-size-frontier/results/processed/bbh_modes_raw.json`)
 with all 23 subtasks as modes, so the frontier can be inspected at full
 granularity even if cells are thin.
 
@@ -132,10 +132,10 @@ granularity even if cells are thin.
 
 - Reuse the existing worker eval entry point; point it at BBH via a new config.
 - Output raw logs with the IDENTICAL per-attempt schema, to new files:
-  `data/raw/runs_qwen2.5_<size>_full_bbh_<timestamp>.jsonl` for 1.5b/7b/32b
+  `experiments/bbh/qwen-model-size-frontier/data/raw/runs_qwen2.5_<size>_full_bbh_<timestamp>.jsonl` for 1.5b/7b/32b
   (note: generalist tag `qwen2.5`, not `qwen2.5-coder`).
 - Resumable: persist the run id; skip already-logged (model, example) pairs.
-- tqdm + console metrics; logfile under data/raw/.
+- tqdm + console metrics; logfile under `experiments/bbh/qwen-model-size-frontier/data/raw/`.
 - If a model is not pulled, stop and tell the human the ollama pull command.
 
 ---
@@ -152,11 +152,11 @@ REUSE without logic changes, pointed at the BBH logs and bbh_modes.json:
   reasoning FAMILY, and the held-out example's family. The router allocates the 10
   attempts across the three generalist models; sequential execution
   fastest->slowest (1.5b, 7b, 32b).
-- 5-fold stratified by family, frozen to `data/derived/bbh_folds.json`, seed 0, no
+- 5-fold stratified by family, frozen to `experiments/bbh/family-and-subtask-router/results/processed/bbh_folds.json`, seed 0, no
   leakage.
-- Namespaced outputs: `data/derived/bbh_router_results.jsonl`,
-  `data/derived/bbh_router_summary.json`, `figures/router_bbh/`.
-- New config `config/router_experiment_bbh.yaml` mirroring the existing ones with
+- Namespaced outputs: `experiments/bbh/family-and-subtask-router/results/processed/bbh_router_results.jsonl`,
+  `experiments/bbh/family-and-subtask-router/results/processed/bbh_router_summary.json`, `experiments/bbh/family-and-subtask-router/results/figures-family/`.
+- New config `experiments/bbh/family-and-subtask-router/configs/router_experiment_bbh.yaml` mirroring the existing ones with
   BBH logs, bbh_modes.json, bbh_folds.json, execution_order ["1.5b","7b","32b"],
   and BBH output paths. Do not edit existing configs.
 
@@ -175,8 +175,8 @@ REUSE without logic changes, pointed at the BBH logs and bbh_modes.json:
   across families, with bootstrap CIs (B=1000) on per-family log2 tau* ratios.
   THIS is the question: does reasoning-type break the size ordering that
   difficulty did not?
-- Write `data/derived/bbh_family_frontier.json` and
-  `figures/router_bbh/fig_bbh_family_frontier.png` (grouped bars: x = family,
+- Write `experiments/bbh/family-and-subtask-router/results/processed/bbh_family_frontier.json` and
+  `experiments/bbh/family-and-subtask-router/results/figures-family/fig_bbh_family_frontier.png` (grouped bars: x = family,
   groups = model, y = tau*, per-family winner marked, CI whiskers).
 - Repeat at raw 23-subtask granularity as a secondary view.
 
@@ -199,10 +199,10 @@ REUSE without logic changes, pointed at the BBH logs and bbh_modes.json:
 
 ## 9. Full-run scripts (written, NOT auto-launched)
 
-- `scripts/full_run_bbh.sh`: the three generalist Qwen on the capped BBH set.
+- `experiments/bbh/qwen-model-size-frontier/scripts/full_run_bbh.sh`: the three generalist Qwen on the capped BBH set.
   Print an ETA (32B bottleneck; depends on the per-subtask cap and CoT length).
   Resumable. Human launches.
-- `scripts/full_router_run_bbh.sh`: the k-fold router over all BBH test decisions.
+- `experiments/bbh/family-and-subtask-router/scripts/full_router_run_bbh.sh`: the k-fold router over all BBH test decisions.
   Print the API-call estimate. Resumable. Human launches.
 
 ---

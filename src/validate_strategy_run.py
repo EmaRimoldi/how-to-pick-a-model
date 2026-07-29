@@ -23,7 +23,7 @@ def load_rows(raw_dir: Path, run_id: str | None) -> list[dict[str, Any]]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Validate completeness of a strategy run")
-    parser.add_argument("--config", default="config/strategy_experiment.yaml")
+    parser.add_argument("--config", default="experiments/humaneval-plus/strategy-by-difficulty-grid/configs/strategy_experiment.yaml")
     parser.add_argument("--run-id", default=None)
     args = parser.parse_args()
 

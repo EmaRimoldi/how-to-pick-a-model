@@ -1,0 +1,17 @@
+experiment:
+  name: swebench_orchestration_open_source_pilot
+  dataset_name: princeton-nlp/SWE-Bench_Verified
+  split: test
+  evidence_level: E1
+  public_instances: experiments/swebench-verified/open-source-orchestration-scaffold/data/dev_slice/instances_public.jsonl
+  output_dir: experiments/swebench-verified/open-source-orchestration-scaffold/runs/open_source_pilot
+
+executor:
+  design: experiments/swebench-verified/open-source-orchestration-scaffold/runs/swebench_orchestration_meta_design/meta_design/orchestration_design.json
+  workers_config: experiments/swebench-verified/open-source-orchestration-scaffold/configs/swebench_open_source_workers.yaml
+  orchestration_id: hierarchical_h1_mode_routed_frontier
+  output_dir: experiments/swebench-verified/open-source-orchestration-scaffold/runs/open_source_pilot/executor
+  max_instances: 4
+  parallel_workers: 2
+  max_calls_per_component: 1
+  dry_run: false

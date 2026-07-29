@@ -253,7 +253,7 @@ def run_model(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run repeated-sampling evaluation.")
-    parser.add_argument("--config", default="config/experiment.yaml")
+    parser.add_argument("--config", default="experiments/humaneval-plus/qwen-model-size-frontier/configs/experiment.yaml")
     parser.add_argument("--run-id", default=None)
     parser.add_argument("--models", default=None, help="Comma-separated model override.")
     parser.add_argument("--limit-problems", type=int, default=None)

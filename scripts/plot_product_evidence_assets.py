@@ -15,12 +15,12 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 PRODUCT_DIR = ROOT / "docs" / "assets" / "product"
-RAW_ROOT = ROOT / "experiments" / "autoresearch" / "05_autoresearch_model_routing" / "raw"
+RAW_ROOT = ROOT / "experiments" / "autoresearch-cifar10" / "three-worker-model-routing" / "raw"
 MEMORY_RESULTS = (
     ROOT
     / "experiments"
-    / "autoresearch"
-    / "03_agent_memory_ablation"
+    / "autoresearch-cifar10"
+    / "shared-memory-ablation"
     / "results"
     / "trial_results.json"
 )

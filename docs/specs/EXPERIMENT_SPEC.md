@@ -62,13 +62,12 @@ These are non-negotiable. Apply them throughout.
 Create exactly this layout.
 
 ```
-proper-time-frontier/
-├── README.md                  # how to set up and run (you write this)
-├── NOTES.md                   # any choices you made; left-open decisions
-├── requirements.txt           # pinned deps
+how-to-pick-a-model/
+├── README.md
+├── NOTES.md
+├── pyproject.toml
+├── uv.lock
 ├── .venv/                     # uv-created; not committed
-├── config/
-│   └── experiment.yaml        # all knobs: models, sampling, modes, budgets
 ├── src/
 │   ├── __init__.py
 │   ├── models.py              # model loading + generation (Ollama or MLX)
@@ -77,13 +76,15 @@ proper-time-frontier/
 │   ├── run_eval.py            # MAIN: repeated sampling, writes raw run logs
 │   ├── estimate.py            # KM success curves + tau* per cell -> writes data
 │   └── plot.py                # READS data only -> writes figures
-├── scripts/
-│   ├── smoke_test.sh          # tiny end-to-end check (≤5 problems)
-│   └── full_run.sh            # the command the human will launch
-├── data/
-│   ├── raw/                   # per-run JSONL logs (run_eval.py output)
-│   └── derived/               # tau* tables, success curves (estimate.py output)
-└── figures/                   # plot.py output (PNG/PDF)
+└── experiments/humaneval-plus/qwen-model-size-frontier/
+    ├── configs/experiment.yaml
+    ├── scripts/
+    │   ├── smoke_test.sh       # tiny end-to-end check (≤5 problems)
+    │   └── full_run.sh         # the command the human will launch
+    ├── data/raw/               # per-run JSONL logs
+    └── results/
+        ├── processed/          # tau* tables and success curves
+        └── figures/            # PNG/PDF outputs
 ```
 
 ---
@@ -142,7 +143,7 @@ Pull 4-bit MLX builds from the `mlx-community` org on HuggingFace, e.g.:
 
 (Verify exact repo names at fetch time; prefer the `-Instruct-4bit` variants.)
 
-The three model identifiers go in `config/experiment.yaml` under `models:`.
+The three model identifiers go in `experiments/humaneval-plus/qwen-model-size-frontier/configs/experiment.yaml` under `models:`.
 
 ---
 
@@ -167,7 +168,7 @@ one in config (default: `ref_solution_length`):
   {easy, medium, hard}.
 - `num_tests`: number of plus unit tests for the problem; tertiles → modes.
 
-Freeze the assignment to a file `data/derived/modes.json`
+Freeze the assignment to a file `experiments/humaneval-plus/qwen-model-size-frontier/results/processed/modes.json`
 (`{task_id: mode}`) so it is identical across models. Aim for ~55 problems per
 mode. Log the chosen proxy and the tertile cutoffs.
 
@@ -181,7 +182,7 @@ mode. Log the chosen proxy and the tertile cutoffs.
 
 This is the core. Contract:
 
-**Input:** `config/experiment.yaml` (models, sampling params, attempt budget,
+**Input:** `experiments/humaneval-plus/qwen-model-size-frontier/configs/experiment.yaml` (models, sampling params, attempt budget,
 modes file).
 
 **For each (model, problem):**
@@ -198,7 +199,7 @@ modes file).
    `solved=false`, `tau_tokens=inf`, `tau_seconds=inf` (censored).
 
 **Output:** append one JSON object per (model, problem) to
-`data/raw/runs_<model>_<timestamp>.jsonl`. **One line per problem.** Schema
+`experiments/humaneval-plus/qwen-model-size-frontier/data/raw/runs_<model>_<timestamp>.jsonl`. **One line per problem.** Schema
 (this is the contract `estimate.py` depends on — do not change field names):
 
 ```json
@@ -231,7 +232,7 @@ run resume.
 
 ## 7. `estimate.py` — proper time per cell
 
-Reads `data/raw/*.jsonl`, writes `data/derived/`. **No model calls. No plotting.**
+Reads the bundle `data/raw/*.jsonl`, writes `results/processed/`. **No model calls. No plotting.**
 
 For each (model, mode) cell:
 
@@ -249,14 +250,14 @@ For each (model, mode) cell:
 
 Write two files:
 
-- `data/derived/tau_star.json`:
+- `experiments/humaneval-plus/qwen-model-size-frontier/results/processed/tau_star.json`:
   `{ "<model>|<mode>": {"tau_star": float, "ci_lo": float, "ci_hi": float,
      "n": int, "n_solved": int} }`
-- `data/derived/success_curves.json`:
+- `experiments/humaneval-plus/qwen-model-size-frontier/results/processed/success_curves.json`:
   `{ "<model>|<mode>": {"grid": [...], "F": [...]} }`  (for the success-by-budget
   plot)
 
-Also compute and write `data/derived/frontier.json`:
+Also compute and write `experiments/humaneval-plus/qwen-model-size-frontier/results/processed/frontier.json`:
 - per mode, the `argmin_model tau_star` (the frontier winner) and whether its CI
   is separated from the runner-up (`separated: true/false`).
 - per model, average accuracy (solve rate) across modes, for the
@@ -284,17 +285,17 @@ Running model-generated code requires care.
 ## 9. `plot.py` — figures (reads derived data only)
 
 Three figures, matching the paper's target figures. **Reads
-`data/derived/*.json` only.** No model calls.
+`experiments/humaneval-plus/qwen-model-size-frontier/results/processed/*.json` only.** No model calls.
 
-1. **`figures/fig_frontier.png`** — grouped bars: x = modes, groups = models,
+1. **`experiments/humaneval-plus/qwen-model-size-frontier/results/figures/fig_frontier.png`** — grouped bars: x = modes, groups = models,
    y = tau_star, with bootstrap CI whiskers. Mark the per-mode winner. This is
    the go/no-go figure: are the winners different across modes, with separated
    CIs?
-2. **`figures/fig_disagreement.png`** — scatter: x = average accuracy (solve
+2. **`experiments/humaneval-plus/qwen-model-size-frontier/results/figures/fig_disagreement.png`** — scatter: x = average accuracy (solve
    rate), y = tau_star (inverted axis, lower=better). One point per model; a
    star for the mode-conditional frontier policy. Shows accuracy vs proper-time
    ranking disagreement.
-3. **`figures/fig_success_curves.png`** — the KM success-by-budget curves
+3. **`experiments/humaneval-plus/qwen-model-size-frontier/results/figures/fig_success_curves.png`** — the KM success-by-budget curves
    `F(t)` per model, one panel per mode, with the tau_star operating point
    marked. This is the diagnostic behind tau_star.
 
@@ -302,7 +303,7 @@ Style: minimal, no chartjunk. Save both PNG (130 dpi) and PDF.
 
 ---
 
-## 10. `config/experiment.yaml` — all knobs in one place
+## 10. `experiments/humaneval-plus/qwen-model-size-frontier/configs/experiment.yaml` — all knobs in one place
 
 ```yaml
 backend: ollama            # or: mlx
@@ -325,16 +326,16 @@ estimation:
   censoring_floor: 1.0e-3
   bootstrap_B: 1000
 paths:
-  raw: data/raw
-  derived: data/derived
-  figures: figures
+  raw: experiments/humaneval-plus/qwen-model-size-frontier/data/raw
+  derived: experiments/humaneval-plus/qwen-model-size-frontier/results/processed
+  figures: experiments/humaneval-plus/qwen-model-size-frontier/results/figures
 ```
 
 ---
 
 ## 11. Scripts
 
-**`scripts/smoke_test.sh`** — end-to-end on a tiny subset, must run in a couple
+**`experiments/humaneval-plus/qwen-model-size-frontier/scripts/smoke_test.sh`** — end-to-end on a tiny subset, must run in a couple
 of minutes:
 - temporarily restrict to **5 problems** and **2 max_attempts**, only the
   **1.5B** model (fastest);
@@ -342,11 +343,11 @@ of minutes:
 - assert: raw JSONL has 5 lines, derived tau_star.json has cells, figures exist.
 - This is what the agent runs to validate. **The agent runs the smoke test.**
 
-**`scripts/full_run.sh`** — the real run over all 3 models × 164 problems:
+**`experiments/humaneval-plus/qwen-model-size-frontier/scripts/full_run.sh`** — the real run over all 3 models × 164 problems:
 - this is the command the **human** launches; the agent writes it and **does not
   execute it**.
 - print an ETA estimate at start (rough: tokens/sec × expected tokens).
-- log progress to console and to a logfile under `data/raw/`.
+- log progress to console and to a logfile under the bundle `data/raw/`.
 
 ---
 
@@ -359,7 +360,7 @@ of minutes:
 - [ ] Censored (unsolved) problems are written with `tau_tokens=inf`,
       `solved=false`, and kept.
 - [ ] `estimate.py` makes **no** model calls; `plot.py` makes **no** model calls
-      and reads only `data/derived`.
+      and reads only its bundle `results/processed`.
 - [ ] tau_star uses KM with censoring floor; CIs are bootstrap on log2 ratios.
 - [ ] Smoke test passes end-to-end (5 problems, 1.5B, 2 attempts).
 - [ ] `full_run.sh` is written, prints an ETA, and is **not executed** by the
@@ -371,8 +372,8 @@ of minutes:
 
 ## 13. The go/no-go decision (state this in README)
 
-After the full run, read `figures/fig_frontier.png` and
-`data/derived/frontier.json`:
+After the full run, read `experiments/humaneval-plus/qwen-model-size-frontier/results/figures/fig_frontier.png` and
+`experiments/humaneval-plus/qwen-model-size-frontier/results/processed/frontier.json`:
 
 - **GO** if the per-mode frontier winner differs across modes **with separated
   bootstrap CIs** — the proper-time frontier is non-degenerate, and (per

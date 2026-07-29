@@ -11,7 +11,7 @@ platform-specific artifacts part of the canonical runtime.
 
 - The 22 ignored Step 1 outputs from
   `NeurIPS_2026.pre-unified-step1-generated-backup-20260728` are present at the
-  corresponding `experiments/other/distribution-aware-orchestration/step1/`
+  corresponding `experiments/humaneval-plus/verifier-guided-dag-induction-smoke/`
   `data/` and `logs/` paths.
 - The ignored AutoResearch campaign is preserved in 18 Git LFS component
   archives under `artifacts/raw/autoresearch-campaigns/`.

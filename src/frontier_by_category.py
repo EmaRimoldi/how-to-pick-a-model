@@ -278,7 +278,7 @@ def save_figure(frontier: dict[str, Any], *, figures_dir: Path, stem: str) -> No
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Estimate category-conditional frontier from worker logs.")
-    parser.add_argument("--config", default="config/router_experiment_mbpp_category.yaml")
+    parser.add_argument("--config", default="experiments/mbpp-plus/category-router-smoke/configs/router_experiment_mbpp_category.yaml")
     parser.add_argument("--output-path", default=None)
     parser.add_argument("--figures-dir", default=None)
     parser.add_argument("--figure-stem", default="fig_category_frontier")
@@ -310,11 +310,14 @@ def main() -> None:
     )
     output_path = Path(
         args.output_path
-        or config["paths"].get("category_frontier", "data/derived/category_frontier.json")
+        or config["paths"].get("category_frontier", "experiments/mbpp-plus/category-router-smoke/results/processed/category_frontier.json")
     )
     figures_dir = Path(
         args.figures_dir
-        or config["paths"].get("category_frontier_figures", config["paths"].get("figures", "figures/router_mbpp_category"))
+        or config["paths"].get(
+            "category_frontier_figures",
+            config["paths"].get("figures", "experiments/mbpp-plus/category-router-smoke/results/figures-category"),
+        )
     )
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", encoding="utf-8") as f:

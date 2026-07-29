@@ -13,18 +13,20 @@ clear experimental boundaries.
 - `paper/`: submitted manuscript, LaTeX sources, historical drafts, references,
   and paper figures.
 - `autoresearch/`: runnable CIFAR-10 edit--verify benchmark and analysis code.
-- `experiments/autoresearch/`: AutoResearch-only experiments and evidence.
-- `experiments/other/`: strategy-routing, SWE-bench, and other non-AutoResearch
-  experiment artifacts.
-- `experiments/other/distribution-aware-orchestration/`: the non-AutoResearch
-  archive, Step 1 induction work, and later SWE-bench studies imported from the
-  former cluster checkout `NeurIPS_2026`.
+- `experiments/autoresearch-cifar10/`: AutoResearch-only experiments and evidence.
+- `experiments/humaneval-plus/`, `experiments/mbpp-plus/`, and
+  `experiments/bbh/`: worker-frontier and routing studies grouped by benchmark.
+- `experiments/swebench-verified/`: SWE-bench scaffolds, shared runtime, and the
+  dated open-source meta-loop evidence archive.
+- `experiments/archive/`: historical benchmark implementations that are not
+  part of the active empirical evidence.
 - `artifacts/raw/` and `artifacts/source-snapshots/`: Git LFS archives and exact
   working-tree files retained from the source folders for provenance.
 - `src/agent_workflow/` and `src/vao/`: orchestration runtime imported from
   `agentops-lab-public`.
-- `src/*.py`, `config/`, and `data/`: HumanEval+, MBPP+, BBH, and retry-routing
-  pipeline inherited from `theory-of-agents`.
+- `src/*.py`: shared HumanEval+, MBPP+, BBH, and retry-routing pipeline inherited
+  from `theory-of-agents`; experiment-specific configs and data are co-located
+  in their bundles.
 - `configs/`: orchestration and AutoResearch runtime configuration.
 - `tests/`: runtime and AutoResearch reproduction tests.
 
@@ -55,16 +57,16 @@ Regenerate the reader-facing AutoResearch figures from processed evidence:
 
 ```bash
 uv run python -m autoresearch.scripts.reproduce_main_figures_from_processed \
-  --input experiments/autoresearch/05_autoresearch_model_routing/results/accounting/threeworker_final_analysis.json \
+  --input experiments/autoresearch-cifar10/three-worker-model-routing/results/accounting/threeworker_final_analysis.json \
   --out-dir /tmp/how_to_pick_a_model_autoresearch
 ```
 
 Inspect the non-AutoResearch worker traces without live model calls:
 
 ```bash
-uv run python -m src.load_traces --config config/router_experiment.yaml
-uv run python -m src.load_traces --config config/router_experiment_mbpp_2models.yaml
-uv run python -m src.load_traces --config config/router_experiment_bbh.yaml
+uv run python -m src.load_traces --config experiments/humaneval-plus/retry-allocation-router/configs/router.yaml
+uv run python -m src.load_traces --config experiments/mbpp-plus/two-model-retry-router/configs/router.yaml
+uv run python -m src.load_traces --config experiments/bbh/family-and-subtask-router/configs/router_experiment_bbh.yaml
 ```
 
 See [`docs/reproducibility.md`](docs/reproducibility.md) for the complete

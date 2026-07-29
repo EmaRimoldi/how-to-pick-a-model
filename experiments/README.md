@@ -1,37 +1,43 @@
 # Experiments
 
-Experiments are split by benchmark family. No AutoResearch evidence is mixed
-with the other evaluation tracks.
+Every experiment is grouped first by benchmark and then by the concrete
+question it studies. A bundle owns its configs, launchers, inputs, processed
+results, figures, and run metadata whenever those artifacts are available.
 
-## AutoResearch
+| Benchmark | Experiment bundle | Status | Evidence in the repository |
+| --- | --- | --- | --- |
+| AutoResearch / CIFAR-10 | [`starting-model-calibration/`](autoresearch-cifar10/starting-model-calibration/) | completed | 161 controlled evaluations, tables, figures, plotting script |
+| AutoResearch / CIFAR-10 | [`evaluation-protocol-and-compute-calibration/`](autoresearch-cifar10/evaluation-protocol-and-compute-calibration/) | completed | deterministic-evaluator checks, CPU scaling, fixed-step/fixed-time summaries |
+| AutoResearch / CIFAR-10 | [`shared-memory-ablation/`](autoresearch-cifar10/shared-memory-ablation/) | completed | 11 trials, statistical summary, figures |
+| AutoResearch / CIFAR-10 | [`swarm-vs-independent-agents/`](autoresearch-cifar10/swarm-vs-independent-agents/) | historical/partial | summaries, analyses, figures; some raw run trees absent |
+| AutoResearch / CIFAR-10 | [`three-worker-model-routing/`](autoresearch-cifar10/three-worker-model-routing/) | completed with raw-coverage gap | processed 270-record accounting panel and 180 balanced raw traces |
+| HumanEval+ | [`qwen-model-size-frontier/`](humaneval-plus/qwen-model-size-frontier/) | completed | three 164-task worker logs and processed frontier estimates |
+| HumanEval+ | [`retry-allocation-router/`](humaneval-plus/retry-allocation-router/) | completed | folds, router decisions, summary, configs, launchers |
+| HumanEval+ | [`strategy-by-difficulty-grid/`](humaneval-plus/strategy-by-difficulty-grid/) | completed | full run, source/config snapshot, raw shards, summaries, figures |
+| HumanEval+ | [`llm-router-context-search/`](humaneval-plus/llm-router-context-search/) | completed | validation selection, held-out test evaluation, logs, figure |
+| HumanEval+ | [`verifier-guided-dag-induction-smoke/`](humaneval-plus/verifier-guided-dag-induction-smoke/) | incomplete smoke | implementation and smoke artifacts; rep42 cheap-node coverage is 9/42 |
+| MBPP+ | [`qwen-model-size-frontier/`](mbpp-plus/qwen-model-size-frontier/) | completed worker logs | three 378-task logs and mode estimates |
+| MBPP+ | [`two-model-retry-router/`](mbpp-plus/two-model-retry-router/) | partial | config and folds; router result/summary files are absent |
+| MBPP+ | [`category-router-smoke/`](mbpp-plus/category-router-smoke/) | smoke/partial | smoke figures and configs; full category labels/results are absent |
+| BBH | [`qwen-model-size-frontier/`](bbh/qwen-model-size-frontier/) | partial frontier | two 1,200-task logs and mode files; no tracked 32B log |
+| BBH | [`family-and-subtask-router/`](bbh/family-and-subtask-router/) | runnable scaffold | configs and launchers; no completed router result bundle |
+| SWE-bench Verified | [`neutral-100-meta-design-scaffold/`](swebench-verified/neutral-100-meta-design-scaffold/) | scaffold | prompt-safe 100-instance slice, configs, prompts, frozen designs |
+| SWE-bench Verified | [`open-source-orchestration-scaffold/`](swebench-verified/open-source-orchestration-scaffold/) | scaffold | worker/meta-design configs and prompt-safe data manifests |
+| SWE-bench Verified | [`open-source-meta-loop-2026-06-07/`](swebench-verified/open-source-meta-loop-2026-06-07/) | historical result archive | official evaluation manifests, failure analyses, plots, selected designs |
+| SWE-bench Verified | [`shared-runtime/`](swebench-verified/shared-runtime/) | implementation | orchestration code, Slurm launcher, and tests shared by the SWE studies |
+| Historical | [`stateful-query-engine/`](archive/stateful-query-engine/) | archived benchmark | 61 implementation/config/test files; no runs, results, figures, or reports |
 
-[`autoresearch/`](autoresearch/) contains the CIFAR-10 edit--verify studies:
+## Families
 
-1. baseline calibration;
-2. evaluation-protocol calibration;
-3. agent-memory ablation;
-4. swarm baselines;
-5. model-routing and deployment accounting.
+- [`autoresearch-cifar10/`](autoresearch-cifar10/)
+- [`humaneval-plus/`](humaneval-plus/)
+- [`mbpp-plus/`](mbpp-plus/)
+- [`bbh/`](bbh/)
+- [`swebench-verified/`](swebench-verified/)
+- [`archive/`](archive/) (historical implementations, excluded from active evidence)
 
-The runnable substrate lives at the repository root in `autoresearch/`,
-`src/agent_workflow/`, and `src/vao/`.
+The former `stateful-query-engine` benchmark has been removed from the active
+families and retained under `archive/`, clearly marked as an implementation
+without run, result, figure, or report evidence.
 
-## Other experiments
-
-[`other/`](other/) contains:
-
-- completed strategy-routing and router-search runs;
-- MBPP category-routing smoke figures;
-- the original SWE-bench experimental scaffold;
-- the later distribution-aware orchestration archive, Step 1 induction work,
-  and SWE-bench studies imported from the cluster checkout `NeurIPS_2026`.
-
-The cluster import is rooted at
-[`other/distribution-aware-orchestration/`](other/distribution-aware-orchestration/).
-Its AutoResearch code and evidence remain in the root `autoresearch/` package
-and this directory's `autoresearch/` experiment family, so the non-AutoResearch
-snapshot does not duplicate them.
-
-The tracked HumanEval+, MBPP+, and BBH worker logs remain in `data/` because the
-legacy `config/` and `src/*.py` pipeline addresses them directly. They are
-non-AutoResearch evidence and are documented by `other/README.md`.
+Reproduction guidance lives in [`../docs/reproducibility.md`](../docs/reproducibility.md).

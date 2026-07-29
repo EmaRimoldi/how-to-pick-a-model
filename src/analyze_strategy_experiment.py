@@ -210,7 +210,7 @@ def summarize(config: dict[str, Any], rows: list[dict[str, Any]]) -> dict[str, A
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Analyze mode-specialized strategy logs")
-    parser.add_argument("--config", default="config/strategy_experiment.yaml")
+    parser.add_argument("--config", default="experiments/humaneval-plus/strategy-by-difficulty-grid/configs/strategy_experiment.yaml")
     parser.add_argument("--run-id", default=None)
     args = parser.parse_args()
     config = load_config(args.config)

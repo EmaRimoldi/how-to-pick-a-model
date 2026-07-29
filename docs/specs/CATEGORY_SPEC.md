@@ -76,9 +76,9 @@ reproducible.
   flag the record. Count parse failures.
 - tqdm over problems.
 
-**Output:** freeze to `data/derived/mbpp_modes_category.json`
+**Output:** freeze to `experiments/mbpp-plus/category-router-smoke/results/processed/mbpp_modes_category.json`
 (`{task_id: "string"|"math"|"list_ds"|"logic_control"}`) and
-`data/derived/mbpp_modes_category_meta.json` (model id, prompt hash, per-category
+`experiments/mbpp-plus/category-router-smoke/results/processed/mbpp_modes_category_meta.json` (model id, prompt hash, per-category
 counts, parse-failure count, mean confidence).
 
 ---
@@ -89,12 +89,12 @@ Before trusting the labels:
 - Print the per-category counts. Flag if any category has fewer than ~50 problems
   on MBPP+ (too thin for a stable per-cell estimate); note it in NOTES.md.
 - Sample 20 random labeled problems and write them to
-  `data/derived/category_label_sample.json` (task_id, description snippet,
+  `experiments/mbpp-plus/category-router-smoke/results/processed/category_label_sample.json` (task_id, description snippet,
   assigned category, rationale) so the human can eyeball labeling quality.
 - Report the distribution. We EXPECT imbalance (string/list/math common,
   logic_control rarer); document it.
 
-Also produce a **2-category coarse view** `data/derived/mbpp_modes_mathnot.json`
+Also produce a **2-category coarse view** `experiments/mbpp-plus/category-router-smoke/results/processed/mbpp_modes_mathnot.json`
 mapping each problem to `math` vs `nonmath` (collapse string+list_ds+logic_control
 into nonmath). This high-power view (~189/cell) is the cleanest test of a
 math-vs-rest swap.
@@ -106,18 +106,18 @@ math-vs-rest swap.
 Without changing any analysis logic, run the existing pipeline with the mode file
 set to the category labels:
 
-- Build category-stratified 5-fold: `data/derived/mbpp_folds_category.json`
+- Build category-stratified 5-fold: `experiments/mbpp-plus/category-router-smoke/results/processed/mbpp_folds_category.json`
   (5 folds, stratified by the 4 categories, seed 0, no leakage).
 - Run `run_router_experiment.py` pointed at `mbpp_modes_category.json` and the
   category folds. The router now sees, in-context, training traces grouped by
   CATEGORY, and the held-out problem's category. Outputs:
-  `data/derived/mbpp_router_results_category.jsonl`.
-- Run estimators -> `data/derived/mbpp_router_summary_category.json`.
-- Run plots -> `figures/router_mbpp_category/`.
+  `experiments/mbpp-plus/category-router-smoke/results/processed/mbpp_router_results_category.jsonl`.
+- Run estimators -> `experiments/mbpp-plus/category-router-smoke/results/processed/mbpp_router_summary_category.json`.
+- Run plots -> `experiments/mbpp-plus/category-router-smoke/results/figures-category/`.
 - Repeat for the 2-category math/nonmath view with its own namespaced outputs
   (`*_mathnot`).
 
-Config: add `config/router_experiment_mbpp_category.yaml` mirroring the MBPP+
+Config: add `experiments/mbpp-plus/category-router-smoke/configs/router_experiment_mbpp_category.yaml` mirroring the MBPP+
 config but with the category mode file, category folds, and category output
 paths. Do not edit existing configs.
 
@@ -136,15 +136,15 @@ strict success) AND the strict solved rate. Then:
   accuracy. This is exactly what difficulty-modes did NOT show.
 - Bootstrap CIs on the per-category log2 tau* ratios between models, so a swap is
   only claimed when CIs separate.
-- Write `data/derived/category_frontier.json` and a figure
-  `figures/router_mbpp_category/fig_category_frontier.png` (grouped bars: x =
+- Write `experiments/mbpp-plus/category-router-smoke/results/processed/category_frontier.json` and a figure
+  `experiments/mbpp-plus/category-router-smoke/results/figures-category/fig_category_frontier.png` (grouped bars: x =
   category, groups = model, y = tau*, mark per-category winner, CI whiskers).
 
 Also report the same for the 2-category math/nonmath view, where power is highest.
 
 ---
 
-## 7. Smoke test (`scripts/smoke_category.sh`)
+## 7. Smoke test (`experiments/mbpp-plus/category-router-smoke/scripts/smoke_category.sh`)
 
 - Tag only 5 problems (real LLM, 5 calls — cheap) OR a mock tagger; confirm strict
   JSON parsing and the frozen label file format.
@@ -153,7 +153,7 @@ Also report the same for the 2-category math/nonmath view, where power is highes
   5 lines; category_frontier.json produced; figures exist.
 - The agent runs this.
 
-## 8. Full run (`scripts/full_category_run.sh`)
+## 8. Full run (`experiments/mbpp-plus/category-router-smoke/scripts/full_category_run.sh`)
 
 - Full LLM tagging of all MBPP+ problems (~378 LLM calls, cheap, free on the
   subscription). Then the full category router run (~378 router calls) and the
