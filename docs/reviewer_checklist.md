@@ -10,7 +10,7 @@ to know whether AutoResearch Orchestration is real, inspectable, and honest abou
 | What is this? | `README.md` | Benchmark harness for comparing AI-agent workflow modes on one controlled ML task. |
 | What concrete task does it run? | `autoresearch/README.md`, `autoresearch/train.py` | Agents optimize CIFAR-10 validation loss by editing one training script. |
 | What is the user-facing surface? | `src/agent_workflow/cli.py`, `README.md` | One CLI: `agent-workflow`. |
-| What should a reviewer read first? | `docs/demo_script.md`, `docs/demo_walkthrough.md` | Short demo path and evidence path are explicit. |
+| What should a reviewer read first? | `docs/demo.md` | Short demo path and evidence path are explicit. |
 | Can this be tried without Claude Code or GPU? | `uv run agent-workflow demo` | Offline fixture bundle with `report.html` and Workflow Card. |
 
 ## Built System
@@ -40,7 +40,7 @@ to know whether AutoResearch Orchestration is real, inspectable, and honest abou
 | Check | Command or file | Status |
 |---|---|---|
 | Install dependencies | `uv sync --dev --frozen` | Documented. |
-| Run tests | `uv run pytest tests -q` | Passing locally. |
+| Run structural gate and tests | `make check` | Passing locally. |
 | Inspect CLI | `uv run agent-workflow --help` | Passing locally. |
 | Prepare benchmark data | `docs/reproducibility.md` | Documented. |
 | Run live agent experiments | `docs/reproducibility.md` | Requires Claude Code and isolated workspace. |

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Bootstrap the cluster Python environment for HumanEval+/MBPP+/BBH routing runs.
 set -euo pipefail
 
 ROOT="${1:-/orcd/data/tpoggio/001/erimoldi/theory-of-agents-strategy}"
@@ -24,4 +25,3 @@ print("torch", torch.__version__, "cuda", torch.version.cuda)
 print("transformers", transformers.__version__)
 print("evalplus", getattr(evalplus, "__version__", "unknown"))
 PY
-

@@ -1,8 +1,7 @@
 # Implementation Spec — BIG-Bench Hard (BBH) Domain-Mode Experiment
 
 > **Audience: an autonomous coding agent (Codex / Claude Code).**
-> Add a third dataset, **BIG-Bench Hard (BBH)**, to the project at
-> `/Users/emanuelerimoldi/Documents/theory-of-agents`. This tests whether the
+> Add a third dataset, **BIG-Bench Hard (BBH)**, to this repository. This tests whether the
 > proper-time frontier becomes NON-DEGENERATE when modes are heterogeneous
 > reasoning SUBTASKS rather than difficulty tiers, using three GENERALIST Qwen
 > models. Reuse the existing worker -> allocation -> router -> frontier pipeline;

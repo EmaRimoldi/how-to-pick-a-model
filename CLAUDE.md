@@ -7,6 +7,14 @@ AutoResearch orchestration track.
 
 ## Default Behavior
 
+- Read `AGENTS.md` and `docs/knowledge-map.md` before broad repo changes.
+- Use `docs/audits/knowledge-index.md` for a compact map of paper sources,
+  formal objects, experiment bundles, and scripts.
+- Use `docs/audits/experiment-manifest.md` before citing or rerunning an
+  experiment; it records bundle class, asset counts, and key files.
+- Use `docs/audits/command-manifest.md` before running unfamiliar commands; it
+  separates safe local checks from live, cluster, and mixed CLI surfaces.
+- Run `make check` after structural, documentation, or code changes.
 - Prefer read-only inspection unless the user explicitly asks for edits.
 - Do not start live Claude Code agent experiments unless the user explicitly
   asks for a live run.

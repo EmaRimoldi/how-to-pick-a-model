@@ -15,4 +15,5 @@ jobs:
           python-version: "3.11"
       - uses: astral-sh/setup-uv@v5
       - run: uv sync --dev --frozen
+      - run: uv run python scripts/validate_agent_readiness.py
       - run: uv run pytest tests -q

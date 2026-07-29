@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Run allocation-router decision batches for the AutoResearch CIFAR-10 campaign.
 set -euo pipefail
 
 PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"

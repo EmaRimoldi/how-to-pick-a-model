@@ -1,7 +1,7 @@
 # Implementation Spec — Algorithmic-Category Modes (LLM tagging) on MBPP+
 
 > **Audience: an autonomous coding agent (Codex / Claude Code).**
-> Extend the MBPP+ experiment in `/Users/emanuelerimoldi/Documents/theory-of-agents`
+> Extend the MBPP+ experiment in this repository
 > with a SECOND mode schema: algorithmic category, assigned by an LLM. This does
 > NOT replace the difficulty-based modes and does NOT re-run any worker model.
 > It adds a parallel mode labeling and re-runs the EXISTING allocation/router

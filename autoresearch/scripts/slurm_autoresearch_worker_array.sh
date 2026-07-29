@@ -7,6 +7,7 @@
 #SBATCH --output=autoresearch/artifacts/slurm/ar-cifar10-%A_%a.out
 #SBATCH --error=autoresearch/artifacts/slurm/ar-cifar10-%A_%a.err
 
+# Run one AutoResearch CIFAR-10 worker task from a Slurm manifest row.
 set -euo pipefail
 
 REPO_ROOT="${REPO_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"

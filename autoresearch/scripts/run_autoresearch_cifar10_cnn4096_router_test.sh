@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Run the CNN-4096 AutoResearch router solver/probe comparison panel.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"

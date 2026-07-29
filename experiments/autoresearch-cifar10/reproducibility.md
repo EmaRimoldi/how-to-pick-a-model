@@ -134,12 +134,9 @@ uv run agent-workflow swarm \
 Regenerate processed figures from the analysis JSON:
 
 ```bash
-(
-  cd experiments/autoresearch-cifar10/three-worker-model-routing
-  uv run python source/scripts/reproduce_main_figures_from_processed.py \
-    --input results/accounting/threeworker_final_analysis.json \
-    --out-dir results/figures/reproduced
-)
+uv run python -m autoresearch.scripts.reproduce_main_figures_from_processed \
+  --input experiments/autoresearch-cifar10/three-worker-model-routing/results/accounting/threeworker_final_analysis.json \
+  --out-dir experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/reproduced
 ```
 
 Inspect raw-trace coverage:

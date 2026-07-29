@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Run one Slurm array task for AutoResearch threshold-calibration sweeps.
 set -euo pipefail
 
 TASK_FILE="${1:-.threshold_calibration_tasks.tsv}"

@@ -2,7 +2,7 @@
 
 > **Audience: an autonomous coding agent (Codex / Claude Code).**
 > Replicate the HumanEval+ proper-time / retry-allocation experiment on **MBPP+**,
-> in the existing project at `/Users/emanuelerimoldi/Documents/theory-of-agents`.
+> in this repository.
 > This is mostly a DATASET SWAP: the worker eval pipeline, the trace schema, the
 > allocation simulator, the router, and the estimators already exist and must be
 > REUSED, not rewritten. Only the dataset, the mode cutoffs, and the file names

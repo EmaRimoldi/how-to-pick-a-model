@@ -90,7 +90,8 @@ Implementation references:
   `src/agent_workflow/agents/isolated_agent_process.py`;
 - Claude Code invocation: `src/agent_workflow/swarm/claude_agent_runner.py`;
 - swarm orchestrator: `src/agent_workflow/swarm/swarm_orchestrator.py`;
-- blackboard implementation: `src/agent_workflow/swarm/shared_memory.py`;
+- blackboard implementation: `src/agent_workflow/communication/blackboard.py`
+  with compatibility exports in `src/agent_workflow/swarm/shared_memory.py`;
 - workspace blackboard tool installation: `src/agent_workflow/swarm/workspace.py`.
 
 ## Evidence Files

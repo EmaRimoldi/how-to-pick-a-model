@@ -10,6 +10,8 @@ clear experimental boundaries.
 
 ## Repository map
 
+- `AGENTS.md` and `docs/knowledge-map.md`: agent-facing entry points that
+  explain what is canonical, what is archive, and where evidence lives.
 - `paper/`: submitted manuscript, LaTeX sources, historical drafts, references,
   and paper figures.
 - `autoresearch/`: runnable CIFAR-10 edit--verify benchmark and analysis code.
@@ -31,6 +33,14 @@ clear experimental boundaries.
 - `tests/`: runtime and AutoResearch reproduction tests.
 
 The experiment index is in [`experiments/README.md`](experiments/README.md).
+The generated experiment asset manifest is in
+[`docs/audits/experiment-manifest.md`](docs/audits/experiment-manifest.md).
+The generated command safety manifest is in
+[`docs/audits/command-manifest.md`](docs/audits/command-manifest.md).
+The agent-facing knowledge map is in
+[`docs/knowledge-map.md`](docs/knowledge-map.md).
+The manuscript-editing workflow is in
+[`docs/paper-revision-playbook.md`](docs/paper-revision-playbook.md).
 
 ## Quick setup
 
@@ -39,8 +49,26 @@ The unified Python package is named `how-to-pick-a-model`. The historical
 
 ```bash
 uv sync --dev --frozen
-uv run agent-workflow --help
+make check
+```
+
+`make check` expands to:
+
+```bash
+python scripts/build_repo_inventory.py --output docs/audits/repo-inventory.md
+python scripts/build_knowledge_index.py --output docs/audits/knowledge-index.md
+python scripts/build_paper_archive_manifest.py --output docs/audits/paper-archive-manifest.md
+python scripts/build_experiment_manifest.py --output docs/audits/experiment-manifest.md
+python scripts/build_command_manifest.py --output docs/audits/command-manifest.md
+python scripts/validate_agent_readiness.py
+python -m compileall -q scripts src autoresearch
 uv run pytest -q
+```
+
+The historical CLI remains available:
+
+```bash
+uv run agent-workflow --help
 ```
 
 Install optional experiment dependencies only when needed:
@@ -86,6 +114,8 @@ canonical computational results in this repository. Details are recorded in
 [`docs/audits/manuscript-reproducibility.md`](docs/audits/manuscript-reproducibility.md).
 The theorem-level consolidation of the manuscript family is documented in
 [`docs/audits/theory-consolidation.md`](docs/audits/theory-consolidation.md).
+The root-level paper archive is classified in
+[`docs/audits/paper-archive-manifest.md`](docs/audits/paper-archive-manifest.md).
 
 ## Historical names
 

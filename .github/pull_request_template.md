@@ -5,6 +5,8 @@ What changed?
 ## Verification
 
 ```bash
+make check
+python scripts/validate_agent_readiness.py
 uv run pytest tests -q
 ```
 

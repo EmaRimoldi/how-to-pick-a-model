@@ -1,8 +1,7 @@
 # Implementation Spec — Retry-Allocation Router (k-fold on HumanEval+)
 
 > **Audience: an autonomous coding agent (Codex / Claude Code).**
-> Build this on top of the existing project at
-> `/Users/emanuelerimoldi/Documents/theory-of-agents`. The worker logs already
+> Build this on top of this repository. The worker logs already
 > exist (three `runs_qwen2.5-coder_*_full_20260616T0640Z.jsonl` files). You do
 > NOT re-run any worker model. You build the allocation experiment that consumes
 > those logs, plus an LLM router that runs via API. Follow the conventions and

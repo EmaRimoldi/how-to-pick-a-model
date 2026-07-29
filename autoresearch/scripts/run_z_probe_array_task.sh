@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Run one Slurm array task for AutoResearch zero-step probe baselines.
 set -euo pipefail
 
 TASK_FILE="${1:-.z_probe_families.txt}"
