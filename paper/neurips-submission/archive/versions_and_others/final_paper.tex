@@ -41,11 +41,6 @@
 \setlist[itemize]{leftmargin=1.2em,itemsep=0.2em,topsep=0.2em}
 \setlist[enumerate]{leftmargin=1.3em,itemsep=0.2em,topsep=0.2em}
 
-% Let this archived entry point compile from either the repo root or this folder.
-\makeatletter
-\def\input@path{{archive/versions_and_others/}{archive/versions_and_others/sections/}}
-\makeatother
-
 % -------------------- Theorem extensions --------------------
 \newtheorem{assumption}[theorem]{Assumption}
 
@@ -112,34 +107,1208 @@
 \maketitle
 
 % ==================== ABSTRACT ====================
-\input{sections/abstract}
+\begin{abstract}
+Benchmark racing---the standard method for choosing among LLM agent designs---conflates per-step cost, model competence, information structure, and routing quality into a single opaque comparison.
+We show that, under a packed latent-mode family assumption, the performance gap between any two agent designs decomposes exactly into four independently measurable terms.
+The decomposition is an algebraic identity, not an approximation.
+
+The decomposition yields a closed-form crossover formula---a small model with $D$ retries matches a large model when $\Dcross = \log(1-p_l)/\log(1-p_s)$, and dominates when this depth falls below the cost ratio---and a monotonicity theorem: stronger models need less scaffolding.
+In synthetic evaluations, decomposition-guided search uses $50\times$ fewer evaluations than benchmark racing at comparable regret.
+A Bernstein corollary makes the required pilot estimation practical for hard tasks.
+
+An honest negative result clarifies scope: the four terms are diagnostic performance accounting, not Lagrangian shadow prices.
+The decomposition tells a builder which lever matters most but does not solve for the optimum in closed form.
+The framework applies under a packed-family assumption on the task distribution; its scope and limitations are characterized explicitly.
+\end{abstract}
+
+\begin{keywords}
+agent design, certified time, performance decomposition, test-time compute, model selection, routing
+\end{keywords}
 
 % ==================== ACT I: INTRODUCTION AND SETUP ====================
-\input{sections/introduction}
-\input{sections/preliminaries}
+%% ====================================================================
+%%  SECTION 1 --- INTRODUCTION (~2.5pp)
+%% ====================================================================
+\section{Introduction}
+\label{sec:intro}
+
+A builder of agent systems faces a question every deployment cycle: \emph{I have a task family, a compute budget, and a menu of models ranging from fine-tuned specialists to frontier generalists.
+What system should I build?}
+
+The question is not merely which model to call.
+It is which model, which orchestration policy, and how many sequential attempts jointly minimize time to verified solution.
+The dominant methodology is benchmark racing: run both models on a test set, pick the winner, repeat when the next model arrives.
+
+Benchmark racing is fast and requires no theory.
+It is also structurally blind.
+It conflates per-step cost, within-mode competence, task-relevant information, and routing quality into a single opaque comparison.
+When GPT-4 beats Claude on one benchmark but Claude beats GPT-4 on another, benchmark racing cannot diagnose whether the difference comes from per-step competence, from routing mismatch (the evaluation protocol suits one model's strengths), from cost allocation, or from the inherent information structure of the task.
+All four factors are real; they interact, and benchmark racing conflates them into a single number.
+
+This paper disentangles them.
+
+\paragraph{The decomposition.}
+Under the packed latent-mode family assumption (a task distribution with discrete solution strategies), the performance gap between any two agent designs decomposes exactly as
+\begin{equation}
+\label{eq:four-term-intro}
+\Delta = \log\frac{\kappa_0}{\kappa} + \varphi + G - \varepsilon,
+\end{equation}
+separating per-step cost, within-mode competence, information generation quality, and routing mismatch into four independently measurable terms.
+The decomposition is an algebraic identity---no approximation, no limit.
+A builder who estimates these four numbers from a structured pilot knows which lever to pull: switch models if cost or competence dominates, rebuild the router if mismatch~$\varepsilon$ is large, or restructure the task distribution if the information term~$G$ is small.
+
+The hero equation is simpler still.
+With model held fixed, the Routing-Information Identity reduces to
+\[
+\Delta = G - \varepsilon:
+\]
+certified log-speedup equals information generated minus information wasted.
+
+A natural expectation, given the algebraic structure, is that these four terms are shadow prices of resource constraints---the dual variables of a Lagrangian relaxation.
+We show that this expectation is precisely wrong (Section~\ref{sec:lagrangian}).
+The four terms are components of the primal objective, not the dual.
+The decomposition's value to optimization is as a separable evaluator, not as a dual decomposition.
+
+\paragraph{The crossover theorem.}
+The decomposition also yields a concrete decision rule.
+Given a large expensive model (success probability $p_l$ per attempt, cost $\kappa_l$) and a small cheap model ($p_s$, $\kappa_s$), the number of cheap-model attempts needed to match one expensive-model attempt is
+\begin{equation}
+\label{eq:crossover-intro}
+\Dcross = \frac{\log(1 - p_l)}{\log(1 - p_s)}.
+\end{equation}
+If $\Dcross \le \kappa_l/\kappa_s$, the small model wins.
+This is the paper's most actionable result: one formula, immediately deployable.
+
+\paragraph{Challenging folklore.}
+The paper directly challenges four widespread assumptions:
+
+\begin{enumerate}
+\item \emph{``Scale is all you need.''}\;
+Model competence is one of four terms, and not always the dominant one.
+
+\item \emph{``More agents is better.''}\;
+Optimal orchestration depth \emph{decreases} with model competence: for strong models, the optimal architecture is simpler.
+
+\item \emph{``Benchmark performance predicts deployment performance.''}\;
+The decomposition shows exactly what benchmarks miss: routing mismatch and information structure are invisible to fixed-routing evaluation.
+
+\item \emph{``Agent design is engineering, not science.''}\;
+Agent design has mathematical structure amenable to theory---simpler than optimization theory, but real.
+\end{enumerate}
+
+\paragraph{Contributions.}
+The paper makes five contributions:
+(1)~An exact four-term decomposition of the performance gap between agent designs (Section~\ref{sec:decomposition}), valid under the packed-family assumption with a bounded remainder outside it.
+(2)~An honest negative result: the four terms are performance accounting, not Lagrangian shadow prices (Section~\ref{sec:lagrangian}).
+(3)~A graph-depth model characterizing optimal orchestration depth, with monotonicity in competence and cost (Section~\ref{sec:graph-depth}), and a closed-form crossover theorem (Section~\ref{sec:crossover}).
+(4)~Proxy validity (Section~\ref{sec:proxy-validity}) and Bernstein-improved sample complexity bounds (Section~\ref{sec:sample-complexity}) that make the framework practical.
+(5)~Synthetic validation showing up to 50x evaluation efficiency over benchmark racing in settings with $k = 100$ designs (Section~\ref{sec:validation}), with honest scoping of when the framework should not be used (Section~\ref{sec:scoping}).
+
+\paragraph{Roadmap.}
+Section~\ref{sec:prelim} defines the mathematical objects.
+Sections~\ref{sec:decomposition}--\ref{sec:lagrangian} develop the decomposition and its Lagrangian non-connection.
+Sections~\ref{sec:graph-depth}--\ref{sec:bernstein} derive the depth-cost tradeoff and sample complexity.
+Section~\ref{sec:validation} validates and scopes the framework.
+Section~\ref{sec:related} positions the paper.
+Section~\ref{sec:discussion} discusses limitations and open problems.
+%% ====================================================================
+%%  PRELIMINARIES (~1.5pp)
+%% ====================================================================
+\section{Preliminaries}
+\label{sec:prelim}
+
+We summarize the formal objects from \citet{achille2025agents} and the prior framework~\citep{beneventano2026framework}, fixing notation for the remainder of the paper.
+
+\paragraph{Budgeted transductive tasks.}
+% SOURCE_CLAIM: C01
+A \emph{budgeted transductive task} consists of:
+(i)~an instance space~$\cX$;
+(ii)~a solution space~$\cY$ with an external verifier $v\colon \cX \times \cY \to \{0,1\}$;
+(iii)~a resource budget~$B$ (compute, cost, or wall-clock time).
+The agent receives an instance $x \in \cX$ and must produce a verified solution $y$ with $v(x,y) = 1$ within budget~$B$.
+Examples include code repair against test suites, formal proofs against proof assistants, and plans against constraint checkers.
+We restrict attention to this verifiable regime throughout.
+
+\paragraph{Task families and modes.}
+% SOURCE_CLAIM: C02, C15
+A \emph{task family} is a distribution~$\cD$ over instances.
+Under the \emph{packed latent-mode family} assumption, each instance $x$ has a latent mode $S(x) \in \{1, \ldots, \Mn\}$ representing its dominant solution strategy.
+The mode distribution is $\pi_s = \Prb(S = s)$.
+Conditional on mode~$s$, the time to verified solution for model~$M$ follows a geometric distribution with success probability $p(s, M)$ per attempt:
+\begin{equation}
+\label{eq:geometric-trials}
+  T(s, M) \sim \mathrm{Geometric}(p(s, M)), \quad \E[T(s,M)] = 1/p(s,M).
+\end{equation}
+The packed-family structure means each instance has a single dominant mode, and certified time scales inversely with the compute share allocated to that mode's strategy.
+
+\paragraph{Stochastic solvers and certified time.}
+% SOURCE_CLAIM: C03
+A \emph{stochastic solver} is an agent system specified by a design tuple $d = (M, \pi, \Omega, W, K, p)$, where $M$ is the model, $\pi$ the routing policy mapping instances to modes, $\Omega$ the orchestration graph, $W$ the memory/tool configuration, $K$ the context budget, and $p$ the verification protocol.
+The \emph{certified time} $T(x, d)$ is the time until the agent produces a solution that passes the external verifier.
+
+For this paper, the design space reduces to three key variables: model~$M$, routing policy~$\pi$ (a distribution over modes), and orchestration depth~$D$ (number of sequential attempts).
+Cost per step is $\kappa(M)$.
+
+\paragraph{The packed-family assumption.}
+% SOURCE_CLAIM: C15, C30
+\begin{assumption}[Packed latent-mode family]
+\label{ass:packed-family}
+The task distribution~$\cD$ admits a latent partition into $\Mn$ modes such that:
+\begin{enumerate}[label=(\roman*)]
+  \item Each instance has a unique dominant mode $S(x)$.
+  \item Conditional on mode~$s$, certified time under model~$M$ with routing allocation~$q$ satisfies $\E[-\log T \mid S = s] = \log q(s) + \log p(s, M) + c$ for a constant~$c$ independent of~$s$.
+  \item The mode distribution~$\pi$ is exogenous: it does not shift with model choice.
+\end{enumerate}
+\end{assumption}
+
+Outside the packed family, the four-term decomposition holds with a bounded residual of order $O(\delta \log \Mn + \eta)$, where $\delta$ measures departure from the packed structure and $\eta$ captures non-geometric time distributions~\citep{beneventano2026framework}.
+
+\paragraph{Notation.}
+Throughout, $\Mn$ denotes the number of modes, $\Meff = \exp(\Hent(\pi))$ the entropy-effective mode count, $r_s = 1 - p(s, M)$ the per-attempt failure probability, and $\kappa(M)$ the per-step cost of model~$M$.
+For two designs $(M_1, \pi_1)$ and $(M_2, \pi_2)$, we write $\Delta$ for the log-performance gap.
 
 % ==================== ACT II: THE DECOMPOSITION ENGINE ====================
-\input{sections/act2_decomposition}
+%% ====================================================================
+%%  ACT II: THE DECOMPOSITION ENGINE (~5pp)
+%% ====================================================================
+\section{The Decomposition Engine}
+\label{sec:decomposition}
+
+This section contains the paper's mathematical core: the Routing-Information Identity, its four-term specialization under the packed-family assumption, the Lagrangian non-connection, and finite-sample guarantees.
+
+\subsection{The Routing-Information Identity}
+\label{sec:ri-identity}
+
+% SOURCE_CLAIM: C17
+\begin{theorem}[Routing-Information Identity]
+\label{thm:ri-identity}
+For any two designs $(M_1, \pi_1)$ and $(M_2, \pi_2)$ operating on the same task distribution with $p(s,M) \in (0,1]$ for all modes and models, the log-performance gap decomposes as:
+\begin{equation}
+\label{eq:ri-identity}
+  \Delta(M_1, \pi_1 \to M_2, \pi_2) = G(M_2, \pi_2) - G(M_1, \pi_1)
+  - \bigl[\mismatch(M_2, \pi_2) - \mismatch(M_1, \pi_1)\bigr],
+\end{equation}
+where $G(M, \pi) = \MI(S; D \mid M)$ is the information gain from routing (the mutual information between mode identity and design decisions given the model) and $\mismatch(M, \pi) = \E_D[\KL(\pi_D^M \| q_D)]$ is the routing mismatch (the expected KL divergence between the posterior-optimal and actual routing allocations).
+
+The identity is exact under measurability and positivity of per-mode success probabilities, and holds at every feasible design point---not only at the optimum.
+The proof is a direct algebraic expansion of the mutual information and KL divergence terms in the packed-family parametrization; the full derivation appears in \citet{beneventano2026framework}.
+\end{theorem}
+
+The identity says: performance improves when information gain increases or routing mismatch decreases.  A design is better to the extent that it knows more about task structure and wastes less of what it knows.
+
+\subsection{Four-Term Decomposition under the Packed Family}
+\label{sec:four-term}
+
+% SOURCE_CLAIM: C31
+Under the packed-family assumption (Assumption~\ref{ass:packed-family}), the identity specializes to a four-term decomposition that separates cost from competence from information structure:
+
+\begin{theorem}[Four-term model-aware decomposition]
+\label{thm:four-term}
+Under the packed latent-mode family with geometric trials (Assumption~\ref{ass:packed-family}), the log-performance gap between designs $(M_0, q_0)$ and $(M, q)$ decomposes as:
+\begin{equation}
+\label{eq:four-term}
+  \Delta = \underbrace{\log\frac{\kappa_0}{\kappa(M)}}_{\text{cost}}
+  + \underbrace{\sum_s \pi_s \log\frac{p(s, M)}{p(s, M_0)}}_{\varphi\;\text{(competence)}}
+  + \underbrace{\MI_\pi(S; D_M)}_{G\;\text{(info gain)}}
+  - \underbrace{\E_D\bigl[\KL(\pi_D^M \| q_D)\bigr]}_{\mismatch\;\text{(mismatch)}}.
+\end{equation}
+Each term is independently estimable from pilot data.
+\end{theorem}
+
+The four terms have clean interpretations.
+The \textbf{cost term} measures the per-step price difference.
+The \textbf{competence term}~$\varphi$ measures how much better (or worse) model~$M$ is at each mode, averaged over the task distribution.
+The \textbf{information-gain term}~$G$ measures how much the routing policy can exploit knowledge of task-mode identity.
+The \textbf{routing-mismatch term}~$\mismatch$ measures how far the actual routing deviates from the posterior-optimal allocation.
+
+The decomposition is complete under the packed-family assumption.
+Outside the packed family, the four terms remain well-defined but the identity holds only up to a bounded residual~\citep{beneventano2026framework}.
+
+\subsection{Expectation vs.\ Quantile Objectives}
+\label{sec:quantile-scoping}
+
+% SOURCE_CLAIM: T4 (scoping remark, not proof)
+\begin{remark}[Scope: expectation-level objectives]
+\label{rem:quantile-scoping}
+The four-term decomposition operates on expected log certified time.
+A practitioner may instead care about quantile objectives---the $\delta$-quantile of certified time for a service-level agreement.
+Under geometric trials, the $\delta$-quantile satisfies $T_\delta = \log(1/\delta) / \log(1/(1-q(S)))$.
+For fixed~$\delta$, the design-dependent term is monotonically related to the expectation-level objective, so the four-term decomposition preserves design rankings for fixed deployment parameters.
+Outside the geometric-trials regime, the expectation and quantile objectives can diverge, and quantile-level analysis is an open direction.
+\end{remark}
+
+\subsection{The Lagrangian Non-Connection}
+\label{sec:lagrangian}
+
+% SM4: Lagrangian non-connection surprise marker
+The temptation to interpret these four terms as shadow prices is real.
+Each appears to measure the sensitivity of performance to one design dimension; the operations-research framing invites a Lagrangian interpretation; and analogies to column generation and flow decomposition are standard in the field.
+A natural expectation, given the algebraic structure, is that the four terms are dual variables of a Lagrangian relaxation.
+We show that this expectation is precisely wrong.
+
+% SOURCE_CLAIM: C57
+\begin{proposition}[Lagrangian non-connection]
+\label{prop:lagrangian}
+Consider the packed-family optimization problem with $\Mn = 2$ modes, two candidate models, and a cost budget~$B$.
+\begin{enumerate}[label=(\alph*)]
+  \item The Lagrangian dual has a single scalar multiplier $\lambda \ge 0$, not four multipliers corresponding to the four decomposition terms.
+  \item The four information-theoretic terms are components of the primal objective value evaluated at any feasible design point, not dual variables of constraints.
+  \item No linear combination of the single shadow price~$\lambda^*$ reproduces the four-term decomposition, except in degenerate cases.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}[Proof sketch]
+The KKT conditions for the inner routing problem yield $q_s^* = \pi_s$ (posterior-matched allocation) with $\lambda^*$ as the single shadow price of the cost constraint.
+The optimal objective equals $\Hent(\pi)$---the mode entropy, independent of~$M$.
+The structural reason is that the decomposition is a pointwise algebraic identity valid at any $(M, q)$, not a first-order optimality condition valid only at the optimum.
+Shadow prices measure sensitivity to constraint relaxation (a first-order envelope property); the four terms measure objective components (a zeroth-order algebraic property).
+Full proof in \appref{app:lagrangian}.
+\end{proof}
+
+The decomposition's value to optimization is not as a dual decomposition but as a separable objective evaluator: each term can be estimated independently from pilot data, enabling modular enumeration of the design space.
+
+\subsection{Sample Complexity}
+\label{sec:sample-complexity}
+
+How much pilot data does the decomposition require?
+We answer with a practical rule first, then the formal bound.
+
+\begin{center}
+\fbox{\parbox{0.85\textwidth}{%
+\textbf{Pilot sizing rule of thumb.}
+For $\Mn$ modes with minimum per-mode success probability $\pmin$:
+\begin{itemize}[nosep]
+  \item Easy tasks ($\pmin > 0.5$): $\sim$25 instances per mode.
+  \item Moderate tasks ($\pmin \in [0.1, 0.5]$): $\sim$100 instances per mode.
+  \item Hard tasks ($\pmin < 0.1$): $\sim$1{,}500 instances per mode (use Bernstein, not Hoeffding).
+\end{itemize}
+These are empirical guidelines; the formal bounds below are conservative by a factor of $\sim$29 at $\pmin = 0.05$.
+}}
+\end{center}
+
+% SOURCE_CLAIM: C56
+\begin{proposition}[Hoeffding sample complexity]
+\label{prop:sample-complexity}
+Under the packed-family assumption with geometric trials and $\Mn$ modes, if
+\begin{equation}
+\label{eq:hoeffding-sample}
+  n_0 = \frac{\log(2\Mn / \dconf)}{2\,\dacc^2\,\pmin^2}
+\end{equation}
+pilot instances are collected per mode, then with probability at least $1 - \dconf$, each of the four estimated terms is within $\dacc$~nats of its population value.
+The total pilot size is $N = \Mn \cdot n_0 = O(\Mn \log(\Mn/\dconf) / (\dacc^2 \pmin^2))$.
+\end{proposition}
+
+The $\pmin^{-2}$ factor is the dominant cost driver: modes on which the model rarely succeeds provide very noisy information-gain estimates.
+
+\subsection{The Bernstein Corollary}
+\label{sec:bernstein}
+
+% SOURCE_CLAIM: C59
+For hard tasks, Hoeffding's bound is needlessly conservative.
+Replacing it with Bernstein's inequality---which exploits the low variance of Bernoulli random variables when $p$ is small---yields an improved bound:
+
+\begin{corollary}[Bernstein sample complexity]
+\label{cor:bernstein}
+Under the same assumptions as Proposition~\ref{prop:sample-complexity}, the Bernstein-based per-mode sample complexity is:
+\begin{equation}
+\label{eq:bernstein-sample}
+  n_0^{\mathrm{Bern}} = \frac{3\log(2\Mn/\dconf)}{\dacc^2\,\pmin},
+\end{equation}
+scaling as $\pmin^{-1}$ instead of $\pmin^{-2}$.
+The improvement factor is $1/(6\pmin)$: at $\pmin = 0.05$, Bernstein requires $3.3\times$ fewer samples; at $\pmin = 0.01$, the improvement is $\sim$17$\times$.
+The crossover where Bernstein dominates Hoeffding occurs at $\pmin \approx 0.17$.
+\end{corollary}
+
+% SM2: Bernstein emergence surprise marker
+The Bernstein corollary was not in our original plan---the Hoeffding bound seemed sufficient for a first analysis.
+For tasks where the hardest mode succeeds one percent of the time, the Bernstein bound reduces the required pilot by an order of magnitude relative to Hoeffding, transforming the framework from theoretically attractive to practically feasible in precisely the regime where it is most needed.
+
+Full proofs of both bounds are in \appref{app:sample-complexity} and \appref{app:bernstein}.
+
+\subsection{Kelly--Cover Framing of the Information-Gain Term}
+\label{sec:kelly-cover}
+
+% SOURCE_CLAIM: C36
+The information-gain term $G = \MI(S; D \mid M)$ admits an interpretation as the \emph{value of routing information}, directly analogous to Kelly's~\citeyearpar{kelly1956new} result that mutual information quantifies the value of a noisy side channel for log-optimal betting.
+
+In Kelly's setting, a gambler bets on horse races.
+With no side information, the optimal log-wealth growth rate is~$W_0$.
+With a noisy tip~$Y$ correlated with the race outcome~$X$, the optimal growth rate is $W_0 + \MI(X; Y)$.
+In our setting, the gambler is the routing policy, the horse race is the task mode~$S$, and the noisy tip is the side information used for routing.
+With no routing ($q = \pi$, uniform allocation), the expected log certified time is~$\Hent(\pi)$.
+With optimal routing ($q = \pi_D$, posterior-matched), it improves by exactly~$G$.
+
+The packed-family assumption plays the role of the horse-race market assumption in \citet{cover2006elements}, Chapter~16: it is the regime where the information-gain term~$G$ has an exact, closed-form interpretation.
+Outside this regime, $G$ becomes a bound rather than an identity.
 
 % ==================== ACT III: STRUCTURAL EXTENSIONS ====================
-\input{sections/act3_extensions}
+%% ====================================================================
+%%  ACT III: STRUCTURAL EXTENSIONS (~5pp)
+%% ====================================================================
+\section{Structural Extensions: Depth, Cost, and Transfer}
+\label{sec:extensions}
+
+The four-term decomposition tells a builder which lever matters.
+This section shows how to pull the depth lever (graph-depth model and crossover theorem) and when to reuse what was learned (transfer theory).
+
+\subsection{From Four Terms to Depth: The Connective Step}
+\label{sec:connective}
+
+% W3: Connective paragraph verifying P_D satisfies packed-family structure
+The four-term decomposition (Theorem~\ref{thm:four-term}) applies to any model~$M$ operating within the packed-family framework.
+To extend it to depth-$D$ designs---where an agent makes $D$ independent sequential attempts---we must verify that the boosted success probability $P_D(s, M) = 1 - (1 - p(s,M))^D$ preserves the packed-family structure.
+
+It does.
+Conditional on mode~$s$, the minimum of $D$ independent geometric random variables is itself geometric with parameter~$P_D(s, M)$.
+The mode distribution~$\pi$ does not change (it is a property of the task, not the agent).
+The cost becomes $D \cdot \kappa(M)$ per instance.
+Therefore, the four-term decomposition applies to depth-$D$ designs with $p(s,M)$ replaced by $P_D(s,M)$ and $\kappa(M)$ replaced by $D \cdot \kappa(M)$, and all four terms remain independently estimable.
+
+\subsection{The Graph-Depth Model}
+\label{sec:graph-depth}
+
+% SOURCE_CLAIM: C52
+\begin{definition}[Graph-depth extension]
+\label{def:graph-depth}
+Given a packed latent-mode family with mode distribution~$\pi$, model~$M$ with per-attempt cost~$\kappa(M)$ and per-mode success probabilities~$p(s,M)$, the \emph{$D$-depth extension} makes $D \ge 1$ independent sequential attempts.
+The success probability on mode~$s$ is $P_D(s,M) = 1 - r_s^D$ where $r_s = 1 - p(s,M)$.
+The expected log certified time is $L(M, D) = \sum_s \pi_s (-\log(1 - r_s^D))$.
+\end{definition}
+
+\begin{remark}[Independence caveat]
+\label{rem:independence}
+The independent-attempts model is a simplifying assumption.
+Real orchestration steps exhibit inter-step dependence: later steps condition on earlier failures, use different prompts, or exploit partial progress.
+Independence provides a conservative estimate of depth benefits---dependent attempts with information reuse can only improve upon it.
+\end{remark}
+
+The builder's problem is to choose $D$ to minimize expected log certified time subject to a cost budget:
+
+% SOURCE_CLAIM: C53
+\begin{theorem}[Optimal depth and monotonicity]
+\label{thm:optimal-depth}
+Under the packed-family model with geometric trials, exogenous mode distribution, monotone competence, continuous relaxation of~$D$, and interior solution ($\mu > 0$):
+\begin{enumerate}[label=(\alph*)]
+  \item The optimal depth $\Dstar(M)$ is the unique solution to $F(\Dstar; M) = \mu \cdot \kappa(M)$, where $F(D; M) = \sum_s \pi_s r_s^D (-\log r_s) / (1 - r_s^D)$.
+  \item $F$ is strictly decreasing in~$D$, so $\Dstar$ is unique.
+  \item $d\Dstar / dt_0 < 0$: a more competent model requires fewer orchestration steps.
+  \item $d\Dstar / d(\kappabig/\kappa(M)) > 0$: a cheaper model (relative to alternatives) affords more steps.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Differentiate $L(M,D) + \mu D \kappa$ to obtain the FOC.
+Uniqueness follows from $dF/dD < 0$, proved by showing each summand has negative derivative via $-r_s^D (\log r_s)^2 / (1-r_s^D)^2 < 0$.
+Monotonicity in competence uses the implicit function theorem: the auxiliary function $h(r) = -D\log r - 1 + r^D$ satisfies $h(1) = 0$ and $h'(r) < 0$ on $(0,1)$, giving $dg/dr > 0$.
+Full proof in \appref{app:graph-depth}.
+\end{proof}
+
+The qualitative intuition is straightforward: stronger models need simpler architectures.
+The contribution is making this a theorem with explicit conditions and a computable characterization.
+Numerical validation confirms the FOC is exact to~$0.001$ across 50~scenarios, with zero monotonicity violations in 1{,}000 parameter combinations.
+
+\subsection{The Crossover Theorem}
+\label{sec:crossover}
+
+One might expect model capability to be the dominant design variable---this is the implicit assumption behind benchmark racing.
+The crossover formula reveals otherwise: in the cost-adjusted regime, the ratio of per-step costs often determines which model wins, regardless of the competence gap.
+
+% SOURCE_CLAIM: C54
+\begin{theorem}[Crossover: when small-model-big-graph dominates]
+\label{thm:crossover}
+Given two models $M_s$ (small, cheap) and $M_l$ (large, expensive) with $\kappa(M_l) > \kappa(M_s)$ and $p(s, M_l) > p(s, M_s)$ for all modes~$s$:
+\begin{enumerate}[label=(\alph*)]
+  \item There exists a finite crossover depth $\Dcross \ge 1$ such that $L(M_s, \Dcross) = L(M_l, 1)$.
+  \item For a single mode: $\Dcross = \log(1 - p_l) / \log(1 - p_s)$.
+  \item For multiple modes: $\Dcross$ is the unique solution to $\sum_s \pi_s (-\log(1 - r_s(M_s)^D)) = \sum_s \pi_s (-\log p(s, M_l))$.
+  \item For hard tasks, the hardest-mode formula $\hat{D} = \max_s \log r_l(s) / \log r_s(s)$ provides a practical estimate of~$\Dcross$. Empirically, $\hat{D} \ge \Dcross$ in all 50~tested parameter settings (mean overestimate $1.8\times$, max $3.9\times$). We conjecture $\hat{D} \ge \Dcross$ in general; a proof is open.
+  \item The small model with $\Dcross$ attempts dominates at equal cost if and only if $\Dcross \le \kappa(M_l) / \kappa(M_s)$.
+\end{enumerate}
+\end{theorem}
+
+At current large-model pricing (roughly $10\times$ more expensive than small models), the small model with retries wins for any task where $\Dcross \le 10$---which covers most practical scenarios where per-mode success probabilities differ by less than an order of magnitude.
+
+% SOURCE_CLAIM: C55
+\begin{corollary}[Comparative statics]
+\label{cor:crossover-statics}
+$\Dcross$ is increasing in the competence ratio $p_l/p_s$.
+The cost-adjusted condition $\Dcross \le R$ is more easily satisfied when: (i)~$R$ is large (cheap model relative to expensive); (ii)~the competence ratio is moderate; (iii)~the task is specialist ($\Meff$ small), because the hardest mode dominates.
+\end{corollary}
+
+Numerical validation confirms: the single-mode formula is exact to~$0.004$ across 100~pairs; the cost-adjusted condition correctly predicts 99\% of 200~scenarios.
+The hardest-mode estimate is tighter for specialist tasks ($\Meff$ small) and looser for generalist distributions.
+
+\paragraph{Worked example.}
+Consider two models: a small model with $p_s = 0.2$ per attempt at cost $\kappa_s = 1$, and a large model with $p_l = 0.6$ per attempt at cost $\kappa_l = 10$.
+The crossover depth is $\Dcross = \log(0.4)/\log(0.8) \approx 4.1$.
+Since $\Dcross = 4.1 < 10 = R$, the small model with 4--5 attempts dominates the large model with one attempt at equal cost.
+The small model achieves success probability $1 - 0.8^5 = 0.67$ for cost~$5$, compared to the large model's $0.6$ for cost~$10$.
+
+\subsection{Transfer Theory}
+\label{sec:transfer}
+
+% W4: Transfer theory 4-paragraph structure, no "prove"/"theorem"
+
+The prior framework~\citep{beneventano2026framework} establishes two formal notions of task equivalence for agent design.
+\emph{Post-training equivalence} holds when two task distributions produce the same competence profile $\{p(s,M)\}_s$ for all models~$M$: the same models are good at the same things.
+\emph{Orchestration equivalence} holds when the optimal routing policy is the same: the same workflow applies.
+
+These notions are independent: a pair of tasks can share identical competence profiles while requiring entirely different routing policies, or vice versa.
+The formal infrastructure for this independence is established in the prior work; constructive examples remain future work.
+
+This independence yields a three-case decision rule for when agent-system results transfer to a new task domain.
+Consider a practitioner who has optimized an agent system for Lean theorem proving and now faces a code-repair task distribution, using two models at cost ratios varying across $\{2, 10, 50\}$.
+\emph{Plug-and-play}: at cost ratio~$2$, if both tasks have similar mode structure and the same model is relatively better on each mode, the full design transfers---models, routing, depth, everything.
+\emph{Re-route}: at cost ratio~$10$, if the models are equally capable on the new domain but the task distribution differs (different relative frequencies of modes), the routing policy must be rebuilt from new pilot data, but the model selection stands.
+\emph{Start over}: at cost ratio~$50$, if the cheap model dominates on every mode of the new domain (routing is trivial by the condition in \secref{sec:routing-triviality}), the expensive model is abandoned entirely and the optimization must restart.
+
+Formal quantitative treatment---including constructive independence examples, estimation protocols for the transfer decision, and error bounds---is future work.
+
+% W5: Transfer trichotomy 2-axis figure description
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[scale=1.0]
+    % Axes
+    \draw[->, thick] (-0.3,0) -- (5.5,0) node[right] {\small Routing transfers?};
+    \draw[->, thick] (0,-0.3) -- (0,4.2) node[above] {\small Competence transfers?};
+    % Labels
+    \node at (1.3,0) [below] {\small No};
+    \node at (4.0,0) [below] {\small Yes};
+    \node at (0,1.2) [left] {\small No};
+    \node at (0,3.2) [left] {\small Yes};
+    % Grid lines
+    \draw[dashed, gray] (2.6,0) -- (2.6,4.0);
+    \draw[dashed, gray] (0,2.0) -- (5.3,2.0);
+    % Quadrants
+    \node[align=center, font=\small\bfseries] at (1.3,3.2) {Re-route};
+    \node[align=center, font=\footnotesize, text=black!60] at (1.3,2.7) {rebuild routing,\\keep models};
+    \node[align=center, font=\small\bfseries] at (4.0,3.2) {Plug-and-play};
+    \node[align=center, font=\footnotesize, text=black!60] at (4.0,2.7) {full design\\transfers};
+    % Lower region (merged)
+    \draw[fill=black!8] (0.1,0.1) rectangle (5.2,1.9);
+    \node[align=center, font=\small\bfseries] at (2.6,1.2) {Start over};
+    \node[align=center, font=\footnotesize, text=black!60] at (2.6,0.6) {routing question is moot\\when competence does not transfer};
+  \end{tikzpicture}
+  \caption{The transfer trichotomy.
+  Two binary questions---does the competence profile transfer, and does the routing policy transfer?---yield three named cases for reusing agent design results across task domains.
+  The lower region collapses because when competence does not transfer, the routing question is moot.}
+  \label{fig:transfer-trichotomy}
+\end{figure}
 
 % ==================== ACT IV: VALIDATION AND PRACTICE ====================
-\input{sections/act4_validation}
+%% ====================================================================
+%%  ACT IV: VALIDATION AND PRACTICE (~5pp)
+%% ====================================================================
+\section{Validation and Practice}
+\label{sec:validation}
+
+This section moves from theory to evidence.
+We report the decomposition's efficiency advantage over benchmark racing, pair the over-piloting finding with the Bernstein resolution, demonstrate the routing-triviality condition on a worked example, and state when the framework should \emph{not} be used.
+
+\subsection{Efficiency Advantage over Benchmark Racing}
+\label{sec:efficiency}
+
+% SOURCE: EXP5
+The decomposition-guided procedure selects agent designs at a fraction of the evaluation cost of benchmark racing.
+In a synthetic experiment with 5~models, 20~depth levels, and 100~total designs, the decomposition with 100~pilot instances and 50~confirmation instances per mode achieves mean regret~$0.026$---comparable to benchmark racing with 500~evaluations per design (mean regret~$0.029$)---while using $50\times$ fewer total evaluations ($1{,}000$ vs.\ $50{,}000$).
+
+The advantage is measured against benchmark racing at $k = 100$ designs, with break-even at $k \approx 30\text{--}50$.
+For small design menus, benchmark racing may be simpler and comparably effective.
+For large menus ($k > 50$), the decomposition's cost grows with the number of modes, not the number of designs, making it increasingly advantageous.
+
+\subsection{Over-Piloting and the Bernstein Resolution}
+\label{sec:over-piloting}
+
+% SM3: Over-piloting surprise marker
+% W7: Over-piloting + Bernstein = single constructive beat
+We expected that more pilot data would monotonically improve design selection---at worst, providing diminishing returns.
+We were wrong.
+The decomposition with 500~pilot instances and 200~confirmations achieves regret~$0.035$, which is \emph{worse} than the configuration with 100~pilots and 50~confirmations (regret~$0.026$).
+Beyond a threshold, additional pilot samples refine an already-accurate estimate while consuming budget that is better spent on direct evaluation.
+
+The Bernstein corollary (Corollary~\ref{cor:bernstein}) provides the resolution: it tells practitioners when their estimate is precise enough to stop.
+A conservative heuristic: allocate 20--30\% of total evaluation budget to pilot estimation, and use the Bernstein bound to validate this allocation post hoc.
+If the Bernstein-required sample size at the observed $\pmin$ is below the actual pilot size, stop piloting.
+
+\subsection{Proxy Validity}
+\label{sec:proxy-validity}
+
+% SOURCE_CLAIM: C58
+% W2: C58 in Act IV, not Act III
+The four-term decomposition operates on expected log certified time, which equals $-\log P_D$ (the negative log success probability) up to a Jensen gap.
+A practitioner may worry that this proxy objective selects the wrong design.
+
+\begin{theorem}[Proxy validity]
+\label{thm:proxy-validity}
+\begin{enumerate}[label=(\alph*)]
+  \item For fixed depth~$D$, the proxy $-\log P_D$ and the true objective $\E[\log T]$ rank models identically: $\argmin_M (-\log P_D(M)) = \argmin_M \E[\log T(M)]$.
+  \item For fixed model, the cost-adjusted proxy and true objectives have optimizers satisfying $\Dstar_{\mathrm{true}} \le \Dstar_{\mathrm{proxy}}$, with the difference exponentially small in~$\Dstar$.
+\end{enumerate}
+\end{theorem}
+
+% SM1: Proxy validity surprise marker
+We found this genuinely reassuring: the proxy selects the same design.
+The 16--28\% absolute gap observed in experiments is a cosmetic Jensen artifact of the form $(1-P_D)/2$, which does not affect which design is selected.
+The gap shrinks exponentially with depth and is irrelevant for design ranking.
+Full proof in \appref{app:proxy}.
+
+\subsection{Routing Triviality and Ricardian Comparative Advantage}
+\label{sec:routing-triviality}
+
+% SOURCE_CLAIM: C60
+Before investing in routing infrastructure, a builder should check whether routing adds value at all.
+
+\begin{proposition}[Routing-triviality condition]
+\label{prop:routing-triviality}
+\begin{enumerate}[label=(\alph*)]
+  \item \textbf{Sufficient condition for trivial routing.}
+  If for all modes~$s$ and all model pairs $M, M'$:
+  $|\log p(s, M) - \log p(s, M')| < |\log \kappa(M) - \log \kappa(M')|$,
+  then routing is trivial: the cheapest model wins on every mode.
+  \item \textbf{Necessary condition for non-trivial routing.}
+  Routing is non-trivial if and only if there exist modes $s_1, s_2$ and models $M_1, M_2$ such that $M_1$ is cost-adjusted-better on $s_1$ but $M_2$ is cost-adjusted-better on $s_2$: different models have different comparative advantages across modes.
+\end{enumerate}
+\end{proposition}
+
+\begin{remark}[Intermediate regime]
+\label{rem:intermediate-routing}
+Parts~(a) and~(b) of Proposition~\ref{prop:routing-triviality} precisely delimit when routing matters.
+In the intermediate regime where the sufficient condition narrowly fails, we observe numerically that a tighter heuristic bound characterizes routing value; a formal proof remains open.
+\end{remark}
+
+The necessary condition is an economic insight: non-trivial routing requires \emph{Ricardian comparative advantage}---different models must be \emph{relatively} better at different task types, not merely absolutely better.
+When one model dominates across all modes (the common case with large cost differentials), routing is provably worthless.
+
+\paragraph{Practical pre-check.}
+Compute $\Delta_{\mathrm{cost}} = \log(\kappa_{\max}/\kappa_{\min})$ and $\Delta_{\mathrm{comp}} = \max_{s,M,M'} |\log p(s,M) - \log p(s,M')|$.
+If $\Delta_{\mathrm{comp}} < \Delta_{\mathrm{cost}}$: routing is trivial, use the cheapest model.
+If $\Delta_{\mathrm{comp}} \ge \Delta_{\mathrm{cost}}$: routing may be non-trivial, proceed with full decomposition.
+This is a five-minute calculation that can save weeks of engineering.
+
+\textbf{Caveat:} The sufficient condition (part~a) has 62\% accuracy near the boundary where $\Delta_{\mathrm{comp}} \approx \Delta_{\mathrm{cost}}$.
+When the competence and cost spreads are within a factor of~2, we recommend the full mode-level check: compute $\rho(s,M) = -\log p(s,M) + \log\kappa(M)$ for all modes and verify whether a single model dominates everywhere.
+
+% W6: EXP8 for main-text four-term bar chart
+\paragraph{Worked example (from EXP8).}
+In the non-trivial routing scenario with 5~modes, the small model is cost-adjusted-best on modes~1--3 while the large model is cost-adjusted-best on modes~4--5.
+The competence spread $\Delta_{\mathrm{comp}} = 3.0$ exceeds the cost spread $\Delta_{\mathrm{cost}} = 1.1$, correctly predicting non-trivial routing.
+The information gain under the small model is $G = 0.50$~nats---substantial, because the routing policy can exploit the fact that different models have comparative advantage on different modes.
+
+\begin{figure}[t]
+  \centering
+  \begin{tabular}{lr}
+    \toprule
+    Term & Contribution (nats) \\
+    \midrule
+    Cost & -0.15 \\
+    Competence & 0.22 \\
+    Info Gain & 0.50 \\
+    Mismatch & 0.58 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Four-term decomposition for the Ricardian scenario (EXP8 data).
+  The dominant term is routing mismatch, not competence---indicating that the choice of routing policy matters more than the choice of model in this scenario.
+  This is the regime where the full decomposition provides diagnostic value beyond a simple cost comparison.}
+  \label{fig:four-term-bar}
+\end{figure}
+
+\subsection{Honest Scoping: When NOT to Use This Framework}
+\label{sec:scoping}
+
+A framework that does not say when it should not be used is not trustworthy.
+The four-term decomposition should not be used when:
+
+\begin{enumerate}
+  \item \textbf{Single-mode tasks} ($\Meff \approx 1$): the decomposition reduces trivially to a cost-competence comparison, and a simple A/B test suffices.
+  \item \textbf{No pilot data available}: mode discovery is impossible, and the framework is inapplicable.
+  \item \textbf{Rapidly shifting task distributions}: the static decomposition becomes stale before it can be exploited.
+  \item \textbf{Very small design menus} ($k \le 2$, no depth variation): the framework's overhead exceeds the benefit of a simple comparison.
+  \item \textbf{Cost-adjusted homogeneity} (Proposition~\ref{prop:routing-triviality}): when one model cost-dominates on all modes, the routing terms vanish and a cost comparison suffices.
+  This condition is formally proved and is checkable from pilot data.
+  \item \textbf{Very small $k$} ($k < 30$): the decomposition's efficiency advantage over benchmark racing has not yet materialized.
+\end{enumerate}
+
+The cost of running the full framework---approximately \$800 and 4~hours for a 5-model, 8-mode scenario---is justified only when the design menu is large enough ($k > 30\text{--}50$) that benchmark racing becomes prohibitively expensive.
+
+\subsection{Placeholder: Real-Benchmark Validation}
+\label{sec:real-benchmarks}
+
+% W9: MI1/MI2 placeholders
+To validate generalization beyond synthetic distributions, a natural next step is to apply the framework to established benchmarks.
+
+\paragraph{Formal verification (MI1).}
+We plan to instantiate the full pipeline on Lean/Mathlib theorem-proving tasks: define the task distribution, run a pilot study with two models, discover modes via trajectory clustering, estimate the four terms, compute the crossover, and validate the recommendation against a held-out test set.
+If the decomposition identifies the same dominant term as in the synthetic setting, this confirms that the geometric-trials assumption and packed-family structure hold on real tasks.
+
+\paragraph{Bayesian optimization baseline (MI2).}
+The 50$\times$ advantage is measured against benchmark racing.
+The comparison against Bayesian optimization, which can also exploit structure in the design space, is future work.
+A GP surrogate with Expected Improvement acquisition, categorical kernel for discrete model choice, and 50-evaluation budget would provide a meaningful baseline.
+
+\subsection{Scaling Advantage}
+\label{sec:scaling}
+
+% SOURCE: EXP9
+How does the decomposition's advantage grow with the design-menu size?
+Analytical predictions suggest the efficiency ratio scales as $k^{0.7\text{--}1.0}$, with break-even at $k \approx 30\text{--}50$.
+At $k = 10$, racing uses fewer evaluations ($500$ vs.\ $1{,}400$) and achieves comparable regret.
+At $k = 100$, the decomposition uses $2{,}000$ evaluations vs.\ racing's $5{,}000$, with the gap widening as $k$ grows.
+
+We conjecture that the efficiency advantage grows at least as $k^{0.7}$ in the design-menu size, based on analytical predictions that await Monte Carlo confirmation.
+If confirmed, this implies that the framework's value increases precisely in the regime where practitioners need it most: large design spaces with many model-routing combinations.
 
 % ==================== RELATED WORK ====================
-\input{sections/related_work}
+%% ====================================================================
+%%  SECTION 10 --- RELATED WORK (~2pp)
+%% ====================================================================
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Where does the time-centric viewpoint come from?}
+\citet{achille2025agents} establish that the mutual information between an agent's history and its decisions bounds expected speedup over random search.
+Their framework is model-independent: it characterizes a task's information structure without reference to which model processes it.
+The older lineage runs through Solomonoff induction, Levin search, and Kelly's~\citeyearpar{kelly1956new} result that mutual information quantifies the value of a noisy side channel for log-optimal betting~\citep{cover2006elements}---the idea that prior weight and reusable structure trade against search time.
+We inherit the time-centric transductive view almost entirely.
+Our contribution relative to Achille--Soatto is narrow and operational: they diagnose how much structure a task contains; we tell a builder which system to build to exploit that structure.
+The moment one asks ``which model should I use?'', one needs per-step cost and within-mode competence---terms their framework does not contain.
+
+\paragraph{How do compound AI systems handle routing today?}
+The compound AI systems movement~\citep{zaharia2024compound,wen2025compound} recognizes that production systems combine multiple models, tools, and orchestration layers.
+Within this space, a growing literature learns routing policies end-to-end: RouteLLM trains a classifier to select between models using preference data~\citep{ong2024routellm}; FrugalGPT cascades from cheap to expensive models~\citep{chen2023frugalgpt}; xRouter uses reinforcement learning for cost-aware orchestration~\citep{xrouter2024}; and OmniRouter applies Lagrangian decomposition to the routing \emph{assignment} problem~\citep{omnirouter2025}.
+Cost-aware contrastive routing~\citep{cscr2025} and multi-agent routing~\citep{masrouter2025} extend these ideas to richer settings.
+
+OmniRouter is the closest point of contact with our Lagrangian non-connection: it applies Lagrangian decomposition to the routing \emph{assignment} sub-problem, but decomposes the routing sub-problem, not the performance-gap identity.
+None of these works provides a diagnostic decomposition of \emph{why} one design beats another.
+They solve the routing problem algorithmically; we decompose the objective analytically.
+The approaches are complementary: our decomposition identifies which lever matters, and their learning algorithms pull it.
+The routing-triviality result (Section~\ref{sec:routing-triviality}) provides a pre-screen these methods lack: check whether routing adds value before investing in learning a router.
+The gap is methodological---the routing literature treats model selection as a learning problem; this paper treats it as a measurement problem.
+
+\paragraph{What do test-time compute scaling results tell us?}
+A parallel literature demonstrates that smaller models with more inference-time compute can match or outperform larger models.
+\citet{snell2025testtime} show that optimally allocating test-time compute can be more effective than scaling model parameters.
+\citet{wu2025inference} derive empirical inference scaling laws.
+\citet{brown2024monkeys}---in work titled \emph{Large Language Monkeys}---provide direct empirical support for the geometric-trials assumption underlying our graph-depth model: repeated independent sampling with verification produces pass rates well-described by $1-(1-p)^D$.
+The $4/\delta$ bound~\citep{fourdelta2024} and OSCA~\citep{osca2024} extend this to sample-efficient allocation strategies.
+
+These papers establish the empirical phenomenon that drives our depth-cost tradeoff.
+None provides a closed-form characterization of optimal depth $\Dstar(M)$ or proves that optimal depth decreases monotonically with model competence.
+Their approach is empirical compute-optimal allocation; ours is analytical.
+
+\paragraph{What can the algorithm-selection literature contribute?}
+The question ``how should one allocate limited compute across competing strategies?'' has a long OR history.
+Weitzman's Pandora's Box~\citep{kaufmann2016bestarm} gives optimal stopping rules for inspecting alternatives with known reward distributions---structurally close to our routing problem, but static: there is no learning-from-verification feedback.
+Algorithm portfolios and per-instance selection~\citep{multiagentdesign2025,qiao2025scaling} allocate resources across solvers, and racing methods~\citep{kaufmann2016bestarm} sequentially eliminate inferior candidates.
+We bring these ideas into the language of modern agent systems, where the ``strategies'' are models with different cost-competence profiles and the ``budget'' is a deployment compute ceiling.
+The classical results assume known reward distributions.
+We add a sample-complexity layer they do not address, and the Bernstein corollary makes that layer practically feasible.
+
+\paragraph{How do scaling laws and benchmarks relate?}
+The scaling-law literature~\citep{kaplan2020scaling,hoffmann2022chinchilla} provides the cost-capability relationship that our graph-depth model takes as input: model cost and competence as functions of scale.
+On the evaluation side, benchmark critiques~\citep{linegoes2025} document how aggregate metrics conflate distinct performance factors---precisely the conflation our decomposition resolves.
+Lessons from LLM routing~\citep{chen2025optimizing} highlight that model selection depends on task distribution in ways that benchmark averages cannot capture.
+
+Scaling laws characterize individual models.
+They do not characterize systems.
+The gap between ``how does a model scale?'' and ``how does an agent system scale?'' is the gap this paper addresses.
+
+\paragraph{What does transfer learning theory say about reusing agent designs?}
+Domain adaptation~\citep{bendavid2010theory} provides the gold-standard formalism for bounding target-domain risk in terms of source-domain risk plus a divergence penalty.
+Transferability estimation using Bhattacharyya class separability~\citep{pandy2022gbc} brings these ideas to practical image-classification pipelines.
+Our transfer trichotomy (Section~\ref{sec:transfer}) operates on different mathematical objects---design tuples and routing policies rather than hypothesis classes and feature representations---but the conceptual structure is parallel: two domains are close when their task-relevant structure is close.
+The qualitative framework we present does not compete with the formal bounds of \citet{bendavid2010theory}; it addresses a different question (when does an \emph{agent system design} transfer?) that their theory does not cover.
+
+\paragraph{Broader context.}
+Agent design as a budgeted optimization problem has roots in stochastic programming, team decision theory~\citep{multiagentfinance2026}, and the Dantzig--Wolfe decomposition tradition~\citep{dantzigwolfe1960,fisher2004lagrangian}---though as Section~\ref{sec:lagrangian} shows, the analogy to Lagrangian dual decomposition is precisely wrong for our four-term identity.
 
 % ==================== DISCUSSION ====================
-\input{sections/discussion}
+%% ====================================================================
+%%  SECTION 11 --- DISCUSSION AND CONCLUSION (~1.5pp)
+%% ====================================================================
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{What We Learned}
+
+The four-term decomposition turns out to be useful not because it is an optimization algorithm---it is not---but because it converts the builder's vague question (``why is my system slow?'') into four specific diagnostics with different remedies.
+The crossover theorem converts ``which model should I use?'' into arithmetic.
+Perhaps most importantly, the Lagrangian non-connection pre-empts the most tempting misinterpretation and correctly positions the decomposition as performance accounting rather than dual decomposition.
+
+\subsection{Limitations}
+
+\paragraph{1. Synthetic-only validation.}
+All nine experiments use geometric-trials Monte Carlo.
+No real-benchmark validation has been performed.
+The packed-family assumption may not hold in practice; the geometric-trials model is a first approximation.
+This is the single largest weakness.
+
+\paragraph{2. Packed-family assumption.}
+The four-term decomposition is exact only under packed families.
+Outside this regime, the approximation guarantee $O(\delta \log \Mn + \eta)$ applies, but $\eta$ is uncharacterized on real data.
+The paper does not claim generality beyond this assumption.
+
+\paragraph{3. Independent-attempts model.}
+The graph-depth model assumes $D$ independent sequential attempts.
+Real orchestration has inter-step dependence.
+Independence is conservative (a lower bound on the benefit of depth), but the prediction gap under dependence is uncharacterized.
+
+\paragraph{4. Transfer theory is incomplete.}
+The three transfer regimes (Section~\ref{sec:transfer}) are a qualitative framework, not formal theorems.
+Constructive examples demonstrating independence of the two equivalence notions, and quantitative transfer bounds with named thresholds, remain future work.
+
+\paragraph{5. Missing BO baseline.}
+The evaluation efficiency comparison is two-way (decomposition vs.\ racing), not three-way.
+A Bayesian optimization baseline would strengthen the efficiency claim and is planned for a future version.
+
+\paragraph{6. MC discrepancies.}
+Three specific deviations from theoretical predictions are documented in Section~\ref{sec:validation}: the Bernstein improvement ratio (4.5x empirical vs.\ 3.3x formula at $p = 0.05$), the Bernstein--Hoeffding crossover ($p \approx 0.23$ vs.\ predicted $0.17$), and the routing-triviality sufficient condition (62\% accuracy near boundary).
+None threatens the paper's claims, but all constrain the precision of practical guidance.
+
+\subsection{Open Questions}
+
+\begin{enumerate}
+\item \textbf{Optimal pilot-to-confirmation budget split.}
+The over-piloting penalty is real but theoretically unexplained.
+What is the bias-variance tradeoff governing this split?
+We suspect the penalty arises from estimation noise in the competence term~$\varphi$ propagating through the design ranking, but a formal analysis would require characterizing the sensitivity of the argmax to estimation error in each of the four terms.
+
+\item \textbf{Tighter sample complexity bounds.}
+The gap between Bernstein's $\pmin^{-1}$ and the empirical $\pmin^{-1.35}$ suggests room for a distribution-dependent analysis.
+
+\item \textbf{Non-geometric distributions.}
+How does the decomposition degrade when certified time is not geometric?
+The packed-family assumption with geometric trials is a first approximation; the right generalization is open.
+
+\item \textbf{Inter-step dependence.}
+Can the graph-depth characterization be extended to Markovian or conditionally independent attempts?
+
+\item \textbf{Real-benchmark validation.}
+Applying the framework to SWE-bench and Lean/Mathlib tasks, with real pilot data and real model APIs, is the most important next step for establishing practical credibility.
+\end{enumerate}
+
+\subsection{Conjectures}
+
+Two conjectures, each clearly marked as such:
+
+\begin{enumerate}
+\item \emph{We conjecture that the evaluation efficiency advantage scales as $\Theta(k^{0.7})$ with design-space size, based on EXP9 analytical predictions.
+Monte Carlo confirmation is pending.}
+
+\item \emph{We conjecture that the optimal pilot budget fraction is monotonically decreasing in the design-menu size~$k$ and increasing in the difficulty of the hardest mode, but a formal characterization remains open.}
+\end{enumerate}
+
+\subsection{Conclusion}
+
+What we did not expect at the outset was how much of the paper's value would come from negative and scoping results.
+The Lagrangian non-connection closes a door that would otherwise waste the field's time.
+The routing-triviality condition saves practitioners from building infrastructure that provably adds nothing.
+The over-piloting finding contradicts the natural assumption that more data always helps.
+These three results are less quotable than the crossover formula, but they may prove more useful: knowing what not to do is often worth more than a formula for what to do.
+
+The framework's main open problem is empirical validation.
+All nine experiments operate within the geometric-trials model that the theory assumes, so the experiments confirm internal consistency, not external validity.
+Applying the decomposition to real agent pipelines---code generation against test suites, theorem proving against proof assistants---is the essential next step.
+If the packed-family structure holds on real tasks, the four-term decomposition becomes a practical diagnostic.
+If it does not, the bounded-residual guarantee tells us how far off the accounting will be.
 
 % ==================== ACKNOWLEDGEMENTS ====================
-\input{sections/conclusion}
+%% ====================================================================
+%%  ACKNOWLEDGEMENTS
+%% ====================================================================
+\section*{Acknowledgements}
+
+We partially used PoggioAI/MSc for this manuscript~\citep{PoggioAIMSc_2026}.
+We thank the Center for Brains, Minds, and Machines (CBMM) for support.
 
 % ==================== APPENDIX ====================
-\input{sections/appendix_proofs}
-\input{sections/appendix_experiments}
-\input{sections/appendix_practitioner}
+%% ====================================================================
+%%  APPENDIX A: FULL PROOFS
+%% ====================================================================
+\appendix
+\section{Full Proofs}
+\label{app:proofs}
+
+\subsection{Graph-Depth Model (Theorem~\ref{thm:optimal-depth})}
+\label{app:graph-depth}
+
+\begin{proof}
+\noindent\textbf{Setup.}
+The builder's sub-problem for model~$M$ is
+$\min_{D \ge 1} L(M,D) + \mu \cdot D \cdot \kappa(M)$,
+where $L(M,D) = \sum_s \pi_s (-\log(1 - r_s^D))$ and $\mu > 0$ is the shadow price of the cost budget.
+
+\noindent\textbf{Part (a): First-order condition.}
+Differentiating $L$ with respect to~$D$:
+\[
+  \frac{\partial L}{\partial D}
+  = \sum_s \pi_s \cdot \frac{-r_s^D \log r_s}{1 - r_s^D}
+  = -F(D; M).
+\]
+The FOC $\partial L/\partial D + \mu \kappa = 0$ gives $F(\Dstar; M) = \mu \cdot \kappa(M)$.
+
+\noindent\textbf{Part (b): Uniqueness.}
+Define $f_s(D) = r_s^D (-\log r_s) / (1 - r_s^D)$.
+Using the quotient rule with $u = r_s^D$, $v = -\log r_s$ (constant in~$D$), $w = 1 - r_s^D$:
+\[
+  \frac{df_s}{dD} = \frac{(-\log r_s) \cdot r_s^D \log r_s}{(1-r_s^D)^2}
+  = \frac{-r_s^D (\log r_s)^2}{(1-r_s^D)^2} < 0.
+\]
+Since each $f_s$ is strictly decreasing, so is $F = \sum_s \pi_s f_s$.
+As $D \to \infty$, $F \to 0$; as $D \to 0^+$, $F \to \infty$.
+For any $\mu \kappa > 0$, the equation $F(\Dstar) = \mu \kappa$ has a unique solution.
+
+\noindent\textbf{Part (c): Monotonicity in competence.}
+Apply the implicit function theorem to $\Phi(\Dstar, t_0) = F(\Dstar; M) - \mu\kappa = 0$.
+We have $\partial \Phi / \partial D = dF/dD < 0$ (from part~b).
+
+We need $\partial F / \partial t_0$.
+Under monotone competence, $p_s$ increases in~$t_0$ and $r_s = 1-p_s$ decreases.
+Define $g(r) = r^D(-\log r)/(1-r^D)$.
+Then:
+\[
+  \frac{dg}{dr} = \frac{r^{D-1}[D(-\log r) - 1 + r^D]}{(1-r^D)^2}.
+\]
+Define $h(r) = -D\log r - 1 + r^D$.
+Then $h(1) = 0$ and $h'(r) = -D/r + Dr^{D-1} = D(r^D - 1)/r < 0$ for $r \in (0,1)$.
+Since $h$ is decreasing with $h(1) = 0$, we have $h(r) > 0$ for all $r \in (0,1)$, giving $dg/dr > 0$.
+
+By the IFT:
+$d\Dstar/dp_s = -(\partial F/\partial p_s) / (\partial F/\partial D) < 0$.
+Under monotone competence ($dp_s/dt_0 > 0$):
+$d\Dstar/dt_0 = \sum_s (d\Dstar/dp_s)(dp_s/dt_0) < 0$.
+
+\noindent\textbf{Part (d): Monotonicity in cost ratio.}
+From $F(\Dstar) = \mu\kappa$: differentiating gives $(dF/dD)(d\Dstar/d\kappa) = \mu$.
+Since $dF/dD < 0$: $d\Dstar/d\kappa < 0$.
+Thus $\Dstar$ is decreasing in~$\kappa(M)$, hence increasing in $\kappabig/\kappa(M)$.
+\end{proof}
+
+\subsection{Crossover Theorem (Theorem~\ref{thm:crossover})}
+\label{app:crossover}
+
+\begin{proof}
+\noindent\textbf{Part (a): Existence.}
+$L(M_s, D)$ is continuous and strictly decreasing in~$D$, with $L(M_s, D) \to 0$ as $D \to \infty$.
+Since $L(M_l, 1) > 0$, by the intermediate value theorem there exists $\Dcross$ with $L(M_s, \Dcross) = L(M_l, 1)$.
+Uniqueness follows from strict monotonicity.
+
+\noindent\textbf{Part (b): Single mode.}
+With $\Mn = 1$, $\pi_1 = 1$:
+$-\log(1 - r_s^D) = -\log p_l$ gives $r_s^D = r_l$, so $\Dcross = \log r_l / \log r_s$.
+
+\noindent\textbf{Part (c): Multi-mode.}
+The LHS of $\sum_s \pi_s(-\log(1-r_s(M_s)^D)) = \sum_s \pi_s(-\log p(s,M_l))$ is strictly decreasing in~$D$, approaching $0$ as $D \to \infty$.
+At $D = 1$: the LHS term for mode~$s$ is $-\log(1 - r_s^1) = -\log(1-(1-p_s)) = -\log p_s > -\log p_l$ (the RHS term), since $p_s < p_l$.
+By the IVT, a unique solution exists.
+
+\noindent\textbf{Part (d): Hardest-mode approximation.}
+For hard tasks, $-\log(1-r_s^D) \approx r_s^D/(1-r_s^D)$, dominated by the mode~$s^*$ with largest~$r_s$.
+The sum reduces approximately to the single-mode equation for $s^*$, giving $\Dcross \approx \max_s \log r_l(s)/\log r_s(s)$.
+The approximation is an overestimate with mean ratio $1.8\times$ in numerical experiments.
+
+\noindent\textbf{Part (e): Cost-adjusted dominance.}
+For the small model to dominate with $\Dcross$ attempts vs.\ the large model with 1~attempt at cost~$\kappa_l$, we need $\Dcross \cdot \kappa_s \le \kappa_l$, i.e., $\Dcross \le R$.
+\end{proof}
+
+\subsection{Sample Complexity (Proposition~\ref{prop:sample-complexity})}
+\label{app:sample-complexity}
+
+\begin{proof}
+\noindent\textbf{Step 1: Per-mode concentration.}
+By Hoeffding's inequality, $\Prb(|\hat{p}_s - p_s| > \epsilon) \le 2\exp(-2n_s\epsilon^2)$.
+Setting the RHS to $\dconf/\Mn$ and applying a union bound: with probability $\ge 1-\dconf$, simultaneously $|\hat{p}_s - p_s| \le \epsilon$ for all~$s$.
+
+\noindent\textbf{Step 2: Lipschitz propagation.}
+The competence term involves $\log p_s$ with derivative $1/p_s$, so its Lipschitz constant is $1/\pmin$.
+For the information-gain term $G = \sum_s \pi_s \log(p_s / \bar{p})$ where $\bar{p} = \sum_s \pi_s p_s$: differentiating with respect to $p_s$ gives $\partial G / \partial p_s = \pi_s(1/p_s - 1/\bar{p})$.
+Since $p_s \ge \pmin$ and $\bar{p} \le 1$: $|\partial G / \partial p_s| \le \pi_s / \pmin$.
+Summing over modes: $\|\nabla_p G\|_1 = \sum_s |\partial G / \partial p_s| \le 1/\pmin$.
+The routing mismatch $\mismatch = \sum_s \pi_s \log(q_s^*/q_s)$ has an analogous bound via the chain rule through $q_s^* = \pi_s p_s / \bar{p}$.
+To achieve $\dacc$-accuracy in each term: set $\epsilon/\pmin = \dacc$, giving $\epsilon = \dacc\pmin$.
+
+\noindent\textbf{Step 3: Combine.}
+$n_0 = \log(2\Mn/\dconf) / (2\dacc^2\pmin^2)$.
+Total: $N = \Mn \cdot n_0 = O(\Mn\log(\Mn/\dconf)/(\dacc^2\pmin^2))$.
+\end{proof}
+
+\subsection{Bernstein Corollary (Corollary~\ref{cor:bernstein})}
+\label{app:bernstein}
+
+\begin{proof}
+Replace Hoeffding with Bernstein's inequality for Bernoulli random variables:
+$\Prb(|\hat{p} - p| \ge \epsilon) \le 2\exp(-n\epsilon^2 / (2\sigma^2 + \frac{2}{3}\epsilon))$
+where $\sigma^2 = p(1-p) \le p$ for $p \le 1/2$.
+
+Setting $\epsilon = \dacc\pmin$ (from the Lipschitz step, unchanged):
+\begin{align}
+  n_0^{\mathrm{Bern}} &\ge \frac{(2\pmin + \frac{2}{3}\dacc\pmin)\log(2/\delta_s)}{(\dacc\pmin)^2}
+  = \frac{(2 + \frac{2}{3}\dacc)\log(2/\delta_s)}{\dacc^2\pmin}.
+\end{align}
+For $\dacc \le 1$: the constant is at most $8/3 < 3$.
+With $\delta_s = \dconf/\Mn$:
+$n_0^{\mathrm{Bern}} = 3\log(2\Mn/\dconf)/(\dacc^2\pmin)$.
+
+The improvement factor over Hoeffding is $n_0^{\mathrm{Hoeff}}/n_0^{\mathrm{Bern}} = 1/(6\pmin)$.
+Bernstein dominates when $\pmin < 1/6 \approx 0.17$.
+\end{proof}
+
+\subsection{Lagrangian Non-Connection (Proposition~\ref{prop:lagrangian})}
+\label{app:lagrangian}
+
+\begin{proof}
+\noindent\textbf{Step 1: KKT conditions for the $2 \times 2$ case.}
+Fix model~$M$.
+The Lagrangian for the routing sub-problem is:
+$\mathcal{L}(q,\lambda,\nu) = \sum_s \pi_s(-\log q_s) + \lambda(\kappa(M)-B) + \nu(\sum_s q_s - 1)$.
+KKT: $-\pi_s/q_s + \nu = 0$, giving $q_s^* = \pi_s/\nu$.
+The simplex constraint gives $\nu = 1$, so $q_s^* = \pi_s$---the posterior-matched allocation.
+The optimal objective is $\Hent(\pi)$, independent of~$M$.
+
+\noindent\textbf{Step 2: The shadow price.}
+There is one constraint (cost~$\le B$), hence one multiplier~$\lambda^*$.
+If $\kappa(M) < B$: $\lambda^* = 0$.
+If $\kappa(M) = B$: $\lambda^* \ge 0$, a single scalar.
+
+\noindent\textbf{Step 3: Comparison.}
+The four-term identity $\Delta = \log(\kappa_0/\kappa) + \varphi + G - \mismatch$ holds at every $(M,q)$---a pointwise algebraic identity.
+The KKT conditions hold only at $(M^*,q^*)$---first-order optimality conditions.
+For the four terms to be shadow prices, the problem would need four constraints whose sensitivities equal these quantities.
+Standard operational constraints (cost, latency, memory) are aggregates that do not encode mode-level information structure.
+Relaxing the cost budget changes the optimal model, affecting $\kappa$, $\varphi$, and $G$ simultaneously---not one term in isolation.
+
+\noindent\textbf{Structural obstruction.}
+Shadow prices measure $-\partial V^*/\partial b_k$ (sensitivity of the optimum to constraint relaxation).
+The four terms are $\Delta_j(M^*,q^*)$ (components of the objective at the optimum).
+These coincide only when relaxing constraint~$k$ shifts the optimum in a direction that changes exactly one term while leaving the others fixed---a generically false condition for operational constraints.
+\end{proof}
+
+\subsection{Proxy Validity (Theorem~\ref{thm:proxy-validity})}
+\label{app:proxy}
+
+\begin{proof}
+\noindent\textbf{Distribution.}
+The minimum of $D$ independent Geometric($p$) variables is Geometric($P_D$) where $P_D = 1-(1-p)^D$.
+Thus $\E[T] = 1/P_D$ and $-\log P_D = \log \E[T]$.
+
+\noindent\textbf{Jensen gap.}
+By Jensen's inequality on the concave function $\log$:
+$\E[\log T] \le \log \E[T] = -\log P_D$.
+The gap $\Delta(p,D) = -\log P_D - \E[\log T] \approx (1-p)^D/2$ (second-order approximation using $\Var(T)/2\mu^2$ for geometric~$T$).
+
+\noindent\textbf{Part (a): Fixed~$D$.}
+$P_D = 1-(1-p)^D$ is strictly increasing in~$p$.
+Thus $-\log P_D$ is strictly decreasing in~$p$.
+By stochastic dominance, $\E[\log T]$ is also strictly decreasing in~$p$.
+Rankings are identical.
+
+\noindent\textbf{Part (b): Fixed model, varying~$D$.}
+The true FOC is $\kappa = -\frac{d}{dD}(-\log P_D) + \frac{d}{dD}\Delta$.
+Explicitly: $d\Delta/dD = -(1-p)^D \log(1-p)/2 < 0$ since $\log(1-p) < 0$ for $p \in (0,1)$.
+Thus the true FOC's RHS is smaller than the proxy FOC's, satisfied at a smaller~$D$:
+$\Dstar_{\mathrm{true}} \le \Dstar_{\mathrm{proxy}}$.
+The difference is bounded by $|\Delta'|/|J''| = O((1-p)^{\Dstar})$, exponentially small.
+\end{proof}
+
+\subsection{Routing Triviality (Proposition~\ref{prop:routing-triviality})}
+\label{app:routing}
+
+\begin{proof}
+Define cost-adjusted performance $\rho(s,M) = -\log p(s,M) + \log\kappa(M)$.
+
+\noindent\textbf{Part (a): Sufficient condition.}
+Let $M_c$ be the cheapest model.
+For any $M'$ and any mode~$s$:
+$\rho(s,M') - \rho(s,M_c) = (\log p(s,M_c) - \log p(s,M')) + (\log\kappa(M') - \log\kappa(M_c))$.
+By the condition, $|\log p(s,M_c) - \log p(s,M')| < |\log\kappa(M') - \log\kappa(M_c)| = \log\kappa(M') - \log\kappa(M_c)$.
+Thus $\rho(s,M') - \rho(s,M_c) > 0$ for all~$s$: $M_c$ wins everywhere.
+
+\noindent\textbf{Part (c): Necessary condition.}
+If routing is non-trivial, there exist $s_1, s_2$ and $M_1, M_2$ with $\rho(s_1,M_1) < \rho(s_1,M_2)$ and $\rho(s_2,M_1) > \rho(s_2,M_2)$.
+This is a crossing in cost-adjusted log-competence---Ricardian comparative advantage.
+Conversely, if no crossing exists, one model has the lowest $\rho$ on every mode, and routing is trivial.
+\end{proof}
+%% ====================================================================
+%%  APPENDIX B: ADDITIONAL EXPERIMENTS
+%% ====================================================================
+\section{Additional Experiments}
+\label{app:experiments}
+
+All experiments use synthetic Monte Carlo simulation under the geometric-trials model.
+This validates the theory's internal consistency; confirming that the geometric-trials assumption holds on real benchmarks is future work and a prerequisite for deployment-facing claims.
+
+\subsection{EXP1: Graph-Depth Model Validation}
+
+We generate 50 random packed-family scenarios with $\Mn \in \{3, 5, 7\}$ modes and compare the FOC-derived $\Dstar$ against brute-force grid search over $D \in [1, 10]$.
+The maximum absolute error in~$\Dstar$ is~$0.0012$; the maximum relative error in objective value is $8.4 \times 10^{-8}$.
+All FOC solutions fall within 0.5 of the brute-force optimum.
+Monotonicity predictions ($d\Dstar/dt_0 < 0$ and $d\Dstar/d(\kappabig/\kappa) > 0$) are confirmed with zero violations across 1{,}000 parameter combinations.
+
+\subsection{EXP2: Crossover Verification}
+
+Single-mode crossover (100~pairs): mean absolute error~$0.0008$, max~$0.004$.
+Multi-mode hardest-mode approximation (50~scenarios): always an upper bound; mean ratio to true crossover~$1.80$, within factor~$2$ in 68\% of cases.
+Cost-adjusted dominance prediction (200~scenarios): 99\% accuracy, with 2~mismatches occurring at the boundary where $\Dcross \approx R$.
+
+\subsection{EXP3: Four-Term Identity Verification}
+
+The four-term identity is verified to machine precision ($\sim 10^{-15}$) across 200 random scenarios.
+The information gain~$G$ is non-negative in all cases and equals zero when the mode distribution is homogeneous.
+Dominance attribution (which term is largest) is correct in all 3 diagnostic scenarios: competence-dominated, cost-dominated, and cost-offset.
+
+\subsection{EXP4: Sample Complexity Validation}
+
+The Hoeffding bound (Proposition~\ref{prop:sample-complexity}) provides valid coverage: at the theoretical sample size, all four terms are estimated within~$\dacc$ with probability~$\ge 1 - \dconf$ across 500~Monte Carlo trials.
+The bound is conservative by a factor of~$\sim 29$ at $\pmin = 0.05$: the empirical required sample size is approximately~$89$ per mode, versus the theoretical bound of $\sim 2{,}591$.
+
+The $\pmin$ scaling exponent: theory predicts $\pmin^{-2}$ (Hoeffding) or $\pmin^{-1}$ (Bernstein); empirical scaling is $\pmin^{-1.35}$.
+The gap arises from Lipschitz looseness (worst-case $1/\pmin$ vs.\ average over modes) and union-bound looseness.
+Tightening this gap is an open analytical question.
+
+\subsection{EXP6: Proxy Validity Details}
+
+Across 6 parameter combinations $(p, D)$, the proxy $-\log P_D$ overestimates $\E[\log T]$ by 8--44\%, with the gap decreasing as $p$ or $D$ increases, consistent with the Jensen-gap formula $(1-p)^D/2$.
+Model rankings are exactly preserved in all configurations.
+Depth optimization: the proxy recommends $\Dstar_{\mathrm{proxy}} \ge \Dstar_{\mathrm{true}}$ in all cases, with the difference at most~1 for $p \ge 0.1$ and $D \ge 3$.
+
+\subsection{EXP7: Bernstein vs.\ Hoeffding}
+
+\begin{table}[h]
+\centering
+\caption{Bernstein vs.\ Hoeffding sample complexity comparison.}
+\label{tab:bernstein}
+\begin{tabular}{rrrr}
+\toprule
+$\pmin$ & Hoeffding $n_0$ & Bernstein $n_0$ & Improvement \\
+\midrule
+0.50 & 589 & 1{,}059 & $0.6\times$ \\
+0.20 & 3{,}678 & 2{,}648 & $1.4\times$ \\
+0.10 & 14{,}710 & 5{,}295 & $2.8\times$ \\
+0.05 & 11{,}775 & 2{,}591 & $4.5\times$ \\
+0.02 & 73{,}588 & 6{,}476 & $11.4\times$ \\
+0.01 & 294{,}351 & 12{,}952 & $22.7\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The crossover where Bernstein dominates Hoeffding occurs at $\pmin \approx 0.17$ (theoretical prediction) to $\pmin \approx 0.23$ (empirical).
+The remaining gap between Bernstein bounds and empirical requirements is $\sim 29\times$ at $\pmin = 0.05$, arising from the same Lipschitz and union-bound looseness noted in EXP4.
+
+\subsection{EXP8: Routing Triviality}
+
+The sufficient condition (Part~a) correctly predicts routing triviality in 62\% of cases where it fires.
+The 38\% false-positive rate occurs near the boundary; for scenarios with $\Delta_{\mathrm{comp}}/\Delta_{\mathrm{cost}} < 0.5$, the accuracy rises to $\sim$100\%.
+The necessary condition (Part~c) is consistent in 100\% of 500~tests.
+The quantitative bound (Part~b) has zero violations and mean ratio $G/(\gamma \cdot \Hent(S)) = 0.10$.
+
+In the non-trivial scenario (EXP8 Test~6), models are assigned to different mode subsets (modes~1--3 to the small model, modes~4--5 to the large), with $\Delta_{\mathrm{comp}} = 3.0 > 1.1 = \Delta_{\mathrm{cost}}$ and $G = 0.50$~nats.
+
+\subsection{EXP9: Scaling Advantage}
+
+The decomposition's evaluation efficiency improves with design-menu size~$k$:
+at $k = 10$, racing uses fewer evaluations;
+at $k = 30$, the methods are comparable;
+at $k \ge 50$, the decomposition dominates.
+The efficiency ratio (racing evaluations / decomposition evaluations) grows approximately as $k^{0.7\text{--}1.0}$.
+The break-even at $k \approx 30\text{--}50$ is robust across parameter settings.
+%% ====================================================================
+%%  APPENDIX C: PRACTITIONER GUIDE
+%% ====================================================================
+\section{Practitioner Guide}
+\label{app:practitioner}
+
+This appendix distills the paper's results into actionable guidance.
+
+\subsection{Decision Flowchart}
+
+\begin{figure}[h]
+\centering
+\fbox{\parbox{0.85\textwidth}{\centering\vspace{0.5cm}
+\textbf{Framework at a Glance}\\[10pt]
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{Check applicability.}
+  Is the task externally verifiable? Are there $\ge 3$ modes? Is pilot data obtainable? Is $k > 30$?
+  If any answer is ``no,'' consider a simpler approach (A/B testing or benchmark racing).
+
+  \item \textbf{Run pilot study.}
+  Collect $\sim$100 instances per mode (moderate tasks) or $\sim$1{,}500 per mode (hard tasks, $\pmin < 0.1$).
+  Use the Bernstein bound to check if piloting is sufficient; if so, stop.
+
+  \item \textbf{Check routing triviality.}
+  Compute $\Delta_{\mathrm{cost}}$ and $\Delta_{\mathrm{comp}}$.
+  If $\Delta_{\mathrm{comp}} < \Delta_{\mathrm{cost}}$: use the cheapest model. Done.
+
+  \item \textbf{Estimate the four terms.}
+  From pilot data, compute cost, competence, information gain, and routing mismatch for each design in the menu.
+
+  \item \textbf{Compute the crossover.}
+  For each model pair, compute $\Dcross$ and compare with the cost ratio~$R$.
+  If $\Dcross \le R$: the cheaper model with retries dominates.
+
+  \item \textbf{Select design.}
+  Pick the design with the best four-term score.
+  The dominant term tells you \emph{why}---and what to improve next.
+
+  \item \textbf{Validate.}
+  Run the selected design on a held-out test set to confirm performance.
+\end{enumerate}
+\vspace{0.5cm}}}
+\caption{Decision flowchart for applying the four-term decomposition to agent design.}
+\label{fig:flowchart}
+\end{figure}
+
+\subsection{Pilot-Sizing Table}
+
+\begin{table}[h]
+\centering
+\caption{Recommended pilot sizes per mode.}
+\label{tab:pilot-sizing}
+\begin{tabular}{llrr}
+\toprule
+Difficulty & $\pmin$ range & Hoeffding $n_0$ & Bernstein $n_0$ \\
+\midrule
+Easy & $> 0.5$ & 25--50 & (use Hoeffding) \\
+Moderate & $0.1$--$0.5$ & 100--750 & 100--500 \\
+Hard & $0.05$--$0.1$ & 3{,}000--12{,}000 & 1{,}000--3{,}500 \\
+Very hard & $< 0.05$ & $> 12{,}000$ & 3{,}500--13{,}000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The practical pilot sizes are $\sim$25--100$\times$ smaller than the theoretical bounds.
+We recommend using the empirical guidelines (``25/mode easy, 100/mode moderate, 1{,}500/mode hard'') and validating with the Bernstein bound post hoc.
+
+\subsection{When to Use and When Not To}
+
+\begin{table}[h]
+\centering
+\caption{Applicability checklist.}
+\label{tab:applicability}
+\begin{tabular}{lll}
+\toprule
+Condition & Recommendation & Reason \\
+\midrule
+$\Meff \approx 1$ & A/B test & Decomposition is trivially cost + competence \\
+No pilot data & Benchmark racing & Framework requires mode estimates \\
+$k \le 30$ & Benchmark racing & Overhead not justified \\
+$\Delta_{\mathrm{comp}} < \Delta_{\mathrm{cost}}$ & Cheapest model & Routing is provably trivial \\
+Shifting distribution & Caution & Static decomposition may be stale \\
+$\Meff > 3$, $k > 50$ & Full framework & Maximum value regime \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Framework Overhead Estimate}
+
+For a typical scenario with 5~models, 8~modes, and 100~instances per mode:
+\begin{itemize}[nosep]
+  \item Pilot cost: $5 \times 8 \times 100 = 4{,}000$ API calls.
+  \item At \$0.20/call average: $\sim$\$800.
+  \item Wall-clock time (parallelized): $\sim$4 hours.
+  \item Decomposition computation: $< 1$ minute.
+  \item Total: $\sim$\$800, $\sim$4 hours.
+\end{itemize}
+
+This is justified when benchmark racing over the full $k$-design menu would cost $k \times 8 \times 100 = 80{,}000$ calls ($\sim$\$16{,}000) at $k = 100$.
 
 % ==================== BIBLIOGRAPHY ====================
 \bibliographystyle{plainnat}
