@@ -205,13 +205,12 @@ The older broad theory can appear only as:
 
 \paragraph{New paper thesis.}
 A good thesis sentence is:
-\[
-    \textit{
-    Given a verifier-backed task family and a finite menu of models, retry depths,
-    fallback rules, and routers, we estimate deployment loss, routing opportunity,
-    learned-router regret, and selection regret from reusable mode-conditioned pilots.
-    }
-\]
+\begin{quote}
+\itshape
+Given a verifier-backed task family and a finite menu of models, retry depths,
+fallback rules, and routers, we estimate deployment loss, routing opportunity,
+learned-router regret, and selection regret from reusable mode-conditioned pilots.
+\end{quote}
 This is concrete, testable, and close to practice.
 
 \paragraph{New abstract skeleton.}
@@ -297,16 +296,12 @@ Let:
 Here \(S\) is a latent bottleneck mode and \(Z\) is a cheap information state.
 The deployable action menu is:
 \[
-    \mathcal A
-    =
-    \{
-    \text{single model},
-    \text{model + retry depth},
-    \text{cheap-then-expensive fallback},
-    \text{router over models},
-    \text{subagent harness},
-    \text{verifier horizon}
-    \}.
+\begin{aligned}
+    \mathcal A=\{&\text{single model},\ \text{model + retry depth},\
+    \ \text{cheap-then-expensive fallback},\\
+    &\text{router over models},\ \text{subagent harness},\
+    \ \text{verifier horizon}\}.
+\end{aligned}
 \]
 For the current AutoResearch paper, start with:
 \[
@@ -321,14 +316,12 @@ For the current AutoResearch paper, start with:
 \]
 Then add sequential actions later:
 \[
-    \mathcal A_{\mathrm{seq}}
-    =
-    \{
-    \text{single model},
-    \text{cheap model for \(k\) steps then stop},
-    \text{cheap model for \(k\) steps then fixed fallback},
-    \text{cheap model for \(k\) steps then posterior fallback}
-    \}.
+\begin{aligned}
+    \mathcal A_{\mathrm{seq}}=\{&\text{single model},\
+    \ \text{cheap model for \(k\) steps then stop},\\
+    &\text{cheap model for \(k\) steps then fixed fallback},\\
+    &\text{cheap model for \(k\) steps then posterior fallback}\}.
+\end{aligned}
 \]
 
 \paragraph{Define trajectory quantities.}
@@ -708,14 +701,14 @@ The student should rewrite the paper in this order.
 
 \paragraph{Step 1: Rewrite the introduction.}
 The opening should not be:
-\[
-    \text{``we decompose model-aware log-effort into four terms.''}
-\]
+\begin{quote}
+``we decompose model-aware log-effort into four terms.''
+\end{quote}
 The opening should be:
-\[
-    \text{``benchmark racing is an expensive and low-resolution way to choose
-    models and harnesses for verifier-backed agents.''}
-\]
+\begin{quote}
+``benchmark racing is an expensive and low-resolution way to choose
+models and harnesses for verifier-backed agents.''
+\end{quote}
 Then argue:
 \[
 \begin{array}{ll}
@@ -881,16 +874,12 @@ For the second pass, expand:
 \paragraph{AutoResearch signal sets.}
 Define:
 \[
-    Z_0^{\mathrm{probe}}
-    =
-    \{
-    \text{baseline validation loss},
-    \text{baseline validation accuracy},
-    \text{training seconds},
-    \text{wall-clock seconds},
-    \text{parameter count},
-    \text{optimizer steps}
-    \}.
+\begin{aligned}
+    Z_0^{\mathrm{probe}}=\{&\text{baseline validation loss},\
+    \ \text{baseline validation accuracy},\ \text{training seconds},\\
+    &\text{wall-clock seconds},\ \text{parameter count},\
+    \ \text{optimizer steps}\}.
+\end{aligned}
 \]
 Define controls:
 \[
@@ -1965,29 +1954,25 @@ Use:
 
 \paragraph{Claim gates.}
 Do not promote a claim unless its gate passes:
-\[
-\begin{array}{ll}
+\begin{center}
+\small
+\begin{tabular}{@{}L{0.27\linewidth}L{0.66\linewidth}@{}}
     \textbf{Certified effort claim} &
-    \mathrm{Reg}_{\mathrm{pass}}(\ell)>0
-    \text{ or nontrivial rank inversions exist},\\
+    $\mathrm{Reg}_{\mathrm{pass}}(\ell)>0$ or nontrivial rank inversions exist.\\
     \textbf{Mode-dependence claim} &
-    \mathrm{CA}_\ell>0
-    \text{ and true modes beat shuffled modes},\\
+    $\mathrm{CA}_\ell>0$ and true modes beat shuffled modes.\\
     \textbf{Cheap-signal claim} &
-    \mathrm{VOI}_\ell(Z_{\mathrm{probe}})>0
-    \text{ and beats budget/corrupt controls},\\
+    $\mathrm{VOI}_\ell(Z_{\mathrm{probe}})>0$ and beats budget/corrupt controls.\\
     \textbf{Router-quality claim} &
-    J(\hat r;Z)<J(a^\star_{\emptyset})
-    \text{ and regret is small relative to opportunity},\\
+    $J(\hat r;Z)<J(a^\star_{\emptyset})$ and regret is small relative to opportunity.\\
     \textbf{Information-diagnostic claim} &
-    \text{I versus VOI or KL versus regret shows meaningful decoupling},\\
+    I versus VOI or KL versus regret shows meaningful decoupling.\\
     \textbf{Cheap-evaluation claim} &
-    \mathcal R_{\mathrm{acct}}(N)<\mathcal R_{\mathrm{race}}(N)
-    \text{ for relevant }N,\\
+    $\mathcal R_{\mathrm{acct}}(N)<\mathcal R_{\mathrm{race}}(N)$ for relevant $N$.\\
     \textbf{Robustness claim} &
-    \text{selected design is stable under bootstrap, threshold, cost, and mode-taxonomy changes}.
-\end{array}
-\]
+    Selected design is stable under bootstrap, threshold, cost, and mode-taxonomy changes.
+\end{tabular}
+\end{center}
 
 \paragraph{Controls checklist.}
 Every main claim should be protected by controls:
@@ -2013,10 +1998,10 @@ If:
     \mathrm{CA}_\ell\approx 0,
 \]
 write:
-\[
-    \textit{the current action menu has no exploitable mode-specific comparative advantage;
-    use the best single action.}
-\]
+\begin{quote}\itshape
+The current action menu has no exploitable mode-specific comparative advantage;
+use the best single action.
+\end{quote}
 If:
 \[
     \mathrm{CA}_\ell>0
@@ -2024,10 +2009,10 @@ If:
     \mathrm{VOI}_\ell(Z)\approx 0,
 \]
 write:
-\[
-    \textit{different modes want different actions, but the deployable probe does not reveal
-    the modes well enough; improve the diagnostic signal.}
-\]
+\begin{quote}\itshape
+Different modes want different actions, but the deployable probe does not reveal
+the modes well enough; improve the diagnostic signal.
+\end{quote}
 If:
 \[
     \mathrm{VOI}_\ell(Z)>0
@@ -2035,19 +2020,19 @@ If:
     \mathrm{Reg}_\ell(\hat r)\text{ is large},
 \]
 write:
-\[
-    \textit{the signal is valuable, but the learned router fails to capture the available value;
-    improve calibration or the router class.}
-\]
+\begin{quote}\itshape
+The signal is valuable, but the learned router fails to capture the available value;
+improve calibration or the router class.
+\end{quote}
 If:
 \[
     \mathcal R_{\mathrm{acct}}(N)>\mathcal R_{\mathrm{race}}(N),
 \]
 write:
-\[
-    \textit{the packed-mode decomposition is not sufficiently predictive for this design menu;
-    residuals identify the missing interaction.}
-\]
+\begin{quote}\itshape
+The packed-mode decomposition is not sufficiently predictive for this design menu;
+residuals identify the missing interaction.
+\end{quote}
 
 \paragraph{Practical coding pipeline.}
 The student should implement the analysis in separate modules:
@@ -2140,30 +2125,21 @@ If AutoResearch reviewers complain that the task is constructed, mention that th
 applies to repository repair.
 Modes:
 \[
-    \mathcal S
-    =
-    \{
-    \text{type/interface error},
-    \text{dependency conflict},
-    \text{flaky test},
-    \text{performance regression},
-    \text{multi-file invariant},
-    \text{API migration}
-    \}.
+\begin{aligned}
+    \mathcal S=\{&\text{type/interface error},\ \text{dependency conflict},
+    \ \text{flaky test},\\
+    &\text{performance regression},\ \text{multi-file invariant},
+    \ \text{API migration}\}.
+\end{aligned}
 \]
 Pre-run signal:
 \[
-    Z_0
-    =
-    \{
-    \text{test failure summary},
-    \text{stack trace features},
-    \text{number of failing tests},
-    \text{files touched},
-    \text{dependency diff},
-    \text{static-analysis warnings},
-    \text{baseline CI time}
-    \}.
+\begin{aligned}
+    Z_0=\{&\text{test failure summary},\ \text{stack trace features},
+    \ \text{number of failing tests},\\
+    &\text{files touched},\ \text{dependency diff},
+    \ \text{static-analysis warnings},\ \text{baseline CI time}\}.
+\end{aligned}
 \]
 Post-failure signal:
 \[
@@ -2180,15 +2156,12 @@ Post-failure signal:
 \]
 Actions:
 \[
-    \mathcal A
-    =
-    \{
-    \text{cheap coding model},
-    \text{repo-aware long-context model},
-    \text{tool-heavy static-analysis harness},
-    \text{frontier model},
-    \text{cheap-then-frontier fallback}
-    \}.
+\begin{aligned}
+    \mathcal A=\{&\text{cheap coding model},\
+    \ \text{repo-aware long-context model},\\
+    &\text{tool-heavy static-analysis harness},\ \text{frontier model},
+    \ \text{cheap-then-frontier fallback}\}.
+\end{aligned}
 \]
 
 \paragraph{Other task domains: formal proof.}
@@ -2207,16 +2180,12 @@ Modes:
 \]
 Pre-run signal:
 \[
-    Z_0
-    =
-    \{
-    \text{goal syntax features},
-    \text{imports},
-    \text{number of hypotheses},
-    \text{operators},
-    \text{nearest-library retrieval scores},
-    \text{cheap tactic-probe outcomes}
-    \}.
+\begin{aligned}
+    Z_0=\{&\text{goal syntax features},\ \text{imports},
+    \ \text{number of hypotheses},\ \text{operators},\\
+    &\text{nearest-library retrieval scores},
+    \ \text{cheap tactic-probe outcomes}\}.
+\end{aligned}
 \]
 Post-failure signal:
 \[
@@ -2325,15 +2294,15 @@ The strongest possible conclusion is:
 \end{aligned}
 \]
 Then the final takeaway is:
-\[
-    \boxed{
-    \textit{
-    In verifier-backed agent systems, model choice is not a scalar leaderboard problem.
-    It is a decision-theoretic accounting problem:
-    estimate mode-conditioned losses, cheap-signal value, router regret, and selection regret.
-    }
-    }
-\]
+\begin{center}
+\setlength{\fboxsep}{7pt}
+\fbox{\begin{minipage}{0.88\linewidth}
+\centering\itshape
+In verifier-backed agent systems, model choice is not a scalar leaderboard problem.
+It is a decision-theoretic accounting problem: estimate mode-conditioned losses,
+cheap-signal value, router regret, and selection regret.
+\end{minipage}}
+\end{center}
 
 
 \end{document}

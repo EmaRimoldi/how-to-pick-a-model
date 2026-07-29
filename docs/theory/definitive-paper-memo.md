@@ -28,7 +28,7 @@ Gerarchia dei claim:
 - `.local_archive/overleaf-theory-notes/overnight_figures.tex`
   - Da usare per i guardrail rigorosi su certified time vs expected log-time, claim status e diagnostica.
 
-- `docs/theory/BP.pdf`
+- `paper/neurips-submission/archive/BP.pdf`
   - Reference teorica locale da allineare prima di fissare i claim.
 
 - `.local_archive/overleaf-theory-notes/reviewer_facing.tex`

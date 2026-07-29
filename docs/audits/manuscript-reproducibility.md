@@ -2,7 +2,8 @@
 
 ## Scope
 
-Audited artifact: `paper/submitted-manuscript.pdf`.
+Audited artifact:
+`paper/neurips-submission/archive/submitted-manuscript.pdf`.
 
 The manuscript source and all twelve paper-facing AutoResearch figures were
 located in `paper/neurips-submission/` and in the imported Overleaf history. The

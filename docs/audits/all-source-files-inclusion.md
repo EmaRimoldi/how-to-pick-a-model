@@ -28,9 +28,10 @@ platform-specific artifacts part of the canonical runtime.
 
 ## Mac working trees
 
-The requested `theory-of-agents` working-tree state was applied on top of the
-unified repository: five modified tracked files, 102 tracked deletions, and the
-untracked root `manuscript.tex`. The manuscript wrapper has SHA-256
+At the time of this audit, the requested `theory-of-agents` working-tree state
+was applied on top of the unified repository: five modified tracked files, 102
+tracked deletions, and the untracked root `manuscript.tex`. The manuscript
+wrapper had SHA-256
 `9ec086fe2abd99b759884d508361978f857f1122cad54ccc12febbb228e3de3e`.
 
 The `agentops-lab-public` checkout contained 32 untracked files. Twenty-nine
@@ -51,5 +52,6 @@ paths or the pre-merge experiment layout.
   streams.
 - All added Step 1 JSON and JSONL files parse successfully.
 - The affected Python scripts compile successfully.
-- `manuscript.tex` compiles to a 35-page PDF.
+- At audit time, `manuscript.tex` compiled to a 35-page PDF; the archival
+  wrapper was subsequently removed while the submitted PDF was retained.
 - The unified test suite passes: 159 tests.

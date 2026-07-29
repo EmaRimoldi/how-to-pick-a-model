@@ -66,8 +66,8 @@
 A Framework for Budget-Aware Orchestration}
 
 \author{%
-  \!\!\!\!\!
-  Pierfrancesco Beneventano$^{*,1}$ \quad Emanuele Rimoldi$^{*,1,2}$ \quad Tomer Galanti$^3$ \quad Tomaso Poggio$^1$ \\
+  Pierfrancesco Beneventano$^{*,1}$ \quad Emanuele Rimoldi$^{*,1,2}$ \\
+  Tomer Galanti$^3$ \quad Tomaso Poggio$^1$ \\
   $^1$ MIT, $^2$ EPFL, $^3$ Texas A\&M University
 }
 
@@ -724,7 +724,6 @@ A measurement or router should be promoted only when it changes selected actions
 \section{Proofs: certified-time derivation of log-effort}
 \label{app:proofs}
 \label{app:certified-log-effort}
-\label{app:proofs}
 
 This appendix derives the log-effort identity used in Section~\ref{sec:accounting}.
 The main text uses three objects:
@@ -1470,6 +1469,16 @@ C_\delta(a,x;\xi)
 \]
 and report worker wall-clock cost as primary, with token count as a sensitivity analysis.
 verifier runtime is logged for audit, but it is not part of $\kappa(a,s)$ unless the verifier protocol or verifier-call frequency differs across actions.
+The primary decision-facing deployment loss is
+\begin{equation}
+\ell_{\mathrm{dep}}(a,x;\xi)
+=
+\alpha_{\mathrm{fail}}F_\delta(a,x;\xi)
++
+C_\delta(a,x;\xi),
+\label{eq:deployment-loss}
+\end{equation}
+with the failure weight and resource normalizers frozen before evaluation.
 
 \paragraph{Routing information.}
 The theorem term $\MI(S;Z)$ measures how much a router-visible signal $Z$ separates the predeclared task modes before deployment.
@@ -1514,6 +1523,19 @@ These losses are not replacements for the theorem; they test whether designs fav
 
 The main four-term identity compares a deployed design to a prior-matched baseline.
 For the V3 router experiment, it is often useful to compare two progressive signal conditions for the same router.
+The corresponding population net-gain estimand is
+\begin{equation}
+\Delta_R(j)
+=
+\E\!\left[
+  \ell_{\mathrm{dep}}(a_R^0(Z_0),X;\xi^0)
+  -
+  \ell_{\mathrm{dep}}(a_R^j(Z_j),X;\xi^j)
+  -
+  \ell_{\mathrm{meas}}(j,X)
+\right].
+\label{eq:router-gain}
+\end{equation}
 Assume a finite task mode $S\in\cS$ and, for each signal condition $j$, the conditional mode distribution induced by the realized signal record
 \[
 \pi_j(s\mid Z_j)=\Prb[S=s\mid Z_j].

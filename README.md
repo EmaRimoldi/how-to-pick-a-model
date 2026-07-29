@@ -77,15 +77,15 @@ The original repository roots and path mapping are documented in
 
 ## Manuscript status
 
-The original submitted PDF is
-[`paper/submitted-manuscript.pdf`](paper/submitted-manuscript.pdf). The
-archival wrapper [`manuscript.tex`](manuscript.tex) compiles that exact
-35-page PDF into a standalone manuscript. The
+The original submitted manuscript is preserved as
+[`paper/neurips-submission/archive/submitted-manuscript.pdf`](paper/neurips-submission/archive/submitted-manuscript.pdf). The
 reproducibility audit found that its promoted deployment-loss table used a
 legacy full-horizon composite loss rather than the first-passage loss stated in
 the text. The corrected accounting and later three-worker analysis are the
 canonical computational results in this repository. Details are recorded in
 [`docs/audits/manuscript-reproducibility.md`](docs/audits/manuscript-reproducibility.md).
+The theorem-level consolidation of the manuscript family is documented in
+[`docs/audits/theory-consolidation.md`](docs/audits/theory-consolidation.md).
 
 ## Historical names
 

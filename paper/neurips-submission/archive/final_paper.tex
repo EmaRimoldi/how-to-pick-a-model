@@ -520,7 +520,12 @@ Given two models $M_s$ (small, cheap) and $M_l$ (large, expensive) with $\kappa(
 \begin{enumerate}[label=(\alph*)]
   \item There exists a finite crossover depth $\Dcross \ge 1$ such that $L(M_s, \Dcross) = L(M_l, 1)$.
   \item For a single mode: $\Dcross = \log(1 - p_l) / \log(1 - p_s)$.
-  \item For multiple modes: $\Dcross$ is the unique solution to $\sum_s \pi_s (-\log(1 - r_s(M_s)^D)) = \sum_s \pi_s (-\log p(s, M_l))$.
+  \item For multiple modes, $\Dcross$ is the unique solution to
+  \[
+    \sum_s \pi_s\bigl[-\log(1-r_s(M_s)^D)\bigr]
+    =
+    \sum_s \pi_s\bigl[-\log p(s,M_l)\bigr].
+  \]
   \item For hard tasks, the hardest-mode formula $\hat{D} = \max_s \log r_l(s) / \log r_s(s)$ provides a practical estimate of~$\Dcross$. Empirically, $\hat{D} \ge \Dcross$ in all 50~tested parameter settings (mean overestimate $1.8\times$, max $3.9\times$). We conjecture $\hat{D} \ge \Dcross$ in general; a proof is open.
   \item The small model with $\Dcross$ attempts dominates at equal cost if and only if $\Dcross \le \kappa(M_l) / \kappa(M_s)$.
 \end{enumerate}
@@ -773,11 +778,9 @@ Our contribution relative to Achille--Soatto is narrow and operational: they dia
 The moment one asks ``which model should I use?'', one needs per-step cost and within-mode competence---terms their framework does not contain.
 
 \paragraph{How do compound AI systems handle routing today?}
-The compound AI systems movement~\citep{zaharia2024compound,wen2025compound} recognizes that production systems combine multiple models, tools, and orchestration layers.
-Within this space, a growing literature learns routing policies end-to-end: RouteLLM trains a classifier to select between models using preference data~\citep{ong2024routellm}; FrugalGPT cascades from cheap to expensive models~\citep{chen2023frugalgpt}; xRouter uses reinforcement learning for cost-aware orchestration~\citep{xrouter2024}; and OmniRouter applies Lagrangian decomposition to the routing \emph{assignment} problem~\citep{omnirouter2025}.
-Cost-aware contrastive routing~\citep{cscr2025} and multi-agent routing~\citep{masrouter2025} extend these ideas to richer settings.
+The compound AI systems movement~\citep{zaharia2024compound} recognizes that production systems combine multiple models, tools, and orchestration layers.
+Within this space, a growing literature learns routing policies end-to-end: RouteLLM trains a classifier to select between models using preference data~\citep{ong2024routellm}; FrugalGPT cascades from cheap to expensive models~\citep{chen2023frugalgpt}; and recent routing benchmarks and multi-agent routers extend these ideas to richer settings~\citep{hu2024routerbench,anonymous2026llmrouterbench,yue2025masrouter}.
 
-OmniRouter is the closest point of contact with our Lagrangian non-connection: it applies Lagrangian decomposition to the routing \emph{assignment} sub-problem, but decomposes the routing sub-problem, not the performance-gap identity.
 None of these works provides a diagnostic decomposition of \emph{why} one design beats another.
 They solve the routing problem algorithmically; we decompose the objective analytically.
 The approaches are complementary: our decomposition identifies which lever matters, and their learning algorithms pull it.
@@ -789,7 +792,7 @@ A parallel literature demonstrates that smaller models with more inference-time 
 \citet{snell2025testtime} show that optimally allocating test-time compute can be more effective than scaling model parameters.
 \citet{wu2025inference} derive empirical inference scaling laws.
 \citet{brown2024monkeys}---in work titled \emph{Large Language Monkeys}---provide direct empirical support for the geometric-trials assumption underlying our graph-depth model: repeated independent sampling with verification produces pass rates well-described by $1-(1-p)^D$.
-The $4/\delta$ bound~\citep{fourdelta2024} and OSCA~\citep{osca2024} extend this to sample-efficient allocation strategies.
+OSCA~\citep{osca2024} extends this line to sample-efficient allocation strategies.
 
 These papers establish the empirical phenomenon that drives our depth-cost tradeoff.
 None provides a closed-form characterization of optimal depth $\Dstar(M)$ or proves that optimal depth decreases monotonically with model competence.
@@ -798,14 +801,14 @@ Their approach is empirical compute-optimal allocation; ours is analytical.
 \paragraph{What can the algorithm-selection literature contribute?}
 The question ``how should one allocate limited compute across competing strategies?'' has a long OR history.
 Weitzman's Pandora's Box~\citep{kaufmann2016bestarm} gives optimal stopping rules for inspecting alternatives with known reward distributions---structurally close to our routing problem, but static: there is no learning-from-verification feedback.
-Algorithm portfolios and per-instance selection~\citep{multiagentdesign2025,qiao2025scaling} allocate resources across solvers, and racing methods~\citep{kaufmann2016bestarm} sequentially eliminate inferior candidates.
+Algorithm portfolios and per-instance selection~\citep{xu2012satzilla,lindauer2015autofolio,kotthoff2016algorithm} allocate resources across solvers, and racing methods~\citep{kaufmann2016bestarm} sequentially eliminate inferior candidates.
 We bring these ideas into the language of modern agent systems, where the ``strategies'' are models with different cost-competence profiles and the ``budget'' is a deployment compute ceiling.
 The classical results assume known reward distributions.
 We add a sample-complexity layer they do not address, and the Bernstein corollary makes that layer practically feasible.
 
 \paragraph{How do scaling laws and benchmarks relate?}
 The scaling-law literature~\citep{kaplan2020scaling,hoffmann2022chinchilla} provides the cost-capability relationship that our graph-depth model takes as input: model cost and competence as functions of scale.
-On the evaluation side, benchmark critiques~\citep{linegoes2025} document how aggregate metrics conflate distinct performance factors---precisely the conflation our decomposition resolves.
+On the evaluation side, benchmark suites such as SWE-bench and MLE-bench expose the limits of reducing heterogeneous tasks to a single aggregate ranking~\citep{jimenez2024swebench,chan2024mlebench}---precisely the conflation our decomposition resolves.
 Lessons from LLM routing~\citep{chen2025optimizing} highlight that model selection depends on task distribution in ways that benchmark averages cannot capture.
 
 Scaling laws characterize individual models.
@@ -814,12 +817,12 @@ The gap between ``how does a model scale?'' and ``how does an agent system scale
 
 \paragraph{What does transfer learning theory say about reusing agent designs?}
 Domain adaptation~\citep{bendavid2010theory} provides the gold-standard formalism for bounding target-domain risk in terms of source-domain risk plus a divergence penalty.
-Transferability estimation using Bhattacharyya class separability~\citep{pandy2022gbc} brings these ideas to practical image-classification pipelines.
+Transferability estimation using Bhattacharyya class separability~\citep{pandy2022transferability} brings these ideas to practical image-classification pipelines.
 Our transfer trichotomy (Section~\ref{sec:transfer}) operates on different mathematical objects---design tuples and routing policies rather than hypothesis classes and feature representations---but the conceptual structure is parallel: two domains are close when their task-relevant structure is close.
 The qualitative framework we present does not compete with the formal bounds of \citet{bendavid2010theory}; it addresses a different question (when does an \emph{agent system design} transfer?) that their theory does not cover.
 
 \paragraph{Broader context.}
-Agent design as a budgeted optimization problem has roots in stochastic programming, team decision theory~\citep{multiagentfinance2026}, and the Dantzig--Wolfe decomposition tradition~\citep{dantzigwolfe1960,fisher2004lagrangian}---though as Section~\ref{sec:lagrangian} shows, the analogy to Lagrangian dual decomposition is precisely wrong for our four-term identity.
+Agent design as a budgeted optimization problem has roots in stochastic programming, team decision theory, and decomposition methods~\citep{fisher2004lagrangian}---though as Section~\ref{sec:lagrangian} shows, the analogy to Lagrangian dual decomposition is precisely wrong for our four-term identity.
 
 % ==================== DISCUSSION ====================
 %% ====================================================================
@@ -978,8 +981,11 @@ Under monotone competence ($dp_s/dt_0 > 0$):
 $d\Dstar/dt_0 = \sum_s (d\Dstar/dp_s)(dp_s/dt_0) < 0$.
 
 \noindent\textbf{Part (d): Monotonicity in cost ratio.}
-From $F(\Dstar) = \mu\kappa$: differentiating gives $(dF/dD)(d\Dstar/d\kappa) = \mu$.
-Since $dF/dD < 0$: $d\Dstar/d\kappa < 0$.
+From $F(\Dstar) = \mu\kappa$, differentiation gives
+\[
+  \frac{dF}{dD}\frac{d\Dstar}{d\kappa}=\mu.
+\]
+Since $dF/dD < 0$, it follows that $d\Dstar/d\kappa < 0$.
 Thus $\Dstar$ is decreasing in~$\kappa(M)$, hence increasing in $\kappabig/\kappa(M)$.
 \end{proof}
 
@@ -1027,8 +1033,14 @@ The routing mismatch $\mismatch = \sum_s \pi_s \log(q_s^*/q_s)$ has an analogous
 To achieve $\dacc$-accuracy in each term: set $\epsilon/\pmin = \dacc$, giving $\epsilon = \dacc\pmin$.
 
 \noindent\textbf{Step 3: Combine.}
-$n_0 = \log(2\Mn/\dconf) / (2\dacc^2\pmin^2)$.
-Total: $N = \Mn \cdot n_0 = O(\Mn\log(\Mn/\dconf)/(\dacc^2\pmin^2))$.
+\[
+  n_0=\frac{\log(2\Mn/\dconf)}{2\dacc^2\pmin^2},
+  \qquad
+  N=\Mn n_0
+  =O\!\left(
+    \frac{\Mn\log(\Mn/\dconf)}{\dacc^2\pmin^2}
+  \right).
+\]
 \end{proof}
 
 \subsection{Bernstein Corollary (Corollary~\ref{cor:bernstein})}
@@ -1041,14 +1053,24 @@ where $\sigma^2 = p(1-p) \le p$ for $p \le 1/2$.
 
 Setting $\epsilon = \dacc\pmin$ (from the Lipschitz step, unchanged):
 \begin{align}
-  n_0^{\mathrm{Bern}} &\ge \frac{(2\pmin + \frac{2}{3}\dacc\pmin)\log(2/\delta_s)}{(\dacc\pmin)^2}
-  = \frac{(2 + \frac{2}{3}\dacc)\log(2/\delta_s)}{\dacc^2\pmin}.
+  n_0^{\mathrm{Bern}}
+  &\ge \frac{(2\pmin + \frac{2}{3}\dacc\pmin)
+                   \log(2/\delta_s)}{(\dacc\pmin)^2} \\
+  &= \frac{(2 + \frac{2}{3}\dacc)\log(2/\delta_s)}
+           {\dacc^2\pmin}.
 \end{align}
 For $\dacc \le 1$: the constant is at most $8/3 < 3$.
 With $\delta_s = \dconf/\Mn$:
-$n_0^{\mathrm{Bern}} = 3\log(2\Mn/\dconf)/(\dacc^2\pmin)$.
+\[
+  n_0^{\mathrm{Bern}}
+  =\frac{3\log(2\Mn/\dconf)}{\dacc^2\pmin}.
+\]
 
-The improvement factor over Hoeffding is $n_0^{\mathrm{Hoeff}}/n_0^{\mathrm{Bern}} = 1/(6\pmin)$.
+The improvement factor over Hoeffding is
+\[
+  \frac{n_0^{\mathrm{Hoeff}}}{n_0^{\mathrm{Bern}}}
+  =\frac{1}{6\pmin}.
+\]
 Bernstein dominates when $\pmin < 1/6 \approx 0.17$.
 \end{proof}
 
@@ -1172,7 +1194,7 @@ Depth optimization: the proxy recommends $\Dstar_{\mathrm{proxy}} \ge \Dstar_{\m
 
 \subsection{EXP7: Bernstein vs.\ Hoeffding}
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \caption{Bernstein vs.\ Hoeffding sample complexity comparison.}
 \label{tab:bernstein}
@@ -1220,7 +1242,7 @@ This appendix distills the paper's results into actionable guidance.
 
 \subsection{Decision Flowchart}
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \fbox{\parbox{0.85\textwidth}{\centering\vspace{0.5cm}
 \textbf{Framework at a Glance}\\[10pt]
@@ -1258,7 +1280,7 @@ This appendix distills the paper's results into actionable guidance.
 
 \subsection{Pilot-Sizing Table}
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \caption{Recommended pilot sizes per mode.}
 \label{tab:pilot-sizing}
@@ -1279,7 +1301,7 @@ We recommend using the empirical guidelines (``25/mode easy, 100/mode moderate, 
 
 \subsection{When to Use and When Not To}
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \caption{Applicability checklist.}
 \label{tab:applicability}

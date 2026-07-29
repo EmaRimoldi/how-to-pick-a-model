@@ -1,14 +1,16 @@
 # Paper
 
-- [`submitted-manuscript.pdf`](submitted-manuscript.pdf): submitted manuscript
-  supplied for the repository audit.
-- [`../manuscript.tex`](../manuscript.tex): archival LaTeX wrapper that embeds
-  every page of the submitted PDF verbatim.
-- [`neurips-submission/`](neurips-submission/): current Overleaf-derived source,
-  figures, sections, and archived versions.
-- [`theory-of-agents.tex`](theory-of-agents.tex): earlier standalone theory
-  source.
-- [`references/`](references/): local reference material.
+- [`neurips-submission/main.tex`](neurips-submission/main.tex): current compact
+  paper anchor.
+- [`neurips-submission/arxiv.tex`](neurips-submission/arxiv.tex): complete
+  AutoResearch manuscript anchor.
+- [`neurips-submission/archive/theory_anchor.tex`](neurips-submission/archive/theory_anchor.tex):
+  maximal consolidated theory anchor.
+- [`neurips-submission/archive/`](neurips-submission/archive/): archived LaTeX
+  material, the submitted manuscript, previous paper builds, and local reference
+  PDFs. The explicitly excluded `next_steps.tex` is retained unchanged.
+- [`../docs/audits/theory-consolidation.md`](../docs/audits/theory-consolidation.md):
+  theorem-level genealogy, validation notes, and redundant-source disposition.
 
 The former nested Overleaf repositories have been flattened into this
 repository. Their Git history is retained in the unified merge ancestry.

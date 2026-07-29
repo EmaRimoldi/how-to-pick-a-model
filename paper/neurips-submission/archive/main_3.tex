@@ -13,6 +13,7 @@
 \usepackage{enumitem}
 \usepackage{microtype}
 \usepackage{xcolor}
+\setlength{\emergencystretch}{2em}
 
 \newtheorem{assumption}{Assumption}
 \newtheorem{definition}{Definition}
@@ -131,7 +132,7 @@ We organize the paper around three questions, each paired with the contribution 
   \item \textbf{Can the certified log-effort surrogate gap between agent designs be decomposed into meaningful terms?}
   Theorem~\ref{thm:four-term} gives an exact four-term identity under a packed latent-mode assumption: cost, within-mode competence, routing information, and a predeclared mode-summary divergence additively explain the improvement in expected certified log-effort.
   \item \textbf{Can the decomposition separate frontier structure, information availability, and deployable routing value?}
-  Algorithm~\ref{alg:decomp-selection} and the pilot concentration bound in Appendix~\ref{app:proofs} turn the identity into a structured pilot protocol that estimates measurable worker-side terms, audits router-visible signals, and reserves deployment recommendations for paired selected-worker validation.
+  Algorithm~\ref{alg:decomp-selection} and the pilot concentration bound in Appendix~\ref{app:certified-log-effort} turn the identity into a structured pilot protocol that estimates measurable worker-side terms, audits router-visible signals, and reserves deployment recommendations for paired selected-worker validation.
   \item \textbf{When does a lower-cost model with retries beat a stronger model?}
   Theorem~\ref{thm:crossover} gives the single-mode crossover rule, and the multi-mode accounting shows why the answer changes across task modes.
 \end{enumerate}
@@ -441,18 +442,19 @@ If the true bottleneck is a dependency conflict but the router assigns only \(10
 \label{sec:results}
 
 The previous section defined verified deployment tasks, certified time, and the packed
-latent-mode model.  We now state the two basic consequences.  As we prove in Appendix \ref{app:proof} in Lemma \ref{lem:routing}, side information can improve certified time only by increasing the router effective weight on useful solvers.  This implies that in the packed latent-mode model, the gain becomes exactly decomposable in four terms, two dependent on the deployed system, two to the router.
+latent-mode model.  We now state the two basic consequences.  As shown in Appendix~\ref{app:certified-log-effort}, especially Theorem~\ref{thm:app-routing-information}, side information can improve certified time only by increasing the router effective weight on useful solvers.  This implies that in the packed latent-mode model, the gain becomes exactly decomposable in four terms, two dependent on the deployed system, two to the router.
 
 \paragraph{Packed-mode accounting.}
 Recall that \(S\in\cS\) is the latent bottleneck mode, \(Z\) is the start-of-run signal, \(\pi_z(s)\) is the true posterior of to what mode the task instance belong to, and \(q_z(s)\) is the probability assigned to mode \(s\) by the router.
 For action \(M\), the packed-time assumption is
-\[
+\begin{equation}
+\label{eq:effort-surrogate}
     \overline T_{a,q}(s,z)
     =
     c_{\mathrm{sim}}\,
     \kappa(a)\,
     \frac{t_0(a,s)}{q_z(s)} .
-\]
+\end{equation}
 The inverse factor \(1/q_z(s)\) is the scheduling penalty: if the true mode is \(s\) and
 the system allocates only \(q_z(s)\) of its effort to the corresponding strategy, certified
 time is slowed by \(1/q_z(s)\).
@@ -567,15 +569,18 @@ The improvement in expected certified log-effort,
 $\Delta=\J(\rho_0,q_0)-\J(\rho,q)$, decomposes as
 \begin{equation}
 \label{eq:four-term}
+\begin{aligned}
   \Delta
-  =
+  &=
   \underbrace{\E_Z\E_{S\sim\pi_Z}\!\left[\log\frac{\kappa(a_0,S)}{\kappa(a_Z,S)}\right]}_{\text{cost}}
   +
   \underbrace{\E_Z\E_{S\sim\pi_Z}\!\left[\log\frac{p(a_Z,S)}{p(a_0,S)}\right]}_{\text{competence}}
-  +
+  \\
+  &\quad+
   \underbrace{\MI_\pi(S;Z)}_{\text{routing information}}
   -
   \underbrace{\E_{Z}\!\left[\KL(\pi_{Z}\|q_{Z})\right]}_{\text{mode-summary divergence}} .
+\end{aligned}
 \end{equation}
 \end{theorem}
 
@@ -586,7 +591,7 @@ Conditioning on $Z=z$ and averaging over $S\sim\pi_z$ converts
 $-\E\log q_z(S)$ into the cross-entropy in~\eqref{eq:cross-entropy-routing}.
 Subtracting the prior-matched baseline cancels constants and uses
 $\Hent(\pi)-\E_Z\Hent(\pi_Z)=\MI_\pi(S;Z)$.
-The full algebra is given in Appendix~\ref{app:proofs}.
+The full algebra is given in Appendix~\ref{app:certified-log-effort}.
 \end{proof}
 
 The four terms have different operational meanings.
@@ -923,15 +928,18 @@ This appendix derives the log-effort objective from certified time.
 The main text uses only the certified-time definition, the coding-gain upper bound, and the
 packed-mode identity.  Here we give the full chain:
 \[
+\begin{aligned}
     \text{certified time}
-    \;\longrightarrow\;
+    &\;\longrightarrow\;
     \text{universal scheduling}
     \;\longrightarrow\;
     \text{coding-gain upper bound}
-    \;\longrightarrow\;
+    \\
+    &\;\longrightarrow\;
     \text{packed latent-mode identity}
     \;\longrightarrow\;
     \text{finite-horizon empirical surrogate}.
+\end{aligned}
 \]
 
 \subsection{Certified time and universal scheduling}
@@ -1475,6 +1483,8 @@ Then
               {t_0(M,S,\delta_{\mathrm{cert}})}
 \right]
 }_{\mathrm{competence}}
+\\
+&\qquad\quad
 +
 \underbrace{I_\pi(S;D_M)}_{\mathrm{routing\ information}}
 +
@@ -1734,6 +1744,8 @@ Under Assumption~\ref{ass:app-approx-log-linear}, the model-aware decomposition 
 \left[
     \log\frac{t_0(M_0,S)}{t_0(M,S)}
 \right]
+\\
+&\qquad
 +
 I_\pi(S;D_M)
 +
