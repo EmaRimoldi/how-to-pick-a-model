@@ -1,0 +1,967 @@
+\documentclass[10pt,twocolumn]{article}
+
+\usepackage[letterpaper,margin=0.75in,columnsep=0.24in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage[numbers]{natbib}
+\usepackage[protrusion=true,expansion=true]{microtype}
+\usepackage[colorlinks=true,citecolor=blue,linkcolor=blue,urlcolor=blue]{hyperref}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\newtheoremstyle{paperplain}
+  {6pt}{6pt}{\itshape}{}{\bfseries}{.}{.5em}
+  {\thmname{#1}\thmnumber{ #2}\thmnote{ \normalfont(#3)}}
+\newtheoremstyle{paperdefinition}
+  {6pt}{6pt}{\normalfont}{}{\bfseries}{.}{.5em}
+  {\thmname{#1}\thmnumber{ #2}\thmnote{ \normalfont(#3)}}
+\newtheoremstyle{paperremark}
+  {6pt}{6pt}{\normalfont}{}{\itshape}{.}{.5em}
+  {\thmname{#1}\thmnumber{ #2}\thmnote{ \normalfont(#3)}}
+
+\theoremstyle{paperplain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{paperdefinition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+
+\theoremstyle{paperremark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\setlist[itemize]{leftmargin=1.6em,itemsep=1pt,topsep=2pt,parsep=0pt}
+\setlist[enumerate]{leftmargin=1.8em,itemsep=1pt,topsep=2pt,parsep=0pt}
+
+\setlength{\parindent}{1em}
+\setlength{\parskip}{0pt}
+\setlength{\abovedisplayskip}{6pt plus 2pt minus 3pt}
+\setlength{\belowdisplayskip}{6pt plus 2pt minus 3pt}
+\setlength{\abovedisplayshortskip}{4pt plus 2pt minus 2pt}
+\setlength{\belowdisplayshortskip}{4pt plus 2pt minus 2pt}
+\allowdisplaybreaks
+\raggedbottom
+\emergencystretch=1em
+
+\makeatletter
+\renewcommand{\section}{%
+  \@startsection{section}{1}{\z@}%
+    {-1.8ex plus -0.4ex minus -0.2ex}%
+    {0.8ex plus 0.2ex}%
+    {\normalfont\large\bfseries\raggedright}}
+\renewcommand{\subsection}{%
+  \@startsection{subsection}{2}{\z@}%
+    {-1.4ex plus -0.3ex minus -0.2ex}%
+    {0.5ex plus 0.2ex}%
+    {\normalfont\normalsize\bfseries\raggedright}}
+\renewcommand{\subsubsection}{%
+  \@startsection{subsubsection}{3}{\z@}%
+    {-1.2ex plus -0.3ex minus -0.2ex}%
+    {0.4ex plus 0.2ex}%
+    {\normalfont\normalsize\bfseries\itshape\raggedright}}
+\makeatother
+
+\newcommand{\poly}{\mathrm{poly}}
+\newcommand{\KL}{\mathrm{KL}}
+\newcommand{\I}{\mathrm{I}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prb}{\mathbb{P}}
+\newcommand{\cA}{\mathcal{A}}
+\newcommand{\cD}{\mathcal{D}}
+\newcommand{\cX}{\mathcal{X}}
+\newcommand{\cY}{\mathcal{Y}}
+\newcommand{\cS}{\mathcal{S}}
+\newcommand{\cT}{\mathcal{T}}
+\newcommand{\cB}{\mathcal{B}}
+\newcommand{\cF}{\mathcal{F}}
+\newcommand{\cM}{\mathcal{M}}
+\newcommand{\Sp}{\mathrm{Sp}}
+\newcommand{\Meff}{M_{\mathrm{eff}}}
+\newcommand{\Dlog}{\Delta_{\log}}
+\newcommand{\DlogM}{\Delta_{M,\log}}
+\newcommand{\boxeddisplay}[1]{%
+  \begin{center}
+  \setlength{\fboxsep}{5pt}%
+  \fbox{\(\displaystyle #1\)}
+  \end{center}
+}
+
+\title{How to Pick a Model:\\
+Information, Allocation, and Proper Time for Verifiable Tasks}
+\author{%
+  Pierfrancesco Beneventano$^{*,1}$ \quad
+  Emanuele Rimoldi$^{*,1,2}$ \quad
+  Tomer Galanti$^3$ \quad
+  Tomaso Poggio$^1$ \\
+  $^1$MIT \quad $^2$EPFL \quad $^3$Texas A\&M University
+}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+\label{sec:intro}
+
+A builder of agent systems repeatedly faces the same decision: given a
+verifiable task, a deployment budget, and a menu ranging from inexpensive
+specialists to frontier generalists, which system should be run? The choice
+extends beyond the backbone model to the solving strategy, the information
+available at deployment, and the allocation of compute across repeated
+attempts. The relevant objective is therefore to identify the configuration
+that reaches a verified solution most efficiently.
+
+The usual answer is benchmark racing: fix the workflow, compare aggregate
+scores, and select the winner. This ranks systems but does not explain the
+ranking. A system may win because each step is cheaper, because it needs fewer
+steps on the relevant instances, because an observable signal identifies the
+appropriate strategy, or because its allocation policy wastes less compute.
+Those mechanisms imply different interventions, yet an aggregate score combines
+them into one number. Related questions arise in algorithm portfolios,
+per-instance selection, and model routing
+\citep{gomes-selman2001,xu_hutter_hoos_leytonbrown_2008_satzilla,
+chen2023frugalgpt,ong2024routellm}.
+
+We study this problem for verifiable tasks, including code generation against
+tests, formal proof search, and verifier-backed planning. Success is determined
+by an external verifier, allowing performance to be measured by \emph{proper
+time}: the wall-clock time, tokens, or cost consumed before the first verified
+solution. This operationalizes the time-to-solution perspective of Achille and
+Soatto~\citep{achille2026} for finite-budget model selection.
+
+We represent task heterogeneity through solver-relevant modes, each associated
+with a specialized solving strategy. The worker model determines the cost and
+competence of executing these strategies. Before allocating compute, a router
+observes a signal $Z$, such as task metadata, demonstrations, or partial
+traces. This induces a posterior $\pi_Z$ over modes, while the router implements
+an allocation $q_Z$ of the retry budget across strategies. Models and modes
+therefore remain distinct objects.
+
+Under a packed inverse-share law, the expected log proper-time gain satisfies
+\[
+    \Delta_{\log}
+    =
+    I(S;Z)
+    -
+    \mathbb E_Z\!\left[
+        \mathrm{KL}(\pi_Z\|q_Z)
+    \right].
+\]
+The first term is the speed potentially available from the signal; the second
+is the amount lost through allocation mismatch. The identity also prescribes
+the optimal allocation under the packed law: $q_Z=\pi_Z$.
+
+When worker models differ, the decomposition becomes
+\[
+    \Delta_{M,\log}
+    =
+    \log\frac{\kappa(M_0)}{\kappa(M)}
+    +
+    \varphi(M_0,M)
+    +
+    G(M)
+    -
+    \varepsilon(M),
+\]
+separating per-step cost, mode-conditioned competence, information, and
+allocation mismatch. It provides the quantities required to decide when a
+larger model, cheaper retries, or signal-conditioned strategy allocation
+minimizes verified time.
+
+We evaluate the framework on HumanEval+ using three worker models, three
+specialized strategies, and twenty attempts per model--strategy--task
+configuration, for $29{,}520$ verified attempts. After selecting the router
+and allocation rule on validation data, the resulting policy achieves a
+$1.113\times$ solver-time speedup on a disjoint test set at fixed 7B worker
+and unchanged verified success ($37/42$ tasks under both policies). This
+comparison isolates allocation speedup and excludes router inference latency.
+
+\paragraph{Contributions.}
+\begin{enumerate}
+    \item We formulate model selection for verifiable tasks as the joint choice
+    of model, strategy, and retry allocation under a deployment budget.
+
+    \item We prove that information-driven expected log-speedup equals signal
+    information minus allocation mismatch under the packed law.
+
+    \item We extend the identity to separate model cost, competence,
+    information, and mismatch, obtaining model and retry crossover criteria.
+
+    \item We introduce a cross-fitted measurement protocol and evaluate it on
+    HumanEval+ using verified first-passage traces and held-out routing.
+\end{enumerate}
+
+\section{A Mathematical Framework for Agentic Tasks}
+\label{sec:framework}
+
+\subsection{Tasks, Solvers, and Agent Systems}
+
+\begin{definition}[Verifiable task]
+\label{def:task}
+A \emph{verifiable task} is a tuple
+\[
+\cT^{(v)}=(\cX,\cY,V,\mu,\cB),
+\]
+where $\cX$ is the instance space, $\cY$ is the solution space,
+$V:\cX\times\cY\to\{0,1\}$ is an external verification oracle that returns
+$1$ exactly when a candidate satisfies the task's acceptance criterion,
+$\mu$ is the deployment distribution over $\cX$, and
+$\cB=(b_t,b_c,b_m)$ specifies time, cost, and memory budgets.
+Success on instance $x$ means producing $y$ such that $V(x,y)=1$ within $\cB$.
+\end{definition}
+
+\begin{definition}[Agent system and induced solver]
+\label{def:agent-system}
+For a verifiable task $\cT^{(v)}$, an \emph{agent system} is specified by
+\begin{equation}
+\label{eq:design-tuple}
+d=(M,\mathcal H,\rho)\in\cD,
+\end{equation}
+where $M$ is the worker model, $\mathcal H$ is a finite set of solving
+strategies or harnesses, and $\rho$ allocates the available attempt budget
+across those strategies using deployment-side information.  These components
+induce a stochastic solver $A_d$ that executes model--strategy attempts and
+emits candidate artifacts until $V$ accepts one or the budget is exhausted.
+\end{definition}
+
+\subsection{Proper Time and Certified Speed}
+
+Fix a resource clock $c$: wall-clock time, tokens, API cost, verifier calls, or
+another declared scalar resource.
+
+\begin{definition}[Proper time and certified proper time]
+\label{def:proper-time}
+For solver $A$ on $(x,r)$, define its \emph{operational proper time} by
+\[
+\begin{gathered}
+\tau_A(x;r):=
+\inf\{c\ge 0:V(x,Y_A(c;x,r))=1\},\\
+\qquad \inf\varnothing:=\infty.
+\end{gathered}
+\]
+\label{def:certified-time}
+and its \emph{certified proper time} at confidence $1-\delta$ by
+\[
+\overline{T}_A(\delta)
+:=
+\inf\!\left\{c\ge 0:
+\Prb_{X\sim\mu,r}[\tau_A(X;r)\le c]\ge 1-\delta
+\right\}.
+\]
+The former is trajectory-level; the latter is its deployment quantile over
+$X\sim\mu$ and $r$.  Its empirical estimate is the corresponding sample
+quantile, with failures recorded as $\infty$.
+\label{def:speedup}
+Relative to baseline $A_0$, the \emph{certified log-speedup} is
+$\Delta:=\log\overline T_{A_0}(\delta)-\log\overline T_A(\delta)$; positive
+$\Delta$ means that $A$ is faster.
+\end{definition}
+
+The packed-family identities below concern an expected log-time surrogate
+$\Dlog$.  Certified quantile speedup and operational first-passage speedup are
+reported separately in the empirical analysis.
+
+\subsection{The Packed Latent-Mode Family}
+\label{subsec:packed-family-def}
+
+\begin{definition}[Packed allocation policy]
+\label{def:routing-policy}
+Let $\cS$ be a finite mode set and let $Z$ take values in a signal space
+$\mathcal Z$.  A \emph{packed allocation policy} is a map
+$\rho:\mathcal Z\to\Delta(\cS)$, written $z\mapsto q_z$, whose coordinate
+$q_z(s)$ is the fraction of the attempt budget assigned to the strategy
+specialized for mode~$s$.  The signal $Z$ contains the information available
+when the allocation is chosen.  A no-routing baseline uses a fixed allocation
+$q_0$ independent of~$z$.
+\end{definition}
+
+\begin{assumption}[Packed latent-mode family]
+\label{def:packed-family}
+\label{ass:packed-family}
+Fix a verifiable task $\cT^{(v)}$.
+Assume:
+\begin{enumerate}
+\item \textbf{Latent modes.} There is a finite set of modes $\cS=\{1,\ldots,m\}$ and a latent variable $S \in \cS$ with prior $\pi$. A mode is a solver-relevant class of instances, defined independently of which model is deployed. An observable signal $Z \sim P(Z \mid S)$ represents admissible pre-deployment evidence or partial execution traces, with posterior $\pi_z(s) := \Prb[S = s \mid Z=z]$.
+\item \textbf{One strategy per mode.} There is a strategy set
+$\mathcal H=\{h_s:s\in\cS\}$ in which $h_s$ is specialized for mode~$s$ and
+has packed internal scale $t_0(s)>0$.
+\item \textbf{Allocation determines time.} A routing policy chooses a share vector $q \in \Delta(\cS)$.
+Under hidden mode~$s$, allocating share $q(s)$ yields certified time
+\[
+\mathsf{T}_q(s) \;=\; c_{\mathrm{sim}} \cdot \frac{t_0(s)}{q(s)},
+\]
+where $c_{\mathrm{sim}}>0$ is the simulation overhead.
+\item \textbf{Baseline and deployed schedulers.} The baseline chooses a fixed share vector $q_0 \in \Delta(\cS)$; the deployed system chooses a data-dependent map $z \mapsto q_z \in \Delta(\cS)$.
+\end{enumerate}
+\end{assumption}
+
+All KL and logarithmic expressions below use the standing support convention
+that every allocation puts positive mass on the posterior support.  For a
+posterior $\pi_z$ over modes, define
+$\Meff(z):=\exp(H(\pi_z))$.
+
+Given the feasible designs $d=(M,\mathcal H,\rho)$, the builder minimizes
+certified proper time over model, strategy set, and allocation policy.  The
+following decomposition identifies the mechanisms determining this objective.
+
+\section{Information-Routing and Model-Aware Decompositions}
+\label{sec:decomposition}
+
+\subsection{The Routing-Information Identity}
+\label{subsec:ri-identity}
+
+\begin{lemma}[Posterior-matched allocation]
+\label{lem:conditional}
+Under Assumption~\ref{ass:packed-family}, for $P_Z$-almost every $z$ and every
+$q\in\Delta(\cS)$ such that
+$\operatorname{supp}(\pi_z)\subseteq\operatorname{supp}(q)$,
+\[
+\E_{S\sim\pi_z}\!\left[
+\log\frac{\mathsf T_q(S)}{c_{\mathrm{sim}}t_0(S)}
+\right]
+=H(\pi_z)+\KL(\pi_z\|q).
+\]
+The unique minimizer of $\E_{S\sim\pi_z}[\log\mathsf T_q(S)]$ over admissible
+allocations is $q=\pi_z$.  The corresponding excess packed log-time is
+$\KL(\pi_z\|q)$.
+\end{lemma}
+
+\par\noindent\emph{Proof.} See Appendix~\ref{app:proof:lem:conditional}.\par
+
+
+\begin{theorem}[Routing-Information Identity]
+\label{thm:ri-identity}
+Under Assumption~\ref{ass:packed-family}, with a prior-matched baseline $q_0 = \pi$,
+\boxeddisplay{\Dlog = G - \varepsilon}
+where
+\begin{align}
+\makebox[4.4em][l]{$\Dlog$}
+&:= \E\!\left[\log \mathsf{T}_\pi(S)-\log \mathsf{T}_{q_Z}(S)\right], \nonumber\\
+\makebox[4.4em][l]{$G$}
+&:= \I_\pi(S : Z)=H(\pi)-\E_Z[H(\pi_Z)], \label{eq:G-def} \\
+\makebox[4.4em][l]{$\varepsilon$}
+&:= \E_Z\!\left[\KL(\pi_Z \| q_Z)\right]. \label{eq:eps-def}
+\end{align}
+The term $G$ is the mutual information between the latent mode and the feedback---the \emph{information generation quality}.
+The term $\varepsilon$ is the expected KL divergence of the routing policy from the posterior---the \emph{routing mismatch}.
+Equivalently: $\Dlog \le G$, with equality if and only if $q_Z = \pi_Z$ almost surely.
+One nat of routing mismatch costs exactly one nat of expected packed
+log-speedup.
+\end{theorem}
+
+\par\noindent\emph{Proof.} See Appendix~\ref{app:proof:thm:ri-identity}.\par
+
+
+For a non-prior-matched baseline $q_0 \ne \pi$, the identity becomes $\Dlog = G + \KL(\pi \| q_0) - \varepsilon$, adding a baseline suboptimality bonus.
+
+\subsection{The Model-Aware Decomposition}
+\label{subsec:four-term}
+
+\begin{assumption}[Model-dependent packed family]
+\label{ass:model-packed-family}
+Fix a verifiable task and a shared latent mode variable $S \sim \pi$ over $\cS=\{1,\ldots,m\}$.
+For each model $M$:
+\begin{enumerate}
+\item The per-step cost satisfies $\kappa(M)>0$.
+\item The within-mode packed scale satisfies $t_0(M,s)>0$, so that packed time
+under mode~$s$ with allocation share $q(s)$ is
+\[
+\mathsf{T}_q^{(M)}(s) = \kappa(M) \cdot c_{\mathrm{sim}} \cdot \frac{t_0(M,s)}{q(s)}.
+\]
+\item The feedback signal is $Z_M \sim P_M(Z \mid S)$, with posterior $\pi_z^M(s) := \Prb[S = s \mid Z_M = z]$ for a realization $z$.
+\item The routing policy is $q_z^M \in \Delta(\cS)$ for each realized signal
+$z$, with
+$\operatorname{supp}(\pi_z^M)\subseteq\operatorname{supp}(q_z^M)$ almost
+surely.
+\end{enumerate}
+\end{assumption}
+
+\begin{theorem}[Model-Aware Decomposition]
+\label{thm:four-term}
+Under Assumption~\ref{ass:model-packed-family}, comparing a prior-matched baseline using model $M_0$ against a deployed system using model~$M$,
+\begin{equation}
+\label{eq:four-term}
+\resizebox{0.88\columnwidth}{!}{$\boxed{\displaystyle
+\DlogM
+=\log\frac{\kappa(M_0)}{\kappa(M)}
++\varphi(M_0,M)+G(M)-\varepsilon(M)}$}
+\end{equation}
+where the four terms are defined by
+\begin{align}
+\makebox[6.0em][l]{$\DlogM$}
+&:=\E\!\left[
+\log \mathsf{T}_\pi^{(M_0)}(S)
+-\log \mathsf{T}_{q_Z}^{(M)}(S)
+\right], \nonumber\\
+\makebox[6.0em][l]{$C_\kappa(M_0,M)$}
+&:=\log\frac{\kappa(M_0)}{\kappa(M)}, \label{eq:kappa-term} \\
+\makebox[6.0em][l]{$\varphi(M_0,M)$}
+&:=\E_\pi\!\left[\log\frac{t_0(M_0,S)}{t_0(M,S)}\right], \label{eq:phi-term} \\
+\makebox[6.0em][l]{$G(M)$}
+&:=\I_\pi(S : Z_M), \label{eq:G-term} \\
+\makebox[6.0em][l]{$\varepsilon(M)$}
+&:=\E_{Z_M}\!\left[\KL(\pi_Z^M \| q_Z^M)\right]. \label{eq:eps-term}
+\end{align}
+Here $C_\kappa$, $\varphi$, $G$, and $\varepsilon$ denote per-step cost,
+within-mode competence, information quality, and routing mismatch, respectively.
+\end{theorem}
+
+\par\noindent\emph{Proof.} See Appendix~\ref{app:proof:thm:four-term}.\par
+
+Appendix Proposition~\ref{prop:mode-dependent-cost} gives the more general identity in which per-step cost may also vary by mode and the baseline allocation need not equal~$\pi$.
+
+
+Benchmark racing reports only an aggregate comparison. The decomposition reports why the expected log-time gain has its value.
+
+\subsection{Scope and Metric Guardrails}
+\label{subsec:guardrails}
+
+The preceding identities hold exactly under the packed latent-mode assumptions
+and concern expected packed log-time.  In particular,
+\[
+\E[\log T_0-\log T_1]\neq \log\frac{\E[T_0]}{\E[T_1]}
+\quad\text{in general.}
+\]
+If the packed log-time law has a uniform additive residual
+$|r_M|\le\eta$, Proposition~\ref{prop:approximation-guarantee} adds a single
+term $R$ satisfying $|R|\le2\eta$.
+
+
+\section{Consequences for Model Choice and System Design}
+\label{sec:consequences}
+
+\begin{corollary}[Model-selection crossover]
+\label{cor:model-selection}
+Under Assumption~\ref{ass:model-packed-family}, model $M_1$ achieves lower
+expected packed log-time than model $M_2$ whenever
+\begin{equation}
+\label{eq:crossover}
+\begin{aligned}
+&
+\log\frac{\kappa(M_2)}{\kappa(M_1)}
++\varphi(M_0,M_1)-\varphi(M_0,M_2)
+\\[-1pt]
+&\qquad>G(M_2)-G(M_1)
++\varepsilon(M_1)-\varepsilon(M_2).
+\end{aligned}
+\end{equation}
+\end{corollary}
+
+\par\noindent\emph{Proof.} See Appendix~\ref{app:proof:cor:model-selection}.\par
+
+\begin{theorem}[Single-mode retry crossover]
+\label{thm:retry-crossover}
+Fix one homogeneous mode and a common one-attempt horizon.  Let a stronger
+system have success probability $p_h$ and per-attempt cost $\kappa_h$, and let
+a cheaper system have $0<p_\ell<p_h<1$ and
+$0<\kappa_\ell<\kappa_h$.  Assume retries of the cheaper system are
+conditionally independent and identically distributed.  The smallest retry
+depth matching the stronger system's one-attempt reliability is
+\[
+D_{\mathrm{cross}}
+=
+\left\lceil
+\frac{\log(1-p_h)}{\log(1-p_\ell)}
+\right\rceil.
+\]
+Executing all $D_{\mathrm{cross}}$ attempts is cheaper if and only if
+$D_{\mathrm{cross}}\kappa_\ell<\kappa_h$.  With stopping at first success,
+the expected cost is
+\[
+\kappa_\ell
+\frac{1-(1-p_\ell)^{D_{\mathrm{cross}}}}{p_\ell}.
+\]
+\end{theorem}
+
+\par\noindent\emph{Proof.} See Appendix~\ref{app:proof:retry-crossover}.\par
+
+The inner routing problem of the packed family is the same log-optimal allocation problem that appears in Kelly betting~\cite{kelly1956}, universal portfolio theory~\cite{cover-thomas2006}, and algorithm-portfolio scheduling~\cite{gomes-selman2001}. The optimal allocation is $q^*(\cdot \mid Z)=\pi_Z(\cdot)$; the mismatch $\varepsilon$ is the expected log-loss from suboptimal allocation.
+
+\section{Related Work and Positioning}
+\label{sec:related}
+
+\paragraph{Time and computational information.}
+Achille and Soatto make time-to-solution central for verifiable tasks and
+connect reusable information to speed~\cite{achille2026}.  Earlier
+foundations include universal and resource-bounded search
+\cite{solomonoff1964,levin1973,livitanyi2008,levin_1984_randomness_conservation,
+schmidhuber_2002_speed_prior}.  We adopt the time-centric objective and study a
+different question: how the deployment-time difference between two agent
+designs separates into cost, competence, information, and allocation mismatch.
+
+\paragraph{Selection, routing, and test-time compute.}
+Algorithm portfolios and SATzilla select algorithms per instance rather than
+committing to one global solver~\cite{gomes-selman2001,
+xu_hutter_hoos_leytonbrown_2008_satzilla}.  FrugalGPT and RouteLLM bring related
+cost--quality routing objectives to language models
+\cite{chen2023frugalgpt,ong2024routellm}.  Adaptive test-time compute further
+shows that the useful amount of inference effort depends on the prompt and the
+policy used to spend it~\cite{snell2024testtime}.  These works motivate the
+decision variables in our framework.  Our policy-agnostic identities expose the
+terms traded by any allocation policy under the packed-family assumptions.
+
+\paragraph{Sequential and modular computation.}
+The retry analysis is related to anytime algorithms, metareasoning, and
+sequential inspection~\cite{zilberstein_1996_anytime_systems,
+hansen_2001_monitoring_anytime,russell_wefald_1991_dotherightthing,weitzman1979,
+wald1947,chernoff1959}.  Mixture-of-experts and conditional computation make
+routing quality an architectural concern~\cite{jordan_jacobs_1994_hme,
+shazeer_2017_moe,fedus_zoph_shazeer_2022_switch}.  Our setting differs by
+allocating an explicit retry budget among complete solving strategies and
+measuring time to external verification.
+
+\section{Discussion and Conclusion}
+\label{sec:discussion}
+
+The framework centers on externally verifiable packed latent modes with
+$\mathsf{T}_q(s)\propto t_0(s)/q(s)$.  Uniform $\eta$-approximate
+log-linearity gives residual at most $2\eta$.  HumanEval+ uses saved-trace
+replay; prospective paired deployment additionally charges fresh
+routing-information acquisition.
+
+Open questions include dynamic mode discovery, correlated strategies,
+end-to-end router-cost accounting, and direct tests of the inverse-share law
+beyond the evaluated retry horizon.
+
+The framework gives a decomposable objective, model-selection crossovers, and a
+measurement protocol, organizing agent-design decisions around named,
+estimable channels.
+
+\onecolumn
+\appendix
+
+\section{General Agent-System Representation}
+\label{app:general-agent-system}
+
+\begin{definition}[General agent-system representation]
+For workflows that include tools, persistent memory, context management, and
+parallel execution, the reduced design tuple of Definition~\ref{def:agent-system}
+may be extended to
+\[
+d_{\mathrm{gen}}=(M,\rho,\Omega,W,K,p),
+\]
+where $\Omega$ is the tool library, $W$ is persistent memory, $K$ is the active
+context budget, and $p$ is the allowed parallelism.  An instrumented run can be
+represented by a resource-indexed artifact process $Y_{A_{d_{\mathrm{gen}}}}(c;x,r)$ and a run
+graph $G_{A_{d_{\mathrm{gen}}}}(x;r)$ whose nodes are recorded computational steps and whose
+edges encode observed data and control dependencies.
+\end{definition}
+
+\section{Proofs for the Main Text}
+\label{app:main-proofs}
+
+\subsection{Proof of Lemma~\ref{lem:conditional}: Posterior-matched allocation}
+\label{app:proof:lem:conditional}
+
+\begin{proof}
+By the inverse-share law,
+$\log(\mathsf T_q(s)/(c_{\mathrm{sim}}t_0(s)))=-\log q(s)$.  Hence
+\[
+\E_{S\sim\pi_z}\!\left[
+\log\frac{\mathsf T_q(S)}{c_{\mathrm{sim}}t_0(S)}
+\right]
+=\sum_s\pi_z(s)\log\frac{1}{q(s)}
+=H(\pi_z)+\KL(\pi_z\|q),
+\]
+where the support condition makes every displayed term finite.  The intrinsic
+term $\E_{S\sim\pi_z}[\log(c_{\mathrm{sim}}t_0(S))]$ is independent of~$q$.
+Finally, $\KL(\pi_z\|q)\ge0$, with equality if and only if $q=\pi_z$.
+This proves both uniqueness and the excess-loss identity.
+\end{proof}
+
+\subsection{Proof of Theorem~\ref{thm:ri-identity}: Routing-Information Identity}
+\label{app:proof:thm:ri-identity}
+
+\begin{proof}
+Apply Lemma~\ref{lem:conditional} to the baseline allocation $q_0 = \pi$:
+\[
+\E\!\left[\log \mathsf{T}_\pi(S)\right]
+= \E_\pi[\log(c_{\mathrm{sim}}\, t_0(S))] + H(\pi).
+\]
+Apply it to the deployed allocation $q_Z$:
+\[
+\E\!\left[\log \mathsf{T}_{q_Z}(S)\right]
+= \E_\pi[\log(c_{\mathrm{sim}}\, t_0(S))] + \E_Z[H(\pi_Z)] + \E_Z[\KL(\pi_Z \| q_Z)].
+\]
+Subtract:
+\[
+\Dlog = H(\pi) - \E_Z[H(\pi_Z)] - \E_Z[\KL(\pi_Z \| q_Z)]
+= G - \varepsilon.
+\]
+\end{proof}
+
+\subsection{Proof of Theorem~\ref{thm:four-term}: Model-Aware Decomposition}
+\label{app:proof:thm:four-term}
+
+\begin{proof}
+Write out the log-time:
+\[
+\log \mathsf{T}_q^{(M)}(s) = \log \kappa(M) + \log c_{\mathrm{sim}} + \log t_0(M,s) - \log q(s).
+\]
+For the prior-matched baseline with model $M_0$:
+\[
+\E\!\left[\log \mathsf{T}_\pi^{(M_0)}(S)\right]
+= \log\kappa(M_0) + \log c_{\mathrm{sim}} + \E_\pi[\log t_0(M_0,S)] + H(\pi).
+\]
+For the deployed system with model $M$:
+\begin{align*}
+\E\!\left[\log \mathsf{T}_{q_Z}^{(M)}(S)\right]
+&= \log\kappa(M) + \log c_{\mathrm{sim}} + \E_\pi[\log t_0(M,S)] \\
+&\quad + \E_{Z_M}[H(\pi_Z^M)] + \E_{Z_M}[\KL(\pi_Z^M \| q_Z^M)],
+\end{align*}
+where the last two terms arise from the cross-entropy identity exactly as in Theorem~\ref{thm:ri-identity}.
+Subtracting and grouping:
+\begin{align*}
+\DlogM &= \log\frac{\kappa(M_0)}{\kappa(M)}
++ \E_\pi\!\left[\log\frac{t_0(M_0,S)}{t_0(M,S)}\right]
++ \bigl(H(\pi) - \E_{Z_M}[H(\pi_Z^M)]\bigr)
+- \E_{Z_M}[\KL(\pi_Z^M \| q_Z^M)] \\[4pt]
+&= \log\frac{\kappa(M_0)}{\kappa(M)} + \varphi(M_0,M) + G(M) - \varepsilon(M).
+\end{align*}
+\end{proof}
+
+\subsection{Mode-dependent cost extension}
+
+\begin{proposition}[Mode-dependent cost extension]
+\label{prop:mode-dependent-cost}
+Suppose $\kappa(M,s)>0$ may depend on both model and mode, and
+\[
+\mathsf{T}_q^{(M)}(s,z)
+=c_{\mathrm{sim}}\,\kappa(M,s)\frac{t_0(M,s)}{q_z(s)}.
+\]
+For a baseline $(M_0,q_0)$ and a routed system $(M,q_Z)$,
+\[
+\begin{aligned}
+&\E\!\left[\log\mathsf{T}_{q_0}^{(M_0)}(S)-\log\mathsf{T}_{q_Z}^{(M)}(S,Z)\right]\\
+&\quad=
+\E_{S\sim\pi}\!\left[\log\frac{\kappa(M_0,S)}{\kappa(M,S)}\right]
++\E_{S\sim\pi}\!\left[\log\frac{t_0(M_0,S)}{t_0(M,S)}\right]
++\I_\pi(S:Z)+\KL(\pi\|q_0)-\E_Z\KL(\pi_Z\|q_Z).
+\end{aligned}
+\]
+\end{proposition}
+
+\begin{proof}
+Apply the conditional cross-entropy identity to the allocation term. The tower property gives
+$\E_Z\E_{S\sim\pi_Z}[\log\kappa(M,S)]=\E_{S\sim\pi}[\log\kappa(M,S)]$
+and the analogous equality for $t_0$. Subtracting the baseline expression and using
+$H(\pi)-\E_ZH(\pi_Z)=\I_\pi(S:Z)$ yields the claim.
+\end{proof}
+
+\subsection{Residual guarantee under approximate packedness}
+\label{app:proof:prop:approximation-guarantee}
+
+\begin{proposition}[Residual guarantee under approximate packedness]
+\label{prop:approximation-guarantee}
+Suppose the packed log-time law is only approximate, and represent the fixed baseline by a constant signal value $z_0$:
+\[
+\log \mathsf{T}_{q}^{(M)}(s,z)
+=\log\kappa(M)+\log c_{\mathrm{sim}}+\log t_0(M,s)-\log q_z(s)
++r_M(s,z,q),
+\]
+with $|r_M(s,z,q)|\le\eta$ uniformly over the evaluated systems, modes, signals, and allocations.
+For a fixed baseline allocation $q_0$ and a routed allocation $q_Z$,
+\[
+\begin{aligned}
+&\E\!\left[\log \mathsf{T}_{q_0}^{(M_0)}(S)-\log \mathsf{T}_{q_Z}^{(M)}(S,Z)\right]\\
+&\quad=
+\log\frac{\kappa(M_0)}{\kappa(M)}
++\varphi(M_0,M)+\I_\pi(S:Z)
++\KL(\pi\|q_0)-\E_Z\KL(\pi_Z^M\|q_Z^M)+R,
+\end{aligned}
+\]
+where
+\[
+R:=\E[r_{M_0}(S,z_0,q_0)-r_M(S,Z,q_Z)],
+\qquad |R|\le 2\eta.
+\]
+For $q_0=\pi$, this is Theorem~\ref{thm:four-term} plus a residual bounded by $2\eta$.
+\end{proposition}
+
+\begin{proof}
+Substitute the approximate log-time law into the proof of Proposition~\ref{prop:mode-dependent-cost}, specialized to mode-independent $\kappa(M)$. The ideal terms decompose exactly as before. The remaining difference is
+\[
+R=\E[r_{M_0}(S,z_0,q_0)-r_M(S,Z,q_Z)].
+\]
+Therefore
+\[
+|R|\le \E|r_{M_0}(S,z_0,q_0)|+\E|r_M(S,Z,q_Z)|\le 2\eta.
+\]
+\end{proof}
+
+\subsection{Cost of a Borrowed Allocation}
+
+\begin{proposition}[Cost of a borrowed allocation]
+\label{prop:borrowed-allocation}
+Under Assumption~\ref{ass:model-packed-family}, fix a model $M_B$ and let
+$q_Z^{*,B}=\pi_Z^B$.  For any allocation policy $q_Z$ satisfying the standing
+support condition,
+\[
+\E\!\left[
+\log\mathsf T_{q_Z}^{(M_B)}(S)
+-\log\mathsf T_{q_Z^{*,B}}^{(M_B)}(S)
+\right]
+=\E_Z\!\left[\KL(\pi_Z^B\|q_Z)\right].
+\]
+In particular, if $q_Z=q_Z^{*,A}$ and
+$q_Z^{*,A}\ne q_Z^{*,B}$ on a set of positive probability, then the excess is
+strictly positive whenever the displayed expectation is finite.
+\end{proposition}
+
+\begin{proof}
+Condition on $Z=z$.  The model-dependent cost and competence terms are fixed,
+so Lemma~\ref{lem:conditional} gives an excess conditional packed log-time of
+$\KL(\pi_z^B\|q_z)$.  Taking expectation over~$Z$ proves the identity.
+Nonnegativity of KL divergence, with equality only when its arguments agree,
+gives the final claim.
+\end{proof}
+
+\subsection{Proof of Corollary~\ref{cor:model-selection}: Model-selection crossover}
+\label{app:proof:cor:model-selection}
+
+\begin{proof}
+Apply Theorem~\ref{thm:four-term} to both models with the same baseline; subtract.
+The baseline terms cancel.
+\end{proof}
+
+\clearpage
+\section{Retry and Paired-Validation Results}
+\label{app:retry-and-validation}
+
+\begin{proposition}[Geometric-retry certified scale]
+\label{prop:geometric-certified-scale}
+Suppose independent attempts of system $M$ on mode $s$ succeed with probability $p_M(s)\in(0,1)$ and each complete attempt has duration $u_M(s)>0$.
+The minimum number of attempts needed to achieve failure probability at most $\delta\in(0,1)$ is
+\[
+N_M(s,\delta)
+=
+\left\lceil\frac{\log\delta}{\log(1-p_M(s))}\right\rceil,
+\]
+and the corresponding focused certified scale is $t_0(M,s,\delta)=u_M(s)N_M(s,\delta)$.
+Equivalently, the exact success hazard is $h_M(s):=-\log(1-p_M(s))$; replacing it by $p_M(s)$ is only a small-$p_M(s)$ approximation.
+\end{proposition}
+
+\begin{proof}
+After $N$ independent attempts, failure has probability $(1-p_M(s))^N$.
+Thus $(1-p_M(s))^N\le\delta$ if and only if
+$N\ge\log\delta/\log(1-p_M(s))$; taking the least integer proves the claim.
+\end{proof}
+
+\subsection{Proof of Theorem~\ref{thm:retry-crossover}: Single-mode retry crossover}
+\label{app:proof:retry-crossover}
+
+\begin{proof}
+The cheaper system succeeds at least once in $D$ attempts with probability
+$1-(1-p_\ell)^D$.
+Requiring this quantity to be at least $p_h$ and dividing by the negative number
+$\log(1-p_\ell)$ gives
+$D\ge\log(1-p_h)/\log(1-p_\ell)$.
+The ceiling is therefore the least feasible integer depth.
+The fixed-depth cost statement is immediate.
+For early stopping, attempt $d$ is reached with probability $(1-p_\ell)^{d-1}$; summing its expected cost gives the finite geometric series.
+\end{proof}
+
+\begin{definition}[Finite-horizon first-hit diagnostics]
+\label{def:first-hit-diagnostics}
+Fix a horizon $H$, action $a$, mode $s$, and censoring floor $p_{\min}\in(0,1)$.
+Let $\tau_a$ be first verified success and $C_t(a)$ accumulated deployment cost through time~$t$.
+Define
+\[
+F_a(s,H):=\Prb(\tau_a\le H\mid S=s),
+\qquad
+C_a(s,H):=\E[C_{\tau_a\wedge H}(a)\mid S=s],
+\]
+Assume $C_a(s,H)>0$ and define the finite-horizon log-effort diagnostic
+\[
+\ell_{\mathrm{hit}}(a,s;H)
+:=
+\log C_a(s,H)-\log(F_a(s,H)\vee p_{\min}).
+\]
+This empirical surrogate is neither the certified-time quantile $\overline T_A(\delta)$ nor the exact packed time $\mathsf T_q$.
+\end{definition}
+
+\subsection{Proof of the paired allocation-gain estimator}
+\label{app:proof:paired-estimator}
+
+\begin{proof}
+Condition on each sampled instance and its two selected actions.
+Each repeated-run average has the corresponding conditional expected deployment loss, while $\widehat m_j$ has conditional expectation $m_j$.
+The tower property and linearity of expectation then give the stated equality.
+\end{proof}
+
+
+\section{Notation and Assumption Audit}
+\label{app:notation}
+
+\begin{center}
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lp{9cm}@{}}
+\toprule
+\textbf{Symbol} & \textbf{Definition} \\
+\midrule
+$\cT^{(v)} = (\cX, \cY, V, \mu, \cB)$ & Verifiable task \\
+$\overline{T}_A(\delta)$ & Certified time-to-solution at confidence $1-\delta$ \\
+$\Delta$ & Certified log-speedup: $\log \overline{T}_{A_0} - \log \overline{T}_A$ \\
+$\mathsf{T}_q^{(M)}(s)$ & Packed mode-conditioned time-sharing surrogate; distinct from $\overline T_A(\delta)$ \\
+$\Dlog,\DlogM$ & Expected packed log-speedup functionals \\
+$S \in \cS$ & Latent mode variable \\
+$\pi, \pi_Z$ & Prior and posterior over modes \\
+$q, q_Z$ & Baseline and deployed routing allocations \\
+$\kappa(M)$ & Per-step cost of model $M$ \\
+$t_0(M,s)$ & Within-mode packed scale for model $M$ on mode $s$ \\
+$\varphi(M_0,M)$ & $\E_\pi[\log(t_0(M_0,S)/t_0(M,S))]$: competence advantage \\
+$G(M)$ & $\I_\pi(S : Z_M)$: information generation quality \\
+$\varepsilon(M)$ & $\E_Z[\KL(\pi_Z^M \| q_Z^M)]$: routing mismatch \\
+$\Meff$ & $\exp(H(\pi_Z))$: entropy-effective mode count \\
+$d = (M,\mathcal H,\rho)$ & Worker model, strategy set, and allocation policy \\
+$d_{\mathrm{gen}}=(M,\rho,\Omega,W,K,p)$ & Extended agent-system coordinates (Appendix~\ref{app:general-agent-system}) \\
+$r_M$ & Additive residual from the packed log-time law \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{center}
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lp{7cm}@{}}
+\toprule
+\textbf{Result} & \textbf{Assumptions Required} \\
+\midrule
+RI Identity (Thm.~\ref{thm:ri-identity}) & Packed family (Asm.~\ref{ass:packed-family}), prior-matched baseline, expected-log functional \\
+Four-term decomposition (Thm.~\ref{thm:four-term}) & Model-dependent packed family (Asm.~\ref{ass:model-packed-family}), expected-log functional \\
+Residual guarantee (Prop.~\ref{prop:approximation-guarantee}) & Uniform $\eta$-approximate packed log-linearity; residual at most $2\eta$ \\
+Mode-dependent cost extension (Prop.~\ref{prop:mode-dependent-cost}) & Positive mode-dependent costs, packed inverse-share law, common mode prior \\
+Crossover under retries (Thm.~\ref{thm:retry-crossover}) & Homogeneous mode, i.i.d. retries, common horizon, fixed per-attempt costs \\
+Paired router estimator & I.i.d. instances, fixed routers, integrable loss, unbiased measurement-cost estimate \\
+Crossover formula (Cor.~\ref{cor:model-selection}) & Model-dependent packed family \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{thebibliography}{99}
+
+\bibitem{achille2026}
+A.~Achille and S.~Soatto.
+\newblock {AI} agents as universal task solvers.
+\newblock \emph{Entropy}, 28(3):332, 2026.
+
+\bibitem{cover-thomas2006}
+T.~M.~Cover and J.~A.~Thomas.
+\newblock \emph{Elements of Information Theory}.
+\newblock Wiley, 2nd edition, 2006.
+
+\bibitem{chernoff1959}
+H.~Chernoff.
+\newblock Sequential design of experiments.
+\newblock \emph{Annals of Mathematical Statistics}, 30(3):755--770, 1959.
+
+\bibitem{chen2023frugalgpt}
+L.~Chen, M.~Zaharia, and J.~Zou.
+\newblock {FrugalGPT}: How to use large language models while reducing cost and improving performance.
+\newblock \emph{arXiv:2305.05176}, 2023.
+
+\bibitem{fedus_zoph_shazeer_2022_switch}
+W.~Fedus, B.~Zoph, and N.~Shazeer.
+\newblock Switch transformers: Scaling to trillion parameter models with simple and efficient sparsity.
+\newblock \emph{JMLR}, 23(120):1--39, 2022.
+
+\bibitem{gomes-selman2001}
+C.~P.~Gomes and B.~Selman.
+\newblock Algorithm portfolios.
+\newblock \emph{Artificial Intelligence}, 126(1--2):43--62, 2001.
+
+\bibitem{hansen_2001_monitoring_anytime}
+E.~A.~Hansen and S.~Zilberstein.
+\newblock Monitoring and control of anytime algorithms: A dynamic programming approach.
+\newblock \emph{Artificial Intelligence}, 126(1--2):139--157, 2001.
+
+\bibitem{jordan_jacobs_1994_hme}
+M.~I.~Jordan and R.~A.~Jacobs.
+\newblock Hierarchical mixtures of experts and the EM algorithm.
+\newblock \emph{Neural Computation}, 6(2):181--214, 1994.
+
+\bibitem{kelly1956}
+J.~L.~Kelly.
+\newblock A new interpretation of information rate.
+\newblock \emph{Bell System Technical Journal}, 35(4):917--926, 1956.
+
+\bibitem{levin1973}
+L.~A.~Levin.
+\newblock Universal sequential search problems.
+\newblock \emph{Problems of Information Transmission}, 9(3):265--266, 1973.
+
+\bibitem{levin_1984_randomness_conservation}
+L.~A.~Levin.
+\newblock Randomness conservation inequalities; information and independence in mathematical theories.
+\newblock \emph{Information and Control}, 61(1):15--37, 1984.
+
+\bibitem{livitanyi2008}
+M.~Li and P.~M.~B.~Vitanyi.
+\newblock \emph{An Introduction to Kolmogorov Complexity and Its Applications}.
+\newblock Springer, 2008.
+
+\bibitem{ong2024routellm}
+I.~Ong, A.~Almahairi, V.~Wu, W.-L.~Chiang, T.~Wu, J.~E.~Gonzalez,
+M.~W.~Kadous, and I.~Stoica.
+\newblock {RouteLLM}: Learning to route {LLM}s with preference data.
+\newblock \emph{arXiv:2406.18665}, 2024.
+
+\bibitem{russell_wefald_1991_dotherightthing}
+S.~Russell and E.~Wefald.
+\newblock \emph{Do the Right Thing: Studies in Limited Rationality}.
+\newblock MIT Press, 1991.
+
+\bibitem{schmidhuber_2002_speed_prior}
+J.~Schmidhuber.
+\newblock The speed prior: A new simplicity measure yielding near-optimal computable predictions.
+\newblock In \emph{COLT}, 2002.
+
+\bibitem{shazeer_2017_moe}
+N.~Shazeer et al.
+\newblock Outrageously large neural networks: The sparsely-gated mixture-of-experts layer.
+\newblock In \emph{ICLR}, 2017.
+
+\bibitem{snell2024testtime}
+C.~Snell, J.~Lee, K.~Xu, and A.~Kumar.
+\newblock Scaling {LLM} test-time compute optimally can be more effective than scaling model parameters.
+\newblock \emph{arXiv:2408.03314}, 2024.
+
+\bibitem{solomonoff1964}
+R.~J.~Solomonoff.
+\newblock A formal theory of inductive inference.
+\newblock \emph{Information and Control}, 7(1--2):1--22, 224--254, 1964.
+
+\bibitem{wald1947}
+A.~Wald.
+\newblock \emph{Sequential Analysis}.
+\newblock Wiley, 1947.
+
+\bibitem{weitzman1979}
+M.~L.~Weitzman.
+\newblock Optimal search for the best alternative.
+\newblock \emph{Econometrica}, 47(3):641--654, 1979.
+
+\bibitem{xu_hutter_hoos_leytonbrown_2008_satzilla}
+L.~Xu, F.~Hutter, H.~H.~Hoos, and K.~Leyton-Brown.
+\newblock Satzilla: Portfolio-based algorithm selection for SAT.
+\newblock \emph{JAIR}, 32:565--606, 2008.
+
+\bibitem{zilberstein_1996_anytime_systems}
+S.~Zilberstein.
+\newblock Using anytime algorithms in intelligent systems.
+\newblock \emph{AI Magazine}, 17(3):73--83, 1996.
+
+\end{thebibliography}
+
+\end{document}

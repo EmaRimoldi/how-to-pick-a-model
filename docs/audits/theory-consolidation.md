@@ -198,6 +198,10 @@ strongest impossibility wording, so it is retained only as interpretation.
 | \`archive/main_1.tex\` | retain as archive | smaller subset; valid selection results consolidated |
 | \`archive/final_paper.tex\` | retain as archive | unique valid depth/routing results consolidated; unsupported claims excluded from the anchor |
 | \`archive/neurips_old.tex\` | retain as archive | core duplicates; valid selection ideas consolidated; transfer bound unsupported |
+| \`archive/main_local.tex\` | retain as archive | Overleaf-only pre-inline snapshot of \`main.tex\`; no distinct theoretical result |
+| \`archive/main_3_local.tex\` | retain as archive | Overleaf-only local counterpart with the exploratory pilot appendix; no additional validated theorem |
+| \`archive/final_paper_local.tex\` | retain as archive | Overleaf-only local counterpart preserving the pre-cleanup transfer claims assessed above |
+| \`archive/Beneventano_Poggio.tex\` | retain as archive | mechanical text extraction of \`BP.pdf\`, not an authoritative LaTeX source |
 | \`archive/next_steps.tex\` | untouched | explicitly excluded by request |
 
 The audit identifies redundancy but does not delete historical source files.

@@ -1,0 +1,1954 @@
+\documentclass[11pt]{article}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[utf8]{inputenc}
+  \usepackage[T1]{fontenc}
+  % Portable ASCII renderings for symbols retained by the PDF text extractor.
+  \DeclareUnicodeCharacter{00A7}{S}
+  \DeclareUnicodeCharacter{00A8}{"}
+  \DeclareUnicodeCharacter{00AF}{-}
+  \DeclareUnicodeCharacter{00B4}{'}
+  \DeclareUnicodeCharacter{00B5}{mu}
+  \DeclareUnicodeCharacter{00B7}{.}
+  \DeclareUnicodeCharacter{00D7}{x}
+  \DeclareUnicodeCharacter{02C6}{hat}
+  \DeclareUnicodeCharacter{0338}{/}
+  \DeclareUnicodeCharacter{039B}{Lambda}
+  \DeclareUnicodeCharacter{03B1}{alpha}
+  \DeclareUnicodeCharacter{03B3}{gamma}
+  \DeclareUnicodeCharacter{03B4}{delta}
+  \DeclareUnicodeCharacter{03B5}{epsilon}
+  \DeclareUnicodeCharacter{03B7}{eta}
+  \DeclareUnicodeCharacter{03BA}{kappa}
+  \DeclareUnicodeCharacter{03C0}{pi}
+  \DeclareUnicodeCharacter{03C1}{rho}
+  \DeclareUnicodeCharacter{03C6}{phi}
+  \DeclareUnicodeCharacter{03D5}{phi}
+  \DeclareUnicodeCharacter{2013}{-}
+  \DeclareUnicodeCharacter{2014}{--}
+  \DeclareUnicodeCharacter{2019}{'}
+  \DeclareUnicodeCharacter{201C}{"}
+  \DeclareUnicodeCharacter{201D}{"}
+  \DeclareUnicodeCharacter{2022}{*}
+  \DeclareUnicodeCharacter{2126}{Omega}
+  \DeclareUnicodeCharacter{2190}{<-}
+  \DeclareUnicodeCharacter{2192}{->}
+  \DeclareUnicodeCharacter{2194}{<->}
+  \DeclareUnicodeCharacter{21D2}{=>}
+  \DeclareUnicodeCharacter{2206}{Delta}
+  \DeclareUnicodeCharacter{2208}{in}
+  \DeclareUnicodeCharacter{2212}{-}
+  \DeclareUnicodeCharacter{2217}{*}
+  \DeclareUnicodeCharacter{221A}{sqrt}
+  \DeclareUnicodeCharacter{221D}{proportional-to}
+  \DeclareUnicodeCharacter{2225}{||}
+  \DeclareUnicodeCharacter{223C}{similar-to}
+  \DeclareUnicodeCharacter{2248}{approximately}
+  \DeclareUnicodeCharacter{2264}{<=}
+  \DeclareUnicodeCharacter{2265}{>=}
+  \DeclareUnicodeCharacter{226A}{<<}
+  \DeclareUnicodeCharacter{226B}{>>}
+  \DeclareUnicodeCharacter{2286}{subset-of}
+  \DeclareUnicodeCharacter{22C6}{*}
+\else
+  \usepackage{fontspec}
+  \setmonofont{Latin Modern Mono}[Scale=MatchLowercase]
+\fi
+\usepackage{geometry}
+\usepackage{fancyvrb}
+\geometry{margin=1in}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{
+  fontsize=\scriptsize
+}
+
+\title{Beneventano--Poggio: Archival PDF Text Extraction}
+\author{Converted from docs/theory/BP.pdf}
+\date{PDF extracted mechanically for theorem audit}
+
+\begin{document}
+\maketitle
+
+\noindent This file is a mechanical text extraction from \texttt{BP.pdf}. It is
+kept in the paper archive for audit and comparison; it is not the original
+LaTeX source.
+
+\clearpage
+\section*{Extracted page 1}
+\begin{verbatim}
+A Mathematical Framework for Building Agent Systems
+A Mathematical Framework for Building Agent Systems
+Task-First Design, Equivalence, and Model Choice under Deployment
+Budgets
+Pierfrancesco Beneventano and Tomaso Poggio
+Center for Brains, Minds and Machines, MIT
+Editor: Under review
+Abstract
+A builder of LLM agent systems faces a concrete design problem: given a task distribution
+and a compute budget, which model, orchestration, and tool configuration minimizes time
+to verified solution? We provide a mathematical framework that replaces benchmark racing—
+the standard methodology of running both models and picking the winner—with structured
+analysis.
+The framework rests on three moves. First, we separate the task (an objective under
+budgets with an external verifier) from the graph (the solver-induced execution), and show
+this distinction changes design decisions. Second, we cast agent building as a stochastic
+optimization problem over a six-dimensional design tuple (M, π, Ω, W, K, p) and prove that
+restricting optimization to model variation alone is suboptimal whenever optimal routing
+policies differ across models. Third, we define two notions of task equivalence—post-training
+equivalence (when does training data transfer?) and orchestration equivalence (when does
+the same workflow apply?)—and show they are independent.
+For packed latent-mode families, expected certified log-speedup decomposes exactly as
+∆ = log(κ /κ) + φ + G − ε, separating per-step cost, within-mode competence, task-relevant
+0
+information, and routing mismatch into four independently measurable terms. This yields a
+closed-form crossover formula: a smaller specialist dominates a frontier generalist whenever
+the effective mode count falls below a computable threshold. The decomposition is exact in
+the packed-family regime and degrades gracefully outside it, with remainder O(δ log M +η).
+n
+We apply the framework to building agents for formal mathematical research, deriving
+opposing prescriptions for different task regimes from the same theory, and provide a
+measurement protocol for estimating all quantities from a structured pilot.
+Keywords: agent design, certified time, task equivalence, orchestration equivalence, model
+choice, operations research
+1 Introduction
+A builder of agent systems faces a question every deployment cycle: I have a task family,
+a compute budget, and a menu of models ranging from fine-tuned 7B specialists to frontier
+generalists. What system should I build? The question is not merely which model to call. It
+is which model, which orchestration policy, which tools, which memory architecture, and
+which budget allocation jointly minimize time to verified solution.
+The dominant methodology is benchmark racing: run both models on a test set, pick
+the winner, repeat when the next model arrives. Benchmark racing is fast and requires no
+1
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 2}
+\begin{verbatim}
+Beneventano and Poggio
+theory. It is also structurally blind. It conflates per-step cost, within-mode competence,
+task-relevant information, and routing quality into a single opaque comparison. A team that
+benchmark-races cannot diagnose why model A beats model B, cannot predict when the
+ranking reverses on a different task distribution, and cannot decide whether to fine-tune,
+add tools, or restructure the workflow. Benchmark racing tells you the average winner. This
+paper tells you the winner per task regime and tells you why.
+Four questions. The paper is organized around four questions, ordered so that each
+builds on the previous and the climax comes last.
+1. What explains suboptimal performance? When an agent system is slow, is it
+because the task lacks exploitable structure, because the system routes compute to the
+wrong strategies, because each step is too expensive, or because the workflow graph is
+badly shaped? The four-term decomposition (Section 6) separates these four causes into
+independently measurable channels.
+2. When are two tasks the same for design purposes? Benchmark racing treats
+every new task as an independent evaluation problem. Post-training equivalence and
+orchestration equivalence (Section 5) reveal when two apparently different tasks demand
+the same system design—and when they do not.
+3. When does training on one task help another? The transfer characterization
+(Section 5) bounds the gain from source-task data by the mutual information between
+the source representation and the target’s latent modes. Conditional guidance tells the
+builder: shared modes implies transfer works; shared modes but different orchestration
+implies retrain the router; no shared modes implies broader pre-training.
+4. Which model should I use—and when does a small specialist beat a frontier
+generalist? The crossover formula (Section 7) gives a closed-form threshold. A smaller
+model wins when its cost advantage exceeds the information and routing penalties, with
+the boundary determined by the task’s effective mode count.
+Contributions. The paper makes five contributions.
+1. A task-first ontology for agent systems (Section 3). We formalize budgeted trans-
+ductive tasks, stochastic solvers, and certified time, separating the task (objective under
+budgets) from the graph (solver-induced execution). A formal proposition shows this
+separation changes design decisions: benchmark racing is suboptimal whenever optimal
+routing differs across models.
+2. Agent building as a deployment optimization problem (Section 4). We cast agent
+design as stochastic optimization over a six-dimensional design tuple and prove that
+restricting the program to model variation alone forfeits routing-adaptive designs.
+3. Task equivalence and transfer (Section 5). We define post-training equivalence and
+orchestration equivalence, prove they are independent, and characterize transfer gain.
+√
+The orchestration bound is O( α log M) via Pinsker and Audenaert.
+4. An exact decomposition with approximation guarantee (Section 6). The four-
+term decomposition is algebraically exact in the packed-family regime; outside it, a
+2
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 3}
+\begin{verbatim}
+A Mathematical Framework for Building Agent Systems
+bounded remainder holds. The decomposition yields a crossover formula, a specialization-
+dominance checklist, and a multi-agent threshold (Section 7).
+5. A measurement protocol and application (Sections 8–9). We instantiate the
+framework on formal mathematical research, deriving opposing prescriptions for different
+task regimes, and provide estimators for all framework quantities from a structured pilot.
+Scope. The main body concentrates on tasks for which success is externally checkable:
+code against test suites, proofs against proof assistants, plans against constraint checkers.
+This is a deliberate restriction, not an apology. It is precisely the regime in which time-to-
+solution becomes mathematically clean and engineering-relevant. The exact decomposition
+requires the packed latent-mode family (Assumption 6): each instance has a dominant
+solution strategy, and certified time scales inversely with the compute share allocated to
+that strategy. Outside this regime, the approximation guarantee (Proposition 25) quantifies
+the degradation. Appendix A extends the framework to continuous rewards.
+Relation to Achille–Soatto. Achille and Soatto [1] establish that the mutual informa-
+tion between an agent’s history and its decisions bounds expected speedup over random
+search—formally, that information buys speed. Their framework is model-independent: it
+characterizes a task’s information structure without reference to which model processes it.
+The moment one asks “which model should I use?”, one needs per-step cost and within-mode
+competence—terms their framework does not contain. We extend their perspective: speed
+has a price, the price depends on design choices, and the price structure is decomposable
+into four measurable channels. They diagnose how much structure a task contains. We tell
+you which system to build to exploit that structure.
+Roadmap. Section 2 positions the paper. Section 3 defines the task, solver, and certified-
+time objects. Section 4 formulates the deployment optimization problem. Section 5 develops
+task equivalence and transfer. Section 6 contains the decomposition core. Sections 7–9 derive
+consequences, apply the framework to mathematical research, and specify the measurement
+protocol. Section 10 discusses limitations and open problems.
+2 Related Work and Positioning
+Achille–Soatto and the time-centric transductive view. The conceptual starting
+point is Achille–Soatto [1], who frame agents in the verifiable transductive regime and
+make time-to-solution central. We inherit that move almost entirely. Our contribution
+is narrower and more operational: we specialize the viewpoint to the problem of building
+agent systems, with explicit objects for tasks, solvers, budgets, transfer, orchestration
+mismatch, and deployment-facing model choice. The older lineage behind this viewpoint
+runs through Solomonoff induction, Levin search, and related resource-bounded views of
+inference [37, 24, 29, 25, 34]. These works motivate the idea that prior weight, description
+length, and reusable structure can be traded against search time. The present paper stays
+within that lineage but asks a deployment-facing question: given a modern agent stack with
+LLMs, tools, memory, and orchestration, which quantities should a builder optimize?
+Graph-centric reasoning and workflow literature. A substantial body of recent work
+describes reasoning or orchestration through explicit graph-like objects: trees of thoughts,
+3
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 4}
+\begin{verbatim}
+Beneventano and Poggio
+graphs of thoughts, and code-represented workflows searched over graph-structured execution
+spaces [44, 6, 45]. We agree that graphs are often the right representation of a solver execution.
+Our difference is ontological rather than adversarial: the graph is not the task. The task
+is the objective under budgets; the graph is the realization induced by a particular solver,
+model, and memory regime. That separation is what lets us ask whether different solvers
+on the same task should induce different graphs, and whether apparently similar graphs
+correspond to the same task at all.
+Algorithm portfolios and anytime computation. The question “how should one
+allocate limited compute across competing strategies for a given instance?” has a long
+history in algorithm portfolios and per-instance selection [20, 43], anytime algorithms and
+metareasoning under deadlines [47, 19, 33], and sequential inspection [42, 40, 10]. Weitzman’s
+Pandora’s Box result gives optimal stopping rules for inspecting alternatives with known
+reward distributions—structurally close to our routing problem, but in a static setting
+without the learning-from-verification feedback that the packed-family model captures. The
+present framework brings this family of ideas into the language of modern agent systems:
+the builder allocates compute across branches, tools, and strategies, and the target is a
+certified time frontier rather than a scalar accuracy metric.
+Operations research and team decision problems. Radner [31] initiated the theory
+of team decisions: agents with a common objective but decentralized information. Our
+multi-agent threshold (Section 7) is a special case of Marschak–Radner team optimization [28]
+applied to the packed-family setting. The broader framing of agent building as a stochastic
+optimization over design variables follows the tradition of stochastic programming [7] and
+automated ML pipelines [21, 16]. The contribution is not the optimization framing—that is
+standard—but the decomposable objective with four named, measurable terms.
+Conditional computation and routing. Mixture-of-experts and conditional computa-
+tion architectures separate a predictor from a router and make routing quality a first-class
+determinant of performance [22, 35, 14]. This is structurally close to our mismatch account-
+ing. The difference is granularity: in this paper the objects being routed are not token-level
+experts but agentic modes—toolchains, decomposition choices, branches of search, and
+orchestration policies.
+Task equivalence and MDP similarity. Ferns, Panangaden, and Precup [15] define
+bisimulation metrics for MDPs; Ravindran and Barto [32] introduce MDP homomorphisms.
+Both operate at a finer grain than our equivalence notions: they compare state-action spaces,
+while we compare posterior mode distributions at the task-family level. Agarwal et al. [2]
+propose policy similarity metrics. Taylor and Stone [39] survey transfer learning in RL. Our
+post-training equivalence addresses a different question: not whether two MDPs admit the
+same optimal policy, but whether training data from one task family improves certified time
+on another. Orchestration equivalence is, to our knowledge, without close precedent at this
+grain size.
+Verifiable reasoning and test-time compute. The motivating workloads are those in
+which test-time reasoning is evaluated against an external checker: code generation against
+unit tests, formal theorem proving, and verifier-backed reasoning [9, 27, 46]. A parallel
+4
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 5}
+\begin{verbatim}
+A Mathematical Framework for Building Agent Systems
+literature studies how additional test-time compute improves performance [41, 44, 36]. Our
+contribution is not another prompting or search heuristic. It is a mathematical language for
+asking what kind of speedup a design has bought and whether that speedup came from more
+reusable structure, better orchestration, or simply more expensive per-step computation.
+Memory, retrieval, and mode discovery. Retrieval-augmented models and library-
+induction systems convert past experience into faster future execution [26, 8, 13, 18]. In
+our language, such mechanisms change both how much reusable structure is available and
+how effectively the solver deploys it. Mode discovery—identifying the latent strategies that
+govern performance—connects to the options framework [38], option-critic architectures [4],
+and trajectory-based behavioral mode discovery [5]. Our measurement protocol (Section 9)
+adapts trajectory clustering to the proof-strategy setting.
+Positioning. We do not claim priority on time, verifiability, search, routing, or graph-based
+workflows in isolation. The claim is that, within one framework, we separate tasks from
+solver-induced graphs, cast agent building as a budgeted design problem, formalize task
+equivalence and transfer, and connect these objects to theorem-level speed accounting and
+deployment-facing model choice. The paper is a framework for building agent systems, not
+only for interpreting them after the fact.
+3 A Mathematical Framework for Agentic Tasks
+The mathematical objects in this paper are tasks, solvers, and certified time. The definitions
+are compressed; a Lean 4 tactic-prediction example follows each one to build intuition.
+3.1 Tasks
+Definition 1 (Budgeted transductive task) A budgeted transductive task at scale n
+is a tuple T = (X , Y , V , B ) where:
+n n n n
+• X is a set of instances and Y a set of candidate solutions;
+n n
+• V : X × Y → {0, 1} is a polynomial-time verifier;
+n n n
+• B = (b , b , b ) specifies budgets for time, cost, and memory.
+n t c m
+Success on instance x means producing y with V (x, y) = 1 within B .
+n n
+In Lean 4: X is a set of lemma statements, Y is the set of tactic proof scripts, V is
+n n n
+the Lean kernel checker, and B specifies maximum API cost and wall-clock time.
+n
+Definition 2 (Task family) A task family is a sequence T = (T ) of budgeted trans-
+n n≥1
+ductive tasks, together with a deployment distribution µ over instances X . The family
+n n
+captures a class of problems the builder expects to encounter repeatedly.
+The Lean example: a task family is a distribution over Mathlib lemma difficulties—some
+routine, some library-heavy, some creative.
+5
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 6}
+\begin{verbatim}
+Beneventano and Poggio
+3.2 Solvers and orchestration graphs
+Definition 3 (Stochastic solver) A stochastic solver A for task family T is a randomized
+algorithm that, given instance x ∈ X and budgets B , produces a candidate y (or reports
+n n
+failure) using a sequence of model calls, tool invocations, memory accesses, and branching
+decisions. A run of A on (x, r) (where r denotes randomness) induces a run graph G (x; r)—
+A
+a DAG whose nodes are computational steps and whose edges encode data and control
+flow.
+The graph is not the task. The task is the objective under budgets; the graph is the
+realized execution induced by a particular solver, model, and orchestration on a particular
+instance. Two solvers for the same task may produce radically different graphs—one a linear
+chain of rewrites, another a branching tree search with backtracking—yet both target the
+same objective. Confusing the graph with the task is the structural error that benchmark
+racing commits: it evaluates the realized execution without decomposing the objective.
+3.3 Certified time
+Definition 4 (Certified time-to-solution) For solver A on task family T at confidence
+level δ ∈ (0, 1), the certified time-to-solution is
+T (n, δ) = inf{t > 0 : P [A(x; r) succeeds within time t] ≥ 1 − δ} .
+A x∼µn,r
+Certified time is the deployment-relevant quantity: the builder needs the system to
+succeed with probability 1 − δ within a time budget, not merely to succeed “on average.”
+The log of certified time, log T , is the natural scale for additive decomposition.
+A
+Definition 5 (Certified log-speedup) Given a baseline solver A and a deployed solver
+0
+A, the certified log-speedup is ∆ = log T (n, δ) − log T (n, δ). Positive ∆ means the
+A0 A
+deployed solver is faster.
+3.4 The packed latent-mode family
+The exact decomposition requires a structural assumption on the task family. The assumption
+is stylized but captures the essential feature of verifiable tasks with multiple solution
+strategies.
+Assumption 6 (Packed latent-mode family) Fix a task family at scale n. Assume:
+1. Latent modes. There is a discrete latent variable S ∈ [M ] := {1, . . . , M } with prior π,
+n n
+representing the solution strategy, and an observable D ∼ P (D | S) representing verifier
+feedback and partial execution traces, with posterior π (s) := P[S = s | D].
+D
+2. One expert per mode. Each mode s has a specialized expert with certified internal scale
+t (s).
+0
+3. Allocation determines time. A routing policy chooses a share vector q ∈ ∆ . Under
+Mn
+hidden mode s, allocating share q(s) yields certified time
+t (s)
+0
+T (s) = c · ,
+q sim
+q(s)
+6
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 7}
+\begin{verbatim}
+A Mathematical Framework for Building Agent Systems
+where c is the simulation overhead.
+sim
+4. Baseline and deployed schedulers. The baseline chooses a fixed share vector q ∈ ∆ ;
+0 Mn
+the deployed system chooses a data-dependent map D (cid:55)→ q ∈ ∆ .
+D Mn
+In Lean tactic prediction, the modes are proof strategy families: induction, case splitting,
+library search, simp chains, rewrite sequences. The observable D is the partial execution
+trace—which tactics were tried, which failed, what error messages the kernel returned. The
+allocation q(s) is the fraction of the attempt budget devoted to strategy s. The assumption
+that T (s) ∝ t (s)/q(s) is a geometric-trials model: doubling the share on the correct
+q 0
+strategy halves expected time to find the proof. This is well-supported empirically for
+search-based theorem proving [17].
+The entropy-effective mode count. For a posterior π over modes, define M (D) :=
+D eff
+exp(H(π )). When M is small on most instances, only a few modes need to be separated
+D eff
+and executed well—the regime where specialization is most valuable.
+3.5 The graph is not the task
+The following proposition formalizes why the task-graph separation matters for design
+decisions.
+Proposition 7 (Benchmark racing can be suboptimal) Under the packed-family as-
+sumption, consider two models M and M with distinct optimal routing policies: π∗,A ̸=
+A B D
+π∗,B on a set of instances of positive measure. Then evaluating both models under a single
+D
+fixed workflow (as benchmark racing does) can select the wrong model: the model with lower
+win rate under the fixed workflow may achieve lower certified time under its own optimal
+routing.
+Proof Model M evaluated under its optimal routing has mismatch ε (π∗,A) = 0. Model
+A A
+M evaluated under M ’s routing has mismatch ε (π∗,A) = E [KL(π∗,B∥π∗,A)] > 0.
+B A B D D D
+Benchmark racing compares both under π∗,A, penalizing M by ε (π∗,A) nats. Under
+B B
+its own routing, M recovers the full penalty. If M ’s other advantages exceed M ’s by
+B B A
+less than ε (π∗,A) but more than zero, benchmark racing selects A while B with adapted
+B
+routing is superior.
+A concrete instance: Model A wins 60% of problems with a fixed workflow; Model B
+wins only 45% with the same workflow but 70% with an adapted routing policy. Benchmark
+racing selects A; the framework selects B. The graph is not the task. The task is the same
+in both cases; the graphs—and therefore the performance—differ because the routing policy
+differs.
+Scope declaration. The framework restricts to verifiable tasks with external checkers.
+This already includes many of the most important agentic workloads: code synthesis
+against tests, formal theorem proving, constrained planning, and verifier-backed search.
+The restriction is a feature: it is precisely the regime in which time-to-solution becomes
+mathematically clean and engineering-relevant.
+7
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 8}
+\begin{verbatim}
+Beneventano and Poggio
+4 Agent Building as a Deployment Optimization Problem
+The task object and solver-induced graph are now in place. The question is no longer only
+why a finished system is slow. It is how to choose model, memory, tools, routing, and
+parallelism before deployment.
+4.1 The design tuple
+A design point is
+d = (M, π, Ω, W, K, p) ∈ D , (1)
+n
+where M is the base model, π is the orchestration/routing policy, Ω is the available tool
+library, W denotes long-term memory resources, K is the active context budget, and p is
+the allowed degree of parallelism. Write A for the solver induced by design d.
+d
+In the Lean example: M is DeepSeek-Prover-7B or Claude Opus; π is the tactic-selection
+and backtracking policy; Ω includes the Lean kernel, Mathlib search, and rewriting tools; W
+is the persistent lemma cache; K is the proof-state context window; and p is the number of
+parallel proof branches.
+4.2 The master optimization problem
+For a confidence level δ ∈ (0, 1) and a deployment loss Λ over feasible time–cost–memory–
+n
+parallelism tuples, the builder solves
+min Λ (t, c, m, p) subject to (t, c, m, p) ∈ Fdep(n, δ) (2)
+n A
+d∈Dn d
+where Fdep(n, δ) is the deployment frontier: the set of time–cost–memory–parallelism tuples
+A
+d
+at which solver A succeeds with probability ≥ 1 − δ.
+d
+This is the sense in which building an agent system is an operations-research problem.
+The builder chooses a design point under resource constraints, not merely a single model
+under a scalar accuracy metric. The paper does not claim to solve this optimization in full
+generality. It identifies the design-variable space, provides a decomposable objective for the
+model-choice component, and solves restricted sub-problems (Sections 6–7).
+4.3 Suboptimality of model-restricted optimization
+Benchmark racing restricts the design program to model variation alone: it fixes the routing
+policy and all other coordinates, then compares models. The following proposition quantifies
+what this restriction forfeits.
+Proposition 8 (Suboptimality of M-restricted optimization) Under the packed-
+family assumption (Assumption 6), consider two candidate models M and M with distinct
+A B
+optimal routing policies: π∗,A ≠ π∗,B on a set of instances of positive measure. If the builder
+D D
+restricts to M-variation alone—fixing π = π∗,A and all other coordinates at model A’s
+values—then the suboptimality gap relative to the unrestricted optimum is at least
+ε (π∗,A) − ε (π∗,B) = ε (π∗,A) > 0,
+B B B
+the routing-mismatch penalty from evaluating model B under the wrong routing policy.
+8
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 9}
+\begin{verbatim}
+A Mathematical Framework for Building Agent Systems
+Proof Under the four-term decomposition (Theorem 21), the certified log-speedup
+for model M under routing policy q is ∆(M , q) = log(κ /κ ) + φ + G − ε (q),
+B B 0 B B B B
+where ε (q) = E [KL(π∗,B∥q )]. The unrestricted optimum uses q = π∗,B, achieving
+B D D D D
+ε (π∗,B) = 0. Under M-restriction, the builder evaluates M with π∗,A, incurring
+B B
+ε (π∗,A) = E [KL(π∗,B∥π∗,A)] > 0 since the policies differ on positive measure and KL
+B D D D
+divergence is zero if and only if the distributions agree almost surely.
+Corollary 9 (Benchmark racing eliminates routing-adaptive designs) Benchmark
+racing can only discover which model is better under one fixed routing policy. It cannot
+discover that model B with an adapted routing policy outperforms model A—precisely the
+design the framework identifies as optimal in the contested zone where M ≈ M⋆ .
+eff eff
+Builder interpretation. The suboptimality gap is largest when two models’ optimal
+routing policies differ substantially—the contested zone where the framework’s marginal value
+over benchmark racing is concentrated. In the clear-cut zones (M ≪ M⋆ or M ≫ M⋆ ),
+eff eff eff eff
+one model dominates regardless of routing, and benchmark racing gives the right answer.
+4.4 What does posing the problem this way buy?
+Without the OR framing, the builder does trial-and-error over a combinatorial design space.
+With it, the builder has structured search with named dimensions: model choice affects
+cost and competence; routing policy affects mismatch; tools and memory affect available
+structure; context budget trades node cost against graph shrinkage; parallelism trades
+coordination overhead against critical-path reduction. The four-term decomposition provides
+the objective function for the model-choice component.
+Which sections address which coordinates. Model choice M is addressed by Section 7
+(crossover theorem under simplifying assumptions). Routing policy π is partially addressed
+by Section 5 (orchestration equivalence: when two tasks demand the same routing) and
+Section 6 (the ε term diagnoses routing mismatch). Transfer across task distributions is
+characterized by Section 5. Orchestration architecture Ω, context budget W , and parallelism
+p are addressed only partially. Full joint optimization over all six coordinates simultaneously,
+multi-agent team composition beyond the threshold result, and optimal budget allocation
+under cost constraints remain open problems.
+Closing promise. The design program identifies six decision variables. The next two
+sections show that three of these variables are often redundant—because tasks that appear
+different are, for design purposes, the same—and that the remaining objective decomposes
+exactly into four terms a builder can estimate and independently improve.
+5 When Are Two Tasks the Same?
+Benchmark racing treats every new task as an independent evaluation problem. The
+equivalence framework reveals when two apparently different tasks are the same design
+problem—and when training on one transfers to the other.
+9
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 10}
+\begin{verbatim}
+Beneventano and Poggio
+5.1 Budget-preserving reduction and task equivalence
+Definition 10 (Budget-preserving reduction) A budget-preserving reduction from
+task family TA to task family TB at scale n is a pair of maps (f, g) where f : X A → X B
+n n
+maps instances and g : YB → YA maps solutions, such that:
+n n
+1. Correctness preservation: V B(f(x), y) = 1 =⇒ V A(x, g(y)) = 1.
+n n
+2. Budget preservation: the composition x (cid:55)→ g(AB(f(x))) respects the budget constraints
+d
+of TA: the overhead of applying f and g is absorbed within BA.
+n
+Definition 11 (Strong and weak equivalence) Two task families TA and TB are:
+• Strongly equivalent if budget-preserving reductions exist in both directions with overhead
+that is o(1) relative to the budgets.
+• α-weakly equivalent if for every design d the certified log-speedups satisfy |∆A(d) −
+∆B(d)| ≤ α.
+Strong equivalence says the two tasks are the same design problem: any solver for one is
+a solver for the other at negligible overhead. Weak equivalence is looser: the two tasks may
+differ, but no design choice exploits the difference by more than α nats.
+5.2 Post-training equivalence
+The builder’s question: if a model is post-trained on task family A and deployed on family B,
+should the builder expect the same performance?
+Definition 12 (Post-training efficiency) Fix a base solver U(0) and an update rule Upd.
+For data budget m, the post-training efficiency of A-data for task B is the transfer ratio
+∆ (n, m, δ)
+A→B
+η (m) := .
+A→B
+∆ (n, m, δ)
+B→B
+When η ≈ 1, training on A-data is almost as good as training on B-data for improving
+A→B
+performance on B.
+Theorem 13 (Post-training equivalence from task equivalence) In the packed-
+family regime, suppose both families share the same latent space S ∈ [M ] with different
+n
+observation channels P (D|S) and P (D|S). Then
+A B
+(m)
+I(S; D ) − ε
+η (m) = A A→B . (3)
+A→B
+(m)
+I(S; D ) − ε
+B B→B
+In particular:
+(i) If both families share all latent structure and cross-family mismatch equals within-family
+mismatch, then η = 1: training on A is exactly as good as training on B.
+A→B
+(ii) If the families share the latent space but different channels, then η ≈ I(S; D )/I(S; D )
+A→B A B
+when mismatch terms are small: the transfer ratio is governed by the information-quality
+ratio of the two channels.
+10
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 11}
+\begin{verbatim}
+A Mathematical Framework for Building Agent Systems
+Proof Apply the Routing-Information Identity (Theorem 19) to both transfer settings over
+(m)
+the shared mode space. For the numerator, the side-information variable is D drawn
+A
+from the A-channel, applied to target family B:
+∆ = I(S; D (m) ) − ε , where ε := E (cid:2) KL (cid:0) πB ∥q (· | D ) (cid:1)(cid:3) .
+A→B A A→B A→B DA DA B A
+Here πB (s) = P[S = s | D ] is the posterior over B-task modes given A-channel data. For
+DA A
+(m)
+the denominator, within-family data gives ∆ = I(S; D ) − ε . Dividing yields (3).
+B→B B B→B
+Claims (i) and (ii) follow by specialization.
+The shared-latent-space assumption is strong. It is appropriate when both families
+draw on the same underlying skill bank—coding and formal mathematics both involve
+decomposition, symbolic manipulation, and verification. It is inappropriate when the
+families share only surface-level features.
+Design heuristic for mixed-source post-training. For fraction α of data from source A,
+(m)
+the natural objective is ∆ (m) = I(S; D ) − ε . The mutual information is concave
+α→B α α
+in α by standard arguments [11]. The behavior of ε is less clear: an earlier draft asserted
+α
+convexity by citing “the infimum of convex functions is convex,” which is false in general.
+We state as a design heuristic: when the concavity of I(S; D ) dominates any non-convexity
+α
+in ε , compute ∆ on a coarse grid and select the maximizer. Whether the objective is
+α α→B
+generically concave under natural structural conditions is an open question (Section 10).
+5.3 Transfer characterization
+Proposition 14 (Transfer through target-relevant side information) Suppose the
+target family TB admits the packed-family representation with latent mode S ∼ πB. Let
+B
+adaptation on family TA produce a random representation Z , and let the transferred system
+A
+choose allocation q (· | Z ). Write πB (s) := P[S = s | Z ]. Then the packed-family
+B A ZA B A
+certified-time gain on TB from using Z is
+A
+∆packed = I (S : Z ) − E(cid:2) KL (cid:0) πB ∥q (· | Z ) (cid:1)(cid:3) . (4)
+A→B πB B A ZA B A
+Proof Apply the packed-family decomposition to the target family TB with side-information
+variable Z rather than within-family data. The proof is otherwise unchanged: the cross-
+A
+entropy identity splits the allocation term into information and mismatch.
+Remark 15 (DPI bound under joint latent structure) If additionally D ← S ↔
+A A
+S → D is a Markov chain and Z is a function of (D , S ), then by the data-processing
+B B A A A
+inequality: ∆packed ≤ I(S : S ). Transfer is bounded by the mutual information between the
+A→B A B
+latent mode spaces. The Markov chain assumption is appropriate when the families share a
+common underlying skill space; it is inappropriate when they share only surface features.
+11
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 12}
+\begin{verbatim}
+Beneventano and Poggio
+Estimability. The quantity I(S ; Z ) is a theoretical characterization, not an actionable
+B A
+prescription: estimation requires model internals or representation probing. For practical
+guidance, the builder uses the three-case conditional heuristic below and an estimable
+mode-overlap proxy—the Bhattacharyya coefficient between empirical mode distributions
+from two pilot runs. Estimation of I(S ; Z ) is an open problem (Section 10).
+B A
+Conditional guidance. The framework yields three conditional prescriptions for transfer:
+• Shared dominant modes, similar orchestration. Training benefit transfers. Deploy the
+source-trained model with minor adaptation.
+• Shared dominant modes, different orchestration. Retrain the routing policy but keep the
+base model. Competence transfers; the routing does not.
+• Target has modes not present in the source. Broader pre-training matters more than
+source-task fine-tuning. The source representation carries little information about the
+target’s latent modes.
+5.4 Orchestration equivalence
+Post-training equivalence governs what model to train. Orchestration equivalence governs a
+complementary question: when to reuse the same workflow.
+Definition 16 (α-Orchestration equivalence) Two packed-family task families T A and
+T B sharing a common mode bank [M ] are α-orchestration-equivalent if
+n
+E D (cid:2) KL (cid:0) π D A (cid:13) (cid:13) π D B(cid:1)(cid:3) ≤ α, (5)
+where πA, πB ∈ ∆ are the posterior mode distributions induced by side information D
+D D Mn−1
+under the two families, and the expectation is over the marginal distribution of D.
+Two families that are α-orchestration-equivalent with small α demand similar routing
+policies: the posterior beliefs about which strategy to deploy are close on average.
+Proposition 17 (Orchestration equivalence bounds) Suppose T A and T B are α-
+orchestration-equivalent packed families with common mode bank [M ]. Then:
+n
+(a) Information-term bound (independent of routing policy q).
+|G A − G B | = (cid:12) (cid:12) E D [H(π D A)] − E D [H(π D B)] (cid:12) (cid:12) ≤ √ 2α log (cid:18) √ M n (cid:19) , (6)
+2α
+√
+provided 2α ≤ 1 − 1/M .
+n
+(b) Routing-mismatch bound (depends on routing policy q). For any routing policy q
+with q := min q(s) > 0:
+min s
+√ √ (cid:18) M (cid:19)
+n
+|ε (q) − ε (q)| ≤ 2α log(1/q ) + 2α log √ . (7)
+A B min
+2α
+(c) Simplified bound under uniform-floor routing. If q ≥ 1/M , both bounds are
+√ min n
+O( α log M ).
+n
+12
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 13}
+\begin{verbatim}
+A Mathematical Framework for Building Agent Systems
+Proof sketch. Apply Pinsker’s inequality [30, 12] pointwise: ∥πA − πB∥ ≤
+D D 1
+(cid:113) √
+2 KL(πA∥πB). Take expectations and apply Jensen (concavity of ·): δ¯ :=
+D D √
+E[∥πA − πB∥ ] ≤ 2α. For (a), apply Audenaert’s [3] entropy continuity lemma:
+D D 1
+|H(p) − H(r)| ≤ ∥p − r∥ log(M /∥p − r∥ ) for distributions on M atoms. Take expecta-
+1 n 1 n
+tions; t (cid:55)→ t log(M /t) is concave, so Jensen gives the bound in terms of δ¯. For (b), use the
+n
+KL-difference decomposition:
+(cid:80)
+KL(p∥q) − KL(r∥q) = [H(r) − H(p)] + [p(s) − r(s)] log(1/q(s)).
+s
+Bound the first term by (a) and the second by δ¯ · log(1/q ) via Pinsker. Full proof in
+min
+Appendix B.
+Builder interpretation. If two tasks are α-orchestration-equivalent, the penalty from
+√
+reusing task A’s routing policy on task B is at most O( α log M ) nats in both the
+n
+information and routing terms. For a system with M = 10 modes and α = 0.01, this
+√ n
+is about 2 0.02 · log(10) ≈ 0.65 nats—less than the typical cost-ratio term log(30) ≈ 3.4
+√
+nats. The bound degrades with α, not α, reflecting the sub-linear relationship between
+KL divergence and total-variation distance. This is weaker than a linear bound for small α
+but is the correct scaling from first principles.
+5.5 The two equivalences are independent
+The two equivalence notions capture independent design dimensions.
+Orchestration-equivalent but not post-training-equivalent. Two families can share
+the same posterior structure (same beliefs about which mode to use, hence small α) while
+one requires much more data to reach those beliefs. The posteriors are close; the data
+requirements are not. A builder can reuse the workflow but must invest in separate training.
+Post-training-equivalent but not orchestration-equivalent. Two families can share
+the same latent modes (training on one transfers to the other, so η ≈ 1) while the
+A→B
+posterior structures differ enough that they demand different routing policies. Coding and
+formal mathematics may share symbolic-manipulation modes, so fine-tuning transfers. But
+the optimal proof-search orchestration differs from the optimal code-repair orchestration. A
+builder can reuse the model but must redesign the workflow.
+This separation is not a pathology. It is the conceptual payoff of having two distinct
+equivalence notions: post-training equivalence tells the builder when to reuse training data;
+orchestration equivalence tells the builder when to reuse the workflow. The decomposition
+in the next section provides the objective these equivalences operate on.
+6 Information-Routing and Model-Aware Decompositions
+The equivalence notions of the previous section identify when two tasks are the same
+design problem. The present section provides the objective function that design problem
+optimizes. We first establish the Routing-Information Identity—the two-term decomposition
+∆ = G−ε that is the paper’s cleanest equation—then extend it to the four-term Model-Aware
+Decomposition that compares models, and finally prove the upper envelope theorem and the
+approximation guarantee outside the packed family.
+13
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 14}
+\begin{verbatim}
+Beneventano and Poggio
+6.1 The Routing-Information Identity
+The first result decomposes certified log-speedup into two terms: how much the system
+learns about the latent mode, and how well it uses what it learns.
+Lemma 18 (Conditional log-time decomposition) Under Assumption 6, for any re-
+alized feedback D and any share vector q ∈ ∆ with supp(π ) ⊆ supp(q),
+Mn D
+E (cid:2) log T (S) | D (cid:3) = E [log(c t (S))] + H(π ) + KL(π ∥q).
+S∼πD q S∼πD sim 0 D D
+The allocation q = π uniquely minimizes conditional expected certified log-time. The excess
+D
+over this optimum is exactly KL(π ∥q).
+D
+Proof Since log T (s) = log(c t (s)) − log q(s),
+q sim 0
+E (cid:2) log T (S) | D (cid:3) = E [log(c t (S))]+ (cid:88) π (s) log 1 = E [log(c t (S))]+H(π )+KL(π ∥q),
+S∼πD q S∼πD sim 0 D
+q(s)
+S∼πD sim 0 D D
+s
+(cid:80)
+using the cross-entropy identity p(s) log(1/q(s)) = H(p) + KL(p∥q). Nonnegativity of
+s
+KL divergence gives the optimality claim.
+Theorem 19 (Routing-Information Identity) Under Assumption 6, with a prior-
+matched baseline q = π,
+0
+∆ = G − ε
+where
+G := I (S : D) = H(π) − E [H(π )], (8)
+π D D
+ε := E [KL(π ∥q )] . (9)
+D D D
+The term G is the mutual information between the latent mode and the feedback—the
+information generation quality. The term ε is the expected KL divergence of the routing
+policy from the posterior—the routing mismatch. Equivalently: ∆ ≤ G, with equality if and
+only if q = π almost surely. One nat of routing mismatch costs exactly one nat of certified
+D D
+log-speedup.
+Proof Apply Lemma 18 to the baseline allocation q = π:
+0
+E(cid:2) log T (S) (cid:3) = E [log(c t (S))] + H(π).
+π π sim 0
+Apply it to the deployed allocation q :
+D
+E(cid:2) log T (S) (cid:3) = E [log(c t (S))] + E [H(π )] + E [KL(π ∥q )].
+qD π sim 0 D D D D D
+Subtract:
+∆ = H(π) − E [H(π )] − E [KL(π ∥q )] = G − ε.
+D D D D D
+14
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 15}
+\begin{verbatim}
+A Mathematical Framework for Building Agent Systems
+The identity is algebraic: no approximation, no limit, no asymptotic qualifier. In the
+packed-family regime, information generation and routing mismatch are the only deter-
+minants of speedup, and they combine additively on the log scale. A system can be fast
+because it generates good information (G large) or slow because it routes poorly (ε large),
+and these two failures are separable.
+For a non-prior-matched baseline q ̸= π, the identity becomes ∆ = G + KL(π∥q ) − ε,
+0 0
+adding a baseline suboptimality bonus. The prior-matched case is the clean comparison.
+6.2 The Model-Aware Decomposition
+The Routing-Information Identity holds model fixed. To compare models, we extend the
+packed-family assumption to include model-dependent costs and competence.
+Assumption 20 (Model-dependent packed family) Fix a task family and a shared
+latent mode variable S ∼ π over [M ]. For each model M:
+n
+1. The per-step cost is κ(M).
+2. The within-mode certified scale is t (M, s), so that certified time under mode s with
+0
+allocation share q(s) is
+t (M, s)
+(M) 0
+T (s) = κ(M) · c · .
+q sim q(s)
+3. The feedback observable is D ∼ P (D | S), with posterior πM(s) := P[S = s | D = D].
+M D M
+4. The routing policy is qM ∈ ∆ .
+D Mn
+Theorem 21 (Model-Aware Decomposition) Under Assumption 20, comparing a
+prior-matched baseline using model M against a deployed system using model M,
+0
+κ(M )
+0
+∆ = log + φ(M , M) + G(M) − ε(M) (10)
+M 0
+κ(M)
+(cid:124) (cid:123)(cid:122) (cid:125) (cid:124) (cid:123)(cid:122) (cid:125) (cid:124) (cid:123)(cid:122) (cid:125)
+(cid:124) (cid:123)(cid:122) (cid:125) competence information routing mismatch
+per-step cost
+where the four terms are:
+κ(M )
+0
+log (per-step cost advantage of M), (11)
+κ(M)
+(cid:20) (cid:21)
+t (M , S)
+φ(M , M) := E log 0 0 (within-mode competence advantage), (12)
+0 π
+t (M, S)
+0
+G(M) := I (S : D ) (information generation quality), (13)
+π M
+ε(M) := E (cid:2) KL(πM∥qM) (cid:3) (routing mismatch). (14)
+D D D
+Proof Write out the log-time:
+(M)
+log T (s) = log κ(M) + log c + log t (M, s) − log q(s).
+q sim 0
+15
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 16}
+\begin{verbatim}
+Beneventano and Poggio
+For the prior-matched baseline with model M :
+0
+(cid:104) (cid:105)
+E log T (M0) (S) = log κ(M ) + log c + E [log t (M , S)] + H(π).
+π 0 sim π 0 0
+For the deployed system with model M:
+(cid:104) (cid:105)
+E log T (M) (S) = log κ(M) + log c + E [log t (M, S)]
+qD sim π 0
++ E [H(πM)] + E [KL(πM∥qM)],
+D D D D D
+where the last two terms arise from the cross-entropy identity exactly as in Theorem 19.
+Subtracting and grouping:
+(cid:20) (cid:21)
+∆ = log κ(M 0 ) + E log t 0 (M 0 , S) + (cid:0) H(π) − E [H(πM)] (cid:1) − E [KL(πM∥qM)]
+M κ(M) π t (M, S) D D D D D
+0
+κ(M )
+0
+= log + φ(M , M) + G(M) − ε(M).
+0
+κ(M)
+The four terms have clean interpretations:
+• Per-step cost log(κ /κ): the log cost ratio. A 7B model at 1/30th the price contributes
+0
+log 30 ≈ 3.4 nats.
+• Competence φ: the expected log-ratio of within-mode solve times. A fine-tuned specialist
+that is twice as fast per mode contributes log 2 ≈ 0.7 nats.
+• Information G: the mutual information between the latent mode and verifier feedback.
+A task with 8 equiprobable modes and a verifier that identifies the correct one contributes
+log 8 ≈ 2.1 nats.
+• Routing mismatch ε: the KL divergence of the routing policy from the posterior. A
+policy that spreads mass uniformly when the posterior is concentrated wastes ε nats of
+potential speedup.
+Benchmark racing reports only ∆. The decomposition reports why ∆ takes the value it
+does. Two systems with the same ∆ may differ entirely in how they achieve it—one through
+low cost, the other through good routing—and the appropriate intervention is different in
+each case.
+6.3 The upper envelope theorem
+The decomposition is exact within the packed family. Before specializing further, we state
+the general upper bound that holds outside it. The theorem rests on the following regularity
+conditions on the solver space and a structural witness.
+Assumption 22 (A1–A7: shared admissibility and aligned witness)
+• A1 (verifiability): V ∈ P.
+n
+16
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 17}
+\begin{verbatim}
+A Mathematical Framework for Building Agent Systems
+• A2 (prefix coding): A is countable and prefix-free, and both w(·) and w(· | D ) satisfy
+n n
+Kraft.
+• A3 (shared admissibility): the same nonempty set Aδ is used in the baseline and condi-
+n
+tioned schedule objectives.
+• A4 (shared simulation): both schedules incur the same simulation overhead c (n) ∈
+sim
+poly(n).
+• A5 (resource-bounded conditioning): the map D (cid:55)→ w(· | D ) is computable or decodable
+n n
+in polynomial time.
+• A6 (structure witness class): there is a nonempty subclass S(H ) ⊆ Aδ of admissible
+n n
+solvers that realize the reusable structure H .
+n
+• A7 (aligned witness): there exists a⋆ ∈ S(H ) and nonnegative slacks (ρ , ρ , κ ) such
+n U D U
+that
+F (a⋆) ≤ eρU inf F (a), F (a⋆) ≤ eρD inf F (a),
+U U D D
+a∈Aδ a∈Aδ
+n n
+− log w(a⋆) ≤ Kpoly(H ) + κ ,
+n U
+where F and F denote the baseline and conditioned schedule objectives and Kpoly(H ) :=
+U D n
+inf {− log w(a)} is the resource-bounded Kolmogorov complexity of the reusable
+a∈S(Hn)
+structure.
+Assumption 23 (Sufficient-statistic condition) The history H is a sufficient statistic
+n
+for the strategy set S(H ) relative to the side information D :
+n n
+P (D | H , S(H )) = P (D | H ).
+n n n n n
+This assumption is natural in the packed-family setting, where H determines the posterior
+n
+allocation over modes and thereby determines the distribution of strategies.
+Theorem 24 (Upper envelope at expectation level) Under Assumptions A1–A7 (As-
+sumption 22) and the sufficient-statistic condition (Assumption 23):
+E (cid:2) Sp(D ) (cid:3) ≤ I(H ; D ) + log (cid:0) 1/w(S(H )) (cid:1) ,
+Dn n n n n
+where Sp(D ) := log(T /T ) is the log-speedup from conditioning on D , I(H ; D ) is
+n U UDn n n n
+the mutual information between the history and the side information, and w(S(H )) is the
+n
+prior weight assigned to the strategy set.
+Proof Step 1 (Pointwise ratio bound). By Assumptions A1–A7, there exists a∗ ∈ S(H )
+n
+such that for each realization of D :
+n
+Sp(D ) ≤ ρ + log w(a∗ | D ) − log w(a∗).
+n Dn n
+Step 2 (Expectations under sufficiency). Take expectations over D . The sufficient-
+n
+statistic condition ensures that a∗ does not depend on D in a way that correlates with the
+n
+posterior weights beyond the dependence through H , so Jensen’s inequality applies cleanly:
+n
+E (cid:2) log w(a∗ | D ) (cid:3) ≤ E (cid:2) sup log w(a | D ) (cid:3) .
+Dn n Dn n
+a∈S(Hn)
+17
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 18}
+\begin{verbatim}
+Beneventano and Poggio
+Step 3 (Information bound). By the Kraft inequality applied to both prior and posterior:
+E [ρ ] + E (cid:2) sup log w(a | D ) (cid:3) − log w(a∗) ≤ I(H ; D ) + log(1/w(S(H ))).
+Dn Dn Dn n n n n
+a∈S(Hn)
+Step 4 (Combine). Collecting the bounds:
+E (cid:2) Sp(D ) (cid:3) ≤ I(H ; D ) + log(1/w(S(H ))).
+Dn n n n n
+Which results inherit the sufficiency assumption. The sufficient-statistic condition
+is required for this upper envelope and inherited by the approximation guarantee (Proposi-
+tion 25), which references the upper envelope as a ceiling. The RI Identity and the four-term
+decomposition are algebraic identities within the packed family and do not depend on the
+sufficiency assumption.
+Route A2 fallback. If the sufficiency assumption is relaxed, a maximal-inequality route
+gives a weaker bound with an additional log |S(H )| term arising from a union bound over
+n
+the strategy set.
+6.4 Approximation guarantee outside the packed family
+The packed-family assumptions are stylized. Real tasks have soft mode posteriors and
+approximate log-linear time scaling. The following proposition quantifies the degradation.
+Proposition 25 (Approximation guarantee) Suppose the packed-family assumptions
+(Assumption 20) hold except for two relaxations:
+1. (Soft modes.) The posterior πM is δ-approximately one-hot: there exists s∗(D) ∈ [M ]
+D n
+with πM(s∗(D)) ≥ 1 − δ for some δ ∈ [0, 1).
+D
+(M)
+2. (Approximate log-linearity.) The certified time satisfies log T (s) = log κ(M)+log c +
+q sim
+log t (M, s) − log q(s) + r(M, s, q) where |r(M, s, q)| ≤ η uniformly.
+0
+Then the four-term identity (Theorem 21) holds up to a remainder:
+(cid:12) (cid:20) (cid:21)(cid:12)
+(cid:12) (cid:12) (cid:12) E (cid:104) log T ( π M0) (S) − log T ( q M D ) (S) (cid:105) − log κ κ ( ( M M 0 ) ) + φ(M 0 , M) + G(M) − ε(M) (cid:12) (cid:12) (cid:12) ≤ R(δ, η, M n ),
+where
+R(δ, η, M ) ≤ 2δ log M + 2η.
+n n
+Proof The two relaxations contribute independently.
+Soft modes. When πM is δ-approximately one-hot, H(πM) ≤ h(δ) + δ log(M − 1) ≤
+D D n
+h(δ) + δ log M , where h(δ) = −δ log δ − (1−δ) log(1−δ). For M ≥ exp(h(δ)/δ), we have
+n n
+H(πM) ≤ 2δ log M . Both the baseline and deployed terms contribute, giving a routing
+D n
+correction of at most 2δ log M .
+n
+Approximate log-linearity. The residual r(M, s, q) enters additively into each log-time
+term. Since the identity subtracts two such terms, |r(M, s, q ) − r(M , s, π)| ≤ 2η.
+D 0
+Combining: R(δ, η, M ) ≤ 2δ log M + 2η.
+n n
+18
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 19}
+\begin{verbatim}
+A Mathematical Framework for Building Agent Systems
+When the bound is tight. For M = 8 modes, δ = 0.1, η = 0.05: R ≤ 0.42 + 0.10 = 0.52
+n
+nats. Against a typical decomposition value ∆ ≈ 3 nats (a 20x speedup), the remainder is
+about 17%—meaningful but not invalidating. The bound is tight when the effective mode
+count is small and the time model is approximately multiplicative.
+7 Consequences for Model Choice and System Design
+The decomposition is the accounting identity. Five consequences follow: a crossover formula,
+a specialization-dominance checklist, verifier equalization, a multi-agent threshold, and a
+Kelly-betting interpretation.
+7.1 The crossover formula and effective mode count
+Corollary 26 (Model-selection crossover) Under Assumption 20, model M achieves
+1
+lower expected certified log-time than model M whenever
+2
+κ(M )
+2
+log + φ(M , M ) − φ(M , M ) > G(M ) − G(M ) + ε(M ) − ε(M ) . (15)
+0 1 0 2 2 1 1 2
+κ(M )
+1 (cid:124) (cid:123)(cid:122) (cid:125) (cid:124) (cid:123)(cid:122) (cid:125) (cid:124) (cid:123)(cid:122) (cid:125)
+(cid:124) (cid:123)(cid:122) (cid:125) competence advantage information advantage routing penalty
+cost savings
+Proof Apply Theorem 21 to both models with the same baseline; subtract. The baseline
+terms cancel.
+Derivation of the exponential threshold formula. Equation (15) gives the general
+crossover condition. To obtain a closed-form threshold in terms of the effective mode count
+M , we make three additional assumptions:
+eff
+(S1) Verifier equalization: |G(M ) − G(M )| ≤ η for η small relative to log(κ /κ ) (Proposi-
+1 2 2 1
+tion 27), so the information terms approximately cancel.
+(S2) Linear routing-mismatch scaling: the specialist’s routing mismatch grows approximately
+linearly with the log of the effective mode count, ε(M ) − ε(M ) ≈ cˆ· log M , where
+small big eff
+cˆ > 0 is the per-mode routing penalty. This holds exactly when the specialist allocates
+uniformly over M modes while the generalist routes according to the posterior, giving
+eff
+cˆ = 1; more generally, cˆ is an empirically estimated coefficient.
+(S3) Net competence advantage φˆ independent of M : the within-mode competence difference
+eff
+φ(M , M ) − φ(M , M ) is approximately constant across task strata.
+0 1 0 2
+Under (S1)–(S3), the crossover condition becomes log(κ /κ ) + φˆ > cˆ · log M ,
+big small eff
+which gives the threshold:
+(cid:18) (cid:19)
+log(κ /κ ) + φˆ
+M⋆ = exp big small . (16)
+eff cˆ
+For a cost ratio of 30x, comparable competence (φˆ ≈ 0), and binary verifier feedback
+(cˆ = log 2, corresponding to one bit of routing penalty per mode doubling):
+(cid:18) (cid:19)
+log 30
+M⋆ = exp = 2log 2 30 = 30.
+eff log 2
+19
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 20}
+\begin{verbatim}
+Beneventano and Poggio
+Tasks with fewer than 30 effective modes belong to the specialist. With richer verifier
+feedback (cˆ > log 2), the threshold drops: a more informative verifier makes it harder for
+the specialist to justify its cost advantage.
+7.2 Specialization dominance
+The crossover formula gives a threshold. The following checklist gives sufficient conditions
+for specialization dominance that are individually checkable.
+A smaller model dominates when:
+(i) it is cheaper: κ < κ ;
+small big
+(ii) it is comparably competent on effective modes: φ(M , M ) ≥ φ(M , M );
+0 small 0 big
+(iii) its routing mismatch is no worse: ε ≤ ε ;
+small big
+(iv) verifier equalization holds: |G − G | is small relative to the cost ratio.
+big small
+When all four conditions hold, the specialist dominates on every channel simultaneously.
+The checklist is a design diagnostic, not a discovery: the conditions individually assert the
+small model is better on every dimension. The value lies in the decomposition into four
+named, measurable channels and the explicit quantitative form of the crossover.
+7.3 Verifier equalization
+The information term G(M) = I (S : D ) is, in general, model-dependent: different models
+π M
+generate different probes and receive different verifier feedback. A key simplification occurs
+when the verifier is rich enough to make G approximately model-independent.
+Proposition 27 (Verifier equalization) Under Assumption 20, suppose both models’
+residual posterior entropies are small:
+E [H(πM1)] ≤ η , E [H(πM2)] ≤ η .
+D D 1 D D 2
+Then
+|G(M ) − G(M )| ≤ η + η .
+1 2 1 2
+Proof G(M) = H(π)−E [H(πM)]. Since H(π) is model-independent, |G(M )−G(M )| =
+D D 1 2
+|E [H(πM2)] − E [H(πM1)]| ≤ η + η .
+D D D D 1 2
+Verifier equalization holds when the external checker provides enough feedback that both
+models’ residual uncertainties about the latent mode are small. Formal proof assistants with
+step-level error messages, comprehensive test suites with diagnostic output, and constraint
+solvers with counterexample feedback are all settings where this is plausible. When verifier
+equalization holds, the crossover formula simplifies: the information terms nearly cancel,
+and the model-selection decision reduces to cost plus competence versus routing quality.
+The verifier is the great equalizer: a rich external checker neutralizes the large model’s
+informational advantage, leaving only per-step cost and competence to determine the winner.
+20
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 21}
+\begin{verbatim}
+A Mathematical Framework for Building Agent Systems
+7.4 Multi-agent specialization threshold
+The crossover formula compares two models. The multi-agent threshold extends the analysis
+to teams of specialized agents versus a single generalist.
+Assumption 28 (Multi-agent packed family with coordination cost) Consider a
+packed latent-mode family with M modes and prior π. A single-agent design uses model M
+n g
+(generalist) with per-mode competence t (M , s), per-step cost κ(M ), and routing allocation
+0 g g
+q . A K-agent specialist-team design assigns each of K agents to a subset of modes. Agent
+g
+i has model M with per-mode competence t (M , s) and per-step cost κ(M ). The team
+i 0 i i
+allocation is q , and team(s) ∈ [K] denotes the agent assigned to mode s. The team
+team
+incurs a coordination cost c (K) ≥ 0 added to the expected log-time. The prior-weighted
+coord
+average per-step cost of the team is κ¯ :=
+(cid:80)Mn
+π(s) κ(M ).
+team s=1 team(s)
+Theorem 29 (Multi-agent specialization threshold) Under Assumption 28, suppose
+G(M ) − G = γ for a known constant γ. Then the K-agent specialist team achieves
+g team
+strictly lower expected certified log-time than the single generalist if and only if
+(cid:88) t 0 (M g , s) κ(M g )
+π(s) log + log + (ε − ε ) > c (K) + γ.
+g team coord
+t (M , s) κ¯
+s 0 team(s) team (cid:124) (cid:123)(cid:122) (cid:125)
+(cid:124) (cid:123)(cid:122) (cid:125) pe (cid:124) r-ste (cid:123) p (cid:122) savin (cid:125) gs routing improvement
+ϕspec: competence gain
+Proof Apply Theorem 21 to both designs with the same prior-matched baseline.
+For the generalist: ∆ = log(κ /κ(M )) + φ(M , M ) + G(M ) − ε . For the team,
+g 0 g 0 g g g
+the effective per-step cost is κ¯ and the effective competence is φ(M , M ) =
+team 0 team
+(cid:80)
+π(s) log(t (M , s)/t (M , s)). The team incurs additive coordination cost:
+s 0 0 0 team(s)
+∆ = log(κ /κ¯ ) + φ(M , M ) + G − ε − c (K). Subtracting:
+team 0 team 0 team team team coord
+κ(M )
+g
+∆ − ∆ = log + ϕ − γ + (ε − ε ) − c (K),
+team g spec g team coord
+κ¯
+team
+(cid:80)
+where ϕ = π(s) log(t (M , s)/t (M , s)) and the M terms cancel. The bicondi-
+spec s 0 g 0 team(s) 0
+tional follows because the four-term decomposition is an algebraic identity.
+Corollary 30 (Multi-agent threshold under verifier equalization) If verifier equal-
+ization holds, |G(M ) − G | ≤ η, then the specialist team dominates whenever
+g team
+κ(M )
+g
+ϕ + log + (ε − ε ) > c (K) + η.
+spec g team coord
+κ¯
+team
+This is a sufficient condition: the team may dominate even when the left-hand side falls
+below c (K) + η, provided the actual information-gain difference γ is less than η.
+coord
+Proof From Theorem 29, the team dominates iff the LHS exceeds c (K) + γ. Since
+coord
+γ ≤ η by verifier equalization, the condition LHS > c (K) + η ≥ c (K) + γ is
+coord coord
+sufficient.
+21
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 22}
+\begin{verbatim}
+Beneventano and Poggio
+Builder interpretation. The exact biconditional requires knowing γ exactly. In practice,
+verifier equalization provides only |γ| ≤ η, and the corollary gives a conservative test: if
+the combined savings from specialization exceed c (K) + η, the team is guaranteed to
+coord
+dominate. The gap between the conservative threshold and the exact threshold is at most 2η.
+This split follows Radner’s [31] tradition of distinguishing exact equilibrium characterizations
+from sufficient conditions for coordination gains.
+7.5 The Kelly connection
+The inner routing problem of the packed family—choosing the share allocation q to minimize
+expected certified log-time given feedback D—is the same log-optimal portfolio problem
+that appears in Kelly betting [23], universal portfolio theory [11], and algorithm-portfolio
+scheduling [17]. The optimal allocation q∗(· | D) = π (·) maximizes expected log-speedup
+D
+just as the Kelly bet maximizes expected log-wealth growth. The routing mismatch ε =
+E [KL(π ∥q )] is the expected log-wealth loss from suboptimal betting. The mathematical
+D D D
+identity is known; the contribution is its instantiation in the LLM agent setting, where it
+prescribes posterior-matched routing as the compute-optimal strategy and decomposes the
+gap from optimality into four measurable terms.
+8 Application: Building Math Research Agents
+The preceding sections develop the framework in domain-general terms. We now instantiate
+it for building agents for formal theorem proving in Lean 4. This is not a toy example.
+Teams at several organizations are actively building such systems, facing precisely the design
+choices the framework addresses: which model, what orchestration, when to fine-tune, and
+how to diagnose failures.
+The framework yields concrete, differentiated prescriptions that vary across three iden-
+tifiable task regimes within the same domain. The same framework applied to different
+regimes within formal theorem proving produces opposing recommendations—a feature, not
+a bug, since it reflects genuine structural differences in what makes these tasks hard.
+8.1 Three-regime taxonomy
+Formal theorem proving in Lean 4 is not a single task. The strategy space, the role of library
+knowledge, and the nature of the creative bottleneck vary dramatically across problem types.
+We identify three regimes, distinguished by their effective mode count M and the resulting
+eff
+implications for the decomposition terms.
+Routine tactic application (M ≈ 3–5). These are lemmas solvable by a small number
+eff
+of well-known tactic patterns: induction followed by simplification, ring arithmetic, omega
+for linear integer goals. The mode space is narrow, the verifier provides rich step-level
+feedback, and a specialist trained on Lean tactics has seen thousands of similar proofs. The
+decomposition predicts: the cost term log(κ /κ ) dominates because φ > 0 and ε
+big small small
+is small. This is the specialization-friendly regime.
+Library-heavy formalization (M ≈ 8–15). These lemmas require knowing which
+eff
+specific Mathlib lemma to invoke—a retrieval problem embedded in a proof-construction
+22
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 23}
+\begin{verbatim}
+A Mathematical Framework for Building Agent Systems
+Table 1: Three-regime taxonomy for formal theorem proving in Lean 4. Columns marked
+[E] contain empirically estimated values reflecting domain judgment; these would
+differ for other task domains. Columns marked [F] are framework-derived: they
+follow from the decomposition structure given the mode count. A practitioner
+in a different domain must estimate their own mode counts via the protocol in
+Section 9.
+Regime M [E] Transfer from coding [E] Recommended Likely bot- Recommended
+eff
+model class [F] tleneck [F] intervention [F]
+Routine tactic 3–5 Strong Small fine-tuned Cost (κ) Cheaper model,
+application specialist more attempts
+Library-heavy 8–15 Partial Medium model + Routing (ε) Better retrieval,
+formalization retrieval augmen- mode-specific
+tation routing
+Creative theo- 20+ Weak Frontier general- Competence Better training
+rem search ist (φ) or informa- data, broader
+tion (G) pre-training
+problem. The mode space is moderately wide: multiple viable proof strategies exist, and the
+key differentiator is whether the model can locate the right library fact. The decomposition
+predicts: the routing term ε is the primary bottleneck. A specialist may have low κ but high
+ε if its training did not cover the relevant library corner. This is the contested regime where
+the recommendation is conditional.
+Creative theorem search (M ≈ 20+). These problems require multi-step combinations
+eff
+of tactics, novel lemma inventions, and proof-state abstractions not well represented in
+any existing training corpus. The decomposition predicts: either φ or G is the bottleneck,
+because even a well-routed model needs to discover strategies not in its training distribution.
+The cost advantage of a specialist is eroded by the routing penalty ε.
+8.2 Worked examples
+Example 1 (Undergraduate Lean Agent — Specialist Dominates) Team A builds
+a Lean 4 agent for undergraduate-level theorem proving. They consider DeepSeek-Prover-V1.5
+(7B specialist, κ = $0.001/call) versus Claude Opus 4 (frontier generalist, κ = $0.03/call)
+A B
+under a monthly budget of $500.
+Decomposition estimation. From a 50-problem development set (satisfying the screening
+heuristic: κ ratio = 30×, narrow domain, > 50 problems):
+Model logκ0 φ G −ε ∆
+κ
+DeepSeek-7B +1.70 +0.90 +0.80 −0.10 +3.30
+Routine (M ≈ 3)
+eff Claude Opus −1.70 0.00 +0.90 −0.55 −1.35
+Illustrative values under model parameters from published benchmarks and structural
+predictions of the framework.
+23
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 24}
+\begin{verbatim}
+Beneventano and Poggio
+Verdict: deploy the specialist. The specialist advantage is ∆ − ∆ = 4.65 nats,
+A B
+corresponding to exp(4.65) ≈ 105× speedup under equalized cost. All four terms favor
+the specialist. The decomposition shows why: cost (+3.40 nats from 30× cheaper price),
+competence (+0.90 nats from faster convergence on induction/simp patterns), and routing
+(ε = 0.10 ≪ ε = 0.55). Information is approximately equal. Even if the competence
+A B
+advantage φ were zero, the cost advantage alone exceeds any plausible combination of routing
+penalty and information gap in this narrow-mode regime.
+What benchmark racing would say. “DeepSeek wins 88% of problems.” Correct but unin-
+formative: it does not explain which lever drives the advantage, whether the advantage persists
+under different cost assumptions, or what would need to change for the recommendation to
+flip.
+Example 2 (Research-Level Lean Agent — Conditional Verdict) Team B builds a
+Lean 4 agent for research-level formalization: library-heavy proofs requiring knowledge of
+specific Mathlib4 lemmas, with 8–15 effective modes.
+Decomposition estimation. From a 100-problem development set:
+Model logκ0 φ G −ε ∆
+κ
+DeepSeek-7B +1.70 +0.10 +1.60 −0.85 +2.55
+Library (M ≈ 12)
+eff Claude Opus −1.70 0.00 +1.80 −0.35 −0.25
+The specialist advantage is ∆ − ∆ = 2.80 nats. But this headline number conceals a
+A B
+fragile structure.
+Sensitivity. The specialist’s routing mismatch ε = 0.85 nats is large: it wastes attempts
+A
+on tactic families that do not match the library-heavy mode structure. If the specialist’s
+routing could be improved to ε = 0.45 (via retrieval augmentation), the advantage grows
+A
+to 3.20 nats—robust. But on the roughly 20% of library-heavy problems where only Claude
+succeeds (because the specialist has never seen the required Mathlib lemma), no amount of
+cost advantage helps. The expected advantage, weighting by coverage, may be near zero or
+negative.
+Verdict: conditional. The framework identifies this as a close call and provides specific
+conditions under which the recommendation flips: (i) if the team can reduce ε via retrieval
+A
+augmentation, the specialist dominates; (ii) if frontier-only coverage matters, the generalist is
+safer; (iii) if cˆ is uncertain, the team should run the full pilot. The framework’s prescription
+is “invest in routing improvement before committing to the specialist”—qualitatively different
+from benchmark racing’s “just try both.”
+What benchmark racing would say. “DeepSeek wins 65% of problems overall.” The
+decomposition reveals this conflates the 80% where both succeed (specialist wins most by cost)
+and the 20% where only the generalist succeeds.
+8.3 Coding-to-math transfer
+The framework provides a nuanced answer to whether training on code corpora helps with
+formal theorem proving.
+24
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 25}
+\begin{verbatim}
+A Mathematical Framework for Building Agent Systems
+Narrow-mode regime (routine tactic application). The dominant modes—pattern
+matching on goal structure, symbolic rewriting, search over a small tactic vocabulary—
+overlap substantially with code-generation modes. Post-training equivalence predicts that
+coding-task fine-tuning transfers well.
+Wide-mode regime (creative theorem search). The dominant modes—lemma inven-
+tion, proof-state abstraction, library navigation across deep dependency chains—are not
+represented in code corpora. The transfer analysis predicts: source-task fine-tuning on code
+is insufficient because the target has modes not present in the source. Broader mathematical
+pre-training matters more.
+The opposing conclusions. The same framework yields: code training helps for routine
+tactic application and code training does not help for creative theorem search. This reflects
+the structural difference in mode overlap between coding and proving across narrow versus
+wide mode regimes. A benchmark that averages across regimes would report “partial
+transfer,” masking the fact that transfer is strong where it does not matter much and weak
+where it matters most.
+8.4 Four failure modes
+The four-term decomposition provides a diagnostic framework for understanding why a math
+agent is slow.
+1. Missing structure (low G). The agent’s proof traces show that knowing the problem
+identity does not help predict which strategy works. The model lacks the representations
+to extract information from the proof state. Intervention: better training data covering
+the missing modes.
+2. Bad routing (high ε). The agent attempts tactics in the wrong order or wastes
+attempts on strategies that cannot work for the given goal structure. Intervention:
+improve retrieval or add mode-specific routing.
+3. Expensive nodes (high κ). Each attempt costs too much, consuming budget before
+the model can explore enough strategies. Intervention: switch to a cheaper model or
+reduce per-step cost via distillation.
+4. Bad graph shape (critical-path bottleneck). The orchestration forces sequential
+steps when parallel branching would be more efficient. Intervention: restructure the
+workflow.
+9 Measurement Protocol and Empirical Program
+The decomposition is useful only to the extent that κ, φ, G, ε, and M can be estimated
+eff
+from data. A domain-agnostic recipe, concrete estimators, and a pilot study design follow.
+9.1 Domain-agnostic mode-discovery recipe
+Before any domain-specific measurement, the builder must identify the latent modes. The
+recipe has four steps, of which only Step 2 requires domain knowledge.
+1. Collect successful solution traces from the target task. Run candidate models on a
+development set. Pool all successful traces.
+25
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 26}
+\begin{verbatim}
+Beneventano and Poggio
+2. Define a trace-level similarity metric appropriate to the domain. This is the one domain-
+specific step: theorem proving uses edit distance on tactic sequences; code generation uses
+AST diff; text generation uses embedding cosine similarity; retrieval-augmented systems
+use tool-call sequence alignment.
+3. Cluster with stability selection. Apply hierarchical clustering at multiple thresholds.
+Retain the mode count that is stable across bootstrap resamples. Report the stability
+range.
+4. Validate predictiveness. Check that mode labels predict differential model performance:
+success rates must differ meaningfully across clusters for at least one model. If mode
+labels do not predict which model succeeds, the discovered modes are not design-relevant.
+Steps 1, 3, and 4 are domain-agnostic. Step 2 requires domain knowledge but is a
+well-posed question.
+9.2 Screening heuristic
+Before investing in the full measurement protocol, practitioners should apply a cheap
+screening test.
+Condition Action Rationale
+κ ratio > 50× and nar- Deploy specialist, no pi- Cost term (> 3.9 nats) dom-
+row domain lot needed inates all plausible φ, G, ε
+κ ratio < 3× Benchmark-race with Cost term (< 1.1 nats) is
+small comparison set comparable to estimation
+noise
+Fewer than ∼ 50 verifi- Do not run pilot Mode labeling requires suffi-
+able problems cient within-cluster samples
+κ ratio 3–50×, moderate Run the full pilot Decomposition’s marginal
+complexity, ≥ 50 prob- value over benchmark rac-
+lems ing is concentrated here
+This converts the measurement protocol from “always do this” to “do this when it is
+worth doing”—consistent with a framework that includes cost in its own decomposition.
+9.3 Estimator summary
+All estimators require the mode-labeling step above. The following table summarizes.
+26
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 27}
+\begin{verbatim}
+A Mathematical Framework for Building Agent Systems
+Quantity Observable / Estimator Main Error Source
+κ(M) Per-step cost from API pric- Variance in tokens/call. Use
+ing: κˆ = price/1K tokens × median.
+tokens/call; or latency.
+φ(M , M) Within-mode competence Small sample per mode.
+0
+(cid:80)
+gap: φˆ = πˆ(s) · Bootstrap CIs.
+s
+log(tˆ (M , s)/tˆ (M, s)), where
+0 0 0
+tˆ is median solve time per
+0
+mode.
+G(M) Gˆ = H(πˆ) − 1 (cid:80) H(πˆM ). Un- Entropy estimation bias.
+N i Di
+der verifier equalization: check Miller–Madow correction:
+|Gˆ(M 1 ) − Gˆ(M 2 )| < 0.5 nats; if Hˆ MM = Hˆ + M 2 n N −1.
+so, use the average.
+ε(M) εˆ = 1 (cid:80) K(cid:99)L(πˆM ∥qˆM). Fre- KL plug-in estimator biased
+N i Di i
+quency proxy if model does not upward. Laplace smooth-
+output mode probabilities. ing.
+(cid:16) (cid:17)
+M M = exp 1 (cid:80) H(πˆMref) , Mode-labeling uncertainty
+eff eff N i Di
+where M is the cheapest can- propagates directly.
+ref
+didate model.
+9.4 Pilot study design
+We specify a pilot for comparing DeepSeek-Prover-V1.5 (7B specialist) against Claude Opus 4
+(frontier generalist) on 300 Mathlib4 lemmas.
+Benchmark construction. Extract candidate lemmas from Mathlib4 (commit pinned
+after DeepSeek-Prover training cutoff). Classify into three strata by top-level tactic diversity:
+routine (≤ 2 tactic families), library-heavy (specific Mathlib lemma invocations), and creative
+(≥ 3 tactic families, no single tactic > 50% of steps). Sample 100 per stratum; split 50/50
+into development and test sets.
+Budget equalization. Equalize total API cost, not number of attempts. At κ =
+A
+$0.001/call and κ = $0.03/call with $0.064/problem: DeepSeek gets 64 attempts per
+B
+problem, Claude gets ≈ 56.
+Mode labeling. Pool successful proof traces from both models on the development set.
+Extract top-level tactic sequences; compute pairwise normalized edit distance; hierarchical
+agglomerative clustering with average linkage. Sweep distance threshold and retain the
+M stable across bootstrap resamples. Fix labels before computing any model-dependent
+eff
+quantities.
+Five testable predictions. The pilot tests five qualitative predictions: (P1) DeepSeek
+has ∼ 30× lower per-call cost; (P2) DeepSeek has better competence on routine problems
+(φ > 0); (P3) Claude has higher information gain on creative problems; (P4) DeepSeek
+27
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 28}
+\begin{verbatim}
+Beneventano and Poggio
+has lower routing mismatch on routine problems; (P5) a crossover exists: specialist wins
+low-M , generalist wins high-M .
+eff eff
+Power analysis. Under log-normal certified times, a two-sample t-test on log-speedup
+differences with effect size d = 0.5, α = 0.05, and 80% power requires ∼ 64 problems per
+group. The 150-problem test set (50 per stratum) provides adequate power for stratum-level
+comparisons.
+Honest assessment criterion. If prediction accuracy in the contested regime (library-
+heavy) is near 50% (within [45%, 55%]), the decomposition adds nothing beyond a cost-based
+rule of thumb, and the paper reports this as a negative result.
+10 Discussion and Conclusion
+10.1 Limitations
+The framework rests on the packed latent-mode family. The assumption that certified
+time scales as t (s)/q(s)—that doubling the compute share halves the expected time—is a
+0
+geometric-trials model. The framework does not model correlated strategies, where success
+on one approach provides partial information for another. The mode-labeling step is a
+clustering judgment, not a mathematical object: different clustering thresholds yield different
+mode counts, and the decomposition values change accordingly.
+The framework assumes an external verifier. Tasks without binary or continuous
+verification—open-ended generation, creative writing, policy analysis—fall outside its scope.
+The framework addresses this limitation by not pretending to cover these tasks.
+The four-term decomposition is exact only in the packed-family regime. Outside it, the
+approximation guarantee (Proposition 25) provides a bound with remainder O(δ log M + η).
+n
+For tasks with many soft modes or strongly nonlinear time scaling, the remainder may
+dominate.
+The measurement protocol requires a pilot study. The pilot is cheap (estimated $725–$775
+for the Lean study) but not free. The screening heuristic (Section 9.2) mitigates this by
+identifying when the pilot is worth running.
+10.2 Open questions
+1. Joint optimization. The framework solves the model-choice sub-problem of the master
+design program (2). Full joint optimization over all six coordinates—model, routing,
+tools, memory, context, parallelism—remains open.
+2. Concavity of mixed-source objective. The mixed-source post-training objective
+∆ (m) involves a mutual-information term (concave in α) and a mismatch term (not
+α→B
+generically convex). Whether the combined objective is concave under natural structural
+conditions is unknown.
+3. Dynamic mode discovery. The current framework assumes modes are fixed. An
+adaptive version that discovers and refines modes during deployment—updating the
+decomposition as the system learns—would extend the framework to non-stationary task
+distributions.
+28
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 29}
+\begin{verbatim}
+A Mathematical Framework for Building Agent Systems
+4. Estimation of I(S ; Z ). The transfer characterization (Proposition 14) involves the
+B A
+mutual information between a target’s latent modes and a source’s learned representation.
+Direct estimation requires model internals or representation probing and remains an open
+problem.
+5. Multi-agent coordination cost. The multi-agent threshold (Theorem 29) treats
+c (K) as exogenous. Deriving c from the structure of the coordination protocol
+coord coord
+is an open problem connected to Radner’s [31] team theory.
+10.3 What the framework gives and does not give
+The framework gives the builder four things. First, a decomposable objective: instead of a
+single opaque comparison, the builder sees four channels, each independently improvable.
+Second, a crossover formula: the specialist-versus-generalist boundary is computable, not
+guessable. Third, a transfer characterization: the builder knows when source-task training
+helps, when to retrain the router, and when broader pre-training is needed. Fourth, a
+measurement protocol: every quantity in the decomposition is estimable from a structured
+pilot.
+The framework does not give the builder a solved optimization problem. It does not
+choose the orchestration architecture, the tool library, the memory system, or the parallelism
+degree. It does not replace engineering judgment. It replaces unstructured engineering
+judgment with structured engineering judgment: the builder still decides, but now knows
+which channel to invest in and how much each channel contributes.
+The gap between the framework and a full agent-design compiler is large. The framework
+occupies a middle ground between theory that is too abstract to be actionable and engineering
+that is too ad hoc to be systematic. Whether that middle ground is useful is ultimately an
+empirical question—one the pilot study is designed to answer.
+Appendix A. Continuous-Reward Extension
+The main body restricts to binary verification: a task instance either produces a verified
+solution (V = 1) or does not. This appendix generalizes the framework to continuous reward
+n
+signals R : X × Y → [0, R ], where R (x, y) measures the quality of output y on input x.
+n max n
+The generalization is structurally parallel to the binary case; the algebraic decomposition
+carries through with three specific modifications.
+A.1 Setup
+Definition 31 (Continuous-reward task family) A continuous-reward task family is a
+tuple (X , Y , R , B , P ) where X is the input space, Y is the output space, R : X ×Y →
+n n n n n n n n n n
+[0, R ] is the reward function (measurable, bounded), B is the budget, and P is the task
+max n n
+distribution over X . The binary case is recovered by setting R = 1{V = 1} with R = 1.
+n n n max
+A.2 Three modifications
+Modification 1: Success probability → expected reward per mode. The mode-
+conditional log-time log t (M, s) = log(1/p (M)) generalizes to the mode-conditional log-
+0 s
+29
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 30}
+\begin{verbatim}
+Beneventano and Poggio
+reward-rate: log tR(M, s) := − log r (M), where r (M) := E[R (X, Y ) | S = s, model M].
+0 s s n
+When R is binary, r = p and the expressions coincide.
+n s s
+Modification 2: Certified time → certified reward-time. The certified time T M(s)
+q
+is replaced by T R,M(s) := κ(M)·c /(q(s)·r (M)). In log-space: log T R,M(s) = log κ(M)+
+q sim s q
+log c + log tR(M, s) + log(1/q(s))—the same additive structure as the binary case.
+sim 0
+Modification 3: Posterior via reward observations. The posterior is updated via
+Bayes’ rule on reward observations: πR,M(s) ∝ π(s) · (cid:81) p(R | S = s, M). The informa-
+D j∈D j
+tion gain becomes GR(M) = I (S : DR ).
+π M
+A.3 Generalized decomposition theorem
+Theorem 32 (Four-term decomposition under continuous rewards) Under the
+packed-family assumption with continuous rewards (Modifications 1–3), the expected certified
+log-reward-time decomposes as:
+∆R := E(cid:2) log T R,M0(S) − log T R,M(S) (cid:3) = log κ(M 0 ) + φR(M , M) + GR(M) − εR(M),
+π qD κ(M) 0
+where φR(M , M) := E [log(r (M)/r (M ))] is the competence advantage, GR(M) := I (S :
+0 π S S 0 π
+DR ) is the information gain from reward observations, and εR(M) := E [KL(πR,M∥q )] is
+M D D D
+the routing mismatch.
+Proof The proof is identical in structure to the binary case (Theorem 21). The additive
+log-structure of certified reward-time ensures the cross-entropy identity applies. The tower
+property E [E [log tR(M, S)]] = E [log tR(M, S)] holds by the same argument as in the
+D πR,M 0 π 0
+D
+binary case. The four terms emerge identically.
+A.4 Binary recovery
+Setting R = 1{V = 1}: r (M) = p (M), tR = t , T R,M = T M, πR,M = πM, and ∆R = ∆.
+n n s s 0 0 q q D D
+All terms reduce exactly to their binary counterparts.
+A.5 Connection to optimal stopping
+The routing problem in the continuous-reward case generalizes to a stopping/multi-armed-
+bandit structure. This connects to Weitzman’s [42] Pandora’s Box (each mode is a “box” with
+opening cost proportional to κ(M)/q(s) and expected reward r (M); the routing mismatch
+s
+measures the gap between the builder’s allocation and the reservation-value ranking) and to
+Zilberstein’s [47] anytime-algorithm framework (the reward function is the natural quality
+measure and the four-term decomposition tells the builder why the system’s reward-rate is
+what it is). The framework identifies the stopping/routing structure and decomposes the
+performance gap into four channels. It does not prove a new optimal stopping theorem: the
+inner routing problem is known, and the outer model-choice problem is the contribution of
+the four-term decomposition.
+30
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 31}
+\begin{verbatim}
+A Mathematical Framework for Building Agent Systems
+Appendix B. Proofs of Supplementary Results
+B.1 Full proof of Proposition 17 (orchestration equivalence bounds)
+Proof Step 0: Pinsker bound. By Pinsker’s inequality applied pointwise: δ := ∥πA −
+D D
+(cid:113) √
+πB∥ ≤ 2 KL(πA∥πB). Taking expectations and applying Jensen (concavity of ·):
+D 1 √ D D
+δ¯ := E [δ ] ≤ 2α.
+D D
+Proof of (a). Recall G − G = E [H(πB)] − E [H(πA)]. By Audenaert’s entropy
+A B D D D D
+continuity applied pointwise: |H(πA) − H(πB)| ≤ δ log(M /δ ). Taking expectations:
+D D D n D
+|G − G | ≤ E [δ log(M /δ )]. Since f(t) = t log(M /t) is concave on (0, M ], Jensen
+A B D D √n D √ n n
+gives E [f(δ )] ≤ f(δ¯) ≤ 2α log(M / 2α).
+D D n
+Proof of (b). Use the KL-difference decomposition: KL(p∥q)−KL(r∥q) = [H(r)−H(p)]+
+(cid:80) [p(s) − r(s)] log(1/q(s)). Apply with p = πA, r = πB, take expectations. Bound the first
+s D √D
+term by part (a) and the second by δ¯ · log(1/q ) ≤ 2α log(1/q ).
+min min
+Proof of (c). If q ≥ 1/M , then log(1/q ) ≤ log M . Parts (a) and (b) are both
+√ min n min n
+O( α log M ).
+n
+B.2 Full proof of the alignment-certified upper envelope (Theorem 24)
+See Section 6, §6.3 for the expectation-level statement. The pointwise argument follows the
+structure in the main text:
+Sp(D ) ≤ I (H : D ) + ρ + κ .
+n poly n n D U
+Full details are provided in the earlier presentation.
+Appendix C. Scaling Laws (Compressed)
+The four-term decomposition induces scaling predictions for how ∆ changes with model
+scale and data scale.
+Pre-saturation regime. When G(M) ≪ H(π) (the verifier feedback does not yet resolve
+all modes), increasing data or model quality increases G approximately linearly. In this
+regime, improving the information channel is the highest-leverage intervention.
+Post-saturation regime. When G(M) ≈ H(π) (the verifier has identified the dominant
+mode), further improvements come only from reducing κ or ε. This is the regime where
+specialization dominates: the system already knows what to do, and the question is how
+cheaply and accurately it can execute.
+Crossover threshold scaling. The crossover threshold M⋆ = exp((log(κ /κ ) +
+eff big small
+φˆ)/cˆ) grows exponentially with the cost ratio and competence advantage, and shrinks
+with richer verifier feedback (cˆ larger). As frontier models become cheaper (compressing
+κ /κ ), the specialization-viable region shrinks. This predicts that the value of task-
+big small
+specific fine-tuning decreases over time as inference costs fall—a testable prediction.
+31
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 32}
+\begin{verbatim}
+Beneventano and Poggio
+Appendix D. Notation and Assumption Audit
+D.1 Notation reference
+Symbol Definition
+T = (X , Y , V , B ) Budgeted transductive task at scale n
+n n n n
+T (n, δ) Certified time-to-solution at confidence 1 − δ
+A
+∆ Certified log-speedup: log T − log T
+A0 A
+S ∈ [M ] Latent mode variable
+n
+π, π Prior and posterior over modes
+D
+q, q Baseline and deployed routing allocations
+D
+κ(M) Per-step cost of model M
+t (M, s) Within-mode certified scale for model M on mode s
+0
+φ(M , M) E [log(t (M , S)/t (M, S))]: competence advantage
+0 π 0 0 0
+G(M) I (S : D ): information generation quality
+π M
+ε(M) E [KL(πM∥qM)]: routing mismatch
+D D D
+M exp(H(π )): entropy-effective mode count
+eff D
+M⋆ Crossover threshold: specialist dominates below, generalist
+eff
+above
+d = (M, π, Ω, W, K, p) Design tuple
+α Orchestration-equivalence parameter: E [KL(πA∥πB)]
+D D D
+η Post-training efficiency: transfer ratio from family A to B
+A→B
+c (K) Coordination cost for K-agent team
+coord
+(cid:80)
+ϕ π(s) log(t (M , s)/t (M , s)): specialization gain
+spec s 0 g 0 team(s)
+D.2 Assumption audit
+The following table traces which assumptions each result requires.
+32
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 33}
+\begin{verbatim}
+A Mathematical Framework for Building Agent Systems
+Result Assumptions Required
+RI Identity (Thm. 19) Packed family (Asm. 6), prior-matched base-
+line
+Four-term decomposition (Thm. 21) Model-dependent packed family (Asm. 20)
+Upper envelope (Thm. 24) A1–A7 (Asm. 22), sufficient-statistic condition
+(Asm. 23)
+Approximation guarantee (Prop. 25) Relaxed packed family (δ-soft modes, η-
+approximate log-linearity)
+Crossover formula (Cor. 26) Model-dependent packed family
+Crossover threshold (16) Additionally (S1)–(S3): verifier equalization,
+linear mismatch scaling, constant competence
+Verifier equalization (Prop. 27) Model-dependent packed family, small residual
+posterior entropy
+Multi-agent threshold (Thm. 29) Multi-agent packed family (Asm. 28), known
+γ
+Multi-agent corollary (Cor. 30) Additionally: verifier equalization with bound
+η
+Orchestration equivalence (Prop. 17) α-orchestration equivalence (Def. 16), common
+mode bank
+Post-training equivalence (Thm. 13) Packed family, shared latent space
+Transfer characterization (Prop. 14) Target admits packed-family representation
+Continuous-reward extension (Thm. 32) Packed family with Modifications 1–3
+References
+[1] A. Achille and S. Soatto. AI agents as universal task solvers: It’s all about time.
+Preprint, 2026.
+[2] R. Agarwal, M. C. Machado, P. S. Castro, and M. G. Bellemare. Contrastive behavioral
+similarity embeddings for generalization in reinforcement learning. In ICLR, 2021.
+[3] K. M. R. Audenaert. A sharp continuity estimate for the von Neumann entropy. J.
+Phys. A: Math. Theor., 40(28):8127, 2007.
+[4] P.-L. Bacon, J. Harb, and D. Precup. The option-critic architecture. In AAAI, 2017.
+[5] N. Baram et al. Behavioral mode discovery via trajectory clustering. Preprint, 2024.
+[6] M. Besta et al. Graph of thoughts: Solving elaborate problems with large language
+models. Preprint, 2023.
+[7] J. R. Birge and F. Louveaux. Introduction to Stochastic Programming. Springer, 2nd
+edition, 2011.
+[8] S. Borgeaud et al. Improving language models by retrieving from trillions of tokens. In
+ICML, 2022.
+[9] M. Chen et al. Evaluating large language models trained on code. Preprint, 2021.
+33
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 34}
+\begin{verbatim}
+Beneventano and Poggio
+[10] H. Chernoff. Sequential design of experiments. Ann. Math. Stat., 30(3):755–770, 1959.
+[11] T. M. Cover and J. A. Thomas. Elements of Information Theory. Wiley, 2nd edition,
+2006.
+[12] I. Csisza´r and J. Ko¨rner. Information Theory: Coding Theorems for Discrete Memoryless
+Systems. Cambridge University Press, 2nd edition, 2011.
+[13] K. Ellis et al. DreamCoder: Learning to code by writing programs in your sleep. In
+PLDI, 2021.
+[14] W. Fedus, B. Zoph, and N. Shazeer. Switch Transformers: Scaling to trillion parameter
+models with simple and efficient sparsity. JMLR, 23(120):1–39, 2022.
+[15] N. Ferns, P. Panangaden, and D. Precup. Metrics for finite Markov decision processes.
+In UAI, 2004.
+[16] M. Feurer et al. Efficient and robust automated machine learning. In NeurIPS, 2015.
+[17] C. P. Gomes and B. Selman. Algorithm portfolios. Artif. Intell., 126(1–2):43–62, 2001.
+[18] G. Grand et al. LILO: Learning interpretable libraries by compressing and documenting
+code. Preprint, 2023.
+[19] E. A. Hansen and S. Zilberstein. Monitoring and control of anytime algorithms: A
+dynamic programming approach. Artif. Intell., 126(1–2):139–157, 2001.
+[20] B. A. Huberman, R. M. Lukose, and T. Hogg. An economics approach to hard
+computational problems. Science, 275(5296):51–54, 1997.
+[21] F. Hutter, H. Hoos, and K. Leyton-Brown. Sequential model-based optimization for
+general algorithm configuration. In LION, 2011.
+[22] M. I. Jordan and R. A. Jacobs. Hierarchical mixtures of experts and the EM algorithm.
+Neural Comput., 6(2):181–214, 1994.
+[23] J. L. Kelly. A new interpretation of information rate. Bell Syst. Tech. J., 35(4):917–926,
+1956.
+[24] L. A. Levin. Universal sequential search problems. Probl. Peredachi Inf., 9(3):115–116,
+1973.
+[25] L. A. Levin. Randomness conservation inequalities. Inform. Control, 61(1):15–37, 1984.
+[26] P. Lewis et al. Retrieval-augmented generation for knowledge-intensive NLP tasks. In
+NeurIPS, 2020.
+[27] Y. Li et al. Competition-level code generation with AlphaCode. Science, 378(6624):1092–
+1097, 2022.
+[28] J. Marschak and R. Radner. Economic Theory of Teams. Yale University Press, 1972.
+34
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 35}
+\begin{verbatim}
+A Mathematical Framework for Building Agent Systems
+[29] M. Li and P. Vita´nyi. An Introduction to Kolmogorov Complexity and Its Applications.
+Springer, 3rd edition, 2008.
+[30] M. S. Pinsker. Information and Information Stability of Random Variables and Processes.
+Holden-Day, 1964. (Russian original 1960.)
+[31] R. Radner. Team decision problems. Ann. Math. Stat., 33(3):857–881, 1962.
+[32] B. Ravindran and A. G. Barto. SMDP homomorphisms: An algebraic approach to
+abstraction in semi-Markov decision processes. In IJCAI, 2003.
+[33] S. Russell and E. Wefald. Do the Right Thing: Studies in Limited Rationality. MIT
+Press, 1991.
+[34] J. Schmidhuber. The speed prior: A new simplicity measure yielding near-optimal
+computable predictions. In COLT, 2002.
+[35] N. Shazeer et al. Outrageously large neural networks: The sparsely-gated mixture-of-
+experts layer. In ICLR, 2017.
+[36] C. Snell et al. Scaling LLM test-time compute optimally can be more effective than
+scaling model parameters. In ICLR, 2025.
+[37] R. J. Solomonoff. A formal theory of inductive inference, Part I. Inform. Control,
+7(1):1–22, 1964.
+[38] R. S. Sutton, D. Precup, and S. Singh. Between MDPs and semi-MDPs: A framework
+for temporal abstraction in reinforcement learning. Artif. Intell., 112(1–2):181–211,
+1999.
+[39] M. E. Taylor and P. Stone. Transfer learning for reinforcement learning domains: A
+survey. JMLR, 10:1633–1685, 2009.
+[40] A. Wald. Sequential Analysis. Wiley, 1947.
+[41] X. Wang et al. Self-consistency improves chain of thought reasoning in language models.
+In ICLR, 2023.
+[42] M. L. Weitzman. Optimal search for the best alternative. Econometrica, 47(3):641–654,
+1979.
+[43] L. Xu, F. Hutter, H. H. Hoos, and K. Leyton-Brown. SATzilla: Portfolio-based algorithm
+selection for SAT. JAIR, 32:565–606, 2008.
+[44] S. Yao et al. Tree of thoughts: Deliberate problem solving with large language models.
+In NeurIPS, 2023.
+[45] J. Zhang et al. AFlow: Automating agentic workflow generation. Preprint, 2024.
+[46] K. Zheng et al. MiniF2F: A cross-system benchmark for formal Olympiad-level mathe-
+matics. In ICLR, 2022.
+35
+\end{verbatim}
+
+\clearpage
+\section*{Extracted page 36}
+\begin{verbatim}
+Beneventano and Poggio
+[47] S. Zilberstein. Using anytime algorithms in intelligent systems. AI Magazine, 17(3):73–
+83, 1996.
+36
+\end{verbatim}
+
+\end{document}
