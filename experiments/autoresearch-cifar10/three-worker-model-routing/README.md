@@ -128,5 +128,7 @@ covered records can be audited step-by-step from raw JSONL traces.
 - `results/accounting/threeworker_threshold_summary.csv`
 - `results/accounting/threeworker_router_gain_summary.csv`
 - `raw/manifests/raw_run_inventory.csv`
+- `source/exploratory-bottleneck-pilot.md`: historical six-mode, four-worker
+  pilot decisions that preceded the promoted panel.
 - `raw/README.md`
 - `results/figures/README.md`

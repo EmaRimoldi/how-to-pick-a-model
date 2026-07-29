@@ -6,7 +6,6 @@ This audit covers the theoretical content of:
 
 - \`paper/neurips-submission/main.tex\`;
 - \`paper/neurips-submission/arxiv.tex\`;
-- \`paper/neurips-submission/arxiv_backup.tex\`;
 - \`paper/neurips-submission/archive/final_paper.tex\`;
 - \`paper/neurips-submission/archive/main_1.tex\`;
 - \`paper/neurips-submission/archive/main_3.tex\`;
@@ -14,7 +13,8 @@ This audit covers the theoretical content of:
 - the retained manuscript PDFs under \`paper/neurips-submission/archive/\`.
 
 \`next_steps.tex\` was deliberately excluded from inspection, comparison, and
-editing.  \`piers_macro.tex\` is a macro file rather than a manuscript.
+editing.  The non-theoretical \`piers_macro.tex\` support file was removed during
+the subsequent source cleanup.
 \`Achille & Soatto.pdf\` is an external reference and is not a candidate for
 content consolidation.
 
@@ -39,9 +39,8 @@ content consolidation.
 
 - Latest complete source in the AutoResearch manuscript branch.
 - 17 formal objects and the fullest empirical discussion in that branch.
-- \`arxiv_backup.tex\` has the same formal-result inventory and is an earlier,
-  shorter version.  Their normalized five-word-shingle overlap is 0.641;
-  the later file adds 381 lines and removes 144 relative to the backup.
+- The earlier \`arxiv_backup.tex\` snapshot had the same formal-result inventory
+  and was removed after this comparison; no theoretical result was lost.
 - \`submitted-manuscript.pdf\` remains the immutable record of the submitted
   layout and is not replaced by this editable source.
 
@@ -52,7 +51,11 @@ content consolidation.
 - Recovered from the maximal theory source at historical commit \`01a8e85\`.
 - The historical source contained 54 formal objects and 24 proof
   environments.
-- The consolidated anchor contains 62 formal objects and compiles to 26 pages.
+- After the second quantity-level audit, the consolidated anchor contains 65
+  formal objects.  The added objects preserve cellwise pilot concentration,
+  operational progress/persistence losses, and the progressive-signal packed
+  decomposition that had previously appeared only in draft prose or appendices.
+- The consolidated source compiles cleanly to 29 pages.
 - It is the editable theory companion to the historical \`BP.pdf\`, while
   preserving additional theory that was added after the PDF snapshot.
 
@@ -74,7 +77,7 @@ the theory anchor and, in shorter form, in the current paper:
 8. Mode-dependent-cost extension.
 9. Uniform residual under approximate inverse-share log-linearity.
 
-The statements in \`arxiv.tex\`, \`arxiv_backup.tex\`, and \`main_3.tex\`
+The statements in \`arxiv.tex\` and \`main_3.tex\`
 use different symbols but do not add a distinct theorem to this core.
 
 ### Retry and first-passage family
@@ -125,6 +128,32 @@ versions were transported into \`theory_anchor.tex\`:
 - when all designs are deterministic functions of shared model--mode
   estimands, pilot task evaluations are independent of the number of
   analytically scored designs.
+
+### Second-pass quantity audit
+
+The second audit inspected displayed quantities and estimator definitions in
+addition to formal theorem environments.  It found and consolidated:
+
+- the valid Bernoulli cell-concentration calculation from `main_1.tex`, now
+  Proposition `prop:cellwise-pilot-concentration`, with an exact logarithmic
+  error bound and an explicit warning that it does not control all four terms;
+- first-hit CDF, survival, discrete hazard, geometric-fit discrepancy,
+  persistence, occupancy loss, first-passage deployment loss, and audit loss,
+  now Definition `def:operational-progress-loss`;
+- the progressive-signal quantities
+  `(Delta_R^log,C_R,Phi_R,G_R,M_R)`, now Proposition
+  `prop:progressive-signal-decomposition`;
+- the net router objective, signal-acquisition scalarization, paired gain, and
+  action-shift probability, now recorded with Proposition
+  `prop:paired-unbiased`;
+- the empirical four-term closure residual, now recorded in the measurement
+  protocol.
+
+The obsolete evaluator-side `widehat{MM}` construction was not promoted as an
+operating-resource quantity: the anchor retains posterior-allocation KL only
+when a supported packed allocation is predeclared and otherwise uses held-out
+hard-router allocation regret.  Occupancy remains a persistence diagnostic and
+is not identified with certified proper time.
 
 ## Claims not promoted into the anchors
 
@@ -193,18 +222,20 @@ strongest impossibility wording, so it is retained only as interpretation.
 | \`main.tex\` | keep | current compact paper anchor |
 | \`arxiv.tex\` | keep | latest AutoResearch manuscript anchor |
 | \`archive/theory_anchor.tex\` | keep | maximal validated theory anchor |
-| \`arxiv_backup.tex\` | retain as archive | strict predecessor of \`arxiv.tex\` at result level |
-| \`archive/main_3.tex\` | retain as archive | merge-era draft with duplicated definitions and labels |
-| \`archive/main_1.tex\` | retain as archive | smaller subset; valid selection results consolidated |
+| \`arxiv_backup.tex\` | removed | strict predecessor of \`arxiv.tex\`; same formal-result inventory |
+| \`archive/main_3.tex\` | removed after second audit | packed, upper-envelope, operational-routing, retry, residual, progressive-signal, finite-horizon, and paired-estimator quantities are in \`theory_anchor.tex\`; protocol material is in \`arxiv.tex\` |
+| \`archive/main_1.tex\` | removed after second audit | packed core, cellwise concentration, corrected selection, and evaluation-reuse results are in \`theory_anchor.tex\`; the selection protocol is in \`arxiv.tex\` |
 | \`archive/final_paper.tex\` | retain as archive | unique valid depth/routing results consolidated; unsupported claims excluded from the anchor |
 | \`archive/neurips_old.tex\` | retain as archive | core duplicates; valid selection ideas consolidated; transfer bound unsupported |
-| \`archive/main_local.tex\` | retain as archive | Overleaf-only pre-inline snapshot of \`main.tex\`; no distinct theoretical result |
-| \`archive/main_3_local.tex\` | retain as archive | Overleaf-only local counterpart with the exploratory pilot appendix; no additional validated theorem |
+| \`archive/main_local.tex\` | removed after second audit | strict predecessor of \`main.tex\`; no distinct theoretical or empirical result |
+| \`archive/main_3_local.tex\` | removed after migration | same theory as \`main_3.tex\`; its unique exploratory pilot appendix was moved to the AutoResearch experiment bundle |
 | \`archive/final_paper_local.tex\` | retain as archive | Overleaf-only local counterpart preserving the pre-cleanup transfer claims assessed above |
 | \`archive/Beneventano_Poggio.tex\` | retain as archive | mechanical text extraction of \`BP.pdf\`, not an authoritative LaTeX source |
 | \`archive/next_steps.tex\` | untouched | explicitly excluded by request |
 
-The audit identifies redundancy but does not delete historical source files.
+The audit identifies redundancy and records the migration required before
+historical source deletion.  Git history remains the provenance record after a
+snapshot is removed from the working tree.
 
 ## Retained PDFs
 

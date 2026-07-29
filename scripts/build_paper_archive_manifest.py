@@ -51,30 +51,6 @@ ARCHIVE_POLICIES = {
         "superseded_by": "main.tex build output",
         "notes": "Do not cite as evidence source; rebuild active sources with make paper-build.",
     },
-    "main_1.tex": {
-        "role": "historical compact draft",
-        "disposition": "superseded-provenance",
-        "superseded_by": "main.tex and archive/theory_anchor.tex",
-        "notes": "Use only for draft genealogy.",
-    },
-    "main_3.tex": {
-        "role": "historical theory-heavy draft",
-        "disposition": "superseded-provenance",
-        "superseded_by": "archive/theory_anchor.tex",
-        "notes": "Main source for prior theory consolidation checks.",
-    },
-    "main_3_local.tex": {
-        "role": "local snapshot of historical theory-heavy draft",
-        "disposition": "review-before-delete",
-        "superseded_by": "main_3.tex and archive/theory_anchor.tex",
-        "notes": "Retained only for possible local-only deltas.",
-    },
-    "main_local.tex": {
-        "role": "local snapshot of compact draft",
-        "disposition": "review-before-delete",
-        "superseded_by": "main.tex",
-        "notes": "Retained only for possible local-only deltas.",
-    },
     "neurips_old.tex": {
         "role": "old NeurIPS draft",
         "disposition": "superseded-provenance",

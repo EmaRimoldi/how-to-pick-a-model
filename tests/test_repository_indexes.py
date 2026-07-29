@@ -235,7 +235,7 @@ def test_paper_archive_manifest_classifies_all_archive_files() -> None:
     assert manifest["archive_root"] == "paper/neurips-submission/archive"
     assert coverage["classified"] == coverage["files"]
     assert coverage["unclassified"] == []
-    assert len(records) >= 15
+    assert len(records) >= 11
 
     assert records[
         "paper/neurips-submission/archive/theory_anchor.tex"
@@ -246,16 +246,13 @@ def test_paper_archive_manifest_classifies_all_archive_files() -> None:
     assert records[
         "paper/neurips-submission/archive/final_paper_local.tex"
     ]["disposition"] == "review-before-delete"
-    assert records[
-        "paper/neurips-submission/archive/main_3_local.tex"
-    ]["nearest_text_neighbor"] == "paper/neurips-submission/archive/main_3.tex"
-
-    assert any(
-        pair["a"] == "main_3.tex"
-        and pair["b"] == "main_3_local.tex"
-        and pair["similarity"] > 0.6
-        for pair in manifest["similar_text_pairs"]
-    )
+    removed_snapshots = {
+        "paper/neurips-submission/archive/main_1.tex",
+        "paper/neurips-submission/archive/main_3.tex",
+        "paper/neurips-submission/archive/main_3_local.tex",
+        "paper/neurips-submission/archive/main_local.tex",
+    }
+    assert removed_snapshots.isdisjoint(records)
 
 
 def test_inventory_has_no_unexpected_source_duplicates() -> None:

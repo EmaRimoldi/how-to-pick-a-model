@@ -771,6 +771,36 @@ Analytic scoring reuses those estimates for all \(K\) designs.  Only the
 declared confirmation runs add task evaluations.
 \end{proof}
 
+\begin{proposition}[Cellwise Bernoulli pilot concentration]
+\label{prop:cellwise-pilot-concentration}
+Let \(\mathcal M\) and \(\mathcal S\) be finite.  In every model--mode cell,
+observe \(n_0\) conditionally independent Bernoulli outcomes with success
+probability \(p_M(s)\ge p_{\min}>0\), and let \(\widehat p_M(s)\) be their
+empirical mean.  For any \(b\in(0,p_{\min})\) and \(\delta\in(0,1)\), if
+\[
+n_0\ge
+\frac{1}{2b^2}\log\frac{2|\mathcal M||\mathcal S|}{\delta},
+\]
+then, with probability at least \(1-\delta\), simultaneously in every cell,
+\[
+|\widehat p_M(s)-p_M(s)|\le b,
+\qquad
+|\log\widehat p_M(s)-\log p_M(s)|
+\le \frac{b}{p_{\min}-b}.
+\]
+This proposition controls only the Bernoulli competence cells.  It does not
+provide a simultaneous bound for cost, information, or routing mismatch
+without separate estimators and support conditions for those quantities.
+\end{proposition}
+
+\begin{proof}
+Hoeffding's inequality bounds each cell failure probability by
+\(2e^{-2n_0b^2}\).  A union bound over
+\(|\mathcal M||\mathcal S|\) cells gives the first conclusion.  On that event,
+both \(p_M(s)\) and \(\widehat p_M(s)\) are at least
+\(p_{\min}-b\); the mean-value theorem for \(\log\) gives the second bound.
+\end{proof}
+
 \section{When Are Two Tasks the Same?}
 \label{sec:equivalence}
 
@@ -990,6 +1020,16 @@ The mode-discovery recipe is: collect successful traces; define a trace-level si
 \[
 \overline M_{\mathrm{eff}}=\exp\!\left(\frac{1}{N}\sum_i H(\hat\pi_{Z_i}^{M_{\mathrm{ref}}})\right).
 \]
+For any evaluated design, the empirical closure residual is
+\[
+\widehat R(d)
+:=\widehat\Delta_{\mathrm{obs}}(d)
+-\left(\widehat C_\kappa(d)+\widehat\varphi(d)
++\widehat G(d)-\widehat\varepsilon(d)\right).
+\]
+Residuals should be stratified by mode, model, horizon, signal, and allocation;
+systematic structure indicates a missing interaction rather than sampling noise
+around the packed law.
 Main error sources are token variance for $\kappa$, small samples per mode for $\varphi$, entropy-estimation bias for $G$, upward plug-in bias for $\varepsilon$, and propagation of mode-labeling uncertainty into $\Meff$. The source protocol uses medians for token cost, bootstrap confidence intervals, Miller--Madow entropy correction, and Laplace smoothing for KL estimates.
 
 Before running the full pilot, the screening heuristic is: if the cost ratio is above $50\times$ and the domain is narrow, deploy the specialist without a pilot; if the cost ratio is below $3\times$, benchmark-race on a small comparison set; if fewer than about 50 verifiable problems are available, do not run the pilot; if the cost ratio is between $3\times$ and $50\times$, complexity is moderate, and at least 50 problems are available, run the full pilot.
@@ -1481,6 +1521,83 @@ Assume $C_a(s,H)>0$ and define the finite-horizon log-effort diagnostic
 This empirical surrogate is neither the certified-time quantile $\overline T_A(\delta)$ nor the exact packed time $\mathsf T_q$.
 \end{definition}
 
+\begin{definition}[Operational progress, persistence, and deployment loss]
+\label{def:operational-progress-loss}
+Fix a horizon \(H\), a normalized verifier-progress process
+\(G_t(a,x;\xi)\in[0,1]\), and a success threshold \(\gamma\).  Define
+\[
+\tau_\gamma(a,x;\xi)
+:=\inf\{t\le H:G_t(a,x;\xi)\ge\gamma\},
+\qquad
+D_\gamma(a,x;\xi):=\mathbf{1}\{\tau_\gamma(a,x;\xi)=\infty\}.
+\]
+For a lower-is-better verifier loss, one admissible task-normalized process is
+\[
+G_t(a,x;\xi)
+:=\operatorname{clip}_{[0,1]}\!\left(
+\frac{L_0(x)-L_t(a,x;\xi)}{|L_0(x)|+\epsilon_L}
+\right),
+\qquad \epsilon_L>0.
+\]
+Let \(c_\gamma(a,x;\xi)\) be the resource vector accumulated through
+\(\tau_\gamma\wedge H\), let \(\lambda\ge0\) be declared before evaluation,
+and set
+\[
+C_\gamma(a,x;\xi):=\lambda^\top c_\gamma(a,x;\xi),
+\qquad
+\ell_{\mathrm{dep}}(a,x;\xi)
+:=\alpha_{\mathrm{fail}}D_\gamma(a,x;\xi)+C_\gamma(a,x;\xi).
+\]
+The persistence of verified progress and its mode-conditioned mean are
+\[
+O_{\gamma,H}(a,x;\xi)
+:=\frac1H\sum_{t=1}^H\mathbf{1}\{G_t(a,x;\xi)\ge\gamma\},
+\qquad
+O_a^\gamma(s,H):=\E[O_{\gamma,H}(a,X;\xi)\mid S=s].
+\]
+The corresponding threshold-free average-progress diagnostic is
+\[
+\overline G_a(s,H)
+:=\E\!\left[\frac1H\sum_{t=1}^H G_t(a,X;\xi)\,\middle|\,S=s\right].
+\]
+If \(C_a^H(s,H)>0\) is expected full-horizon cost, define
+\[
+\ell_{\mathrm{occ}}(a,s;H)
+:=\log C_a^H(s,H)-\log(O_a^\gamma(s,H)\vee p_{\min}).
+\]
+An optional full-horizon audit loss is
+\[
+\ell_{\mathrm{audit}}
+:=\ell_{\mathrm{dep}}
++\alpha_{\mathrm{occ}}(1-O_{\gamma,H})
++\alpha_{\mathrm{qual}}\psi(G_H),
+\]
+for a predeclared terminal-quality penalty \(\psi\).  Persistence and audit
+loss are secondary diagnostics; they do not replace first passage in
+Definition~\ref{def:certified-time}.
+
+For \(n_{a,s}\) independent trajectories in a fixed action--mode cell, the
+empirical first-hit CDF, survival function, and discrete hazard are
+\[
+\widehat F_a(s,h)
+:=\frac1{n_{a,s}}\sum_i\mathbf{1}\{\tau_i\le h\},
+\qquad
+\widehat S_a(s,h):=1-\widehat F_a(s,h),
+\]
+\[
+\widehat\lambda_a(s,h)
+:=\frac{\sum_i\mathbf{1}\{\tau_i=h\}}
+{\sum_i\mathbf{1}\{\tau_i\ge h\}}.
+\]
+For a geometric-retry diagnostic with
+\(\widehat p_a(s):=\widehat\lambda_a(s,1)\), the finite-horizon discrepancy is
+\[
+\mathcal D_{\mathrm{geom}}(a,s;H)
+:=\max_{h\le H}
+\left|\widehat F_a(s,h)-\{1-(1-\widehat p_a(s))^h\}\right|.
+\]
+\end{definition}
+
 \begin{definition}[Hard-router allocation regret]
 \label{def:allocation-regret}
 Using the horizon and floor from Definition~\ref{def:first-hit-diagnostics}, define for a finite action menu $\cA$
@@ -1497,21 +1614,95 @@ r_\rho(x):=L(a_\rho(x),s)-\min_{a\in\cA}L(a,s)\ge0.
 This diagnostic is reported instead of $\KL(\pi_Z\|q_Z)$ when no reproducible packed allocation $q_Z$ is implemented; it must be estimated on data not used to fit the router.
 \end{definition}
 
+\begin{proposition}[Progressive-signal packed decomposition]
+\label{prop:progressive-signal-decomposition}
+Let \(k\in\{0,j\}\) index two start-of-run signal conditions.  Under condition
+\(k\), a fixed router observes \(Z_k\), selects
+\(a_R^k(Z_k)\in\cA\), and induces the posterior
+\(\pi_k(s\mid Z_k)=\Prb(S=s\mid Z_k)\).  Let
+\(q_R^k(\cdot\mid Z_k)\in\Delta(\cS)\) be a predeclared packed allocation with
+support containing that of \(\pi_k\), and suppose
+\(\kappa(a,s)>0\) and \(p(a,s)>0\).  Define
+\[
+\mathcal E_R^k(s,Z_k)
+:=
+\frac{\kappa(a_R^k(Z_k),s)}
+{p(a_R^k(Z_k),s)q_R^k(s\mid Z_k)}
+\]
+and
+\[
+\Delta_R^{\log}(j)
+:=\E[\log\mathcal E_R^0(S,Z_0)-\log\mathcal E_R^j(S,Z_j)].
+\]
+Then
+\[
+\Delta_R^{\log}(j)=C_R(j)+\Phi_R(j)+G_R(j)+M_R(j),
+\]
+where
+\begin{align*}
+C_R(j)
+&:=\E\!\left[
+\log\frac{\kappa(a_R^0(Z_0),S)}{\kappa(a_R^j(Z_j),S)}
+\right],\\
+\Phi_R(j)
+&:=\E\!\left[
+\log\frac{p(a_R^j(Z_j),S)}{p(a_R^0(Z_0),S)}
+\right],\\
+G_R(j)
+&:=H(S\mid Z_0)-H(S\mid Z_j),\\
+M_R(j)
+&:=\E\!\left[
+\KL(\pi_0(\cdot\mid Z_0)\|q_R^0(\cdot\mid Z_0))
+-\KL(\pi_j(\cdot\mid Z_j)\|q_R^j(\cdot\mid Z_j))
+\right].
+\end{align*}
+If \(Z_j\) refines \(Z_0\), then
+\(G_R(j)=\I(S:Z_j\mid Z_0)\).  This is a packed log-effort diagnostic and
+excludes signal-acquisition cost.  If the deployment mechanism does not
+implement the allocations \(q_R^k\), the displayed KL terms are descriptive
+summaries rather than operating-resource terms.
+\end{proposition}
+
+\begin{proof}
+Expand \(\log\mathcal E_R^0-\log\mathcal E_R^j\).  For each signal condition,
+the allocation cross-entropy is
+\[
+\E[-\log q_R^k(S\mid Z_k)]
+=H(S\mid Z_k)
++\E\KL(\pi_k(\cdot\mid Z_k)\|q_R^k(\cdot\mid Z_k)).
+\]
+Subtract the condition-\(j\) expression from the condition-0 expression.  The
+refinement statement is the definition of conditional mutual information.
+\end{proof}
+
 \begin{proposition}[Unbiased paired router-gain estimator]
 \label{prop:paired-unbiased}
 Let $X_1,\ldots,X_N$ be i.i.d. from $\mu$.
 For signal condition $j$, a fixed router selects
 $a_i^j=\rho_j(Z_j(X_i))$.
 Let $\ell(a,x;\xi)$ be an integrable deployment loss, let $m_j(x)$ be the incremental cost of acquiring signal $Z_j$, and suppose $\widehat m_j(x)$ is unbiased for $m_j(x)$.
+The signal cost may itself be a declared scalarization
+\(m_j(x)=\lambda_{\mathrm{meas}}^\top d_j(x)\) of wall-clock, token,
+verifier-call, context, parsing, retry, and latency resources; it is charged even
+when the subsequent deployment horizon is kept separate.
+Set \(m_0\equiv0\) and define the decision-facing router objective and action
+shift by
+\[
+J_R(k):=\E[\ell(a^k,X;\xi^k)+m_k(X)],
+\qquad
+\operatorname{Shift}_R(j):=\Prb(a^j\ne a^0).
+\]
 Define
 \[
 \Delta_R(j)
-:=
+:=J_R(0)-J_R(j)
+=
 \E\!\left[
 \ell(a^0,X;\xi^0)-\ell(a^j,X;\xi^j)-m_j(X)
 \right].
 \]
 Here $a^k=\rho_k(Z_k(X))$ for $k\in\{0,j\}$.
+The shift measures decision relevance, not deployment benefit.
 If, conditional on $(X_i,a_i^k)$, each of $Q$ repeats is distributed as the corresponding deployment run for $k\in\{0,j\}$, then
 \[
 \widehat\Delta_R(j)
@@ -1858,6 +2049,12 @@ $G(M)$ & $\I_\pi(S : Z_M)$: information generation quality \\
 $\varepsilon(M)$ & $\E_Z[\KL(\pi_Z^M \| q_Z^M)]$: routing mismatch \\
 $\Meff$ & $\exp(H(\pi_Z))$: entropy-effective mode count \\
 $\Meff^\star$ & Crossover threshold: specialist dominates below, generalist above \\
+$G_t,\tau_\gamma,D_\gamma$ & Verified-progress process, first threshold hit, and finite-horizon failure indicator \\
+$\ell_{\mathrm{dep}},\overline G_a,O_{\gamma,H},\ell_{\mathrm{occ}}$ & First-passage deployment loss, average progress, persistence, and occupancy diagnostic \\
+$\widehat F,\widehat S,\widehat\lambda$ & Empirical first-hit CDF, survival function, and discrete hazard \\
+$\widehat R(d)$ & Empirical closure residual: observed minus four-term packed prediction \\
+$\Delta_R^{\log},C_R,\Phi_R,G_R,M_R$ & Progressive-signal packed log-effort decomposition \\
+$J_R,\Delta_R,\operatorname{Shift}_R$ & Net router objective, paired gain after signal cost, and action-shift probability \\
 $d = (M, \rho, \Omega, W, K, p)$ & Agentic system design tuple \\
 $\alpha$ & Orchestration-equivalence parameter: $\E_Z[\KL(\pi^A_Z \| \pi^B_Z)]$ \\
 $\eta_{A \to B}$ & Post-training efficiency: transfer ratio from family $A$ to $B$ \\
@@ -1885,6 +2082,8 @@ Residual guarantee (Prop.~\ref{prop:approximation-guarantee}) & Uniform $\eta$-a
 Mode-dependent cost extension (Prop.~\ref{prop:mode-dependent-cost}) & Positive mode-dependent costs, packed inverse-share law, common mode prior \\
 Coding-gain bound (Prop.~\ref{prop:coding-gain}) & Shared admissible class, attained conditioned optimum, positive coding weights \\
 Crossover under retries (Thm.~\ref{thm:retry-crossover}) & Homogeneous mode, i.i.d. retries, common horizon, fixed per-attempt costs \\
+Cellwise pilot concentration (Prop.~\ref{prop:cellwise-pilot-concentration}) & Independent Bernoulli outcomes within each model--mode cell, positive probability floor \\
+Progressive-signal decomposition (Prop.~\ref{prop:progressive-signal-decomposition}) & Positive costs and success rates, predeclared supported packed allocations; excludes signal cost \\
 Paired router estimator (Prop.~\ref{prop:paired-unbiased}) & I.i.d. instances, fixed routers, integrable loss, unbiased measurement-cost estimate \\
 Crossover formula (Cor.~\ref{cor:model-selection}) & Model-dependent packed family \\
 Crossover threshold~\eqref{eq:meff-threshold} & Additionally (S1)--(S3): verifier equalization, linear mismatch scaling, constant competence \\

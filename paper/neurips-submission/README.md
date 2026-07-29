@@ -11,7 +11,6 @@ evidence stay co-located.
 | `main.tex` | Current compact submission anchor. |
 | `arxiv.tex` | Longer AutoResearch manuscript anchor. |
 | `references.bib` | Active bibliography. |
-| `piers_macro.tex` | Macro file used by the manuscript sources. |
 | `figures/` | Paper-ready figure copies used for compilation. |
 
 Build from the repository root when TeX Live is available:

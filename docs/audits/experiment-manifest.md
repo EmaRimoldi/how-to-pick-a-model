@@ -36,7 +36,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 42 | 0 | 0 | 40 | 18 | 1 | 0 | 0 | 5 |
 | `experiments/autoresearch-cifar10/shared-memory-ablation/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 12 | 0 | 0 | 10 | 6 | 1 | 0 | 0 | 1 |
 | `experiments/autoresearch-cifar10/swarm-vs-independent-agents/` | historical/partial | Tier 2: Supporting Or Diagnostic Evidence | `historical-or-archive` | 48 | 0 | 0 | 46 | 23 | 5 | 0 | 0 | 4 |
-| `experiments/autoresearch-cifar10/three-worker-model-routing/` | completed with raw-coverage gap | Tier 1: Main Evidence | `partial-evidence` | 1845 | 250 | 1761 | 78 | 46 | 0 | 1756 | 0 | 267 |
+| `experiments/autoresearch-cifar10/three-worker-model-routing/` | completed with raw-coverage gap | Tier 1: Main Evidence | `partial-evidence` | 1846 | 250 | 1761 | 78 | 46 | 0 | 1756 | 0 | 267 |
 | `experiments/humaneval-plus/qwen-model-size-frontier/` | completed | Tier 2: Supporting Or Diagnostic Evidence | `paper-supporting-evidence` | 12 | 1 | 3 | 5 | 0 | 2 | 3 | 0 | 0 |
 | `experiments/humaneval-plus/retry-allocation-router/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 7 | 1 | 0 | 3 | 0 | 2 | 0 | 0 | 1 |
 | `experiments/humaneval-plus/strategy-by-difficulty-grid/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 115 | 1 | 27 | 0 | 4 | 7 | 27 | 106 | 2 |
