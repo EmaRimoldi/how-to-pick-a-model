@@ -1,5 +1,6 @@
 \documentclass{article}
 
+\PassOptionsToPackage{numbers,sort&compress}{natbib}
 \usepackage[preprint]{neurips_2026}
 
 \usepackage[utf8]{inputenc}
@@ -8,6 +9,7 @@
 \usepackage{url}
 \usepackage{booktabs}
 \usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{enumitem}
 \usepackage{microtype}
 
 \title{How to Pick a Model}
@@ -16,5 +18,167 @@
 \begin{document}
 
 \maketitle
+
+\section{Introduction}
+\label{sec:introduction}
+
+Which model should be deployed on a new task whose solution can be checked?
+Current practice often answers this question indirectly: evaluate candidate
+systems end to end on a benchmark and deploy the one with the best aggregate
+score.  We call this practice \emph{benchmark racing}.  It has produced
+increasingly realistic evaluations, from
+repository repair against executable tests to machine-learning engineering
+against held-out validation criteria~\citep{jimenez2024swebench,chan2024mlebench}.
+Yet an aggregate score is not sufficient for deployment when models
+differ in serving cost, can be retried, or exhibit complementary strengths
+across instances.  A system that is more accurate per attempt need not be the
+one that reaches the first verified solution with the least wall-clock time,
+computation, energy, tokens, or money.  Moreover, the same aggregate advantage
+can arise from cheaper attempts, greater competence on the relevant kind of
+instance, more informative pre-deployment evidence, or better allocation of
+effort.  These mechanisms imply different engineering decisions, but an
+end-to-end race reports only their net result.
+
+The problem has important antecedents.  Classical algorithm selection maps
+instance features to a solver from a portfolio; empirical performance models
+predict runtimes on unseen instances; and systems such as SATzilla demonstrate
+that the best solver can be instance dependent rather than
+global~\citep{rice1976algorithm,hutter2014runtime,xu2012satzilla,kotthoff2016algorithm}.
+Statistical racing and best-arm methods reduce the cost of identifying a winner
+from repeated evaluations~\citep{maron1993hoeffding,maron1997racing,kaufmann2016bestarm}.
+More recently, LLM cascades and routers have learned cost--quality policies over
+heterogeneous model pools~\citep{chen2023frugalgpt,ong2024routellm,hu2024routerbench},
+while test-time scaling and sample-allocation studies show that model size,
+sampling policy, and inference effort interact in task- and budget-dependent
+ways~\citep{brown2024monkeys,snell2025testtime,wu2025inference,osca2024}.
+These lines of work establish the relevance of per-instance choice and
+resource-aware inference.  Their primary output is a runtime predictor,
+selector, or allocation policy under a declared performance objective.  Our
+focus is complementary: an accounting law for the verified first-passage
+resource of a stochastic solver that separates the price of one attempt, its
+mode-conditional probability of success, the information available before
+deployment, and the extent to which the scheduler uses that information.
+
+Our conceptual foundation is the proper-time framework of Achille and
+Soatto~\citep{achille2025agents}.  They model an agent as a stochastic dynamical
+system acting on verifiable transductive tasks and argue that, because a
+universal search procedure may eventually find a valid witness, accuracy alone
+does not characterize useful intelligence.  The relevant benefit of learning
+is instead to reduce the time required to find a solution.  Their proper time
+for reaching a target state is a path quantity,
+\(
+  \tau_\nu(u\!\to\!v)=\min_{h:u\to v} T(h)/\nu(h\mid u)
+\),
+which divides trajectory length by the probability of realizing that path.  We
+retain two principles from this theory: solutions must be
+defined by an external verifier, and information is valuable insofar as it buys
+speed.  We do not identify their path proper time with our deployment metric.
+Their framework supplies a computational foundation rather than a finite-sample
+rule for selecting from a deployed model menu.  For a design~\(d\), instance
+\(X\sim\mu\), and run randomness~\(\xi\), let \(\tau_d(X,\xi)\) be the resource
+consumed until the first verified artifact, with value \(\infty\) if none is
+reached.  We define certified resource-to-solution as the population quantile
+\begin{equation}
+  T_d(\delta)
+  :=
+  \inf\!\left\{t\ge 0:
+  \Pr_{X\sim\mu,\xi}[\tau_d(X,\xi)\le t]\ge 1-\delta\right\}.
+  \label{eq:intro-certified-time}
+\end{equation}
+This turns the time-centric principle into a measurable service-level objective
+for comparing a finite menu of models and deployment policies under a
+predeclared resource clock.
+
+To obtain a tractable accounting of mode-conditioned first-passage behavior,
+we study a falsifiable latent-mode model.
+Let \(S\) denote a solver-relevant task mode, \(Z\) admissible evidence about
+that mode, and \(q_Z(S)\) the share of eligible attempts allocated to mode-
+\(S\) work.  For model \(M\), let \(\kappa(M,S)\) be the resource consumed by
+one eligible attempt and \(t_0(M,S)\) its dimensionless focused first-passage
+scale.
+The packed inverse-share hypothesis asserts
+\(
+  \mathsf T_{M,q}(S,Z)
+  =c_{\mathrm{sim}}\kappa(M,S)t_0(M,S)/q_Z(S)
+\), where \(c_{\mathrm{sim}}\) is a shared scheduling overhead.
+Writing \(\pi\) for the mode prior, the expected log-resource gain over a
+prior-matched baseline is
+\(
+\Delta_{\mathrm{pack}}
+=\mathbb E[\log\mathsf T_{M_0,\pi}(S)
+-\log\mathsf T_{M,q}(S,Z)]
+\).
+Under the packed hypothesis, it decomposes as
+\begin{equation}
+\begin{aligned}
+\Delta_{\mathrm{pack}}
+={}&
+\underbrace{\mathbb E_S\!\left[\log
+  \frac{\kappa(M_0,S)}{\kappa(M,S)}\right]}_{\text{unit cost}}
++
+\underbrace{\mathbb E_S\!\left[\log
+  \frac{t_0(M_0,S)}{t_0(M,S)}\right]}_{\text{focused competence}}
+\\[-0.15em]
+&+
+\underbrace{I(S;Z)}_{\text{mode information}}
+-
+\underbrace{\mathbb E_Z\!\left[
+  \mathrm{KL}(\pi_Z\Vert q_Z)\right]}_{\text{allocation mismatch}}.
+\label{eq:intro-four-term}
+\end{aligned}
+\end{equation}
+The identity is exact inside the packed model; it is not a general
+decomposition of \(\log T_d(\delta)\).  We therefore derive the corresponding
+residual form when inverse-share log-linearity is approximate and an exact
+geometric-retry bridge showing that, under IID eligible attempts, \(1/q\)
+governs mean first-passage attempts, whereas certified quantiles require an
+explicit correction.  This distinction makes the assumption testable rather
+than definitional.
+
+Equation~\eqref{eq:intro-four-term} changes model selection from a leaderboard
+comparison into a diagnostic and counterfactual calculation.  It identifies
+whether a gain comes from purchasing cheaper attempts, changing the model,
+acquiring a more informative signal, or correcting an allocation policy.  It
+also predicts model-choice crossovers by balancing focused competence and
+information against unit cost and allocation mismatch.  The practical goal is
+not to eliminate empirical evaluation, but to use a calibrated pilot to predict
+held-out expected log first-passage resource, reserve full deployment trials
+for confirmation, and state when the prediction is too uncertain to determine
+a winner.
+
+We make three contributions:
+\begin{enumerate}[leftmargin=1.5em,itemsep=0.2em,topsep=0.35em]
+  \item Starting from Achille and Soatto's time-centric principle, we formulate
+  finite, verifiable model selection through first-passage resource and its
+  certified population quantile, while keeping this deployment object distinct
+  from both
+  Achille--Soatto path proper time and the theorem-facing expected-log
+  functional.
+  \item We prove the four-term cost--competence--information--mismatch identity,
+  its approximate-packed residual guarantee, and model-selection and retry
+  consequences.  Together these results specify which quantities must be
+  estimated and the assumptions under which their sum predicts a packed
+  expected-log deployment comparison.
+  \item We test those assumptions with real language models on a controlled,
+  execution-verified coding benchmark.  In a held-out study of 175,104 physical
+  trajectories over 768 unseen tasks using Qwen2.5-Coder 7B and 14B, the
+  inverse-share exponent is \(0.987\), the four-term prediction has residual RMS
+  \(0.015\) nat, and its model choice agrees with the held-out resource oracle in
+  all six evaluated deployment conditions.  The experiment nevertheless fails
+  its preregistered exact-closure omnibus; a fresh 122,880-trajectory replication
+  attenuates the targeted mismatch trend but does not justify a universal
+  exactness claim.
+  We therefore interpret the decomposition as an accurate, falsifiable decision
+  approximation in the tested regime.
+\end{enumerate}
+
+The resulting thesis is deliberately narrow: for verifiable tasks, the object
+to optimize is certified resource-to-solution rather than aggregate benchmark
+score; under a packed allocation model, its expected-log first-passage
+surrogate admits an interpretable four-term accounting; and held-out residuals
+determine whether that accounting is reliable enough to choose a model.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
 
 \end{document}
