@@ -1,48 +1,80 @@
 {
   "evidence_status": "development_stage_0_nonconfirmatory",
-  "hardware": "NVIDIA A100-SXM4-80GB",
+  "generator_schema_version": 5,
+  "hardware": "NVIDIA A100 80GB PCIe",
   "models": {
     "Qwen/Qwen2.5-Coder-14B-Instruct": {
-      "gpu": "NVIDIA A100-SXM4-80GB, GPU-c0776eb0-46d0-f851-74e8-dce5992d58cf, 81920 MiB, 590.48.01",
-      "host": "node4000",
+      "gpu": "NVIDIA A100 80GB PCIe, GPU-72006112-2891-7163-3243-1a46fcd5ba27, 81920 MiB, 590.48.01",
+      "host": "node3808",
       "matched_by_mode": [
-        {"mode": 0, "rate": 0.9479166666666666, "successes": 182, "trials": 192},
-        {"mode": 1, "rate": 0.9739583333333334, "successes": 187, "trials": 192},
-        {"mode": 2, "rate": 0.96875, "successes": 186, "trials": 192}
+        {"mode": 0, "rate": 0.9895833333333334, "successes": 190, "trials": 192},
+        {"mode": 1, "rate": 1.0, "successes": 192, "trials": 192},
+        {"mode": 2, "rate": 0.9947916666666666, "successes": 191, "trials": 192}
       ],
-      "matched_decoded_tokens_per_second": 3296.855961172642,
-      "matched_elapsed_seconds": 44.72624880692456,
+      "matched_decoded_tokens_per_second": 3141.311658114197,
+      "matched_elapsed_seconds": 46.94090114207938,
       "max_tokens": 256,
-      "model_load_seconds": 59.807875468046404,
+      "model_load_seconds": 48.40241628896911,
       "parse_rate": 1.0,
       "seed_scheme": "blake2b(base_seed|model|task_id|shard|attempt)",
-      "wrong_decoded_tokens_per_second": 2539.9727211384225,
-      "wrong_elapsed_seconds": 29.0270833959803,
+      "task_success_counts_by_mode_and_stratum": [
+        {"attempts_per_task": 8, "mode": 0, "stratum": "collapse_spaces", "success_counts": [7, 8, 8, 8, 8, 8]},
+        {"attempts_per_task": 8, "mode": 0, "stratum": "integer_offset", "success_counts": [8, 8, 8, 8, 8, 8]},
+        {"attempts_per_task": 8, "mode": 0, "stratum": "strip_lower", "success_counts": [7, 8, 8, 8, 8, 8]},
+        {"attempts_per_task": 8, "mode": 0, "stratum": "strip_upper", "success_counts": [8, 8, 8, 8, 8, 8]},
+        {"attempts_per_task": 8, "mode": 1, "stratum": "collapse_spaces", "success_counts": [8, 8, 8, 8, 8, 8]},
+        {"attempts_per_task": 8, "mode": 1, "stratum": "integer_offset", "success_counts": [8, 8, 8, 8, 8, 8]},
+        {"attempts_per_task": 8, "mode": 1, "stratum": "strip_lower", "success_counts": [8, 8, 8, 8, 8, 8]},
+        {"attempts_per_task": 8, "mode": 1, "stratum": "strip_upper", "success_counts": [8, 8, 8, 8, 8, 8]},
+        {"attempts_per_task": 8, "mode": 2, "stratum": "collapse_spaces", "success_counts": [7, 8, 8, 8, 8, 8]},
+        {"attempts_per_task": 8, "mode": 2, "stratum": "integer_offset", "success_counts": [8, 8, 8, 8, 8, 8]},
+        {"attempts_per_task": 8, "mode": 2, "stratum": "strip_lower", "success_counts": [8, 8, 8, 8, 8, 8]},
+        {"attempts_per_task": 8, "mode": 2, "stratum": "strip_upper", "success_counts": [8, 8, 8, 8, 8, 8]}
+      ],
+      "wrong_decoded_tokens_per_second": 2383.788002516793,
+      "wrong_elapsed_seconds": 30.928924854961224,
       "wrong_successes": 0,
       "wrong_trials": 288,
-      "wrong_wilson_upper_95": 0.013162827640106806
+      "wrong_wilson_upper_95": 0.013162827640106806,
+      "zero_success_task_cells": 0
     },
     "Qwen/Qwen2.5-Coder-7B-Instruct": {
-      "gpu": "NVIDIA A100-SXM4-80GB, GPU-c0776eb0-46d0-f851-74e8-dce5992d58cf, 81920 MiB, 590.48.01",
-      "host": "node4000",
+      "gpu": "NVIDIA A100 80GB PCIe, GPU-3be5957b-7eda-ce8f-c838-23e87b9ba2fd, 81920 MiB, 590.48.01",
+      "host": "node3908",
       "matched_by_mode": [
-        {"mode": 0, "rate": 0.4791666666666667, "successes": 92, "trials": 192},
-        {"mode": 1, "rate": 0.6666666666666666, "successes": 128, "trials": 192},
-        {"mode": 2, "rate": 0.734375, "successes": 141, "trials": 192}
+        {"mode": 0, "rate": 0.8697916666666666, "successes": 167, "trials": 192},
+        {"mode": 1, "rate": 0.875, "successes": 168, "trials": 192},
+        {"mode": 2, "rate": 0.8541666666666666, "successes": 164, "trials": 192}
       ],
-      "matched_decoded_tokens_per_second": 5676.1904528354835,
-      "matched_elapsed_seconds": 25.977986684069037,
+      "matched_decoded_tokens_per_second": 5514.6067477951865,
+      "matched_elapsed_seconds": 26.73916867398657,
       "max_tokens": 256,
-      "model_load_seconds": 41.14751296304166,
+      "model_load_seconds": 27.112789546954446,
       "parse_rate": 1.0,
       "seed_scheme": "blake2b(base_seed|model|task_id|shard|attempt)",
-      "wrong_decoded_tokens_per_second": 4516.5045428370295,
-      "wrong_elapsed_seconds": 16.324128383072093,
+      "task_success_counts_by_mode_and_stratum": [
+        {"attempts_per_task": 8, "mode": 0, "stratum": "collapse_spaces", "success_counts": [4, 4, 4, 5, 5, 6]},
+        {"attempts_per_task": 8, "mode": 0, "stratum": "integer_offset", "success_counts": [8, 8, 8, 8, 8, 8]},
+        {"attempts_per_task": 8, "mode": 0, "stratum": "strip_lower", "success_counts": [7, 7, 7, 8, 8, 8]},
+        {"attempts_per_task": 8, "mode": 0, "stratum": "strip_upper", "success_counts": [7, 7, 8, 8, 8, 8]},
+        {"attempts_per_task": 8, "mode": 1, "stratum": "collapse_spaces", "success_counts": [3, 3, 4, 4, 5, 5]},
+        {"attempts_per_task": 8, "mode": 1, "stratum": "integer_offset", "success_counts": [8, 8, 8, 8, 8, 8]},
+        {"attempts_per_task": 8, "mode": 1, "stratum": "strip_lower", "success_counts": [8, 8, 8, 8, 8, 8]},
+        {"attempts_per_task": 8, "mode": 1, "stratum": "strip_upper", "success_counts": [8, 8, 8, 8, 8, 8]},
+        {"attempts_per_task": 8, "mode": 2, "stratum": "collapse_spaces", "success_counts": [2, 3, 3, 3, 4, 5]},
+        {"attempts_per_task": 8, "mode": 2, "stratum": "integer_offset", "success_counts": [8, 8, 8, 8, 8, 8]},
+        {"attempts_per_task": 8, "mode": 2, "stratum": "strip_lower", "success_counts": [8, 8, 8, 8, 8, 8]},
+        {"attempts_per_task": 8, "mode": 2, "stratum": "strip_upper", "success_counts": [8, 8, 8, 8, 8, 8]}
+      ],
+      "wrong_decoded_tokens_per_second": 4342.637300649891,
+      "wrong_elapsed_seconds": 16.977701543015428,
       "wrong_successes": 0,
       "wrong_trials": 288,
-      "wrong_wilson_upper_95": 0.013162827640106806
+      "wrong_wilson_upper_95": 0.013162827640106806,
+      "zero_success_task_cells": 0
     }
   },
-  "schema_version": 1,
-  "slurm_jobs": [19274650, 19274651]
+  "schema_version": 2,
+  "slurm_jobs": [19276528, 19276529],
+  "task_strata_balanced": true
 }

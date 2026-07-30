@@ -48,4 +48,5 @@ fi
   --task-offset-per-mode "${SAI3_TASK_OFFSET_PER_MODE:-0}" \
   --matched-attempts "${SAI3_MATCHED_ATTEMPTS:-4}" \
   --wrong-attempts "${SAI3_WRONG_ATTEMPTS:-1}" \
+  --attempt-offset "${SAI3_ATTEMPT_OFFSET:-0}" \
   --max-tokens "${SAI3_MAX_TOKENS:-256}"

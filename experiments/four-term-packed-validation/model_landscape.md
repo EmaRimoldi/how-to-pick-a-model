@@ -106,11 +106,11 @@ This is 864 completions or 221,184 decoded tokens per model. It is an
 infrastructure and regime check, not evidence for the theorem. The scout
 records parse rate, focused pass probability, wrong-shard success, output
 length, aggregate throughput, GPU memory, joules, and verifier time. It must
-not inspect closure residuals or confirmation seeds. On the BF16 A100 run, 7B
-matched success was `0.479/0.667/0.734` by mode and 14B was
-`0.948/0.974/0.969`; both had 100% parsing and zero wrong-shard successes in
-288 trials. Sustained matched throughput was about 5,676 token/s for 7B and
-3,297 token/s for 14B.
+not inspect closure residuals or confirmation seeds. On the final generator-v5
+BF16 A100 run, 7B matched success was `0.870/0.875/0.854` by mode and 14B was
+`0.990/1.000/0.995`; both had 100% parsing, no zero-success task cells, and zero
+wrong-shard successes in 288 trials. Sustained matched throughput was about
+5,515 token/s for 7B and 3,141 token/s for 14B.
 
 North Mini Code is replaced by Qwen3-Coder-30B-A3B if its required main-branch
 runtime or response parser fails the smoke. SERA-8B is replaced by
@@ -154,11 +154,12 @@ SERA fails its format gate. Do not choose alternates by SAI-3 rank.
 
 ## How Long The Run Takes
 
-The frozen primary protocol creates 11,520 calibration completions per model.
-The physical confirmation has 10,944 trajectories per model and stops each at
-certified success. Stage 0 hazards imply about 70,800 issued slots for 7B and
-44,600 for 14B. Including calibration, the expected total is approximately
-21.1 million decoded tokens for 7B and 14.3 million for 14B.
+The frozen primary protocol creates 55,296 initial calibration completions per
+model. The physical confirmation has 58,368 trajectories per model and stops
+each at certified success. A planning approximation from the balanced Stage 0
+strata gives roughly 128 million confirmation decoded tokens across both
+models and 156 million including initial calibration, before any zero-cell
+extensions.
 
 The batch scout sustained about 5.7k and 3.3k decoded token/s respectively.
 Physical scheduling is slower because active batches shrink in the tail; the

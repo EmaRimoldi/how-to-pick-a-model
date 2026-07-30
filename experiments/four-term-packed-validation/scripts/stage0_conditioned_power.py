@@ -72,6 +72,23 @@ def heterogeneous_probabilities(
     return np.clip(probabilities, 0.01, 0.995)
 
 
+def stratified_prototype_probabilities(
+    rng: np.random.Generator,
+    strata: list[dict[str, object]],
+    tasks_per_mode: int,
+) -> np.ndarray:
+    if tasks_per_mode % len(strata) != 0:
+        raise ValueError("tasks per mode must be divisible by the number of strata")
+    per_stratum = tasks_per_mode // len(strata)
+    probabilities = []
+    for stratum in sorted(strata, key=lambda item: str(item["stratum"])):
+        counts = np.asarray(stratum["success_counts"], dtype=int)
+        attempts = int(stratum["attempts_per_task"])
+        selected = rng.choice(counts, size=per_stratum, replace=True)
+        probabilities.append(rng.beta(selected + 0.5, attempts - selected + 0.5))
+    return np.concatenate(probabilities)
+
+
 def calibrate_t0(
     rng: np.random.Generator, probabilities: np.ndarray, initial_attempts: int, max_attempts: int
 ) -> tuple[float, bool]:
@@ -103,6 +120,7 @@ def physical_cell_mean(
 def simulate_once(
     rng: np.random.Generator,
     hazards: dict[str, list[float]],
+    prototypes: dict[tuple[str, int], list[dict[str, object]]],
     costs: dict[str, float],
     tasks_per_mode: int,
     calibration_attempts: int,
@@ -114,16 +132,32 @@ def simulate_once(
     max_residual_rms: float,
     max_censoring: float,
 ) -> dict[str, float | bool]:
-    calibration_probabilities = {
-        (model, mode): heterogeneous_probabilities(rng, hazards[model][mode], tasks_per_mode, logit_sd)
-        for model in hazards
-        for mode in range(3)
-    }
-    confirmation_probabilities = {
-        (model, mode): heterogeneous_probabilities(rng, hazards[model][mode], tasks_per_mode, logit_sd)
-        for model in hazards
-        for mode in range(3)
-    }
+    if prototypes:
+        calibration_probabilities = {
+            (model, mode): stratified_prototype_probabilities(
+                rng, prototypes[(model, mode)], tasks_per_mode
+            )
+            for model in hazards
+            for mode in range(3)
+        }
+        confirmation_probabilities = {
+            (model, mode): stratified_prototype_probabilities(
+                rng, prototypes[(model, mode)], tasks_per_mode
+            )
+            for model in hazards
+            for mode in range(3)
+        }
+    else:
+        calibration_probabilities = {
+            (model, mode): heterogeneous_probabilities(rng, hazards[model][mode], tasks_per_mode, logit_sd)
+            for model in hazards
+            for mode in range(3)
+        }
+        confirmation_probabilities = {
+            (model, mode): heterogeneous_probabilities(rng, hazards[model][mode], tasks_per_mode, logit_sd)
+            for model in hazards
+            for mode in range(3)
+        }
     t0 = {}
     identified = True
     for key, probabilities in calibration_probabilities.items():
@@ -192,11 +226,11 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--stage0", type=Path, required=True)
     parser.add_argument("--costs", type=Path, required=True)
-    parser.add_argument("--tasks-per-mode", type=int, nargs="+", default=(64, 96, 128, 192))
+    parser.add_argument("--tasks-per-mode", type=int, nargs="+", default=(128, 192, 256))
     parser.add_argument("--replicates", type=int, default=1000)
-    parser.add_argument("--calibration-attempts", type=int, default=32)
-    parser.add_argument("--calibration-max-attempts", type=int, default=64)
-    parser.add_argument("--confirmation-repetitions", type=int, default=2)
+    parser.add_argument("--calibration-attempts", type=int, default=64)
+    parser.add_argument("--calibration-max-attempts", type=int, default=128)
+    parser.add_argument("--confirmation-repetitions", type=int, default=4)
     parser.add_argument("--max-slots", type=int, default=128)
     parser.add_argument("--task-logit-sd", type=float, default=0.25)
     parser.add_argument("--max-absolute-mean-residual", type=float, default=0.10)
@@ -211,6 +245,17 @@ def main() -> None:
         model: [float(cell["rate"]) for cell in sorted(spec["matched_by_mode"], key=lambda item: item["mode"])]
         for model, spec in stage0["models"].items()
     }
+    prototypes = {
+        (model, mode): [
+            item
+            for item in spec.get("task_success_counts_by_mode_and_stratum", [])
+            if int(item["mode"]) == mode
+        ]
+        for model, spec in stage0["models"].items()
+        for mode in range(3)
+    }
+    if not all(prototypes.values()):
+        prototypes = {}
     cost_document = json.loads(args.costs.read_text(encoding="utf-8"))
     costs = {model: float(spec["kappa"]) for model, spec in cost_document["models"].items()}
     rng = np.random.default_rng(args.seed)
@@ -220,6 +265,7 @@ def main() -> None:
             simulate_once(
                 rng,
                 hazards,
+                prototypes,
                 costs,
                 tasks_per_mode,
                 args.calibration_attempts,
@@ -247,6 +293,11 @@ def main() -> None:
         "evidence_status": "design_only_not_theorem_evidence",
         "stage0": str(args.stage0),
         "hazards": hazards,
+        "task_probability_model": (
+            "stratified_beta_posterior_resampling_of_stage0_task_counts"
+            if prototypes
+            else "logistic_normal_sensitivity"
+        ),
         "costs": costs,
         "replicates": args.replicates,
         "calibration_attempts": args.calibration_attempts,

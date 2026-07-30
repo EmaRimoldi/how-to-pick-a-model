@@ -26,12 +26,13 @@ The smoke defaults to six tasks per mode, four matched attempts, and one
 attempt per wrong shard. These counts test the runtime and locate gross
 floor/ceiling behavior only; they cannot pass the statistical gates below.
 
-The BF16 A100 Stage 0 used 24 tasks per mode, eight matched attempts, and two
-attempts per wrong shard. Matched success was `0.479/0.667/0.734` by mode for
-the 7B checkpoint and `0.948/0.974/0.969` for the 14B checkpoint. Both parsed
-100% of outputs and each had zero wrong-shard successes in 288 trials. These
-results establish eligibility and size the physical run; they are not used as
-four-term evidence.
+The final BF16 A100 Stage 0 used generator schema v5 with 24 tasks per mode,
+balanced equally over four task strata, eight matched attempts, and two
+attempts per wrong shard. Matched success was `0.870/0.875/0.854` by mode for
+the 7B checkpoint and `0.990/1.000/0.995` for the 14B checkpoint. Both parsed
+100% of outputs, had no zero-success task cells, and each had zero wrong-shard
+successes in 288 trials. These results establish eligibility and size the
+physical run; they are not used as four-term evidence.
 
 On an Apple-silicon development machine, the equivalent nonconfirmatory MLX
 smoke is:
@@ -241,20 +242,20 @@ correct-shard and two-per-wrong-shard attempts for every scouted checkpoint.
 It records eligibility, format, memory, throughput, energy, and verifier cost,
 but never computes four-term closure or opens confirmation seeds.
 
-Calibration generates 32 correct-shard attempts and four attempts for each
+Calibration generates 64 correct-shard attempts and four attempts for each
 wrong shard per task and model. A correct-shard task with no success is extended
-once, with frozen seeds, to 64 attempts; any remaining zero-success task cell
-makes focused `t0` unidentified. Confirmation physically executes two
-independent trajectories for every `(task, alpha, allocation, z)` cell, plus two
+once, with frozen seeds, to 128 attempts; any remaining zero-success task cell
+makes focused `t0` unidentified. Confirmation physically executes four
+independent trajectories for every `(task, alpha, allocation, z)` cell, plus four
 prior-baseline trajectories, with a 128-slot censoring limit.
 
-This is 11,520 calibration completions per model. The confirmation design has
-10,944 trajectories per model; using the Stage 0 hazards, its preregistered
-expected load is about 70,800 slots for 7B and 44,600 for 14B, or 29.5 million
-decoded tokens across both models. Including calibration, the expected Stage 1
-load is about 35.4 million decoded tokens. Actual issued slots, not this
-expectation, enter the ledger. Prefix caching may be used, but cached and
-uncached normalized compute are both recorded.
+This is 55,296 initial calibration completions per model. The confirmation
+design has 58,368 trajectories per model. A planning approximation based on
+the final Stage 0 strata gives about 128 million confirmation decoded tokens
+across both models and about 156 million including initial calibration, before
+any zero-cell extensions. Actual issued slots, not this expectation, enter the
+ledger. Prefix caching may be used, but cached and uncached normalized compute
+are both recorded.
 
 ## Physical Allocation And Signal Interventions
 
@@ -351,8 +352,8 @@ Use three nonoverlapping splits, each balanced by mode:
 | Split | Tasks per mode | Permitted use |
 | --- | ---: | --- |
 | generator development | 64 | tune task templates and difficulty; never analyze |
-| calibration | 96 | estimate `t0`, off-diagonal hazard, and any practical posterior |
-| confirmation | 96 | one frozen physical evaluation of closure and choice |
+| calibration | 256 | estimate `t0`, off-diagonal hazard, and any practical posterior |
+| confirmation | 256 | one frozen physical evaluation of closure and choice |
 
 The primary `t0(M,s)` is the conditional **mean first-passage number of useful
 fixed-cost slots** under full allocation to the correct shard. The primary
@@ -483,13 +484,14 @@ uv run python experiments/four-term-packed-validation/scripts/power_analysis.py 
 ```
 
 The original conservative sensitivity calculation reports sizes in independent
-trajectories per cell. A second analysis conditions on the BF16 Stage 0 hazards,
-adds task-level logit heterogeneity, simulates 32-attempt calibration with one
-extension to 64, and executes the exact censored IID schedule. It selects 96
-task clusters per mode with two trajectories per `(task, z, allocation)` cell.
-This size was frozen before calibration or confirmation seeds were created.
-Final uncertainty is determined by the paired task bootstrap on actual
-confirmation trajectories.
+trajectories per cell. A second analysis conditions on the final BF16 Stage 0
+task counts, resamples within the four balanced strata using Jeffreys beta
+posteriors, simulates 64-attempt calibration with one extension to 128, and
+executes the exact censored IID schedule. It selects 256 task clusters per mode
+with four trajectories per `(task, z, allocation)` cell. This size was frozen
+before calibration or confirmation seeds were created. Final uncertainty is
+determined by the stratified paired-task bootstrap on actual confirmation
+trajectories.
 
 The checked conservative design run with 1,000 replications is summarized in
 `results/README.md`. At 128 independent trajectories per cell it yields a 95th
@@ -500,10 +502,11 @@ experiment has six conditions and gates weighted mean and RMS residuals, not
 the maximum of 36 cells. These synthetic null results do not establish
 packedness; the physical inverse-share and closure gates remain mandatory.
 
-The Stage-0-conditioned calculation uses 2,000 replications. At the frozen 96
-tasks per mode it identifies every focused cell, passes all point closure gates
-in `97.4%` of packed-null simulations, has 95th-percentile residual RMS `0.090`
-nats, and has 95th-percentile maximum cell censoring `1.04%`. This is a power
+The Stage-0-conditioned calculation uses 2,000 replications. At the frozen 256
+tasks per mode it identifies every focused cell in `99.3%` of simulations and
+passes all point closure gates in `95.35%` of packed-null simulations. Its
+95th-percentile absolute mean residual is `0.0956` nats, residual RMS is
+`0.0969` nats, and maximum cell censoring is `1.56%`. This is a power
 calculation under the law being tested, not evidence that the law holds.
 
 ## External-Validity Arm

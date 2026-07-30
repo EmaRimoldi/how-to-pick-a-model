@@ -79,6 +79,7 @@ def run_group(
     prompts: list[str],
     metadata: list[dict[str, Any]],
     attempts: int,
+    attempt_offset: int,
     seed: int,
     model: str,
     output: Path,
@@ -89,7 +90,8 @@ def run_group(
     sampling_params = []
     for prompt, meta in zip(prompts, metadata):
         task = meta["task"]
-        for attempt in range(attempts):
+        for local_attempt in range(attempts):
+            attempt = attempt_offset + local_attempt
             completion_seed = sampling_seed(seed, model, task["task_id"], int(meta["shard"]), attempt)
             expanded_prompts.append(prompt)
             expanded_metadata.append({**meta, "attempt": attempt, "completion_seed": completion_seed})
@@ -104,6 +106,14 @@ def run_group(
                     seed=completion_seed,
                 )
             )
+    if not expanded_prompts:
+        return {
+            "requests": 0,
+            "completions": 0,
+            "decoded_tokens": 0,
+            "elapsed_seconds": 0.0,
+            "decoded_tokens_per_second": None,
+        }
     started = time.perf_counter()
     request_outputs = llm.generate(expanded_prompts, sampling_params, use_tqdm=True)
     elapsed = time.perf_counter() - started
@@ -154,6 +164,7 @@ def main() -> None:
     parser.add_argument("--task-offset-per-mode", type=int, default=0)
     parser.add_argument("--matched-attempts", type=int, default=4)
     parser.add_argument("--wrong-attempts", type=int, default=1)
+    parser.add_argument("--attempt-offset", type=int, default=0)
     parser.add_argument("--seed", type=int, default=20260730)
     parser.add_argument("--dtype", default="bfloat16")
     parser.add_argument("--max-model-len", type=int, default=4096)
@@ -193,6 +204,7 @@ def main() -> None:
         matched_prompts,
         matched_metadata,
         args.matched_attempts,
+        args.attempt_offset,
         args.seed,
         args.model,
         args.output,
@@ -204,6 +216,7 @@ def main() -> None:
         wrong_prompts,
         wrong_metadata,
         args.wrong_attempts,
+        args.attempt_offset,
         args.seed + 1,
         args.model,
         args.output,
@@ -221,6 +234,7 @@ def main() -> None:
         "task_offset_per_mode": args.task_offset_per_mode,
         "matched_attempts": args.matched_attempts,
         "wrong_attempts": args.wrong_attempts,
+        "attempt_offset": args.attempt_offset,
         "max_tokens": args.max_tokens,
         "seed_scheme": "blake2b(base_seed|model|task_id|shard|attempt)",
         "matched": matched_summary,

@@ -1,5 +1,5 @@
 experiment_id: four_term_packed_validation_sai3
-status: bf16_stage_0_complete
+status: protocol_frozen_before_calibration
 seed: 20260730
 
 benchmark:
@@ -8,8 +8,8 @@ benchmark:
   prior: [0.3333333333, 0.3333333333, 0.3333333333]
   splits:
     development_tasks_per_mode: 64
-    calibration_tasks_per_mode: 96
-    confirmation_tasks_per_mode: 96
+    calibration_tasks_per_mode: 256
+    confirmation_tasks_per_mode: 256
   verifier:
     mutation_score_min: 0.95
     deterministic_reruns: 20
@@ -75,9 +75,9 @@ generation:
   independent_attempts: true
   feedback_between_attempts: false
   focused_pass_probability_min: 0.05
-  calibration_initial_correct_shard_attempts: 32
+  calibration_initial_correct_shard_attempts: 64
   calibration_attempts_per_wrong_shard: 4
-  calibration_max_correct_shard_attempts: 64
+  calibration_max_correct_shard_attempts: 128
 
 signal:
   family: symmetric_three_class
@@ -103,7 +103,7 @@ scheduler:
   share_tolerance_absolute: 0.01
   inverse_share_q_values: [0.10, 0.20, 0.3333333333, 0.50, 0.80, 1.0]
   inverse_share_development_repetitions: 4
-  confirmation_repetitions: 2
+  confirmation_repetitions: 4
   confirmation_max_slots: 128
   physical_schedule_fraction: 1.0
   count_every_issued_slot: true
