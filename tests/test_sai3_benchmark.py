@@ -102,6 +102,17 @@ def test_task_randomness_is_disjoint_across_splits() -> None:
     assert len({task["contracts"][0]["method"] for task in tasks}) == 3
 
 
+def test_numeric_postprocessing_has_explicit_precedence() -> None:
+    for index in range(32):
+        task = SAI3.generate_task(seed=29, split="development", mode=0, index=index, difficulty="scalar")
+        if task["normalization"]["kind"] == "integer_offset":
+            prompt = task["prompts"][0]
+            assert "set `base`" in prompt
+            assert "then set `value`" in prompt
+            return
+    raise AssertionError("seed did not generate an integer_offset task")
+
+
 def test_reflection_and_multi_contract_code_is_rejected() -> None:
     reflection = """\
 def adapt(client, payload):

@@ -267,8 +267,8 @@ def _postprocess(task: dict[str, Any], contract: dict[str, str], response_name: 
     if task["normalization"]["kind"] in {"integer_offset", "weighted_integer"}:
         expression = f"(int({value}) + weight) * {task['post_multiplier']} - scale"
         instruction = (
-            f"convert the documented value attribute to int, add `weight`, multiply by {task['post_multiplier']}, "
-            "then subtract `scale`"
+            "set `base` to the documented value attribute converted to int plus `weight`; then set `value` to "
+            f"(`base` multiplied by {task['post_multiplier']}) minus `scale`"
         )
     else:
         expression = f"str({value}).split('|', 1)[0][::-1] + ':' + label + ':' + str(weight - scale)"
@@ -364,7 +364,7 @@ def generate_task(seed: int, split: str, mode: int, index: int, difficulty: str 
     contracts = [_contract(rng) for _ in range(3)]
     normalization = _normalization(rng, difficulty)
     task = {
-        "schema_version": 3 if difficulty == "scalar" else 4,
+        "schema_version": 4 if difficulty == "scalar" else 5,
         "task_id": f"sai3-{split}-m{mode}-{index:04d}",
         "split": split,
         "task_seed": task_seed,
