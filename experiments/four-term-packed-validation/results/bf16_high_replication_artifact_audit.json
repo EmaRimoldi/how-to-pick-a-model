@@ -1,0 +1,380 @@
+{
+  "audit": "sai3_frozen_confirmation_integrity",
+  "design_files": [
+    {
+      "path": "runs/sai3/finite-replication-followup/design/shard-0.jsonl",
+      "sha256": "4e0716d937099f9ab6e476e9180e81b7603fd5a07e4d3f12fa0d6b2720664806"
+    },
+    {
+      "path": "runs/sai3/finite-replication-followup/design/shard-16.jsonl",
+      "sha256": "2aab4271c4a7bdc2dcbd67bab2464b1976460db1002db0886583947d00aca8fc"
+    },
+    {
+      "path": "runs/sai3/finite-replication-followup/design/shard-32.jsonl",
+      "sha256": "24b8ea152884d3364347997415ef4387230747687a6fbc58275822752b075e9a"
+    },
+    {
+      "path": "runs/sai3/finite-replication-followup/design/shard-48.jsonl",
+      "sha256": "cb1736ad98acc03e12c5c74d05887027a8deccd3522c3796f94dd40c0f1851fe"
+    }
+  ],
+  "design_trajectories_per_model": 61440,
+  "models": {
+    "Qwen/Qwen2.5-Coder-14B-Instruct": {
+      "decoded_tokens": 69364736,
+      "generation_slots": 270956,
+      "gpu_generation_seconds": 20350.387142729945,
+      "model_load_seconds": 183.10923427902162,
+      "runs": 4,
+      "trajectories": 61440,
+      "wrong_shard_successes": 0
+    },
+    "Qwen/Qwen2.5-Coder-7B-Instruct": {
+      "decoded_tokens": 90769664,
+      "generation_slots": 354569,
+      "gpu_generation_seconds": 15876.407626870205,
+      "model_load_seconds": 127.03140067099594,
+      "runs": 4,
+      "trajectories": 61440,
+      "wrong_shard_successes": 0
+    }
+  },
+  "runs": [
+    {
+      "artifacts": {
+        "metadata": {
+          "bytes": 23151,
+          "path": "runs/sai3/finite-replication-followup/qwen25-coder-7b/shard-0/run_metadata.json",
+          "sha256": "9062410965f035ddb098e48da0969cb21d1552995c2957a6dbde3189c82ddc0a"
+        },
+        "slots": {
+          "bytes": 210340162,
+          "path": "runs/sai3/finite-replication-followup/qwen25-coder-7b/shard-0/slots.jsonl",
+          "sha256": "4a0ce277594ecf7f989e3197874122a5feb9d928115509af1eac16542df7fb91"
+        },
+        "trajectories": {
+          "bytes": 11955357,
+          "path": "runs/sai3/finite-replication-followup/qwen25-coder-7b/shard-0/trajectories.jsonl",
+          "sha256": "b5eb920f6a50eb05a647bc7a019e77a77a5d76c40a428364bb6eb91948c1f53e"
+        }
+      },
+      "censored_trajectories": 0,
+      "code_git_commit": "38c8223dfae65f0a8fa86a010e0c7116932ee392",
+      "decoded_tokens": 23507968,
+      "decoded_tokens_per_second": 5338.009234940139,
+      "design_sha256": "4e0716d937099f9ab6e476e9180e81b7603fd5a07e4d3f12fa0d6b2720664806",
+      "generation_elapsed_seconds": 4403.882976846071,
+      "generation_slots": 91828,
+      "gpu": "NVIDIA A100 80GB PCIe, GPU-89a048eb-0025-52be-118a-25b707f99418, 81920 MiB, 590.48.01",
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "model_load_seconds": 31.24939120199997,
+      "model_revision": "c03e6d358207e414f1eca0bb1891e29f1db0e242",
+      "package_versions": {
+        "torch": "2.9.0",
+        "transformers": "4.57.6",
+        "vllm": "0.11.2"
+      },
+      "run_dir": "runs/sai3/finite-replication-followup/qwen25-coder-7b/shard-0",
+      "slurm_job_id": "19295086",
+      "successful_trajectories": 15360,
+      "tokenizer_sha256": "9f2e80cdf646c9485536691daf18b4bd98f1c3862a06089ba5a4e7c3c3872083",
+      "trajectories": 15360,
+      "wrong_shard_successes": 0
+    },
+    {
+      "artifacts": {
+        "metadata": {
+          "bytes": 17410,
+          "path": "runs/sai3/finite-replication-followup/qwen25-coder-7b/shard-16/run_metadata.json",
+          "sha256": "1aea05dfe9cd4d0694dd846bd2782966ba012b56c717bb107fb0fcc4994ab0a2"
+        },
+        "slots": {
+          "bytes": 202889881,
+          "path": "runs/sai3/finite-replication-followup/qwen25-coder-7b/shard-16/slots.jsonl",
+          "sha256": "ab6fd1df9a23838955f73ed37169929038927716c794a314a2dd4046cb347709"
+        },
+        "trajectories": {
+          "bytes": 11949832,
+          "path": "runs/sai3/finite-replication-followup/qwen25-coder-7b/shard-16/trajectories.jsonl",
+          "sha256": "be2f714f024627ca9d3bae69f97f2975b7ba85a8ca895ab66213c872ca0bafd1"
+        }
+      },
+      "censored_trajectories": 0,
+      "code_git_commit": "38c8223dfae65f0a8fa86a010e0c7116932ee392",
+      "decoded_tokens": 22696192,
+      "decoded_tokens_per_second": 5676.906652356141,
+      "design_sha256": "2aab4271c4a7bdc2dcbd67bab2464b1976460db1002db0886583947d00aca8fc",
+      "generation_elapsed_seconds": 3997.9857675799867,
+      "generation_slots": 88657,
+      "gpu": "NVIDIA A100 80GB PCIe, GPU-88c48224-0282-5e53-c9f4-b81ccfd6cc55, 81920 MiB, 590.48.01",
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "model_load_seconds": 27.445255986996926,
+      "model_revision": "c03e6d358207e414f1eca0bb1891e29f1db0e242",
+      "package_versions": {
+        "torch": "2.9.0",
+        "transformers": "4.57.6",
+        "vllm": "0.11.2"
+      },
+      "run_dir": "runs/sai3/finite-replication-followup/qwen25-coder-7b/shard-16",
+      "slurm_job_id": "19295087",
+      "successful_trajectories": 15360,
+      "tokenizer_sha256": "9f2e80cdf646c9485536691daf18b4bd98f1c3862a06089ba5a4e7c3c3872083",
+      "trajectories": 15360,
+      "wrong_shard_successes": 0
+    },
+    {
+      "artifacts": {
+        "metadata": {
+          "bytes": 20958,
+          "path": "runs/sai3/finite-replication-followup/qwen25-coder-7b/shard-32/run_metadata.json",
+          "sha256": "8b59d7df37762f49cc143fbd42dd807bb38237abb3781494509a97a7a412af14"
+        },
+        "slots": {
+          "bytes": 198121318,
+          "path": "runs/sai3/finite-replication-followup/qwen25-coder-7b/shard-32/slots.jsonl",
+          "sha256": "4f6180d2fe7e7e702704b537799bb00b5aaf6365b7e2679136eb639e7325809b"
+        },
+        "trajectories": {
+          "bytes": 11943954,
+          "path": "runs/sai3/finite-replication-followup/qwen25-coder-7b/shard-32/trajectories.jsonl",
+          "sha256": "92268ea7c6830f800f38894906ae31ad9e4f98c40bd18ce233f07cef46367311"
+        }
+      },
+      "censored_trajectories": 0,
+      "code_git_commit": "38c8223dfae65f0a8fa86a010e0c7116932ee392",
+      "decoded_tokens": 22141696,
+      "decoded_tokens_per_second": 5965.712759091698,
+      "design_sha256": "24b8ea152884d3364347997415ef4387230747687a6fbc58275822752b075e9a",
+      "generation_elapsed_seconds": 3711.492137508001,
+      "generation_slots": 86491,
+      "gpu": "NVIDIA A100-SXM4-80GB, GPU-6925da12-30d9-fece-268c-19425ca1bab0, 81920 MiB, 590.48.01",
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "model_load_seconds": 33.9663280909881,
+      "model_revision": "c03e6d358207e414f1eca0bb1891e29f1db0e242",
+      "package_versions": {
+        "torch": "2.9.0",
+        "transformers": "4.57.6",
+        "vllm": "0.11.2"
+      },
+      "run_dir": "runs/sai3/finite-replication-followup/qwen25-coder-7b/shard-32",
+      "slurm_job_id": "19295088",
+      "successful_trajectories": 15360,
+      "tokenizer_sha256": "9f2e80cdf646c9485536691daf18b4bd98f1c3862a06089ba5a4e7c3c3872083",
+      "trajectories": 15360,
+      "wrong_shard_successes": 0
+    },
+    {
+      "artifacts": {
+        "metadata": {
+          "bytes": 20951,
+          "path": "runs/sai3/finite-replication-followup/qwen25-coder-7b/shard-48/run_metadata.json",
+          "sha256": "9693acd1b778938a39d52407a44f3eb68e7fb2e010dadf3d2b829525b158dd4c"
+        },
+        "slots": {
+          "bytes": 200412994,
+          "path": "runs/sai3/finite-replication-followup/qwen25-coder-7b/shard-48/slots.jsonl",
+          "sha256": "7b9acc56fcdd4837475a786b219c9f15882831e8f011126159ba8de3e853ed63"
+        },
+        "trajectories": {
+          "bytes": 11945787,
+          "path": "runs/sai3/finite-replication-followup/qwen25-coder-7b/shard-48/trajectories.jsonl",
+          "sha256": "98f209bf3278d25a5400751d5324ec2132abd77a34b9f31b4010725a7f10f095"
+        }
+      },
+      "censored_trajectories": 0,
+      "code_git_commit": "38c8223dfae65f0a8fa86a010e0c7116932ee392",
+      "decoded_tokens": 22423808,
+      "decoded_tokens_per_second": 5958.950159249352,
+      "design_sha256": "cb1736ad98acc03e12c5c74d05887027a8deccd3522c3796f94dd40c0f1851fe",
+      "generation_elapsed_seconds": 3763.046744936146,
+      "generation_slots": 87593,
+      "gpu": "NVIDIA A100-SXM4-80GB, GPU-cba28f11-4415-3b5a-0ee1-5df9d5e215a5, 81920 MiB, 590.48.01",
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "model_load_seconds": 34.37042539101094,
+      "model_revision": "c03e6d358207e414f1eca0bb1891e29f1db0e242",
+      "package_versions": {
+        "torch": "2.9.0",
+        "transformers": "4.57.6",
+        "vllm": "0.11.2"
+      },
+      "run_dir": "runs/sai3/finite-replication-followup/qwen25-coder-7b/shard-48",
+      "slurm_job_id": "19295089",
+      "successful_trajectories": 15360,
+      "tokenizer_sha256": "9f2e80cdf646c9485536691daf18b4bd98f1c3862a06089ba5a4e7c3c3872083",
+      "trajectories": 15360,
+      "wrong_shard_successes": 0
+    },
+    {
+      "artifacts": {
+        "metadata": {
+          "bytes": 10725,
+          "path": "runs/sai3/finite-replication-followup/qwen25-coder-14b/shard-0/run_metadata.json",
+          "sha256": "5a977d491defa4486d564974e2ee91f346aae0dd80d31bf2d157f9f79ee3836c"
+        },
+        "slots": {
+          "bytes": 155685355,
+          "path": "runs/sai3/finite-replication-followup/qwen25-coder-14b/shard-0/slots.jsonl",
+          "sha256": "f2ff6c40216e80ffc79e6139fadfae5ad2cfdb5341518637d917fb676af8961d"
+        },
+        "trajectories": {
+          "bytes": 11941066,
+          "path": "runs/sai3/finite-replication-followup/qwen25-coder-14b/shard-0/trajectories.jsonl",
+          "sha256": "59b2fd1d8936993325d3977b2fb1febb8d3a207b2e623c6368cce1e3f53ddc45"
+        }
+      },
+      "censored_trajectories": 0,
+      "code_git_commit": "38c8223dfae65f0a8fa86a010e0c7116932ee392",
+      "decoded_tokens": 17672448,
+      "decoded_tokens_per_second": 3285.8594394060874,
+      "design_sha256": "4e0716d937099f9ab6e476e9180e81b7603fd5a07e4d3f12fa0d6b2720664806",
+      "generation_elapsed_seconds": 5378.333530661999,
+      "generation_slots": 69033,
+      "gpu": "NVIDIA A100 80GB PCIe, GPU-72006112-2891-7163-3243-1a46fcd5ba27, 81920 MiB, 590.48.01",
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "model_load_seconds": 42.218394891009666,
+      "model_revision": "aedcc2d42b622764e023cf882b6652e646b95671",
+      "package_versions": {
+        "torch": "2.9.0",
+        "transformers": "4.57.6",
+        "vllm": "0.11.2"
+      },
+      "run_dir": "runs/sai3/finite-replication-followup/qwen25-coder-14b/shard-0",
+      "slurm_job_id": "19295873",
+      "successful_trajectories": 15360,
+      "tokenizer_sha256": "9f2e80cdf646c9485536691daf18b4bd98f1c3862a06089ba5a4e7c3c3872083",
+      "trajectories": 15360,
+      "wrong_shard_successes": 0
+    },
+    {
+      "artifacts": {
+        "metadata": {
+          "bytes": 12101,
+          "path": "runs/sai3/finite-replication-followup/qwen25-coder-14b/shard-16/run_metadata.json",
+          "sha256": "af6b7b2f9bdf274ef6611fc99895ee5272a72685c0e6f7cecf210409d12fd204"
+        },
+        "slots": {
+          "bytes": 151594746,
+          "path": "runs/sai3/finite-replication-followup/qwen25-coder-14b/shard-16/slots.jsonl",
+          "sha256": "af33fb7ebdcfa2dc2b1eb2e28d5f704f2010512ef985d6c6bbd1c8a2613121f3"
+        },
+        "trajectories": {
+          "bytes": 11936703,
+          "path": "runs/sai3/finite-replication-followup/qwen25-coder-14b/shard-16/trajectories.jsonl",
+          "sha256": "3c448a5027363d910f0c477bcfdf3fff76bb08440429aad7dfba238901fabf37"
+        }
+      },
+      "censored_trajectories": 0,
+      "code_git_commit": "38c8223dfae65f0a8fa86a010e0c7116932ee392",
+      "decoded_tokens": 17229568,
+      "decoded_tokens_per_second": 3625.030444785108,
+      "design_sha256": "2aab4271c4a7bdc2dcbd67bab2464b1976460db1002db0886583947d00aca8fc",
+      "generation_elapsed_seconds": 4752.944357967004,
+      "generation_slots": 67303,
+      "gpu": "NVIDIA A100-SXM4-80GB, GPU-df6161e7-2ca2-6f14-30c2-7a650f8b2a79, 81920 MiB, 590.48.01",
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "model_load_seconds": 44.72061939898413,
+      "model_revision": "aedcc2d42b622764e023cf882b6652e646b95671",
+      "package_versions": {
+        "torch": "2.9.0",
+        "transformers": "4.57.6",
+        "vllm": "0.11.2"
+      },
+      "run_dir": "runs/sai3/finite-replication-followup/qwen25-coder-14b/shard-16",
+      "slurm_job_id": "19295094",
+      "successful_trajectories": 15360,
+      "tokenizer_sha256": "9f2e80cdf646c9485536691daf18b4bd98f1c3862a06089ba5a4e7c3c3872083",
+      "trajectories": 15360,
+      "wrong_shard_successes": 0
+    },
+    {
+      "artifacts": {
+        "metadata": {
+          "bytes": 10097,
+          "path": "runs/sai3/finite-replication-followup/qwen25-coder-14b/shard-32/run_metadata.json",
+          "sha256": "4faa725fb71df59ef25b9e7f48b3618a023afc868b0ba033a69693aa6459eb98"
+        },
+        "slots": {
+          "bytes": 151256285,
+          "path": "runs/sai3/finite-replication-followup/qwen25-coder-14b/shard-32/slots.jsonl",
+          "sha256": "f86ff0e39068fd858e9853543e0272a1a1d1551327a9305fbe747d2f95fc0e85"
+        },
+        "trajectories": {
+          "bytes": 11932585,
+          "path": "runs/sai3/finite-replication-followup/qwen25-coder-14b/shard-32/trajectories.jsonl",
+          "sha256": "703108142e72996df0a1a3308c42dc4d93f65cbf55003552518e040bf1093b68"
+        }
+      },
+      "censored_trajectories": 0,
+      "code_git_commit": "38c8223dfae65f0a8fa86a010e0c7116932ee392",
+      "decoded_tokens": 17176576,
+      "decoded_tokens_per_second": 3540.9170348129783,
+      "design_sha256": "24b8ea152884d3364347997415ef4387230747687a6fbc58275822752b075e9a",
+      "generation_elapsed_seconds": 4850.883494621958,
+      "generation_slots": 67096,
+      "gpu": "NVIDIA A100-SXM4-80GB, GPU-2615c44b-894d-65d2-ae54-3b2c9bf16c6b, 81920 MiB, 590.48.01",
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "model_load_seconds": 49.74345152103342,
+      "model_revision": "aedcc2d42b622764e023cf882b6652e646b95671",
+      "package_versions": {
+        "torch": "2.9.0",
+        "transformers": "4.57.6",
+        "vllm": "0.11.2"
+      },
+      "run_dir": "runs/sai3/finite-replication-followup/qwen25-coder-14b/shard-32",
+      "slurm_job_id": "19295885",
+      "successful_trajectories": 15360,
+      "tokenizer_sha256": "9f2e80cdf646c9485536691daf18b4bd98f1c3862a06089ba5a4e7c3c3872083",
+      "trajectories": 15360,
+      "wrong_shard_successes": 0
+    },
+    {
+      "artifacts": {
+        "metadata": {
+          "bytes": 12849,
+          "path": "runs/sai3/finite-replication-followup/qwen25-coder-14b/shard-48/run_metadata.json",
+          "sha256": "396126a4180630026940ab45ee27edda158bf21d55a690db6d4c84096f5eb2fc"
+        },
+        "slots": {
+          "bytes": 152274502,
+          "path": "runs/sai3/finite-replication-followup/qwen25-coder-14b/shard-48/slots.jsonl",
+          "sha256": "9aa10b33c53e80d8cbfd1b4f4315c786ac017707f592ea3b5b699146da4fe378"
+        },
+        "trajectories": {
+          "bytes": 11932563,
+          "path": "runs/sai3/finite-replication-followup/qwen25-coder-14b/shard-48/trajectories.jsonl",
+          "sha256": "c994b256704247ca1d97ef6b4988c2c917e71ee03f6b420dd1fa94f53fe51a8a"
+        }
+      },
+      "censored_trajectories": 0,
+      "code_git_commit": "38c8223dfae65f0a8fa86a010e0c7116932ee392",
+      "decoded_tokens": 17286144,
+      "decoded_tokens_per_second": 3220.0851406960414,
+      "design_sha256": "cb1736ad98acc03e12c5c74d05887027a8deccd3522c3796f94dd40c0f1851fe",
+      "generation_elapsed_seconds": 5368.225759478984,
+      "generation_slots": 67524,
+      "gpu": "NVIDIA A100 80GB PCIe, GPU-072f2dbb-4984-2a9f-116f-62c27b8aa0bb, 81920 MiB, 590.48.01",
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "model_load_seconds": 46.42676846799441,
+      "model_revision": "aedcc2d42b622764e023cf882b6652e646b95671",
+      "package_versions": {
+        "torch": "2.9.0",
+        "transformers": "4.57.6",
+        "vllm": "0.11.2"
+      },
+      "run_dir": "runs/sai3/finite-replication-followup/qwen25-coder-14b/shard-48",
+      "slurm_job_id": "19295096",
+      "successful_trajectories": 15360,
+      "tokenizer_sha256": "9f2e80cdf646c9485536691daf18b4bd98f1c3862a06089ba5a4e7c3c3872083",
+      "trajectories": 15360,
+      "wrong_shard_successes": 0
+    }
+  ],
+  "schema_version": 1,
+  "status": "PASS",
+  "tasks": {
+    "path": "runs/sai3/finite-replication-followup/tasks.jsonl",
+    "sha256": "018cbff2026e00f501af7b525d97368e07a348c39857a5cca979de70246f8d05"
+  },
+  "unique_generation_seeds": 625525,
+  "unique_schedule_seeds": 61440
+}

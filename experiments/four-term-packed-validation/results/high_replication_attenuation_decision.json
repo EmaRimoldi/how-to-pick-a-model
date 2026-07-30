@@ -1,0 +1,36 @@
+{
+  "analysis": "fresh_high_replication_mismatch_slope_attenuation",
+  "attenuation_point_pass": true,
+  "attenuation_ratio": 0.39749433123072075,
+  "attenuation_threshold_slope": 0.018838051428456928,
+  "bias_adjusted_replication_mismatch_slope": 0.007790735873487439,
+  "evidence_status": "posthoc_fresh_task_replication",
+  "interpretation": "Diagnostic follow-up only; it explains or localizes the frozen primary failure but cannot reverse the primary outcome.",
+  "physical_gates": {
+    "attempt_stationarity_pass": true,
+    "censoring_pass": true,
+    "confirmation_wrong_shard_success_pass": true,
+    "focused_regime_pass": true,
+    "inverse_share_beta_pass": true,
+    "off_diagonal_hazard_pass": true,
+    "planned_share_pass": true
+  },
+  "physical_gates_pass": true,
+  "predicted_finite_replication_mismatch_slope": 0.007185301435001379,
+  "primary_mismatch_slope": 0.03767610285691385,
+  "primary_mismatch_slope_ci_95": [
+    0.010839036846360544,
+    0.06465802872064604
+  ],
+  "primary_repetitions_per_task_cell": 6,
+  "replication_ci_excludes_primary_point": false,
+  "replication_mismatch_slope": 0.014976037308488817,
+  "replication_mismatch_slope_ci_95": [
+    -0.009812860225857808,
+    0.039388704734484296
+  ],
+  "replication_mismatch_slope_holm_adjusted_p": 0.4871025794841032,
+  "replication_repetitions_per_task_cell": 32,
+  "schema_version": 1,
+  "status": "SUPPORTS_FINITE_REPLICATION_MECHANISM"
+}
