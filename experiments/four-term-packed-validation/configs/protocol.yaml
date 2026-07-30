@@ -1,5 +1,5 @@
 experiment_id: four_term_packed_validation_sai3
-status: protocol_only
+status: development_pilot_complete
 seed: 20260730
 
 benchmark:
@@ -19,14 +19,12 @@ benchmark:
 models:
   baseline: Qwen/Qwen2.5-Coder-14B-Instruct
   candidates:
-    - Qwen/Qwen2.5-Coder-3B-Instruct
     - Qwen/Qwen2.5-Coder-7B-Instruct
     - Qwen/Qwen2.5-Coder-14B-Instruct
   identification_arm:
     purpose: four_term_closure
     architecture_scope: dense_same_family
     candidates:
-      - Qwen/Qwen2.5-Coder-3B-Instruct
       - Qwen/Qwen2.5-Coder-7B-Instruct
       - Qwen/Qwen2.5-Coder-14B-Instruct
   transport_arm:
@@ -57,11 +55,18 @@ models:
       - peak_gpu_memory
       - joules
       - verifier_time
+  local_debug:
+    evidence_status: development_only_nonconfirmatory
+    backend: mlx
+    hardware: apple_silicon
+    quantization_bits: 4
+    rerun_stage_0_on_final_serving_stack: true
+    pooling_with_identification_arm_prohibited: true
 
 generation:
   temperature: 0.8
   top_p: 0.95
-  decoded_tokens: 192
+  decoded_tokens: 256
   identification_precision: bfloat16
   transport_sampling_matches_identification: true
   transport_reasoning_mode: disabled_where_supported
@@ -69,7 +74,7 @@ generation:
   model_chat_protocol_is_part_of_system: true
   independent_attempts: true
   feedback_between_attempts: false
-  focused_pass_probability_range: [0.15, 0.65]
+  focused_pass_probability_min: 0.05
   calibration_initial_correct_shard_attempts: 32
   calibration_attempts_per_wrong_shard: 8
   calibration_max_correct_shard_attempts: 96

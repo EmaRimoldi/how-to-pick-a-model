@@ -1,7 +1,15 @@
-# Design Sensitivity Results
+# Development And Sensitivity Results
 
-These files are **not model-evaluation results**. They are synthetic design
-calculations generated without reading any empirical result in this repository.
+No file in this directory is confirmatory evidence.
+
+`mlx_development_pilot.json` records the new Apple-silicon model pilot used to
+debug and select the BF16 Stage 0 candidates. It contains actual model
+completions, but quantization and Apple hardware define different deployed
+systems from the A100 identification arm. Closure analysis is prohibited on
+this development split.
+
+`power_analysis.json` is a synthetic design calculation generated without
+reading any empirical result in this repository.
 
 `power_analysis.json` was produced with:
 

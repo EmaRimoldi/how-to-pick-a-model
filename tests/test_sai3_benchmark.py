@@ -24,10 +24,20 @@ def test_reference_and_wrong_shards_are_separated() -> None:
 
 
 def test_reference_audit_passes_generator_gate() -> None:
-    tasks = SAI3.generate_tasks(seed=23, split="development", tasks_per_mode=4)
-    audits = [SAI3.audit_task(task, deterministic_reruns=3) for task in tasks]
-    assert all(audit["gate_passed"] for audit in audits)
-    assert min(audit["mutation_score"] for audit in audits) >= 0.95
+    for difficulty in ("scalar", "list"):
+        tasks = SAI3.generate_tasks(seed=23, split="development", tasks_per_mode=4, difficulty=difficulty)
+        audits = [SAI3.audit_task(task, deterministic_reruns=3) for task in tasks]
+        assert all(audit["gate_passed"] for audit in audits)
+        assert min(audit["mutation_score"] for audit in audits) >= 0.95
+
+
+def test_difficulty_variants_have_distinct_payload_contracts() -> None:
+    scalar = SAI3.generate_task(seed=29, split="development", mode=0, index=0, difficulty="scalar")
+    list_task = SAI3.generate_task(seed=29, split="development", mode=0, index=0, difficulty="list")
+    assert "payload['value']" in scalar["prompts"][0]
+    assert "payload['values']" in list_task["prompts"][0]
+    assert SAI3.verify_code(scalar, scalar["references"][0])["passed"]
+    assert SAI3.verify_code(list_task, list_task["references"][0])["passed"]
 
 
 def test_reflection_and_multi_contract_code_is_rejected() -> None:

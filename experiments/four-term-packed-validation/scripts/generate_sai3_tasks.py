@@ -20,12 +20,13 @@ def main() -> None:
     parser.add_argument("--seed", type=int, required=True)
     parser.add_argument("--split", choices=("development", "calibration", "confirmation"), required=True)
     parser.add_argument("--tasks-per-mode", type=int, required=True)
+    parser.add_argument("--difficulty", choices=("scalar", "list"), default="scalar")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--audit-output", type=Path, required=True)
     parser.add_argument("--deterministic-reruns", type=int, default=20)
     args = parser.parse_args()
 
-    tasks = generate_tasks(args.seed, args.split, args.tasks_per_mode)
+    tasks = generate_tasks(args.seed, args.split, args.tasks_per_mode, difficulty=args.difficulty)
     audits = [audit_task(task, args.deterministic_reruns) for task in tasks]
     if not all(audit["gate_passed"] for audit in audits):
         failed = [audit["task_id"] for audit in audits if not audit["gate_passed"]]
@@ -39,6 +40,7 @@ def main() -> None:
         "split": args.split,
         "tasks": len(tasks),
         "tasks_per_mode": args.tasks_per_mode,
+        "difficulty": args.difficulty,
         "all_gates_passed": True,
         "minimum_mutation_score": min(audit["mutation_score"] for audit in audits),
         "wrong_reference_acceptances": sum(audit["wrong_reference_acceptances"] for audit in audits),

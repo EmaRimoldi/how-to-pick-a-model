@@ -56,12 +56,13 @@ def run_group(
     seed: int,
     model: str,
     output: Path,
+    max_tokens: int,
 ) -> dict[str, Any]:
     params = sampling_params_type(
         temperature=0.8,
         top_p=0.95,
-        max_tokens=192,
-        min_tokens=192,
+        max_tokens=max_tokens,
+        min_tokens=max_tokens,
         ignore_eos=True,
         n=attempts,
         seed=seed,
@@ -116,6 +117,7 @@ def main() -> None:
     parser.add_argument("--dtype", default="bfloat16")
     parser.add_argument("--max-model-len", type=int, default=4096)
     parser.add_argument("--gpu-memory-utilization", type=float, default=0.90)
+    parser.add_argument("--max-tokens", type=int, default=256)
     args = parser.parse_args()
 
     from vllm import LLM, SamplingParams
@@ -157,6 +159,7 @@ def main() -> None:
         args.seed,
         args.model,
         args.output,
+        args.max_tokens,
     )
     wrong_summary = run_group(
         llm,
@@ -167,6 +170,7 @@ def main() -> None:
         args.seed + 1,
         args.model,
         args.output,
+        args.max_tokens,
     )
     metadata = {
         "schema_version": 1,
@@ -179,6 +183,7 @@ def main() -> None:
         "tasks_per_mode": args.tasks_per_mode,
         "matched_attempts": args.matched_attempts,
         "wrong_attempts": args.wrong_attempts,
+        "max_tokens": args.max_tokens,
         "matched": matched_summary,
         "wrong": wrong_summary,
     }

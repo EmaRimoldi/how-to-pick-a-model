@@ -75,7 +75,7 @@ def main() -> None:
                 "wrong_trials": wrong_trials,
                 "wrong_success_rate": wrong_rate,
                 "wrong_success_rate_upper_95": wilson_upper(counts["wrong_successes"], wrong_trials),
-                "focused_regime_eligible": 0.15 <= matched_rate <= 0.65,
+                "focused_regime_eligible": matched_rate >= 0.05,
             }
         )
 

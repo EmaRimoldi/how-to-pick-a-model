@@ -41,12 +41,9 @@ FORBIDDEN_NODES = (
     ast.Await,
     ast.ClassDef,
     ast.Delete,
-    ast.For,
-    ast.GeneratorExp,
     ast.Global,
     ast.Import,
     ast.ImportFrom,
-    ast.ListComp,
     ast.Lambda,
     ast.Nonlocal,
     ast.SetComp,
@@ -88,84 +85,225 @@ def _token(rng: random.Random, length: int = 7) -> str:
 
 
 def _contract(rng: random.Random) -> dict[str, str]:
-    error_token = _token(rng, 6)
+    error_token = _token(rng, 3)
     return {
-        "method": f"invoke_{_token(rng)}",
-        "keyword": f"item_{_token(rng)}",
-        "field": f"result_{_token(rng)}",
+        "method": f"invoke_{_token(rng, 3)}",
+        "value_keyword": f"item_{_token(rng, 3)}",
+        "label_keyword": f"label_{_token(rng, 3)}",
+        "weight_keyword": f"weight_{_token(rng, 3)}",
+        "scale_keyword": f"scale_{_token(rng, 3)}",
+        "value_field": f"result_{_token(rng, 3)}",
+        "ticket_field": f"ticket_{_token(rng, 3)}",
+        "status_field": f"status_{_token(rng, 3)}",
+        "ready_status": f"ready_{_token(rng, 3)}",
         "error": f"Contract{error_token.title()}Error",
     }
 
 
-def _normalization(rng: random.Random) -> dict[str, Any]:
-    kind = rng.choice(("strip_lower", "strip_upper", "collapse_spaces", "integer_offset"))
-    if kind == "strip_lower":
+def _normalization(rng: random.Random, difficulty: str) -> dict[str, Any]:
+    if difficulty == "scalar":
+        kind = rng.choice(("strip_lower", "strip_upper", "collapse_spaces", "integer_offset"))
+        if kind == "strip_lower":
+            return {
+                "kind": kind,
+                "instruction": "convert payload['value'] to str, strip it, then lowercase it and store it as `normalized`",
+                "expression": "str(payload['value']).strip().lower()",
+                "values": ["  Alpha ", "MiXeD", " two words  "],
+            }
+        if kind == "strip_upper":
+            return {
+                "kind": kind,
+                "instruction": "convert payload['value'] to str, strip it, then uppercase it and store it as `normalized`",
+                "expression": "str(payload['value']).strip().upper()",
+                "values": ["  Alpha ", "MiXeD", " two words  "],
+            }
+        if kind == "collapse_spaces":
+            return {
+                "kind": kind,
+                "instruction": (
+                    "convert payload['value'] to str, collapse every whitespace run to one space, and store it as "
+                    "`normalized`"
+                ),
+                "expression": "' '.join(str(payload['value']).split())",
+                "values": ["alpha   beta", "  mixed\tspacing ", "one"],
+            }
+        offset = rng.choice((-3, -1, 2, 4))
         return {
             "kind": kind,
-            "instruction": "convert payload['value'] to str, strip it, then lowercase it",
-            "expression": "str(payload['value']).strip().lower()",
-            "values": ["  Alpha ", "MiXeD", " two words  "],
+            "instruction": f"convert payload['value'] to int, add {offset}, and store it as `normalized`",
+            "expression": f"int(payload['value']) + ({offset})",
+            "values": ["4", " -2 ", "13"],
+            "offset": offset,
         }
-    if kind == "strip_upper":
+    if difficulty != "list":
+        raise ValueError(f"unknown difficulty: {difficulty}")
+    kind = rng.choice(("stable_lower", "stable_upper", "stable_spaces", "weighted_integer"))
+    if kind in {"stable_lower", "stable_upper", "stable_spaces"}:
+        if kind == "stable_lower":
+            transform = "str(raw).strip().lower()"
+            transform_instruction = "convert it to str, strip it, and lowercase it"
+        elif kind == "stable_upper":
+            transform = "str(raw).strip().upper()"
+            transform_instruction = "convert it to str, strip it, and uppercase it"
+        else:
+            transform = "' '.join(str(raw).split())"
+            transform_instruction = "convert it to str and collapse every whitespace run to one space"
         return {
             "kind": kind,
-            "instruction": "convert payload['value'] to str, strip it, then uppercase it",
-            "expression": "str(payload['value']).strip().upper()",
-            "values": ["  Alpha ", "MiXeD", " two words  "],
-        }
-    if kind == "collapse_spaces":
-        return {
-            "kind": kind,
-            "instruction": "convert payload['value'] to str and collapse all whitespace runs to one space",
-            "expression": "' '.join(str(payload['value']).split())",
-            "values": ["alpha   beta", "  mixed\tspacing ", "one"],
+            "instruction": (
+                "iterate over payload['values']; for each item, "
+                f"{transform_instruction}; discard empty normalized strings and duplicates while preserving the "
+                "first occurrence; join the retained strings with `;` and store that string as `normalized`"
+            ),
+            "reference_lines": [
+                "parts = []",
+                "for raw in payload['values']:",
+                f"    part = {transform}",
+                "    if part and part not in parts:",
+                "        parts.append(part)",
+                "normalized = ';'.join(parts)",
+            ],
+            "mutation_target": "if part and part not in parts:",
+            "mutation_replacement": "if part:",
+            "values": [
+                ["  Alpha ", "alpha", "", "Beta"],
+                ["MiXeD", " mixed ", "Two Words", "two words"],
+                [" one   item ", "one item", "  ", "last"],
+            ],
         }
     offset = rng.choice((-3, -1, 2, 4))
     return {
         "kind": kind,
-        "instruction": f"convert payload['value'] to int and add {offset}",
-        "expression": f"int(payload['value']) + ({offset})",
-        "values": ["4", " -2 ", "13"],
+        "instruction": (
+            f"convert each item in payload['values'] to int and add {offset}; then store as `normalized` the sum "
+            "of each converted number multiplied by its one-based position"
+        ),
+        "reference_lines": [
+            f"numbers = [int(raw) + ({offset}) for raw in payload['values']]",
+            "normalized = sum((index + 1) * number for index, number in enumerate(numbers))",
+        ],
+        "mutation_target": "index + 1",
+        "mutation_replacement": "index",
+        "values": [["4", "-2", "13"], ["0", "5", "-1", "2"], ["9", "3"]],
         "offset": offset,
     }
 
 
-def _normalize(spec: dict[str, Any], value: Any) -> Any:
+def _normalize(spec: dict[str, Any], values: list[Any]) -> Any:
     kind = spec["kind"]
     if kind == "strip_lower":
-        return str(value).strip().lower()
+        return str(values).strip().lower()
     if kind == "strip_upper":
-        return str(value).strip().upper()
+        return str(values).strip().upper()
     if kind == "collapse_spaces":
-        return " ".join(str(value).split())
+        return " ".join(str(values).split())
     if kind == "integer_offset":
-        return int(value) + int(spec["offset"])
+        return int(values) + int(spec["offset"])
+    if kind in {"stable_lower", "stable_upper", "stable_spaces"}:
+        parts = []
+        for raw in values:
+            if kind == "stable_lower":
+                part = str(raw).strip().lower()
+            elif kind == "stable_upper":
+                part = str(raw).strip().upper()
+            else:
+                part = " ".join(str(raw).split())
+            if part and part not in parts:
+                parts.append(part)
+        return ";".join(parts)
+    if kind == "weighted_integer":
+        numbers = [int(raw) + int(spec["offset"]) for raw in values]
+        return sum((index + 1) * number for index, number in enumerate(numbers))
     raise ValueError(f"unknown normalization: {kind}")
 
 
+def _context(rng: random.Random) -> dict[str, Any]:
+    casing = rng.choice(("lower", "upper"))
+    offset = rng.choice((-2, 1, 3, 5))
+    return {
+        "instruction": f"convert payload['label'] to str, strip it, then {casing}case it",
+        "expression": f"str(payload['label']).strip().{casing}()",
+        "scale_instruction": "convert payload['scale'] to int and clamp it to the inclusive range 1 through 4",
+        "scale_expression": "max(1, min(4, int(payload['scale'])))",
+        "weight_instruction": f"set `weight` to (len(label) plus {offset}) multiplied by `scale`",
+        "weight_expression": f"(len(label) + ({offset})) * scale",
+        "weight_offset": offset,
+        "labels": ["  North Star ", "Beta-2", " mixed Label  "],
+        "scales": ["0", "2", "7"],
+    }
+
+
+def _context_values(spec: dict[str, Any], value: Any, raw_scale: Any) -> tuple[str, int, int]:
+    label = str(value).strip()
+    if ".lower()" in spec["expression"]:
+        label = label.lower()
+    else:
+        label = label.upper()
+    scale = max(1, min(4, int(raw_scale)))
+    weight = (len(label) + int(spec["weight_offset"])) * scale
+    return label, scale, weight
+
+
 def _server_value(task: dict[str, Any], normalized: Any) -> Any:
-    if task["normalization"]["kind"] == "integer_offset":
+    if task["normalization"]["kind"] in {"integer_offset", "weighted_integer"}:
         return normalized * int(task["server_multiplier"])
     return f"{normalized}|{task['server_suffix']}"
 
 
+def _postprocess_value(task: dict[str, Any], server_value: Any, label: str, scale: int, weight: int) -> Any:
+    if task["normalization"]["kind"] in {"integer_offset", "weighted_integer"}:
+        return (int(server_value) + weight) * int(task["post_multiplier"]) - scale
+    base = str(server_value).split("|", 1)[0]
+    return f"{base[::-1]}:{label}:{weight - scale}"
+
+
+def _postprocess(task: dict[str, Any], contract: dict[str, str], response_name: str = "response") -> tuple[str, str]:
+    value = f"{response_name}.{contract['value_field']}"
+    if task["normalization"]["kind"] in {"integer_offset", "weighted_integer"}:
+        expression = f"(int({value}) + weight) * {task['post_multiplier']} - scale"
+        instruction = (
+            f"convert the documented value attribute to int, add `weight`, multiply by {task['post_multiplier']}, "
+            "then subtract `scale`"
+        )
+    else:
+        expression = f"str({value}).split('|', 1)[0][::-1] + ':' + label + ':' + str(weight - scale)"
+        instruction = (
+            "convert the documented value attribute to str, take the part before the first `|`, reverse that part, "
+            "then append `:`, `label`, another `:`, and `weight - scale` converted to str"
+        )
+    return expression, instruction
+
+
 def reference_code(task: dict[str, Any], shard: int) -> str:
     contract = task["contracts"][shard]
-    expression = task["normalization"]["expression"]
+    postprocess_expression, _ = _postprocess(task, contract, "r")
     fallback = repr(task["fallback"])
+    if "reference_lines" in task["normalization"]:
+        normalization_code = "".join(f"    {line}\n" for line in task["normalization"]["reference_lines"])
+    else:
+        normalization_code = f"    normalized = {task['normalization']['expression']}\n"
     return (
         "def adapt(client, payload):\n"
-        f"    normalized = {expression}\n"
+        f"{normalization_code}"
+        f"    label = {task['context']['expression']}\n"
+        f"    scale = {task['context']['scale_expression']}\n"
+        f"    weight = {task['context']['weight_expression']}\n"
         "    try:\n"
-        f"        response = client.{contract['method']}({contract['keyword']}=normalized)\n"
+        f"        r = client.{contract['method']}({contract['value_keyword']}=normalized, "
+        f"{contract['label_keyword']}=label, {contract['scale_keyword']}=scale, "
+        f"{contract['weight_keyword']}=weight)\n"
         f"    except {contract['error']}:\n"
-        f"        return {{'ok': False, 'value': {fallback}}}\n"
-        f"    return {{'ok': True, 'value': response.{contract['field']}}}\n"
+        f"        return {{'ok': False, 'value': {fallback}, 'ticket': None}}\n"
+        f"    ticket = r.{contract['ticket_field']}\n"
+        f"    if r.{contract['status_field']} != {contract['ready_status']!r}:\n"
+        f"        return {{'ok': False, 'value': {fallback}, 'ticket': ticket}}\n"
+        f"    return {{'ok': True, 'value': {postprocess_expression}, 'ticket': ticket}}\n"
     )
 
 
 def task_prompt(task: dict[str, Any], shard: int) -> str:
     contract = task["contracts"][shard]
+    _, postprocess_instruction = _postprocess(task, contract)
     return f"""Implement target.py.
 
 The file must define exactly this function:
@@ -173,51 +311,74 @@ The file must define exactly this function:
     def adapt(client, payload):
 
 Required behavior:
-1. {task['normalization']['instruction']} and store the result as `normalized`.
-2. Call the client API described by the evidence shard below, passing `normalized`.
-3. On success return {{"ok": True, "value": <the documented response field>}}.
-4. If the documented contract exception is raised, return
-   {{"ok": False, "value": {task['fallback']!r}}}.
+1. {task['normalization']['instruction']}.
+2. {task['context']['instruction']} and store the result as `label`; then
+   {task['context']['scale_instruction']} and store the result as `scale`;
+   finally, {task['context']['weight_instruction']}.
+3. Call the client API described by the evidence shard, passing all four
+   documented keyword arguments.
+4. The response is an object, not a mapping: access all documented fields with
+   dot notation. Read `ticket` from its ticket attribute. If its status
+   attribute is not exactly {contract['ready_status']!r}, return
+   {{"ok": False, "value": {task['fallback']!r}, "ticket": ticket}}.
+5. For a ready response, {postprocess_instruction}. Return that result as
+   {{"ok": True, "value": value, "ticket": ticket}}.
+6. If the documented contract exception is raised, return
+   {{"ok": False, "value": {task['fallback']!r}, "ticket": None}}.
 
 Evidence shard {shard}:
 - method: client.{contract['method']}
-- required keyword argument: {contract['keyword']}
-- response field: {contract['field']}
+- normalized-value keyword: {contract['value_keyword']}
+- label keyword: {contract['label_keyword']}
+- scale keyword: {contract['scale_keyword']}
+- weight keyword: {contract['weight_keyword']}
+- value attribute: response.{contract['value_field']}
+- ticket attribute: response.{contract['ticket_field']}
+- status attribute: response.{contract['status_field']}
+- ready status: {contract['ready_status']!r}
 - contract exception: {contract['error']}
 
 Constraints:
 - Do not import anything.
 - Do not inspect the client dynamically.
 - Do not support multiple contracts or alternate method names.
+- Use direct payload indexing; do not add defaults for missing inputs.
+- Use no comments, docstrings, helper functions, or explanatory text.
+- Keep the function at most 24 nonblank lines.
 - Return only one Python code block containing the complete function.
 """
 
 
-def generate_task(seed: int, split: str, mode: int, index: int) -> dict[str, Any]:
+def generate_task(seed: int, split: str, mode: int, index: int, difficulty: str = "scalar") -> dict[str, Any]:
     if mode not in (0, 1, 2):
         raise ValueError("mode must be 0, 1, or 2")
     rng = random.Random((seed + 1) * 1_000_003 + mode * 10_007 + index)
     contracts = [_contract(rng) for _ in range(3)]
-    normalization = _normalization(rng)
+    normalization = _normalization(rng, difficulty)
     task = {
-        "schema_version": 1,
+        "schema_version": 3 if difficulty == "scalar" else 4,
         "task_id": f"sai3-{split}-m{mode}-{index:04d}",
         "split": split,
         "mode": mode,
+        "difficulty": difficulty,
         "contracts": contracts,
         "normalization": normalization,
+        "context": _context(rng),
         "fallback": f"unavailable_{_token(rng, 5)}",
         "server_suffix": _token(rng, 5),
         "server_multiplier": rng.choice((2, 3, 5)),
+        "post_multiplier": rng.choice((2, 3, 4)),
+        "ticket_prefix": _token(rng, 4),
+        "not_ready_status": f"pending_{_token(rng, 5)}",
     }
     task["prompts"] = [task_prompt(task, shard) for shard in range(3)]
     task["references"] = [reference_code(task, shard) for shard in range(3)]
     return task
 
 
-def generate_tasks(seed: int, split: str, tasks_per_mode: int) -> list[dict[str, Any]]:
+def generate_tasks(seed: int, split: str, tasks_per_mode: int, difficulty: str = "scalar") -> list[dict[str, Any]]:
     return [
-        generate_task(seed=seed, split=split, mode=mode, index=index)
+        generate_task(seed=seed, split=split, mode=mode, index=index, difficulty=difficulty)
         for mode in range(3)
         for index in range(tasks_per_mode)
     ]
@@ -257,7 +418,7 @@ def check_policy(code: str) -> PolicyResult:
     arg_names = [arg.arg for arg in function.args.args]
     if arg_names != ["client", "payload"]:
         return PolicyResult(False, "signature_must_be_client_payload", tree)
-    if len(list(ast.walk(tree))) > 120:
+    if len(list(ast.walk(tree))) > 350:
         return PolicyResult(False, "program_too_large", tree)
 
     client_methods: set[str] = set()
@@ -293,14 +454,26 @@ def _runtime(task: dict[str, Any]) -> tuple[type, type, type]:
     def invoke(self: Any, **kwargs: Any) -> Any:
         if self.force_error:
             raise error_type("forced verifier path")
-        if set(kwargs) != {contract["keyword"]}:
+        expected_keywords = {
+            contract["value_keyword"],
+            contract["label_keyword"],
+            contract["scale_keyword"],
+            contract["weight_keyword"],
+        }
+        if set(kwargs) != expected_keywords:
             raise TypeError("wrong keyword")
+        normalized = kwargs[contract["value_keyword"]]
+        label = kwargs[contract["label_keyword"]]
+        scale = kwargs[contract["scale_keyword"]]
+        weight = kwargs[contract["weight_keyword"]]
+        expected_weight = (len(label) + int(task["context"]["weight_offset"])) * scale
+        if not 1 <= scale <= 4 or weight != expected_weight:
+            raise ValueError("wrong derived weight")
         response = response_type()
-        setattr(
-            response,
-            contract["field"],
-            _server_value(task, kwargs[contract["keyword"]]),
-        )
+        setattr(response, contract["value_field"], _server_value(task, normalized))
+        setattr(response, contract["ticket_field"], f"{task['ticket_prefix']}:{label}:{scale}:{weight}")
+        status = task["not_ready_status"] if self.force_not_ready else contract["ready_status"]
+        setattr(response, contract["status_field"], status)
         return response
 
     client_type = type("HiddenClient", (), {contract["method"]: invoke})
@@ -322,21 +495,51 @@ def verify_code(task: dict[str, Any], code: str) -> dict[str, Any]:
     except Exception as exc:  # noqa: BLE001 - verifier reports model failures.
         return {"passed": False, "parsed": True, "policy_ok": True, "reason": f"load:{type(exc).__name__}"}
 
-    tests: list[tuple[dict[str, Any], bool, dict[str, Any]]] = []
-    for value in task["normalization"]["values"]:
-        normalized = _normalize(task["normalization"], value)
+    tests: list[tuple[dict[str, Any], bool, bool, dict[str, Any]]] = []
+    value_key = "values" if task["normalization"]["kind"].startswith(("stable_", "weighted_")) else "value"
+    cases = zip(task["normalization"]["values"], task["context"]["labels"], task["context"]["scales"])
+    for values, raw_label, raw_scale in cases:
+        normalized = _normalize(task["normalization"], values)
+        label, scale, weight = _context_values(task["context"], raw_label, raw_scale)
+        ticket = f"{task['ticket_prefix']}:{label}:{scale}:{weight}"
         tests.append(
             (
-                {"value": value},
+                {value_key: values, "label": raw_label, "scale": raw_scale},
                 False,
-                {"ok": True, "value": _server_value(task, normalized)},
+                False,
+                {
+                    "ok": True,
+                    "value": _postprocess_value(task, _server_value(task, normalized), label, scale, weight),
+                    "ticket": ticket,
+                },
             )
         )
-    tests.append(({"value": task["normalization"]["values"][0]}, True, {"ok": False, "value": task["fallback"]}))
+    first_values = task["normalization"]["values"][0]
+    first_raw_label = task["context"]["labels"][0]
+    first_raw_scale = task["context"]["scales"][0]
+    first_label, first_scale, first_weight = _context_values(task["context"], first_raw_label, first_raw_scale)
+    first_ticket = f"{task['ticket_prefix']}:{first_label}:{first_scale}:{first_weight}"
+    tests.append(
+        (
+            {value_key: first_values, "label": first_raw_label, "scale": first_raw_scale},
+            False,
+            True,
+            {"ok": False, "value": task["fallback"], "ticket": first_ticket},
+        )
+    )
+    tests.append(
+        (
+            {value_key: first_values, "label": first_raw_label, "scale": first_raw_scale},
+            True,
+            False,
+            {"ok": False, "value": task["fallback"], "ticket": None},
+        )
+    )
 
-    for test_index, (payload, force_error, expected) in enumerate(tests):
+    for test_index, (payload, force_error, force_not_ready, expected) in enumerate(tests):
         client = client_type()
         client.force_error = force_error
+        client.force_not_ready = force_not_ready
         try:
             observed = function(client, copy.deepcopy(payload))
         except Exception as exc:  # noqa: BLE001 - verifier reports model failures.
@@ -368,11 +571,23 @@ def reference_mutants(task: dict[str, Any]) -> list[str]:
     contract = task["contracts"][mode]
     other = task["contracts"][(mode + 1) % 3]
     correct = reference_code(task, mode)
+    if "mutation_target" in task["normalization"]:
+        normalization_mutant = correct.replace(
+            task["normalization"]["mutation_target"],
+            task["normalization"]["mutation_replacement"],
+        )
+    else:
+        normalization_mutant = correct.replace(task["normalization"]["expression"], "payload['value']")
     mutants = [
         reference_code(task, (mode + 1) % 3),
         reference_code(task, (mode + 2) % 3),
-        correct.replace(contract["field"], other["field"]),
-        correct.replace(task["normalization"]["expression"], "payload['value']"),
+        correct.replace(contract["value_field"], other["value_field"]),
+        normalization_mutant,
+        correct.replace(task["context"]["expression"], "str(payload['label'])"),
+        correct.replace(task["context"]["scale_expression"], "int(payload['scale'])"),
+        correct.replace(task["context"]["weight_expression"], "len(label)"),
+        correct.replace(contract["ticket_field"], other["ticket_field"]),
+        correct.replace(contract["status_field"], other["status_field"]),
         correct.replace(repr(task["fallback"]), repr(task["fallback"] + "_wrong")),
     ]
     return mutants

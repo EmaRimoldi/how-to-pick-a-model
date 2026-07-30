@@ -1,29 +1,50 @@
 # Four-Term Packed Validation
 
-Status: **confirmatory protocol; no empirical result is claimed yet**.
+Status: **development pilot complete; no confirmatory result is claimed yet**.
 
 Implementation status (2026-07-30): the procedural generator, static-policy
-verifier, reference/mutation audit, vLLM scout runner, eligibility analysis,
-and Slurm entrypoint are implemented. The local development audit passes, but
-no model completion has yet been counted as evidence.
+verifier, reference/mutation audit, vLLM and Apple-MLX scout runners,
+eligibility analysis, and Slurm entrypoint are implemented. The local
+development audit and MLX pilot pass their intended checks; these completions
+are explicitly excluded from confirmatory evidence.
 
 The first infrastructure smoke is intentionally smaller than Stage 0:
 
 ```bash
 uv run python experiments/four-term-packed-validation/scripts/generate_sai3_tasks.py \
-  --seed 20260730 --split development --tasks-per-mode 24 \
+  --seed 20260730 --split development --tasks-per-mode 24 --difficulty scalar \
   --output runs/sai3/development.jsonl \
   --audit-output runs/sai3/development-audit.json
 
 sbatch experiments/four-term-packed-validation/scripts/slurm_sai3_scout.sbatch \
-  Qwen/Qwen2.5-Coder-3B-Instruct \
+  Qwen/Qwen2.5-Coder-7B-Instruct \
   "$PWD/runs/sai3/development.jsonl" \
-  "$PWD/runs/sai3/scout-qwen25-coder-3b"
+  "$PWD/runs/sai3/scout-qwen25-coder-7b"
 ```
 
 The smoke defaults to six tasks per mode, four matched attempts, and one
 attempt per wrong shard. These counts test the runtime and locate gross
 floor/ceiling behavior only; they cannot pass the statistical gates below.
+
+On an Apple-silicon development machine, the equivalent nonconfirmatory MLX
+smoke is:
+
+```bash
+uv run --with mlx-lm==0.28.3 --with transformers==4.57.6 \
+  python experiments/four-term-packed-validation/scripts/run_sai3_mlx_scout.py \
+  --tasks runs/sai3/development.jsonl \
+  --model mlx-community/Qwen2.5-Coder-7B-Instruct-4bit \
+  --tasks-per-mode 2 --matched-attempts 2 --wrong-attempts 1 \
+  --completion-batch-size 8 \
+  --output runs/sai3/mlx-smoke-7b.jsonl \
+  --metadata-output runs/sai3/mlx-smoke-7b.metadata.json
+```
+
+MLX is used to debug prompts, parsing, verifier behavior, and benchmark
+difficulty without waiting for a cluster allocation. Quantization and Apple
+hardware are part of this local system definition, so these observations are
+not pooled with the BF16 A100 identification arm. Stage 0 eligibility is rerun
+on the final serving stack before any confirmatory split is generated.
 
 This bundle specifies a new experiment for testing the four-term packed
 decomposition without using any existing experimental result in this
@@ -119,11 +140,11 @@ solver-relevant and keeps off-diagonal success measurable and near zero without
 giving the model the true mode.
 
 The implementation problem remains nontrivial after the correct contract is
-known. A task composes three to five operations and samples requirements such
-as normalization, exception translation, asynchronous calls, context-manager
-lifetime, and typed serialization. Randomized identifiers prevent checkpoint
-memorization. All confirmation seeds are generated only after the generator,
-templates, and analysis code are frozen.
+known. A task composes value normalization, context transformation, a derived
+weight, a three-keyword API call, status handling, response post-processing,
+ticket propagation, and exception translation. Randomized identifiers prevent
+checkpoint memorization. All confirmation seeds are generated only after the
+generator, templates, and analysis code are frozen.
 
 ### Verifier
 
@@ -152,16 +173,17 @@ eligibility is determined on the frozen generator-development split.
 
 ### Primary identification arm
 
-Use the instruct checkpoints from one dense, open, same-tokenizer family:
+Use two instruct checkpoints from one dense, open, same-tokenizer family:
 
-- `Qwen/Qwen2.5-Coder-3B-Instruct`;
 - `Qwen/Qwen2.5-Coder-7B-Instruct`;
 - `Qwen/Qwen2.5-Coder-14B-Instruct`.
 
 The [Qwen2.5-Coder report](https://arxiv.org/abs/2409.12186) documents the
-same-family 0.5B--32B series. Using 3B/7B/14B creates meaningful cost variation
-without the severe floor expected from the smallest checkpoints or the
-hardware discontinuity of the 32B checkpoint.
+same-family 0.5B--32B series. The local development pilot rejected the 3B
+system because it produced no matched success in the micro-scout. The 7B/14B
+pair preserves meaningful cost and competence variation without the hardware
+discontinuity of the 32B checkpoint. Eligibility is rerun in BF16 before the
+pair is frozen.
 
 These checkpoints are code-specific; the panel is not a generic-language
 baseline. Its age is an advantage for identification because the serving path,
@@ -187,7 +209,7 @@ cannot be used to select an alternate.
 Every completion is an independent fixed-format slot:
 
 - temperature `0.8`, top-p `0.95`;
-- fixed prompt-token envelope and exactly 192 decoded tokens;
+- fixed prompt-token envelope and exactly 256 decoded tokens;
 - no conversation history or feedback between attempts;
 - independent, logged RNG seeds;
 - the first parseable patch is evaluated;
@@ -196,15 +218,16 @@ Every completion is an independent fixed-format slot:
 
 The transport arm keeps the same sampling envelope and disables thinking when
 the official chat protocol supports it. If a checkpoint cannot disable
-reasoning, every reasoning token consumes the 192-token slot. Its frozen
+reasoning, every reasoning token consumes the 256-token slot. Its frozen
 runtime and parser are recorded as part of `M`; they are not pooled into the
 same-family causal contrast.
 
 The generator-development split may tune task complexity until focused
-pass@1 lies in `[0.15, 0.65]` for every retained model-mode cell. This avoids
-floor, ceiling, and excessive censoring. Development tasks and completions are
-then destroyed; the generator is frozen before fresh calibration and
-confirmation seeds are sampled.
+pass@1 is at least `0.05` for every retained model-mode cell. The lower gate
+prevents excessive censoring; no upper gate is needed because near-certain
+focused success still leaves inverse allocation experimentally identifiable.
+Development tasks and completions are then destroyed; the generator is frozen
+before fresh calibration and confirmation seeds are sampled.
 
 Before that tuning, Stage 0 runs 24 development tasks per mode with eight
 correct-shard and two-per-wrong-shard attempts for every scouted checkpoint.
@@ -215,12 +238,13 @@ Calibration initially generates 32 correct-shard attempts and eight attempts
 for each wrong shard per task and model. A correct-shard stream that has not
 succeeded is extended, with frozen seeds, up to 96 attempts. Confirmation uses
 96 attempts per task/model/shard so the same exchangeable pool supports all
-predeclared schedules. The nominal budget is about 0.11 million calibration
-and 0.66 million confirmation completions, or roughly 148 million decoded
-tokens before rare extensions. Prefix caching should be used, but cached and
-uncached FLOPs must both remain in the resource ledger.
+predeclared schedules. The nominal budget is about 0.074 million calibration
+and 0.442 million confirmation completions across the two primary models, or
+roughly 132 million decoded tokens before rare extensions. Prefix caching
+should be used, but cached and uncached FLOPs must both remain in the resource
+ledger.
 
-The exact nominal load is 258,048 completions and 49,545,216 decoded tokens per
+The exact nominal load is 258,048 completions and 66,060,288 decoded tokens per
 model. Consequently, elapsed time must be projected from the sustained
 aggregate throughput measured in Stage 0; the planning scenarios in
 `model_landscape.md` are not substituted for a hardware benchmark.
@@ -366,7 +390,7 @@ signal.
 
 ### Gate 2: usable stochastic regime
 
-- focused pass@1 in `[0.15, 0.65]` on the frozen calibration split;
+- focused pass@1 at least `0.05` on the frozen calibration split;
 - confirmation censoring below `5%` in every primary cell;
 - no significant attempt-index trend after conditioning on task and model.
 
@@ -428,7 +452,7 @@ clock-dependent.
 ## Power Analysis
 
 `scripts/power_analysis.py` is a design calculation, not evidence. It samples
-focused pass probabilities over the preregistered `[0.15, 0.65]` regime,
+focused pass probabilities over a conservative `[0.15, 0.65]` sensitivity regime,
 simulates independent calibration and confirmation first-passage data, and
 checks closure, the inverse-share slope, and held-out model choice. It reads no
 repository result.
