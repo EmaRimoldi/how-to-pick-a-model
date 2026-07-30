@@ -1,13 +1,15 @@
 # Four-Term Packed Validation
 
-Status: **BF16 Stage 0, physical inverse-share, and frozen calibration gates
-pass; held-out confirmation is running and no closure result is claimed yet**.
+Status: **held-out confirmation complete. The practical closure and decision
+gates pass, but the preregistered omnibus result does not pass because residuals
+retain a small positive slope against mismatch**.
 
 Implementation status (2026-07-30): the procedural generator, static-policy
 verifier, reference/mutation audit, vLLM and Apple-MLX scout runners, physical
 IID soft-allocation scheduler, inverse-share analysis, four-term held-out
-analysis, and Slurm entrypoints are implemented. Development completions are
-explicitly excluded from confirmatory closure evidence.
+analysis, artifact audit, plots, and Slurm entrypoints are implemented.
+Development completions are explicitly excluded from confirmatory closure
+evidence.
 
 The first infrastructure smoke is intentionally smaller than Stage 0:
 
@@ -96,6 +98,42 @@ The active theoretical statement is in
 `thm:four-term`. The packed law is an assumption, not a consequence of the
 general definition of proper time. Therefore the empirical burden is to test
 the inverse-share law and out-of-sample closure.
+
+## Held-Out Result
+
+The frozen BF16 A100 confirmation executed 175,104 physical trajectories over
+768 unseen tasks. There was no censoring and no wrong-shard success. The
+confirmation-only inverse-share estimate was `beta = 0.9868`, with 90%
+bootstrap interval `[0.9784, 0.9952]`, inside the preregistered equivalence
+region `[0.90, 1.10]`.
+
+Across the six primary model-allocation contrasts, the independently calibrated
+four terms had mean residual `0.0100` nat and RMS residual `0.0147` nat; the 95%
+bootstrap upper bound on RMS was `0.0350` nat. Every individual 95% residual
+interval contained zero. The predicted model agreed with the held-out oracle in
+all six conditions, with bootstrap selection probability `1.0` and zero oracle
+regret.
+
+Thirteen of fourteen machine-readable gates pass. The exception is the frozen
+Holm-corrected residual-slope diagnostic: residual increases with mismatch with
+slope `0.0377` (95% bootstrap interval `[0.0108, 0.0647]`, adjusted
+`p = 0.0224`). At the largest tested mismatch this corresponds to about
+`0.0299` nat, or a `3.0%` multiplicative resource discrepancy. The honest
+conclusion is therefore that the four-term identity is a highly accurate
+decision approximation on SAI-3, while its strict exact-closure omnibus claim
+is not supported. No gate or estimator was changed after opening confirmation.
+
+A separately labeled post-hoc calculation identifies a plausible estimator
+mechanism for the failed diagnostic. With six trajectories per task cell,
+`log(sample mean first-passage)` has allocation-dependent Jensen bias. Under a
+stationary geometric model and the calibrated mode scales, this predicts a
+mismatch slope of `0.0257`, explaining `68.3%` of the observed `0.0377`; the
+bias-adjusted diagnostic slope is `0.0119`. This does not reverse the frozen
+gate. It motivates a fresh high-repetition replication that can distinguish
+finite-repetition bias from a physical failure of the packed law.
+
+The full result, bootstrap draws, raw-artifact hashes, and paper-facing figures
+are versioned under [`results/`](results/).
 
 ## Why This Setup
 

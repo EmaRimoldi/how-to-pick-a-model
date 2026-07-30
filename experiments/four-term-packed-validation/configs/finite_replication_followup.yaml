@@ -1,0 +1,45 @@
+experiment_id: sai3_finite_replication_followup
+status: frozen_before_task_generation
+frozen_date: 2026-07-30
+relationship_to_primary: posthoc_fresh_task_replication_cannot_reverse_primary_gate
+
+motivation:
+  observed_primary_mismatch_slope: 0.03767610285691385
+  observed_primary_mismatch_slope_ci_95: [0.010839036846360544, 0.06465802872064604]
+  expected_six_replication_bias_slope: 0.025742669037212312
+  expected_thirty_two_replication_bias_slope: 0.004699293057619068
+  aggregate_fraction_primary_slope_explained: 0.68326252147091
+
+design:
+  task_seed: 20260731
+  schedule_seed: 2026073101
+  split: replication
+  tasks_per_mode: 64
+  task_shards_per_mode: 4
+  tasks_per_mode_per_shard: 16
+  repetitions_per_task_cell: 32
+  alpha: [0.80]
+  allocations: [matched, prior, half_anti]
+  max_slots: 256
+  models:
+    - Qwen/Qwen2.5-Coder-7B-Instruct
+    - Qwen/Qwen2.5-Coder-14B-Instruct
+  precision: bfloat16
+  hardware: one_a100_per_shard
+  expected_trajectories_per_model: 61440
+  expected_total_trajectories: 122880
+
+estimand:
+  primary: raw_residual_slope_against_mismatch
+  secondary: analytic_finite_replication_bias_adjusted_slope
+  uncertainty: paired_task_bootstrap_5000_repetitions
+
+diagnostic_decision:
+  attenuation_threshold_fraction_of_primary_slope: 0.50
+  attenuation_threshold_slope: 0.018838051428456926
+  supports_finite_replication_mechanism_when:
+    - fresh_raw_mismatch_slope_at_most_attenuation_threshold
+    - no_new_integrity_or_physical_packedness_gate_failure
+  supports_persistent_physical_deviation_when:
+    - fresh_raw_mismatch_slope_above_attenuation_threshold
+  interpretation: diagnostic_only_not_a_retest_of_the_frozen_primary_outcome

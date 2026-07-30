@@ -1,6 +1,59 @@
-# Development And Sensitivity Results
+# Empirical Results
 
-No file in this directory is confirmatory evidence.
+The `bf16_four_term_confirmation.json` result and its associated audit and
+bootstrap archive are held-out confirmatory evidence. The remaining JSON files
+are development, calibration, or design-sensitivity evidence as noted below.
+
+## Held-Out Confirmation
+
+`bf16_four_term_confirmation.json` is the frozen BF16 A100 analysis of 175,104
+physical trajectories over 768 unseen tasks. It records zero censoring, zero
+wrong-shard success, a confirmation inverse-share slope of `0.9868` with 90%
+interval `[0.9784, 0.9952]`, and six primary four-term contrasts. Mean residual
+is `0.0100` nat, residual RMS is `0.0147` nat, and the 95% bootstrap upper bound
+on RMS is `0.0350` nat. Every individual residual interval contains zero.
+
+The four-term decision selects the same model as the held-out oracle in all six
+conditions, with minimum bootstrap selection probability `1.0` and zero oracle
+regret. The strict omnibus status is nevertheless
+`INCONCLUSIVE_OR_FALSIFIED`: thirteen of fourteen gates pass, but the residual
+slope against mismatch is `0.0377` with Holm-adjusted `p = 0.0224`. At the
+largest mismatch this is a `0.0299`-nat, approximately `3.0%`, discrepancy.
+This supports practical approximate closure and model choice, not an exact
+identity on the tested domain.
+
+`bf16_confirmation_artifact_audit.json` verifies the eight raw A100 runs. It
+contains 87,552 trajectories per model, 175,104 unique trajectory IDs, 87,552
+unique schedule seeds, 801,535 unique generation seeds, model and tokenizer
+revisions, design and artifact hashes, and zero wrong-shard successes. The 7B
+and 14B systems issued 455,248 and 346,287 generation slots respectively. Their
+measured generation time was 20,288 and 27,433 GPU-seconds respectively.
+
+`bf16_four_term_bootstrap_draws.json.gz` contains the 5,000 nested task-bootstrap
+draws referenced by the confirmation result. Its uncompressed JSON SHA-256 is
+`9800cc94c6d50f703587712308189cadb840193bb6eb09f713c1d4b5673552c4`.
+
+`posthoc_finite_replication_bias.json` is an explicitly nonconfirmatory
+diagnostic of the only failed gate. The exact negative-binomial calculation
+predicts a mismatch slope of `0.0257` from taking the log of a six-repetition
+sample mean, explaining `68.3%` of the observed `0.0377` slope. Subtracting this
+approximate bias leaves slope `0.0119` and reduces all-comparison residual RMS
+from `0.0141` to `0.0083` nat. Because it uses aggregate mode scales and was
+motivated after observing the result, it cannot change the frozen outcome.
+
+The confirmation jobs were Slurm `19281145`, `19281147`, `19281148`,
+`19281149`, `19281158`, `19281159`, `19281160`, and `19281162`; all completed
+on one A100 each. Artifact audit job `19283303` and analysis job `19283418`
+also completed. The paper-facing plots in `figures/` are generated with:
+
+```bash
+uv run python experiments/four-term-packed-validation/scripts/plot_sai3_four_term.py \
+  --analysis experiments/four-term-packed-validation/results/bf16_four_term_confirmation.json \
+  --inverse-share experiments/four-term-packed-validation/results/bf16_inverse_share_development.json \
+  --output-dir experiments/four-term-packed-validation/results/figures
+```
+
+## Development And Sensitivity
 
 `mlx_development_pilot.json` records the new Apple-silicon model pilot used to
 debug and select the BF16 Stage 0 candidates. It contains actual model
@@ -29,11 +82,13 @@ maximum cell censoring is `0.456%`.
 
 `bf16_inverse_share_development.json` records the physical IID allocation gate
 on generator v5 before either final split was opened. Across 3,456 trajectories,
-the pooled slope is `0.988` with 90% bootstrap interval `0.960`--`1.013`; the
-14B and 7B intervals are respectively `0.985`--`1.052` and `0.913`--`0.995`.
-Residual RMS is `0.108` nats, planned-share error is `0.0051`, and censoring and
-off-diagonal wins are both zero. All inverse-share gates pass. This authorizes
-confirmation but is still development evidence, not held-out four-term closure.
+the expected-log estimand gives pooled slope `0.9549` with 90% bootstrap
+interval `0.9286`--`0.9810`; the 14B and 7B intervals are respectively
+`0.9375`--`1.0083` and `0.8984`--`0.9753`. The frozen pooled gate passes. The
+7B-only interval narrowly misses the lower equivalence threshold, but this is a
+preserved model-specific diagnostic, not the preregistered gate. Residual RMS is
+`0.104` nat, planned-share error is `0.0051`, and censoring and off-diagonal wins
+are both zero. This authorized confirmation but remains development evidence.
 
 `bf16_calibration.json` records the frozen pre-confirmation gate over 110,592
 BF16 A100 completions. No task has zero matched successes and no physical slot

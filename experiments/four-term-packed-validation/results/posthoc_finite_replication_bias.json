@@ -1,0 +1,185 @@
+{
+  "all_comparisons_bias_adjusted_residual_rms_nats": 0.008328991573240742,
+  "all_comparisons_raw_residual_rms_nats": 0.014094199252135686,
+  "analysis": "finite_replication_log_mean_bias",
+  "assumptions": [
+    "geometric stationary first passage",
+    "zero off-diagonal success",
+    "model-mode geometric calibration scale represents task probabilities"
+  ],
+  "bias_adjusted_mismatch_slope": 0.011933433819701533,
+  "evidence_status": "posthoc_diagnostic_not_confirmatory",
+  "fraction_raw_slope_explained": 0.68326252147091,
+  "limitation": "Uses aggregate model-mode scales and does not replace the frozen primary estimator or gate.",
+  "predicted_finite_replication_mismatch_slope": 0.025742669037212312,
+  "primary_bias_adjusted_mean_residual_nats": 0.007863046181078496,
+  "primary_bias_adjusted_residual_rms_nats": 0.010052273379191023,
+  "raw_mismatch_slope": 0.03767610285691385,
+  "repetitions_per_task_cell": 6,
+  "rows": [
+    {
+      "allocation": "half_anti",
+      "alpha": 0.6,
+      "bias_adjusted_residual_nats": -0.0070764852750073715,
+      "comparison": "self_baseline",
+      "mismatch_nats": 0.2595621431620003,
+      "predicted_finite_replication_bias_nats": 0.0024602318759915365,
+      "raw_residual_nats": -0.004616253399015835
+    },
+    {
+      "allocation": "matched",
+      "alpha": 0.6,
+      "bias_adjusted_residual_nats": -0.006141701385479564,
+      "comparison": "self_baseline",
+      "mismatch_nats": 0.0,
+      "predicted_finite_replication_bias_nats": -0.00882988766411616,
+      "raw_residual_nats": -0.014971589049595724
+    },
+    {
+      "allocation": "prior",
+      "alpha": 0.6,
+      "bias_adjusted_residual_nats": 0.007377614995483839,
+      "comparison": "self_baseline",
+      "mismatch_nats": 0.14834174943487521,
+      "predicted_finite_replication_bias_nats": 0.0,
+      "raw_residual_nats": 0.007377614995483839
+    },
+    {
+      "allocation": "half_anti",
+      "alpha": 0.8,
+      "bias_adjusted_residual_nats": 0.01577685674548629,
+      "comparison": "self_baseline",
+      "mismatch_nats": 0.7942222283949247,
+      "predicted_finite_replication_bias_nats": 0.007483850411683701,
+      "raw_residual_nats": 0.02326070715716999
+    },
+    {
+      "allocation": "matched",
+      "alpha": 0.8,
+      "bias_adjusted_residual_nats": -0.00021194032443360225,
+      "comparison": "self_baseline",
+      "mismatch_nats": 0.0,
+      "predicted_finite_replication_bias_nats": -0.026761708762695024,
+      "raw_residual_nats": -0.026973649087128626
+    },
+    {
+      "allocation": "prior",
+      "alpha": 0.8,
+      "bias_adjusted_residual_nats": -0.00045987802151963714,
+      "comparison": "self_baseline",
+      "mismatch_nats": 0.4595804290179329,
+      "predicted_finite_replication_bias_nats": -6.938893903907228e-18,
+      "raw_residual_nats": -0.0004598780215196441
+    },
+    {
+      "allocation": "half_anti",
+      "alpha": 0.6,
+      "bias_adjusted_residual_nats": -0.007931658321153605,
+      "comparison": "self_deployed",
+      "mismatch_nats": 0.2595621431620003,
+      "predicted_finite_replication_bias_nats": 0.002014746019075357,
+      "raw_residual_nats": -0.005916912302078248
+    },
+    {
+      "allocation": "matched",
+      "alpha": 0.6,
+      "bias_adjusted_residual_nats": -0.003181424151874959,
+      "comparison": "self_deployed",
+      "mismatch_nats": 0.0,
+      "predicted_finite_replication_bias_nats": -0.007350540246309642,
+      "raw_residual_nats": -0.010531964398184601
+    },
+    {
+      "allocation": "prior",
+      "alpha": 0.6,
+      "bias_adjusted_residual_nats": 0.005136607345939126,
+      "comparison": "self_deployed",
+      "mismatch_nats": 0.14834174943487521,
+      "predicted_finite_replication_bias_nats": 0.0,
+      "raw_residual_nats": 0.005136607345939126
+    },
+    {
+      "allocation": "half_anti",
+      "alpha": 0.8,
+      "bias_adjusted_residual_nats": 0.01059482480264723,
+      "comparison": "self_deployed",
+      "mismatch_nats": 0.7942222283949247,
+      "predicted_finite_replication_bias_nats": 0.00613443761505722,
+      "raw_residual_nats": 0.01672926241770445
+    },
+    {
+      "allocation": "matched",
+      "alpha": 0.8,
+      "bias_adjusted_residual_nats": 0.006177075506999141,
+      "comparison": "self_deployed",
+      "mismatch_nats": 0.0,
+      "predicted_finite_replication_bias_nats": -0.022303939874982193,
+      "raw_residual_nats": -0.01612686436798305
+    },
+    {
+      "allocation": "prior",
+      "alpha": 0.8,
+      "bias_adjusted_residual_nats": -0.0010920988532951426,
+      "comparison": "self_deployed",
+      "mismatch_nats": 0.4595804290179329,
+      "predicted_finite_replication_bias_nats": 0.0,
+      "raw_residual_nats": -0.0010920988532951426
+    },
+    {
+      "allocation": "half_anti",
+      "alpha": 0.6,
+      "bias_adjusted_residual_nats": -0.001685833194952073,
+      "comparison": "cross_model_primary",
+      "mismatch_nats": 0.2595621431620003,
+      "predicted_finite_replication_bias_nats": 0.007762599684881348,
+      "raw_residual_nats": 0.006076766489929275
+    },
+    {
+      "allocation": "matched",
+      "alpha": 0.6,
+      "bias_adjusted_residual_nats": 0.0030644009743265727,
+      "comparison": "cross_model_primary",
+      "mismatch_nats": 0.0,
+      "predicted_finite_replication_bias_nats": -0.001602686580503651,
+      "raw_residual_nats": 0.0014617143938229216
+    },
+    {
+      "allocation": "prior",
+      "alpha": 0.6,
+      "bias_adjusted_residual_nats": 0.011382432472140658,
+      "comparison": "cross_model_primary",
+      "mismatch_nats": 0.14834174943487521,
+      "predicted_finite_replication_bias_nats": 0.005747853665805991,
+      "raw_residual_nats": 0.01713028613794665
+    },
+    {
+      "allocation": "half_anti",
+      "alpha": 0.8,
+      "bias_adjusted_residual_nats": 0.01684064992884876,
+      "comparison": "cross_model_primary",
+      "mismatch_nats": 0.7942222283949247,
+      "predicted_finite_replication_bias_nats": 0.01188229128086321,
+      "raw_residual_nats": 0.028722941209711972
+    },
+    {
+      "allocation": "matched",
+      "alpha": 0.8,
+      "bias_adjusted_residual_nats": 0.012422900633200673,
+      "comparison": "cross_model_primary",
+      "mismatch_nats": 0.0,
+      "predicted_finite_replication_bias_nats": -0.016556086209176202,
+      "raw_residual_nats": -0.004133185575975529
+    },
+    {
+      "allocation": "prior",
+      "alpha": 0.8,
+      "bias_adjusted_residual_nats": 0.005153726272906389,
+      "comparison": "cross_model_primary",
+      "mismatch_nats": 0.4595804290179329,
+      "predicted_finite_replication_bias_nats": 0.005747853665805991,
+      "raw_residual_nats": 0.01090157993871238
+    }
+  ],
+  "schema_version": 1,
+  "source_analysis": "held_out_four_term_closure"
+}

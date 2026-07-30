@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import gzip
+import hashlib
 import importlib.util
 import json
 import math
@@ -111,6 +113,20 @@ PLOT_SPEC = importlib.util.spec_from_file_location("plot_sai3_four_term", PLOT_P
 assert PLOT_SPEC is not None and PLOT_SPEC.loader is not None
 PLOT = importlib.util.module_from_spec(PLOT_SPEC)
 PLOT_SPEC.loader.exec_module(PLOT)
+
+FINITE_BIAS_PATH = (
+    ROOT
+    / "experiments"
+    / "four-term-packed-validation"
+    / "scripts"
+    / "analyze_finite_replication_bias.py"
+)
+FINITE_BIAS_SPEC = importlib.util.spec_from_file_location(
+    "analyze_finite_replication_bias", FINITE_BIAS_PATH
+)
+assert FINITE_BIAS_SPEC is not None and FINITE_BIAS_SPEC.loader is not None
+FINITE_BIAS = importlib.util.module_from_spec(FINITE_BIAS_SPEC)
+FINITE_BIAS_SPEC.loader.exec_module(FINITE_BIAS)
 
 
 def test_reference_and_wrong_shards_are_separated() -> None:
@@ -727,6 +743,7 @@ def test_four_term_plots_render_from_analysis_schema(tmp_path: Path) -> None:
                     "allocation": allocation_name,
                     "predicted_delta_nats": 0.2 + 0.1 * index,
                     "observed_delta_nats": 0.21 + 0.1 * index,
+                    "residual_ci_95_nats": [-0.02, 0.04],
                     "unit_cost_nats": 0.7,
                     "competence_nats": -0.3,
                     "information_nats": DESIGN.information(alpha),
@@ -754,3 +771,42 @@ def test_four_term_plots_render_from_analysis_schema(tmp_path: Path) -> None:
     }
     PLOT.plot_inverse_share(inverse, tmp_path / "inverse.png")
     assert all((tmp_path / name).stat().st_size > 1000 for name in ("closure.png", "decomposition.png", "inverse.png"))
+
+
+def test_checked_confirmation_bundle_is_internally_consistent() -> None:
+    result_dir = ROOT / "experiments" / "four-term-packed-validation" / "results"
+    analysis = json.loads((result_dir / "bf16_four_term_confirmation.json").read_text())
+    audit = json.loads((result_dir / "bf16_confirmation_artifact_audit.json").read_text())
+
+    assert analysis["evidence_status"] == "held_out_confirmation"
+    assert audit["status"] == "PASS"
+    assert analysis["confirmation_trajectories"] == sum(
+        model["trajectories"] for model in audit["models"].values()
+    )
+    assert analysis["confirmation_trajectories"] == 175_104
+
+    audited_trajectories = {
+        run["artifacts"]["trajectories"]["path"]: run["artifacts"]["trajectories"]["sha256"]
+        for run in audit["runs"]
+    }
+    analyzed_trajectories = {
+        record["path"]: record["sha256"]
+        for record in analysis["input_provenance"]["confirmation"]
+    }
+    assert analyzed_trajectories == audited_trajectories
+
+    digest = hashlib.sha256()
+    with gzip.open(result_dir / "bf16_four_term_bootstrap_draws.json.gz", "rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    assert digest.hexdigest() == analysis["bootstrap_draws"]["sha256"]
+
+    failed_gates = {name for name, passed in analysis["gates"].items() if not passed}
+    assert failed_gates == {"residual_slope_holm_pass"}
+
+
+def test_finite_replication_log_mean_bias_has_expected_direction() -> None:
+    assert FINITE_BIAS.expected_log_sample_mean_bias(1.0, 6) == 0.0
+    six_rep_bias = FINITE_BIAS.expected_log_sample_mean_bias(0.2, 6)
+    thirty_two_rep_bias = FINITE_BIAS.expected_log_sample_mean_bias(0.2, 32)
+    assert six_rep_bias < thirty_two_rep_bias < 0.0

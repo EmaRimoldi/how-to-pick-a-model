@@ -19,7 +19,11 @@ from sai3 import audit_task, generate_tasks, write_jsonl  # noqa: E402
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed", type=int, required=True)
-    parser.add_argument("--split", choices=("development", "calibration", "confirmation"), required=True)
+    parser.add_argument(
+        "--split",
+        choices=("development", "calibration", "confirmation", "replication"),
+        required=True,
+    )
     parser.add_argument("--tasks-per-mode", type=int, required=True)
     parser.add_argument("--difficulty", choices=("scalar", "list"), default="scalar")
     parser.add_argument("--output", type=Path, required=True)

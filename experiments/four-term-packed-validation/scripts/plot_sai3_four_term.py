@@ -32,9 +32,25 @@ def plot_closure(rows: list[dict], output: Path) -> None:
     colors = {0.6: "#247BA0", 0.8: "#D1495B"}
     markers = {"matched": "o", "prior": "s", "half_anti": "^"}
     for row in rows:
+        predicted = float(row["predicted_delta_nats"])
+        observed = float(row["observed_delta_nats"])
+        if "residual_ci_95_nats" in row:
+            residual_low, residual_high = row["residual_ci_95_nats"]
+            axis.errorbar(
+                predicted,
+                observed,
+                yerr=[
+                    [observed - (predicted + residual_low)],
+                    [(predicted + residual_high) - observed],
+                ],
+                color=colors[row["alpha"]],
+                linewidth=0.9,
+                capsize=2.0,
+                zorder=2,
+            )
         axis.scatter(
-            row["predicted_delta_nats"],
-            row["observed_delta_nats"],
+            predicted,
+            observed,
             color=colors[row["alpha"]],
             marker=markers[row["allocation"]],
             s=58,
@@ -86,6 +102,8 @@ def plot_decomposition(rows: list[dict], output: Path) -> None:
     axis.axhline(0.0, color="#202124", linewidth=0.8)
     axis.set_xticks(x, [condition_label(row) for row in rows])
     axis.set_ylabel("log-resource gain (nat)")
+    span = max(positive) - min(negative)
+    axis.set_ylim(min(negative) - 0.08 * span, max(positive) + 0.12 * span)
     axis.grid(axis="y", alpha=0.2, linewidth=0.7)
     axis.legend(frameon=False, fontsize=8, ncol=3, loc="upper center")
     figure.savefig(output, dpi=220)
