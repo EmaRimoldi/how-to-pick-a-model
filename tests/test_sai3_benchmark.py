@@ -178,6 +178,7 @@ def test_schedule_design_is_balanced_and_reuses_no_trajectory_seed() -> None:
     assert len({row["schedule_seed"] for row in rows}) == len(rows)
     for row in rows:
         assert math.isclose(sum(row["q"]), 1.0, abs_tol=1e-12)
+        assert math.isclose(row["q_true"], row["q"][row["mode"]], abs_tol=1e-12)
 
 
 def test_schedule_generation_seeds_are_unique_per_physical_slot() -> None:

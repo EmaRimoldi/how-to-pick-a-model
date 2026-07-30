@@ -131,6 +131,7 @@ def four_term_rows(
                     "task_id": task["task_id"],
                     "mode": mode,
                     "q": list(PRIOR),
+                    "q_true": PRIOR[mode],
                     "repetition": repetition,
                     "schedule_seed": stable_seed(seed, baseline_id),
                     "analysis_weight": 1.0,
@@ -143,6 +144,7 @@ def four_term_rows(
                         trajectory_id = (
                             f"four|{task['task_id']}|a={alpha:.8f}|alloc={name}|z={z}|r={repetition}"
                         )
+                        q = allocation(alpha, z, name)
                         rows.append(
                             {
                                 "schema_version": 1,
@@ -154,7 +156,8 @@ def four_term_rows(
                                 "alpha": alpha,
                                 "allocation": name,
                                 "z": z,
-                                "q": list(allocation(alpha, z, name)),
+                                "q": list(q),
+                                "q_true": q[mode],
                                 "repetition": repetition,
                                 "schedule_seed": stable_seed(seed, trajectory_id),
                                 "analysis_weight": channel_probability(alpha, mode, z),
