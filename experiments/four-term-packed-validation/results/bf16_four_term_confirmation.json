@@ -1,0 +1,1716 @@
+{
+  "analysis": "held_out_four_term_closure",
+  "attempt_index_diagnostics": [
+    {
+      "bootstrap_ci_95": [
+        -0.0014241536458333333,
+        0.0002848307291666667
+      ],
+      "estimand": "late_minus_early_matched_success_probability",
+      "initial_attempts_only": 64,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "no_significant_trend": true,
+      "task_fixed_effect_difference": -0.0005696614583333334
+    },
+    {
+      "bootstrap_ci_95": [
+        -0.0019124348958333333,
+        0.0074462890625
+      ],
+      "estimand": "late_minus_early_matched_success_probability",
+      "initial_attempts_only": 64,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "no_significant_trend": true,
+      "task_fixed_effect_difference": 0.0026448567708333335
+    }
+  ],
+  "baseline_model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+  "bootstrap_draws": {
+    "path": "runs/sai3/stage1-v5/confirmation/bootstrap_draws.json",
+    "repetitions": 5000,
+    "sha256": "9800cc94c6d50f703587712308189cadb840193bb6eb09f713c1d4b5673552c4"
+  },
+  "calibration_hazard_diagnostics": [
+    {
+      "matched_hazard": 0.997314453125,
+      "matched_hazard_ci_95": [
+        0.9968164389788688,
+        0.997734738442332
+      ],
+      "matched_successes": 49020,
+      "matched_trials": 49152,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "off_diagonal_hazard": 0.0,
+      "off_diagonal_hazard_ci_95": [
+        5.421010862427522e-20,
+        0.000624846760676065
+      ],
+      "off_diagonal_successes": 0,
+      "off_diagonal_to_matched_upper_95": 0.0006268423515528628,
+      "off_diagonal_trials": 6144
+    },
+    {
+      "matched_hazard": 0.8526814778645834,
+      "matched_hazard_ci_95": [
+        0.8495206347875922,
+        0.8557871978337676
+      ],
+      "matched_successes": 41911,
+      "matched_trials": 49152,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "off_diagonal_hazard": 0.0,
+      "off_diagonal_hazard_ci_95": [
+        5.421010862427522e-20,
+        0.000624846760676065
+      ],
+      "off_diagonal_successes": 0,
+      "off_diagonal_to_matched_upper_95": 0.0007355286441421132,
+      "off_diagonal_trials": 6144
+    }
+  ],
+  "censoring_rate": 0.0,
+  "clock": "normalized_non_embedding_parameter_tokens_per_fixed_slot",
+  "confirmation_censoring_cells": [
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=half_anti",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=half_anti",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=half_anti",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=half_anti",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=half_anti",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=half_anti",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=half_anti",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=half_anti",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=half_anti",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=matched",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=matched",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=matched",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=matched",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=matched",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=matched",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=matched",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=matched",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=matched",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=prior",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=prior",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=prior",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=prior",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=prior",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=prior",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=prior",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=prior",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=prior",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=half_anti",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=half_anti",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=half_anti",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=half_anti",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=half_anti",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=half_anti",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=half_anti",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=half_anti",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=half_anti",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=matched",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=matched",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=matched",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=matched",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=matched",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=matched",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=matched",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=matched",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=matched",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=prior",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=prior",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=prior",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=prior",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=prior",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=prior",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=prior",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=prior",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=prior",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "baseline_prior",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": -1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "baseline_prior",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": -1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "baseline_prior",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "trajectories": 1536,
+      "z": -1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=half_anti",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=half_anti",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=half_anti",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=half_anti",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=half_anti",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=half_anti",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=half_anti",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=half_anti",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=half_anti",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=matched",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=matched",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=matched",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=matched",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=matched",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=matched",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=matched",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=matched",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=matched",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=prior",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=prior",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=prior",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=prior",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=prior",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=prior",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=prior",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=prior",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.60000000|allocation=prior",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=half_anti",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=half_anti",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=half_anti",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=half_anti",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=half_anti",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=half_anti",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=half_anti",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=half_anti",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=half_anti",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=matched",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=matched",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=matched",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=matched",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=matched",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=matched",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=matched",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=matched",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=matched",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=prior",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=prior",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=prior",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=prior",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=prior",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=prior",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=prior",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 0
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=prior",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "alpha=0.80000000|allocation=prior",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": 2
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "baseline_prior",
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": -1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "baseline_prior",
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": -1
+    },
+    {
+      "censoring_rate": 0.0,
+      "condition": "baseline_prior",
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "trajectories": 1536,
+      "z": -1
+    }
+  ],
+  "confirmation_integrity": {
+    "unique_model_trajectory_ids": 175104,
+    "wrong_shard_success_examples": [],
+    "wrong_shard_successes": 0
+  },
+  "confirmation_inverse_share_beta": 0.986813157958398,
+  "confirmation_inverse_share_beta_ci_90": [
+    0.978437838375367,
+    0.995173684994646
+  ],
+  "confirmation_trajectories": 175104,
+  "costs": {
+    "Qwen/Qwen2.5-Coder-14B-Instruct": 13100000000.0,
+    "Qwen/Qwen2.5-Coder-7B-Instruct": 6530000000.0
+  },
+  "deployed_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+  "evidence_status": "held_out_confirmation",
+  "focused_mode_pass_probabilities": [
+    {
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "pass_probability": 0.99774169921875,
+      "trials": 16384
+    },
+    {
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "pass_probability": 0.998291015625,
+      "trials": 16384
+    },
+    {
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "pass_probability": 0.99591064453125,
+      "trials": 16384
+    },
+    {
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "pass_probability": 0.8431396484375,
+      "trials": 16384
+    },
+    {
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "pass_probability": 0.8648681640625,
+      "trials": 16384
+    },
+    {
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "pass_probability": 0.85003662109375,
+      "trials": 16384
+    }
+  ],
+  "focused_scales": [
+    {
+      "estimand": "exp(mean_task_log_t0)",
+      "geometric_mean_t0_slots": 1.0022925981316797,
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct"
+    },
+    {
+      "estimand": "exp(mean_task_log_t0)",
+      "geometric_mean_t0_slots": 1.0017400658950806,
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct"
+    },
+    {
+      "estimand": "exp(mean_task_log_t0)",
+      "geometric_mean_t0_slots": 1.005019388050612,
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct"
+    },
+    {
+      "estimand": "exp(mean_task_log_t0)",
+      "geometric_mean_t0_slots": 1.2551630302045627,
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct"
+    },
+    {
+      "estimand": "exp(mean_task_log_t0)",
+      "geometric_mean_t0_slots": 1.2123227706443331,
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct"
+    },
+    {
+      "estimand": "exp(mean_task_log_t0)",
+      "geometric_mean_t0_slots": 1.25993263298429,
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct"
+    }
+  ],
+  "gates": {
+    "attempt_stationarity_pass": true,
+    "censoring_pass": true,
+    "confirmation_wrong_shard_success_pass": true,
+    "focused_regime_pass": true,
+    "inverse_share_beta_pass": true,
+    "mean_residual_pass": true,
+    "off_diagonal_hazard_pass": true,
+    "planned_share_pass": true,
+    "practitioner_kendall_tau_pass": true,
+    "practitioner_oracle_regret_pass": true,
+    "residual_rms_pass": true,
+    "residual_slope_holm_pass": false,
+    "rms_upper_95_pass": true,
+    "selected_model_probability_pass": true
+  },
+  "input_provenance": {
+    "calibration": [
+      {
+        "path": "runs/sai3/stage1-v5/calibration/qwen25-coder-7b/shard-0/completions.jsonl",
+        "sha256": "d0b36cb797e5412a8af5596b4b3c7d7da63324f58a6c26295c249ae53be6dc66"
+      },
+      {
+        "path": "runs/sai3/stage1-v5/calibration/qwen25-coder-7b/shard-128/completions.jsonl",
+        "sha256": "dcb35d21b2d48468c7614306b20428d27cfc93fedf7ed9be19861ab575e8c582"
+      },
+      {
+        "path": "runs/sai3/stage1-v5/calibration/qwen25-coder-7b/shard-192/completions.jsonl",
+        "sha256": "a26982c1c7530c3e48f61a1fabc32491d52e17fca4c89bfc26da2a4b0c8a5c9e"
+      },
+      {
+        "path": "runs/sai3/stage1-v5/calibration/qwen25-coder-7b/shard-64/completions.jsonl",
+        "sha256": "19ca11080abf073783740d7d6734f9e2301830811f732317272ed46ffffa8ba9"
+      },
+      {
+        "path": "runs/sai3/stage1-v5/calibration/qwen25-coder-14b/shard-0/completions.jsonl",
+        "sha256": "50785fff8d6637b0dc5360ad108df0a3b2cb9cb2eb082842bf4984646e17e709"
+      },
+      {
+        "path": "runs/sai3/stage1-v5/calibration/qwen25-coder-14b/shard-128/completions.jsonl",
+        "sha256": "68fe497bdeb3cfe996dd8a6e79eeafa6bc28638ee9c8c4b7447d5bb20c6c4b07"
+      },
+      {
+        "path": "runs/sai3/stage1-v5/calibration/qwen25-coder-14b/shard-192/completions.jsonl",
+        "sha256": "d9d34a959620b5d141e84ceaac3e376bfc05756d484354f84b35cb997d3caf3f"
+      },
+      {
+        "path": "runs/sai3/stage1-v5/calibration/qwen25-coder-14b/shard-64/completions.jsonl",
+        "sha256": "8132b701232ec906824d7aeda2fa6d1507600fd816d09cca9f94c3138ccbabc4"
+      }
+    ],
+    "confirmation": [
+      {
+        "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-7b/shard-0/trajectories.jsonl",
+        "sha256": "825b401b9e149b9d5763aef8292d7125cfbb4371fc8be609d6ee41059825c05b"
+      },
+      {
+        "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-7b/shard-128/trajectories.jsonl",
+        "sha256": "c91c208889970feef3b7957fe5ca253629f3da205cde0931979e72cd48c9f6c8"
+      },
+      {
+        "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-7b/shard-192/trajectories.jsonl",
+        "sha256": "69eba6ad0bb79c8535aeb25a615c0c24cd1ca435d437998363e01a9489945f34"
+      },
+      {
+        "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-7b/shard-64/trajectories.jsonl",
+        "sha256": "eb8f712b27a73647fe850c1c61a42160e3b7f4a1a98d06cac8bc42c1197d6869"
+      },
+      {
+        "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-14b/shard-0/trajectories.jsonl",
+        "sha256": "35efea36ab13a5313c02dc16a30201425ad83d27a47dcf8285feeb834dad254e"
+      },
+      {
+        "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-14b/shard-128/trajectories.jsonl",
+        "sha256": "a7f232689f17e7038836b814ba78ca765eff808a114d7d2374c0817d6b9a9f3b"
+      },
+      {
+        "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-14b/shard-192/trajectories.jsonl",
+        "sha256": "dc960ab892c0986f538fc16c5ee60614433765ed08d6f9c10805ce4d5d6b8eb3"
+      },
+      {
+        "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-14b/shard-64/trajectories.jsonl",
+        "sha256": "83eff1423d5cb64a9524bb22fca158c36e01f3673d40a5a43ca6f96b3683b173"
+      }
+    ],
+    "costs": {
+      "path": "experiments/four-term-packed-validation/configs/model_costs.json",
+      "sha256": "1cd7ba10b2c8675cee47a776480c0ffc6d2292879007968b4f717913e99b5d52"
+    },
+    "design_manifest": {
+      "path": "runs/sai3/stage1-v5/confirmation-design/shard-0-manifest.json",
+      "sha256": "6b4d6ffee6b82761f3740e27e710e8dcedfe049ebfab076adeb987605924d59f"
+    }
+  },
+  "max_absolute_planned_share_error": 0.0004365709092679966,
+  "max_cell_censoring_rate": 0.0,
+  "max_practitioner_oracle_regret_fraction": 0.0,
+  "min_selected_model_bootstrap_probability": 1.0,
+  "planned_share_audit": [
+    {
+      "condition": "alpha=0.60000000|allocation=half_anti",
+      "max_absolute_planned_share_error": 0.00014241536455050362,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "slots": 3538944
+    },
+    {
+      "condition": "alpha=0.60000000|allocation=matched",
+      "max_absolute_planned_share_error": 0.000271267361174402,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "slots": 3538944
+    },
+    {
+      "condition": "alpha=0.60000000|allocation=prior",
+      "max_absolute_planned_share_error": 0.00017491093390329968,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "slots": 3538944
+    },
+    {
+      "condition": "alpha=0.80000000|allocation=half_anti",
+      "max_absolute_planned_share_error": 0.00015823929401187692,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "slots": 3538944
+    },
+    {
+      "condition": "alpha=0.80000000|allocation=matched",
+      "max_absolute_planned_share_error": 0.00017180266205473483,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "slots": 3538944
+    },
+    {
+      "condition": "alpha=0.80000000|allocation=prior",
+      "max_absolute_planned_share_error": 0.0004365709092679966,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "slots": 3538944
+    },
+    {
+      "condition": "baseline_prior",
+      "max_absolute_planned_share_error": 0.0002856784396549412,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "slots": 1179648
+    },
+    {
+      "condition": "alpha=0.60000000|allocation=half_anti",
+      "max_absolute_planned_share_error": 0.00014241536455050362,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "slots": 3538944
+    },
+    {
+      "condition": "alpha=0.60000000|allocation=matched",
+      "max_absolute_planned_share_error": 0.000271267361174402,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "slots": 3538944
+    },
+    {
+      "condition": "alpha=0.60000000|allocation=prior",
+      "max_absolute_planned_share_error": 0.00017491093390329968,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "slots": 3538944
+    },
+    {
+      "condition": "alpha=0.80000000|allocation=half_anti",
+      "max_absolute_planned_share_error": 0.00015823929401187692,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "slots": 3538944
+    },
+    {
+      "condition": "alpha=0.80000000|allocation=matched",
+      "max_absolute_planned_share_error": 0.00017180266205473483,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "slots": 3538944
+    },
+    {
+      "condition": "alpha=0.80000000|allocation=prior",
+      "max_absolute_planned_share_error": 0.0004365709092679966,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "slots": 3538944
+    },
+    {
+      "condition": "baseline_prior",
+      "max_absolute_planned_share_error": 0.0002856784396549412,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "slots": 1179648
+    }
+  ],
+  "practitioner_choice": [
+    {
+      "agreement": true,
+      "allocation": "half_anti",
+      "alpha": 0.6,
+      "oracle_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "oracle_regret_fraction": 0.0,
+      "predicted_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "selected_model_bootstrap_probability": 1.0
+    },
+    {
+      "agreement": true,
+      "allocation": "matched",
+      "alpha": 0.6,
+      "oracle_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "oracle_regret_fraction": 0.0,
+      "predicted_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "selected_model_bootstrap_probability": 1.0
+    },
+    {
+      "agreement": true,
+      "allocation": "prior",
+      "alpha": 0.6,
+      "oracle_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "oracle_regret_fraction": 0.0,
+      "predicted_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "selected_model_bootstrap_probability": 1.0
+    },
+    {
+      "agreement": true,
+      "allocation": "half_anti",
+      "alpha": 0.8,
+      "oracle_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "oracle_regret_fraction": 0.0,
+      "predicted_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "selected_model_bootstrap_probability": 1.0
+    },
+    {
+      "agreement": true,
+      "allocation": "matched",
+      "alpha": 0.8,
+      "oracle_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "oracle_regret_fraction": 0.0,
+      "predicted_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "selected_model_bootstrap_probability": 1.0
+    },
+    {
+      "agreement": true,
+      "allocation": "prior",
+      "alpha": 0.8,
+      "oracle_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "oracle_regret_fraction": 0.0,
+      "predicted_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "selected_model_bootstrap_probability": 1.0
+    }
+  ],
+  "practitioner_kendall_tau": 1.0,
+  "primary_residual_rms_nats": 0.014682446566179643,
+  "primary_residual_rms_upper_95_nats": 0.034992340560170816,
+  "primary_weighted_mean_residual_nats": 0.010026683765691278,
+  "residual_slope_diagnostics": [
+    {
+      "bootstrap_ci_95": [
+        0.0019613312247294345,
+        0.033911462116739795
+      ],
+      "bootstrap_two_sided_p": 0.028794241151769647,
+      "holm_adjusted_p": 0.08638272345530894,
+      "significant_after_holm": false,
+      "slope": 0.01777555479936654,
+      "term": "unit_cost_nats"
+    },
+    {
+      "bootstrap_ci_95": [
+        -0.10789182774804637,
+        -0.0064643544828230474
+      ],
+      "bootstrap_two_sided_p": 0.028794241151769647,
+      "holm_adjusted_p": 0.08638272345530894,
+      "significant_after_holm": false,
+      "slope": -0.05784476673170816,
+      "term": "competence_nats"
+    },
+    {
+      "bootstrap_ci_95": [
+        -0.03162243695815385,
+        0.05410308935306276
+      ],
+      "bootstrap_two_sided_p": 0.6242751449710058,
+      "holm_adjusted_p": 0.6242751449710058,
+      "significant_after_holm": false,
+      "slope": 0.010596563755761982,
+      "term": "information_nats"
+    },
+    {
+      "bootstrap_ci_95": [
+        0.010839036846360544,
+        0.06465802872064604
+      ],
+      "bootstrap_two_sided_p": 0.005598880223955209,
+      "holm_adjusted_p": 0.022395520895820836,
+      "significant_after_holm": true,
+      "slope": 0.03767610285691385,
+      "term": "mismatch_nats"
+    }
+  ],
+  "results": [
+    {
+      "allocation": "half_anti",
+      "alpha": 0.6,
+      "baseline_model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "comparison": "self_baseline",
+      "competence_nats": 0.0,
+      "condition": "alpha=0.60000000|allocation=half_anti",
+      "deployed_model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "information_nats": 0.14834174943487521,
+      "mismatch_nats": 0.2595621431620003,
+      "observed_delta_nats": -0.11583664712614095,
+      "predicted_delta_nats": -0.11122039372712511,
+      "residual_ci_95_nats": [
+        -0.03279398528834736,
+        0.02311421781945475
+      ],
+      "residual_nats": -0.004616253399015835,
+      "unit_cost_nats": 0.0
+    },
+    {
+      "allocation": "matched",
+      "alpha": 0.6,
+      "baseline_model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "comparison": "self_baseline",
+      "competence_nats": 0.0,
+      "condition": "alpha=0.60000000|allocation=matched",
+      "deployed_model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "information_nats": 0.14834174943487521,
+      "mismatch_nats": 0.0,
+      "observed_delta_nats": 0.1333701603852795,
+      "predicted_delta_nats": 0.14834174943487521,
+      "residual_ci_95_nats": [
+        -0.041141755042409196,
+        0.011685494304844727
+      ],
+      "residual_nats": -0.014971589049595724,
+      "unit_cost_nats": 0.0
+    },
+    {
+      "allocation": "prior",
+      "alpha": 0.6,
+      "baseline_model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "comparison": "self_baseline",
+      "competence_nats": 0.0,
+      "condition": "alpha=0.60000000|allocation=prior",
+      "deployed_model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "information_nats": 0.14834174943487521,
+      "mismatch_nats": 0.14834174943487521,
+      "observed_delta_nats": 0.007377614995483839,
+      "predicted_delta_nats": 0.0,
+      "residual_ci_95_nats": [
+        -0.019961026342244635,
+        0.035811301383800204
+      ],
+      "residual_nats": 0.007377614995483839,
+      "unit_cost_nats": 0.0
+    },
+    {
+      "allocation": "half_anti",
+      "alpha": 0.8,
+      "baseline_model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "comparison": "self_baseline",
+      "competence_nats": 0.0,
+      "condition": "alpha=0.80000000|allocation=half_anti",
+      "deployed_model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "information_nats": 0.45958042901793283,
+      "mismatch_nats": 0.7942222283949247,
+      "observed_delta_nats": -0.3113810922198219,
+      "predicted_delta_nats": -0.3346417993769919,
+      "residual_ci_95_nats": [
+        -0.008879909094182237,
+        0.054832754332806516
+      ],
+      "residual_nats": 0.02326070715716999,
+      "unit_cost_nats": 0.0
+    },
+    {
+      "allocation": "matched",
+      "alpha": 0.8,
+      "baseline_model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "comparison": "self_baseline",
+      "competence_nats": 0.0,
+      "condition": "alpha=0.80000000|allocation=matched",
+      "deployed_model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "information_nats": 0.45958042901793283,
+      "mismatch_nats": 0.0,
+      "observed_delta_nats": 0.4326067799308042,
+      "predicted_delta_nats": 0.45958042901793283,
+      "residual_ci_95_nats": [
+        -0.05233072842803837,
+        -0.0015518706472101335
+      ],
+      "residual_nats": -0.026973649087128626,
+      "unit_cost_nats": 0.0
+    },
+    {
+      "allocation": "prior",
+      "alpha": 0.8,
+      "baseline_model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "comparison": "self_baseline",
+      "competence_nats": 0.0,
+      "condition": "alpha=0.80000000|allocation=prior",
+      "deployed_model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "information_nats": 0.45958042901793283,
+      "mismatch_nats": 0.4595804290179329,
+      "observed_delta_nats": -0.0004598780215196996,
+      "predicted_delta_nats": -5.551115123125783e-17,
+      "residual_ci_95_nats": [
+        -0.0296142336612354,
+        0.030266795685372775
+      ],
+      "residual_nats": -0.0004598780215196441,
+      "unit_cost_nats": 0.0
+    },
+    {
+      "allocation": "half_anti",
+      "alpha": 0.6,
+      "baseline_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "comparison": "self_deployed",
+      "competence_nats": 0.0,
+      "condition": "alpha=0.60000000|allocation=half_anti",
+      "deployed_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "information_nats": 0.14834174943487521,
+      "mismatch_nats": 0.2595621431620003,
+      "observed_delta_nats": -0.11713730602920336,
+      "predicted_delta_nats": -0.11122039372712511,
+      "residual_ci_95_nats": [
+        -0.036071703231757256,
+        0.024171407647422885
+      ],
+      "residual_nats": -0.005916912302078248,
+      "unit_cost_nats": 0.0
+    },
+    {
+      "allocation": "matched",
+      "alpha": 0.6,
+      "baseline_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "comparison": "self_deployed",
+      "competence_nats": 0.0,
+      "condition": "alpha=0.60000000|allocation=matched",
+      "deployed_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "information_nats": 0.14834174943487521,
+      "mismatch_nats": 0.0,
+      "observed_delta_nats": 0.1378097850366906,
+      "predicted_delta_nats": 0.14834174943487521,
+      "residual_ci_95_nats": [
+        -0.038020201036172166,
+        0.01768730634928666
+      ],
+      "residual_nats": -0.010531964398184601,
+      "unit_cost_nats": 0.0
+    },
+    {
+      "allocation": "prior",
+      "alpha": 0.6,
+      "baseline_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "comparison": "self_deployed",
+      "competence_nats": 0.0,
+      "condition": "alpha=0.60000000|allocation=prior",
+      "deployed_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "information_nats": 0.14834174943487521,
+      "mismatch_nats": 0.14834174943487521,
+      "observed_delta_nats": 0.005136607345939126,
+      "predicted_delta_nats": 0.0,
+      "residual_ci_95_nats": [
+        -0.02403637100355045,
+        0.03428748978802457
+      ],
+      "residual_nats": 0.005136607345939126,
+      "unit_cost_nats": 0.0
+    },
+    {
+      "allocation": "half_anti",
+      "alpha": 0.8,
+      "baseline_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "comparison": "self_deployed",
+      "competence_nats": 0.0,
+      "condition": "alpha=0.80000000|allocation=half_anti",
+      "deployed_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "information_nats": 0.45958042901793283,
+      "mismatch_nats": 0.7942222283949247,
+      "observed_delta_nats": -0.31791253695928745,
+      "predicted_delta_nats": -0.3346417993769919,
+      "residual_ci_95_nats": [
+        -0.0167537739600466,
+        0.0514589849676017
+      ],
+      "residual_nats": 0.01672926241770445,
+      "unit_cost_nats": 0.0
+    },
+    {
+      "allocation": "matched",
+      "alpha": 0.8,
+      "baseline_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "comparison": "self_deployed",
+      "competence_nats": 0.0,
+      "condition": "alpha=0.80000000|allocation=matched",
+      "deployed_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "information_nats": 0.45958042901793283,
+      "mismatch_nats": 0.0,
+      "observed_delta_nats": 0.4434535646499498,
+      "predicted_delta_nats": 0.45958042901793283,
+      "residual_ci_95_nats": [
+        -0.04453402215891029,
+        0.012848643572818936
+      ],
+      "residual_nats": -0.01612686436798305,
+      "unit_cost_nats": 0.0
+    },
+    {
+      "allocation": "prior",
+      "alpha": 0.8,
+      "baseline_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "comparison": "self_deployed",
+      "competence_nats": 0.0,
+      "condition": "alpha=0.80000000|allocation=prior",
+      "deployed_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "information_nats": 0.45958042901793283,
+      "mismatch_nats": 0.4595804290179329,
+      "observed_delta_nats": -0.001092098853295198,
+      "predicted_delta_nats": -5.551115123125783e-17,
+      "residual_ci_95_nats": [
+        -0.031964863157607167,
+        0.030613480995959196
+      ],
+      "residual_nats": -0.0010920988532951426,
+      "unit_cost_nats": 0.0
+    },
+    {
+      "allocation": "half_anti",
+      "alpha": 0.6,
+      "baseline_model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "comparison": "cross_model_primary",
+      "competence_nats": -0.2139421753852371,
+      "condition": "alpha=0.60000000|allocation=half_anti",
+      "deployed_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "information_nats": 0.14834174943487521,
+      "mismatch_nats": 0.2595621431620003,
+      "observed_delta_nats": 0.37711948429633324,
+      "predicted_delta_nats": 0.37104271780640397,
+      "residual_ci_95_nats": [
+        -0.023581005174598907,
+        0.03585186232651665
+      ],
+      "residual_nats": 0.006076766489929275,
+      "unit_cost_nats": 0.6962052869187662
+    },
+    {
+      "allocation": "matched",
+      "alpha": 0.6,
+      "baseline_model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "comparison": "cross_model_primary",
+      "competence_nats": -0.2139421753852371,
+      "condition": "alpha=0.60000000|allocation=matched",
+      "deployed_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "information_nats": 0.14834174943487521,
+      "mismatch_nats": 0.0,
+      "observed_delta_nats": 0.6320665753622272,
+      "predicted_delta_nats": 0.6306048609684043,
+      "residual_ci_95_nats": [
+        -0.026315171355672046,
+        0.0297846272581745
+      ],
+      "residual_nats": 0.0014617143938229216,
+      "unit_cost_nats": 0.6962052869187662
+    },
+    {
+      "allocation": "prior",
+      "alpha": 0.6,
+      "baseline_model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "comparison": "cross_model_primary",
+      "competence_nats": -0.2139421753852371,
+      "condition": "alpha=0.60000000|allocation=prior",
+      "deployed_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "information_nats": 0.14834174943487521,
+      "mismatch_nats": 0.14834174943487521,
+      "observed_delta_nats": 0.4993933976714757,
+      "predicted_delta_nats": 0.4822631115335291,
+      "residual_ci_95_nats": [
+        -0.012054705639598103,
+        0.046981601011128964
+      ],
+      "residual_nats": 0.01713028613794665,
+      "unit_cost_nats": 0.6962052869187662
+    },
+    {
+      "allocation": "half_anti",
+      "alpha": 0.8,
+      "baseline_model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "comparison": "cross_model_primary",
+      "competence_nats": -0.2139421753852371,
+      "condition": "alpha=0.80000000|allocation=half_anti",
+      "deployed_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "information_nats": 0.45958042901793283,
+      "mismatch_nats": 0.7942222283949247,
+      "observed_delta_nats": 0.17634425336624915,
+      "predicted_delta_nats": 0.14762131215653718,
+      "residual_ci_95_nats": [
+        -0.0037787997787327022,
+        0.06193800343005684
+      ],
+      "residual_nats": 0.028722941209711972,
+      "unit_cost_nats": 0.6962052869187662
+    },
+    {
+      "allocation": "matched",
+      "alpha": 0.8,
+      "baseline_model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "comparison": "cross_model_primary",
+      "competence_nats": -0.2139421753852371,
+      "condition": "alpha=0.80000000|allocation=matched",
+      "deployed_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "information_nats": 0.45958042901793283,
+      "mismatch_nats": 0.0,
+      "observed_delta_nats": 0.9377103549754864,
+      "predicted_delta_nats": 0.9418435405514619,
+      "residual_ci_95_nats": [
+        -0.032625899633316205,
+        0.02457340303573147
+      ],
+      "residual_nats": -0.004133185575975529,
+      "unit_cost_nats": 0.6962052869187662
+    },
+    {
+      "allocation": "prior",
+      "alpha": 0.8,
+      "baseline_model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "comparison": "cross_model_primary",
+      "competence_nats": -0.2139421753852371,
+      "condition": "alpha=0.80000000|allocation=prior",
+      "deployed_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "information_nats": 0.45958042901793283,
+      "mismatch_nats": 0.4595804290179329,
+      "observed_delta_nats": 0.4931646914722414,
+      "predicted_delta_nats": 0.482263111533529,
+      "residual_ci_95_nats": [
+        -0.020664286319228953,
+        0.04290077318099177
+      ],
+      "residual_nats": 0.01090157993871238,
+      "unit_cost_nats": 0.6962052869187662
+    }
+  ],
+  "schema_version": 1,
+  "status": "INCONCLUSIVE_OR_FALSIFIED"
+}

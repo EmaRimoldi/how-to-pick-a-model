@@ -1,0 +1,380 @@
+{
+  "audit": "sai3_frozen_confirmation_integrity",
+  "design_files": [
+    {
+      "path": "runs/sai3/stage1-v5/confirmation-design/shard-0.jsonl",
+      "sha256": "b3b094eccc59cb2f64ba4a60b8962b40f5e3b0244907fc4b6bf807029fa202af"
+    },
+    {
+      "path": "runs/sai3/stage1-v5/confirmation-design/shard-64.jsonl",
+      "sha256": "65a61588a61f17e78423339371c828a6cc09a84f8e7ff6ca7b05cb60eadda67e"
+    },
+    {
+      "path": "runs/sai3/stage1-v5/confirmation-design/shard-128.jsonl",
+      "sha256": "aa68728ae2d09c72ad2d2053e1a4e58b5ddbf32e39c2e47956ae9377aaba7235"
+    },
+    {
+      "path": "runs/sai3/stage1-v5/confirmation-design/shard-192.jsonl",
+      "sha256": "be3b8285226d41628eaa72bdb066aabf51be54b7349d15efacbdcdca7f4f64d0"
+    }
+  ],
+  "design_trajectories_per_model": 87552,
+  "models": {
+    "Qwen/Qwen2.5-Coder-14B-Instruct": {
+      "decoded_tokens": 88649472,
+      "generation_slots": 346287,
+      "gpu_generation_seconds": 27433.150720125996,
+      "model_load_seconds": 264.1880450907629,
+      "runs": 4,
+      "trajectories": 87552,
+      "wrong_shard_successes": 0
+    },
+    "Qwen/Qwen2.5-Coder-7B-Instruct": {
+      "decoded_tokens": 116543488,
+      "generation_slots": 455248,
+      "gpu_generation_seconds": 20288.171188408975,
+      "model_load_seconds": 108.48578972299583,
+      "runs": 4,
+      "trajectories": 87552,
+      "wrong_shard_successes": 0
+    }
+  },
+  "runs": [
+    {
+      "artifacts": {
+        "metadata": {
+          "bytes": 21455,
+          "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-7b/shard-0/run_metadata.json",
+          "sha256": "123d0e78c8c4b44d34aac77582c8738aaeb244bd27a0b3f2d132d8431dc7f926"
+        },
+        "slots": {
+          "bytes": 261528139,
+          "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-7b/shard-0/slots.jsonl",
+          "sha256": "f860403417432dfe4329cbf8467cd071e27aaffc82b0a13013d4a7a6e820841e"
+        },
+        "trajectories": {
+          "bytes": 16874590,
+          "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-7b/shard-0/trajectories.jsonl",
+          "sha256": "825b401b9e149b9d5763aef8292d7125cfbb4371fc8be609d6ee41059825c05b"
+        }
+      },
+      "censored_trajectories": 0,
+      "code_git_commit": "2ca0b5e38524dcc83a28c13211fab756ad97bf80",
+      "decoded_tokens": 29202688,
+      "decoded_tokens_per_second": 5819.775868007108,
+      "design_sha256": "b3b094eccc59cb2f64ba4a60b8962b40f5e3b0244907fc4b6bf807029fa202af",
+      "generation_elapsed_seconds": 5017.837226436008,
+      "generation_slots": 114073,
+      "gpu": "NVIDIA A100-SXM4-80GB, GPU-c0776eb0-46d0-f851-74e8-dce5992d58cf, 81920 MiB, 590.48.01",
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "model_load_seconds": 27.397023828001693,
+      "model_revision": "c03e6d358207e414f1eca0bb1891e29f1db0e242",
+      "package_versions": {
+        "torch": "2.9.0",
+        "transformers": "4.57.6",
+        "vllm": "0.11.2"
+      },
+      "run_dir": "runs/sai3/stage1-v5/confirmation/qwen25-coder-7b/shard-0",
+      "slurm_job_id": "19281145",
+      "successful_trajectories": 21888,
+      "tokenizer_sha256": "9f2e80cdf646c9485536691daf18b4bd98f1c3862a06089ba5a4e7c3c3872083",
+      "trajectories": 21888,
+      "wrong_shard_successes": 0
+    },
+    {
+      "artifacts": {
+        "metadata": {
+          "bytes": 20976,
+          "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-7b/shard-64/run_metadata.json",
+          "sha256": "756361e8136ac77a824d0416728a926986c6ea18360f54aafd7637669869c019"
+        },
+        "slots": {
+          "bytes": 258254338,
+          "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-7b/shard-64/slots.jsonl",
+          "sha256": "83da070a8c481e9f690c394f93f332a948865e390dc7bed2e1587f22fe153316"
+        },
+        "trajectories": {
+          "bytes": 16873606,
+          "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-7b/shard-64/trajectories.jsonl",
+          "sha256": "eb8f712b27a73647fe850c1c61a42160e3b7f4a1a98d06cac8bc42c1197d6869"
+        }
+      },
+      "censored_trajectories": 0,
+      "code_git_commit": "2ca0b5e38524dcc83a28c13211fab756ad97bf80",
+      "decoded_tokens": 28851712,
+      "decoded_tokens_per_second": 5326.501546008825,
+      "design_sha256": "65a61588a61f17e78423339371c828a6cc09a84f8e7ff6ca7b05cb60eadda67e",
+      "generation_elapsed_seconds": 5416.634492787998,
+      "generation_slots": 112702,
+      "gpu": "NVIDIA A100 80GB PCIe, GPU-eb064ee9-4e11-f6ee-5531-97564b1ab354, 81920 MiB, 590.48.01",
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "model_load_seconds": 29.912222777027637,
+      "model_revision": "c03e6d358207e414f1eca0bb1891e29f1db0e242",
+      "package_versions": {
+        "torch": "2.9.0",
+        "transformers": "4.57.6",
+        "vllm": "0.11.2"
+      },
+      "run_dir": "runs/sai3/stage1-v5/confirmation/qwen25-coder-7b/shard-64",
+      "slurm_job_id": "19281147",
+      "successful_trajectories": 21888,
+      "tokenizer_sha256": "9f2e80cdf646c9485536691daf18b4bd98f1c3862a06089ba5a4e7c3c3872083",
+      "trajectories": 21888,
+      "wrong_shard_successes": 0
+    },
+    {
+      "artifacts": {
+        "metadata": {
+          "bytes": 20460,
+          "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-7b/shard-128/run_metadata.json",
+          "sha256": "23cfe607a1448781bc7aac61aa32dcf0037938ab092e5512ec137b285ef31ce0"
+        },
+        "slots": {
+          "bytes": 265074924,
+          "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-7b/shard-128/slots.jsonl",
+          "sha256": "9ea0441b6809fe33ceff97185c70e1196b62ae85f241ce0bff803fe8478c665c"
+        },
+        "trajectories": {
+          "bytes": 16885013,
+          "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-7b/shard-128/trajectories.jsonl",
+          "sha256": "c91c208889970feef3b7957fe5ca253629f3da205cde0931979e72cd48c9f6c8"
+        }
+      },
+      "censored_trajectories": 0,
+      "code_git_commit": "2ca0b5e38524dcc83a28c13211fab756ad97bf80",
+      "decoded_tokens": 29607424,
+      "decoded_tokens_per_second": 5956.332932926944,
+      "design_sha256": "aa68728ae2d09c72ad2d2053e1a4e58b5ddbf32e39c2e47956ae9377aaba7235",
+      "generation_elapsed_seconds": 4970.746990371961,
+      "generation_slots": 115654,
+      "gpu": "NVIDIA A100-SXM4-80GB, GPU-5bb49db2-b7e6-49e9-b59b-3cca05bf15cf, 81920 MiB, 590.48.01",
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "model_load_seconds": 24.74619449302554,
+      "model_revision": "c03e6d358207e414f1eca0bb1891e29f1db0e242",
+      "package_versions": {
+        "torch": "2.9.0",
+        "transformers": "4.57.6",
+        "vllm": "0.11.2"
+      },
+      "run_dir": "runs/sai3/stage1-v5/confirmation/qwen25-coder-7b/shard-128",
+      "slurm_job_id": "19281148",
+      "successful_trajectories": 21888,
+      "tokenizer_sha256": "9f2e80cdf646c9485536691daf18b4bd98f1c3862a06089ba5a4e7c3c3872083",
+      "trajectories": 21888,
+      "wrong_shard_successes": 0
+    },
+    {
+      "artifacts": {
+        "metadata": {
+          "bytes": 21186,
+          "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-7b/shard-192/run_metadata.json",
+          "sha256": "e023b524454c826306e9c4658db8d215a8a03ed12d338a7fcda4c7201e0aa8fe"
+        },
+        "slots": {
+          "bytes": 258527245,
+          "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-7b/shard-192/slots.jsonl",
+          "sha256": "061454b903588fcc176d25be8b811d343a75d900dedbebc30cc650b9726bb98e"
+        },
+        "trajectories": {
+          "bytes": 16874644,
+          "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-7b/shard-192/trajectories.jsonl",
+          "sha256": "69eba6ad0bb79c8535aeb25a615c0c24cd1ca435d437998363e01a9489945f34"
+        }
+      },
+      "censored_trajectories": 0,
+      "code_git_commit": "2ca0b5e38524dcc83a28c13211fab756ad97bf80",
+      "decoded_tokens": 28881664,
+      "decoded_tokens_per_second": 5914.795223856207,
+      "design_sha256": "be3b8285226d41628eaa72bdb066aabf51be54b7349d15efacbdcdca7f4f64d0",
+      "generation_elapsed_seconds": 4882.9524788130075,
+      "generation_slots": 112819,
+      "gpu": "NVIDIA A100-SXM4-80GB, GPU-07e3c00f-6444-9c9d-6b8d-e48a4b21a99a, 81920 MiB, 590.48.01",
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "model_load_seconds": 26.43034862494096,
+      "model_revision": "c03e6d358207e414f1eca0bb1891e29f1db0e242",
+      "package_versions": {
+        "torch": "2.9.0",
+        "transformers": "4.57.6",
+        "vllm": "0.11.2"
+      },
+      "run_dir": "runs/sai3/stage1-v5/confirmation/qwen25-coder-7b/shard-192",
+      "slurm_job_id": "19281149",
+      "successful_trajectories": 21888,
+      "tokenizer_sha256": "9f2e80cdf646c9485536691daf18b4bd98f1c3862a06089ba5a4e7c3c3872083",
+      "trajectories": 21888,
+      "wrong_shard_successes": 0
+    },
+    {
+      "artifacts": {
+        "metadata": {
+          "bytes": 14844,
+          "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-14b/shard-0/run_metadata.json",
+          "sha256": "a7a8fca2e40d4564d1f5552a725a16e115e8a795950494e9638c2ba5e0604c34"
+        },
+        "slots": {
+          "bytes": 194252005,
+          "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-14b/shard-0/slots.jsonl",
+          "sha256": "18438f8b7b6bfd5ca4740e7e16eccc0d3b5526636a91a13064b5748fd9d9f4fc"
+        },
+        "trajectories": {
+          "bytes": 16852343,
+          "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-14b/shard-0/trajectories.jsonl",
+          "sha256": "35efea36ab13a5313c02dc16a30201425ad83d27a47dcf8285feeb834dad254e"
+        }
+      },
+      "censored_trajectories": 0,
+      "code_git_commit": "2ca0b5e38524dcc83a28c13211fab756ad97bf80",
+      "decoded_tokens": 22038272,
+      "decoded_tokens_per_second": 3066.898091984796,
+      "design_sha256": "b3b094eccc59cb2f64ba4a60b8962b40f5e3b0244907fc4b6bf807029fa202af",
+      "generation_elapsed_seconds": 7185.850764848059,
+      "generation_slots": 86087,
+      "gpu": "NVIDIA A100 80GB PCIe, GPU-d0a0dfad-5a69-20d2-239e-1d5584a50177, 81920 MiB, 590.48.01",
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "model_load_seconds": 45.10226338694338,
+      "model_revision": "aedcc2d42b622764e023cf882b6652e646b95671",
+      "package_versions": {
+        "torch": "2.9.0",
+        "transformers": "4.57.6",
+        "vllm": "0.11.2"
+      },
+      "run_dir": "runs/sai3/stage1-v5/confirmation/qwen25-coder-14b/shard-0",
+      "slurm_job_id": "19281158",
+      "successful_trajectories": 21888,
+      "tokenizer_sha256": "9f2e80cdf646c9485536691daf18b4bd98f1c3862a06089ba5a4e7c3c3872083",
+      "trajectories": 21888,
+      "wrong_shard_successes": 0
+    },
+    {
+      "artifacts": {
+        "metadata": {
+          "bytes": 12203,
+          "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-14b/shard-64/run_metadata.json",
+          "sha256": "90bb63d124cd225950e56d4aaee21b92986a67b66313fc9e1cb90b8e8b6a6032"
+        },
+        "slots": {
+          "bytes": 193367842,
+          "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-14b/shard-64/slots.jsonl",
+          "sha256": "70de14b213ecb3bf95fc79c8396e01499fb88d6f8a8b27f13de46a0245ab0458"
+        },
+        "trajectories": {
+          "bytes": 16854111,
+          "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-14b/shard-64/trajectories.jsonl",
+          "sha256": "83eff1423d5cb64a9524bb22fca158c36e01f3673d40a5a43ca6f96b3683b173"
+        }
+      },
+      "censored_trajectories": 0,
+      "code_git_commit": "2ca0b5e38524dcc83a28c13211fab756ad97bf80",
+      "decoded_tokens": 21960704,
+      "decoded_tokens_per_second": 3550.2705301525384,
+      "design_sha256": "65a61588a61f17e78423339371c828a6cc09a84f8e7ff6ca7b05cb60eadda67e",
+      "generation_elapsed_seconds": 6185.642421749886,
+      "generation_slots": 85784,
+      "gpu": "NVIDIA A100-SXM4-80GB, GPU-0929c1d0-ccd9-d664-d3df-ba657cea2a05, 81920 MiB, 590.48.01",
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "model_load_seconds": 43.63949453784153,
+      "model_revision": "aedcc2d42b622764e023cf882b6652e646b95671",
+      "package_versions": {
+        "torch": "2.9.0",
+        "transformers": "4.57.6",
+        "vllm": "0.11.2"
+      },
+      "run_dir": "runs/sai3/stage1-v5/confirmation/qwen25-coder-14b/shard-64",
+      "slurm_job_id": "19281159",
+      "successful_trajectories": 21888,
+      "tokenizer_sha256": "9f2e80cdf646c9485536691daf18b4bd98f1c3862a06089ba5a4e7c3c3872083",
+      "trajectories": 21888,
+      "wrong_shard_successes": 0
+    },
+    {
+      "artifacts": {
+        "metadata": {
+          "bytes": 15481,
+          "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-14b/shard-128/run_metadata.json",
+          "sha256": "d07d46c42bc20a66b1928f8217b824feadfffcd125244695514c3515d615544e"
+        },
+        "slots": {
+          "bytes": 198403411,
+          "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-14b/shard-128/slots.jsonl",
+          "sha256": "f06fd4f0e654461e7506b0b32a1bb097f0dda70dcae71dc8b1e788132aa68fba"
+        },
+        "trajectories": {
+          "bytes": 16862485,
+          "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-14b/shard-128/trajectories.jsonl",
+          "sha256": "a7f232689f17e7038836b814ba78ca765eff808a114d7d2374c0817d6b9a9f3b"
+        }
+      },
+      "censored_trajectories": 0,
+      "code_git_commit": "2ca0b5e38524dcc83a28c13211fab756ad97bf80",
+      "decoded_tokens": 22511104,
+      "decoded_tokens_per_second": 2872.8987920962227,
+      "design_sha256": "aa68728ae2d09c72ad2d2053e1a4e58b5ddbf32e39c2e47956ae9377aaba7235",
+      "generation_elapsed_seconds": 7835.67595974193,
+      "generation_slots": 87934,
+      "gpu": "NVIDIA A100 80GB PCIe, GPU-f299813b-857f-18e9-2215-61a866de3001, 81920 MiB, 590.48.01",
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "model_load_seconds": 42.57987718901131,
+      "model_revision": "aedcc2d42b622764e023cf882b6652e646b95671",
+      "package_versions": {
+        "torch": "2.9.0",
+        "transformers": "4.57.6",
+        "vllm": "0.11.2"
+      },
+      "run_dir": "runs/sai3/stage1-v5/confirmation/qwen25-coder-14b/shard-128",
+      "slurm_job_id": "19281160",
+      "successful_trajectories": 21888,
+      "tokenizer_sha256": "9f2e80cdf646c9485536691daf18b4bd98f1c3862a06089ba5a4e7c3c3872083",
+      "trajectories": 21888,
+      "wrong_shard_successes": 0
+    },
+    {
+      "artifacts": {
+        "metadata": {
+          "bytes": 11087,
+          "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-14b/shard-192/run_metadata.json",
+          "sha256": "252f89e8f19d661a2ceafdf1f3f2264708b6187d6e26f160bef02af24e44ede1"
+        },
+        "slots": {
+          "bytes": 194979209,
+          "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-14b/shard-192/slots.jsonl",
+          "sha256": "c8d0e9be2ef4a590ddc01021a0843b34f87309f1ddfd0879e1a5f49f5ada07fd"
+        },
+        "trajectories": {
+          "bytes": 16854205,
+          "path": "runs/sai3/stage1-v5/confirmation/qwen25-coder-14b/shard-192/trajectories.jsonl",
+          "sha256": "dc960ab892c0986f538fc16c5ee60614433765ed08d6f9c10805ce4d5d6b8eb3"
+        }
+      },
+      "censored_trajectories": 0,
+      "code_git_commit": "2ca0b5e38524dcc83a28c13211fab756ad97bf80",
+      "decoded_tokens": 22139392,
+      "decoded_tokens_per_second": 3555.968121270342,
+      "design_sha256": "be3b8285226d41628eaa72bdb066aabf51be54b7349d15efacbdcdca7f4f64d0",
+      "generation_elapsed_seconds": 6225.981573786121,
+      "generation_slots": 86482,
+      "gpu": "NVIDIA A100-SXM4-80GB, GPU-cfa4d59c-a207-ec81-0407-d6a2d4dc17f9, 81920 MiB, 590.48.01",
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "model_load_seconds": 132.86640997696668,
+      "model_revision": "aedcc2d42b622764e023cf882b6652e646b95671",
+      "package_versions": {
+        "torch": "2.9.0",
+        "transformers": "4.57.6",
+        "vllm": "0.11.2"
+      },
+      "run_dir": "runs/sai3/stage1-v5/confirmation/qwen25-coder-14b/shard-192",
+      "slurm_job_id": "19281162",
+      "successful_trajectories": 21888,
+      "tokenizer_sha256": "9f2e80cdf646c9485536691daf18b4bd98f1c3862a06089ba5a4e7c3c3872083",
+      "trajectories": 21888,
+      "wrong_shard_successes": 0
+    }
+  ],
+  "schema_version": 1,
+  "status": "PASS",
+  "tasks": {
+    "path": "runs/sai3/stage1-v5/confirmation.jsonl",
+    "sha256": "7f354ef24decc5e6717c7955bec2a5c0ebff99cced9819ffaebc9d2800dedf12"
+  },
+  "unique_generation_seeds": 801535,
+  "unique_schedule_seeds": 87552
+}
