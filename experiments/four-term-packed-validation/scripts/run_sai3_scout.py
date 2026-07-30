@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import platform
 import subprocess
@@ -17,6 +18,31 @@ BUNDLE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BUNDLE))
 
 from sai3 import read_jsonl, verify_completion  # noqa: E402
+
+
+def sampling_seed(base_seed: int, model: str, task_id: str, shard: int, attempt: int) -> int:
+    """Derive a stable independent seed for one physical generation slot."""
+    payload = f"{base_seed}|{model}|{task_id}|{shard}|{attempt}".encode()
+    digest = hashlib.blake2b(payload, digest_size=8).digest()
+    return 1 + int.from_bytes(digest, "big") % (2**31 - 2)
+
+
+def select_balanced_tasks(
+    all_tasks: list[dict[str, Any]], tasks_per_mode: int, task_offset_per_mode: int
+) -> tuple[list[dict[str, Any]], dict[int, int]]:
+    selected: list[dict[str, Any]] = []
+    seen = {mode: 0 for mode in range(3)}
+    selected_counts = {mode: 0 for mode in range(3)}
+    for task in all_tasks:
+        mode = int(task["mode"])
+        mode_index = seen[mode]
+        seen[mode] += 1
+        if mode_index < task_offset_per_mode:
+            continue
+        if selected_counts[mode] < tasks_per_mode:
+            selected.append(task)
+            selected_counts[mode] += 1
+    return selected, selected_counts
 
 
 def gpu_snapshot() -> str:
@@ -58,45 +84,58 @@ def run_group(
     output: Path,
     max_tokens: int,
 ) -> dict[str, Any]:
-    params = sampling_params_type(
-        temperature=0.8,
-        top_p=0.95,
-        max_tokens=max_tokens,
-        min_tokens=max_tokens,
-        ignore_eos=True,
-        n=attempts,
-        seed=seed,
-    )
+    expanded_prompts: list[str] = []
+    expanded_metadata: list[dict[str, Any]] = []
+    sampling_params = []
+    for prompt, meta in zip(prompts, metadata):
+        task = meta["task"]
+        for attempt in range(attempts):
+            completion_seed = sampling_seed(seed, model, task["task_id"], int(meta["shard"]), attempt)
+            expanded_prompts.append(prompt)
+            expanded_metadata.append({**meta, "attempt": attempt, "completion_seed": completion_seed})
+            sampling_params.append(
+                sampling_params_type(
+                    temperature=0.8,
+                    top_p=0.95,
+                    max_tokens=max_tokens,
+                    min_tokens=max_tokens,
+                    ignore_eos=True,
+                    n=1,
+                    seed=completion_seed,
+                )
+            )
     started = time.perf_counter()
-    request_outputs = llm.generate(prompts, params, use_tqdm=True)
+    request_outputs = llm.generate(expanded_prompts, sampling_params, use_tqdm=True)
     elapsed = time.perf_counter() - started
     rows = 0
     decoded_tokens = 0
     with output.open("a", encoding="utf-8") as handle:
-        for request, meta in zip(request_outputs, metadata):
+        for request, meta in zip(request_outputs, expanded_metadata):
             task = meta["task"]
-            for attempt, completion in enumerate(request.outputs):
-                verification = verify_completion(task, completion.text)
-                row = {
-                    "schema_version": 1,
-                    "model": model,
-                    "task_id": task["task_id"],
-                    "mode": task["mode"],
-                    "shard": meta["shard"],
-                    "relation": meta["relation"],
-                    "attempt": attempt,
-                    "seed": seed,
-                    "prompt_tokens": len(request.prompt_token_ids),
-                    "decoded_tokens": len(completion.token_ids),
-                    "finish_reason": completion.finish_reason,
-                    "text": completion.text,
-                    "verification": verification,
-                }
-                handle.write(json.dumps(row, sort_keys=True) + "\n")
-                rows += 1
-                decoded_tokens += len(completion.token_ids)
+            if len(request.outputs) != 1:
+                raise RuntimeError(f"expected one output per seeded slot, got {len(request.outputs)}")
+            completion = request.outputs[0]
+            verification = verify_completion(task, completion.text)
+            row = {
+                "schema_version": 2,
+                "model": model,
+                "task_id": task["task_id"],
+                "mode": task["mode"],
+                "shard": meta["shard"],
+                "relation": meta["relation"],
+                "attempt": meta["attempt"],
+                "seed": meta["completion_seed"],
+                "prompt_tokens": len(request.prompt_token_ids),
+                "decoded_tokens": len(completion.token_ids),
+                "finish_reason": completion.finish_reason,
+                "text": completion.text,
+                "verification": verification,
+            }
+            handle.write(json.dumps(row, sort_keys=True) + "\n")
+            rows += 1
+            decoded_tokens += len(completion.token_ids)
     return {
-        "requests": len(prompts),
+        "requests": len(expanded_prompts),
         "completions": rows,
         "decoded_tokens": decoded_tokens,
         "elapsed_seconds": elapsed,
@@ -111,6 +150,7 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--metadata-output", type=Path, required=True)
     parser.add_argument("--tasks-per-mode", type=int, default=6)
+    parser.add_argument("--task-offset-per-mode", type=int, default=0)
     parser.add_argument("--matched-attempts", type=int, default=4)
     parser.add_argument("--wrong-attempts", type=int, default=1)
     parser.add_argument("--seed", type=int, default=20260730)
@@ -123,15 +163,11 @@ def main() -> None:
     from vllm import LLM, SamplingParams
 
     all_tasks = read_jsonl(args.tasks)
-    counts = {mode: 0 for mode in range(3)}
-    tasks = []
-    for task in all_tasks:
-        mode = int(task["mode"])
-        if counts[mode] < args.tasks_per_mode:
-            tasks.append(task)
-            counts[mode] += 1
+    tasks, counts = select_balanced_tasks(all_tasks, args.tasks_per_mode, args.task_offset_per_mode)
     if any(count != args.tasks_per_mode for count in counts.values()):
-        raise SystemExit(f"insufficient balanced tasks: {counts}")
+        raise SystemExit(
+            f"insufficient balanced tasks after offset {args.task_offset_per_mode}: {counts}"
+        )
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.metadata_output.parent.mkdir(parents=True, exist_ok=True)
@@ -173,7 +209,7 @@ def main() -> None:
         args.max_tokens,
     )
     metadata = {
-        "schema_version": 1,
+        "schema_version": 2,
         "model": args.model,
         "model_load_seconds": load_seconds,
         "gpu": gpu_snapshot(),
@@ -181,9 +217,11 @@ def main() -> None:
         "python": platform.python_version(),
         "tasks": str(args.tasks),
         "tasks_per_mode": args.tasks_per_mode,
+        "task_offset_per_mode": args.task_offset_per_mode,
         "matched_attempts": args.matched_attempts,
         "wrong_attempts": args.wrong_attempts,
         "max_tokens": args.max_tokens,
+        "seed_scheme": "blake2b(base_seed|model|task_id|shard|attempt)",
         "matched": matched_summary,
         "wrong": wrong_summary,
     }

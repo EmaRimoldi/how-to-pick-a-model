@@ -45,6 +45,7 @@ fi
   --output "$OUTPUT_DIR/completions.jsonl" \
   --metadata-output "$OUTPUT_DIR/run_metadata.json" \
   --tasks-per-mode "${SAI3_TASKS_PER_MODE:-6}" \
+  --task-offset-per-mode "${SAI3_TASK_OFFSET_PER_MODE:-0}" \
   --matched-attempts "${SAI3_MATCHED_ATTEMPTS:-4}" \
   --wrong-attempts "${SAI3_WRONG_ATTEMPTS:-1}" \
   --max-tokens "${SAI3_MAX_TOKENS:-256}"

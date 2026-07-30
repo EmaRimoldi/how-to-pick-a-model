@@ -13,6 +13,12 @@ SAI3 = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = SAI3
 SPEC.loader.exec_module(SAI3)
 
+RUNNER_PATH = ROOT / "experiments" / "four-term-packed-validation" / "scripts" / "run_sai3_scout.py"
+RUNNER_SPEC = importlib.util.spec_from_file_location("run_sai3_scout", RUNNER_PATH)
+assert RUNNER_SPEC is not None and RUNNER_SPEC.loader is not None
+RUNNER = importlib.util.module_from_spec(RUNNER_SPEC)
+RUNNER_SPEC.loader.exec_module(RUNNER)
+
 
 def test_reference_and_wrong_shards_are_separated() -> None:
     for mode in range(3):
@@ -76,3 +82,25 @@ def test_fenced_completion_parser() -> None:
     task = SAI3.generate_task(seed=31, split="development", mode=1, index=2)
     completion = f"Here is the implementation:\n```python\n{task['references'][1]}\n```\n"
     assert SAI3.verify_completion(task, completion)["passed"]
+
+
+def test_vllm_slot_seeds_are_stable_and_unique() -> None:
+    seeds = {
+        RUNNER.sampling_seed(17, "model", f"task-{task}", shard, attempt)
+        for task in range(3)
+        for shard in range(3)
+        for attempt in range(8)
+    }
+    assert len(seeds) == 72
+    assert RUNNER.sampling_seed(17, "model", "task-1", 2, 3) == RUNNER.sampling_seed(
+        17, "model", "task-1", 2, 3
+    )
+
+
+def test_balanced_task_selection_supports_disjoint_shards() -> None:
+    tasks = SAI3.generate_tasks(seed=37, split="development", tasks_per_mode=6)
+    first, first_counts = RUNNER.select_balanced_tasks(tasks, tasks_per_mode=2, task_offset_per_mode=0)
+    second, second_counts = RUNNER.select_balanced_tasks(tasks, tasks_per_mode=2, task_offset_per_mode=2)
+    assert first_counts == {0: 2, 1: 2, 2: 2}
+    assert second_counts == {0: 2, 1: 2, 2: 2}
+    assert {task["task_id"] for task in first}.isdisjoint(task["task_id"] for task in second)
