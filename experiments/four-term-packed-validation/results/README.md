@@ -17,6 +17,13 @@ pre-confirmation sample size, but it is not closure evidence.
 `power_analysis.json` is a synthetic design calculation generated without
 reading any empirical result in this repository.
 
+`stage0_conditioned_power.json` is a second design-only calculation that reads
+the nonconfirmatory BF16 hazards, adds task heterogeneity, and simulates the
+exact frozen calibration and physical confirmation protocol. With 2,000
+replications, 96 tasks per mode passes all point closure gates in `97.4%` of
+packed-null simulations; its 95th-percentile residual RMS is `0.090` nats and
+maximum cell censoring is `1.04%`.
+
 `power_analysis.json` was produced with:
 
 ```bash

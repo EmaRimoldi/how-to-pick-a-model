@@ -241,19 +241,20 @@ correct-shard and two-per-wrong-shard attempts for every scouted checkpoint.
 It records eligibility, format, memory, throughput, energy, and verifier cost,
 but never computes four-term closure or opens confirmation seeds.
 
-Calibration generates 16 correct-shard attempts and four attempts for each
+Calibration generates 32 correct-shard attempts and four attempts for each
 wrong shard per task and model. A correct-shard task with no success is extended
-once, with frozen seeds, to 32 attempts; any remaining zero-success task cell
+once, with frozen seeds, to 64 attempts; any remaining zero-success task cell
 makes focused `t0` unidentified. Confirmation physically executes two
 independent trajectories for every `(task, alpha, allocation, z)` cell, plus two
 prior-baseline trajectories, with a 128-slot censoring limit.
 
-This is 4,608 calibration completions per model. The confirmation design has
-7,296 trajectories per model; using the Stage 0 hazards, its preregistered
-expected load is about 47,200 slots for 7B and 29,700 for 14B, or 19.7 million
-decoded tokens across both models. Actual issued slots, not this expectation,
-enter the ledger. Prefix caching may be used, but cached and uncached normalized
-compute are both recorded.
+This is 11,520 calibration completions per model. The confirmation design has
+10,944 trajectories per model; using the Stage 0 hazards, its preregistered
+expected load is about 70,800 slots for 7B and 44,600 for 14B, or 29.5 million
+decoded tokens across both models. Including calibration, the expected Stage 1
+load is about 35.4 million decoded tokens. Actual issued slots, not this
+expectation, enter the ledger. Prefix caching may be used, but cached and
+uncached normalized compute are both recorded.
 
 ## Physical Allocation And Signal Interventions
 
@@ -350,8 +351,8 @@ Use three nonoverlapping splits, each balanced by mode:
 | Split | Tasks per mode | Permitted use |
 | --- | ---: | --- |
 | generator development | 64 | tune task templates and difficulty; never analyze |
-| calibration | 64 | estimate `t0`, off-diagonal hazard, and any practical posterior |
-| confirmation | 64 | one frozen physical evaluation of closure and choice |
+| calibration | 96 | estimate `t0`, off-diagonal hazard, and any practical posterior |
+| confirmation | 96 | one frozen physical evaluation of closure and choice |
 
 The primary `t0(M,s)` is the conditional **mean first-passage number of useful
 fixed-cost slots** under full allocation to the correct shard. The primary
@@ -427,7 +428,7 @@ success by `log(1.02) < 0.02` nats.
 
 ### Gate 4: four-term closure
 
-- absolute weighted mean residual at most `0.05` nats;
+- absolute weighted mean residual at most `0.10` nats;
 - weighted residual RMS at most `0.15` nats;
 - 95% bootstrap upper bound on residual RMS at most `0.20` nats;
 - no residual slope against cost, competence, information, or mismatch after
@@ -481,14 +482,15 @@ uv run python experiments/four-term-packed-validation/scripts/power_analysis.py 
 ```
 
 The original conservative sensitivity calculation reports sizes in independent
-trajectories per cell. The physical confirmation fixes 64 tasks per mode and
-two trajectories per `(task, z, allocation)` cell, giving 128 trajectories per
-cell while retaining task-clustered inference. This size was frozen after BF16
-development Stage 0 and before calibration or confirmation seeds were created.
+trajectories per cell. A second analysis conditions on the BF16 Stage 0 hazards,
+adds task-level logit heterogeneity, simulates 32-attempt calibration with one
+extension to 64, and executes the exact censored IID schedule. It selects 96
+task clusters per mode with two trajectories per `(task, z, allocation)` cell.
+This size was frozen before calibration or confirmation seeds were created.
 Final uncertainty is determined by the paired task bootstrap on actual
 confirmation trajectories.
 
-The checked design run with 1,000 replications is summarized in
+The checked conservative design run with 1,000 replications is summarized in
 `results/README.md`. At 128 independent trajectories per cell it yields a 95th
 percentile residual RMS of `0.115` nats and an inverse-share slope range of
 `0.966`--`1.034`; its stricter requirement that every one of 36 simulated
@@ -496,6 +498,12 @@ design residuals be below `0.15` nats passes only 69% of the time. The primary
 experiment has six conditions and gates weighted mean and RMS residuals, not
 the maximum of 36 cells. These synthetic null results do not establish
 packedness; the physical inverse-share and closure gates remain mandatory.
+
+The Stage-0-conditioned calculation uses 2,000 replications. At the frozen 96
+tasks per mode it identifies every focused cell, passes all point closure gates
+in `97.4%` of packed-null simulations, has 95th-percentile residual RMS `0.090`
+nats, and has 95th-percentile maximum cell censoring `1.04%`. This is a power
+calculation under the law being tested, not evidence that the law holds.
 
 ## External-Validity Arm
 

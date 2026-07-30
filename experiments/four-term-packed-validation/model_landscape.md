@@ -154,11 +154,11 @@ SERA fails its format gate. Do not choose alternates by SAI-3 rank.
 
 ## How Long The Run Takes
 
-The frozen primary protocol creates 4,608 calibration completions per model.
-The physical confirmation has 7,296 trajectories per model and stops each at
-certified success. Stage 0 hazards imply about 47,200 issued slots for 7B and
-29,700 for 14B. Including calibration, the expected total is approximately
-13.3 million decoded tokens for 7B and 8.8 million for 14B.
+The frozen primary protocol creates 11,520 calibration completions per model.
+The physical confirmation has 10,944 trajectories per model and stops each at
+certified success. Stage 0 hazards imply about 70,800 issued slots for 7B and
+44,600 for 14B. Including calibration, the expected total is approximately
+21.1 million decoded tokens for 7B and 14.3 million for 14B.
 
 The batch scout sustained about 5.7k and 3.3k decoded token/s respectively.
 Physical scheduling is slower because active batches shrink in the tail; the

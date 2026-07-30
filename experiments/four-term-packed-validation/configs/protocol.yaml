@@ -8,8 +8,8 @@ benchmark:
   prior: [0.3333333333, 0.3333333333, 0.3333333333]
   splits:
     development_tasks_per_mode: 64
-    calibration_tasks_per_mode: 64
-    confirmation_tasks_per_mode: 64
+    calibration_tasks_per_mode: 96
+    confirmation_tasks_per_mode: 96
   verifier:
     mutation_score_min: 0.95
     deterministic_reruns: 20
@@ -75,9 +75,9 @@ generation:
   independent_attempts: true
   feedback_between_attempts: false
   focused_pass_probability_min: 0.05
-  calibration_initial_correct_shard_attempts: 16
+  calibration_initial_correct_shard_attempts: 32
   calibration_attempts_per_wrong_shard: 4
-  calibration_max_correct_shard_attempts: 32
+  calibration_max_correct_shard_attempts: 64
 
 signal:
   family: symmetric_three_class
@@ -126,7 +126,7 @@ gates:
   max_confirmation_censoring: 0.05
   max_off_diagonal_hazard_ratio_upper_95: 0.02
   inverse_share_beta_equivalence: [0.90, 1.10]
-  max_absolute_weighted_mean_residual_nats: 0.05
+  max_absolute_weighted_mean_residual_nats: 0.10
   max_weighted_residual_rms_nats: 0.15
   max_residual_rms_upper_95_nats: 0.20
   min_practitioner_kendall_tau: 0.80

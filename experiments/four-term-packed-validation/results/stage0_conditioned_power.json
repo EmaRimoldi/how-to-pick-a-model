@@ -1,0 +1,64 @@
+{
+  "analysis": "stage0_conditioned_packed_null_power",
+  "calibration_attempts": 32,
+  "calibration_max_attempts": 64,
+  "confirmation_repetitions": 2,
+  "costs": {
+    "Qwen/Qwen2.5-Coder-14B-Instruct": 13100000000.0,
+    "Qwen/Qwen2.5-Coder-7B-Instruct": 6530000000.0
+  },
+  "evidence_status": "design_only_not_theorem_evidence",
+  "gates": {
+    "max_absolute_mean_residual_nats": 0.1,
+    "max_censoring": 0.05,
+    "max_residual_rms_nats": 0.15
+  },
+  "hazards": {
+    "Qwen/Qwen2.5-Coder-14B-Instruct": [
+      0.9479166666666666,
+      0.9739583333333334,
+      0.96875
+    ],
+    "Qwen/Qwen2.5-Coder-7B-Instruct": [
+      0.4791666666666667,
+      0.6666666666666666,
+      0.734375
+    ]
+  },
+  "max_slots": 128,
+  "replicates": 2000,
+  "sample_sizes": {
+    "128": {
+      "absolute_mean_residual_p95_nats": 0.07694823236006373,
+      "closure_gate_probability": 0.9905,
+      "identification_probability": 1.0,
+      "max_cell_censoring_p95": 0.01171875,
+      "residual_rms_p95_nats": 0.07973745782333581
+    },
+    "192": {
+      "absolute_mean_residual_p95_nats": 0.0672324843573696,
+      "closure_gate_probability": 0.997,
+      "identification_probability": 1.0,
+      "max_cell_censoring_p95": 0.0078125,
+      "residual_rms_p95_nats": 0.06995385179167127
+    },
+    "64": {
+      "absolute_mean_residual_p95_nats": 0.10332387747346941,
+      "closure_gate_probability": 0.9455,
+      "identification_probability": 1.0,
+      "max_cell_censoring_p95": 0.015625,
+      "residual_rms_p95_nats": 0.10735283272727464
+    },
+    "96": {
+      "absolute_mean_residual_p95_nats": 0.08579006472546774,
+      "closure_gate_probability": 0.974,
+      "identification_probability": 1.0,
+      "max_cell_censoring_p95": 0.010416666666666666,
+      "residual_rms_p95_nats": 0.09032384102315599
+    }
+  },
+  "schema_version": 1,
+  "seed": 20260730,
+  "stage0": "experiments/four-term-packed-validation/results/bf16_stage0.json",
+  "task_logit_sd": 0.25
+}

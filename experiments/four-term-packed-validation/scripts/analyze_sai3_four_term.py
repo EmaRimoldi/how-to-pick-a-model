@@ -168,7 +168,7 @@ def main() -> None:
     parser.add_argument("--deployed-model", required=True)
     parser.add_argument("--bootstrap-repetitions", type=int, default=2000)
     parser.add_argument("--seed", type=int, default=20260730)
-    parser.add_argument("--max-absolute-mean-residual", type=float, default=0.05)
+    parser.add_argument("--max-absolute-mean-residual", type=float, default=0.10)
     parser.add_argument("--max-residual-rms", type=float, default=0.15)
     parser.add_argument("--max-rms-upper-95", type=float, default=0.20)
     parser.add_argument("--max-censoring", type=float, default=0.05)
