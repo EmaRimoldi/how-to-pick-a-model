@@ -819,6 +819,62 @@ def test_checked_confirmation_bundle_is_internally_consistent() -> None:
     assert failed_gates == {"residual_slope_holm_pass"}
 
 
+def test_checked_high_replication_bundle_is_internally_consistent() -> None:
+    result_dir = ROOT / "experiments" / "four-term-packed-validation" / "results"
+    analysis = json.loads((result_dir / "bf16_high_replication_followup.json").read_text())
+    audit = json.loads(
+        (result_dir / "bf16_high_replication_artifact_audit.json").read_text()
+    )
+    task_audit = json.loads(
+        (result_dir / "bf16_high_replication_task_audit.json").read_text()
+    )
+    decision = json.loads(
+        (result_dir / "high_replication_attenuation_decision.json").read_text()
+    )
+
+    assert audit["status"] == "PASS"
+    assert analysis["confirmation_trajectories"] == 122_880
+    assert analysis["confirmation_trajectories"] == sum(
+        model["trajectories"] for model in audit["models"].values()
+    )
+    assert set(model["trajectories"] for model in audit["models"].values()) == {61_440}
+
+    audited_trajectories = {
+        run["artifacts"]["trajectories"]["path"]: run["artifacts"]["trajectories"]["sha256"]
+        for run in audit["runs"]
+    }
+    analyzed_trajectories = {
+        record["path"]: record["sha256"]
+        for record in analysis["input_provenance"]["confirmation"]
+    }
+    assert analyzed_trajectories == audited_trajectories
+
+    digest = hashlib.sha256()
+    with gzip.open(
+        result_dir / "bf16_high_replication_bootstrap_draws.json.gz", "rb"
+    ) as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    assert digest.hexdigest() == analysis["bootstrap_draws"]["sha256"]
+
+    assert task_audit["all_gates_passed"]
+    assert task_audit["tasks"] == 192
+    assert task_audit["minimum_mutation_score"] == 1.0
+    assert task_audit["wrong_reference_acceptances"] == 0
+    assert task_audit["task_file_sha256"] == audit["tasks"]["sha256"]
+
+    mismatch = next(
+        row for row in analysis["residual_slope_diagnostics"] if row["term"] == "mismatch_nats"
+    )
+    assert decision["status"] == "SUPPORTS_FINITE_REPLICATION_MECHANISM"
+    assert decision["physical_gates_pass"]
+    assert decision["replication_mismatch_slope"] == mismatch["slope"]
+    assert decision["attenuation_ratio"] < 0.5
+    assert decision["bias_adjusted_replication_mismatch_slope"] < decision[
+        "replication_mismatch_slope"
+    ]
+
+
 def test_finite_replication_log_mean_bias_has_expected_direction() -> None:
     assert FINITE_BIAS.expected_log_sample_mean_bias(1.0, 6) == 0.0
     six_rep_bias = FINITE_BIAS.expected_log_sample_mean_bias(0.2, 6)
@@ -851,6 +907,11 @@ def test_replication_attenuation_requires_physical_gates() -> None:
     result = ATTENUATION.analyze(primary, replication, bias, attenuation_threshold=0.02)
     assert result["status"] == "SUPPORTS_FINITE_REPLICATION_MECHANISM"
     assert result["attenuation_point_pass"]
+
+    replication["residual_slope_diagnostics"][0]["slope"] = 0.03
+    result = ATTENUATION.analyze(primary, replication, bias, attenuation_threshold=0.02)
+    assert result["status"] == "SUPPORTS_PERSISTENT_MISMATCH_DEVIATION"
+    assert not result["attenuation_point_pass"]
 
     replication["gates"]["censoring_pass"] = False
     result = ATTENUATION.analyze(primary, replication, bias, attenuation_threshold=0.02)

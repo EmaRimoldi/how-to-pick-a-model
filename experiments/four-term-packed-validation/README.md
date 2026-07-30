@@ -1,8 +1,9 @@
 # Four-Term Packed Validation
 
-Status: **held-out confirmation complete. The practical closure and decision
-gates pass, but the preregistered omnibus result does not pass because residuals
-retain a small positive slope against mismatch**.
+Status: **held-out confirmation and fresh high-repetition diagnostic complete.
+The practical closure and decision gates pass, while the preregistered primary
+omnibus result remains failed. The independent diagnostic supports finite-
+replication bias as the source of most of its mismatch slope**.
 
 Implementation status (2026-07-30): the procedural generator, static-policy
 verifier, reference/mutation audit, vLLM and Apple-MLX scout runners, physical
@@ -131,6 +132,22 @@ mismatch slope of `0.0257`, explaining `68.3%` of the observed `0.0377`; the
 bias-adjusted diagnostic slope is `0.0119`. This does not reverse the frozen
 gate. It motivates a fresh high-repetition replication that can distinguish
 finite-repetition bias from a physical failure of the packed law.
+
+That diagnostic has now been run on 192 newly generated tasks with 32
+trajectories per task cell, totaling 122,880 additional physical trajectories.
+All physical and artifact gates pass. The raw mismatch slope falls to `0.0150`
+(95% bootstrap interval `[-0.0098, 0.0394]`), or `39.7%` of the primary point
+estimate and below the frozen attenuation threshold `0.01884`. The
+replication-specific finite-sample prediction is `0.0072`; subtracting it leaves
+`0.0078`. The frozen diagnostic therefore reports
+`SUPPORTS_FINITE_REPLICATION_MECHANISM`. Its interval still contains the
+primary point estimate, so this is mechanism-level support rather than a
+high-power refutation of every persistent deviation. The primary omnibus
+failure remains unchanged. Moreover, the generic four-term omnibus applied to
+the replication is also `INCONCLUSIVE_OR_FALSIFIED`: mismatch is no longer a
+significant residual direction, but unit-cost and competence diagnostics are.
+The evidence supports approximate closure and the finite-replication mechanism,
+not exact equality.
 
 The full result, bootstrap draws, raw-artifact hashes, and paper-facing figures
 are versioned under [`results/`](results/).

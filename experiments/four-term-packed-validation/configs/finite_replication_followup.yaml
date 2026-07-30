@@ -1,6 +1,7 @@
 experiment_id: sai3_finite_replication_followup
-status: frozen_before_task_generation
+status: completed_posthoc_fresh_task_replication
 frozen_date: 2026-07-30
+completed_date: 2026-07-30
 relationship_to_primary: posthoc_fresh_task_replication_cannot_reverse_primary_gate
 
 motivation:
@@ -43,3 +44,32 @@ diagnostic_decision:
   supports_persistent_physical_deviation_when:
     - fresh_raw_mismatch_slope_above_attenuation_threshold
   interpretation: diagnostic_only_not_a_retest_of_the_frozen_primary_outcome
+
+result:
+  status: SUPPORTS_FINITE_REPLICATION_MECHANISM
+  generic_four_term_omnibus_status: INCONCLUSIVE_OR_FALSIFIED
+  generic_four_term_failed_gate: residual_slope_holm_pass
+  significant_generic_residual_terms: [unit_cost_nats, competence_nats]
+  task_file_sha256: 018cbff2026e00f501af7b525d97368e07a348c39857a5cca979de70246f8d05
+  observed_trajectories: 122880
+  raw_mismatch_slope: 0.014976037308488817
+  raw_mismatch_slope_ci_95: [-0.009812860225857808, 0.039388704734484296]
+  attenuation_ratio_against_primary: 0.39749433123072075
+  predicted_finite_replication_mismatch_slope: 0.007185301435001379
+  bias_adjusted_mismatch_slope: 0.007790735873487439
+  physical_gates_pass: true
+  interpretation: diagnostic_support_only_primary_frozen_failure_unchanged
+  successful_schedule_jobs:
+    - 19295086
+    - 19295087
+    - 19295088
+    - 19295089
+    - 19295094
+    - 19295096
+    - 19295873
+    - 19295885
+  excluded_startup_failures: [19295093, 19295095]
+  audit_job: 19297727
+  analysis_job: 19297740
+  finite_bias_job: 19297757
+  attenuation_decision_job: 19297761

@@ -41,6 +41,59 @@ approximate bias leaves slope `0.0119` and reduces all-comparison residual RMS
 from `0.0141` to `0.0083` nat. Because it uses aggregate mode scales and was
 motivated after observing the result, it cannot change the frozen outcome.
 
+## Fresh High-Replication Diagnostic
+
+`bf16_high_replication_followup.json` analyzes 122,880 additional BF16 A100
+trajectories over 192 fresh replication tasks, with 32 trajectories per task
+cell. The physical inverse-share slope is `0.9944` with 90% interval
+`[0.9865, 1.0021]`; censoring and wrong-shard success are both zero. The three
+primary contrasts have mean residual `0.0330` nat, RMS `0.0334` nat, and a 95%
+bootstrap upper bound on RMS of `0.0529` nat. Model choice remains correct in
+all conditions with bootstrap probability `1.0` and zero regret.
+
+The generic four-term omnibus remains `INCONCLUSIVE_OR_FALSIFIED`. Its sole
+failed aggregate gate is `residual_slope_holm_pass`: mismatch is no longer
+significant, but residual slopes against unit cost (`0.0334`) and competence
+(`-0.1086`) are Holm-significant. These terms are not the frozen target of this
+one-alpha diagnostic and are strongly coupled in a two-model contrast, but the
+result still rules out claiming exact four-term closure from the replication.
+
+`high_replication_attenuation_decision.json` evaluates the diagnostic criterion
+frozen before the replication tasks were generated. The mismatch slope is
+`0.0150` with 95% interval `[-0.0098, 0.0394]`, compared with primary slope
+`0.0377`. Its attenuation ratio is `0.397`, below the frozen 50% threshold;
+all seven physical gates pass. The status is therefore
+`SUPPORTS_FINITE_REPLICATION_MECHANISM`. The interval does not exclude the
+primary point estimate, so the evidence supports attenuation but remains
+imprecise about the exact residual physical slope.
+
+`high_replication_finite_bias.json` predicts slope `0.0072` from the 32-
+replication log-mean estimator and reports bias-adjusted slope `0.0078`.
+`bf16_high_replication_artifact_audit.json` verifies 61,440 trajectories per
+model, 625,525 unique generation seeds, 61,440 unique scheduling seeds, and
+zero wrong-shard successes. `bf16_high_replication_task_audit.json` verifies
+all 192 tasks, mutation score `1.0`, and zero accepted wrong references. The
+5,000 bootstrap draws are stored in
+`bf16_high_replication_bootstrap_draws.json.gz`; their uncompressed SHA-256 is
+`0860fad66c91ba80020df55d605bb5bd8e3a40b20cf4a3d089c8fc3e2fb96e9c`.
+
+The successful schedule jobs were `19295086`, `19295087`, `19295088`,
+`19295089`, `19295094`, `19295096`, `19295873`, and `19295885`. Jobs
+`19295093` and `19295095` failed during CUDA startup before producing data and
+are excluded; their clean retries are included above. Audit, analysis,
+finite-bias, and decision jobs were respectively `19297727`, `19297740`,
+`19297757`, and `19297761`.
+
+The attenuation figure is generated with:
+
+```bash
+uv run python experiments/four-term-packed-validation/scripts/plot_replication_attenuation.py \
+  --primary-bias experiments/four-term-packed-validation/results/posthoc_finite_replication_bias.json \
+  --replication-bias experiments/four-term-packed-validation/results/high_replication_finite_bias.json \
+  --decision experiments/four-term-packed-validation/results/high_replication_attenuation_decision.json \
+  --output experiments/four-term-packed-validation/results/figures/mismatch_slope_attenuation.png
+```
+
 The confirmation jobs were Slurm `19281145`, `19281147`, `19281148`,
 `19281149`, `19281158`, `19281159`, `19281160`, and `19281162`; all completed
 on one A100 each. Artifact audit job `19283303` and analysis job `19283418`
