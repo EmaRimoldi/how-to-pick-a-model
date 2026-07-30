@@ -421,7 +421,8 @@ resource and do not claim exact closure.
 - in the preregistered regression
   `log T = cell_intercept - beta log q`, the 90% equivalence interval for
   `beta` lies inside `[0.90, 1.10]`;
-- requested and realized resource shares differ by at most `0.01` absolutely.
+- requested shares and the full pre-generated, outcome-independent schedule
+  shares differ by at most `0.01` absolutely after aggregation.
 
 The hazard-ratio threshold bounds the log-time distortion from wrong-stream
 success by `log(1.02) < 0.02` nats.

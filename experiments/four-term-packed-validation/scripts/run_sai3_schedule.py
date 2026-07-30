@@ -37,6 +37,14 @@ def sample_shard(q: list[float], rng: random.Random) -> int:
     raise AssertionError("unreachable")
 
 
+def planned_counts(q: list[float], schedule_seed: int, slots: int) -> list[int]:
+    rng = random.Random(schedule_seed)
+    counts = [0, 0, 0]
+    for _ in range(slots):
+        counts[sample_shard(q, rng)] += 1
+    return counts
+
+
 def gpu_snapshot() -> str:
     try:
         return subprocess.check_output(
@@ -201,6 +209,8 @@ def main() -> None:
         for state in states:
             design_row = state["design"]
             slots = int(state["slots"])
+            q = [float(value) for value in design_row["q"]]
+            planned = planned_counts(q, int(design_row["schedule_seed"]), args.max_slots)
             trajectory_row = {
                 **design_row,
                 "schema_version": 2,
@@ -212,6 +222,8 @@ def main() -> None:
                 "verification_reason": state["verification_reason"],
                 "issued": state["issued"],
                 "realized_q": [count / slots if slots else 0.0 for count in state["issued"]],
+                "planned_issued": planned,
+                "planned_q": [count / args.max_slots for count in planned],
             }
             trajectory_handle.write(json.dumps(trajectory_row, sort_keys=True) + "\n")
 

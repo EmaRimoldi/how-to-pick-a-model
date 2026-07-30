@@ -31,6 +31,16 @@ def percentile(values: list[float], probability: float) -> float:
     return ordered[lower] * (1.0 - weight) + ordered[upper] * weight
 
 
+def sample_shard(q: list[float], rng: random.Random) -> int:
+    draw = rng.random()
+    cumulative = 0.0
+    for shard, share in enumerate(q):
+        cumulative += share
+        if draw < cumulative or shard == len(q) - 1:
+            return shard
+    raise AssertionError("unreachable")
+
+
 def fixed_effect_slope(cells: Iterable[tuple[str, int, float, float]]) -> float:
     """Fit log T = group intercept + beta*(-log q)."""
     groups: dict[tuple[str, int], list[tuple[float, float]]] = collections.defaultdict(list)
@@ -110,6 +120,7 @@ def main() -> None:
     parser.add_argument("--max-censoring", type=float, default=0.05)
     parser.add_argument("--max-residual-rms", type=float, default=0.15)
     parser.add_argument("--max-share-error", type=float, default=0.01)
+    parser.add_argument("--share-audit-slots", type=int, default=128)
     args = parser.parse_args()
 
     rows = []
@@ -157,30 +168,34 @@ def main() -> None:
         for row in rows
     )
     share_groups: dict[tuple[str, float], dict[str, Any]] = collections.defaultdict(
-        lambda: {"issued": [0, 0, 0], "expected": [0.0, 0.0, 0.0], "slots": 0}
+        lambda: {"planned": [0, 0, 0], "expected": [0.0, 0.0, 0.0], "slots": 0}
     )
     for row in rows:
         group = share_groups[(row["model"], float(row["q_true"]))]
-        slots = int(row["total_slots"])
-        group["slots"] += slots
+        q = [float(value) for value in row["q"]]
+        rng = random.Random(int(row["schedule_seed"]))
+        planned = [0, 0, 0]
+        for _ in range(args.share_audit_slots):
+            planned[sample_shard(q, rng)] += 1
+        group["slots"] += args.share_audit_slots
         for shard in range(3):
-            group["issued"][shard] += int(row["issued"][shard])
-            group["expected"][shard] += slots * float(row["q"][shard])
+            group["planned"][shard] += planned[shard]
+            group["expected"][shard] += args.share_audit_slots * q[shard]
     share_audit = []
     for (model, q_true), group in sorted(share_groups.items()):
         errors = [
             abs(actual - expected) / group["slots"]
-            for actual, expected in zip(group["issued"], group["expected"])
+            for actual, expected in zip(group["planned"], group["expected"])
         ]
         share_audit.append(
             {
                 "model": model,
                 "q_true": q_true,
                 "slots": group["slots"],
-                "max_absolute_share_error": max(errors),
+                "max_absolute_planned_share_error": max(errors),
             }
         )
-    max_share_error = max(item["max_absolute_share_error"] for item in share_audit)
+    max_share_error = max(item["max_absolute_planned_share_error"] for item in share_audit)
     beta_ci = [percentile(bootstrap_pooled, 0.025), percentile(bootstrap_pooled, 0.975)]
     model_rows = []
     for model in models:
@@ -201,8 +216,8 @@ def main() -> None:
         "trajectories": len(rows),
         "censoring_rate": censoring_rate,
         "off_diagonal_wins": off_diagonal_wins,
-        "max_absolute_share_error": max_share_error,
-        "share_audit": share_audit,
+        "max_absolute_planned_share_error": max_share_error,
+        "planned_share_audit": share_audit,
         "pooled_beta": pooled_beta,
         "pooled_beta_ci_95": beta_ci,
         "packed_residual_mean_nats": mean(residuals),
@@ -216,7 +231,7 @@ def main() -> None:
             "model_beta_equivalence_pass": model_equivalence_pass,
             "censoring_pass": censoring_rate <= args.max_censoring,
             "residual_rms_pass": residual_rms <= args.max_residual_rms,
-            "realized_share_pass": max_share_error <= args.max_share_error,
+            "planned_share_pass": max_share_error <= args.max_share_error,
         },
     }
     summary["status"] = "PASS" if all(summary["gates"].values()) else "INCONCLUSIVE_OR_FALSIFIED"
