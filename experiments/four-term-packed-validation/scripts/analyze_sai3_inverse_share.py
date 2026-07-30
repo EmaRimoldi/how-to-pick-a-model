@@ -18,6 +18,11 @@ def mean(values: Iterable[float]) -> float:
     return sum(materialized) / len(materialized)
 
 
+def geometric_mean(values: Iterable[float]) -> float:
+    materialized = list(values)
+    return math.exp(mean(math.log(value) for value in materialized))
+
+
 def percentile(values: list[float], probability: float) -> float:
     ordered = sorted(values)
     if not ordered:
@@ -57,14 +62,13 @@ def fixed_effect_slope(cells: Iterable[tuple[str, int, float, float]]) -> float:
 
 
 def task_cell_means(rows: list[dict[str, Any]]) -> dict[tuple[str, int, str, str, float], float]:
-    groups: dict[tuple[str, int, str, str, float], list[float]] = collections.defaultdict(list)
+    groups: dict[tuple[str, int, str, str, float], list[int]] = collections.defaultdict(
+        lambda: [0, 0]
+    )
     for row in rows:
         if row.get("design") != "inverse_share":
             continue
-        value = float(row["total_slots"])
-        if row.get("censored"):
-            value += 1.0
-        groups[
+        group = groups[
             (
                 row["model"],
                 int(row["mode"]),
@@ -72,8 +76,13 @@ def task_cell_means(rows: list[dict[str, Any]]) -> dict[tuple[str, int, str, str
                 row["task_id"],
                 float(row["q_true"]),
             )
-        ].append(value)
-    return {key: mean(values) for key, values in groups.items()}
+        ]
+        group[0] += int(row["total_slots"])
+        group[1] += bool(row.get("success"))
+    unidentified = [key for key, (_exposure, successes) in groups.items() if successes == 0]
+    if unidentified:
+        raise ValueError(f"inverse-share has all-censored task cells: {unidentified[:5]}")
+    return {key: exposure / successes for key, (exposure, successes) in groups.items()}
 
 
 def aggregate_cells(
@@ -100,7 +109,10 @@ def aggregate_cells(
                     values[(model, mode, q_true)].append(
                         task_means[(model, mode, stratum, task_id, q_true)]
                     )
-    return [(model, mode, q_true, mean(cell_values)) for (model, mode, q_true), cell_values in sorted(values.items())]
+    return [
+        (model, mode, q_true, geometric_mean(cell_values))
+        for (model, mode, q_true), cell_values in sorted(values.items())
+    ]
 
 
 def bootstrap_slopes(
@@ -172,8 +184,8 @@ def main() -> None:
                 "model": model,
                 "mode": mode,
                 "q_true": q_true,
-                "mean_first_passage_slots": mean_slots,
-                "focused_mean_slots": focused,
+                "geometric_mean_first_passage_slots": mean_slots,
+                "focused_geometric_mean_slots": focused,
                 "packed_log_residual_nats": residual,
             }
         )

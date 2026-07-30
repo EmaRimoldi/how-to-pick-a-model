@@ -107,7 +107,10 @@ def plot_inverse_share(document: dict, output: Path) -> None:
             )
             x = [-np.log(row["q_true"]) for row in cells]
             y = [
-                np.log(row["mean_first_passage_slots"] / row["focused_mean_slots"])
+                np.log(
+                    row["geometric_mean_first_passage_slots"]
+                    / row["focused_geometric_mean_slots"]
+                )
                 for row in cells
             ]
             axis.plot(x, y, color=colors[model], alpha=0.45, linewidth=1.0)

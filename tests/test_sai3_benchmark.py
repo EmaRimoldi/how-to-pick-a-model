@@ -297,6 +297,28 @@ def test_inverse_share_fixed_effect_fit_recovers_unit_slope() -> None:
     assert math.isclose(INVERSE_ANALYSIS.fixed_effect_slope(cells), 1.0, abs_tol=1e-12)
 
 
+def test_inverse_share_uses_task_geometric_mle_and_log_aggregation() -> None:
+    rows = []
+    for task_id, slots in (("easy", (1, 1)), ("hard", (9, 9))):
+        for total_slots in slots:
+            rows.append(
+                {
+                    "design": "inverse_share",
+                    "model": "model",
+                    "mode": 0,
+                    "task_stratum": "stratum",
+                    "task_id": task_id,
+                    "q_true": 1.0,
+                    "total_slots": total_slots,
+                    "success": True,
+                }
+            )
+    task_means = INVERSE_ANALYSIS.task_cell_means(rows)
+    cells = INVERSE_ANALYSIS.aggregate_cells(task_means)
+    assert cells[0][:3] == ("model", 0, 1.0)
+    assert math.isclose(cells[0][3], 3.0)
+
+
 def test_four_term_statistical_helpers_are_conservative() -> None:
     lower, upper = FOUR_TERM_ANALYSIS.wilson_interval(0, 6144)
     assert lower >= 0.0
@@ -719,8 +741,8 @@ def test_four_term_plots_render_from_analysis_schema(tmp_path: Path) -> None:
                 "model": model,
                 "mode": mode,
                 "q_true": q,
-                "mean_first_passage_slots": scale / q,
-                "focused_mean_slots": scale,
+                "geometric_mean_first_passage_slots": scale / q,
+                "focused_geometric_mean_slots": scale,
             }
             for model, scale in (
                 ("Qwen/Qwen2.5-Coder-7B-Instruct", 1.3),
