@@ -52,6 +52,20 @@ assert INVERSE_ANALYSIS_SPEC is not None and INVERSE_ANALYSIS_SPEC.loader is not
 INVERSE_ANALYSIS = importlib.util.module_from_spec(INVERSE_ANALYSIS_SPEC)
 INVERSE_ANALYSIS_SPEC.loader.exec_module(INVERSE_ANALYSIS)
 
+FOUR_TERM_ANALYSIS_PATH = (
+    ROOT
+    / "experiments"
+    / "four-term-packed-validation"
+    / "scripts"
+    / "analyze_sai3_four_term.py"
+)
+FOUR_TERM_ANALYSIS_SPEC = importlib.util.spec_from_file_location(
+    "analyze_sai3_four_term", FOUR_TERM_ANALYSIS_PATH
+)
+assert FOUR_TERM_ANALYSIS_SPEC is not None and FOUR_TERM_ANALYSIS_SPEC.loader is not None
+FOUR_TERM_ANALYSIS = importlib.util.module_from_spec(FOUR_TERM_ANALYSIS_SPEC)
+FOUR_TERM_ANALYSIS_SPEC.loader.exec_module(FOUR_TERM_ANALYSIS)
+
 
 def test_reference_and_wrong_shards_are_separated() -> None:
     for mode in range(3):
@@ -173,3 +187,38 @@ def test_inverse_share_fixed_effect_fit_recovers_unit_slope() -> None:
             for q_true in (0.1, 0.2, 0.5, 0.8, 1.0):
                 cells.append((model, mode, q_true, scale * mode_scale / q_true))
     assert math.isclose(INVERSE_ANALYSIS.fixed_effect_slope(cells), 1.0, abs_tol=1e-12)
+
+
+def test_four_term_analysis_closes_on_exact_packed_cells() -> None:
+    baseline_model = "baseline"
+    deployed_model = "deployed"
+    costs = {baseline_model: 2.0, deployed_model: 1.0}
+    scales = {
+        (baseline_model, 0): 2.0,
+        (baseline_model, 1): 3.0,
+        (baseline_model, 2): 4.0,
+        (deployed_model, 0): 1.0,
+        (deployed_model, 1): 1.5,
+        (deployed_model, 2): 2.0,
+    }
+    alpha = 0.8
+    allocation_name = "half_anti"
+    condition = f"alpha={alpha:.8f}|allocation={allocation_name}"
+    cells = {}
+    for mode in range(3):
+        cells[(baseline_model, "baseline_prior", mode, -1)] = scales[(baseline_model, mode)] / (1.0 / 3.0)
+        for z in range(3):
+            q = DESIGN.allocation(alpha, z, allocation_name)
+            cells[(deployed_model, condition, mode, z)] = scales[(deployed_model, mode)] / q[mode]
+    observed = FOUR_TERM_ANALYSIS.observed_delta(
+        cells, costs, baseline_model, deployed_model, condition, alpha
+    )
+    terms = FOUR_TERM_ANALYSIS.predicted_terms(
+        scales,
+        costs,
+        baseline_model,
+        deployed_model,
+        DESIGN.information(alpha),
+        DESIGN.mismatch(alpha, allocation_name),
+    )
+    assert math.isclose(observed, terms["predicted_delta_nats"], abs_tol=1e-12)

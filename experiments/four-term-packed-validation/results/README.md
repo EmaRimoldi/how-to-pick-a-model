@@ -8,6 +8,12 @@ completions, but quantization and Apple hardware define different deployed
 systems from the A100 identification arm. Closure analysis is prohibited on
 this development split.
 
+`bf16_stage0.json` records the eligibility scout on the final BF16 A100 serving
+stack. Across 576 matched completions per model, success was `62.7%` for 7B and
+`96.4%` for 14B; both parsed 100%. Neither model succeeded on any of 288
+wrong-shard attempts. This file fixes the identification pair and informs the
+pre-confirmation sample size, but it is not closure evidence.
+
 `power_analysis.json` is a synthetic design calculation generated without
 reading any empirical result in this repository.
 
@@ -20,7 +26,7 @@ python experiments/four-term-packed-validation/scripts/power_analysis.py \
   --output experiments/four-term-packed-validation/results/power_analysis.json
 ```
 
-At the frozen confirmatory size of 256 tasks per mode:
+At 256 independent trajectories per cell:
 
 - all 36 closure residuals are simultaneously within `0.15` nats in `95.4%`
   of simulations;
@@ -30,8 +36,11 @@ At the frozen confirmatory size of 256 tasks per mode:
 - mean pairwise rank concordance over all systems is `0.947`;
 - the 95th percentile residual RMS is `0.078` nats.
 
-At 128 tasks per mode, simultaneous closure falls to `69.0%`. This is why the
-protocol fixes 256 and prohibits reducing the sample size after calibration.
+At 128 independent trajectories per cell, residual RMS remains below `0.115`
+nats in 95% of simulations, while the stricter maximum-over-36-designs closure
+criterion passes `69.0%`. The physical protocol uses 64 task clusters and two
+trajectories per cell, gates weighted mean and RMS over six primary conditions,
+and freezes this size before creating calibration or confirmation seeds.
 
 The calculation assumes the inverse-share law and zero off-diagonal success.
 It measures finite-sample sensitivity under the null; it does not establish

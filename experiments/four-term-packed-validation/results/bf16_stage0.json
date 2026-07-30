@@ -1,0 +1,48 @@
+{
+  "evidence_status": "development_stage_0_nonconfirmatory",
+  "hardware": "NVIDIA A100-SXM4-80GB",
+  "models": {
+    "Qwen/Qwen2.5-Coder-14B-Instruct": {
+      "gpu": "NVIDIA A100-SXM4-80GB, GPU-c0776eb0-46d0-f851-74e8-dce5992d58cf, 81920 MiB, 590.48.01",
+      "host": "node4000",
+      "matched_by_mode": [
+        {"mode": 0, "rate": 0.9479166666666666, "successes": 182, "trials": 192},
+        {"mode": 1, "rate": 0.9739583333333334, "successes": 187, "trials": 192},
+        {"mode": 2, "rate": 0.96875, "successes": 186, "trials": 192}
+      ],
+      "matched_decoded_tokens_per_second": 3296.855961172642,
+      "matched_elapsed_seconds": 44.72624880692456,
+      "max_tokens": 256,
+      "model_load_seconds": 59.807875468046404,
+      "parse_rate": 1.0,
+      "seed_scheme": "blake2b(base_seed|model|task_id|shard|attempt)",
+      "wrong_decoded_tokens_per_second": 2539.9727211384225,
+      "wrong_elapsed_seconds": 29.0270833959803,
+      "wrong_successes": 0,
+      "wrong_trials": 288,
+      "wrong_wilson_upper_95": 0.013162827640106806
+    },
+    "Qwen/Qwen2.5-Coder-7B-Instruct": {
+      "gpu": "NVIDIA A100-SXM4-80GB, GPU-c0776eb0-46d0-f851-74e8-dce5992d58cf, 81920 MiB, 590.48.01",
+      "host": "node4000",
+      "matched_by_mode": [
+        {"mode": 0, "rate": 0.4791666666666667, "successes": 92, "trials": 192},
+        {"mode": 1, "rate": 0.6666666666666666, "successes": 128, "trials": 192},
+        {"mode": 2, "rate": 0.734375, "successes": 141, "trials": 192}
+      ],
+      "matched_decoded_tokens_per_second": 5676.1904528354835,
+      "matched_elapsed_seconds": 25.977986684069037,
+      "max_tokens": 256,
+      "model_load_seconds": 41.14751296304166,
+      "parse_rate": 1.0,
+      "seed_scheme": "blake2b(base_seed|model|task_id|shard|attempt)",
+      "wrong_decoded_tokens_per_second": 4516.5045428370295,
+      "wrong_elapsed_seconds": 16.324128383072093,
+      "wrong_successes": 0,
+      "wrong_trials": 288,
+      "wrong_wilson_upper_95": 0.013162827640106806
+    }
+  },
+  "schema_version": 1,
+  "slurm_jobs": [19274650, 19274651]
+}

@@ -108,6 +108,7 @@ def main() -> None:
     parser.add_argument("--beta-lower", type=float, default=0.90)
     parser.add_argument("--beta-upper", type=float, default=1.10)
     parser.add_argument("--max-censoring", type=float, default=0.05)
+    parser.add_argument("--max-residual-rms", type=float, default=0.15)
     args = parser.parse_args()
 
     rows = []
@@ -166,6 +167,8 @@ def main() -> None:
                 "equivalence_pass": interval[0] >= args.beta_lower and interval[1] <= args.beta_upper,
             }
         )
+    residual_rms = math.sqrt(mean(value * value for value in residuals))
+    model_equivalence_pass = all(row["equivalence_pass"] for row in model_rows)
     summary = {
         "schema_version": 1,
         "analysis": "physical_iid_inverse_share",
@@ -175,21 +178,19 @@ def main() -> None:
         "pooled_beta": pooled_beta,
         "pooled_beta_ci_95": beta_ci,
         "packed_residual_mean_nats": mean(residuals),
-        "packed_residual_rms_nats": math.sqrt(mean(value * value for value in residuals)),
+        "packed_residual_rms_nats": residual_rms,
         "models": model_rows,
         "cells": cell_rows,
         "gates": {
             "beta_equivalence_interval": [args.beta_lower, args.beta_upper],
             "max_censoring": args.max_censoring,
             "pooled_beta_equivalence_pass": beta_ci[0] >= args.beta_lower and beta_ci[1] <= args.beta_upper,
+            "model_beta_equivalence_pass": model_equivalence_pass,
             "censoring_pass": censoring_rate <= args.max_censoring,
+            "residual_rms_pass": residual_rms <= args.max_residual_rms,
         },
     }
-    summary["status"] = (
-        "PASS"
-        if summary["gates"]["pooled_beta_equivalence_pass"] and summary["gates"]["censoring_pass"]
-        else "INCONCLUSIVE_OR_FALSIFIED"
-    )
+    summary["status"] = "PASS" if all(summary["gates"].values()) else "INCONCLUSIVE_OR_FALSIFIED"
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps(summary, indent=2, sort_keys=True))

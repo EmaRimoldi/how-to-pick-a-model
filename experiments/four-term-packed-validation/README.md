@@ -1,12 +1,12 @@
 # Four-Term Packed Validation
 
-Status: **development pilot complete; no confirmatory result is claimed yet**.
+Status: **BF16 Stage 0 complete; no confirmatory result is claimed yet**.
 
 Implementation status (2026-07-30): the procedural generator, static-policy
-verifier, reference/mutation audit, vLLM and Apple-MLX scout runners,
-eligibility analysis, and Slurm entrypoint are implemented. The local
-development audit and MLX pilot pass their intended checks; these completions
-are explicitly excluded from confirmatory evidence.
+verifier, reference/mutation audit, vLLM and Apple-MLX scout runners, physical
+IID soft-allocation scheduler, inverse-share analysis, four-term held-out
+analysis, and Slurm entrypoints are implemented. Development completions are
+explicitly excluded from confirmatory closure evidence.
 
 The first infrastructure smoke is intentionally smaller than Stage 0:
 
@@ -25,6 +25,13 @@ sbatch experiments/four-term-packed-validation/scripts/slurm_sai3_scout.sbatch \
 The smoke defaults to six tasks per mode, four matched attempts, and one
 attempt per wrong shard. These counts test the runtime and locate gross
 floor/ceiling behavior only; they cannot pass the statistical gates below.
+
+The BF16 A100 Stage 0 used 24 tasks per mode, eight matched attempts, and two
+attempts per wrong shard. Matched success was `0.479/0.667/0.734` by mode for
+the 7B checkpoint and `0.948/0.974/0.969` for the 14B checkpoint. Both parsed
+100% of outputs and each had zero wrong-shard successes in 288 trials. These
+results establish eligibility and size the physical run; they are not used as
+four-term evidence.
 
 On an Apple-silicon development machine, the equivalent nonconfirmatory MLX
 smoke is:
@@ -234,20 +241,19 @@ correct-shard and two-per-wrong-shard attempts for every scouted checkpoint.
 It records eligibility, format, memory, throughput, energy, and verifier cost,
 but never computes four-term closure or opens confirmation seeds.
 
-Calibration initially generates 32 correct-shard attempts and eight attempts
-for each wrong shard per task and model. A correct-shard stream that has not
-succeeded is extended, with frozen seeds, up to 96 attempts. Confirmation uses
-96 attempts per task/model/shard so the same exchangeable pool supports all
-predeclared schedules. The nominal budget is about 0.074 million calibration
-and 0.442 million confirmation completions across the two primary models, or
-roughly 132 million decoded tokens before rare extensions. Prefix caching
-should be used, but cached and uncached FLOPs must both remain in the resource
-ledger.
+Calibration generates 16 correct-shard attempts and four attempts for each
+wrong shard per task and model. A correct-shard task with no success is extended
+once, with frozen seeds, to 32 attempts; any remaining zero-success task cell
+makes focused `t0` unidentified. Confirmation physically executes two
+independent trajectories for every `(task, alpha, allocation, z)` cell, plus two
+prior-baseline trajectories, with a 128-slot censoring limit.
 
-The exact nominal load is 258,048 completions and 66,060,288 decoded tokens per
-model. Consequently, elapsed time must be projected from the sustained
-aggregate throughput measured in Stage 0; the planning scenarios in
-`model_landscape.md` are not substituted for a hardware benchmark.
+This is 4,608 calibration completions per model. The confirmation design has
+7,296 trajectories per model; using the Stage 0 hazards, its preregistered
+expected load is about 47,200 slots for 7B and 29,700 for 14B, or 19.7 million
+decoded tokens across both models. Actual issued slots, not this expectation,
+enter the ledger. Prefix caching may be used, but cached and uncached normalized
+compute are both recorded.
 
 ## Physical Allocation And Signal Interventions
 
@@ -277,17 +283,21 @@ mismatches are approximately `0.000`, `0.121`, `0.460`, and `0.794` nats.
 Thus information and mismatch vary independently over a practically visible
 range while every mode keeps positive allocation.
 
-A weighted-fair scheduler, not a hard selector, realizes `q_z`. It issues
-fixed-cost generation slots to the three evidence streams and records total
-resource through the first verifier-passing candidate, including completed and
-in-flight losing work. The realized share, rather than the requested share,
-enters the analysis.
+An IID categorical soft scheduler, not a hard selector, realizes `q_z`. Before
+every fixed-cost generation slot it samples one of the three evidence streams
+with probabilities `q_z`, issues that prompt with a unique seed, verifies the
+completion, and stops the trajectory at the first certified solution. With
+matched-stream hazard `p_M(s)` and zero off-diagonal hazard, each global slot
+succeeds with probability `q_z(s)p_M(s)`, so its mean first-passage count is
+exactly `1/(q_z(s)p_M(s)) = t0(M,s)/q_z(s)`. The experiment tests the two
+empirical premises rather than assuming them: exchangeable matched hazards and
+negligible wrong-stream success.
 
-Large exchangeable completion pools may be generated once and replayed under
-predeclared weighted-fair schedules, following the sample-pool logic used for
-pass@k. Calibration pools, confirmation pools, and scheduler permutations must
-be disjoint. A 10% randomly selected audit is also executed online end to end
-to check that replay and live scheduling agree.
+This randomized scheduler is the discrete physical counterpart of processor
+sharing. Deterministic weighted-fair scheduling is not used for the primary
+test because indivisible LLM slots create first-service granularity errors when
+`t0` is near one. Every primary trajectory is executed online end to end; no
+post-hoc completion-pool replay is used as closure evidence.
 
 ### Practical-signal arm
 
@@ -313,9 +323,13 @@ term and is no longer presented as an exact four-term decomposition.
 ## Resource Clocks
 
 The primary clock is additive normalized inference compute per fixed slot. For
-dense models it is computed from architecture, prompt tokens, decoded tokens,
-and attention cost, and is cross-checked against profiler counters. This gives
-the model-specific `kappa(M)` without batching or queueing artifacts.
+the same-tokenizer dense identification pair, `kappa(M)` is the checkpoint's
+official non-embedding parameter count multiplied by the common fixed token
+envelope; the common multiplier cancels in every log ratio. The frozen values
+are 6.53B for 7B and 13.1B for 14B in `configs/model_costs.json`, as reported by
+the official model cards. Prompt-token and attention corrections are recorded
+as diagnostics. This clock avoids batching and queueing artifacts and is
+cross-checked against profiler counters.
 
 The complete analysis is repeated with three practitioner clocks:
 
@@ -336,8 +350,8 @@ Use three nonoverlapping splits, each balanced by mode:
 | Split | Tasks per mode | Permitted use |
 | --- | ---: | --- |
 | generator development | 64 | tune task templates and difficulty; never analyze |
-| calibration | 256 | estimate `kappa`, `t0`, and any practical posterior |
-| confirmation | 256 | one frozen evaluation of packedness, closure, and choice |
+| calibration | 64 | estimate `t0`, off-diagonal hazard, and any practical posterior |
+| confirmation | 64 | one frozen physical evaluation of closure and choice |
 
 The primary `t0(M,s)` is the conditional **mean first-passage number of useful
 fixed-cost slots** under full allocation to the correct shard. The primary
@@ -374,8 +388,10 @@ The confirmation response is
 \widehat R=\widehat\Delta_{\rm obs}-\widehat\Delta_4.
 \]
 
-All uncertainty intervals use a nested bootstrap that resamples tasks, signal
-draws, and completion seeds while preserving paired model and policy results.
+All uncertainty intervals use a nested cluster bootstrap over calibration and
+confirmation tasks while preserving paired model, signal, and allocation
+results. The controlled signal values are enumerated and weighted by the known
+channel rather than estimated from random signal counts.
 
 ## Mandatory Gates And Falsification
 
@@ -464,17 +480,22 @@ uv run python experiments/four-term-packed-validation/scripts/power_analysis.py 
   --output /tmp/four-term-power.json
 ```
 
-The confirmatory size is fixed at 256 tasks per mode. It is not reduced after
-observing model completions. The simulation is deliberately only a sensitivity
-analysis: final uncertainty is determined by the paired bootstrap on actual
-confirmation tasks.
+The original conservative sensitivity calculation reports sizes in independent
+trajectories per cell. The physical confirmation fixes 64 tasks per mode and
+two trajectories per `(task, z, allocation)` cell, giving 128 trajectories per
+cell while retaining task-clustered inference. This size was frozen after BF16
+development Stage 0 and before calibration or confirmation seeds were created.
+Final uncertainty is determined by the paired task bootstrap on actual
+confirmation trajectories.
 
 The checked design run with 1,000 replications is summarized in
-`results/README.md`. At 256 tasks per mode it yields `95.4%` simultaneous
-closure within `0.15` nats over all 36 model/signal/allocation designs, a
-2.5%--97.5% inverse-share slope range of `0.976`--`1.023`, and `99.9%`
-fixed-signal model-selection agreement. These are synthetic null results, not
-evidence that the benchmark is packed; the empirical gates remain mandatory.
+`results/README.md`. At 128 independent trajectories per cell it yields a 95th
+percentile residual RMS of `0.115` nats and an inverse-share slope range of
+`0.966`--`1.034`; its stricter requirement that every one of 36 simulated
+design residuals be below `0.15` nats passes only 69% of the time. The primary
+experiment has six conditions and gates weighted mean and RMS residuals, not
+the maximum of 36 cells. These synthetic null results do not establish
+packedness; the physical inverse-share and closure gates remain mandatory.
 
 ## External-Validity Arm
 
@@ -499,5 +520,6 @@ A completed bundle must contain:
 - bootstrap draws and practitioner ranking/regret table;
 - a machine-readable statement of every passed and failed gate.
 
-Until those artifacts exist, this directory is a protocol, not empirical
-support for the paper.
+Until the calibration and untouched confirmation artifacts exist, Stage 0 is
+development evidence only and this directory does not support the paper's
+four-term empirical claim.

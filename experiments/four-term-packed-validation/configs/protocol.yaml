@@ -1,5 +1,5 @@
 experiment_id: four_term_packed_validation_sai3
-status: development_pilot_complete
+status: bf16_stage_0_complete
 seed: 20260730
 
 benchmark:
@@ -8,8 +8,8 @@ benchmark:
   prior: [0.3333333333, 0.3333333333, 0.3333333333]
   splits:
     development_tasks_per_mode: 64
-    calibration_tasks_per_mode: 256
-    confirmation_tasks_per_mode: 256
+    calibration_tasks_per_mode: 64
+    confirmation_tasks_per_mode: 64
   verifier:
     mutation_score_min: 0.95
     deterministic_reruns: 20
@@ -75,9 +75,9 @@ generation:
   independent_attempts: true
   feedback_between_attempts: false
   focused_pass_probability_min: 0.05
-  calibration_initial_correct_shard_attempts: 32
-  calibration_attempts_per_wrong_shard: 8
-  calibration_max_correct_shard_attempts: 96
+  calibration_initial_correct_shard_attempts: 16
+  calibration_attempts_per_wrong_shard: 4
+  calibration_max_correct_shard_attempts: 32
 
 signal:
   family: symmetric_three_class
@@ -99,14 +99,18 @@ signal:
     max_omitted_acquisition_cost_fraction: 0.01
 
 scheduler:
-  implementation: weighted_fair
+  implementation: iid_categorical_soft_allocation
   share_tolerance_absolute: 0.01
-  confirmation_pool_samples_per_model_task_shard: 96
-  live_replay_audit_fraction: 0.10
-  count_in_flight_resource: true
+  inverse_share_q_values: [0.10, 0.20, 0.3333333333, 0.50, 0.80, 1.0]
+  inverse_share_development_repetitions: 4
+  confirmation_repetitions: 2
+  confirmation_max_slots: 128
+  physical_schedule_fraction: 1.0
+  count_every_issued_slot: true
 
 resource:
-  primary: normalized_dense_inference_flops
+  primary: normalized_non_embedding_parameter_tokens_per_fixed_slot
+  model_costs: configs/model_costs.json
   secondary:
     - isolated_gpu_seconds
     - joules

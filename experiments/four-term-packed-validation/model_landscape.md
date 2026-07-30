@@ -98,21 +98,19 @@ not directly comparable across rows.
 ### Stage 0: infrastructure and eligibility scout
 
 Run 24 development tasks per mode, eight correct-shard attempts, and two
-attempts per wrong shard for each of these checkpoints:
+attempts per wrong shard for the same-family Qwen2.5-Coder 7B and 14B
+identification pair. The heterogeneous candidates remain frozen for the later
+transport arm and are not used to tune the primary benchmark.
 
-1. Qwen2.5-Coder 3B, 7B, and 14B;
-2. Qwen3.5-4B;
-3. SERA-8B;
-4. Gemma-4-12B-it;
-5. Devstral-Small-2-24B;
-6. Qwen3.6-27B;
-7. North-Mini-Code-1.0.
-
-This is 864 completions or 165,888 decoded tokens per model. It is an
+This is 864 completions or 221,184 decoded tokens per model. It is an
 infrastructure and regime check, not evidence for the theorem. The scout
 records parse rate, focused pass probability, wrong-shard success, output
 length, aggregate throughput, GPU memory, joules, and verifier time. It must
-not inspect closure residuals or confirmation seeds.
+not inspect closure residuals or confirmation seeds. On the BF16 A100 run, 7B
+matched success was `0.479/0.667/0.734` by mode and 14B was
+`0.948/0.974/0.969`; both had 100% parsing and zero wrong-shard successes in
+288 trials. Sustained matched throughput was about 5,676 token/s for 7B and
+3,297 token/s for 14B.
 
 North Mini Code is replaced by Qwen3-Coder-30B-A3B if its required main-branch
 runtime or response parser fails the smoke. SERA-8B is replaced by
@@ -156,45 +154,20 @@ SERA fails its format gate. Do not choose alternates by SAI-3 rank.
 
 ## How Long The Run Takes
 
-The current full protocol creates, before rare calibration extensions:
+The frozen primary protocol creates 4,608 calibration completions per model.
+The physical confirmation has 7,296 trajectories per model and stops each at
+certified success. Stage 0 hazards imply about 47,200 issued slots for 7B and
+29,700 for 14B. Including calibration, the expected total is approximately
+13.3 million decoded tokens for 7B and 8.8 million for 14B.
 
-- 36,864 calibration completions per model;
-- 221,184 confirmation completions per model;
-- 258,048 completions and **66,060,288 decoded tokens per model**.
-
-Output-only generation time is therefore
-
-```text
-hours per model = 66,060,288 / sustained aggregate decoded tokens per second / 3,600.
-```
-
-| Measured aggregate throughput | Hours per model | Two-model Stage 1, sequential | Four-model Stage 2, sequential |
-| ---: | ---: | ---: | ---: |
-| 250 token/s | 73.4 | 146.8 | 293.6 |
-| 500 token/s | 36.7 | 73.4 | 146.8 |
-| 1,000 token/s | 18.4 | 36.7 | 73.4 |
-| 2,000 token/s | 9.2 | 18.4 | 36.7 |
-| 4,000 token/s | 4.6 | 9.2 | 18.4 |
-
-These rows are arithmetic scenarios, not assumed GPU benchmarks. Add 30%-100%
-for prompt prefill, verifier execution, scheduler overhead, loading, profiler
-runs, failed jobs, and the 10% live-replay audit. The Stage-0 smoke must replace
-the scenarios with measured per-model throughput before reserving hardware.
-
-A realistic planning envelope is:
-
-- Stage 0: several GPU-hours of generation, but one working day for runtime
-  setup, downloads, and format fixes;
-- Stage 1 on one 80 GB GPU: roughly 2-5 wall-clock days;
-- Stage 1 on two independent 80 GB GPUs: roughly 12-36 hours;
-- Stage 2 on four suitable GPUs: roughly 18-48 hours after all runtimes work;
-- both full stages sequentially on one GPU: about one to two weeks.
-
-The wide ranges are deliberate. Until the exact prompt length, batch size,
-GPU, serving engine, and verifier throughput are measured, a tighter estimate
-would be fabricated precision. Model-parallel checkpoints can also consume
-multiple GPUs without increasing the number of independent model endpoints,
-so GPU count alone does not determine elapsed time.
+The batch scout sustained about 5.7k and 3.3k decoded token/s respectively.
+Physical scheduling is slower because active batches shrink in the tail; the
+12-trajectory scheduler smoke sustained only 194 token/s and therefore gives a
+deliberately pessimistic lower bound. With thousands of active trajectories at
+the start, the expected Stage 1 envelope is one to three GPU-hours per model,
+plus queueing, model load, verification, bootstrap analysis, and failed-job
+margin. Actual issued slots and elapsed time replace these projections in the
+final ledger.
 
 ## Decision
 
