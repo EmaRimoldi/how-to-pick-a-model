@@ -75,6 +75,7 @@ SPLIT_SEED_OFFSETS = {
     "development": 0,
     "calibration": 1_000_000_007,
     "confirmation": 2_000_000_033,
+    "replication": 3_000_000_047,
 }
 
 

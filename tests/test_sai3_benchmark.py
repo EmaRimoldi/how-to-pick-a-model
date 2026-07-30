@@ -158,10 +158,10 @@ def test_difficulty_variants_have_distinct_payload_contracts() -> None:
 def test_task_randomness_is_disjoint_across_splits() -> None:
     tasks = [
         SAI3.generate_task(seed=29, split=split, mode=0, index=0, difficulty="scalar")
-        for split in ("development", "calibration", "confirmation")
+        for split in ("development", "calibration", "confirmation", "replication")
     ]
-    assert len({task["task_seed"] for task in tasks}) == 3
-    assert len({task["contracts"][0]["method"] for task in tasks}) == 3
+    assert len({task["task_seed"] for task in tasks}) == 4
+    assert len({task["contracts"][0]["method"] for task in tasks}) == 4
 
 
 def test_numeric_postprocessing_has_explicit_precedence() -> None:
