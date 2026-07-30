@@ -258,12 +258,15 @@ def main() -> None:
         "packed_residual_mean_nats": mean(residuals),
         "packed_residual_rms_nats": residual_rms,
         "models": model_rows,
+        "model_specific_beta_diagnostic": {
+            "preregistered_gate": False,
+            "all_intervals_inside_equivalence_region": model_equivalence_pass,
+        },
         "cells": cell_rows,
         "gates": {
             "beta_equivalence_interval": [args.beta_lower, args.beta_upper],
             "max_censoring": args.max_censoring,
             "pooled_beta_equivalence_pass": beta_ci_90[0] >= args.beta_lower and beta_ci_90[1] <= args.beta_upper,
-            "model_beta_equivalence_pass": model_equivalence_pass,
             "censoring_pass": censoring_rate <= args.max_censoring,
             "residual_rms_pass": residual_rms <= args.max_residual_rms,
             "planned_share_pass": max_share_error <= args.max_share_error,
