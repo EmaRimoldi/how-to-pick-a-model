@@ -1,0 +1,148 @@
+{
+  "assumptions": {
+    "hypothetical_pass_means": [
+      [
+        0.15,
+        0.18,
+        0.23
+      ],
+      [
+        0.27,
+        0.32,
+        0.38
+      ],
+      [
+        0.43,
+        0.5,
+        0.58
+      ]
+    ],
+    "models": [
+      "3B",
+      "7B",
+      "14B"
+    ],
+    "normalized_kappas": [
+      1.0,
+      2.0,
+      4.0
+    ],
+    "off_diagonal_hazard_ratio": 0.0,
+    "task_logit_sd": 0.25
+  },
+  "channel_terms": {
+    "0.3333333333333333": {
+      "half_anti": {
+        "information_nats": 2.220446049250313e-16,
+        "mismatch_nats": 3.700743415417188e-17
+      },
+      "half_prior": {
+        "information_nats": 2.220446049250313e-16,
+        "mismatch_nats": 0.0
+      },
+      "matched": {
+        "information_nats": 2.220446049250313e-16,
+        "mismatch_nats": 0.0
+      },
+      "prior": {
+        "information_nats": 2.220446049250313e-16,
+        "mismatch_nats": 1.4802973661668753e-16
+      }
+    },
+    "0.6": {
+      "half_anti": {
+        "information_nats": 0.1483417494348751,
+        "mismatch_nats": 0.2595621431620003
+      },
+      "half_prior": {
+        "information_nats": 0.1483417494348751,
+        "mismatch_nats": 0.03571582798783124
+      },
+      "matched": {
+        "information_nats": 0.1483417494348751,
+        "mismatch_nats": 0.0
+      },
+      "prior": {
+        "information_nats": 0.1483417494348751,
+        "mismatch_nats": 0.14834174943487521
+      }
+    },
+    "0.8": {
+      "half_anti": {
+        "information_nats": 0.45958042901793295,
+        "mismatch_nats": 0.7942222283949247
+      },
+      "half_prior": {
+        "information_nats": 0.45958042901793295,
+        "mismatch_nats": 0.12123441138668734
+      },
+      "matched": {
+        "information_nats": 0.45958042901793295,
+        "mismatch_nats": 0.0
+      },
+      "prior": {
+        "information_nats": 0.45958042901793295,
+        "mismatch_nats": 0.4595804290179329
+      }
+    }
+  },
+  "closure_tolerance_nats": 0.15,
+  "design_only": true,
+  "replicates": 1000,
+  "sample_sizes": {
+    "128": {
+      "fixed_signal_model_selection_probability": 0.977,
+      "full_system_selection_probability": 0.962,
+      "max_abs_residual_p95_nats": 0.2183692202356053,
+      "packedness_equivalence_probability": 1.0,
+      "packedness_slope_mean": 1.0004470952797937,
+      "packedness_slope_p025": 0.966136804011519,
+      "packedness_slope_p975": 1.034185205088949,
+      "rank_concordance_mean": 0.9247200879827746,
+      "residual_rms_p95_nats": 0.11462491265869104,
+      "simultaneous_closure_probability": 0.69,
+      "system_regret_p95_fraction": 0.0
+    },
+    "192": {
+      "fixed_signal_model_selection_probability": 0.99,
+      "full_system_selection_probability": 0.987,
+      "max_abs_residual_p95_nats": 0.1762672811769653,
+      "packedness_equivalence_probability": 1.0,
+      "packedness_slope_mean": 1.0000122096649955,
+      "packedness_slope_p025": 0.9744756255703214,
+      "packedness_slope_p975": 1.0275192910225428,
+      "rank_concordance_mean": 0.9379819890446758,
+      "residual_rms_p95_nats": 0.09078306846306562,
+      "simultaneous_closure_probability": 0.861,
+      "system_regret_p95_fraction": 0.0
+    },
+    "256": {
+      "fixed_signal_model_selection_probability": 0.999,
+      "full_system_selection_probability": 0.999,
+      "max_abs_residual_p95_nats": 0.1487909053934717,
+      "packedness_equivalence_probability": 1.0,
+      "packedness_slope_mean": 0.9999075228948215,
+      "packedness_slope_p025": 0.9757422480551776,
+      "packedness_slope_p975": 1.0234336371189534,
+      "rank_concordance_mean": 0.9465126048081272,
+      "residual_rms_p95_nats": 0.07806614207715086,
+      "simultaneous_closure_probability": 0.954,
+      "system_regret_p95_fraction": 0.0
+    },
+    "64": {
+      "fixed_signal_model_selection_probability": 0.903,
+      "full_system_selection_probability": 0.848,
+      "max_abs_residual_p95_nats": 0.3026983363605521,
+      "packedness_equivalence_probability": 1.0,
+      "packedness_slope_mean": 1.0003880627188637,
+      "packedness_slope_p025": 0.9518319875400961,
+      "packedness_slope_p975": 1.0478216225191632,
+      "rank_concordance_mean": 0.8923352677173573,
+      "residual_rms_p95_nats": 0.15787983089775195,
+      "simultaneous_closure_probability": 0.316,
+      "system_regret_p95_fraction": 0.08951936974675694
+    }
+  },
+  "seed": 20260730,
+  "uses_repository_results": false
+}

@@ -1,0 +1,125 @@
+experiment_id: four_term_packed_validation_sai3
+status: protocol_only
+seed: 20260730
+
+benchmark:
+  name: sai3_sharded_api_integration
+  modes: 3
+  prior: [0.3333333333, 0.3333333333, 0.3333333333]
+  splits:
+    development_tasks_per_mode: 64
+    calibration_tasks_per_mode: 256
+    confirmation_tasks_per_mode: 256
+  verifier:
+    mutation_score_min: 0.95
+    deterministic_reruns: 20
+    reject_reflection: true
+    reject_multi_contract_fallbacks: true
+
+models:
+  baseline: Qwen/Qwen2.5-Coder-14B-Instruct
+  candidates:
+    - Qwen/Qwen2.5-Coder-3B-Instruct
+    - Qwen/Qwen2.5-Coder-7B-Instruct
+    - Qwen/Qwen2.5-Coder-14B-Instruct
+  identification_arm:
+    purpose: four_term_closure
+    architecture_scope: dense_same_family
+    candidates:
+      - Qwen/Qwen2.5-Coder-3B-Instruct
+      - Qwen/Qwen2.5-Coder-7B-Instruct
+      - Qwen/Qwen2.5-Coder-14B-Instruct
+  transport_arm:
+    purpose: practitioner_decision_transport
+    run_after_identification_freeze: true
+    candidates:
+      - Qwen/Qwen3.5-4B
+      - allenai/SERA-8B
+      - Qwen/Qwen3.6-27B
+      - CohereLabs/North-Mini-Code-1.0
+    operational_substitutions:
+      CohereLabs/North-Mini-Code-1.0: Qwen/Qwen3-Coder-30B-A3B-Instruct
+      allenai/SERA-8B: ByteDance-Seed/Seed-Coder-8B-Instruct
+      Qwen/Qwen3.6-27B: mistralai/Devstral-Small-2-24B-Instruct-2512
+      medium_fallback: google/gemma-4-12B-it
+    selection_by_sai3_rank_prohibited: true
+  scout:
+    tasks_per_mode: 24
+    correct_shard_attempts: 8
+    attempts_per_wrong_shard: 2
+    closure_analysis_prohibited: true
+    record:
+      - parse_rate
+      - focused_pass_probability
+      - wrong_shard_success
+      - output_length
+      - aggregate_throughput
+      - peak_gpu_memory
+      - joules
+      - verifier_time
+
+generation:
+  temperature: 0.8
+  top_p: 0.95
+  decoded_tokens: 192
+  identification_precision: bfloat16
+  transport_sampling_matches_identification: true
+  transport_reasoning_mode: disabled_where_supported
+  reasoning_tokens_count_toward_decoded_tokens: true
+  model_chat_protocol_is_part_of_system: true
+  independent_attempts: true
+  feedback_between_attempts: false
+  focused_pass_probability_range: [0.15, 0.65]
+  calibration_initial_correct_shard_attempts: 32
+  calibration_attempts_per_wrong_shard: 8
+  calibration_max_correct_shard_attempts: 96
+
+signal:
+  family: symmetric_three_class
+  accuracies: [0.3333333333, 0.60, 0.80]
+  allocations:
+    - matched
+    - half_prior
+    - prior
+    - half_anti
+  practical_arm:
+    estimator: multinomial_logistic_regression
+    output: discrete_three_class_diagnostic
+    posterior_estimation: five_fold_out_of_fold_confusion_matrix
+    features:
+      - stack_trace_tokens
+      - package_metadata
+    fit_split: calibration
+    evaluate_split: confirmation
+    max_omitted_acquisition_cost_fraction: 0.01
+
+scheduler:
+  implementation: weighted_fair
+  share_tolerance_absolute: 0.01
+  confirmation_pool_samples_per_model_task_shard: 96
+  live_replay_audit_fraction: 0.10
+  count_in_flight_resource: true
+
+resource:
+  primary: normalized_dense_inference_flops
+  secondary:
+    - isolated_gpu_seconds
+    - joules
+    - provider_equivalent_usd
+
+estimand:
+  primary: conditional_mean_first_passage_resource
+  secondary: conditional_p90_first_passage_resource
+  cell_aggregation: log_of_cell_mean
+  per_run_log_average_prohibited: true
+
+gates:
+  max_confirmation_censoring: 0.05
+  max_off_diagonal_hazard_ratio_upper_95: 0.02
+  inverse_share_beta_equivalence: [0.90, 1.10]
+  max_absolute_weighted_mean_residual_nats: 0.05
+  max_weighted_residual_rms_nats: 0.15
+  max_residual_rms_upper_95_nats: 0.20
+  min_practitioner_kendall_tau: 0.80
+  max_practitioner_oracle_regret_fraction: 0.10
+  min_selected_model_bootstrap_probability: 0.80
