@@ -6,8 +6,8 @@ The output is deterministic and excludes local caches, virtualenvs, `tmp/`, `run
 ## Summary
 
 - Root: `.`
-- Files indexed: `2800`
-- Bytes indexed: `97.9M`
+- Files indexed: `2847`
+- Bytes indexed: `100.7M`
 
 ## Canonical Entrypoints
 
@@ -49,7 +49,7 @@ The output is deterministic and excludes local caches, virtualenvs, `tmp/`, `run
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 2275 | 52.2M |
+| `experiments` | 2321 | 55.0M |
 | `artifacts` | 26 | 20.4M |
 | `paper` | 140 | 18.9M |
 | `docs` | 63 | 3.5M |
@@ -57,7 +57,7 @@ The output is deterministic and excludes local caches, virtualenvs, `tmp/`, `run
 | `src` | 134 | 1.0M |
 | `autoresearch` | 75 | 575.4K |
 | `scripts` | 21 | 205.1K |
-| `tests` | 30 | 100.0K |
+| `tests` | 31 | 134.1K |
 | `prompts` | 6 | 21.6K |
 | `configs` | 7 | 12.7K |
 | `NOTES.md` | 1 | 9.2K |
@@ -80,22 +80,23 @@ The output is deterministic and excludes local caches, virtualenvs, `tmp/`, `run
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.json` | 1084 | 4.2M |
-| `.py` | 317 | 2.6M |
-| `.yaml` | 307 | 376.5K |
+| `.json` | 1099 | 4.4M |
+| `.py` | 336 | 2.8M |
+| `.yaml` | 309 | 383.4K |
 | `.jsonl` | 281 | 31.6M |
 | `.txt` | 281 | 4.0M |
-| `.png` | 156 | 21.2M |
-| `.md` | 151 | 692.9K |
+| `.png` | 160 | 21.5M |
+| `.md` | 154 | 743.0K |
 | `.pdf` | 110 | 9.7M |
 | `.csv` | 35 | 722.9K |
 | `.sh` | 24 | 70.6K |
 | `.part-000` | 18 | 20.0M |
 | `<none>` | 12 | 11.0K |
-| `.sbatch` | 5 | 6.5K |
+| `.sbatch` | 7 | 9.8K |
 | `.tex` | 4 | 336.4K |
 | `.svg` | 3 | 9.0K |
 | `.bib` | 2 | 25.0K |
+| `.gz` | 2 | 2.0M |
 | `.pre_deterministic` | 2 | 13.5K |
 | `.example` | 1 | 916B |
 | `.gif` | 1 | 1.4M |
@@ -133,6 +134,8 @@ The output is deterministic and excludes local caches, virtualenvs, `tmp/`, `run
 - `experiments/bbh/README.md`
 - `experiments/bbh/family-and-subtask-router/README.md`
 - `experiments/bbh/qwen-model-size-frontier/README.md`
+- `experiments/four-term-packed-validation/README.md`
+- `experiments/four-term-packed-validation/results/README.md`
 - `experiments/humaneval-plus/README.md`
 - `experiments/humaneval-plus/llm-router-context-search/README.md`
 - `experiments/humaneval-plus/qwen-model-size-frontier/README.md`
