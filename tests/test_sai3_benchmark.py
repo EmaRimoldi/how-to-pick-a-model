@@ -75,6 +75,20 @@ assert PROVENANCE_SPEC is not None and PROVENANCE_SPEC.loader is not None
 PROVENANCE = importlib.util.module_from_spec(PROVENANCE_SPEC)
 PROVENANCE_SPEC.loader.exec_module(PROVENANCE)
 
+CALIBRATION_ANALYSIS_PATH = (
+    ROOT
+    / "experiments"
+    / "four-term-packed-validation"
+    / "scripts"
+    / "analyze_sai3_calibration.py"
+)
+CALIBRATION_ANALYSIS_SPEC = importlib.util.spec_from_file_location(
+    "analyze_sai3_calibration", CALIBRATION_ANALYSIS_PATH
+)
+assert CALIBRATION_ANALYSIS_SPEC is not None and CALIBRATION_ANALYSIS_SPEC.loader is not None
+CALIBRATION_ANALYSIS = importlib.util.module_from_spec(CALIBRATION_ANALYSIS_SPEC)
+CALIBRATION_ANALYSIS_SPEC.loader.exec_module(CALIBRATION_ANALYSIS)
+
 
 def test_reference_and_wrong_shards_are_separated() -> None:
     for mode in range(3):
@@ -446,3 +460,65 @@ def test_four_term_main_runs_on_exact_disjoint_splits(tmp_path: Path, monkeypatc
     assert result["status"] == "PASS"
     assert math.isclose(result["confirmation_inverse_share_beta"], 1.0, abs_tol=1e-12)
     assert math.isclose(result["primary_residual_rms_nats"], 0.0, abs_tol=1e-12)
+
+
+def test_calibration_gate_checks_physical_counts(tmp_path: Path, monkeypatch) -> None:
+    rows = []
+    seed = 0
+    for mode in range(3):
+        task_id = f"calibration-{mode}"
+        for attempt in range(64):
+            seed += 1
+            rows.append(
+                {
+                    "model": "model",
+                    "mode": mode,
+                    "task_id": task_id,
+                    "task_stratum": "stratum",
+                    "shard": mode,
+                    "relation": "matched",
+                    "attempt": attempt,
+                    "seed": seed,
+                    "verification": {"passed": True},
+                }
+            )
+        for shard in range(3):
+            if shard == mode:
+                continue
+            for attempt in range(4):
+                seed += 1
+                rows.append(
+                    {
+                        "model": "model",
+                        "mode": mode,
+                        "task_id": task_id,
+                        "task_stratum": "stratum",
+                        "shard": shard,
+                        "relation": "wrong",
+                        "attempt": attempt,
+                        "seed": seed,
+                        "verification": {"passed": False},
+                    }
+                )
+    input_path = tmp_path / "calibration.jsonl"
+    output_path = tmp_path / "audit.json"
+    input_path.write_text("".join(json.dumps(row) + "\n" for row in rows))
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "analyze_sai3_calibration.py",
+            str(input_path),
+            "--bootstrap-repetitions",
+            "20",
+            "--max-off-diagonal-hazard-ratio",
+            "1.0",
+            "--output",
+            str(output_path),
+        ],
+    )
+    CALIBRATION_ANALYSIS.main()
+    result = json.loads(output_path.read_text())
+    assert result["status"] == "PASS"
+    assert result["duplicate_physical_slots"] == 0
+    assert result["count_mismatch_task_cells"] == 0
