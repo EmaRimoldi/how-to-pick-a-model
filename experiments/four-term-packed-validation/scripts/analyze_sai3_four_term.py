@@ -32,6 +32,57 @@ def percentile(values: list[float], probability: float) -> float:
     return ordered[lower] * (1.0 - weight) + ordered[upper] * weight
 
 
+def wilson_interval(
+    successes: int, trials: int, z: float = 1.959963984540054
+) -> tuple[float, float]:
+    if trials == 0:
+        return math.nan, math.nan
+    probability = successes / trials
+    denominator = 1.0 + z * z / trials
+    center = (probability + z * z / (2.0 * trials)) / denominator
+    radius = (
+        z
+        * math.sqrt(probability * (1.0 - probability) / trials + z * z / (4.0 * trials * trials))
+        / denominator
+    )
+    return max(0.0, center - radius), min(1.0, center + radius)
+
+
+def simple_slope(points: Iterable[tuple[float, float]]) -> float:
+    materialized = list(points)
+    x_mean = mean(x for x, _ in materialized)
+    y_mean = mean(y for _, y in materialized)
+    denominator = sum((x - x_mean) ** 2 for x, _ in materialized)
+    if denominator <= 0.0:
+        return math.nan
+    return sum((x - x_mean) * (y - y_mean) for x, y in materialized) / denominator
+
+
+def fixed_effect_slope(cells: Iterable[tuple[str, int, float, float]]) -> float:
+    groups: dict[tuple[str, int], list[tuple[float, float]]] = collections.defaultdict(list)
+    for model, mode, q_true, mean_slots in cells:
+        groups[(model, mode)].append((-math.log(q_true), math.log(mean_slots)))
+    numerator = 0.0
+    denominator = 0.0
+    for points in groups.values():
+        x_mean = mean(x for x, _ in points)
+        y_mean = mean(y for _, y in points)
+        numerator += sum((x - x_mean) * (y - y_mean) for x, y in points)
+        denominator += sum((x - x_mean) ** 2 for x, _ in points)
+    return numerator / denominator
+
+
+def holm_adjust(p_values: dict[str, float]) -> dict[str, float]:
+    ordered = sorted(p_values, key=p_values.get)
+    adjusted: dict[str, float] = {}
+    running = 0.0
+    total = len(ordered)
+    for rank, name in enumerate(ordered):
+        running = max(running, (total - rank) * p_values[name])
+        adjusted[name] = min(1.0, running)
+    return adjusted
+
+
 def channel_probability(alpha: float, mode: int, z: int) -> float:
     return alpha if mode == z else (1.0 - alpha) / 2.0
 
@@ -115,6 +166,136 @@ def trajectory_cells(
     return {key: mean(cell_values) for key, cell_values in values.items()}
 
 
+def calibration_diagnostics(
+    rows: list[dict[str, Any]], initial_attempts: int, bootstrap_repetitions: int, seed: int
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    models = sorted({str(row["model"]) for row in rows})
+    hazard_rows = []
+    trend_rows = []
+    rng = random.Random(seed)
+    for model in models:
+        model_rows = [row for row in rows if row["model"] == model]
+        matched = [row for row in model_rows if row["relation"] == "matched"]
+        wrong = [row for row in model_rows if row["relation"] == "wrong"]
+        matched_successes = sum(bool(row["verification"]["passed"]) for row in matched)
+        wrong_successes = sum(bool(row["verification"]["passed"]) for row in wrong)
+        matched_lower, matched_upper = wilson_interval(matched_successes, len(matched))
+        wrong_lower, wrong_upper = wilson_interval(wrong_successes, len(wrong))
+        hazard_rows.append(
+            {
+                "model": model,
+                "matched_successes": matched_successes,
+                "matched_trials": len(matched),
+                "matched_hazard": matched_successes / len(matched),
+                "matched_hazard_ci_95": [matched_lower, matched_upper],
+                "off_diagonal_successes": wrong_successes,
+                "off_diagonal_trials": len(wrong),
+                "off_diagonal_hazard": wrong_successes / len(wrong),
+                "off_diagonal_hazard_ci_95": [wrong_lower, wrong_upper],
+                "off_diagonal_to_matched_upper_95": wrong_upper / matched_lower,
+            }
+        )
+
+        by_task: dict[tuple[int, str, str], list[dict[str, Any]]] = collections.defaultdict(list)
+        for row in matched:
+            if int(row["attempt"]) < initial_attempts:
+                by_task[(int(row["mode"]), row["task_stratum"], row["task_id"])].append(row)
+        task_differences: dict[tuple[int, str], list[float]] = collections.defaultdict(list)
+        midpoint = initial_attempts / 2
+        for (mode, stratum, _task_id), task_rows in by_task.items():
+            early = [bool(row["verification"]["passed"]) for row in task_rows if int(row["attempt"]) < midpoint]
+            late = [bool(row["verification"]["passed"]) for row in task_rows if int(row["attempt"]) >= midpoint]
+            if early and late:
+                task_differences[(mode, stratum)].append(mean(late) - mean(early))
+        observed = mean(value for values in task_differences.values() for value in values)
+        bootstrap = []
+        for _ in range(bootstrap_repetitions):
+            sampled = []
+            for values in task_differences.values():
+                sampled.extend(rng.choice(values) for _ in values)
+            bootstrap.append(mean(sampled))
+        interval = [percentile(bootstrap, 0.025), percentile(bootstrap, 0.975)]
+        trend_rows.append(
+            {
+                "model": model,
+                "estimand": "late_minus_early_matched_success_probability",
+                "initial_attempts_only": initial_attempts,
+                "task_fixed_effect_difference": observed,
+                "bootstrap_ci_95": interval,
+                "no_significant_trend": interval[0] <= 0.0 <= interval[1],
+            }
+        )
+    return hazard_rows, trend_rows
+
+
+def confirmation_cell_censoring(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    groups: dict[tuple[str, str, int, int], list[bool]] = collections.defaultdict(list)
+    for row in rows:
+        if row.get("design") != "four_term":
+            continue
+        z = int(row["z"]) if "z" in row else -1
+        groups[(row["model"], row["condition"], int(row["mode"]), z)].append(
+            bool(row.get("censored"))
+        )
+    return [
+        {
+            "model": model,
+            "condition": condition,
+            "mode": mode,
+            "z": z,
+            "trajectories": len(values),
+            "censoring_rate": mean(values),
+        }
+        for (model, condition, mode, z), values in sorted(groups.items())
+    ]
+
+
+def planned_share_audit(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    groups: dict[tuple[str, str], dict[str, Any]] = collections.defaultdict(
+        lambda: {"planned": [0, 0, 0], "expected": [0.0, 0.0, 0.0], "slots": 0}
+    )
+    for row in rows:
+        planned = [int(value) for value in row["planned_issued"]]
+        slots = sum(planned)
+        group = groups[(row["model"], row["condition"])]
+        group["slots"] += slots
+        for shard in range(3):
+            group["planned"][shard] += planned[shard]
+            group["expected"][shard] += slots * float(row["q"][shard])
+    return [
+        {
+            "model": model,
+            "condition": condition,
+            "slots": values["slots"],
+            "max_absolute_planned_share_error": max(
+                abs(actual - expected) / values["slots"]
+                for actual, expected in zip(values["planned"], values["expected"])
+            ),
+        }
+        for (model, condition), values in sorted(groups.items())
+    ]
+
+
+def inverse_share_cells(
+    task_means: dict[tuple[str, str, int, int, str, str], float],
+    rows: list[dict[str, Any]],
+    sampled_tasks: dict[tuple[int, str], list[str]] | None = None,
+) -> list[tuple[str, int, float, float]]:
+    cells = trajectory_cells(task_means, sampled_tasks)
+    q_by_cell = {
+        (row["model"], row["condition"], int(row["mode"]), int(row.get("z", -1))): float(
+            row["q_true"]
+        )
+        for row in rows
+        if row.get("design") == "four_term" and row["condition"] != "baseline_prior"
+    }
+    return [
+        (model, mode, q_by_cell[(model, condition, mode, z)], value)
+        for (model, condition, mode, z), value in cells.items()
+        if condition != "baseline_prior"
+    ]
+
+
 def observed_delta(
     cells: dict[tuple[str, str, int, int], float],
     costs: dict[str, float],
@@ -178,6 +359,11 @@ def main() -> None:
     parser.add_argument("--deployed-model", required=True)
     parser.add_argument("--bootstrap-repetitions", type=int, default=2000)
     parser.add_argument("--seed", type=int, default=20260730)
+    parser.add_argument("--initial-calibration-attempts", type=int, default=64)
+    parser.add_argument("--max-off-diagonal-hazard-ratio", type=float, default=0.02)
+    parser.add_argument("--beta-lower", type=float, default=0.90)
+    parser.add_argument("--beta-upper", type=float, default=1.10)
+    parser.add_argument("--max-share-error", type=float, default=0.01)
     parser.add_argument("--max-absolute-mean-residual", type=float, default=0.10)
     parser.add_argument("--max-residual-rms", type=float, default=0.15)
     parser.add_argument("--max-rms-upper-95", type=float, default=0.20)
@@ -187,10 +373,25 @@ def main() -> None:
 
     calibration_rows = load_jsonl(args.calibration)
     confirmation_rows = load_jsonl(args.confirmation)
+    calibration_task_ids = {row["task_id"] for row in calibration_rows}
+    confirmation_task_ids = {row["task_id"] for row in confirmation_rows}
+    overlap = calibration_task_ids & confirmation_task_ids
+    if overlap:
+        raise SystemExit(f"calibration and confirmation task overlap: {sorted(overlap)[:5]}")
     task_scales = calibration_task_scales(calibration_rows)
     scales = focused_scales(task_scales)
     task_means = trajectory_task_means(confirmation_rows)
     cells = trajectory_cells(task_means)
+    hazard_rows, attempt_trends = calibration_diagnostics(
+        calibration_rows,
+        args.initial_calibration_attempts,
+        args.bootstrap_repetitions,
+        args.seed + 1,
+    )
+    censoring_cells = confirmation_cell_censoring(confirmation_rows)
+    share_audit = planned_share_audit(confirmation_rows)
+    inverse_cells = inverse_share_cells(task_means, confirmation_rows)
+    inverse_beta = fixed_effect_slope(inverse_cells)
     manifest = json.loads(args.design_manifest.read_text(encoding="utf-8"))
     cost_document = json.loads(args.costs.read_text(encoding="utf-8"))
     costs = {model: float(spec["kappa"]) for model, spec in cost_document["models"].items()}
@@ -239,6 +440,9 @@ def main() -> None:
     rng = random.Random(args.seed)
     bootstrap_residuals: dict[tuple[str, float, str], list[float]] = collections.defaultdict(list)
     bootstrap_primary_rms = []
+    bootstrap_inverse_betas = []
+    term_names = ("unit_cost_nats", "competence_nats", "information_nats", "mismatch_nats")
+    bootstrap_term_slopes: dict[str, list[float]] = collections.defaultdict(list)
     for _ in range(args.bootstrap_repetitions):
         sampled_calibration = {
             cell: [rng.choice(task_ids) for _ in task_ids]
@@ -250,7 +454,11 @@ def main() -> None:
         }
         sampled_scales = focused_scales(task_scales, sampled_calibration)
         sampled_cells = trajectory_cells(task_means, sampled_confirmation)
+        bootstrap_inverse_betas.append(
+            fixed_effect_slope(inverse_share_cells(task_means, confirmation_rows, sampled_confirmation))
+        )
         primary_residuals = []
+        sampled_result_rows = []
         for baseline_model, deployed_model, label in comparisons:
             for (alpha, allocation), term_spec in sorted(term_specs.items()):
                 condition = f"alpha={alpha:.8f}|allocation={allocation}"
@@ -267,9 +475,17 @@ def main() -> None:
                 )
                 residual = observed - terms["predicted_delta_nats"]
                 bootstrap_residuals[(label, alpha, allocation)].append(residual)
+                sampled_result_rows.append({**terms, "residual_nats": residual})
                 if label == "cross_model_primary":
                     primary_residuals.append(residual)
         bootstrap_primary_rms.append(math.sqrt(mean(value * value for value in primary_residuals)))
+        for term_name in term_names:
+            bootstrap_term_slopes[term_name].append(
+                simple_slope(
+                    (float(row[term_name]), float(row["residual_nats"]))
+                    for row in sampled_result_rows
+                )
+            )
 
     for result in results:
         samples = bootstrap_residuals[(result["comparison"], result["alpha"], result["allocation"])]
@@ -280,12 +496,64 @@ def main() -> None:
     primary_mean = mean(primary_residuals)
     primary_rms = math.sqrt(mean(value * value for value in primary_residuals))
     censoring_rate = sum(bool(row.get("censored")) for row in confirmation_rows) / len(confirmation_rows)
+    max_cell_censoring = max(row["censoring_rate"] for row in censoring_cells)
+    max_share_error = max(row["max_absolute_planned_share_error"] for row in share_audit)
+    max_hazard_ratio = max(row["off_diagonal_to_matched_upper_95"] for row in hazard_rows)
+    focused_mode_rates: dict[tuple[str, int], list[bool]] = collections.defaultdict(list)
+    for row in calibration_rows:
+        if row["relation"] == "matched" and int(row["attempt"]) < args.initial_calibration_attempts:
+            focused_mode_rates[(row["model"], int(row["mode"]))].append(
+                bool(row["verification"]["passed"])
+            )
+    focused_mode_rows = [
+        {"model": model, "mode": mode, "pass_probability": mean(values), "trials": len(values)}
+        for (model, mode), values in sorted(focused_mode_rates.items())
+    ]
+    inverse_beta_ci_90 = [
+        percentile(bootstrap_inverse_betas, 0.05),
+        percentile(bootstrap_inverse_betas, 0.95),
+    ]
+    raw_term_p_values = {}
+    observed_term_slopes = {}
+    for term_name in term_names:
+        observed_term_slopes[term_name] = simple_slope(
+            (float(result[term_name]), float(result["residual_nats"])) for result in results
+        )
+        samples = bootstrap_term_slopes[term_name]
+        lower_tail = (1 + sum(value <= 0.0 for value in samples)) / (len(samples) + 1)
+        upper_tail = (1 + sum(value >= 0.0 for value in samples)) / (len(samples) + 1)
+        raw_term_p_values[term_name] = min(1.0, 2.0 * min(lower_tail, upper_tail))
+    adjusted_term_p_values = holm_adjust(raw_term_p_values)
+    residual_slope_diagnostics = [
+        {
+            "term": term_name,
+            "slope": observed_term_slopes[term_name],
+            "bootstrap_ci_95": [
+                percentile(bootstrap_term_slopes[term_name], 0.025),
+                percentile(bootstrap_term_slopes[term_name], 0.975),
+            ],
+            "bootstrap_two_sided_p": raw_term_p_values[term_name],
+            "holm_adjusted_p": adjusted_term_p_values[term_name],
+            "significant_after_holm": adjusted_term_p_values[term_name] < 0.05,
+        }
+        for term_name in term_names
+    ]
     rms_upper = percentile(bootstrap_primary_rms, 0.95)
     gates = {
+        "focused_regime_pass": min(row["pass_probability"] for row in focused_mode_rows) >= 0.05,
+        "attempt_stationarity_pass": all(row["no_significant_trend"] for row in attempt_trends),
+        "off_diagonal_hazard_pass": max_hazard_ratio <= args.max_off_diagonal_hazard_ratio,
+        "inverse_share_beta_pass": (
+            inverse_beta_ci_90[0] >= args.beta_lower and inverse_beta_ci_90[1] <= args.beta_upper
+        ),
+        "planned_share_pass": max_share_error <= args.max_share_error,
         "mean_residual_pass": abs(primary_mean) <= args.max_absolute_mean_residual,
         "residual_rms_pass": primary_rms <= args.max_residual_rms,
         "rms_upper_95_pass": rms_upper <= args.max_rms_upper_95,
-        "censoring_pass": censoring_rate <= args.max_censoring,
+        "censoring_pass": max_cell_censoring <= args.max_censoring,
+        "residual_slope_holm_pass": not any(
+            row["significant_after_holm"] for row in residual_slope_diagnostics
+        ),
     }
     summary = {
         "schema_version": 1,
@@ -298,11 +566,21 @@ def main() -> None:
             {"model": model, "mode": mode, "t0_slots": value}
             for (model, mode), value in sorted(scales.items())
         ],
+        "focused_mode_pass_probabilities": focused_mode_rows,
+        "calibration_hazard_diagnostics": hazard_rows,
+        "attempt_index_diagnostics": attempt_trends,
         "confirmation_trajectories": len(confirmation_rows),
         "censoring_rate": censoring_rate,
+        "max_cell_censoring_rate": max_cell_censoring,
+        "confirmation_censoring_cells": censoring_cells,
+        "planned_share_audit": share_audit,
+        "max_absolute_planned_share_error": max_share_error,
+        "confirmation_inverse_share_beta": inverse_beta,
+        "confirmation_inverse_share_beta_ci_90": inverse_beta_ci_90,
         "primary_weighted_mean_residual_nats": primary_mean,
         "primary_residual_rms_nats": primary_rms,
         "primary_residual_rms_upper_95_nats": rms_upper,
+        "residual_slope_diagnostics": residual_slope_diagnostics,
         "results": results,
         "gates": gates,
         "status": "PASS" if all(gates.values()) else "INCONCLUSIVE_OR_FALSIFIED",

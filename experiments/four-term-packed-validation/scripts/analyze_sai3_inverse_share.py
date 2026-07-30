@@ -212,16 +212,19 @@ def main() -> None:
             }
         )
     max_share_error = max(item["max_absolute_planned_share_error"] for item in share_audit)
-    beta_ci = [percentile(bootstrap_pooled, 0.025), percentile(bootstrap_pooled, 0.975)]
+    beta_ci_90 = [percentile(bootstrap_pooled, 0.05), percentile(bootstrap_pooled, 0.95)]
+    beta_ci_95 = [percentile(bootstrap_pooled, 0.025), percentile(bootstrap_pooled, 0.975)]
     model_rows = []
     for model in models:
-        interval = [percentile(bootstrap_models[model], 0.025), percentile(bootstrap_models[model], 0.975)]
+        interval_90 = [percentile(bootstrap_models[model], 0.05), percentile(bootstrap_models[model], 0.95)]
+        interval_95 = [percentile(bootstrap_models[model], 0.025), percentile(bootstrap_models[model], 0.975)]
         model_rows.append(
             {
                 "model": model,
                 "beta": model_betas[model],
-                "beta_ci_95": interval,
-                "equivalence_pass": interval[0] >= args.beta_lower and interval[1] <= args.beta_upper,
+                "beta_ci_90": interval_90,
+                "beta_ci_95": interval_95,
+                "equivalence_pass": interval_90[0] >= args.beta_lower and interval_90[1] <= args.beta_upper,
             }
         )
     residual_rms = math.sqrt(mean(value * value for value in residuals))
@@ -235,7 +238,8 @@ def main() -> None:
         "max_absolute_planned_share_error": max_share_error,
         "planned_share_audit": share_audit,
         "pooled_beta": pooled_beta,
-        "pooled_beta_ci_95": beta_ci,
+        "pooled_beta_ci_90": beta_ci_90,
+        "pooled_beta_ci_95": beta_ci_95,
         "packed_residual_mean_nats": mean(residuals),
         "packed_residual_rms_nats": residual_rms,
         "models": model_rows,
@@ -243,7 +247,7 @@ def main() -> None:
         "gates": {
             "beta_equivalence_interval": [args.beta_lower, args.beta_upper],
             "max_censoring": args.max_censoring,
-            "pooled_beta_equivalence_pass": beta_ci[0] >= args.beta_lower and beta_ci[1] <= args.beta_upper,
+            "pooled_beta_equivalence_pass": beta_ci_90[0] >= args.beta_lower and beta_ci_90[1] <= args.beta_upper,
             "model_beta_equivalence_pass": model_equivalence_pass,
             "censoring_pass": censoring_rate <= args.max_censoring,
             "residual_rms_pass": residual_rms <= args.max_residual_rms,

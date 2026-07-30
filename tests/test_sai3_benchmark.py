@@ -225,6 +225,34 @@ def test_inverse_share_fixed_effect_fit_recovers_unit_slope() -> None:
     assert math.isclose(INVERSE_ANALYSIS.fixed_effect_slope(cells), 1.0, abs_tol=1e-12)
 
 
+def test_four_term_statistical_helpers_are_conservative() -> None:
+    lower, upper = FOUR_TERM_ANALYSIS.wilson_interval(0, 6144)
+    assert lower >= 0.0
+    assert 0.0006 < upper < 0.0007
+    adjusted = FOUR_TERM_ANALYSIS.holm_adjust({"a": 0.01, "b": 0.04, "c": 0.20, "d": 0.80})
+    assert adjusted == {"a": 0.04, "b": 0.12, "c": 0.4, "d": 0.8}
+
+
+def test_confirmation_share_audit_uses_full_planned_schedule() -> None:
+    rows = [
+        {
+            "model": "model",
+            "condition": "condition",
+            "q": [0.5, 0.25, 0.25],
+            "planned_issued": [64, 32, 32],
+        },
+        {
+            "model": "model",
+            "condition": "condition",
+            "q": [0.25, 0.5, 0.25],
+            "planned_issued": [32, 64, 32],
+        },
+    ]
+    audit = FOUR_TERM_ANALYSIS.planned_share_audit(rows)
+    assert len(audit) == 1
+    assert audit[0]["max_absolute_planned_share_error"] == 0.0
+
+
 def test_four_term_analysis_closes_on_exact_packed_cells() -> None:
     baseline_model = "baseline"
     deployed_model = "deployed"
