@@ -34,6 +34,15 @@ Residual RMS is `0.108` nats, planned-share error is `0.0051`, and censoring and
 off-diagonal wins are both zero. All inverse-share gates pass. This authorizes
 confirmation but is still development evidence, not held-out four-term closure.
 
+`bf16_calibration.json` records the frozen pre-confirmation gate over 110,592
+BF16 A100 completions. No task has zero matched successes and no physical slot
+or numerical seed is duplicated. Focused pass probabilities are
+`0.998/0.998/0.996` for 14B and `0.843/0.865/0.850` for 7B. The largest upper
+95% off-diagonal-to-matched hazard ratio is `0.000736`; both task-conditioned
+attempt-index intervals include zero. Calibration passes without the optional
+64-to-128 extension. It estimates competence and validates assumptions, but it
+does not contain held-out closure outcomes.
+
 `power_analysis.json` was produced with:
 
 ```bash

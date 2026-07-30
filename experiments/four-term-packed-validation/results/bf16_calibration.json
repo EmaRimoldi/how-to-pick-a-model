@@ -1,0 +1,158 @@
+{
+  "analysis": "frozen_calibration_gate",
+  "attempt_index_diagnostics": [
+    {
+      "bootstrap_ci_95": [
+        -0.0014241536458333333,
+        0.000244140625
+      ],
+      "estimand": "late_minus_early_matched_success_probability",
+      "initial_attempts_only": 64,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "no_significant_trend": true,
+      "task_fixed_effect_difference": -0.0005696614583333334
+    },
+    {
+      "bootstrap_ci_95": [
+        -0.0020345052083333335,
+        0.007283528645833333
+      ],
+      "estimand": "late_minus_early_matched_success_probability",
+      "initial_attempts_only": 64,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "no_significant_trend": true,
+      "task_fixed_effect_difference": 0.0026448567708333335
+    }
+  ],
+  "completions": 110592,
+  "count_mismatch_task_cells": 0,
+  "duplicate_model_seeds": 0,
+  "duplicate_physical_slots": 0,
+  "evidence_status": "calibration_not_confirmation",
+  "focused_rates": [
+    {
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "pass_probability": 0.99774169921875,
+      "trials": 16384
+    },
+    {
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "pass_probability": 0.998291015625,
+      "trials": 16384
+    },
+    {
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "pass_probability": 0.99591064453125,
+      "trials": 16384
+    },
+    {
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "pass_probability": 0.8431396484375,
+      "trials": 16384
+    },
+    {
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "pass_probability": 0.8648681640625,
+      "trials": 16384
+    },
+    {
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "pass_probability": 0.85003662109375,
+      "trials": 16384
+    }
+  ],
+  "gates": {
+    "attempt_stationarity_pass": true,
+    "completion_counts_pass": true,
+    "focused_identification_pass": true,
+    "focused_regime_pass": true,
+    "off_diagonal_hazard_pass": true,
+    "unique_physical_slots_pass": true
+  },
+  "hazard_diagnostics": [
+    {
+      "matched_hazard": 0.997314453125,
+      "matched_hazard_ci_95": [
+        0.9968164389788688,
+        0.997734738442332
+      ],
+      "matched_successes": 49020,
+      "matched_trials": 49152,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "off_diagonal_hazard": 0.0,
+      "off_diagonal_hazard_ci_95": [
+        5.421010862427522e-20,
+        0.000624846760676065
+      ],
+      "off_diagonal_successes": 0,
+      "off_diagonal_to_matched_upper_95": 0.0006268423515528628,
+      "off_diagonal_trials": 6144
+    },
+    {
+      "matched_hazard": 0.8526814778645834,
+      "matched_hazard_ci_95": [
+        0.8495206347875922,
+        0.8557871978337676
+      ],
+      "matched_successes": 41911,
+      "matched_trials": 49152,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "off_diagonal_hazard": 0.0,
+      "off_diagonal_hazard_ci_95": [
+        5.421010862427522e-20,
+        0.000624846760676065
+      ],
+      "off_diagonal_successes": 0,
+      "off_diagonal_to_matched_upper_95": 0.0007355286441421132,
+      "off_diagonal_trials": 6144
+    }
+  ],
+  "input_provenance": [
+    {
+      "path": "runs/sai3/stage1-v5/calibration/qwen25-coder-7b/shard-0/completions.jsonl",
+      "sha256": "d0b36cb797e5412a8af5596b4b3c7d7da63324f58a6c26295c249ae53be6dc66"
+    },
+    {
+      "path": "runs/sai3/stage1-v5/calibration/qwen25-coder-7b/shard-128/completions.jsonl",
+      "sha256": "dcb35d21b2d48468c7614306b20428d27cfc93fedf7ed9be19861ab575e8c582"
+    },
+    {
+      "path": "runs/sai3/stage1-v5/calibration/qwen25-coder-7b/shard-192/completions.jsonl",
+      "sha256": "a26982c1c7530c3e48f61a1fabc32491d52e17fca4c89bfc26da2a4b0c8a5c9e"
+    },
+    {
+      "path": "runs/sai3/stage1-v5/calibration/qwen25-coder-7b/shard-64/completions.jsonl",
+      "sha256": "19ca11080abf073783740d7d6734f9e2301830811f732317272ed46ffffa8ba9"
+    },
+    {
+      "path": "runs/sai3/stage1-v5/calibration/qwen25-coder-14b/shard-0/completions.jsonl",
+      "sha256": "50785fff8d6637b0dc5360ad108df0a3b2cb9cb2eb082842bf4984646e17e709"
+    },
+    {
+      "path": "runs/sai3/stage1-v5/calibration/qwen25-coder-14b/shard-128/completions.jsonl",
+      "sha256": "68fe497bdeb3cfe996dd8a6e79eeafa6bc28638ee9c8c4b7447d5bb20c6c4b07"
+    },
+    {
+      "path": "runs/sai3/stage1-v5/calibration/qwen25-coder-14b/shard-192/completions.jsonl",
+      "sha256": "d9d34a959620b5d141e84ceaac3e376bfc05756d484354f84b35cb997d3caf3f"
+    },
+    {
+      "path": "runs/sai3/stage1-v5/calibration/qwen25-coder-14b/shard-64/completions.jsonl",
+      "sha256": "8132b701232ec906824d7aeda2fa6d1507600fd816d09cca9f94c3138ccbabc4"
+    }
+  ],
+  "models": [
+    "Qwen/Qwen2.5-Coder-14B-Instruct",
+    "Qwen/Qwen2.5-Coder-7B-Instruct"
+  ],
+  "schema_version": 1,
+  "status": "PASS",
+  "tasks": 1536,
+  "zero_success_task_cells": 0
+}
