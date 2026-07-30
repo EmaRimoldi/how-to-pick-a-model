@@ -71,6 +71,11 @@ SAFE_BUILTINS = {
     "tuple": tuple,
     "zip": zip,
 }
+SPLIT_SEED_OFFSETS = {
+    "development": 0,
+    "calibration": 1_000_000_007,
+    "confirmation": 2_000_000_033,
+}
 
 
 @dataclass(frozen=True)
@@ -352,13 +357,17 @@ Constraints:
 def generate_task(seed: int, split: str, mode: int, index: int, difficulty: str = "scalar") -> dict[str, Any]:
     if mode not in (0, 1, 2):
         raise ValueError("mode must be 0, 1, or 2")
-    rng = random.Random((seed + 1) * 1_000_003 + mode * 10_007 + index)
+    if split not in SPLIT_SEED_OFFSETS:
+        raise ValueError(f"unknown split: {split}")
+    task_seed = (seed + 1) * 1_000_003 + mode * 10_007 + index + SPLIT_SEED_OFFSETS[split]
+    rng = random.Random(task_seed)
     contracts = [_contract(rng) for _ in range(3)]
     normalization = _normalization(rng, difficulty)
     task = {
         "schema_version": 3 if difficulty == "scalar" else 4,
         "task_id": f"sai3-{split}-m{mode}-{index:04d}",
         "split": split,
+        "task_seed": task_seed,
         "mode": mode,
         "difficulty": difficulty,
         "contracts": contracts,
