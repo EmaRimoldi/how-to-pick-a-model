@@ -4,7 +4,7 @@
 
 This audit covers the theoretical content of:
 
-- \`paper/neurips-submission/main.tex\`;
+- the former \`paper/neurips-submission/main.tex\` compact source;
 - \`paper/neurips-submission/arxiv.tex\`;
 - \`paper/neurips-submission/archive/final_paper.tex\`;
 - \`paper/neurips-submission/archive/main_1.tex\`;
@@ -12,19 +12,21 @@ This audit covers the theoretical content of:
 - \`paper/neurips-submission/archive/neurips_old.tex\`;
 - the retained manuscript PDFs under \`paper/neurips-submission/archive/\`.
 
-\`next_steps.tex\` was deliberately excluded from inspection, comparison, and
-editing.  The non-theoretical \`piers_macro.tex\` support file was removed during
-the subsequent source cleanup.
+\`next_steps.tex\` was deliberately excluded from the theoretical audit and was
+later removed during source synchronization.  The non-theoretical
+\`piers_macro.tex\` support file was also removed during source cleanup.
 \`Achille & Soatto.pdf\` is an external reference and is not a candidate for
 content consolidation.
 
 ## Selected anchors
 
-### Current paper anchor
+### Former compact paper source
 
 \`paper/neurips-submission/main.tex\`
 
-- Current compact paper with HumanEval+ evidence.
+- Former compact paper with HumanEval+ evidence; removed after its validated
+  theory was retained in \`theory_anchor.tex\` and manuscript material in
+  \`arxiv.tex\`.
 - 18 formal objects: 2 assumptions, 6 definitions, 3 theorems, 1 lemma,
   5 propositions, and 1 corollary.
 - Contains the clean current statements of the routing-information identity,
@@ -33,7 +35,7 @@ content consolidation.
   borrowed-allocation penalty, geometric retry scale, and first-hit
   diagnostics.
 
-### AutoResearch manuscript anchor
+### Active AutoResearch manuscript anchor
 
 \`paper/neurips-submission/arxiv.tex\`
 
@@ -220,7 +222,7 @@ strongest impossibility wording, so it is retained only as interpretation.
 
 | File | Decision | Reason |
 | --- | --- | --- |
-| \`main.tex\` | keep | current compact paper anchor |
+| \`main.tex\` | removed after synchronization | validated formal content is in \`theory_anchor.tex\`; \`arxiv.tex\` is now the sole active manuscript |
 | \`arxiv.tex\` | keep | latest AutoResearch manuscript anchor |
 | \`archive/theory_anchor.tex\` | keep | maximal validated theory anchor |
 | \`arxiv_backup.tex\` | removed | strict predecessor of \`arxiv.tex\`; same formal-result inventory |
@@ -228,11 +230,11 @@ strongest impossibility wording, so it is retained only as interpretation.
 | \`archive/main_1.tex\` | removed after second audit | packed core, cellwise concentration, corrected selection, and evaluation-reuse results are in \`theory_anchor.tex\`; the selection protocol is in \`arxiv.tex\` |
 | \`archive/final_paper.tex\` | retain as archive | unique valid depth/routing results consolidated; unsupported claims excluded from the anchor |
 | \`archive/neurips_old.tex\` | retain as archive | core duplicates; valid selection ideas consolidated; transfer bound unsupported |
-| \`archive/main_local.tex\` | removed after second audit | strict predecessor of \`main.tex\`; no distinct theoretical or empirical result |
+| \`archive/main_local.tex\` | removed after second audit | strict predecessor of the former \`main.tex\`; no distinct theoretical or empirical result |
 | \`archive/main_3_local.tex\` | removed after migration | same theory as \`main_3.tex\`; its unique exploratory pilot appendix was moved to the AutoResearch experiment bundle |
 | \`archive/final_paper_local.tex\` | removed after reconciliation | its valid transfer concepts are represented more rigorously in \`theory_anchor.tex\`; the exclusive quantitative bound is unsupported, and its new citation keys have no bibliography entries |
-| \`archive/Beneventano_Poggio.tex\` | retain as archive | mechanical text extraction of \`BP.pdf\`, not an authoritative LaTeX source |
-| \`archive/next_steps.tex\` | untouched | explicitly excluded by request |
+| \`archive/Beneventano_Poggio.tex\` | removed after synchronization | mechanical extraction only; the authoritative \`BP.pdf\` remains retained |
+| \`archive/next_steps.tex\` | removed after synchronization | independent planning source, excluded from the theoretical consolidation |
 
 The audit identifies redundancy and records the migration required before
 historical source deletion.  Git history remains the provenance record after a

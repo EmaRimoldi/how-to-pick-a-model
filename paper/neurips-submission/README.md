@@ -8,8 +8,7 @@ evidence stay co-located.
 
 | File | Role |
 | --- | --- |
-| `main.tex` | Current compact submission anchor. |
-| `arxiv.tex` | Longer AutoResearch manuscript anchor. |
+| `arxiv.tex` | Active AutoResearch manuscript anchor. |
 | `references.bib` | Active bibliography. |
 | `figures/` | Paper-ready figure copies used for compilation. |
 
@@ -19,8 +18,8 @@ Build from the repository root when TeX Live is available:
 make paper-build
 ```
 
-The build script compiles `main.tex` and `arxiv.tex` into `/tmp/...` output
-directories, so the Overleaf-compatible source tree stays clean.
+The build script compiles `arxiv.tex` into a `/tmp/...` output directory, so
+the Overleaf-compatible source tree stays clean.
 
 ## Archive
 
@@ -30,15 +29,14 @@ and retained PDFs. The important anchors are:
 | File | Role |
 | --- | --- |
 | `archive/theory_anchor.tex` | Maximal validated theory anchor. |
-| `archive/Beneventano_Poggio.tex` | Mechanical extraction retained for theory audit context. |
-| `archive/next_steps.tex` | Independent planning document; keep separate. |
 | `archive/submitted-manuscript.pdf` | Immutable submitted manuscript snapshot. |
 | `archive/BP.pdf` and `archive/Achille & Soatto.pdf` | External/reference PDFs retained for provenance. |
 
 The generated file-level manifest is
 [`../../docs/audits/paper-archive-manifest.md`](../../docs/audits/paper-archive-manifest.md).
 It classifies all archived root files and records nearest-neighbor similarity
-among archived text sources.
+among archived text sources. Removed editable sources remain available in Git
+history.
 
 Do not edit archive files as the active paper unless the task explicitly asks
 for archival consolidation.

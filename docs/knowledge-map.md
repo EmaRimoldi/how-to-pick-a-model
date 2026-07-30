@@ -20,11 +20,8 @@ paper should connect:
 
 | Source | Role |
 | --- | --- |
-| `paper/neurips-submission/main.tex` | Current compact submission anchor. |
-| `paper/neurips-submission/arxiv.tex` | Longer AutoResearch manuscript anchor. |
+| `paper/neurips-submission/arxiv.tex` | Active AutoResearch manuscript anchor. |
 | `paper/neurips-submission/archive/theory_anchor.tex` | Maximal validated theory anchor. |
-| `paper/neurips-submission/archive/Beneventano_Poggio.tex` | Mechanical extraction used as historical/theory context. |
-| `paper/neurips-submission/archive/next_steps.tex` | Independent planning document; keep separate. |
 | `docs/audits/theory-consolidation.md` | Theorem genealogy, validation notes, and source disposition. |
 | `docs/audits/paper-archive-manifest.md` | File-level policy for archived drafts, local snapshots, PDFs, and nearest text neighbors. |
 
@@ -110,8 +107,7 @@ and `autoresearch/scripts/README.md`.
 ## Before Making Paper Changes
 
 1. Read `docs/paper-revision-playbook.md`.
-2. Decide whether the change belongs in `main.tex`, `arxiv.tex`, or
-   `archive/theory_anchor.tex`.
+2. Edit `arxiv.tex`; mine `archive/theory_anchor.tex` only for validated theory.
 3. Check `docs/audits/theory-consolidation.md` for related theorem variants and
    unsupported claims.
 4. Check the relevant experiment README for empirical support.

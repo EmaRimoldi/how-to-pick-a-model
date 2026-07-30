@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 
-DEFAULT_SOURCES = ("main.tex", "arxiv.tex")
+DEFAULT_SOURCES = ("arxiv.tex",)
 
 
 def run_command(

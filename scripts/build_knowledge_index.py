@@ -136,7 +136,6 @@ FIGURE_GENERATOR_HINTS = {
     "autoresearch_n20_confirmation": "autoresearch/scripts/reproduce_appendix_figures_n20_confirmation.py",
 }
 ACTIVE_PAPER_TEX = (
-    Path("paper/neurips-submission/main.tex"),
     Path("paper/neurips-submission/arxiv.tex"),
 )
 
@@ -172,16 +171,10 @@ def clean_latex(text: str, limit: int = 220) -> str:
 
 def tex_role(path: Path) -> str:
     rel = path.as_posix()
-    if rel.endswith("main.tex"):
-        return "current compact submission anchor"
     if rel.endswith("arxiv.tex"):
-        return "long AutoResearch manuscript anchor"
+        return "active AutoResearch manuscript anchor"
     if rel.endswith("theory_anchor.tex"):
         return "maximal validated theory anchor"
-    if rel.endswith("Beneventano_Poggio.tex"):
-        return "mechanical historical theory extraction"
-    if rel.endswith("next_steps.tex"):
-        return "independent planning document"
     if "/archive/" in rel:
         return "archived draft or provenance source"
     if rel.endswith("piers_macro.tex"):

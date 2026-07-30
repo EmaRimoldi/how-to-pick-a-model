@@ -59,8 +59,7 @@ The paper build gate is:
 make paper-build
 ```
 
-It compiles `paper/neurips-submission/main.tex` and
-`paper/neurips-submission/arxiv.tex` out of tree.
+It compiles `paper/neurips-submission/arxiv.tex` out of tree.
 
 ## Residual Risk
 

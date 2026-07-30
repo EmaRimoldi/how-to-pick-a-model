@@ -6,13 +6,13 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 ## Summary
 
 - Canonical docs present: `23/23`
-- Paper TeX sources indexed: `7`
-- Formal objects in canonical TeX anchors: `100`
+- Paper TeX sources indexed: `4`
+- Formal objects in canonical TeX anchors: `82`
 - Experiment bundles indexed: `20`
 - Script entrypoints indexed: `35`
 - Code modules indexed: `134`
 - Paper figures indexed: `125`
-- Active paper references indexed: `20`
+- Active paper references indexed: `15`
 - Command targets indexed: `7`
 
 ## Canonical Docs
@@ -47,13 +47,10 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 
 | Path | Role | Lines | Formal Objects | Canonical |
 | --- | --- | --- | --- | --- |
-| `paper/neurips-submission/archive/Beneventano_Poggio.tex` | mechanical historical theory extraction | 1954 | 0 | yes |
 | `paper/neurips-submission/archive/final_paper.tex` | archived draft or provenance source | 1339 | 15 | archive |
 | `paper/neurips-submission/archive/neurips_old.tex` | archived draft or provenance source | 1166 | 13 | archive |
-| `paper/neurips-submission/archive/next_steps.tex` | independent planning document | 2308 | 0 | yes |
 | `paper/neurips-submission/archive/theory_anchor.tex` | maximal validated theory anchor | 2272 | 65 | yes |
-| `paper/neurips-submission/arxiv.tex` | long AutoResearch manuscript anchor | 2171 | 17 | yes |
-| `paper/neurips-submission/main.tex` | current compact submission anchor | 1206 | 18 | yes |
+| `paper/neurips-submission/arxiv.tex` | active AutoResearch manuscript anchor | 2171 | 17 | yes |
 
 ## Formal Objects In Canonical Anchors
 
@@ -141,24 +138,6 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `paper/neurips-submission/arxiv.tex:1527` | assumption | `ass:app-approx-packed` | Approximate packed log-linearity | Suppose \[ T_ M,q (s,z) &= c_ sim + (M,s) + t_0(M,s) - q_z(s) + r_M(s,z,q), \] with \[ \|r_M(s,z,q)\| \] uniformly over the evaluated systems, modes, signals, and packed shares. |
 | `paper/neurips-submission/arxiv.tex:1552` | proposition | `prop:app-residual-decomp` | Residual form of the packed identity | Under Assumption~ ass:app-approx-packed , \[ & \\ & = _ S + _ S \\ & + _ (S;Z) + ( \\|q_0) - _Z ( _Z\\|q_Z) + R, \] where \[ R= . \] If \(\|r_M\| \) uniformly, then \[ \|R\| 2 . \] |
 | `paper/neurips-submission/arxiv.tex:1884` | proposition | `prop:paired-unbiased` | Unbiased paired router-gain estimator | Assume task instances are sampled i.i.d.\ from , the orchestrator, action menu, and signal protocols are fixed before evaluation, measurement costs are recorded without bias, and deployment seeds are independent condi... |
-| `paper/neurips-submission/main.tex:209` | definition | `def:task` | Verifiable task | A verifiable task is a tuple \[ ^ (v) =( , ,V, , ), \] where is the instance space, is the solution space, V: \ 0,1\ is an external verification oracle that returns 1 exactly when a candidate satisfies the task's acce... |
-| `paper/neurips-submission/main.tex:223` | definition | `def:agent-system` | Agent system and induced solver | For a verifiable task ^ (v) , an agent system is specified by d=(M, H, ) , where M is the worker model, H is a finite set of solving strategies or harnesses, and allocates the available attempt budget across those str... |
-| `paper/neurips-submission/main.tex:242` | definition | `def:proper-time` | Proper time and certified proper time | For solver A on (x,r) , define its operational proper time by \[ _A(x;r):= \ c 0:V(x,Y_A(c;x,r))=1\ ,\\ := . \] and its certified proper time at confidence 1- by \[ T _A( ) := \! \ c 0: _ X ,r [ _A(X;r) c] 1- \ . \] T... |
-| `paper/neurips-submission/main.tex:277` | definition | `def:routing-policy` | Packed allocation policy | Let be a finite mode set and let Z take values in a signal space Z . A packed allocation policy is a map : Z ( ) , written z q_z , whose coordinate q_z(s) is the fraction of the attempt budget assigned to the strategy... |
-| `paper/neurips-submission/main.tex:288` | assumption | `def:packed-family` | Packed latent-mode family | Fix a verifiable task ^ (v) . Assume: Latent modes. There is a finite set of modes =\ 1, ,m\ and a latent variable S with prior . A mode is a solver-relevant class of instances, defined independently of which model is... |
-| `paper/neurips-submission/main.tex:323` | lemma | `lem:conditional` | Posterior-matched allocation | Under Assumption~ ass:packed-family , for P_Z -almost every z and every q ( ) such that supp ( _z) supp (q) , \[ _ S _z \! =H( _z)+ ( _z\\|q). \] The unique minimizer of _ S _z [ T_q(S)] over admissible allocations is... |
-| `paper/neurips-submission/main.tex:342` | theorem | `thm:ri-identity` | Routing-Information Identity | Under Assumption~ ass:packed-family , with a prior-matched baseline q_0 = , = G - where [l] &:= \! , \\ [l] G &:= _ (S : Z)=H( )- _Z[H( _Z)], \\ [l] &:= _Z\! . The term G is the mutual information between the latent m... |
-| `paper/neurips-submission/main.tex:370` | assumption | `ass:model-packed-family` | Model-dependent packed family | Fix a verifiable task and a shared latent mode variable S over =\ 1, ,m\ . For each model M : The per-step cost satisfies (M)>0 . The within-mode packed scale satisfies t_0(M,s)>0 , so that packed time under mode~ s w... |
-| `paper/neurips-submission/main.tex:389` | theorem | `thm:four-term` | Model-Aware Decomposition | Under Assumption~ ass:model-packed-family , comparing a prior-matched baseline using model M_0 against a deployed system using model~ M , 0.88 ! = (M_0) (M) + (M_0,M)+G(M)- (M) where the four terms are defined by [l]... |
-| `paper/neurips-submission/main.tex:443` | corollary | `cor:model-selection` | Model-selection crossover | Under Assumption~ ass:model-packed-family , model M_1 achieves lower expected packed log-time than model M_2 whenever & (M_2) (M_1) + (M_0,M_1)- (M_0,M_2) \\[-1pt] & >G(M_2)-G(M_1) + (M_1)- (M_2). |
-| `paper/neurips-submission/main.tex:462` | theorem | `thm:retry-crossover` | Single-mode retry crossover | Fix one homogeneous mode and a common one-attempt horizon. Let a stronger system have success probability p_h and per-attempt cost _h , and let a cheaper system have 0<p_ <p_h<1 and 0< _ < _h . Assume retries of the c... |
-| `paper/neurips-submission/main.tex:620` | proposition | `prop:paired-unbiased` | Paired allocation-gain estimator | Let X_1, ,X_N be i.i.d. deployment instances. For condition k \ 0,j\ , let a fixed policy select action a_i^k= _k(Z_k(X_i)) , where an action may be a retry allocation. Let (a,x; ) be an integrable deployment loss, an... |
-| `paper/neurips-submission/main.tex:697` | definition |  | General agent-system representation | For workflows that include tools, persistent memory, context management, and parallel execution, the reduced design tuple of Definition~ def:agent-system may be extended to \[ d_ gen =(M, , ,W,K,p), \] where is the to... |
-| `paper/neurips-submission/main.tex:786` | proposition | `prop:mode-dependent-cost` | Mode-dependent cost extension | Suppose (M,s)>0 may depend on both model and mode, and \[ T _q^ (M) (s,z) =c_ sim \, (M,s) t_0(M,s) q_z(s) . \] For a baseline (M_0,q_0) and a routed system (M,q_Z) , \[ & \! \\ & = _ S \! + _ S \! + _ (S:Z)+ ( \\|q_0)... |
-| `paper/neurips-submission/main.tex:815` | proposition | `prop:approximation-guarantee` | Residual guarantee under approximate packedness | Suppose the packed log-time law is only approximate, and represent the fixed baseline by a constant signal value z_0 : \[ T _ q ^ (M) (s,z) = (M)+ c_ sim + t_0(M,s)- q_z(s) +r_M(s,z,q), \] with \|r_M(s,z,q)\| uniformly... |
-| `paper/neurips-submission/main.tex:855` | proposition | `prop:borrowed-allocation` | Cost of a borrowed allocation | Under Assumption~ ass:model-packed-family , fix a model M_B and let q_Z^ *,B = _Z^B . For any allocation policy q_Z satisfying the standing support condition, \[ \! = _Z\! . \] In particular, if q_Z=q_Z^ *,A and q_Z^... |
-| `paper/neurips-submission/main.tex:892` | proposition | `prop:geometric-certified-scale` | Geometric-retry certified scale | Suppose independent attempts of system M on mode s succeed with probability p_M(s) (0,1) and each complete attempt has duration u_M(s)>0 . The minimum number of attempts needed to achieve failure probability at most (... |
-| `paper/neurips-submission/main.tex:925` | definition | `def:first-hit-diagnostics` | Finite-horizon first-hit diagnostics | Fix a horizon H , action a , mode s , and censoring floor p_ (0,1) . Let _a be first verified success and C_t(a) accumulated deployment cost through time~ t . Define \[ F_a(s,H):= ( _a H S=s), C_a(s,H):= , \] Assume C... |
 
 ## Experiment Bundles
 
@@ -498,11 +477,6 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 
 | Source TeX | Kind | Target | Resolved Path | Present |
 | --- | --- | --- | --- | --- |
-| `paper/neurips-submission/main.tex` | figure | `figures/strategy_routing/four_term_accounting.pdf` | `paper/neurips-submission/figures/strategy_routing/four_term_accounting.pdf` | yes |
-| `paper/neurips-submission/main.tex` | figure | `figures/strategy_routing/confirmatory_speedup.pdf` | `paper/neurips-submission/figures/strategy_routing/confirmatory_speedup.pdf` | yes |
-| `paper/neurips-submission/main.tex` | figure | `figures/strategy_routing/strategy_specialization.pdf` | `paper/neurips-submission/figures/strategy_routing/strategy_specialization.pdf` | yes |
-| `paper/neurips-submission/main.tex` | figure | `figures/strategy_routing/information_speed_curve.pdf` | `paper/neurips-submission/figures/strategy_routing/information_speed_curve.pdf` | yes |
-| `paper/neurips-submission/main.tex` | figure | `figures/strategy_routing/router_allocations.pdf` | `paper/neurips-submission/figures/strategy_routing/router_allocations.pdf` | yes |
 | `paper/neurips-submission/arxiv.tex` | figure | `figures/autoresearch/certified_resource_summary_unified.png` | `paper/neurips-submission/figures/autoresearch/certified_resource_summary_unified.png` | yes |
 | `paper/neurips-submission/arxiv.tex` | figure | `figures/autoresearch/router_shift_lookup_summary.png` | `paper/neurips-submission/figures/autoresearch/router_shift_lookup_summary.png` | yes |
 | `paper/neurips-submission/arxiv.tex` | figure | `figures/autoresearch/quality_vs_certified_resource.png` | `paper/neurips-submission/figures/autoresearch/quality_vs_certified_resource.png` | yes |

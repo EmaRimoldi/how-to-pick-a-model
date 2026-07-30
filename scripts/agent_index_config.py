@@ -58,11 +58,8 @@ REQUIRED_MAKE_TARGETS = [
 
 PAPER_ROOT = Path("paper/neurips-submission")
 CANONICAL_TEX = [
-    PAPER_ROOT / "main.tex",
     PAPER_ROOT / "arxiv.tex",
     PAPER_ROOT / "archive" / "theory_anchor.tex",
-    PAPER_ROOT / "archive" / "Beneventano_Poggio.tex",
-    PAPER_ROOT / "archive" / "next_steps.tex",
 ]
 PAPER_SOURCES = [path.as_posix() for path in CANONICAL_TEX]
 

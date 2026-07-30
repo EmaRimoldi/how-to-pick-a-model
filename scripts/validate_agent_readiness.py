@@ -21,7 +21,6 @@ from agent_index_config import (
 
 FORMAL_LABEL_RE = re.compile(r"^(ass|def|lem|thm|prop|cor|rem|claim):")
 PAPER_SOURCE_ALIASES = {
-    "main.tex": [Path("paper/neurips-submission/main.tex")],
     "arxiv.tex": [Path("paper/neurips-submission/arxiv.tex")],
     "theory_anchor.tex": [Path("paper/neurips-submission/archive/theory_anchor.tex")],
 }
@@ -154,12 +153,12 @@ def check_active_paper_references(knowledge: dict) -> list[str]:
     ]
     if missing:
         problems.append("active paper references missing files: " + ", ".join(missing))
-    main_figures = [
+    arxiv_figures = [
         ref for ref in refs
-        if ref["source_tex"].endswith("main.tex") and ref["kind"] == "figure"
+        if ref["source_tex"].endswith("arxiv.tex") and ref["kind"] == "figure"
     ]
-    if len(main_figures) < 5:
-        problems.append("main.tex should reference at least 5 paper figures")
+    if len(arxiv_figures) < 10:
+        problems.append("arxiv.tex should reference at least 10 paper figures")
     return problems
 
 
@@ -209,8 +208,6 @@ def check_paper_archive_manifest(manifest: dict) -> list[str]:
     records = {record["path"]: record for record in manifest.get("files", [])}
     expected = {
         "paper/neurips-submission/archive/theory_anchor.tex": "canonical-anchor",
-        "paper/neurips-submission/archive/next_steps.tex": "keep-independent",
-        "paper/neurips-submission/archive/Beneventano_Poggio.tex": "keep-provenance",
     }
     for path, disposition in expected.items():
         record = records.get(path)
@@ -381,8 +378,8 @@ def validate(root: Path, write: bool = False) -> tuple[bool, list[str], dict[str
     if missing_paper:
         messages.append("missing paper sources: " + ", ".join(missing_paper))
 
-    if len(knowledge["formal_objects"]) < 90:
-        messages.append("knowledge index found fewer than 90 formal objects")
+    if len(knowledge["formal_objects"]) < 80:
+        messages.append("knowledge index found fewer than 80 formal objects")
     if len(knowledge["experiment_bundles"]) < 20:
         messages.append("knowledge index found fewer than 20 experiment bundles")
     if len(knowledge["scripts"]) < 30:

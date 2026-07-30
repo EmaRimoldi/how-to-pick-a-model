@@ -229,8 +229,8 @@ available, compile the active manuscript sources out of tree:
 make paper-build
 ```
 
-This builds `main.tex` and `arxiv.tex` into `/tmp/how_to_pick_a_model_paper_build`
-by default and leaves the Overleaf-compatible source tree clean.
+This builds `arxiv.tex` into `/tmp/how_to_pick_a_model_paper_build` by default
+and leaves the Overleaf-compatible source tree clean.
 
 The known manuscript/result mismatch is documented in
 [`audits/manuscript-reproducibility.md`](audits/manuscript-reproducibility.md).

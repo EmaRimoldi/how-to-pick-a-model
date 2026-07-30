@@ -43,7 +43,7 @@ def test_knowledge_index_is_complete_and_descriptive() -> None:
 
     assert index["root"] == "."
     assert all(index["canonical_docs"].values())
-    assert len(index["formal_objects"]) >= 90
+    assert len(index["formal_objects"]) >= 80
     assert len(index["experiment_bundles"]) >= 20
     assert len(index["scripts"]) >= 30
     assert len(index["code_modules"]) >= 70
@@ -81,20 +81,16 @@ def test_knowledge_index_is_complete_and_descriptive() -> None:
     ]["source"].startswith("experiments/")
 
     assert all(ref["present"] for ref in index["active_paper_references"])
-    main_refs = [
+    arxiv_refs = [
         ref for ref in index["active_paper_references"]
-        if ref["source_tex"] == "paper/neurips-submission/main.tex" and ref["kind"] == "figure"
+        if ref["source_tex"] == "paper/neurips-submission/arxiv.tex" and ref["kind"] == "figure"
     ]
-    assert len(main_refs) == 5
-    assert {
-        ref["resolved_path"] for ref in main_refs
-    } == {
-        "paper/neurips-submission/figures/strategy_routing/four_term_accounting.pdf",
-        "paper/neurips-submission/figures/strategy_routing/confirmatory_speedup.pdf",
-        "paper/neurips-submission/figures/strategy_routing/strategy_specialization.pdf",
-        "paper/neurips-submission/figures/strategy_routing/information_speed_curve.pdf",
-        "paper/neurips-submission/figures/strategy_routing/router_allocations.pdf",
-    }
+    assert len(arxiv_refs) >= 10
+    assert any(
+        ref["resolved_path"]
+        == "paper/neurips-submission/figures/autoresearch/first_hit_ecdf_by_mode.png"
+        for ref in arxiv_refs
+    )
     assert any(
         ref["source_tex"] == "paper/neurips-submission/arxiv.tex"
         and ref["kind"] == "bibliography"
@@ -235,20 +231,19 @@ def test_paper_archive_manifest_classifies_all_archive_files() -> None:
     assert manifest["archive_root"] == "paper/neurips-submission/archive"
     assert coverage["classified"] == coverage["files"]
     assert coverage["unclassified"] == []
-    assert len(records) >= 10
+    assert len(records) >= 8
 
     assert records[
         "paper/neurips-submission/archive/theory_anchor.tex"
     ]["disposition"] == "canonical-anchor"
-    assert records[
-        "paper/neurips-submission/archive/next_steps.tex"
-    ]["disposition"] == "keep-independent"
     removed_snapshots = {
+        "paper/neurips-submission/archive/Beneventano_Poggio.tex",
         "paper/neurips-submission/archive/final_paper_local.tex",
         "paper/neurips-submission/archive/main_1.tex",
         "paper/neurips-submission/archive/main_3.tex",
         "paper/neurips-submission/archive/main_3_local.tex",
         "paper/neurips-submission/archive/main_local.tex",
+        "paper/neurips-submission/archive/next_steps.tex",
     }
     assert removed_snapshots.isdisjoint(records)
 

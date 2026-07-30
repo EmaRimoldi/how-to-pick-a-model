@@ -26,12 +26,12 @@ The strongest current story is:
 
 | Claim family | Theory source | Empirical support | Status |
 | --- | --- | --- | --- |
-| Proper time / certified proper time is the right operational quantity for verifiable deployment. | `paper/neurips-submission/main.tex`, `paper/neurips-submission/archive/theory_anchor.tex` | First-hit diagnostics in `experiments/autoresearch-cifar10/three-worker-model-routing/`; retry/routing evidence in `experiments/humaneval-plus/`. | Strong conceptual anchor; empirical realization exists. |
-| Routing information can improve expected log-time when signals identify latent modes. | `main.tex` theorem `thm:ri-identity`; `theory_anchor.tex` theorem `thm:ri-identity` | `experiments/humaneval-plus/strategy-by-difficulty-grid/`; `experiments/humaneval-plus/llm-router-context-search/`; AutoResearch allocation-router outputs. | Strongest for completed HumanEval+ and AutoResearch bundles. |
-| Model choice decomposes into cost, competence, information, and mismatch. | `main.tex` theorem `thm:four-term`; `theory_anchor.tex` theorem `thm:four-term` | AutoResearch three-worker accounting and router diagnostics; HumanEval+ model-size frontier and strategy routing. | Good submission spine if claims stay at accounting/decomposition level. |
-| Retry depth has a cost-adjusted crossover; cheaper repeated attempts can beat stronger single attempts only in specified regimes. | `main.tex` theorem `thm:retry-crossover`; `theory_anchor.tex` retry family. | `experiments/humaneval-plus/retry-allocation-router/`; related strategy-routing figures. | Good, but avoid claiming universal retry benefit. |
-| Borrowed allocations and allocation mismatch have measurable regret. | `main.tex` proposition `prop:borrowed-allocation`; `theory_anchor.tex` operational hard-router and borrowed-allocation results. | AutoResearch router selection regret and paired-gain figures. | Useful for diagnostics and appendix. |
-| Approximate packedness can be tested through residual diagnostics rather than assumed exactly. | `main.tex` proposition `prop:approximation-guarantee`; `theory_anchor.tex` residual guarantees. | AutoResearch negative controls, threshold sensitivity, and z-signal ablation. | Good as empirical stress test, not as proof of exact model. |
+| Proper time / certified proper time is the right operational quantity for verifiable deployment. | `arxiv.tex` definition `def:certified-time`; `theory_anchor.tex` definition `def:certified-time` | First-hit diagnostics in `experiments/autoresearch-cifar10/three-worker-model-routing/`; retry/routing evidence in `experiments/humaneval-plus/`. | Strong conceptual anchor; empirical realization exists. |
+| Routing information can improve expected log-time when signals identify latent modes. | `theory_anchor.tex`, theorem `thm:ri-identity`; operational discussion in `arxiv.tex` | `experiments/humaneval-plus/strategy-by-difficulty-grid/`; `experiments/humaneval-plus/llm-router-context-search/`; AutoResearch allocation-router outputs. | Strongest for completed HumanEval+ and AutoResearch bundles. |
+| Model choice decomposes into cost, competence, information, and mismatch. | `arxiv.tex` and `theory_anchor.tex`, theorem `thm:four-term` | AutoResearch three-worker accounting and router diagnostics; HumanEval+ model-size frontier and strategy routing. | Good submission spine if claims stay at accounting/decomposition level. |
+| Retry depth has a cost-adjusted crossover; cheaper repeated attempts can beat stronger single attempts only in specified regimes. | `arxiv.tex` theorem `thm:crossover`; `theory_anchor.tex` retry family. | `experiments/humaneval-plus/retry-allocation-router/`; related strategy-routing figures. | Good, but avoid claiming universal retry benefit. |
+| Borrowed allocations and allocation mismatch have measurable regret. | `theory_anchor.tex` operational hard-router and borrowed-allocation results. | AutoResearch router selection regret and paired-gain figures. | Useful for diagnostics and appendix. |
+| Approximate packedness can be tested through residual diagnostics rather than assumed exactly. | `arxiv.tex` and `theory_anchor.tex` residual guarantees. | AutoResearch negative controls, threshold sensitivity, and z-signal ablation. | Good as empirical stress test, not as proof of exact model. |
 | Multi-agent or memory-augmented workflows can outperform naive exploration when coordination reduces repeated/destructive search. | `theory_anchor.tex` multi-agent specialization threshold and agent-system design definitions. | `experiments/autoresearch-cifar10/shared-memory-ablation/`; `experiments/autoresearch-cifar10/swarm-vs-independent-agents/`. | Use narrowly; strongest evidence is shared-memory ablation, swarm is historical/partial. |
 
 ## Evidence Tiers
@@ -105,15 +105,14 @@ uv run python -m src.load_traces --config experiments/bbh/family-and-subtask-rou
 Use `docs/paper-revision-playbook.md` as the operational workflow. The short
 protocol is:
 
-1. Start with `paper/neurips-submission/main.tex` for compact submission edits.
-2. Use `paper/neurips-submission/arxiv.tex` for longer AutoResearch material.
-3. Use `paper/neurips-submission/archive/theory_anchor.tex` only as a validated
+1. Start with `paper/neurips-submission/arxiv.tex` for manuscript edits.
+2. Use `paper/neurips-submission/archive/theory_anchor.tex` only as a validated
    theory source, not as the active manuscript.
-4. Check `docs/audits/knowledge-index.md` for formal object line numbers.
-5. Check `docs/audits/theory-consolidation.md` before promoting an archived
+3. Check `docs/audits/knowledge-index.md` for formal object line numbers.
+4. Check `docs/audits/theory-consolidation.md` before promoting an archived
    theorem.
-6. Check the relevant experiment README before citing any result.
-7. Keep claims aligned with the evidence tier above.
+5. Check the relevant experiment README before citing any result.
+6. Keep claims aligned with the evidence tier above.
 
 ## Current Paper Risk Register
 

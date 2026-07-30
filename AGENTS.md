@@ -52,8 +52,8 @@ tree.
 - Do not launch live model, Claude Code, Slurm, Docker, or provider-backed runs
   unless explicitly requested.
 - Use `docs/audits/command-manifest.md` before running an unfamiliar command.
-- Treat `paper/neurips-submission/main.tex`, `paper/neurips-submission/arxiv.tex`,
-  and `paper/neurips-submission/archive/theory_anchor.tex` as the paper anchors.
+- Treat `paper/neurips-submission/arxiv.tex` as the active manuscript and
+  `paper/neurips-submission/archive/theory_anchor.tex` as the validated theory anchor.
 - Treat experiment `README.md` files, `docs/audits/experiment-manifest.md`, and
   `docs/reproducibility.md` as the authoritative operational descriptions.
 - Keep generated local outputs under ignored paths such as `tmp/`, `runs/`, or

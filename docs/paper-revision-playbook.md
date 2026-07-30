@@ -19,11 +19,8 @@ for theorem genealogy.
 
 | Need | Source |
 | --- | --- |
-| Compact submission edits | [`../paper/neurips-submission/main.tex`](../paper/neurips-submission/main.tex) |
-| Longer AutoResearch text or appendix material | [`../paper/neurips-submission/arxiv.tex`](../paper/neurips-submission/arxiv.tex) |
+| Active manuscript edits | [`../paper/neurips-submission/arxiv.tex`](../paper/neurips-submission/arxiv.tex) |
 | Validated theorem source | [`../paper/neurips-submission/archive/theory_anchor.tex`](../paper/neurips-submission/archive/theory_anchor.tex) |
-| Historical/theory context | [`../paper/neurips-submission/archive/Beneventano_Poggio.tex`](../paper/neurips-submission/archive/Beneventano_Poggio.tex) |
-| Independent planning notes | [`../paper/neurips-submission/archive/next_steps.tex`](../paper/neurips-submission/archive/next_steps.tex) |
 | Archived draft policy | [`audits/paper-archive-manifest.md`](audits/paper-archive-manifest.md) |
 
 Do not edit archive files as active manuscript source unless the user explicitly
@@ -31,11 +28,11 @@ asks for archival consolidation.
 
 ## Manuscript Assembly Order
 
-1. Start from [`../paper/neurips-submission/main.tex`](../paper/neurips-submission/main.tex).
+1. Start from [`../paper/neurips-submission/arxiv.tex`](../paper/neurips-submission/arxiv.tex).
 2. Keep the introduction aligned with the narrow first-passage/deployment-time
    claim above.
 3. Promote only the theory needed by the claim spine:
-   `def:proper-time`, `thm:ri-identity`, `thm:four-term`,
+   `def:certified-time`, `thm:ri-identity`, `thm:four-term`,
    `thm:retry-crossover`, `prop:borrowed-allocation`,
    `prop:approximation-guarantee`, and `def:first-hit-diagnostics`.
 4. Use Tier 1 evidence as main paper support.
