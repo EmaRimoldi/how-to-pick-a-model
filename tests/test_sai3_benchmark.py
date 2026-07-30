@@ -68,6 +68,20 @@ assert FOUR_TERM_ANALYSIS_SPEC is not None and FOUR_TERM_ANALYSIS_SPEC.loader is
 FOUR_TERM_ANALYSIS = importlib.util.module_from_spec(FOUR_TERM_ANALYSIS_SPEC)
 FOUR_TERM_ANALYSIS_SPEC.loader.exec_module(FOUR_TERM_ANALYSIS)
 
+CONFIRMATION_AUDIT_PATH = (
+    ROOT
+    / "experiments"
+    / "four-term-packed-validation"
+    / "scripts"
+    / "audit_sai3_confirmation.py"
+)
+CONFIRMATION_AUDIT_SPEC = importlib.util.spec_from_file_location(
+    "audit_sai3_confirmation", CONFIRMATION_AUDIT_PATH
+)
+assert CONFIRMATION_AUDIT_SPEC is not None and CONFIRMATION_AUDIT_SPEC.loader is not None
+CONFIRMATION_AUDIT = importlib.util.module_from_spec(CONFIRMATION_AUDIT_SPEC)
+CONFIRMATION_AUDIT_SPEC.loader.exec_module(CONFIRMATION_AUDIT)
+
 PROVENANCE_PATH = (
     ROOT / "experiments" / "four-term-packed-validation" / "runtime_provenance.py"
 )
@@ -397,6 +411,75 @@ def test_confirmation_integrity_rejects_wrong_shard_success() -> None:
         ]
     )
     assert audit["wrong_shard_successes"] == 1
+
+
+def test_confirmation_artifact_audit_checks_slot_accounting(tmp_path: Path) -> None:
+    tasks_path = tmp_path / "tasks.jsonl"
+    tasks_path.write_text('{"task_id":"task"}\n')
+    tasks_sha256 = CONFIRMATION_AUDIT.sha256_path(tasks_path)
+    design_row = {
+        "trajectory_id": "trajectory",
+        "task_id": "task",
+        "task_stratum": "stratum",
+        "mode": 0,
+        "condition": "baseline_prior",
+        "schedule_seed": 11,
+        "q": [1.0, 0.0, 0.0],
+    }
+    design_path = tmp_path / "design.jsonl"
+    design_path.write_text(json.dumps(design_row) + "\n")
+    design_sha256 = CONFIRMATION_AUDIT.sha256_path(design_path)
+    run_dir = tmp_path / "run"
+    run_dir.mkdir()
+    trajectory = {
+        **design_row,
+        "model": "model",
+        "success": True,
+        "censored": False,
+        "total_slots": 1,
+        "issued": [1, 0, 0],
+        "winning_shard": 0,
+    }
+    (run_dir / "trajectories.jsonl").write_text(json.dumps(trajectory) + "\n")
+    slot = {
+        "model": "model",
+        "trajectory_id": "trajectory",
+        "slot": 0,
+        "shard": 0,
+        "seed": 17,
+        "decoded_tokens": 4,
+        "verification": {"passed": True},
+    }
+    (run_dir / "slots.jsonl").write_text(json.dumps(slot) + "\n")
+    metadata = {
+        "model": "model",
+        "max_slots": 1,
+        "trajectories": 1,
+        "successful_trajectories": 1,
+        "censored_trajectories": 0,
+        "generation_slots": 1,
+        "decoded_tokens": 4,
+        "gpu": "A100",
+        "provenance": {
+            "tasks_sha256": tasks_sha256,
+            "design_sha256": design_sha256,
+            "model_revision": "revision",
+            "tokenizer_sha256": "tokenizer",
+            "code_git_commit": "commit",
+            "package_versions": {},
+            "slurm_job_id": "job",
+        },
+    }
+    (run_dir / "run_metadata.json").write_text(json.dumps(metadata))
+
+    summary = CONFIRMATION_AUDIT.audit_run(
+        run_dir,
+        tasks_sha256=tasks_sha256,
+        designs_by_sha256={design_sha256: {"trajectory": design_row}},
+        all_generation_seeds=set(),
+    )
+    assert summary["generation_slots"] == 1
+    assert summary["wrong_shard_successes"] == 0
 
 
 def test_four_term_main_runs_on_exact_disjoint_splits(tmp_path: Path, monkeypatch) -> None:
