@@ -381,6 +381,24 @@ def test_task_aggregation_matches_expected_log_time() -> None:
     assert math.isclose(cells[("model", "condition", 0, 0)], 3.0)
 
 
+def test_confirmation_integrity_rejects_wrong_shard_success() -> None:
+    audit = FOUR_TERM_ANALYSIS.confirmation_integrity(
+        [
+            {
+                "model": "model",
+                "trajectory_id": "trajectory",
+                "mode": 1,
+                "success": True,
+                "censored": False,
+                "winning_shard": 2,
+                "total_slots": 3,
+                "issued": [0, 2, 1],
+            }
+        ]
+    )
+    assert audit["wrong_shard_successes"] == 1
+
+
 def test_four_term_main_runs_on_exact_disjoint_splits(tmp_path: Path, monkeypatch) -> None:
     baseline = "baseline"
     deployed = "deployed"
@@ -461,6 +479,12 @@ def test_four_term_main_runs_on_exact_disjoint_splits(tmp_path: Path, monkeypatc
                                     "planned_issued": planned,
                                 }
                             )
+
+    for index, row in enumerate(confirmation):
+        row["trajectory_id"] = f"trajectory-{index}"
+        row["winning_shard"] = row["mode"]
+        row["issued"] = [0, 0, 0]
+        row["issued"][row["mode"]] = int(row["total_slots"])
 
     calibration_path = tmp_path / "calibration.jsonl"
     confirmation_path = tmp_path / "confirmation.jsonl"

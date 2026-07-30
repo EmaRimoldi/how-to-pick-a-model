@@ -274,6 +274,32 @@ def confirmation_cell_censoring(rows: list[dict[str, Any]]) -> list[dict[str, An
     ]
 
 
+def confirmation_integrity(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    identifiers = [(str(row["model"]), str(row["trajectory_id"])) for row in rows]
+    if len(set(identifiers)) != len(identifiers):
+        raise ValueError("confirmation contains duplicate model/trajectory identifiers")
+    invalid = []
+    for row in rows:
+        success = bool(row.get("success"))
+        censored = bool(row.get("censored"))
+        total_slots = int(row["total_slots"])
+        issued = [int(value) for value in row["issued"]]
+        if success == censored or total_slots <= 0 or sum(issued) != total_slots:
+            invalid.append((row["model"], row["trajectory_id"]))
+    if invalid:
+        raise ValueError(f"confirmation contains inconsistent trajectory rows: {invalid[:5]}")
+    wrong_shard_wins = [
+        (str(row["model"]), str(row["trajectory_id"]))
+        for row in rows
+        if bool(row.get("success")) and int(row["winning_shard"]) != int(row["mode"])
+    ]
+    return {
+        "unique_model_trajectory_ids": len(identifiers),
+        "wrong_shard_successes": len(wrong_shard_wins),
+        "wrong_shard_success_examples": wrong_shard_wins[:5],
+    }
+
+
 def planned_share_audit(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     groups: dict[tuple[str, str], dict[str, Any]] = collections.defaultdict(
         lambda: {"planned": [0, 0, 0], "expected": [0.0, 0.0, 0.0], "slots": 0}
@@ -408,6 +434,7 @@ def main() -> None:
         raise SystemExit(f"calibration and confirmation task overlap: {sorted(overlap)[:5]}")
     task_scales = calibration_task_scales(calibration_rows)
     scales = focused_scales(task_scales)
+    integrity = confirmation_integrity(confirmation_rows)
     task_means = trajectory_task_means(confirmation_rows)
     cells = trajectory_cells(task_means)
     hazard_rows, attempt_trends = calibration_diagnostics(
@@ -606,6 +633,7 @@ def main() -> None:
         "focused_regime_pass": min(row["pass_probability"] for row in focused_mode_rows) >= 0.05,
         "attempt_stationarity_pass": all(row["no_significant_trend"] for row in attempt_trends),
         "off_diagonal_hazard_pass": max_hazard_ratio <= args.max_off_diagonal_hazard_ratio,
+        "confirmation_wrong_shard_success_pass": integrity["wrong_shard_successes"] == 0,
         "inverse_share_beta_pass": (
             inverse_beta_ci_90[0] >= args.beta_lower and inverse_beta_ci_90[1] <= args.beta_upper
         ),
@@ -692,6 +720,7 @@ def main() -> None:
         "calibration_hazard_diagnostics": hazard_rows,
         "attempt_index_diagnostics": attempt_trends,
         "confirmation_trajectories": len(confirmation_rows),
+        "confirmation_integrity": integrity,
         "censoring_rate": censoring_rate,
         "max_cell_censoring_rate": max_cell_censoring,
         "confirmation_censoring_cells": censoring_cells,
