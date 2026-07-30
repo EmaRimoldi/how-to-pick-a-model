@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import math
 import sys
 from pathlib import Path
@@ -309,3 +310,139 @@ def test_four_term_analysis_closes_on_exact_packed_cells() -> None:
         DESIGN.mismatch(alpha, allocation_name),
     )
     assert math.isclose(observed, terms["predicted_delta_nats"], abs_tol=1e-12)
+
+
+def test_four_term_main_runs_on_exact_disjoint_splits(tmp_path: Path, monkeypatch) -> None:
+    baseline = "baseline"
+    deployed = "deployed"
+    models = (baseline, deployed)
+    calibration = []
+    for model in models:
+        for mode in range(3):
+            task_id = f"calibration-{mode}"
+            for attempt in range(64):
+                calibration.append(
+                    {
+                        "model": model,
+                        "mode": mode,
+                        "task_id": task_id,
+                        "task_stratum": "stratum",
+                        "relation": "matched",
+                        "attempt": attempt,
+                        "verification": {"passed": True},
+                    }
+                )
+            for attempt in range(200):
+                calibration.append(
+                    {
+                        "model": model,
+                        "mode": mode,
+                        "task_id": task_id,
+                        "task_stratum": "stratum",
+                        "relation": "wrong",
+                        "attempt": attempt,
+                        "verification": {"passed": False},
+                    }
+                )
+
+    confirmation = []
+    for model in models:
+        for mode in range(3):
+            task_id = f"confirmation-{mode}"
+            confirmation.append(
+                {
+                    "design": "four_term",
+                    "model": model,
+                    "condition": "baseline_prior",
+                    "mode": mode,
+                    "task_id": task_id,
+                    "task_stratum": "stratum",
+                    "q": [1 / 3] * 3,
+                    "q_true": 1 / 3,
+                    "total_slots": 3.0,
+                    "censored": False,
+                    "planned_issued": [40, 40, 40],
+                }
+            )
+            for alpha in (0.6, 0.8):
+                for allocation_name in ("matched", "prior", "half_anti"):
+                    condition = f"alpha={alpha:.8f}|allocation={allocation_name}"
+                    for z in range(3):
+                        q = DESIGN.allocation(alpha, z, allocation_name)
+                        planned = [round(value * 120) for value in q]
+                        confirmation.append(
+                            {
+                                "design": "four_term",
+                                "model": model,
+                                "condition": condition,
+                                "mode": mode,
+                                "z": z,
+                                "task_id": task_id,
+                                "task_stratum": "stratum",
+                                "q": q,
+                                "q_true": q[mode],
+                                "total_slots": 1.0 / q[mode],
+                                "censored": False,
+                                "planned_issued": planned,
+                            }
+                        )
+
+    calibration_path = tmp_path / "calibration.jsonl"
+    confirmation_path = tmp_path / "confirmation.jsonl"
+    manifest_path = tmp_path / "manifest.json"
+    costs_path = tmp_path / "costs.json"
+    output_path = tmp_path / "analysis.json"
+    calibration_path.write_text("".join(json.dumps(row) + "\n" for row in calibration))
+    confirmation_path.write_text("".join(json.dumps(row) + "\n" for row in confirmation))
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "terms": [
+                    {
+                        "alpha": alpha,
+                        "allocation": allocation_name,
+                        "information_nats": DESIGN.information(alpha),
+                        "mismatch_nats": DESIGN.mismatch(alpha, allocation_name),
+                    }
+                    for alpha in (0.6, 0.8)
+                    for allocation_name in ("matched", "prior", "half_anti")
+                ]
+            }
+        )
+    )
+    costs_path.write_text(
+        json.dumps(
+            {
+                "clock": "test",
+                "models": {baseline: {"kappa": 2.0}, deployed: {"kappa": 1.0}},
+            }
+        )
+    )
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "analyze_sai3_four_term.py",
+            "--calibration",
+            str(calibration_path),
+            "--confirmation",
+            str(confirmation_path),
+            "--design-manifest",
+            str(manifest_path),
+            "--costs",
+            str(costs_path),
+            "--baseline-model",
+            baseline,
+            "--deployed-model",
+            deployed,
+            "--bootstrap-repetitions",
+            "20",
+            "--output",
+            str(output_path),
+        ],
+    )
+    FOUR_TERM_ANALYSIS.main()
+    result = json.loads(output_path.read_text())
+    assert result["status"] == "PASS"
+    assert math.isclose(result["confirmation_inverse_share_beta"], 1.0, abs_tol=1e-12)
+    assert math.isclose(result["primary_residual_rms_nats"], 0.0, abs_tol=1e-12)
