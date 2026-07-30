@@ -197,7 +197,7 @@ statement is the assumption-explicit uniform-score selection guarantee.
 
 ### Three-case transfer bound
 
-The archived proof:
+The proof found only in the former `final_paper_local.tex` snapshot:
 
 - omits one of the two source--target objective deviations needed for
   transferred-vs-target-optimal regret;
@@ -206,7 +206,8 @@ The archived proof:
 - uses prior KL alone to control posterior and routing-channel shifts.
 
 The qualitative transfer trichotomy remains useful, but the displayed
-quantitative theorem is not promoted.
+quantitative theorem is not promoted.  The snapshot was removed after this
+assessment; Git history remains its provenance record.
 
 ### Lagrangian “non-connection”
 
@@ -229,7 +230,7 @@ strongest impossibility wording, so it is retained only as interpretation.
 | \`archive/neurips_old.tex\` | retain as archive | core duplicates; valid selection ideas consolidated; transfer bound unsupported |
 | \`archive/main_local.tex\` | removed after second audit | strict predecessor of \`main.tex\`; no distinct theoretical or empirical result |
 | \`archive/main_3_local.tex\` | removed after migration | same theory as \`main_3.tex\`; its unique exploratory pilot appendix was moved to the AutoResearch experiment bundle |
-| \`archive/final_paper_local.tex\` | retain as archive | Overleaf-only local counterpart preserving the pre-cleanup transfer claims assessed above |
+| \`archive/final_paper_local.tex\` | removed after reconciliation | its valid transfer concepts are represented more rigorously in \`theory_anchor.tex\`; the exclusive quantitative bound is unsupported, and its new citation keys have no bibliography entries |
 | \`archive/Beneventano_Poggio.tex\` | retain as archive | mechanical text extraction of \`BP.pdf\`, not an authoritative LaTeX source |
 | \`archive/next_steps.tex\` | untouched | explicitly excluded by request |
 

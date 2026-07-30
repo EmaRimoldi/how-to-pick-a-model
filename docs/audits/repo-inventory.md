@@ -6,8 +6,8 @@ The output is deterministic and excludes local caches, virtualenvs, `tmp/`, `run
 ## Summary
 
 - Root: `.`
-- Files indexed: `2804`
-- Bytes indexed: `98.2M`
+- Files indexed: `2803`
+- Bytes indexed: `98.1M`
 
 ## Canonical Entrypoints
 
@@ -54,13 +54,13 @@ The output is deterministic and excludes local caches, virtualenvs, `tmp/`, `run
 | --- | --- | --- |
 | `experiments` | 2275 | 52.2M |
 | `artifacts` | 26 | 20.4M |
-| `paper` | 144 | 19.2M |
+| `paper` | 143 | 19.1M |
 | `docs` | 63 | 3.5M |
 | `uv.lock` | 1 | 1.0M |
 | `src` | 134 | 1.0M |
 | `autoresearch` | 75 | 575.4K |
-| `scripts` | 21 | 206.6K |
-| `tests` | 30 | 100.4K |
+| `scripts` | 21 | 206.3K |
+| `tests` | 30 | 100.3K |
 | `prompts` | 6 | 21.6K |
 | `configs` | 7 | 12.7K |
 | `NOTES.md` | 1 | 9.2K |
@@ -89,13 +89,13 @@ The output is deterministic and excludes local caches, virtualenvs, `tmp/`, `run
 | `.jsonl` | 281 | 31.6M |
 | `.txt` | 281 | 4.0M |
 | `.png` | 156 | 21.2M |
-| `.md` | 151 | 693.6K |
+| `.md` | 151 | 693.9K |
 | `.pdf` | 110 | 9.7M |
 | `.csv` | 35 | 722.9K |
 | `.sh` | 24 | 70.6K |
 | `.part-000` | 18 | 20.0M |
 | `<none>` | 12 | 11.0K |
-| `.tex` | 8 | 628.4K |
+| `.tex` | 7 | 542.6K |
 | `.sbatch` | 5 | 6.5K |
 | `.svg` | 3 | 9.0K |
 | `.bib` | 2 | 25.0K |

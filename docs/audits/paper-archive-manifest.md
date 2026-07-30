@@ -6,8 +6,8 @@ This file classifies every root-level file under `paper/neurips-submission/archi
 ## Summary
 
 - Archive root: `paper/neurips-submission/archive`
-- Files classified: `11/11`
-- Text sources compared: `7`
+- Files classified: `10/10`
+- Text sources compared: `6`
 
 ## Disposition Counts
 
@@ -17,7 +17,6 @@ This file classifies every root-level file under `paper/neurips-submission/archi
 | `keep-independent` | 1 |
 | `keep-provenance` | 3 |
 | `keep-reference` | 3 |
-| `review-before-delete` | 1 |
 | `superseded-provenance` | 2 |
 
 ## File Policy
@@ -27,10 +26,9 @@ This file classifies every root-level file under `paper/neurips-submission/archi
 | `paper/neurips-submission/archive/Achille & Soatto.pdf` | `.pdf` | - | 803.1K | external theory reference | `keep-reference` | - | - | - |
 | `paper/neurips-submission/archive/BP.pdf` | `.pdf` | - | 465.8K | external proper-time reference | `keep-reference` | - | - | - |
 | `paper/neurips-submission/archive/Beneventano_Poggio.tex` | `.tex` | 1954 | 94.9K | mechanical theory extraction | `keep-provenance` | archive/theory_anchor.tex for promoted claims | `paper/neurips-submission/archive/theory_anchor.tex` | 3.99% |
-| `paper/neurips-submission/archive/final_paper.tex` | `.tex` | 1339 | 77.6K | historical integrated draft | `superseded-provenance` | main.tex, arxiv.tex, archive/theory_anchor.tex | `paper/neurips-submission/archive/final_paper_local.tex` | 84.04% |
-| `paper/neurips-submission/archive/final_paper_local.tex` | `.tex` | 1564 | 85.8K | local snapshot of historical integrated draft | `review-before-delete` | final_paper.tex and archive/theory_anchor.tex | `paper/neurips-submission/archive/final_paper.tex` | 84.04% |
+| `paper/neurips-submission/archive/final_paper.tex` | `.tex` | 1339 | 77.6K | historical integrated draft | `superseded-provenance` | main.tex, arxiv.tex, archive/theory_anchor.tex | `paper/neurips-submission/archive/neurips_old.tex` | 2.53% |
 | `paper/neurips-submission/archive/main.pdf` | `.pdf` | - | 599.4K | historical compiled manuscript snapshot | `keep-provenance` | main.tex build output | - | - |
-| `paper/neurips-submission/archive/neurips_old.tex` | `.tex` | 1166 | 46.8K | old NeurIPS draft | `superseded-provenance` | main.tex | `paper/neurips-submission/archive/final_paper_local.tex` | 3.45% |
+| `paper/neurips-submission/archive/neurips_old.tex` | `.tex` | 1166 | 46.8K | old NeurIPS draft | `superseded-provenance` | main.tex | `paper/neurips-submission/archive/final_paper.tex` | 2.53% |
 | `paper/neurips-submission/archive/next_steps.tex` | `.tex` | 2308 | 64.1K | independent planning document | `keep-independent` | - | `paper/neurips-submission/archive/theory_anchor.tex` | 0.13% |
 | `paper/neurips-submission/archive/references.bib` | `.bib` | 336 | 11.4K | archived bibliography | `keep-provenance` | references.bib | `paper/neurips-submission/archive/Beneventano_Poggio.tex` | 0.21% |
 | `paper/neurips-submission/archive/submitted-manuscript.pdf` | `.pdf` | - | 5.2M | immutable submitted manuscript snapshot | `keep-reference` | - | - | - |
@@ -42,7 +40,6 @@ This file classifies every root-level file under `paper/neurips-submission/archi
 - `paper/neurips-submission/archive/BP.pdf`: Reference PDF retained for the proper-time genealogy.
 - `paper/neurips-submission/archive/Beneventano_Poggio.tex`: Use for source genealogy, not as active prose.
 - `paper/neurips-submission/archive/final_paper.tex`: Mine only when reconciling missing concepts.
-- `paper/neurips-submission/archive/final_paper_local.tex`: Retained only because local snapshots can contain unpushed edits.
 - `paper/neurips-submission/archive/main.pdf`: Do not cite as evidence source; rebuild active sources with make paper-build.
 - `paper/neurips-submission/archive/neurips_old.tex`: Do not use as active source unless investigating historical wording.
 - `paper/neurips-submission/archive/next_steps.tex`: Keep separate from the manuscript; do not auto-merge.
@@ -54,15 +51,15 @@ This file classifies every root-level file under `paper/neurips-submission/archi
 
 | A | B | Similarity |
 | --- | --- | --- |
-| `paper/neurips-submission/archive/final_paper.tex` | `paper/neurips-submission/archive/final_paper_local.tex` | 84.04% |
 | `paper/neurips-submission/archive/Beneventano_Poggio.tex` | `paper/neurips-submission/archive/theory_anchor.tex` | 3.99% |
-| `paper/neurips-submission/archive/final_paper_local.tex` | `paper/neurips-submission/archive/neurips_old.tex` | 3.45% |
 | `paper/neurips-submission/archive/final_paper.tex` | `paper/neurips-submission/archive/neurips_old.tex` | 2.53% |
 | `paper/neurips-submission/archive/Beneventano_Poggio.tex` | `paper/neurips-submission/archive/final_paper.tex` | 0.81% |
-| `paper/neurips-submission/archive/Beneventano_Poggio.tex` | `paper/neurips-submission/archive/final_paper_local.tex` | 0.78% |
 | `paper/neurips-submission/archive/final_paper.tex` | `paper/neurips-submission/archive/theory_anchor.tex` | 0.40% |
-| `paper/neurips-submission/archive/final_paper_local.tex` | `paper/neurips-submission/archive/theory_anchor.tex` | 0.39% |
 | `paper/neurips-submission/archive/neurips_old.tex` | `paper/neurips-submission/archive/theory_anchor.tex` | 0.32% |
 | `paper/neurips-submission/archive/Beneventano_Poggio.tex` | `paper/neurips-submission/archive/references.bib` | 0.21% |
 | `paper/neurips-submission/archive/references.bib` | `paper/neurips-submission/archive/theory_anchor.tex` | 0.18% |
 | `paper/neurips-submission/archive/next_steps.tex` | `paper/neurips-submission/archive/theory_anchor.tex` | 0.13% |
+| `paper/neurips-submission/archive/final_paper.tex` | `paper/neurips-submission/archive/references.bib` | 0.05% |
+| `paper/neurips-submission/archive/neurips_old.tex` | `paper/neurips-submission/archive/references.bib` | 0.05% |
+| `paper/neurips-submission/archive/Beneventano_Poggio.tex` | `paper/neurips-submission/archive/neurips_old.tex` | 0.04% |
+| `paper/neurips-submission/archive/neurips_old.tex` | `paper/neurips-submission/archive/next_steps.tex` | 0.03% |

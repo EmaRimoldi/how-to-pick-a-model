@@ -6,7 +6,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 ## Summary
 
 - Canonical docs present: `23/23`
-- Paper TeX sources indexed: `8`
+- Paper TeX sources indexed: `7`
 - Formal objects in canonical TeX anchors: `100`
 - Experiment bundles indexed: `20`
 - Script entrypoints indexed: `35`
@@ -49,7 +49,6 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | --- | --- | --- | --- | --- |
 | `paper/neurips-submission/archive/Beneventano_Poggio.tex` | mechanical historical theory extraction | 1954 | 0 | yes |
 | `paper/neurips-submission/archive/final_paper.tex` | archived draft or provenance source | 1339 | 15 | archive |
-| `paper/neurips-submission/archive/final_paper_local.tex` | archived draft or provenance source | 1564 | 20 | archive |
 | `paper/neurips-submission/archive/neurips_old.tex` | archived draft or provenance source | 1166 | 13 | archive |
 | `paper/neurips-submission/archive/next_steps.tex` | independent planning document | 2308 | 0 | yes |
 | `paper/neurips-submission/archive/theory_anchor.tex` | maximal validated theory anchor | 2272 | 65 | yes |

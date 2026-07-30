@@ -39,12 +39,6 @@ ARCHIVE_POLICIES = {
         "superseded_by": "main.tex, arxiv.tex, archive/theory_anchor.tex",
         "notes": "Mine only when reconciling missing concepts.",
     },
-    "final_paper_local.tex": {
-        "role": "local snapshot of historical integrated draft",
-        "disposition": "review-before-delete",
-        "superseded_by": "final_paper.tex and archive/theory_anchor.tex",
-        "notes": "Retained only because local snapshots can contain unpushed edits.",
-    },
     "main.pdf": {
         "role": "historical compiled manuscript snapshot",
         "disposition": "keep-provenance",
