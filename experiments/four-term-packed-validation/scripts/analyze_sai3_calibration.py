@@ -14,6 +14,7 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from analyze_sai3_four_term import calibration_diagnostics, load_jsonl, mean  # noqa: E402
+from runtime_provenance import sha256_path  # noqa: E402
 
 
 def main() -> None:
@@ -117,6 +118,9 @@ def main() -> None:
         "evidence_status": "calibration_not_confirmation",
         "completions": len(rows),
         "models": sorted({row["model"] for row in rows}),
+        "input_provenance": [
+            {"path": str(path), "sha256": sha256_path(path)} for path in args.inputs
+        ],
         "tasks": len(task_rows),
         "duplicate_physical_slots": duplicate_slots,
         "duplicate_model_seeds": duplicate_seeds,

@@ -9,8 +9,15 @@ import json
 import math
 import random
 import statistics
+import sys
 from pathlib import Path
 from typing import Any, Iterable
+
+
+BUNDLE = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(BUNDLE))
+
+from runtime_provenance import sha256_path  # noqa: E402
 
 
 PRIOR = (1.0 / 3.0,) * 3
@@ -372,6 +379,7 @@ def main() -> None:
     parser.add_argument("--max-rms-upper-95", type=float, default=0.20)
     parser.add_argument("--max-censoring", type=float, default=0.05)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--bootstrap-output", type=Path)
     args = parser.parse_args()
 
     calibration_rows = load_jsonl(args.calibration)
@@ -602,13 +610,58 @@ def main() -> None:
             min_selection_probability >= args.min_selected_model_probability
         ),
     }
+    bootstrap_record = None
+    if args.bootstrap_output is not None:
+        bootstrap_document = {
+            "schema_version": 1,
+            "analysis": "held_out_four_term_cluster_bootstrap_draws",
+            "seed": args.seed,
+            "repetitions": args.bootstrap_repetitions,
+            "primary_residual_rms_nats": bootstrap_primary_rms,
+            "inverse_share_beta": bootstrap_inverse_betas,
+            "residuals_nats": {
+                f"{label}|alpha={alpha:.8f}|allocation={allocation}": values
+                for (label, alpha, allocation), values in sorted(bootstrap_residuals.items())
+            },
+            "predicted_deltas_nats": {
+                f"{label}|alpha={alpha:.8f}|allocation={allocation}": values
+                for (label, alpha, allocation), values in sorted(
+                    bootstrap_predicted_deltas.items()
+                )
+            },
+            "residual_term_slopes": dict(bootstrap_term_slopes),
+        }
+        args.bootstrap_output.parent.mkdir(parents=True, exist_ok=True)
+        args.bootstrap_output.write_text(
+            json.dumps(bootstrap_document, separators=(",", ":")) + "\n", encoding="utf-8"
+        )
+        bootstrap_record = {
+            "path": str(args.bootstrap_output),
+            "sha256": sha256_path(args.bootstrap_output),
+            "repetitions": args.bootstrap_repetitions,
+        }
     summary = {
         "schema_version": 1,
         "analysis": "held_out_four_term_closure",
+        "evidence_status": "held_out_confirmation",
         "baseline_model": args.baseline_model,
         "deployed_model": args.deployed_model,
         "clock": cost_document["clock"],
         "costs": costs,
+        "input_provenance": {
+            "calibration": [
+                {"path": str(path), "sha256": sha256_path(path)} for path in args.calibration
+            ],
+            "confirmation": [
+                {"path": str(path), "sha256": sha256_path(path)} for path in args.confirmation
+            ],
+            "design_manifest": {
+                "path": str(args.design_manifest),
+                "sha256": sha256_path(args.design_manifest),
+            },
+            "costs": {"path": str(args.costs), "sha256": sha256_path(args.costs)},
+        },
+        "bootstrap_draws": bootstrap_record,
         "focused_scales": [
             {"model": model, "mode": mode, "t0_slots": value}
             for (model, mode), value in sorted(scales.items())
