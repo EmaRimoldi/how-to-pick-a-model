@@ -66,6 +66,14 @@ assert FOUR_TERM_ANALYSIS_SPEC is not None and FOUR_TERM_ANALYSIS_SPEC.loader is
 FOUR_TERM_ANALYSIS = importlib.util.module_from_spec(FOUR_TERM_ANALYSIS_SPEC)
 FOUR_TERM_ANALYSIS_SPEC.loader.exec_module(FOUR_TERM_ANALYSIS)
 
+PROVENANCE_PATH = (
+    ROOT / "experiments" / "four-term-packed-validation" / "runtime_provenance.py"
+)
+PROVENANCE_SPEC = importlib.util.spec_from_file_location("runtime_provenance", PROVENANCE_PATH)
+assert PROVENANCE_SPEC is not None and PROVENANCE_SPEC.loader is not None
+PROVENANCE = importlib.util.module_from_spec(PROVENANCE_SPEC)
+PROVENANCE_SPEC.loader.exec_module(PROVENANCE)
+
 
 def test_reference_and_wrong_shards_are_separated() -> None:
     for mode in range(3):
@@ -177,6 +185,21 @@ def test_vllm_slot_seeds_are_stable_and_unique() -> None:
     assert RUNNER.sampling_seed(17, "model", "task-1", 2, 3) == RUNNER.sampling_seed(
         17, "model", "task-1", 2, 3
     )
+
+
+def test_tokenizer_fingerprint_covers_vocab_and_chat_protocol() -> None:
+    class Tokenizer:
+        special_tokens_map = {"eos_token": "<eos>"}
+
+        def __init__(self, chat_template: str) -> None:
+            self.chat_template = chat_template
+
+        def get_vocab(self) -> dict[str, int]:
+            return {"b": 2, "a": 1}
+
+    first = PROVENANCE.tokenizer_fingerprint(Tokenizer("template-a"))
+    assert first == PROVENANCE.tokenizer_fingerprint(Tokenizer("template-a"))
+    assert first != PROVENANCE.tokenizer_fingerprint(Tokenizer("template-b"))
 
 
 def test_balanced_task_selection_supports_disjoint_shards() -> None:

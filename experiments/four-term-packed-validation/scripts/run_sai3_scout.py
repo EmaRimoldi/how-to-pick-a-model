@@ -18,6 +18,7 @@ BUNDLE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BUNDLE))
 
 from sai3 import read_jsonl, verify_completion  # noqa: E402
+from runtime_provenance import collect_runtime_provenance  # noqa: E402
 
 
 def sampling_seed(base_seed: int, model: str, task_id: str, shard: int, attempt: int) -> int:
@@ -239,6 +240,9 @@ def main() -> None:
         "seed_scheme": "blake2b(base_seed|model|task_id|shard|attempt)",
         "matched": matched_summary,
         "wrong": wrong_summary,
+        "provenance": collect_runtime_provenance(
+            bundle=BUNDLE, tokenizer=tokenizer, tasks=args.tasks, runtime_model=llm
+        ),
     }
     args.metadata_output.write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps(metadata, indent=2, sort_keys=True))

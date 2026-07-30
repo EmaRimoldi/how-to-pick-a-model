@@ -19,6 +19,7 @@ BUNDLE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BUNDLE))
 
 from sai3 import read_jsonl, verify_completion  # noqa: E402
+from runtime_provenance import collect_runtime_provenance  # noqa: E402
 
 
 def generation_seed(base_seed: int, model: str, trajectory_id: str, slot: int) -> int:
@@ -250,6 +251,13 @@ def main() -> None:
         "host": platform.node(),
         "python": platform.python_version(),
         "gpu": gpu_snapshot(),
+        "provenance": collect_runtime_provenance(
+            bundle=BUNDLE,
+            tokenizer=tokenizer,
+            tasks=args.tasks,
+            design=args.design,
+            runtime_model=llm,
+        ),
         "rounds": rounds,
     }
     args.metadata_output.write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n", encoding="utf-8")
