@@ -226,6 +226,14 @@ def test_balanced_task_selection_supports_disjoint_shards() -> None:
     assert {task["task_id"] for task in first}.isdisjoint(task["task_id"] for task in second)
 
 
+def test_targeted_task_selection_supports_calibration_extensions() -> None:
+    tasks = SAI3.generate_tasks(seed=39, split="calibration", tasks_per_mode=4)
+    requested = [tasks[0]["task_id"], tasks[5]["task_id"], tasks[10]["task_id"]]
+    selected, counts = RUNNER.select_task_ids(tasks, requested)
+    assert [task["task_id"] for task in selected] == requested
+    assert counts == {0: 1, 1: 1, 2: 1}
+
+
 def test_controlled_channel_terms_match_known_special_cases() -> None:
     assert math.isclose(DESIGN.information(1.0 / 3.0), 0.0, abs_tol=1e-12)
     for alpha in (0.6, 0.8):

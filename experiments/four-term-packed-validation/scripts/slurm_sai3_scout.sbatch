@@ -39,6 +39,11 @@ if ! "$ENV_DIR/bin/python" -c "import vllm, transformers" >/dev/null 2>&1; then
   uv pip install --python "$ENV_DIR/bin/python" "vllm>=0.8,<0.12" "transformers>=4.51" numpy
 fi
 
+EXTRA_ARGS=()
+if [[ -n "${SAI3_TASK_IDS_FILE:-}" ]]; then
+  EXTRA_ARGS+=(--task-ids-file "$SAI3_TASK_IDS_FILE")
+fi
+
 "$ENV_DIR/bin/python" "$BUNDLE/scripts/run_sai3_scout.py" \
   --tasks "$TASKS" \
   --model "$MODEL" \
@@ -49,4 +54,5 @@ fi
   --matched-attempts "${SAI3_MATCHED_ATTEMPTS:-4}" \
   --wrong-attempts "${SAI3_WRONG_ATTEMPTS:-1}" \
   --attempt-offset "${SAI3_ATTEMPT_OFFSET:-0}" \
-  --max-tokens "${SAI3_MAX_TOKENS:-256}"
+  --max-tokens "${SAI3_MAX_TOKENS:-256}" \
+  "${EXTRA_ARGS[@]}"

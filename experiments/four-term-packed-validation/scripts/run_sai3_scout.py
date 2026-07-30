@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import collections
 import hashlib
 import json
 import platform
@@ -44,6 +45,20 @@ def select_balanced_tasks(
             selected.append(task)
             selected_counts[mode] += 1
     return selected, selected_counts
+
+
+def select_task_ids(
+    all_tasks: list[dict[str, Any]], requested_ids: list[str]
+) -> tuple[list[dict[str, Any]], dict[int, int]]:
+    if len(requested_ids) != len(set(requested_ids)):
+        raise ValueError("requested task ids must be unique")
+    by_id = {task["task_id"]: task for task in all_tasks}
+    missing = sorted(set(requested_ids) - by_id.keys())
+    if missing:
+        raise ValueError(f"requested task ids are missing: {missing[:5]}")
+    selected = [by_id[task_id] for task_id in requested_ids]
+    counts = collections.Counter(int(task["mode"]) for task in selected)
+    return selected, {mode: counts[mode] for mode in range(3)}
 
 
 def gpu_snapshot() -> str:
@@ -163,6 +178,7 @@ def main() -> None:
     parser.add_argument("--metadata-output", type=Path, required=True)
     parser.add_argument("--tasks-per-mode", type=int, default=6)
     parser.add_argument("--task-offset-per-mode", type=int, default=0)
+    parser.add_argument("--task-ids-file", type=Path)
     parser.add_argument("--matched-attempts", type=int, default=4)
     parser.add_argument("--wrong-attempts", type=int, default=1)
     parser.add_argument("--attempt-offset", type=int, default=0)
@@ -176,11 +192,21 @@ def main() -> None:
     from vllm import LLM, SamplingParams
 
     all_tasks = read_jsonl(args.tasks)
-    tasks, counts = select_balanced_tasks(all_tasks, args.tasks_per_mode, args.task_offset_per_mode)
-    if any(count != args.tasks_per_mode for count in counts.values()):
-        raise SystemExit(
-            f"insufficient balanced tasks after offset {args.task_offset_per_mode}: {counts}"
+    if args.task_ids_file is not None:
+        requested_ids = json.loads(args.task_ids_file.read_text(encoding="utf-8"))
+        if not isinstance(requested_ids, list) or not all(
+            isinstance(task_id, str) for task_id in requested_ids
+        ):
+            raise SystemExit("task ids file must contain a JSON list of strings")
+        tasks, counts = select_task_ids(all_tasks, requested_ids)
+    else:
+        tasks, counts = select_balanced_tasks(
+            all_tasks, args.tasks_per_mode, args.task_offset_per_mode
         )
+        if any(count != args.tasks_per_mode for count in counts.values()):
+            raise SystemExit(
+                f"insufficient balanced tasks after offset {args.task_offset_per_mode}: {counts}"
+            )
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.metadata_output.parent.mkdir(parents=True, exist_ok=True)
@@ -233,6 +259,8 @@ def main() -> None:
         "tasks": str(args.tasks),
         "tasks_per_mode": args.tasks_per_mode,
         "task_offset_per_mode": args.task_offset_per_mode,
+        "task_ids_file": str(args.task_ids_file) if args.task_ids_file else None,
+        "selected_tasks_by_mode": counts,
         "matched_attempts": args.matched_attempts,
         "wrong_attempts": args.wrong_attempts,
         "attempt_offset": args.attempt_offset,
