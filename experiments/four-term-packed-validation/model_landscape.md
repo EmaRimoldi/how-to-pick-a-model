@@ -155,10 +155,10 @@ SERA fails its format gate. Do not choose alternates by SAI-3 rank.
 ## How Long The Run Takes
 
 The frozen primary protocol creates 55,296 initial calibration completions per
-model. The physical confirmation has 58,368 trajectories per model and stops
+model. The physical confirmation has 87,552 trajectories per model and stops
 each at certified success. A planning approximation from the balanced Stage 0
-strata gives roughly 128 million confirmation decoded tokens across both
-models and 156 million including initial calibration, before any zero-cell
+strata gives roughly 191 million confirmation decoded tokens across both
+models and 220 million including initial calibration, before any zero-cell
 extensions.
 
 The batch scout sustained about 5.7k and 3.3k decoded token/s respectively.

@@ -246,14 +246,14 @@ but never computes four-term closure or opens confirmation seeds.
 Calibration generates 64 correct-shard attempts and four attempts for each
 wrong shard per task and model. A correct-shard task with no success is extended
 once, with frozen seeds, to 128 attempts; any remaining zero-success task cell
-makes focused `t0` unidentified. Confirmation physically executes four
-independent trajectories for every `(task, alpha, allocation, z)` cell, plus four
-prior-baseline trajectories, with a 128-slot censoring limit.
+makes focused `t0` unidentified. Confirmation physically executes six
+independent trajectories for every `(task, alpha, allocation, z)` cell, plus six
+prior-baseline trajectories, with a 256-slot censoring limit.
 
 This is 55,296 initial calibration completions per model. The confirmation
-design has 58,368 trajectories per model. A planning approximation based on
-the final Stage 0 strata gives about 128 million confirmation decoded tokens
-across both models and about 156 million including initial calibration, before
+design has 87,552 trajectories per model. A planning approximation based on
+the final Stage 0 strata gives about 191 million confirmation decoded tokens
+across both models and about 220 million including initial calibration, before
 any zero-cell extensions. Actual issued slots, not this expectation, enter the
 ledger. Prefix caching may be used, but cached and uncached normalized compute
 are both recorded.
@@ -371,6 +371,11 @@ then take its logarithm:
 Do not average per-run log times: in general
 `E[log(tau)] != log(E[tau])`. A 90% first-passage quantile is reported as a
 secondary proper-time diagnostic and receives a separate packedness test.
+Within each task cell, independent stationary attempts make first passage
+geometric. Estimate its mean as total exposed slots divided by certified
+successes; this is the geometric MLE, equals the ordinary sample mean without
+censoring, and handles right-censoring without imputing an artificial time.
+An all-censored task cell remains unidentified and fails the gate.
 
 The calibration-only prediction relative to the 14B prior-matched baseline is
 
@@ -489,7 +494,7 @@ trajectories per cell. A second analysis conditions on the final BF16 Stage 0
 task counts, resamples within the four balanced strata using Jeffreys beta
 posteriors, simulates 64-attempt calibration with one extension to 128, and
 executes the exact censored IID schedule. It selects 256 task clusters per mode
-with four trajectories per `(task, z, allocation)` cell. This size was frozen
+with six trajectories per `(task, z, allocation)` cell and a 256-slot limit. This size was frozen
 before calibration or confirmation seeds were created. Final uncertainty is
 determined by the stratified paired-task bootstrap on actual confirmation
 trajectories.
@@ -504,10 +509,10 @@ the maximum of 36 cells. These synthetic null results do not establish
 packedness; the physical inverse-share and closure gates remain mandatory.
 
 The Stage-0-conditioned calculation uses 2,000 replications. At the frozen 256
-tasks per mode it identifies every focused cell in `99.3%` of simulations and
-passes all point closure gates in `95.35%` of packed-null simulations. Its
-95th-percentile absolute mean residual is `0.0956` nats, residual RMS is
-`0.0969` nats, and maximum cell censoring is `1.56%`. This is a power
+tasks per mode it identifies every focused cell in `98.45%` of simulations and
+passes all point closure gates in `95.05%` of packed-null simulations. Its
+95th-percentile absolute mean residual is `0.0926` nats, residual RMS is
+`0.0939` nats, and maximum cell censoring is `0.456%`. This is a power
 calculation under the law being tested, not evidence that the law holds.
 
 ## External-Validity Arm

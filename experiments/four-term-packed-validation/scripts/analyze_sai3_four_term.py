@@ -137,18 +137,27 @@ def focused_scales(
 def trajectory_task_means(
     rows: list[dict[str, Any]],
 ) -> dict[tuple[str, str, int, int, str, str], float]:
-    groups: dict[tuple[str, str, int, int, str, str], list[float]] = collections.defaultdict(list)
+    groups: dict[tuple[str, str, int, int, str, str], list[int]] = collections.defaultdict(
+        lambda: [0, 0]
+    )
     for row in rows:
         if row.get("design") != "four_term":
             continue
         z = int(row["z"]) if "z" in row else -1
-        value = float(row["total_slots"])
-        if row.get("censored"):
-            value += 1.0
-        groups[
-            (row["model"], row["condition"], int(row["mode"]), z, row["task_stratum"], row["task_id"])
-        ].append(value)
-    return {key: mean(values) for key, values in groups.items()}
+        key = (
+            row["model"],
+            row["condition"],
+            int(row["mode"]),
+            z,
+            row["task_stratum"],
+            row["task_id"],
+        )
+        groups[key][0] += int(row["total_slots"])
+        groups[key][1] += bool(row.get("success"))
+    unidentified = [key for key, (_exposure, successes) in groups.items() if successes == 0]
+    if unidentified:
+        raise ValueError(f"confirmation has all-censored task cells: {unidentified[:5]}")
+    return {key: exposure / successes for key, (exposure, successes) in groups.items()}
 
 
 def trajectory_cells(

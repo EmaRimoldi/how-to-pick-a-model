@@ -104,8 +104,8 @@ scheduler:
   share_tolerance_absolute: 0.01
   inverse_share_q_values: [0.10, 0.20, 0.3333333333, 0.50, 0.80, 1.0]
   inverse_share_development_repetitions: 4
-  confirmation_repetitions: 4
-  confirmation_max_slots: 128
+  confirmation_repetitions: 6
+  confirmation_max_slots: 256
   physical_schedule_fraction: 1.0
   count_every_issued_slot: true
 
@@ -119,6 +119,7 @@ resource:
 
 estimand:
   primary: conditional_mean_first_passage_resource
+  censored_cell_estimator: geometric_total_exposure_over_successes
   secondary: conditional_p90_first_passage_resource
   cell_aggregation: log_of_cell_mean
   per_run_log_average_prohibited: true

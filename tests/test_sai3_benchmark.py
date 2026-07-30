@@ -4,6 +4,7 @@ import importlib.util
 import json
 import math
 import sys
+from fractions import Fraction
 from pathlib import Path
 
 
@@ -345,6 +346,25 @@ def test_four_term_analysis_closes_on_exact_packed_cells() -> None:
     assert math.isclose(observed, terms["predicted_delta_nats"], abs_tol=1e-12)
 
 
+def test_censored_first_passage_uses_geometric_exposure_mle() -> None:
+    rows = [
+        {
+            "design": "four_term",
+            "model": "model",
+            "condition": "condition",
+            "mode": 0,
+            "z": 0,
+            "task_stratum": "stratum",
+            "task_id": "task",
+            "total_slots": slots,
+            "success": success,
+        }
+        for slots, success in ((2, True), (3, True), (10, False), (10, False))
+    ]
+    estimates = FOUR_TERM_ANALYSIS.trajectory_task_means(rows)
+    assert list(estimates.values()) == [12.5]
+
+
 def test_four_term_main_runs_on_exact_disjoint_splits(tmp_path: Path, monkeypatch) -> None:
     baseline = "baseline"
     deployed = "deployed"
@@ -393,6 +413,7 @@ def test_four_term_main_runs_on_exact_disjoint_splits(tmp_path: Path, monkeypatc
                     "q": [1 / 3] * 3,
                     "q_true": 1 / 3,
                     "total_slots": 3.0,
+                    "success": True,
                     "censored": False,
                     "planned_issued": [40, 40, 40],
                 }
@@ -403,22 +424,27 @@ def test_four_term_main_runs_on_exact_disjoint_splits(tmp_path: Path, monkeypatc
                     for z in range(3):
                         q = DESIGN.allocation(alpha, z, allocation_name)
                         planned = [round(value * 120) for value in q]
-                        confirmation.append(
-                            {
-                                "design": "four_term",
-                                "model": model,
-                                "condition": condition,
-                                "mode": mode,
-                                "z": z,
-                                "task_id": task_id,
-                                "task_stratum": "stratum",
-                                "q": q,
-                                "q_true": q[mode],
-                                "total_slots": 1.0 / q[mode],
-                                "censored": False,
-                                "planned_issued": planned,
-                            }
-                        )
+                        target = Fraction(1.0 / q[mode]).limit_denominator(1000)
+                        slots = [1] * target.denominator
+                        slots[0] += target.numerator - target.denominator
+                        for total_slots in slots:
+                            confirmation.append(
+                                {
+                                    "design": "four_term",
+                                    "model": model,
+                                    "condition": condition,
+                                    "mode": mode,
+                                    "z": z,
+                                    "task_id": task_id,
+                                    "task_stratum": "stratum",
+                                    "q": q,
+                                    "q_true": q[mode],
+                                    "total_slots": total_slots,
+                                    "success": True,
+                                    "censored": False,
+                                    "planned_issued": planned,
+                                }
+                            )
 
     calibration_path = tmp_path / "calibration.jsonl"
     confirmation_path = tmp_path / "confirmation.jsonl"

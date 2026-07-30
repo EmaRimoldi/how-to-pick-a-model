@@ -21,10 +21,11 @@ reading any empirical result in this repository.
 `stage0_conditioned_power.json` is a second design-only calculation that
 resamples the nonconfirmatory BF16 task counts within the four frozen strata
 and simulates the exact calibration and physical confirmation protocol. With
-2,000 replications, 256 tasks per mode passes all point closure gates in
-`95.35%` of packed-null simulations; its 95th-percentile absolute mean residual
-is `0.0956` nats, residual RMS is `0.0969` nats, and maximum cell censoring is
-`1.56%`.
+2,000 replications, 256 tasks per mode, six trajectories per cell, and a
+256-slot limit pass all point closure gates in `95.05%` of packed-null
+simulations. The identification probability is `98.45%`; 95th-percentile
+absolute mean residual is `0.0926` nats, residual RMS is `0.0939` nats, and
+maximum cell censoring is `0.456%`.
 
 `bf16_inverse_share_development.json` records the physical IID allocation gate
 on generator v5 before either final split was opened. Across 3,456 trajectories,
@@ -65,7 +66,7 @@ At 256 independent trajectories per cell:
 At 128 independent trajectories per cell, residual RMS remains below `0.115`
 nats in 95% of simulations, while the stricter maximum-over-36-designs closure
 criterion passes `69.0%`. The physical protocol uses 256 task clusters per mode
-and four trajectories per cell, gates weighted mean and RMS over six primary
+and six trajectories per cell, gates weighted mean and RMS over six primary
 conditions, and freezes this size before creating calibration or confirmation
 seeds.
 

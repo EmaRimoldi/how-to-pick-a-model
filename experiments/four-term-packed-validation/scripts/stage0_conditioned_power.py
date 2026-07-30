@@ -110,11 +110,15 @@ def physical_cell_mean(
     q_true: float,
     repetitions: int,
     max_slots: int,
-) -> tuple[float, float]:
+) -> tuple[float, float, bool]:
     draws = rng.geometric(q_true * probabilities, size=(repetitions, len(probabilities)))
     censored = draws > max_slots
-    observed = np.minimum(draws, max_slots + 1)
-    return float(np.mean(observed)), float(np.mean(censored))
+    exposure = np.minimum(draws, max_slots)
+    successes = np.sum(~censored, axis=0)
+    if np.any(successes == 0):
+        return math.inf, float(np.mean(censored)), False
+    task_means = np.sum(exposure, axis=0) / successes
+    return float(np.mean(task_means)), float(np.mean(censored)), True
 
 
 def simulate_once(
@@ -171,13 +175,15 @@ def simulate_once(
     baseline_log = 0.0
     censoring_rates = []
     for mode in range(3):
-        cell_mean, censoring = physical_cell_mean(
+        cell_mean, censoring, cell_identified = physical_cell_mean(
             rng,
             confirmation_probabilities[(BASELINE, mode)],
             1.0 / 3.0,
             confirmation_repetitions,
             max_slots,
         )
+        if not cell_identified:
+            return {"identified": False, "closure_pass": False, "censoring": censoring, "mean_residual": math.inf, "rms": math.inf}
         baseline_log += PRIOR[mode] * math.log(costs[BASELINE] * cell_mean)
         censoring_rates.append(censoring)
 
@@ -189,13 +195,15 @@ def simulate_once(
                 for z in range(3):
                     channel = alpha if mode == z else (1.0 - alpha) / 2.0
                     q_true = float(allocation(alpha, z, name)[mode])
-                    cell_mean, censoring = physical_cell_mean(
+                    cell_mean, censoring, cell_identified = physical_cell_mean(
                         rng,
                         confirmation_probabilities[(DEPLOYED, mode)],
                         q_true,
                         confirmation_repetitions,
                         max_slots,
                     )
+                    if not cell_identified:
+                        return {"identified": False, "closure_pass": False, "censoring": censoring, "mean_residual": math.inf, "rms": math.inf}
                     deployed_log += PRIOR[mode] * channel * math.log(costs[DEPLOYED] * cell_mean)
                     censoring_rates.append(censoring)
             observed = baseline_log - deployed_log
@@ -230,8 +238,8 @@ def main() -> None:
     parser.add_argument("--replicates", type=int, default=1000)
     parser.add_argument("--calibration-attempts", type=int, default=64)
     parser.add_argument("--calibration-max-attempts", type=int, default=128)
-    parser.add_argument("--confirmation-repetitions", type=int, default=4)
-    parser.add_argument("--max-slots", type=int, default=128)
+    parser.add_argument("--confirmation-repetitions", type=int, default=6)
+    parser.add_argument("--max-slots", type=int, default=256)
     parser.add_argument("--task-logit-sd", type=float, default=0.25)
     parser.add_argument("--max-absolute-mean-residual", type=float, default=0.10)
     parser.add_argument("--max-residual-rms", type=float, default=0.15)
