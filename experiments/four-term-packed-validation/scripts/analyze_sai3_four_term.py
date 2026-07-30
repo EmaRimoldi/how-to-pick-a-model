@@ -364,6 +364,9 @@ def main() -> None:
     parser.add_argument("--beta-lower", type=float, default=0.90)
     parser.add_argument("--beta-upper", type=float, default=1.10)
     parser.add_argument("--max-share-error", type=float, default=0.01)
+    parser.add_argument("--min-practitioner-kendall-tau", type=float, default=0.80)
+    parser.add_argument("--max-practitioner-oracle-regret", type=float, default=0.10)
+    parser.add_argument("--min-selected-model-probability", type=float, default=0.80)
     parser.add_argument("--max-absolute-mean-residual", type=float, default=0.10)
     parser.add_argument("--max-residual-rms", type=float, default=0.15)
     parser.add_argument("--max-rms-upper-95", type=float, default=0.20)
@@ -439,6 +442,7 @@ def main() -> None:
     confirmation_ids = shared_tasks(task_means, task_index=5, mode_index=2, stratum_index=4)
     rng = random.Random(args.seed)
     bootstrap_residuals: dict[tuple[str, float, str], list[float]] = collections.defaultdict(list)
+    bootstrap_predicted_deltas: dict[tuple[str, float, str], list[float]] = collections.defaultdict(list)
     bootstrap_primary_rms = []
     bootstrap_inverse_betas = []
     term_names = ("unit_cost_nats", "competence_nats", "information_nats", "mismatch_nats")
@@ -475,6 +479,9 @@ def main() -> None:
                 )
                 residual = observed - terms["predicted_delta_nats"]
                 bootstrap_residuals[(label, alpha, allocation)].append(residual)
+                bootstrap_predicted_deltas[(label, alpha, allocation)].append(
+                    terms["predicted_delta_nats"]
+                )
                 sampled_result_rows.append({**terms, "residual_nats": residual})
                 if label == "cross_model_primary":
                     primary_residuals.append(residual)
@@ -495,6 +502,37 @@ def main() -> None:
     primary_residuals = [float(result["residual_nats"]) for result in primary]
     primary_mean = mean(primary_residuals)
     primary_rms = math.sqrt(mean(value * value for value in primary_residuals))
+    choice_rows = []
+    for result in primary:
+        predicted = float(result["predicted_delta_nats"])
+        observed = float(result["observed_delta_nats"])
+        predicted_model = args.deployed_model if predicted >= 0.0 else args.baseline_model
+        oracle_model = args.deployed_model if observed >= 0.0 else args.baseline_model
+        predicted_samples = bootstrap_predicted_deltas[
+            (result["comparison"], result["alpha"], result["allocation"])
+        ]
+        probability = mean(
+            (value >= 0.0) if predicted_model == args.deployed_model else (value < 0.0)
+            for value in predicted_samples
+        )
+        choice_rows.append(
+            {
+                "alpha": result["alpha"],
+                "allocation": result["allocation"],
+                "predicted_model": predicted_model,
+                "oracle_model": oracle_model,
+                "agreement": predicted_model == oracle_model,
+                "selected_model_bootstrap_probability": probability,
+                "oracle_regret_fraction": (
+                    0.0 if predicted_model == oracle_model else math.exp(abs(observed)) - 1.0
+                ),
+            }
+        )
+    practitioner_kendall_tau = mean(1.0 if row["agreement"] else -1.0 for row in choice_rows)
+    max_practitioner_regret = max(row["oracle_regret_fraction"] for row in choice_rows)
+    min_selection_probability = min(
+        row["selected_model_bootstrap_probability"] for row in choice_rows
+    )
     censoring_rate = sum(bool(row.get("censored")) for row in confirmation_rows) / len(confirmation_rows)
     max_cell_censoring = max(row["censoring_rate"] for row in censoring_cells)
     max_share_error = max(row["max_absolute_planned_share_error"] for row in share_audit)
@@ -554,6 +592,15 @@ def main() -> None:
         "residual_slope_holm_pass": not any(
             row["significant_after_holm"] for row in residual_slope_diagnostics
         ),
+        "practitioner_kendall_tau_pass": (
+            practitioner_kendall_tau >= args.min_practitioner_kendall_tau
+        ),
+        "practitioner_oracle_regret_pass": (
+            max_practitioner_regret <= args.max_practitioner_oracle_regret
+        ),
+        "selected_model_probability_pass": (
+            min_selection_probability >= args.min_selected_model_probability
+        ),
     }
     summary = {
         "schema_version": 1,
@@ -581,6 +628,10 @@ def main() -> None:
         "primary_residual_rms_nats": primary_rms,
         "primary_residual_rms_upper_95_nats": rms_upper,
         "residual_slope_diagnostics": residual_slope_diagnostics,
+        "practitioner_choice": choice_rows,
+        "practitioner_kendall_tau": practitioner_kendall_tau,
+        "max_practitioner_oracle_regret_fraction": max_practitioner_regret,
+        "min_selected_model_bootstrap_probability": min_selection_probability,
         "results": results,
         "gates": gates,
         "status": "PASS" if all(gates.values()) else "INCONCLUSIVE_OR_FALSIFIED",
