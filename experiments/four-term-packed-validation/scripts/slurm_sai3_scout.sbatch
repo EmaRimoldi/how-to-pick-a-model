@@ -33,6 +33,9 @@ export TOKENIZERS_PARALLELISM=false
 if [[ ! -x "$ENV_DIR/bin/python" ]]; then
   mkdir -p "$(dirname "$ENV_DIR")"
   uv venv --python 3.11 "$ENV_DIR"
+fi
+
+if ! "$ENV_DIR/bin/python" -c "import vllm, transformers" >/dev/null 2>&1; then
   uv pip install --python "$ENV_DIR/bin/python" "vllm>=0.8,<0.12" "transformers>=4.51" numpy
 fi
 
