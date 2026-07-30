@@ -105,9 +105,11 @@ def _contract(rng: random.Random) -> dict[str, str]:
     }
 
 
-def _normalization(rng: random.Random, difficulty: str) -> dict[str, Any]:
+def _normalization(
+    rng: random.Random, difficulty: str, scalar_kind: str | None = None
+) -> dict[str, Any]:
     if difficulty == "scalar":
-        kind = rng.choice(("strip_lower", "strip_upper", "collapse_spaces", "integer_offset"))
+        kind = scalar_kind or rng.choice(("strip_lower", "strip_upper", "collapse_spaces", "integer_offset"))
         if kind == "strip_lower":
             return {
                 "kind": kind,
@@ -362,9 +364,14 @@ def generate_task(seed: int, split: str, mode: int, index: int, difficulty: str 
     task_seed = (seed + 1) * 1_000_003 + mode * 10_007 + index + SPLIT_SEED_OFFSETS[split]
     rng = random.Random(task_seed)
     contracts = [_contract(rng) for _ in range(3)]
-    normalization = _normalization(rng, difficulty)
+    scalar_kinds = ("strip_lower", "strip_upper", "collapse_spaces", "integer_offset")
+    normalization = _normalization(
+        rng,
+        difficulty,
+        scalar_kind=scalar_kinds[index % len(scalar_kinds)] if difficulty == "scalar" else None,
+    )
     task = {
-        "schema_version": 4 if difficulty == "scalar" else 5,
+        "schema_version": 5 if difficulty == "scalar" else 6,
         "task_id": f"sai3-{split}-m{mode}-{index:04d}",
         "split": split,
         "task_seed": task_seed,
@@ -372,6 +379,7 @@ def generate_task(seed: int, split: str, mode: int, index: int, difficulty: str 
         "difficulty": difficulty,
         "contracts": contracts,
         "normalization": normalization,
+        "task_stratum": normalization["kind"],
         "context": _context(rng),
         "fallback": f"unavailable_{_token(rng, 5)}",
         "server_suffix": _token(rng, 5),

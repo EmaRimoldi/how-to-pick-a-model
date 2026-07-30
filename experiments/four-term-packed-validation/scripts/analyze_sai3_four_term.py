@@ -44,12 +44,12 @@ def load_jsonl(paths: list[Path]) -> list[dict[str, Any]]:
     return rows
 
 
-def calibration_task_scales(rows: list[dict[str, Any]]) -> dict[tuple[str, int, str], float]:
-    counts: dict[tuple[str, int, str], list[int]] = collections.defaultdict(lambda: [0, 0])
+def calibration_task_scales(rows: list[dict[str, Any]]) -> dict[tuple[str, int, str, str], float]:
+    counts: dict[tuple[str, int, str, str], list[int]] = collections.defaultdict(lambda: [0, 0])
     for row in rows:
         if row["relation"] != "matched":
             continue
-        key = (row["model"], int(row["mode"]), row["task_id"])
+        key = (row["model"], int(row["mode"]), row["task_stratum"], row["task_id"])
         counts[key][0] += bool(row["verification"]["passed"])
         counts[key][1] += 1
     zero_success = [key for key, (successes, _trials) in counts.items() if successes == 0]
@@ -59,25 +59,27 @@ def calibration_task_scales(rows: list[dict[str, Any]]) -> dict[tuple[str, int, 
 
 
 def focused_scales(
-    task_scales: dict[tuple[str, int, str], float],
-    sampled_tasks: dict[int, list[str]] | None = None,
+    task_scales: dict[tuple[str, int, str, str], float],
+    sampled_tasks: dict[tuple[int, str], list[str]] | None = None,
 ) -> dict[tuple[str, int], float]:
     values: dict[tuple[str, int], list[float]] = collections.defaultdict(list)
     if sampled_tasks is None:
-        for (model, mode, _task), scale in task_scales.items():
+        for (model, mode, _stratum, _task), scale in task_scales.items():
             values[(model, mode)].append(scale)
     else:
         models = sorted({key[0] for key in task_scales})
         for model in models:
-            for mode, task_ids in sampled_tasks.items():
-                values[(model, mode)].extend(task_scales[(model, mode, task_id)] for task_id in task_ids)
+            for (mode, stratum), task_ids in sampled_tasks.items():
+                values[(model, mode)].extend(
+                    task_scales[(model, mode, stratum, task_id)] for task_id in task_ids
+                )
     return {key: mean(cell_values) for key, cell_values in values.items()}
 
 
 def trajectory_task_means(
     rows: list[dict[str, Any]],
-) -> dict[tuple[str, str, int, int, str], float]:
-    groups: dict[tuple[str, str, int, int, str], list[float]] = collections.defaultdict(list)
+) -> dict[tuple[str, str, int, int, str, str], float]:
+    groups: dict[tuple[str, str, int, int, str, str], list[float]] = collections.defaultdict(list)
     for row in rows:
         if row.get("design") != "four_term":
             continue
@@ -85,25 +87,31 @@ def trajectory_task_means(
         value = float(row["total_slots"])
         if row.get("censored"):
             value += 1.0
-        groups[(row["model"], row["condition"], int(row["mode"]), z, row["task_id"])].append(value)
+        groups[
+            (row["model"], row["condition"], int(row["mode"]), z, row["task_stratum"], row["task_id"])
+        ].append(value)
     return {key: mean(values) for key, values in groups.items()}
 
 
 def trajectory_cells(
-    task_means: dict[tuple[str, str, int, int, str], float],
-    sampled_tasks: dict[int, list[str]] | None = None,
+    task_means: dict[tuple[str, str, int, int, str, str], float],
+    sampled_tasks: dict[tuple[int, str], list[str]] | None = None,
 ) -> dict[tuple[str, str, int, int], float]:
     values: dict[tuple[str, str, int, int], list[float]] = collections.defaultdict(list)
     if sampled_tasks is None:
-        for (model, condition, mode, z, _task), task_mean in task_means.items():
+        for (model, condition, mode, z, _stratum, _task), task_mean in task_means.items():
             values[(model, condition, mode, z)].append(task_mean)
     else:
-        cell_keys = sorted({(model, condition, mode, z) for model, condition, mode, z, _task in task_means})
+        cell_keys = sorted(
+            {(model, condition, mode, z) for model, condition, mode, z, _stratum, _task in task_means}
+        )
         for model, condition, mode, z in cell_keys:
-            for task_id in sampled_tasks[mode]:
-                values[(model, condition, mode, z)].append(
-                    task_means[(model, condition, mode, z, task_id)]
-                )
+            strata = sorted(stratum for candidate_mode, stratum in sampled_tasks if candidate_mode == mode)
+            for stratum in strata:
+                for task_id in sampled_tasks[(mode, stratum)]:
+                    values[(model, condition, mode, z)].append(
+                        task_means[(model, condition, mode, z, stratum, task_id)]
+                    )
     return {key: mean(cell_values) for key, cell_values in values.items()}
 
 
@@ -151,11 +159,13 @@ def predicted_terms(
     }
 
 
-def shared_tasks(keys: Iterable[tuple[Any, ...]], task_index: int, mode_index: int) -> dict[int, list[str]]:
-    by_mode: dict[int, set[str]] = collections.defaultdict(set)
+def shared_tasks(
+    keys: Iterable[tuple[Any, ...]], task_index: int, mode_index: int, stratum_index: int
+) -> dict[tuple[int, str], list[str]]:
+    by_cell: dict[tuple[int, str], set[str]] = collections.defaultdict(set)
     for key in keys:
-        by_mode[int(key[mode_index])].add(str(key[task_index]))
-    return {mode: sorted(task_ids) for mode, task_ids in by_mode.items()}
+        by_cell[(int(key[mode_index]), str(key[stratum_index]))].add(str(key[task_index]))
+    return {cell: sorted(task_ids) for cell, task_ids in by_cell.items()}
 
 
 def main() -> None:
@@ -224,19 +234,19 @@ def main() -> None:
                 }
             )
 
-    calibration_ids = shared_tasks(task_scales, task_index=2, mode_index=1)
-    confirmation_ids = shared_tasks(task_means, task_index=4, mode_index=2)
+    calibration_ids = shared_tasks(task_scales, task_index=3, mode_index=1, stratum_index=2)
+    confirmation_ids = shared_tasks(task_means, task_index=5, mode_index=2, stratum_index=4)
     rng = random.Random(args.seed)
     bootstrap_residuals: dict[tuple[str, float, str], list[float]] = collections.defaultdict(list)
     bootstrap_primary_rms = []
     for _ in range(args.bootstrap_repetitions):
         sampled_calibration = {
-            mode: [rng.choice(task_ids) for _ in task_ids]
-            for mode, task_ids in calibration_ids.items()
+            cell: [rng.choice(task_ids) for _ in task_ids]
+            for cell, task_ids in calibration_ids.items()
         }
         sampled_confirmation = {
-            mode: [rng.choice(task_ids) for _ in task_ids]
-            for mode, task_ids in confirmation_ids.items()
+            cell: [rng.choice(task_ids) for _ in task_ids]
+            for cell, task_ids in confirmation_ids.items()
         }
         sampled_scales = focused_scales(task_scales, sampled_calibration)
         sampled_cells = trajectory_cells(task_means, sampled_confirmation)

@@ -113,6 +113,21 @@ def test_numeric_postprocessing_has_explicit_precedence() -> None:
     raise AssertionError("seed did not generate an integer_offset task")
 
 
+def test_scalar_generator_balances_task_strata_within_mode() -> None:
+    tasks = SAI3.generate_tasks(seed=31, split="calibration", tasks_per_mode=12, difficulty="scalar")
+    for mode in range(3):
+        counts = {}
+        for task in tasks:
+            if task["mode"] == mode:
+                counts[task["task_stratum"]] = counts.get(task["task_stratum"], 0) + 1
+        assert counts == {
+            "collapse_spaces": 3,
+            "integer_offset": 3,
+            "strip_lower": 3,
+            "strip_upper": 3,
+        }
+
+
 def test_reflection_and_multi_contract_code_is_rejected() -> None:
     reflection = """\
 def adapt(client, payload):

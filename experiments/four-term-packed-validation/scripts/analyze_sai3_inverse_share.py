@@ -56,44 +56,60 @@ def fixed_effect_slope(cells: Iterable[tuple[str, int, float, float]]) -> float:
     return numerator / denominator
 
 
-def task_cell_means(rows: list[dict[str, Any]]) -> dict[tuple[str, int, str, float], float]:
-    groups: dict[tuple[str, int, str, float], list[float]] = collections.defaultdict(list)
+def task_cell_means(rows: list[dict[str, Any]]) -> dict[tuple[str, int, str, str, float], float]:
+    groups: dict[tuple[str, int, str, str, float], list[float]] = collections.defaultdict(list)
     for row in rows:
         if row.get("design") != "inverse_share":
             continue
         value = float(row["total_slots"])
         if row.get("censored"):
             value += 1.0
-        groups[(row["model"], int(row["mode"]), row["task_id"], float(row["q_true"]))].append(value)
+        groups[
+            (
+                row["model"],
+                int(row["mode"]),
+                row.get("task_stratum", "unknown"),
+                row["task_id"],
+                float(row["q_true"]),
+            )
+        ].append(value)
     return {key: mean(values) for key, values in groups.items()}
 
 
 def aggregate_cells(
-    task_means: dict[tuple[str, int, str, float], float],
-    sampled_tasks: dict[tuple[str, int], list[str]] | None = None,
+    task_means: dict[tuple[str, int, str, str, float], float],
+    sampled_tasks: dict[tuple[str, int, str], list[str]] | None = None,
 ) -> list[tuple[str, int, float, float]]:
     values: dict[tuple[str, int, float], list[float]] = collections.defaultdict(list)
     if sampled_tasks is None:
-        for (model, mode, _task_id, q_true), task_mean in task_means.items():
+        for (model, mode, _stratum, _task_id, q_true), task_mean in task_means.items():
             values[(model, mode, q_true)].append(task_mean)
     else:
-        for (model, mode), task_ids in sampled_tasks.items():
+        for (model, mode, stratum), task_ids in sampled_tasks.items():
             q_values = sorted(
-                {q for candidate_model, candidate_mode, _task, q in task_means if candidate_model == model and candidate_mode == mode}
+                {
+                    q
+                    for candidate_model, candidate_mode, candidate_stratum, _task, q in task_means
+                    if candidate_model == model
+                    and candidate_mode == mode
+                    and candidate_stratum == stratum
+                }
             )
             for task_id in task_ids:
                 for q_true in q_values:
-                    values[(model, mode, q_true)].append(task_means[(model, mode, task_id, q_true)])
+                    values[(model, mode, q_true)].append(
+                        task_means[(model, mode, stratum, task_id, q_true)]
+                    )
     return [(model, mode, q_true, mean(cell_values)) for (model, mode, q_true), cell_values in sorted(values.items())]
 
 
 def bootstrap_slopes(
-    task_means: dict[tuple[str, int, str, float], float], repetitions: int, seed: int
+    task_means: dict[tuple[str, int, str, str, float], float], repetitions: int, seed: int
 ) -> tuple[list[float], dict[str, list[float]]]:
-    task_ids: dict[tuple[str, int], list[str]] = collections.defaultdict(list)
-    for model, mode, task_id, _q in task_means:
-        if task_id not in task_ids[(model, mode)]:
-            task_ids[(model, mode)].append(task_id)
+    task_ids: dict[tuple[str, int, str], list[str]] = collections.defaultdict(list)
+    for model, mode, stratum, task_id, _q in task_means:
+        if task_id not in task_ids[(model, mode, stratum)]:
+            task_ids[(model, mode, stratum)].append(task_id)
     rng = random.Random(seed)
     pooled = []
     by_model: dict[str, list[float]] = collections.defaultdict(list)

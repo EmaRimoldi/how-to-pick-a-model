@@ -120,6 +120,7 @@ def run_group(
                 "schema_version": 2,
                 "model": model,
                 "task_id": task["task_id"],
+                "task_stratum": task.get("task_stratum", task["normalization"]["kind"]),
                 "mode": task["mode"],
                 "shard": meta["shard"],
                 "relation": meta["relation"],

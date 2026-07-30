@@ -183,6 +183,7 @@ def main() -> None:
                     "model": args.model,
                     "trajectory_id": design_row["trajectory_id"],
                     "task_id": design_row["task_id"],
+                    "task_stratum": design_row["task_stratum"],
                     "mode": design_row["mode"],
                     "slot": slot,
                     "shard": shard,
