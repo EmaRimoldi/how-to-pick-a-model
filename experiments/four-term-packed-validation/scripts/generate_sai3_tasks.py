@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -33,6 +34,7 @@ def main() -> None:
         raise SystemExit(f"verifier gate failed for {failed[:10]}")
 
     write_jsonl(args.output, tasks)
+    task_file_sha256 = hashlib.sha256(args.output.read_bytes()).hexdigest()
     args.audit_output.parent.mkdir(parents=True, exist_ok=True)
     summary = {
         "schema_version": 1,
@@ -44,6 +46,7 @@ def main() -> None:
         "all_gates_passed": True,
         "minimum_mutation_score": min(audit["mutation_score"] for audit in audits),
         "wrong_reference_acceptances": sum(audit["wrong_reference_acceptances"] for audit in audits),
+        "task_file_sha256": task_file_sha256,
         "audits": audits,
     }
     args.audit_output.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")

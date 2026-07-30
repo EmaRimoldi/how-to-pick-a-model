@@ -219,6 +219,8 @@ def main() -> None:
         "schema_version": 1,
         "design": args.design,
         "source_tasks": str(args.tasks),
+        "source_tasks_sha256": hashlib.sha256(args.tasks.read_bytes()).hexdigest(),
+        "design_sha256": hashlib.sha256(args.output.read_bytes()).hexdigest(),
         "tasks_per_mode": args.tasks_per_mode,
         "task_offset_per_mode": args.task_offset_per_mode,
         "repetitions": args.repetitions,
