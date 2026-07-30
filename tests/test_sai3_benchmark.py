@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import math
 import sys
 from pathlib import Path
 
@@ -18,6 +19,38 @@ RUNNER_SPEC = importlib.util.spec_from_file_location("run_sai3_scout", RUNNER_PA
 assert RUNNER_SPEC is not None and RUNNER_SPEC.loader is not None
 RUNNER = importlib.util.module_from_spec(RUNNER_SPEC)
 RUNNER_SPEC.loader.exec_module(RUNNER)
+
+DESIGN_PATH = (
+    ROOT
+    / "experiments"
+    / "four-term-packed-validation"
+    / "scripts"
+    / "generate_sai3_schedule_design.py"
+)
+DESIGN_SPEC = importlib.util.spec_from_file_location("generate_sai3_schedule_design", DESIGN_PATH)
+assert DESIGN_SPEC is not None and DESIGN_SPEC.loader is not None
+DESIGN = importlib.util.module_from_spec(DESIGN_SPEC)
+DESIGN_SPEC.loader.exec_module(DESIGN)
+
+SCHEDULE_PATH = ROOT / "experiments" / "four-term-packed-validation" / "scripts" / "run_sai3_schedule.py"
+SCHEDULE_SPEC = importlib.util.spec_from_file_location("run_sai3_schedule", SCHEDULE_PATH)
+assert SCHEDULE_SPEC is not None and SCHEDULE_SPEC.loader is not None
+SCHEDULE = importlib.util.module_from_spec(SCHEDULE_SPEC)
+SCHEDULE_SPEC.loader.exec_module(SCHEDULE)
+
+INVERSE_ANALYSIS_PATH = (
+    ROOT
+    / "experiments"
+    / "four-term-packed-validation"
+    / "scripts"
+    / "analyze_sai3_inverse_share.py"
+)
+INVERSE_ANALYSIS_SPEC = importlib.util.spec_from_file_location(
+    "analyze_sai3_inverse_share", INVERSE_ANALYSIS_PATH
+)
+assert INVERSE_ANALYSIS_SPEC is not None and INVERSE_ANALYSIS_SPEC.loader is not None
+INVERSE_ANALYSIS = importlib.util.module_from_spec(INVERSE_ANALYSIS_SPEC)
+INVERSE_ANALYSIS_SPEC.loader.exec_module(INVERSE_ANALYSIS)
 
 
 def test_reference_and_wrong_shards_are_separated() -> None:
@@ -104,3 +137,39 @@ def test_balanced_task_selection_supports_disjoint_shards() -> None:
     assert first_counts == {0: 2, 1: 2, 2: 2}
     assert second_counts == {0: 2, 1: 2, 2: 2}
     assert {task["task_id"] for task in first}.isdisjoint(task["task_id"] for task in second)
+
+
+def test_controlled_channel_terms_match_known_special_cases() -> None:
+    assert math.isclose(DESIGN.information(1.0 / 3.0), 0.0, abs_tol=1e-12)
+    for alpha in (0.6, 0.8):
+        assert math.isclose(DESIGN.mismatch(alpha, "matched"), 0.0, abs_tol=1e-12)
+        assert math.isclose(DESIGN.mismatch(alpha, "prior"), DESIGN.information(alpha), rel_tol=1e-12)
+        assert DESIGN.mismatch(alpha, "half_anti") > DESIGN.mismatch(alpha, "prior")
+
+
+def test_schedule_design_is_balanced_and_reuses_no_trajectory_seed() -> None:
+    tasks = SAI3.generate_tasks(seed=41, split="confirmation", tasks_per_mode=1)
+    rows = DESIGN.four_term_rows(tasks, [0.8], ["matched", "prior"], repetitions=2, seed=43)
+    assert len(rows) == 3 * (2 + 2 * 3 * 2)
+    assert len({row["trajectory_id"] for row in rows}) == len(rows)
+    assert len({row["schedule_seed"] for row in rows}) == len(rows)
+    for row in rows:
+        assert math.isclose(sum(row["q"]), 1.0, abs_tol=1e-12)
+
+
+def test_schedule_generation_seeds_are_unique_per_physical_slot() -> None:
+    seeds = {
+        SCHEDULE.generation_seed(47, "model", f"trajectory-{trajectory}", slot)
+        for trajectory in range(5)
+        for slot in range(32)
+    }
+    assert len(seeds) == 160
+
+
+def test_inverse_share_fixed_effect_fit_recovers_unit_slope() -> None:
+    cells = []
+    for model, scale in (("small", 1.5), ("large", 2.25)):
+        for mode, mode_scale in enumerate((1.0, 1.4, 2.0)):
+            for q_true in (0.1, 0.2, 0.5, 0.8, 1.0):
+                cells.append((model, mode, q_true, scale * mode_scale / q_true))
+    assert math.isclose(INVERSE_ANALYSIS.fixed_effect_slope(cells), 1.0, abs_tol=1e-12)
