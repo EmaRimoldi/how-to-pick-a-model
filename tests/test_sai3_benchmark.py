@@ -459,6 +459,9 @@ def test_confirmation_artifact_audit_checks_slot_accounting(tmp_path: Path) -> N
         "censored_trajectories": 0,
         "generation_slots": 1,
         "decoded_tokens": 4,
+        "generation_elapsed_seconds": 2.0,
+        "model_load_seconds": 1.0,
+        "decoded_tokens_per_second": 2.0,
         "gpu": "A100",
         "provenance": {
             "tasks_sha256": tasks_sha256,

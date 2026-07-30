@@ -136,6 +136,9 @@ def audit_run(
         "censored_trajectories": sum(bool(row["censored"]) for row in trajectories.values()),
         "generation_slots": slot_rows,
         "decoded_tokens": decoded_tokens,
+        "generation_elapsed_seconds": float(metadata["generation_elapsed_seconds"]),
+        "model_load_seconds": float(metadata["model_load_seconds"]),
+        "decoded_tokens_per_second": float(metadata["decoded_tokens_per_second"]),
         "wrong_shard_successes": wrong_shard_successes,
         "gpu": metadata["gpu"],
         "model_revision": provenance["model_revision"],
@@ -231,6 +234,10 @@ def main() -> None:
                 "trajectories": sum(item["trajectories"] for item in summaries),
                 "generation_slots": sum(item["generation_slots"] for item in summaries),
                 "decoded_tokens": sum(item["decoded_tokens"] for item in summaries),
+                "gpu_generation_seconds": sum(
+                    item["generation_elapsed_seconds"] for item in summaries
+                ),
+                "model_load_seconds": sum(item["model_load_seconds"] for item in summaries),
                 "wrong_shard_successes": sum(item["wrong_shard_successes"] for item in summaries),
             }
             for model, summaries in sorted(by_model.items())
