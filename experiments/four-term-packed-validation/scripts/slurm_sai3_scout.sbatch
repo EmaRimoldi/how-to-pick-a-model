@@ -17,8 +17,13 @@ fi
 MODEL="$1"
 TASKS="$2"
 OUTPUT_DIR="$3"
-BUNDLE="$(cd "$(dirname "$0")/.." && pwd)"
+BUNDLE="${SAI3_BUNDLE:-${SLURM_SUBMIT_DIR:-$PWD}/experiments/four-term-packed-validation}"
 ENV_DIR="${SAI3_ENV_DIR:-$HOME/orcd/scratch/sai3-runtime/.venv}"
+
+if [[ ! -f "$BUNDLE/scripts/run_sai3_scout.py" ]]; then
+  echo "SAI-3 bundle not found at $BUNDLE" >&2
+  exit 2
+fi
 
 mkdir -p "$OUTPUT_DIR" "$HOME/orcd/scratch/huggingface" "$HOME/orcd/scratch/uv-cache"
 export HF_HOME="$HOME/orcd/scratch/huggingface"
