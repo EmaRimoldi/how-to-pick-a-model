@@ -143,6 +143,18 @@ def audit_run(
         "code_git_commit": provenance["code_git_commit"],
         "package_versions": provenance["package_versions"],
         "slurm_job_id": provenance["slurm_job_id"],
+        "artifacts": {
+            name: {
+                "path": str(path),
+                "bytes": path.stat().st_size,
+                "sha256": sha256_path(path),
+            }
+            for name, path in (
+                ("metadata", metadata_path),
+                ("trajectories", trajectories_path),
+                ("slots", slots_path),
+            )
+        },
     }
 
 
