@@ -121,7 +121,8 @@ estimand:
   primary: conditional_mean_first_passage_resource
   censored_cell_estimator: geometric_total_exposure_over_successes
   secondary: conditional_p90_first_passage_resource
-  cell_aggregation: log_of_cell_mean
+  per_task_transform: log_of_conditional_task_mean
+  across_task_aggregation: stratified_mean_of_task_log_means
   per_run_log_average_prohibited: true
 
 gates:
