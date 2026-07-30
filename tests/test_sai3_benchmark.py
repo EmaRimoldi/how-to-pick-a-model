@@ -128,6 +128,20 @@ assert FINITE_BIAS_SPEC is not None and FINITE_BIAS_SPEC.loader is not None
 FINITE_BIAS = importlib.util.module_from_spec(FINITE_BIAS_SPEC)
 FINITE_BIAS_SPEC.loader.exec_module(FINITE_BIAS)
 
+ATTENUATION_PATH = (
+    ROOT
+    / "experiments"
+    / "four-term-packed-validation"
+    / "scripts"
+    / "analyze_replication_attenuation.py"
+)
+ATTENUATION_SPEC = importlib.util.spec_from_file_location(
+    "analyze_replication_attenuation", ATTENUATION_PATH
+)
+assert ATTENUATION_SPEC is not None and ATTENUATION_SPEC.loader is not None
+ATTENUATION = importlib.util.module_from_spec(ATTENUATION_SPEC)
+ATTENUATION_SPEC.loader.exec_module(ATTENUATION)
+
 
 def test_reference_and_wrong_shards_are_separated() -> None:
     for mode in range(3):
@@ -810,3 +824,34 @@ def test_finite_replication_log_mean_bias_has_expected_direction() -> None:
     six_rep_bias = FINITE_BIAS.expected_log_sample_mean_bias(0.2, 6)
     thirty_two_rep_bias = FINITE_BIAS.expected_log_sample_mean_bias(0.2, 32)
     assert six_rep_bias < thirty_two_rep_bias < 0.0
+
+
+def test_replication_attenuation_requires_physical_gates() -> None:
+    primary = {
+        "residual_slope_diagnostics": [
+            {"term": "mismatch_nats", "slope": 0.04, "bootstrap_ci_95": [0.02, 0.06]}
+        ]
+    }
+    replication = {
+        "residual_slope_diagnostics": [
+            {
+                "term": "mismatch_nats",
+                "slope": 0.01,
+                "bootstrap_ci_95": [-0.01, 0.03],
+                "holm_adjusted_p": 0.5,
+            }
+        ],
+        "gates": {name: True for name in ATTENUATION.PHYSICAL_GATES},
+    }
+    bias = {
+        "repetitions_per_task_cell": 32,
+        "predicted_finite_replication_mismatch_slope": 0.005,
+        "bias_adjusted_mismatch_slope": 0.005,
+    }
+    result = ATTENUATION.analyze(primary, replication, bias, attenuation_threshold=0.02)
+    assert result["status"] == "SUPPORTS_FINITE_REPLICATION_MECHANISM"
+    assert result["attenuation_point_pass"]
+
+    replication["gates"]["censoring_pass"] = False
+    result = ATTENUATION.analyze(primary, replication, bias, attenuation_threshold=0.02)
+    assert result["status"] == "FOLLOWUP_INVALID_PHYSICAL_GATE_FAILURE"
