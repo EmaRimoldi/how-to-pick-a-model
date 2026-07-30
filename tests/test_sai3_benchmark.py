@@ -197,6 +197,7 @@ def test_vllm_slot_seeds_are_stable_and_unique() -> None:
         for attempt in range(8)
     }
     assert len(seeds) == 72
+    assert max(seeds) > 2**32
     assert RUNNER.sampling_seed(17, "model", "task-1", 2, 3) == RUNNER.sampling_seed(
         17, "model", "task-1", 2, 3
     )
@@ -248,6 +249,7 @@ def test_schedule_design_is_balanced_and_reuses_no_trajectory_seed() -> None:
     assert len(rows) == 3 * (2 + 2 * 3 * 2)
     assert len({row["trajectory_id"] for row in rows}) == len(rows)
     assert len({row["schedule_seed"] for row in rows}) == len(rows)
+    assert max(row["schedule_seed"] for row in rows) > 2**32
     for row in rows:
         assert math.isclose(sum(row["q"]), 1.0, abs_tol=1e-12)
         assert math.isclose(row["q_true"], row["q"][row["mode"]], abs_tol=1e-12)
@@ -260,6 +262,7 @@ def test_schedule_generation_seeds_are_unique_per_physical_slot() -> None:
         for slot in range(32)
     }
     assert len(seeds) == 160
+    assert max(seeds) > 2**32
 
 
 def test_inverse_share_fixed_effect_fit_recovers_unit_slope() -> None:

@@ -26,7 +26,7 @@ def sampling_seed(base_seed: int, model: str, task_id: str, shard: int, attempt:
     """Derive a stable independent seed for one physical generation slot."""
     payload = f"{base_seed}|{model}|{task_id}|{shard}|{attempt}".encode()
     digest = hashlib.blake2b(payload, digest_size=8).digest()
-    return 1 + int.from_bytes(digest, "big") % (2**31 - 2)
+    return int.from_bytes(digest, "big")
 
 
 def select_balanced_tasks(
@@ -265,7 +265,7 @@ def main() -> None:
         "wrong_attempts": args.wrong_attempts,
         "attempt_offset": args.attempt_offset,
         "max_tokens": args.max_tokens,
-        "seed_scheme": "blake2b(base_seed|model|task_id|shard|attempt)",
+        "seed_scheme": "blake2b-64(base_seed|model|task_id|shard|attempt)",
         "matched": matched_summary,
         "wrong": wrong_summary,
         "provenance": collect_runtime_provenance(

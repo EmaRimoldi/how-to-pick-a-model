@@ -24,7 +24,7 @@ PRIOR = (1.0 / 3.0,) * 3
 
 def stable_seed(base_seed: int, key: str) -> int:
     digest = hashlib.blake2b(f"{base_seed}|{key}".encode(), digest_size=8).digest()
-    return 1 + int.from_bytes(digest, "big") % (2**31 - 2)
+    return int.from_bytes(digest, "big")
 
 
 def select_balanced_tasks(

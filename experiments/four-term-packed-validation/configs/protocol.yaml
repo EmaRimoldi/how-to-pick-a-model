@@ -73,6 +73,7 @@ generation:
   reasoning_tokens_count_toward_decoded_tokens: true
   model_chat_protocol_is_part_of_system: true
   independent_attempts: true
+  rng_seed_bits: 64
   feedback_between_attempts: false
   focused_pass_probability_min: 0.05
   calibration_initial_correct_shard_attempts: 64

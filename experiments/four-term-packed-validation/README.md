@@ -220,7 +220,7 @@ Every completion is an independent fixed-format slot:
 - temperature `0.8`, top-p `0.95`;
 - fixed prompt-token envelope and exactly 256 decoded tokens;
 - no conversation history or feedback between attempts;
-- independent, logged RNG seeds;
+- independent, logged 64-bit RNG seeds with collision audit;
 - the first parseable patch is evaluated;
 - identical serving software and BF16 precision within the primary
   identification arm.

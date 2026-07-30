@@ -25,7 +25,7 @@ from runtime_provenance import collect_runtime_provenance  # noqa: E402
 def generation_seed(base_seed: int, model: str, trajectory_id: str, slot: int) -> int:
     payload = f"{base_seed}|{model}|{trajectory_id}|{slot}".encode()
     digest = hashlib.blake2b(payload, digest_size=8).digest()
-    return 1 + int.from_bytes(digest, "big") % (2**31 - 2)
+    return int.from_bytes(digest, "big")
 
 
 def sample_shard(q: list[float], rng: random.Random) -> int:
@@ -246,7 +246,7 @@ def main() -> None:
         "model_load_seconds": load_seconds,
         "max_slots": args.max_slots,
         "max_tokens": args.max_tokens,
-        "seed_scheme": "blake2b(base_seed|model|trajectory_id|slot)",
+        "seed_scheme": "blake2b-64(base_seed|model|trajectory_id|slot)",
         "scheduler": "iid_categorical_soft_allocation",
         "host": platform.node(),
         "python": platform.python_version(),
