@@ -101,7 +101,8 @@ def calibrate_t0(
         attempts[needs_extension] += extension
     if np.any(successes == 0):
         return math.inf, False
-    return float(np.mean(attempts / successes)), True
+    task_means = attempts / successes
+    return float(np.exp(np.mean(np.log(task_means)))), True
 
 
 def physical_cell_mean(
@@ -118,7 +119,7 @@ def physical_cell_mean(
     if np.any(successes == 0):
         return math.inf, float(np.mean(censored)), False
     task_means = np.sum(exposure, axis=0) / successes
-    return float(np.mean(task_means)), float(np.mean(censored)), True
+    return float(np.exp(np.mean(np.log(task_means)))), float(np.mean(censored)), True
 
 
 def simulate_once(

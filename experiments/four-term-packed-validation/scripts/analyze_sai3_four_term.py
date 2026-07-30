@@ -28,6 +28,11 @@ def mean(values: Iterable[float]) -> float:
     return sum(materialized) / len(materialized)
 
 
+def geometric_mean(values: Iterable[float]) -> float:
+    materialized = list(values)
+    return math.exp(mean(math.log(value) for value in materialized))
+
+
 def percentile(values: list[float], probability: float) -> float:
     ordered = sorted(values)
     position = probability * (len(ordered) - 1)
@@ -131,7 +136,9 @@ def focused_scales(
                 values[(model, mode)].extend(
                     task_scales[(model, mode, stratum, task_id)] for task_id in task_ids
                 )
-    return {key: mean(cell_values) for key, cell_values in values.items()}
+    # The theorem's estimand is E_s[log t0(M,s)], so each reported scale is
+    # the geometric task mean whose logarithm equals that expected log-scale.
+    return {key: geometric_mean(cell_values) for key, cell_values in values.items()}
 
 
 def trajectory_task_means(
@@ -179,7 +186,8 @@ def trajectory_cells(
                     values[(model, condition, mode, z)].append(
                         task_means[(model, condition, mode, z, stratum, task_id)]
                     )
-    return {key: mean(cell_values) for key, cell_values in values.items()}
+    # Aggregate task-specific first-passage means on the theorem's log scale.
+    return {key: geometric_mean(cell_values) for key, cell_values in values.items()}
 
 
 def calibration_diagnostics(
@@ -672,7 +680,12 @@ def main() -> None:
         },
         "bootstrap_draws": bootstrap_record,
         "focused_scales": [
-            {"model": model, "mode": mode, "t0_slots": value}
+            {
+                "model": model,
+                "mode": mode,
+                "geometric_mean_t0_slots": value,
+                "estimand": "exp(mean_task_log_t0)",
+            }
             for (model, mode), value in sorted(scales.items())
         ],
         "focused_mode_pass_probabilities": focused_mode_rows,

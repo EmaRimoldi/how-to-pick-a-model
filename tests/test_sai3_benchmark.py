@@ -365,6 +365,22 @@ def test_censored_first_passage_uses_geometric_exposure_mle() -> None:
     assert list(estimates.values()) == [12.5]
 
 
+def test_task_aggregation_matches_expected_log_time() -> None:
+    task_scales = {
+        ("model", 0, "stratum", "easy"): 1.0,
+        ("model", 0, "stratum", "hard"): 9.0,
+    }
+    focused = FOUR_TERM_ANALYSIS.focused_scales(task_scales)
+    assert math.isclose(focused[("model", 0)], 3.0)
+
+    task_means = {
+        ("model", "condition", 0, 0, "stratum", "easy"): 1.0,
+        ("model", "condition", 0, 0, "stratum", "hard"): 9.0,
+    }
+    cells = FOUR_TERM_ANALYSIS.trajectory_cells(task_means)
+    assert math.isclose(cells[("model", "condition", 0, 0)], 3.0)
+
+
 def test_four_term_main_runs_on_exact_disjoint_splits(tmp_path: Path, monkeypatch) -> None:
     baseline = "baseline"
     deployed = "deployed"

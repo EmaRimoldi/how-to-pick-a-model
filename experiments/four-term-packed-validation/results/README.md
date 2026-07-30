@@ -22,9 +22,9 @@ reading any empirical result in this repository.
 resamples the nonconfirmatory BF16 task counts within the four frozen strata
 and simulates the exact calibration and physical confirmation protocol. With
 2,000 replications, 256 tasks per mode, six trajectories per cell, and a
-256-slot limit pass all point closure gates in `95.05%` of packed-null
-simulations. The identification probability is `98.45%`; 95th-percentile
-absolute mean residual is `0.0926` nats, residual RMS is `0.0939` nats, and
+256-slot limit identify every required cell and pass all point closure gates
+in `98.45%` of packed-null simulations. The 95th-percentile absolute mean
+residual is `0.0362` nats, residual RMS is `0.0387` nats, and
 maximum cell censoring is `0.456%`.
 
 `bf16_inverse_share_development.json` records the physical IID allocation gate

@@ -510,9 +510,9 @@ packedness; the physical inverse-share and closure gates remain mandatory.
 
 The Stage-0-conditioned calculation uses 2,000 replications. At the frozen 256
 tasks per mode it identifies every focused cell in `98.45%` of simulations and
-passes all point closure gates in `95.05%` of packed-null simulations. Its
-95th-percentile absolute mean residual is `0.0926` nats, residual RMS is
-`0.0939` nats, and maximum cell censoring is `0.456%`. This is a power
+passes all point closure gates in `98.45%` of packed-null simulations. Its
+95th-percentile absolute mean residual is `0.0362` nats, residual RMS is
+`0.0387` nats, and maximum cell censoring is `0.456%`. This is a power
 calculation under the law being tested, not evidence that the law holds.
 
 ## External-Validity Arm
