@@ -89,6 +89,14 @@ assert CALIBRATION_ANALYSIS_SPEC is not None and CALIBRATION_ANALYSIS_SPEC.loade
 CALIBRATION_ANALYSIS = importlib.util.module_from_spec(CALIBRATION_ANALYSIS_SPEC)
 CALIBRATION_ANALYSIS_SPEC.loader.exec_module(CALIBRATION_ANALYSIS)
 
+PLOT_PATH = (
+    ROOT / "experiments" / "four-term-packed-validation" / "scripts" / "plot_sai3_four_term.py"
+)
+PLOT_SPEC = importlib.util.spec_from_file_location("plot_sai3_four_term", PLOT_PATH)
+assert PLOT_SPEC is not None and PLOT_SPEC.loader is not None
+PLOT = importlib.util.module_from_spec(PLOT_SPEC)
+PLOT_SPEC.loader.exec_module(PLOT)
+
 
 def test_reference_and_wrong_shards_are_separated() -> None:
     for mode in range(3):
@@ -533,3 +541,42 @@ def test_calibration_gate_checks_physical_counts(tmp_path: Path, monkeypatch) ->
     assert result["status"] == "PASS"
     assert result["duplicate_physical_slots"] == 0
     assert result["count_mismatch_task_cells"] == 0
+
+
+def test_four_term_plots_render_from_analysis_schema(tmp_path: Path) -> None:
+    rows = []
+    for alpha in (0.6, 0.8):
+        for index, allocation_name in enumerate(("matched", "prior", "half_anti")):
+            rows.append(
+                {
+                    "alpha": alpha,
+                    "allocation": allocation_name,
+                    "predicted_delta_nats": 0.2 + 0.1 * index,
+                    "observed_delta_nats": 0.21 + 0.1 * index,
+                    "unit_cost_nats": 0.7,
+                    "competence_nats": -0.3,
+                    "information_nats": DESIGN.information(alpha),
+                    "mismatch_nats": DESIGN.mismatch(alpha, allocation_name),
+                }
+            )
+    PLOT.plot_closure(rows, tmp_path / "closure.png")
+    PLOT.plot_decomposition(rows, tmp_path / "decomposition.png")
+    inverse = {
+        "cells": [
+            {
+                "model": model,
+                "mode": mode,
+                "q_true": q,
+                "mean_first_passage_slots": scale / q,
+                "focused_mean_slots": scale,
+            }
+            for model, scale in (
+                ("Qwen/Qwen2.5-Coder-7B-Instruct", 1.3),
+                ("Qwen/Qwen2.5-Coder-14B-Instruct", 1.0),
+            )
+            for mode in range(3)
+            for q in (0.2, 0.5, 1.0)
+        ]
+    }
+    PLOT.plot_inverse_share(inverse, tmp_path / "inverse.png")
+    assert all((tmp_path / name).stat().st_size > 1000 for name in ("closure.png", "decomposition.png", "inverse.png"))
