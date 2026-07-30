@@ -26,6 +26,14 @@ and simulates the exact calibration and physical confirmation protocol. With
 is `0.0956` nats, residual RMS is `0.0969` nats, and maximum cell censoring is
 `1.56%`.
 
+`bf16_inverse_share_development.json` records the physical IID allocation gate
+on generator v5 before either final split was opened. Across 3,456 trajectories,
+the pooled slope is `0.988` with 90% bootstrap interval `0.960`--`1.013`; the
+14B and 7B intervals are respectively `0.985`--`1.052` and `0.913`--`0.995`.
+Residual RMS is `0.108` nats, planned-share error is `0.0051`, and censoring and
+off-diagonal wins are both zero. All inverse-share gates pass. This authorizes
+confirmation but is still development evidence, not held-out four-term closure.
+
 `power_analysis.json` was produced with:
 
 ```bash

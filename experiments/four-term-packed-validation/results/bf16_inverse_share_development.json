@@ -1,0 +1,428 @@
+{
+  "analysis": "physical_iid_inverse_share",
+  "bootstrap_repetitions": 5000,
+  "cells": [
+    {
+      "focused_mean_slots": 1.0,
+      "mean_first_passage_slots": 8.989583333333334,
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "packed_log_residual_nats": -0.10651859337845382,
+      "q_true": 0.1
+    },
+    {
+      "focused_mean_slots": 1.0,
+      "mean_first_passage_slots": 5.135416666666667,
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "packed_log_residual_nats": 0.026723070140753702,
+      "q_true": 0.2
+    },
+    {
+      "focused_mean_slots": 1.0,
+      "mean_first_passage_slots": 2.7291666666666665,
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "packed_log_residual_nats": -0.09461597647484932,
+      "q_true": 0.3333333333
+    },
+    {
+      "focused_mean_slots": 1.0,
+      "mean_first_passage_slots": 1.96875,
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "packed_log_residual_nats": -0.015748356968139143,
+      "q_true": 0.5
+    },
+    {
+      "focused_mean_slots": 1.0,
+      "mean_first_passage_slots": 1.2395833333333333,
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "packed_log_residual_nats": -0.008368249670516609,
+      "q_true": 0.8
+    },
+    {
+      "focused_mean_slots": 1.0,
+      "mean_first_passage_slots": 1.0,
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "packed_log_residual_nats": 0.0,
+      "q_true": 1.0
+    },
+    {
+      "focused_mean_slots": 1.0,
+      "mean_first_passage_slots": 10.84375,
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "packed_log_residual_nats": 0.08100378415308729,
+      "q_true": 0.1
+    },
+    {
+      "focused_mean_slots": 1.0,
+      "mean_first_passage_slots": 5.15625,
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "packed_log_residual_nats": 0.030771658666753687,
+      "q_true": 0.2
+    },
+    {
+      "focused_mean_slots": 1.0,
+      "mean_first_passage_slots": 2.8645833333333335,
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "packed_log_residual_nats": -0.04618938256937466,
+      "q_true": 0.3333333333
+    },
+    {
+      "focused_mean_slots": 1.0,
+      "mean_first_passage_slots": 1.90625,
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "packed_log_residual_nats": -0.048009219186360585,
+      "q_true": 0.5
+    },
+    {
+      "focused_mean_slots": 1.0,
+      "mean_first_passage_slots": 1.25,
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "packed_log_residual_nats": 5.551115123125783e-17,
+      "q_true": 0.8
+    },
+    {
+      "focused_mean_slots": 1.0,
+      "mean_first_passage_slots": 1.0,
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "packed_log_residual_nats": 0.0,
+      "q_true": 1.0
+    },
+    {
+      "focused_mean_slots": 1.0,
+      "mean_first_passage_slots": 10.510416666666666,
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "packed_log_residual_nats": 0.04978173589172741,
+      "q_true": 0.1
+    },
+    {
+      "focused_mean_slots": 1.0,
+      "mean_first_passage_slots": 5.729166666666667,
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "packed_log_residual_nats": 0.13613217432458002,
+      "q_true": 0.2
+    },
+    {
+      "focused_mean_slots": 1.0,
+      "mean_first_passage_slots": 3.3333333333333335,
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "packed_log_residual_nats": 0.10536051555782633,
+      "q_true": 0.3333333333
+    },
+    {
+      "focused_mean_slots": 1.0,
+      "mean_first_passage_slots": 2.1458333333333335,
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "packed_log_residual_nats": 0.07038079676179965,
+      "q_true": 0.5
+    },
+    {
+      "focused_mean_slots": 1.0,
+      "mean_first_passage_slots": 1.1145833333333333,
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "packed_log_residual_nats": -0.11466290832013984,
+      "q_true": 0.8
+    },
+    {
+      "focused_mean_slots": 1.0,
+      "mean_first_passage_slots": 1.0,
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "packed_log_residual_nats": 0.0,
+      "q_true": 1.0
+    },
+    {
+      "focused_mean_slots": 1.40625,
+      "mean_first_passage_slots": 10.71875,
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "packed_log_residual_nats": -0.27151713559842516,
+      "q_true": 0.1
+    },
+    {
+      "focused_mean_slots": 1.40625,
+      "mean_first_passage_slots": 6.28125,
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "packed_log_residual_nats": -0.11279549414534418,
+      "q_true": 0.2
+    },
+    {
+      "focused_mean_slots": 1.40625,
+      "mean_first_passage_slots": 3.9791666666666665,
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "packed_log_residual_nats": -0.05846645859996413,
+      "q_true": 0.3333333333
+    },
+    {
+      "focused_mean_slots": 1.40625,
+      "mean_first_passage_slots": 2.25,
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "packed_log_residual_nats": -0.2231435513142097,
+      "q_true": 0.5
+    },
+    {
+      "focused_mean_slots": 1.40625,
+      "mean_first_passage_slots": 1.9895833333333333,
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "packed_log_residual_nats": 0.12385509829399066,
+      "q_true": 0.8
+    },
+    {
+      "focused_mean_slots": 1.40625,
+      "mean_first_passage_slots": 1.40625,
+      "mode": 0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "packed_log_residual_nats": 0.0,
+      "q_true": 1.0
+    },
+    {
+      "focused_mean_slots": 1.2708333333333333,
+      "mean_first_passage_slots": 12.791666666666666,
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "packed_log_residual_nats": 0.006535970979785866,
+      "q_true": 0.1
+    },
+    {
+      "focused_mean_slots": 1.2708333333333333,
+      "mean_first_passage_slots": 7.5625,
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "packed_log_residual_nats": 0.17409105765743926,
+      "q_true": 0.2
+    },
+    {
+      "focused_mean_slots": 1.2708333333333333,
+      "mean_first_passage_slots": 3.8125,
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "packed_log_residual_nats": -1.000000082740371e-10,
+      "q_true": 0.3333333333
+    },
+    {
+      "focused_mean_slots": 1.2708333333333333,
+      "mean_first_passage_slots": 2.7604166666666665,
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "packed_log_residual_nats": 0.08256160069302043,
+      "q_true": 0.5
+    },
+    {
+      "focused_mean_slots": 1.2708333333333333,
+      "mean_first_passage_slots": 1.7708333333333333,
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "packed_log_residual_nats": 0.10863384100279555,
+      "q_true": 0.8
+    },
+    {
+      "focused_mean_slots": 1.2708333333333333,
+      "mean_first_passage_slots": 1.2708333333333333,
+      "mode": 1,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "packed_log_residual_nats": 0.0,
+      "q_true": 1.0
+    },
+    {
+      "focused_mean_slots": 1.5,
+      "mean_first_passage_slots": 12.875,
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "packed_log_residual_nats": -0.1527627545524104,
+      "q_true": 0.1
+    },
+    {
+      "focused_mean_slots": 1.5,
+      "mean_first_passage_slots": 8.197916666666666,
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "packed_log_residual_nats": 0.08897703640730237,
+      "q_true": 0.2
+    },
+    {
+      "focused_mean_slots": 1.5,
+      "mean_first_passage_slots": 4.71875,
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "packed_log_residual_nats": 0.04746653713892357,
+      "q_true": 0.3333333333
+    },
+    {
+      "focused_mean_slots": 1.5,
+      "mean_first_passage_slots": 3.2708333333333335,
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "packed_log_residual_nats": 0.08643250577230754,
+      "q_true": 0.5
+    },
+    {
+      "focused_mean_slots": 1.5,
+      "mean_first_passage_slots": 1.625,
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "packed_log_residual_nats": -0.14310084364067327,
+      "q_true": 0.8
+    },
+    {
+      "focused_mean_slots": 1.5,
+      "mean_first_passage_slots": 1.5,
+      "mode": 2,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "packed_log_residual_nats": 0.0,
+      "q_true": 1.0
+    }
+  ],
+  "censoring_rate": 0.0,
+  "evidence_status": "development_gate_not_confirmatory_closure",
+  "gates": {
+    "beta_equivalence_interval": [
+      0.9,
+      1.1
+    ],
+    "censoring_pass": true,
+    "max_censoring": 0.05,
+    "model_beta_equivalence_pass": true,
+    "planned_share_pass": true,
+    "pooled_beta_equivalence_pass": true,
+    "residual_rms_pass": true
+  },
+  "max_absolute_planned_share_error": 0.005045572916665137,
+  "models": [
+    {
+      "beta": 1.0212353520516495,
+      "beta_ci_90": [
+        0.9848537244511371,
+        1.0522340468785323
+      ],
+      "beta_ci_95": [
+        0.9783648856586536,
+        1.0587680481310462
+      ],
+      "equivalence_pass": true,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct"
+    },
+    {
+      "beta": 0.9550122356898921,
+      "beta_ci_90": [
+        0.9133915065955094,
+        0.9946800585182494
+      ],
+      "beta_ci_95": [
+        0.9053736846110666,
+        1.0012375051755285
+      ],
+      "equivalence_pass": true,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct"
+    }
+  ],
+  "off_diagonal_wins": 0,
+  "packed_residual_mean_nats": -0.005906384702558913,
+  "packed_residual_rms_nats": 0.10784376472992474,
+  "planned_share_audit": [
+    {
+      "max_absolute_planned_share_error": 0.005045572916665137,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "q_true": 0.1,
+      "slots": 36864
+    },
+    {
+      "max_absolute_planned_share_error": 0.004014756944442224,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "q_true": 0.2,
+      "slots": 36864
+    },
+    {
+      "max_absolute_planned_share_error": 0.0017361111111101736,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "q_true": 0.3333333333,
+      "slots": 36864
+    },
+    {
+      "max_absolute_planned_share_error": 0.0037706163194444445,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "q_true": 0.5,
+      "slots": 36864
+    },
+    {
+      "max_absolute_planned_share_error": 0.002604166666662374,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "q_true": 0.8,
+      "slots": 36864
+    },
+    {
+      "max_absolute_planned_share_error": 0.0,
+      "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+      "q_true": 1.0,
+      "slots": 36864
+    },
+    {
+      "max_absolute_planned_share_error": 0.005045572916665137,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "q_true": 0.1,
+      "slots": 36864
+    },
+    {
+      "max_absolute_planned_share_error": 0.004014756944442224,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "q_true": 0.2,
+      "slots": 36864
+    },
+    {
+      "max_absolute_planned_share_error": 0.0017361111111101736,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "q_true": 0.3333333333,
+      "slots": 36864
+    },
+    {
+      "max_absolute_planned_share_error": 0.0037706163194444445,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "q_true": 0.5,
+      "slots": 36864
+    },
+    {
+      "max_absolute_planned_share_error": 0.002604166666662374,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "q_true": 0.8,
+      "slots": 36864
+    },
+    {
+      "max_absolute_planned_share_error": 0.0,
+      "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "q_true": 1.0,
+      "slots": 36864
+    }
+  ],
+  "pooled_beta": 0.9881237938707711,
+  "pooled_beta_ci_90": [
+    0.9598296872378591,
+    1.0131868271091025
+  ],
+  "pooled_beta_ci_95": [
+    0.9545076103992317,
+    1.017297199792031
+  ],
+  "schema_version": 1,
+  "seed": 20260731,
+  "slurm_jobs": [19277256, 19277263],
+  "status": "PASS",
+  "trajectories": 3456
+}

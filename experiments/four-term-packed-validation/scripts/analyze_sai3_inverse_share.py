@@ -232,6 +232,9 @@ def main() -> None:
     summary = {
         "schema_version": 1,
         "analysis": "physical_iid_inverse_share",
+        "evidence_status": "development_gate_not_confirmatory_closure",
+        "bootstrap_repetitions": args.bootstrap_repetitions,
+        "seed": args.seed,
         "trajectories": len(rows),
         "censoring_rate": censoring_rate,
         "off_diagonal_wins": off_diagonal_wins,

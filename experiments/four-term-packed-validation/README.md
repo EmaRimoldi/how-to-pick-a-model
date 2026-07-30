@@ -1,6 +1,7 @@
 # Four-Term Packed Validation
 
-Status: **BF16 Stage 0 complete; no confirmatory result is claimed yet**.
+Status: **BF16 Stage 0 and physical inverse-share gate complete; final
+calibration is queued and no confirmatory closure result is claimed yet**.
 
 Implementation status (2026-07-30): the procedural generator, static-policy
 verifier, reference/mutation audit, vLLM and Apple-MLX scout runners, physical
