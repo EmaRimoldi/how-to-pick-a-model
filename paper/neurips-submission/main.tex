@@ -67,7 +67,7 @@ from repeated evaluations~\citep{maron1993hoeffding,maron1997racing,kaufmann2016
 More recently, LLM cascades and routers have learned cost--quality policies over
 heterogeneous model pools~\citep{chen2023frugalgpt,ong2024routellm,hu2024routerbench},
 while test-time scaling and sample-allocation studies show that model size,
-sampling policy, and inference effort interact in task- and budget-dependent
+sampling policy, and inference effort interact in task- and effort-dependent
 ways~\citep{brown2024monkeys,snell2025testtime,wu2025inference,osca2024}.
 These lines of work establish the relevance of per-instance choice and
 resource-aware inference.  Their primary output is a runtime predictor,
@@ -95,8 +95,8 @@ speed.  We do not identify their path proper time with our deployment metric.
 Their framework supplies a computational foundation rather than a finite-sample
 rule for selecting from a deployed model menu.  For a design~\(d\), instance
 \(X\sim\mu\), and run randomness~\(\xi\), we define certified proper time
-\(T_d(\delta)\) as the \((1-\delta)\)-quantile of the declared budget consumed
-before the first verified artifact.  The budget measure may count seconds,
+\(T_d(\delta)\) as the \((1-\delta)\)-quantile of the first-passage proper time
+to a verified artifact.  The proper-time measure may be expressed in seconds,
 computation, energy, tokens, or money, but it is fixed before comparison and
 supplies the unit in which \(T_d(\delta)\) is reported.
 
@@ -167,28 +167,31 @@ We make three contributions:
 
 We first separate the deployment quantity that the builder ultimately cares
 about from the expected-log functional that admits the decomposition.  This
-distinction fixes the task, the budget unit, and the statistical estimand
+distinction fixes the task, the proper-time unit, and the statistical estimand
 before introducing latent modes.
 
-\begin{definition}[Verifiable task family and budget measure]
+\begin{definition}[Verifiable task family and proper-time measure]
 \label{def:task-family}
 A \emph{verifiable task family} is a tuple
 \(
   \mathcal T=(\mathcal X,\mathcal Y,V,\mu)
-\), where \(X\sim\mu\) is a deployment instance, \(y\in\mathcal Y\) is a
-candidate artifact, and \(V:\mathcal X\times\mathcal Y\to\{0,1\}\) is a
-predeclared external verifier.  A \emph{budget measure} assigns every partial
-run a scalar, additive consumption \(b\ge0\).  It may count isolated
+\).  Each \(x\in\mathcal X\) is a concrete transductive problem instance: the
+observed input and context for which one artifact \(y\in\mathcal Y\) must be
+constructed.  The distribution \(\mu\) describes future instances, while the
+predeclared external verifier
+\(V:\mathcal X\times\mathcal Y\to\{0,1\}\) supplies the common success
+criterion.  A \emph{proper-time measure} assigns every partial execution a
+nonnegative, additive coordinate \(t\).  It may be measured in isolated
 GPU-seconds, joules, tokens, dollars, or a predeclared scalarization of several
-resources.  The same measure is used for every candidate in one comparison and
-charges signal acquisition, generation, verification, and retries.
+resources.  It is fixed before comparison and accounts for signal acquisition,
+generation, verification, and retries for every candidate.
 \end{definition}
 
 A \emph{deployment design} \(d\) fixes the complete solution procedure: model
 and hardware/runtime implementation, prompting and decoding, permitted
 pre-allocation observations, retry or allocation, and verifier invocation.
-Given instance \(x\) and run randomness \(\xi\), \(y_d(b;x,\xi)\) is the
-realized latest artifact after budget \(b\).  Here \(\xi\) collects stochastic
+Given instance \(x\) and run randomness \(\xi\), \(y_d(t;x,\xi)\) is the
+realized latest artifact at proper time \(t\).  Here \(\xi\) collects stochastic
 decoding, retry seeds, randomized allocation, and other run-to-run variation,
 making repeated executions of the same design explicit.
 
@@ -199,19 +202,20 @@ For failure tolerance \(\delta\in(0,1)\), define
 \left\{
 \begin{aligned}
 \tau_d(x,\xi)
-&:=\inf\{b\ge0:V(x,y_d(b;x,\xi))=1\},
+&:=\inf\{t\ge0:V(x,y_d(t;x,\xi))=1\},
 \qquad \inf\varnothing:=\infty,\\
 T_d(\delta)
-&:=\inf\{b\ge0:
-\Prob_{X\sim\mu,\xi}[\tau_d(X,\xi)\le b]\ge1-\delta\}.
+&:=\inf\{t\ge0:
+\Prob_{X\sim\mu,\xi}[\tau_d(X,\xi)\le t]\ge1-\delta\}.
 \end{aligned}
 \right.
 \label{eq:proper-time-system}
 \end{equation}
-Thus \(\tau_d\) is the realized budget to the first verified artifact, whereas
-\(T_d(\delta)\) is the certified proper time: the smallest budget that succeeds
-with probability at least \(1-\delta\) over deployment instances and repeated
-runs.  Its unit is inherited from the chosen budget measure.
+Thus \(\tau_d\) is the realized first-passage proper time, whereas
+\(T_d(\delta)\) is its population \((1-\delta)\)-quantile: the smallest proper
+time by which a verified artifact is produced with probability at least
+\(1-\delta\) over deployment instances and repeated runs.  Its unit is
+inherited from the chosen proper-time measure.
 For a baseline \(d_0\), the certified log-speedup is
 \(\Delta_{\mathrm{cert}}(d_0,d;\delta)
 =\log T_{d_0}(\delta)-\log T_d(\delta)\), whenever both quantiles are finite
@@ -221,14 +225,14 @@ and positive.
 \begin{problem}[Deployment model selection]
 \label{prob:model-selection}
 Given a finite, predeclared design menu \(\mathcal D\), a task family, a common
-budget measure, and \(\delta\), select
+proper-time measure, and \(\delta\), select
 \begin{equation}
   d^\star\in\argmin_{d\in\mathcal D}T_d(\delta).
   \label{eq:deployment-selection}
 \end{equation}
-Candidates must share the budget measure and verifier.  Repeating the analysis
-in another common unit gives another proper-time comparison; simultaneous
-resources require a scalarization or Pareto frontier.
+Candidates must share the proper-time measure and verifier.  Repeating the
+analysis in another common unit gives another proper-time comparison;
+simultaneous resources require a scalarization or Pareto frontier.
 \end{problem}
 
 This formulation covers code against tests, proof search against a checker, and
@@ -239,13 +243,31 @@ unique.
 \subsection{Task modes, signals, and packed allocation}
 \label{sec:packed-setup}
 
+This is an instance-wise algorithm-selection problem in the sense of
+Rice~\citep{rice1976algorithm}: observable instance features may predict which
+solver will perform well on a previously unseen input
+\citep{hutter2014runtime,xu2012satzilla}.  Latent-class portfolio models make
+the stronger hypothesis used here, namely that correlations in solver behavior
+can arise from unobserved subpopulations of problem
+instances~\citep{silverthorn2010latent}.
+
 \begin{definition}[Task modes, signals, and deployable shares]
 \label{def:packed-objects}
-Partition the task family into \emph{solver-relevant modes}
-\(\mathcal S=\{1,\ldots,m\}\), each grouping instances with a distinct cost or
-success profile for a declared solution strategy.  The random mode
-\(S\in\mathcal S\), with prior \(\pi(s)=\Prob[S=s]\), may be unknown when effort
-is allocated.  The same predeclared partition is used for every design.
+Let \(S\in\mathcal S=\{1,\ldots,m\}\) be a latent structural mode with
+\(S\sim\pi\) and
+\[
+  X\mid S=s\sim\mu_s,
+  \qquad
+  \mu=\sum_{s\in\mathcal S}\pi(s)\mu_s.
+\]
+A mode identifies an intrinsic subfamily whose instances share
+solver-relevant structure, such as a dependency pattern, proof schema, edit
+locality, or algorithmic invariant.  The mixture and its interpretation are
+predeclared independently of the candidate designs.  A hard partition
+\(S=g(X)\) is a special case; in general the same observed instance can have
+non-degenerate posterior membership.  Thus mode-dependent performance is a
+consequence of how a design interacts with instance structure, not the
+definition of the mode.
 
 An admissible signal \(Z\) is pre-allocation information, such as static
 instance features or a charged partial trace.  After \(Z=z\), the posterior is
@@ -263,6 +285,17 @@ using mode-\(s\) work.  For design \(d\), \(\kappa(d,s)>0\) is its expected cost
 in the declared unit, including natural output length and verification, while
 \(t_0(d,s)>0\) is the expected number of focused mode-\(s\) attempts to the first
 verified artifact.
+
+The family exhibits \emph{solver specialization} when the preferred design is
+not constant across modes; equivalently, for some \(s\ne s'\) and \(d\ne d'\),
+\[
+  \kappa(d,s)t_0(d,s)<\kappa(d',s)t_0(d',s)
+  \quad\text{and}\quad
+  \kappa(d,s')t_0(d,s')>\kappa(d',s')t_0(d',s').
+\]
+This crossing condition, rather than difficulty variation alone, is what makes
+an instance-dependent choice potentially better than one globally fixed
+design.
 \end{definition}
 
 For two mode distributions \(a,b\in\Delta(\mathcal S)\), write
@@ -294,10 +327,10 @@ represented by the product in~\eqref{eq:packed-law} must enter the residual
 model below.
 \end{assumption}
 
-In particular, signal acquisition is charged to the chosen budget.  An
-additive or allocation-dependent signal cost cannot generally be absorbed into
-\(\kappa(d,s)\) without changing the factorization and therefore appears in the
-residual of Proposition~\ref{prop:approx-packed}.
+In particular, signal acquisition is included in the chosen proper-time
+measure.  An additive or allocation-dependent signal cost cannot generally be
+absorbed into \(\kappa(d,s)\) without changing the factorization and therefore
+appears in the residual of Proposition~\ref{prop:approx-packed}.
 
 \begin{definition}[Packed expected log-proper-time]
 \label{def:packed-risk}
@@ -337,14 +370,11 @@ Section~\ref{sec:quantile-bridge} appear in Appendix~\ref{app:proofs}.
 
 \begin{lemma}[Conditional log-proper-time and posterior matching]
 \label{lem:conditional}
-Under Assumption~\ref{ass:packed}, for any signal value \(z\),
+Under Assumption~\ref{ass:packed}, for any signal value \(z\), write
+\(\E_z[\cdot]:=\E[\cdot\mid Z=z]\).  Then
 \begin{equation}
-\begin{aligned}
-\E[\log T_{d,q}^{\mathrm{pack}}(S,z)\mid Z=z]
-={}&\E[\log(\kappa(d,S)t_0(d,S))\mid Z=z]
-\\
-&+H(\pi_z)+\KL(\pi_z\Vert q_z).
-\end{aligned}
+\E_z[\log T_{d,q}^{\mathrm{pack}}(S,z)]
+=\E_z[\log(\kappa(d,S)t_0(d,S))]+H(\pi_z)+\KL(\pi_z\Vert q_z).
 \label{eq:conditional-decomposition}
 \end{equation}
 Consequently, \(q_z=\pi_z\) uniquely minimizes conditional expected
@@ -388,13 +418,8 @@ For candidate designs sharing \((\pi,\mathcal S)\), possibly with
 candidate-specific signals \(Z_d\), posteriors
 \(\pi_z^d(s):=\Prob[S=s\mid Z_d=z]\), and allocations \(q^d\), define
 \begin{equation}
-\begin{aligned}
-  \mathcal J(d,q^d)
-  :={}&\E_S[\log\kappa(d,S)]
-      +\E_S[\log t_0(d,S)]
-      -I(S;Z_d)\\
-      &+\E_{Z_d}[\KL(\pi^{d}_{Z_d}\Vert q^d_{Z_d})].
-\end{aligned}
+\mathcal J(d,q^d):=\E_S[\log(\kappa(d,S)t_0(d,S))]
+-I(S;Z_d)+\E_{Z_d}[\KL(\pi^{d}_{Z_d}\Vert q^d_{Z_d})].
 \label{eq:model-score}
 \end{equation}
 Then \(\mathcal L(d,q^d)=H(\pi)+\mathcal J(d,q^d)\).
@@ -406,6 +431,8 @@ quantified rather than hidden.
 
 \begin{proposition}[Approximate packedness]
 \label{prop:approx-packed}
+Let \(r_d(s,z,q)\in\mathbb R\) be the scalar cellwise log-residual, and let
+\(\eta\ge0\) be a uniform upper bound on its magnitude, measured in nats.
 Suppose the actual mode-conditioned scale satisfies
 \begin{equation}
   \log\widetilde T_{d,q}(s,z)
@@ -430,8 +457,11 @@ and
   \qquad |R|\le2\eta.
   \label{eq:residual-decomposition}
 \end{equation}
-Here \(r_{d_0}(s,q_0)\) denotes the baseline residual, which has no signal
-argument because \(q_0\) is fixed.
+Here \(R\in\mathbb R\) is the scalar difference between the expected baseline
+and candidate residuals, so \(|R|\) is the ordinary absolute value of a scalar,
+not a vector norm.  The bound \(2\eta\) follows because each of the two
+cellwise residuals has magnitude at most \(\eta\).
+The term \(r_{d_0}(s,q_0)\) has no signal argument because \(q_0\) is fixed.
 \end{proposition}
 
 \begin{corollary}[Residual-aware decision margin]
