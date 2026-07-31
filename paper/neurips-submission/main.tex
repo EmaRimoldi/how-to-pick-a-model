@@ -251,7 +251,7 @@ the stronger hypothesis used here, namely that correlations in solver behavior
 can arise from unobserved subpopulations of problem
 instances~\citep{silverthorn2010latent}.
 
-\begin{definition}[Task modes, task information, and deployable shares]
+\begin{definition}[Task modes and task information]
 \label{def:packed-objects}
 Fix the verifiable task family
 \(\mathcal T=(\mathcal X,\mathcal Y,V,\mu)\) from
@@ -289,25 +289,89 @@ prior \(\pi\) to the posterior
   \pi_z(s):=\Prob[S=s\mid Z=z].
 \]
 This posterior is a property of the joint law, not automatically a model
-output; in practice it is estimated from calibration data.  Thus the signal is
-useful only to the extent that its content is statistically informative about
-solver-relevant task structure; raw signal length alone does not determine its
-information value.
+output; in practice it is estimated from calibration data.  For discrete
+\(\mathcal Z\), estimates of the prior and mode-conditional signal channel give
+\begin{equation}
+  \widehat\pi_z(s)
+  =\frac{\widehat\pi(s)\widehat p(z\mid s)}
+  {\sum_{u\in\mathcal S}\widehat\pi(u)\widehat p(z\mid u)}.
+  \label{eq:posterior-estimation}
+\end{equation}
+For general signals, \(\widehat\pi_z\) may instead be any probabilistic
+predictor fitted and calibrated on data disjoint from evaluation.  Thus raw
+signal length alone does not determine information value.
+\end{definition}
 
-After observing \(z\), a \emph{packed allocation} selects
-\(q_z\in\Delta(\mathcal S)\), where \(\Delta(\mathcal S)\) is the probability
-simplex over the mode labels and \(q_z(s)\) is the fraction of subsequent
-solution attempts assigned to mode-\(s\) work, such as its associated prompt,
-tool, specialist, or sampling stream.  This share must be physically
-implemented; it is not merely a predicted mode label.  We require \(q_z(s)>0\)
-whenever \(\pi_z(s)>0\), because assigning zero attempts to a mode that remains
-possible after observing \(z\) would give that mode infinite proper time.
+\begin{definition}[Fixed-backbone actions and packed allocator]
+\label{def:packed-allocator}
+Fix a design \(d\) with backbone model \(M_d\).  Its predeclared action bank is
+\[
+  \mathcal A_d
+  :=\{a_{d,s}:s\in\mathcal S\},
+  \qquad
+  a_{d,s}:=(M_d,\rho_{d,s}),
+\]
+where \(\rho_{d,s}\) fixes the mode-directed context, prompt, tools, and
+generation procedure used in one complete generation-and-verification
+attempt.  Hence all actions within \(d\) share the same backbone; only their
+predeclared non-backbone procedure may differ.  The association
+\(s\leftrightarrow a_{d,s}\) is fixed before evaluation.  It identifies the
+action intended to accumulate focused progress on mode \(s\), without
+revealing \(S\) at deployment or assuming that the association is empirically
+correct.  To audit it, let \(b_d(j,s)\in(0,\infty]\) be the calibrated
+proper-time scale obtained by repeatedly applying action \(a_{d,j}\) to
+mode-\(s\) instances.  The declared association is supported when
+\[
+  s\in\argmin_{j\in\mathcal S}b_d(j,s)
+  \quad\text{for every }s\in\mathcal S.
+\]
+For example, \(\rho_{d,s}\) may select evidence shard \(s\) while leaving
+\(M_d\) fixed.
 
-A \emph{mode-directed attempt} is one complete generation-and-verification run
-using mode-\(s\) work.  For design \(d\), \(\kappa(d,s)>0\) is its expected cost
-in the declared unit, including natural output length and verification, while
-\(t_0(d,s)>0\) is the expected number of focused mode-\(s\) attempts to the first
-verified artifact.
+A \emph{packed allocator} is a stochastic kernel
+\[
+  Q_d:\mathcal Z\longrightarrow\Delta(\mathcal S),
+  \qquad
+  Q_d(s\mid z)=q_z(s),
+  \qquad
+  \Delta(\mathcal S)
+  :=\left\{q\in[0,1]^m:\sum_{s\in\mathcal S}q(s)=1\right\}.
+\]
+After observing \(Z=z\), slot \(k\) draws an action index
+\begin{equation}
+  J_k\mid Z=z\overset{\mathrm{iid}}{\sim}\operatorname{Cat}(q_z),
+  \qquad A_k:=a_{d,J_k},
+  \label{eq:physical-allocation}
+\end{equation}
+runs \(A_k\), invokes \(V\), and stops at the first verified artifact.
+Consequently, \(q_z(s)\) is both the conditional probability of assigning a
+slot to \(a_{d,s}\) and its long-run executed share.  A deterministic
+assignment is the special case \(q_z=e_j\); the general allocator is
+stochastic.  We require \(q_z(s)>0\) whenever \(\pi_z(s)>0\), so a deterministic
+assignment is admissible only when the posterior support is a singleton:
+excluding a still-possible mode gives infinite proper time under the packed
+law.
+
+The inference and control maps are distinct:
+\[
+  z\longmapsto\widehat\pi_z
+  \longmapsto q_z=g_d(\widehat\pi_z),
+  \qquad
+  g_d:\Delta(\mathcal S)\to\Delta(\mathcal S).
+\]
+The allocator \(g_d\) is frozen before evaluation and need not be
+posterior-matched.  Lemma~\ref{lem:conditional} shows that the expected-log
+population objective is minimized by \(q_z=\pi_z\); its empirical plug-in rule
+is \(q_z=\widehat\pi_z\).
+
+A \emph{focused mode-\(s\) attempt} is one execution of \(a_{d,s}\).  Let
+\(t_0(d,s)>0\) be the expected number of such focused attempts to the first
+verified artifact, and let \(\kappa(d,s)>0\) be the expected cost of one global
+attempt slot on a mode-\(s\) instance in the declared proper-time unit,
+including natural output length and verification.  Exact packedness requires
+this slot-cost scale to be invariant to the allocation; departures caused by
+action-dependent lengths or overhead are covered by
+Proposition~\ref{prop:approx-packed}.
 
 The family exhibits \emph{solver specialization} when the preferred design is
 not constant across modes; equivalently, for some \(s\ne s'\) and \(d\ne d'\),
@@ -320,6 +384,20 @@ This crossing condition, rather than difficulty variation alone, is what makes
 an instance-dependent choice potentially better than one globally fixed
 design.
 \end{definition}
+
+Any slot-wise randomized implementation with internal seed \(U_k\) is already
+represented by
+\(q_z(s)=\Prob[J_k=s\mid Z=z]\).  If instead one first samples a random share
+vector \(Q\sim K_d(\cdot\mid z)\) and freezes it for the entire episode, the
+conditional mismatch is
+\(\E_{Q\mid z}\KL(\pi_z\Vert Q)\), rather than
+\(\KL(\pi_z\Vert\E[Q\mid z])\).  Convexity gives
+\[
+  \E_{Q\mid z}\KL(\pi_z\Vert Q)
+  \ge \KL\!\left(\pi_z\middle\Vert\E[Q\mid z]\right),
+\]
+so episode-level randomization cannot improve the expected-log packed
+objective over its deterministic mean allocation.
 
 For two mode distributions \(a,b\in\Delta(\mathcal S)\), write
 \[
@@ -348,8 +426,10 @@ finite and experimentally estimable counterpart rather than the same object.
 
 \begin{assumption}[Packed inverse-share law]
 \label{ass:packed}
-The mode-conditioned packed proper time of design \(d\) under allocation \(q\)
-is
+Conditional on \(S=s\) and \(Z=z\), interleaving the action bank changes the
+focused mode-\(s\) process only by assigning it the executed share \(q_z(s)\);
+slot costs remain represented by \(\kappa(d,s)\).  The resulting
+mode-conditioned packed proper time is
 \begin{equation}
   T_{d,q}^{\mathrm{pack}}(s,z)
   =\kappa(d,s)\frac{t_0(d,s)}{q_z(s)}.
@@ -357,9 +437,10 @@ is
 \end{equation}
 The factor \(1/q_z(s)\) states that assigning only a fraction \(q_z(s)\) of
 global attempts to the true mode dilates its focused attempts-to-solution by
-the inverse share.  The law applies only when the declared allocation is
-actually executed.  Any design-, mode-, or allocation-dependent overhead not
-represented by the product in~\eqref{eq:packed-law} must enter the residual
+the inverse share.  Thus off-mode attempts provide no credited focused
+progress in the exact model.  The law applies only when the declared
+allocation is executed; transfer across actions, correlated attempts, or
+design-, mode-, and allocation-dependent overhead must enter the residual
 model below.
 \end{assumption}
 
@@ -625,8 +706,8 @@ For completeness, Jensen's inequality for \(-\log\) gives
 \]
 Equality requires all mass to lie on the posterior support and
 \(q_z(s)/\pi_z(s)\) to be constant there, hence \(q_z=\pi_z\).  The support
-condition in Definition~\ref{def:packed-objects} makes every displayed quantity
-finite.
+condition in Definition~\ref{def:packed-allocator} makes every displayed
+quantity finite.
 \end{proof}
 
 \subsection{Proof of Theorem~\ref{thm:four-term}}
