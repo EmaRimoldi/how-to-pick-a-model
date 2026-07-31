@@ -240,45 +240,68 @@ other transductive tasks in which one concrete artifact must be produced for
 the observed instance.  It does not assume that a successful artifact is
 unique.
 
-\subsection{Task modes, signals, and packed allocation}
+\subsection{Task modes, task information, and packed allocation}
 \label{sec:packed-setup}
 
 This is an instance-wise algorithm-selection problem in the sense of
-Rice~\citep{rice1976algorithm}: observable instance features may predict which
-solver will perform well on a previously unseen input
+Rice~\citep{rice1976algorithm}: observations about an instance may predict
+which solver will perform well on a previously unseen input
 \citep{hutter2014runtime,xu2012satzilla}.  Latent-class portfolio models make
 the stronger hypothesis used here, namely that correlations in solver behavior
 can arise from unobserved subpopulations of problem
 instances~\citep{silverthorn2010latent}.
 
-\begin{definition}[Task modes, signals, and deployable shares]
+\begin{definition}[Task modes, task information, and deployable shares]
 \label{def:packed-objects}
-Let \(S\in\mathcal S=\{1,\ldots,m\}\) be a latent structural mode with
-\(S\sim\pi\) and
+Fix the verifiable task family
+\(\mathcal T=(\mathcal X,\mathcal Y,V,\mu)\) from
+Definition~\ref{def:task-family}.  The finite set
+\(\mathcal S=\{1,\ldots,m\}\) indexes predeclared, solver-relevant subfamilies
+of the instance space \(\mathcal X\).  For a random deployment instance
+\(X\sim\mu\), the random variable \(S\in\mathcal S\) records which subfamily
+generated \(X\).  It is \emph{latent} because its value is not directly
+revealed to the deployment design.  Formally,
 \[
   X\mid S=s\sim\mu_s,
   \qquad
+  \pi(s):=\Prob[S=s],
+  \qquad
   \mu=\sum_{s\in\mathcal S}\pi(s)\mu_s.
 \]
-A mode identifies an intrinsic subfamily whose instances share
-solver-relevant structure, such as a dependency pattern, proof schema, edit
-locality, or algorithmic invariant.  The mixture and its interpretation are
-predeclared independently of the candidate designs.  A hard partition
-\(S=g(X)\) is a special case; in general the same observed instance can have
-non-degenerate posterior membership.  Thus mode-dependent performance is a
-consequence of how a design interacts with instance structure, not the
-definition of the mode.
+Here \(\pi\) is the prior frequency of the subfamilies in deployment and
+\(\mu_s\) is the distribution of task instances within subfamily \(s\).  A
+mode therefore means shared structure among instances of the same task family,
+such as a dependency pattern, proof schema, edit locality, or algorithmic
+invariant.  The subfamilies and their interpretation are fixed independently
+of the candidate designs.
 
-An admissible signal \(Z\) is pre-allocation information, such as static
-instance features or a charged partial trace.  After \(Z=z\), the posterior is
-\(\pi_z(s):=\Prob[S=s\mid Z=z]\).  A \emph{packed allocation} maps
-\(z\mapsto q_z\in\Delta(\mathcal S)\), where \(q_z(s)\) is
-the fraction of subsequent solution attempts assigned to mode-\(s\) work, such
-as its associated prompt, tool, specialist, or sampling stream.  This share
-must be physically implemented; it is not merely a predicted mode label.  We
-require \(q_z(s)>0\) whenever \(\pi_z(s)>0\), because assigning zero attempts to
-a still-plausible mode would give it infinite proper time and make the
-corresponding KL divergence undefined.
+A \emph{task-information signal} is a random variable
+\(Z\in\mathcal Z\), where \(\mathcal Z\) is the space of possible signal
+values.  Before effort is allocated, a predeclared, possibly randomized
+observation channel \(\Prob_{Z\mid X}\)---the conditional distribution of
+\(Z\) given \(X\)---produces information acquired from or associated with the
+current task instance; \(Z\) need not be a static feature vector or a mode
+label.  The mixture above and \(\Prob_{Z\mid X}\) induce a joint probability
+law \(\Prob\) for \((S,X,Z)\).  When the design observes the realized signal
+value \(z\), its uncertainty about the instance's latent mode changes from the
+prior \(\pi\) to the posterior
+\[
+  \pi_z(s):=\Prob[S=s\mid Z=z].
+\]
+This posterior is a property of the joint law, not automatically a model
+output; in practice it is estimated from calibration data.  Thus the signal is
+useful only to the extent that its content is statistically informative about
+solver-relevant task structure; raw signal length alone does not determine its
+information value.
+
+After observing \(z\), a \emph{packed allocation} selects
+\(q_z\in\Delta(\mathcal S)\), where \(\Delta(\mathcal S)\) is the probability
+simplex over the mode labels and \(q_z(s)\) is the fraction of subsequent
+solution attempts assigned to mode-\(s\) work, such as its associated prompt,
+tool, specialist, or sampling stream.  This share must be physically
+implemented; it is not merely a predicted mode label.  We require \(q_z(s)>0\)
+whenever \(\pi_z(s)>0\), because assigning zero attempts to a mode that remains
+possible after observing \(z\) would give that mode infinite proper time.
 
 A \emph{mode-directed attempt} is one complete generation-and-verification run
 using mode-\(s\) work.  For design \(d\), \(\kappa(d,s)>0\) is its expected cost
@@ -307,8 +330,21 @@ For two mode distributions \(a,b\in\Delta(\mathcal S)\), write
 with \(0\log0:=0\).  Here \(H(a)\) is the Shannon entropy, measuring uncertainty
 about the mode in nats, and \(\KL(a\Vert b)\) is the nonnegative mismatch from
 using mode distribution \(b\) in place of \(a\).  The mutual information
-\(I(S;Z):=H(\pi)-\E_ZH(\pi_Z)\) is the expected reduction in mode uncertainty
-provided by the signal.
+\[
+  I(S;Z)
+  :=H(\pi)-\E_ZH(\pi_Z)
+  =\E_Z\!\left[\KL(\pi_Z\Vert\pi)\right]
+\]
+is the expected reduction in mode uncertainty after the design observes the
+task information, where \(\pi_Z\) is the posterior evaluated at the random
+observation \(Z\).  It is zero when \(Z\) and \(S\) are independent and reaches
+\(H(\pi)\) when \(Z\) identifies the latent mode almost surely.  In this sense,
+\(Z\) is the finite-mode analogue of the data or prompt that conditions the
+search distribution in Achille and Soatto's ``information is speed''
+result~\citep{achille2025agents}.  Their quantity is algorithmic mutual
+information between data and a successful trajectory; ours is the Shannon
+mutual information between task information and a predeclared finite mode, a
+finite and experimentally estimable counterpart rather than the same object.
 
 \begin{assumption}[Packed inverse-share law]
 \label{ass:packed}
