@@ -73,9 +73,10 @@ These lines of work establish the relevance of per-instance choice and
 resource-aware inference.  Their primary output is a runtime predictor,
 selector, or allocation policy under a declared performance objective.  Our
 focus is complementary: an accounting law for the verified first-passage
-resource of a stochastic solver that separates the price of one attempt, its
+budget of a stochastic solver that separates the price of one attempt, its
 mode-conditional probability of success, the information available before
-deployment, and the extent to which the scheduler uses that information.
+deployment, and the extent to which the deployed allocation rule uses that
+information.
 
 Our conceptual foundation is the proper-time framework of Achille and
 Soatto~\citep{achille2025agents}.  They model an agent as a stochastic dynamical
@@ -93,26 +94,27 @@ defined by an external verifier, and information is valuable insofar as it buys
 speed.  We do not identify their path proper time with our deployment metric.
 Their framework supplies a computational foundation rather than a finite-sample
 rule for selecting from a deployed model menu.  For a design~\(d\), instance
-\(X\sim\mu\), and run randomness~\(\xi\), we define certified
-resource-to-solution \(T_d(\delta)\) as the \((1-\delta)\)-quantile of the
-resource consumed before the first verified artifact.  This is a measurable
-service-level objective for comparing a finite menu under one predeclared
-resource clock.
+\(X\sim\mu\), and run randomness~\(\xi\), we define the certified
+budget-to-solution \(B_d^{\mathrm{ver}}(\delta)\) as the \((1-\delta)\)-quantile of the
+budget consumed before the first verified artifact.  The budget measure may be
+time, computation, energy, tokens, or money, but it is fixed before comparison.
+This gives a measurable service-level objective for a finite design menu.
 
 For a tractable accounting, we introduce a solver-relevant mode \(S\),
 admissible evidence \(Z\), and a physically implemented effort share \(q_Z(S)\).
-The packed hypothesis makes mode-conditioned resource proportional to unit
-attempt cost \(\kappa(M,S)\), focused scale \(t_0(M,S)\), and \(1/q_Z(S)\).
-Under a prior-matched baseline, the resulting expected log-resource gain is
+The packed hypothesis makes mode-conditioned budget proportional to unit
+attempt budget \(\kappa(d,S)\), focused attempts-to-solution scale
+\(t_0(d,S)\), and \(1/q_Z(S)\).
+Under a prior-matched baseline, the resulting expected log-budget gain is
 \begin{equation}
 \begin{aligned}
 \Delta_{\mathrm{pack}}
 ={}&
 \underbrace{\mathbb E_S\!\left[\log
-  \frac{\kappa(M_0,S)}{\kappa(M,S)}\right]}_{\text{unit cost}}
+  \frac{\kappa(d_0,S)}{\kappa(d,S)}\right]}_{\text{unit cost}}
 +
 \underbrace{\mathbb E_S\!\left[\log
-  \frac{t_0(M_0,S)}{t_0(M,S)}\right]}_{\text{focused competence}}
+  \frac{t_0(d_0,S)}{t_0(d,S)}\right]}_{\text{focused competence}}
 \\[-0.15em]
 &+
 \underbrace{I(S;Z)}_{\text{mode information}}
@@ -123,9 +125,9 @@ Under a prior-matched baseline, the resulting expected log-resource gain is
 \end{aligned}
 \end{equation}
 The identity is exact inside the packed model; it is not a general
-decomposition of \(\log T_d(\delta)\).  We therefore derive the corresponding
+decomposition of \(\log B_d^{\mathrm{ver}}(\delta)\).  We therefore derive the corresponding
 residual form when inverse-share log-linearity is approximate and an exact
-geometric-retry bridge showing that, under IID eligible attempts, \(1/q\)
+geometric-retry bridge showing that, under IID mode-directed attempts, \(1/q\)
 governs mean first-passage attempts, whereas certified quantiles require an
 explicit correction.  This distinction makes the assumption testable rather
 than definitional.
@@ -133,13 +135,13 @@ than definitional.
 Equation~\eqref{eq:intro-four-term} turns model selection into a diagnostic and
 counterfactual calculation: it separates cheaper attempts, model competence,
 information acquisition, and allocation quality.  A calibrated pilot can then
-predict held-out expected log first-passage resource, while full deployment
+predict held-out expected log first-passage budget, while full deployment
 trials remain the confirmation standard.
 
 We make three contributions:
 \begin{enumerate}[leftmargin=1.5em,itemsep=0.2em,topsep=0.35em]
   \item Starting from Achille and Soatto's time-centric principle, we formulate
-  finite, verifiable model selection through first-passage resource and its
+  finite, verifiable model selection through first-passage budget and its
   certified population quantile, while keeping this deployment object distinct
   from both
   Achille--Soatto path proper time and the theorem-facing expected-log
@@ -153,71 +155,83 @@ We make three contributions:
   execution-verified coding benchmark.  In a held-out study of 175,104 physical
   trajectories over 768 unseen tasks using Qwen2.5-Coder 7B and 14B, the
   inverse-share exponent is \(0.987\), the four-term prediction has residual RMS
-  \(0.015\) nat, and its model choice agrees with the held-out resource oracle in
+  \(0.015\) nat, and its model choice agrees with the held-out budget oracle in
   all six conditions.  Because a strict residual omnibus rejects exact closure,
   we interpret the decomposition as a falsifiable decision approximation, not
   a universal equality.
 \end{enumerate}
 
-\section{Verifier-Backed Model Selection}
+\section{Verifier-Backed Budgeted Model Selection}
 \label{sec:problem}
 
 We first separate the deployment quantity that the builder ultimately cares
 about from the expected-log functional that admits the decomposition.  This
-distinction fixes the task, the resource unit, and the statistical estimand
-before introducing latent modes.
+distinction fixes the task, the budget unit, and the statistical estimand before
+introducing latent modes.
 
-\begin{definition}[Verifiable task family and resource clock]
+\begin{definition}[Verifiable task family and budget measure]
 \label{def:task-family}
 A \emph{verifiable task family} is a tuple
 \(
   \mathcal T=(\mathcal X,\mathcal Y,V,\mu)
 \), where \(X\sim\mu\) is a deployment instance, \(y\in\mathcal Y\) is a
 candidate artifact, and \(V:\mathcal X\times\mathcal Y\to\{0,1\}\) is a
-predeclared external verifier.  Before comparing systems, the builder fixes one
-scalar, additive resource clock---for example isolated GPU-seconds, joules,
-tokens, or dollars.  Signal acquisition, generation, verification, and retry
-costs are charged whenever they consume that resource.
+predeclared external verifier.  A \emph{budget measure} assigns every partial
+run a scalar, additive consumption \(b\ge0\).  It may count isolated
+GPU-seconds, joules, tokens, dollars, or a predeclared scalarization of several
+resources.  The same measure is used for every candidate and charges signal
+acquisition, generation, verification, and retries.
 \end{definition}
 
-A design \(d\) fixes the model, serving configuration, admissible signal, and
-allocation or retry policy.  Its randomness is denoted by \(\xi\), and
-\(Y_d(t;x,\xi)\) is the latest artifact available by resource time \(t\).
+A \emph{deployment design} \(d\) is the complete procedure used to solve a
+task: the model, hardware and inference implementation, prompting and decoding
+rules, observations permitted before allocating work, retry or allocation
+policy, and verifier invocation.  All of these choices are fixed before
+evaluation.  The candidate menu is
+\(\mathcal D=\{d_1,\ldots,d_K\}\).  Conditional on an instance \(x\) and run
+randomness \(\xi\), \(y_d(b;x,\xi)\) denotes the realized latest artifact after
+budget \(b\) has been consumed.  The variable \(\xi\) collects stochastic
+decoding, retry seeds, randomized allocation, and any other run-to-run
+variation; it is needed because the same design and instance need not produce
+the same artifact on every run.
 
-\begin{definition}[First passage and certified resource-to-solution]
-\label{def:certified-time}
-The first verified passage of design \(d\) is
+\begin{definition}[First verified passage and certified budget-to-solution]
+\label{def:certified-budget}
+For failure tolerance \(\delta\in(0,1)\), define the paired quantities
 \begin{equation}
-  \tau_d(x,\xi)
-  :=\inf\{t\ge0:V(x,Y_d(t;x,\xi))=1\},
-  \qquad \inf\varnothing:=\infty.
-  \label{eq:first-passage}
+\left\{
+\begin{aligned}
+B_d^{\mathrm{hit}}(x,\xi)
+&:=\inf\{b\ge0:V(x,y_d(b;x,\xi))=1\},
+\qquad \inf\varnothing:=\infty,\\
+B_d^{\mathrm{ver}}(\delta)
+&:=\inf\{b\ge0:
+\Prob_{X\sim\mu,\xi}[B_d^{\mathrm{hit}}(X,\xi)\le b]\ge1-\delta\}.
+\end{aligned}
+\right.
+\label{eq:verified-budget-system}
 \end{equation}
-At failure tolerance \(\delta\in(0,1)\), its certified
-resource-to-solution is the population quantile
-\begin{equation}
-  T_d(\delta)
-  :=\inf\{t\ge0:
-  \Prob_{X\sim\mu,\xi}[\tau_d(X,\xi)\le t]\ge1-\delta\}.
-  \label{eq:certified-time}
-\end{equation}
-For a baseline \(d_0\), the certified log-speedup is
-\(\Delta_{\mathrm{cert}}(d_0,d;\delta)
-=\log T_{d_0}(\delta)-\log T_d(\delta)\), whenever both quantiles are finite
-and positive.
+Thus \(B_d^{\mathrm{hit}}\) is the realized budget consumed before the first
+verified artifact, whereas \(B_d^{\mathrm{ver}}(\delta)\) is the smallest budget
+that succeeds with probability at least \(1-\delta\) over deployment instances
+and repeated runs.  For a baseline \(d_0\), the certified log-gain is
+\(
+\Delta_{\mathrm{cert}}(d_0,d;\delta)
+=\log B_{d_0}^{\mathrm{ver}}(\delta)-\log B_d^{\mathrm{ver}}(\delta)
+\), whenever both quantiles are finite and positive.
 \end{definition}
 
 \begin{problem}[Deployment model selection]
 \label{prob:model-selection}
-Given a finite, predeclared design menu \(\mathcal D\), a task family, a common
-resource clock, and \(\delta\), select
+Given \(\mathcal D=\{d_1,\ldots,d_K\}\), a task family, a common budget measure,
+and \(\delta\), select
 \begin{equation}
-  d^\star\in\argmin_{d\in\mathcal D}T_d(\delta).
+  d^\star\in\argmin_{d\in\mathcal D}B_d^{\mathrm{ver}}(\delta).
   \label{eq:deployment-selection}
 \end{equation}
-The comparison is undefined if systems use different clocks or verifiers; a
-multi-resource problem must instead declare a scalarization or a Pareto
-frontier before selection.
+The comparison is undefined if candidates use different budget measures or
+verifiers.  A genuinely multi-resource problem must declare a scalarization or
+a Pareto frontier before selection.
 \end{problem}
 
 This formulation covers code against tests, proof search against a checker, and
@@ -225,71 +239,85 @@ other transductive tasks in which one concrete artifact must be produced for
 the observed instance.  It does not assume that a successful artifact is
 unique.
 
-\subsection{Latent modes and packed allocation}
+\subsection{Task modes, signals, and packed allocation}
 \label{sec:packed-setup}
 
-\begin{definition}[Modes, signals, and deployable shares]
+\begin{definition}[Task modes, signals, and deployable shares]
 \label{def:packed-objects}
-Let \(S\in\mathcal S=\{1,\ldots,m\}\) be a solver-relevant latent mode with
-prior \(\pi\).  Mode semantics are fixed independently of the model being
-compared.  An admissible signal \(Z\) is observed before the allocated work is
-executed, with posterior \(\pi_z(s):=\Prob[S=s\mid Z=z]\).  A \emph{packed
-allocation} is a measurable map \(z\mapsto q_z\in\Delta(\mathcal S)\), where
-\(q_z(s)\) is the physically implemented share of eligible attempts devoted to
-mode-\(s\) work.  We require \(q_z(s)>0\) whenever \(\pi_z(s)>0\).
+Before comparing designs, partition the task family into
+\(m\) \emph{solver-relevant modes} \(\mathcal S=\{1,\ldots,m\}\).  A mode groups
+instances that induce a distinct cost or success profile for a declared
+solution strategy.  The random variable \(S\in\mathcal S\), with prior
+\(\pi(s)=\Prob[S=s]\), denotes the mode of the deployment instance and may be
+unknown when the design must allocate its budget.  The partition is held fixed
+for every candidate, so it cannot be redefined to favor one design.
 
-For model \(M\) and mode \(s\), \(\kappa(M,s)>0\) is the expected resource of
-one eligible attempt under the frozen serving configuration, and
-\(t_0(M,s)>0\) is its dimensionless focused first-passage scale when all
-eligible effort is assigned to that mode.
+An admissible signal \(Z\) is information available before the allocation
+decision, such as static instance features or a charged partial execution
+trace.  After observing \(Z=z\), uncertainty about the true mode is represented
+by the posterior \(\pi_z(s):=\Prob[S=s\mid Z=z]\).  A \emph{packed allocation}
+is a map \(z\mapsto q_z\in\Delta(\mathcal S)\).  Operationally, \(q_z(s)\) is
+the fraction of subsequent solution attempts assigned to mode-\(s\) work, such
+as its associated prompt, tool, specialist, or sampling stream.  This share
+must be physically implemented; it is not merely a predicted mode label.  We
+require \(q_z(s)>0\) whenever \(\pi_z(s)>0\), because assigning zero attempts to
+a still-plausible mode would give it infinite first-passage budget and make the
+corresponding KL divergence undefined.
+
+A \emph{mode-directed attempt} is one complete candidate-generation and
+verification attempt using the work stream associated with mode \(s\).  For
+design \(d\), \(\kappa(d,s)>0\) is the expected declared budget consumed by one
+such attempt, including natural output length and verification.
+The dimensionless quantity \(t_0(d,s)>0\) is the focused attempts-to-solution
+scale: the expected number of mode-\(s\) attempts required to obtain the first
+verified artifact when every attempt is directed to that mode.
 \end{definition}
 
-For distributions \(a,b\in\Delta(\mathcal S)\), write
+For two mode distributions \(a,b\in\Delta(\mathcal S)\), write
 \[
   H(a):=-\sum_s a(s)\log a(s),
   \qquad
   \KL(a\Vert b):=\sum_s a(s)\log\frac{a(s)}{b(s)},
 \]
-with \(0\log0:=0\), and define
-\(I(S;Z):=H(\pi)-\E_ZH(\pi_Z)\).
+with \(0\log0:=0\).  Here \(H(a)\) is the Shannon entropy, measuring uncertainty
+about the mode in nats, and \(\KL(a\Vert b)\) is the nonnegative mismatch from
+using mode distribution \(b\) in place of \(a\).  The mutual information
+\(I(S;Z):=H(\pi)-\E_ZH(\pi_Z)\) is the expected reduction in mode uncertainty
+provided by the signal.
 
-The signal may be a static instance feature or a charged partial trace.  The
-allocation is a resource-sharing mechanism, not merely a label predicted by a
-classifier.
-
-\begin{assumption}[Packed inverse-share law]
+\begin{assumption}[Packed inverse-share budget law]
 \label{ass:packed}
-For a shared constant \(c_{\mathrm{sim}}>0\), the mode-conditioned resource
-scale of \((M,q)\) is
+The mode-conditioned packed budget scale of design \(d\) under allocation \(q\)
+is
 \begin{equation}
-  \mathsf T_{M,q}(s,z)
-  =c_{\mathrm{sim}}\,
-    \kappa(M,s)\frac{t_0(M,s)}{q_z(s)}.
+  B_{d,q}^{\mathrm{pack}}(s,z)
+  =\kappa(d,s)\frac{t_0(d,s)}{q_z(s)}.
   \label{eq:packed-law}
 \end{equation}
-The law applies only when the scheduler implements the declared shares.  Any
-model- or mode-dependent overhead not represented by \(\kappa\) violates the
-exact assumption and must enter the residual model below.
+The factor \(1/q_z(s)\) states that assigning only a fraction \(q_z(s)\) of
+global attempts to the true mode dilates its focused attempts-to-solution by
+the inverse share.  The law applies only when the declared allocation is
+actually executed.  Any design-, mode-, or allocation-dependent overhead not
+represented by the product in~\eqref{eq:packed-law} must enter the residual
+model below.
 \end{assumption}
 
-In particular, a one-time signal-acquisition cost is part of the actual
-resource clock.  Exact packedness requires that this charge already scale with
-the multiplicative product in~\eqref{eq:packed-law}; an additive or
-allocation-dependent charge cannot generally be absorbed into \(\kappa(M,s)\)
-without changing the factorization and therefore appears in the residual of
-Proposition~\ref{prop:approx-packed}.
+In particular, signal acquisition is charged to the actual budget.  An
+additive or allocation-dependent signal cost cannot generally be absorbed into
+\(\kappa(d,s)\) without changing the factorization and therefore appears in the
+residual of Proposition~\ref{prop:approx-packed}.
 
-\begin{definition}[Packed expected-log risk]
+\begin{definition}[Packed expected-log budget]
 \label{def:packed-risk}
 For the joint law of \((S,Z)\), define
 \begin{equation}
-  \mathcal L(M,q):=\E[\log\mathsf T_{M,q}(S,Z)].
+  \mathcal L(d,q):=\E[\log B_{d,q}^{\mathrm{pack}}(S,Z)].
   \label{eq:packed-risk}
 \end{equation}
-For a baseline model \(M_0\) with fixed allocation \(q_0\), define
+For a baseline design \(d_0\) with fixed allocation \(q_0\), define
 \(
   \Delta_{\mathrm{pack}}
-  :=\mathcal L(M_0,q_0)-\mathcal L(M,q)
+  :=\mathcal L(d_0,q_0)-\mathcal L(d,q)
 \).
 We require \(q_0(s)>0\) whenever \(\pi(s)>0\).
 \end{definition}
@@ -300,56 +328,56 @@ In general,
 \(
   \Delta_{\mathrm{pack}}
   \ne\Delta_{\mathrm{cert}}(d_0,d;\delta)
-\), and \(\E[\log T]\ne\log\E[T]\).  Section~\ref{sec:quantile-bridge}
+\), and \(\E[\log B]\ne\log\E[B]\).  Section~\ref{sec:quantile-bridge}
 gives an exact bridge in an IID geometric setting; outside such a bridge, the
-two quantities must be reported separately.  Moreover, total resource
-identifies only the product \(\kappa(M,s)t_0(M,s)\).  Interpreting its factors
-as unit cost and competence requires separate attempt-level measurement of
+two quantities must be reported separately.  Moreover, total budget identifies
+only the product \(\kappa(d,s)t_0(d,s)\).  Interpreting its factors as unit
+attempt budget and competence requires separate attempt-level measurement of
 \(\kappa\).
 \end{remark}
 
-\section{Four-Term Speed Accounting}
+\section{Four-Term Budget Accounting}
 \label{sec:accounting}
 
 The decomposition follows from the conditional cross-entropy incurred by the
 physical allocation.  Complete proofs of every result in this section and
 Section~\ref{sec:quantile-bridge} appear in Appendix~\ref{app:proofs}.
 
-\begin{lemma}[Conditional log-resource and posterior matching]
+\begin{lemma}[Conditional log-budget and posterior matching]
 \label{lem:conditional}
 Under Assumption~\ref{ass:packed}, for any signal value \(z\),
 \begin{equation}
 \begin{aligned}
-\E[\log\mathsf T_{M,q}(S,z)\mid Z=z]
-={}&\E[\log(c_{\mathrm{sim}}\kappa(M,S)t_0(M,S))\mid Z=z]
+\E[\log B_{d,q}^{\mathrm{pack}}(S,z)\mid Z=z]
+={}&\E[\log(\kappa(d,S)t_0(d,S))\mid Z=z]
 \\
 &+H(\pi_z)+\KL(\pi_z\Vert q_z).
 \end{aligned}
 \label{eq:conditional-decomposition}
 \end{equation}
 Consequently, \(q_z=\pi_z\) uniquely minimizes conditional expected
-log-resource, and its excess over the minimum is exactly
+log-budget, and its excess over the minimum is exactly
 \(\KL(\pi_z\Vert q_z)\).
 \end{lemma}
 
-\begin{theorem}[Model-aware four-term decomposition]
+\begin{theorem}[Design-aware four-term decomposition]
 \label{thm:four-term}
-Let \((M_0,q_0)\) use a fixed baseline allocation and let \((M,q)\) use signal
+Let \((d_0,q_0)\) use a fixed baseline allocation and let \((d,q)\) use signal
 \(Z\).  Under Assumption~\ref{ass:packed}, define
 \begin{align*}
-  C(M_0,M)&:=\E_S\!\left[\log\frac{\kappa(M_0,S)}{\kappa(M,S)}\right],
+  C(d_0,d)&:=\E_S\!\left[\log\frac{\kappa(d_0,S)}{\kappa(d,S)}\right],
   &
-  \Phi(M_0,M)&:=\E_S\!\left[\log\frac{t_0(M_0,S)}{t_0(M,S)}\right],\\
-  G(M)&:=I(S;Z),
+  \Phi(d_0,d)&:=\E_S\!\left[\log\frac{t_0(d_0,S)}{t_0(d,S)}\right],\\
+  G(d)&:=I(S;Z),
   &
-  \varepsilon(M,q)&:=\E_Z[\KL(\pi_Z\Vert q_Z)].
+  \varepsilon(d,q)&:=\E_Z[\KL(\pi_Z\Vert q_Z)].
 \end{align*}
 Then
 \begin{equation}
   \boxed{
   \Delta_{\mathrm{pack}}
-  =C(M_0,M)+\Phi(M_0,M)+G(M)
-   +\KL(\pi\Vert q_0)-\varepsilon(M,q).}
+  =C(d_0,d)+\Phi(d_0,d)+G(d)
+   +\KL(\pi\Vert q_0)-\varepsilon(d,q).}
   \label{eq:four-term-general}
 \end{equation}
 For the prior-matched baseline \(q_0=\pi\), the baseline mismatch vanishes,
@@ -357,27 +385,27 @@ leaving the four terms \emph{unit cost}, \emph{focused competence},
 \emph{mode information}, and \emph{allocation mismatch}.
 \end{theorem}
 
-The identity is exact because Assumption~\ref{ass:packed} makes log-resource
+The identity is exact because Assumption~\ref{ass:packed} makes log-budget
 additive in these quantities.  Its value is diagnostic: it turns an aggregate
 gain into separately measurable mechanisms and exposes the assumption that
 must survive held-out residual tests.
 
-\begin{corollary}[Model-selection score]
+\begin{corollary}[Design-selection score]
 \label{cor:model-score}
-For candidate systems sharing \((\pi,\mathcal S,c_{\mathrm{sim}})\), possibly
-with candidate-specific signals \(Z_M\), posteriors
-\(\pi_z^M(s):=\Prob[S=s\mid Z_M=z]\), and allocations \(q^M\), define
+For candidate designs sharing \((\pi,\mathcal S)\), possibly with
+candidate-specific signals \(Z_d\), posteriors
+\(\pi_z^d(s):=\Prob[S=s\mid Z_d=z]\), and allocations \(q^d\), define
 \begin{equation}
 \begin{aligned}
-  \mathcal J(M,q^M)
-  :={}&\E_S[\log\kappa(M,S)]
-      +\E_S[\log t_0(M,S)]
-      -I(S;Z_M)\\
-      &+\E_{Z_M}[\KL(\pi^{M}_{Z_M}\Vert q^M_{Z_M})].
+  \mathcal J(d,q^d)
+  :={}&\E_S[\log\kappa(d,S)]
+      +\E_S[\log t_0(d,S)]
+      -I(S;Z_d)\\
+      &+\E_{Z_d}[\KL(\pi^{d}_{Z_d}\Vert q^d_{Z_d})].
 \end{aligned}
 \label{eq:model-score}
 \end{equation}
-Then \(\mathcal L(M,q^M)=\log c_{\mathrm{sim}}+H(\pi)+\mathcal J(M,q^M)\).
+Then \(\mathcal L(d,q^d)=H(\pi)+\mathcal J(d,q^d)\).
 Thus the packed-optimal candidate is any minimizer of \(\mathcal J\).
 \end{corollary}
 
@@ -388,21 +416,29 @@ quantified rather than hidden.
 \label{prop:approx-packed}
 Suppose the actual mode-conditioned scale satisfies
 \begin{equation}
-  \log\widetilde{\mathsf T}_{M,q}(s,z)
-  =\log\mathsf T_{M,q}(s,z)+r_M(s,z,q),
-  \qquad |r_M(s,z,q)|\le\eta
+  \log\widetilde B_{d,q}(s,z)
+  =\log B_{d,q}^{\mathrm{pack}}(s,z)+r_d(s,z,q),
+  \qquad |r_d(s,z,q)|\le\eta
   \label{eq:approx-packed}
 \end{equation}
-uniformly for both compared systems.  For a prior-matched baseline,
+uniformly for both compared designs.  Define
+\(
+\widetilde{\mathcal L}(d,q):=\E[\log\widetilde B_{d,q}(S,Z)]
+\)
+and
+\(
+\widetilde\Delta:=
+\widetilde{\mathcal L}(d_0,q_0)-\widetilde{\mathcal L}(d,q)
+\).  For a prior-matched baseline,
 \begin{equation}
   \widetilde\Delta
   =\underbrace{C+\Phi+G-\varepsilon}_{\Delta_4}+R,
   \qquad
-  R=\E[r_{M_0}(S,q_0)-r_M(S,Z,q)],
+  R=\E[r_{d_0}(S,q_0)-r_d(S,Z,q)],
   \qquad |R|\le2\eta.
   \label{eq:residual-decomposition}
 \end{equation}
-Here \(r_{M_0}(s,q_0)\) denotes the baseline residual, which has no signal
+Here \(r_{d_0}(s,q_0)\) denotes the baseline residual, which has no signal
 argument because \(q_0\) is fixed.
 \end{proposition}
 
@@ -427,7 +463,7 @@ the interpretation depends on whether the target is a mean or a quantile.
 
 \begin{theorem}[Geometric allocation bridge]
 \label{thm:geometric-bridge}
-Fix one mode.  In each global slot, independently allocate an eligible attempt
+Fix one mode.  In each global slot, independently allocate a mode-directed attempt
 to the true mode with probability \(q\in(0,1]\).  A true-mode attempt succeeds
 independently with probability \(p\in(0,1)\), and off-mode attempts cannot
 succeed.  If \(N_{p,q}\) is the first successful global slot, then
@@ -464,10 +500,12 @@ For the unrounded quantile \(\widetilde Q_{p,q}\), ceiling contributes at most
 \end{equation}
 \end{theorem}
 
-Thus \(1/q\) is exact for mean first passage and a controlled approximation for
+Multiplying the slot count by a fixed per-attempt budget \(\kappa\) converts
+these expressions into the corresponding budget mean and quantile.  Thus
+\(1/q\) is exact for mean first passage and a controlled approximation for
 a cellwise quantile whose log residual vanishes as \(p\to0\).  For heterogeneous
 modes or success
-probabilities, the population quantity in Definition~\ref{def:certified-time}
+probabilities, the population quantity in Definition~\ref{def:certified-budget}
 is a mixture quantile; it cannot in general be obtained by averaging cellwise
 quantiles.  Accordingly, \(t_0^{\mathrm{mean}}=1/p\) and the focused quantile
 in~\eqref{eq:geometric-quantile} are different estimands and must not be
@@ -475,17 +513,18 @@ interchanged.
 
 \begin{corollary}[Single-mode retry crossover]
 \label{cor:retry-crossover}
-Let a high-cost system have one-attempt success \(p_h\) and cost \(\kappa_h\),
-and a lower-cost system have \(0<p_\ell<p_h<1\) and per-attempt cost
+Let a high-budget system have one-attempt success \(p_h\) and per-attempt
+budget \(\kappa_h\), and a lower-budget system have \(0<p_\ell<p_h<1\) and per-attempt budget
 \(\kappa_\ell\).  The minimum retry depth whose fixed block matches or exceeds
-the high-cost system's reliability is
+the high-budget system's reliability is
 \begin{equation}
   D_\times
   =\left\lceil\frac{\log(1-p_h)}{\log(1-p_\ell)}\right\rceil.
   \label{eq:retry-crossover}
 \end{equation}
-The lower-cost block is cheaper when \(D_\times\kappa_\ell<\kappa_h\).  If it
-stops at first success, its expected cost through depth \(D\) is instead
+The lower-budget block consumes less budget when
+\(D_\times\kappa_\ell<\kappa_h\).  If it stops at first success, its expected
+budget through depth \(D\) is instead
 \begin{equation}
   \kappa_\ell\frac{1-(1-p_\ell)^D}{p_\ell}.
   \label{eq:stopped-retry-cost}
@@ -512,8 +551,8 @@ and certify a decision only outside the combined uncertainty margin.
 \begin{proof}
 Taking logs in~\eqref{eq:packed-law} and conditioning on \(Z=z\) gives
 \begin{align*}
-\E[\log\mathsf T_{M,q}(S,z)\mid Z=z]
-={}&\E[\log(c_{\mathrm{sim}}\kappa(M,S)t_0(M,S))\mid Z=z]\\
+\E[\log B_{d,q}^{\mathrm{pack}}(S,z)\mid Z=z]
+={}&\E[\log(\kappa(d,S)t_0(d,S))\mid Z=z]\\
 &+\sum_{s\in\mathcal S}\pi_z(s)(-\log q_z(s)).
 \end{align*}
 The final sum is the cross-entropy between \(\pi_z\) and \(q_z\), and
@@ -538,14 +577,13 @@ finite.
 \subsection{Proof of Theorem~\ref{thm:four-term}}
 
 \begin{proof}
-For the deployed system, Lemma~\ref{lem:conditional} and the tower property
+For the deployed design, Lemma~\ref{lem:conditional} and the tower property
 give
 \begin{align}
-\mathcal L(M,q)
-={}&\log c_{\mathrm{sim}}
- +\E_S[\log\kappa(M,S)]
- +\E_S[\log t_0(M,S)]\nonumber\\
-&+\E_Z[H(\pi_Z)]+\varepsilon(M,q).
+\mathcal L(d,q)
+={}&\E_S[\log\kappa(d,S)]
+ +\E_S[\log t_0(d,S)]\nonumber\\
+&+\E_Z[H(\pi_Z)]+\varepsilon(d,q).
 \label{eq:proof-deployed-risk}
 \end{align}
 The fixed baseline allocation has cross-entropy
@@ -555,10 +593,9 @@ The fixed baseline allocation has cross-entropy
 \end{equation}
 and hence
 \begin{align}
-\mathcal L(M_0,q_0)
-={}&\log c_{\mathrm{sim}}
- +\E_S[\log\kappa(M_0,S)]
- +\E_S[\log t_0(M_0,S)]\nonumber\\
+\mathcal L(d_0,q_0)
+={}&\E_S[\log\kappa(d_0,S)]
+ +\E_S[\log t_0(d_0,S)]\nonumber\\
 &+H(\pi)+\KL(\pi\Vert q_0).
 \label{eq:proof-baseline-risk}
 \end{align}
@@ -575,24 +612,24 @@ I(S;Z)=H(\pi)-\E_ZH(\pi_Z)
 \begin{proof}
 Apply~\eqref{eq:proof-deployed-risk} to each candidate and substitute
 \(
-\E_{Z_M}H(\pi^M_{Z_M})=H(\pi)-I(S;Z_M)
-\).  The terms \(\log c_{\mathrm{sim}}+H(\pi)\) are common to every candidate;
-the remaining terms are exactly \(\mathcal J(M,q^M)\).  Therefore the
+\E_{Z_d}H(\pi^d_{Z_d})=H(\pi)-I(S;Z_d)
+\).  The term \(H(\pi)\) is common to every candidate; the remaining terms are
+exactly \(\mathcal J(d,q^d)\).  Therefore the
 minimizers of \(\mathcal L\) and \(\mathcal J\) coincide.
 \end{proof}
 
 \subsection{Proof of Proposition~\ref{prop:approx-packed}}
 
 \begin{proof}
-Substitute~\eqref{eq:approx-packed} into the expected log-resource difference.
+Substitute~\eqref{eq:approx-packed} into the expected log-budget difference.
 The ideal terms equal \(\Delta_4\) by Theorem~\ref{thm:four-term}; the remaining
 terms are
 \(
-R=\E[r_{M_0}(S,q_0)-r_M(S,Z,q)]
+R=\E[r_{d_0}(S,q_0)-r_d(S,Z,q)]
 \).  The triangle inequality gives
 \[
   |R|
-  \le\E|r_{M_0}(S,q_0)|+\E|r_M(S,Z,q)|
+  \le\E|r_{d_0}(S,q_0)|+\E|r_d(S,Z,q)|
   \le2\eta.
 \]
 \end{proof}
@@ -617,7 +654,7 @@ If the interval contains zero, these bounds alone cannot determine the sign.
 
 \begin{proof}
 A global slot succeeds exactly when it is allocated to the true mode and that
-eligible attempt succeeds.  Independence therefore gives per-slot success
+mode-directed attempt succeeds.  Independence therefore gives per-slot success
 probability \(pq\), so
 \[
   \Prob[N_{p,q}=n]=(1-pq)^{n-1}pq,
@@ -660,8 +697,8 @@ q h(p)/h(qp)\le q[p/(1-p)]/(pq)=1/(1-p)
 \subsection{Proof of Corollary~\ref{cor:retry-crossover}}
 
 \begin{proof}
-After \(D\) independent low-cost attempts, failure probability is
-\((1-p_\ell)^D\), so reliability is \(1-(1-p_\ell)^D\).  Matching the high-cost
+After \(D\) independent lower-budget attempts, failure probability is
+\((1-p_\ell)^D\), so reliability is \(1-(1-p_\ell)^D\).  Matching the high-budget
 one-attempt reliability requires
 \[
   1-(1-p_\ell)^D\ge p_h
@@ -669,12 +706,12 @@ one-attempt reliability requires
   D\ge\frac{\log(1-p_h)}{\log(1-p_\ell)}.
 \]
 The least integer is~\eqref{eq:retry-crossover}; multiplying by
-\(\kappa_\ell\) gives the fixed-block cost condition.  With stopping, attempt
-\(d\) is incurred only if the first \(d-1\) attempts fail, which has probability
-\((1-p_\ell)^{d-1}\).  Therefore
+\(\kappa_\ell\) gives the fixed-block budget condition.  With stopping, attempt
+\(j\) is incurred only if the first \(j-1\) attempts fail, which has probability
+\((1-p_\ell)^{j-1}\).  Therefore
 \[
-  \E[\text{cost through depth }D]
-  =\kappa_\ell\sum_{d=1}^{D}(1-p_\ell)^{d-1}
+  \E[\text{budget through depth }D]
+  =\kappa_\ell\sum_{j=1}^{D}(1-p_\ell)^{j-1}
   =\kappa_\ell\frac{1-(1-p_\ell)^D}{p_\ell}.
 \]
 \end{proof}
