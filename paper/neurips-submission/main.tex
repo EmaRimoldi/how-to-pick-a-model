@@ -25,6 +25,18 @@
 \theoremstyle{remark}
 \newtheorem{remark}[definition]{Remark}
 
+\newcounter{algorithm}
+\newenvironment{algorithm}[1][]{%
+  \refstepcounter{algorithm}%
+  \par\medskip
+  \noindent\textbf{Algorithm~\thealgorithm}%
+  \if\relax\detokenize{#1}\relax\else\ \normalfont(#1).\fi%
+  \par\vspace{0.45em}%
+  \normalfont\small
+}{%
+  \par\medskip
+}
+
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator{\KL}{KL}
 \newcommand{\E}{\mathbb{E}}
@@ -82,8 +94,19 @@ Our conceptual foundation is the proper-time framework of Achille and
 Soatto~\citep{achille2025agents}.  They model an agent as a stochastic dynamical
 system acting on verifiable transductive tasks and argue that, because a
 universal search procedure may eventually find a valid witness, accuracy alone
-does not characterize useful intelligence.  The relevant benefit of learning
-is instead to reduce the time required to find a solution.  Their proper time
+does not characterize useful intelligence.  Verification supplies an
+observable completion event, so the relevant question is how much resource is
+needed to reach it.  Without a finite resource penalty, exhaustive search can
+enumerate candidates until one is accepted.  Under the elementary IID retry
+idealization with per-attempt success probability \(p>0\), for example,
+\[
+  \Prob(\text{success by attempt }n)=1-(1-p)^n\longrightarrow1.
+\]
+Achille and Soatto call this unbounded-compute failure mode \emph{savantry}:
+eventual correctness can be obtained by brute force without an efficient,
+transferable solution strategy.  We instead require a verified solution within
+a predeclared budget and reliability target.  The relevant benefit of learning
+is therefore to reduce the resource needed to find a solution.  Their proper time
 for reaching a target state is a path quantity,
 \(
   \tau_\nu(u\!\to\!v)=\min_{h:u\to v} T(h)/\nu(h\mid u)
@@ -102,7 +125,7 @@ supplies the unit in which \(T_d(\delta)\) is reported.
 
 For a tractable accounting, we introduce a solver-relevant mode \(S\),
 admissible evidence \(Z\), and a physically implemented effort share \(q_Z(S)\).
-The packed hypothesis makes mode-conditioned proper time proportional to unit
+The PACT hypothesis makes mode-conditioned proper time proportional to unit
 attempt cost \(\kappa(d,S)\), focused attempts-to-solution scale
 \(t_0(d,S)\), and \(1/q_Z(S)\).  The cost \(\kappa\) inherits the declared unit:
 seconds, tokens, energy, or price.
@@ -125,7 +148,7 @@ Under a prior-matched baseline, the resulting expected log-proper-time gain is
 \label{eq:intro-four-term}
 \end{aligned}
 \end{equation}
-The identity is exact inside the packed model; it is not a general
+The identity is exact inside PACT; it is not a general
 decomposition of \(\log T_d(\delta)\).  We therefore derive the corresponding
 residual form when inverse-share log-linearity is approximate and an exact
 geometric-retry bridge showing that, under IID mode-directed attempts, \(1/q\)
@@ -135,7 +158,7 @@ than definitional.
 
 Equation~\eqref{eq:intro-four-term} turns model selection into a diagnostic and
 counterfactual calculation: it separates cheaper attempts, model competence,
-information acquisition, and allocation quality.  A calibrated pilot can then
+information acquisition, and allocation quality.  A structured pilot can then
 predict held-out expected log first-passage resource, while full deployment
 trials remain the confirmation standard.
 
@@ -148,7 +171,7 @@ We make three contributions:
   Achille--Soatto path proper time and the theorem-facing expected-log
   functional.
   \item We prove the four-term cost--competence--information--mismatch identity,
-  its approximate-packed residual guarantee, and model-selection and retry
+  its approximate-PACT residual guarantee, and model-selection and retry
   consequences.  Together these results specify which quantities must be
   estimated and the assumptions under which their sum predicts a packed
   expected-log deployment comparison.
@@ -180,8 +203,9 @@ observed input and context for which one artifact \(y\in\mathcal Y\) must be
 constructed.  The distribution \(\mu\) describes future instances, while the
 predeclared external verifier
 \(V:\mathcal X\times\mathcal Y\to\{0,1\}\) supplies the common success
-criterion.  A \emph{proper-time measure} assigns every partial execution a
-nonnegative, additive coordinate \(t\).  It may be measured in isolated
+criterion: \(V(x,y)=1\) is the observable event that instance \(x\) has been
+completed.  A \emph{proper-time measure} assigns every partial execution a
+nonnegative, additive budget coordinate \(B\).  It may be measured in isolated
 GPU-seconds, joules, tokens, dollars, or a predeclared scalarization of several
 resources.  It is fixed before comparison and accounts for signal acquisition,
 generation, verification, and retries for every candidate.
@@ -190,8 +214,8 @@ generation, verification, and retries for every candidate.
 A \emph{deployment design} \(d\) fixes the complete solution procedure: model
 and hardware/runtime implementation, prompting and decoding, permitted
 pre-allocation observations, retry or allocation, and verifier invocation.
-Given instance \(x\) and run randomness \(\xi\), \(y_d(t;x,\xi)\) is the
-realized latest artifact at proper time \(t\).  Here \(\xi\) collects stochastic
+Given instance \(x\) and run randomness \(\xi\), \(y_d(B;x,\xi)\) is the
+realized latest artifact after cumulative budget \(B\).  Here \(\xi\) collects stochastic
 decoding, retry seeds, randomized allocation, and other run-to-run variation,
 making repeated executions of the same design explicit.
 
@@ -202,18 +226,18 @@ For failure tolerance \(\delta\in(0,1)\), define
 \left\{
 \begin{aligned}
 \tau_d(x,\xi)
-&:=\inf\{t\ge0:V(x,y_d(t;x,\xi))=1\},
+&:=\inf\{B\ge0:V(x,y_d(B;x,\xi))=1\},
 \qquad \inf\varnothing:=\infty,\\
 T_d(\delta)
-&:=\inf\{t\ge0:
-\Prob_{X\sim\mu,\xi}[\tau_d(X,\xi)\le t]\ge1-\delta\}.
+&:=\inf\{B\ge0:
+\Prob_{X\sim\mu,\xi}[\tau_d(X,\xi)\le B]\ge1-\delta\}.
 \end{aligned}
 \right.
 \label{eq:proper-time-system}
 \end{equation}
 Thus \(\tau_d\) is the realized first-passage proper time, whereas
 \(T_d(\delta)\) is its population \((1-\delta)\)-quantile: the smallest proper
-time by which a verified artifact is produced with probability at least
+budget by which a verified artifact is produced with probability at least
 \(1-\delta\) over deployment instances and repeated runs.  Its unit is
 inherited from the chosen proper-time measure.
 For a baseline \(d_0\), the certified log-speedup is
@@ -222,14 +246,47 @@ For a baseline \(d_0\), the certified log-speedup is
 and positive.
 \end{definition}
 
+For observed runs \((X_i,\xi_i)_{i=1}^n\), set
+\(\tau_i:=\tau_d(X_i,\xi_i)\), with unsuccessful runs recorded as
+\(\tau_i=\infty\).  The empirical first-passage curve and proper-time estimator
+are
+\begin{equation}
+  \widehat F_d(B)
+  :=\frac1n\sum_{i=1}^n\mathbf 1\{\tau_i\le B\},
+  \qquad
+  \widehat T_d(\delta)
+  :=\inf\{B:\widehat F_d(B)\ge1-\delta\}.
+  \label{eq:proper-time-estimator}
+\end{equation}
+If verified coverage does not reach \(1-\delta\) by the maximum observed
+budget, \(\widehat T_d(\delta)\) is reported as censored rather than
+extrapolated.
+
 \begin{problem}[Deployment model selection]
 \label{prob:model-selection}
 Given a finite, predeclared design menu \(\mathcal D\), a task family, a common
-proper-time measure, and \(\delta\), select
+proper-time measure, failure tolerance \(\delta\), and maximum budget
+\(B_{\max}\), first form the admissible set
 \begin{equation}
-  d^\star\in\argmin_{d\in\mathcal D}T_d(\delta).
+  \mathcal D_{\mathrm{adm}}(\delta,B_{\max})
+  :=
+  \left\{
+    d\in\mathcal D:
+    \Prob[\tau_d(X,\xi)\le B_{\max}]\ge1-\delta
+  \right\}.
+  \label{eq:admissible-designs}
+\end{equation}
+Then select
+\begin{equation}
+  d^\star
+  \in
+  \argmin_{d\in\mathcal D_{\mathrm{adm}}(\delta,B_{\max})}
+  T_d(\delta).
   \label{eq:deployment-selection}
 \end{equation}
+Thus reliability is declared and tested before proper time ranks the
+admissible candidates.  Designs outside
+\(\mathcal D_{\mathrm{adm}}\) remain censored at \(B_{\max}\).
 Candidates must share the proper-time measure and verifier.  Repeating the
 analysis in another common unit gives another proper-time comparison;
 simultaneous resources require a scalarization or Pareto frontier.
@@ -240,7 +297,7 @@ other transductive tasks in which one concrete artifact must be produced for
 the observed instance.  It does not assume that a successful artifact is
 unique.
 
-\subsection{Task modes, task information, and packed allocation}
+\subsection{Task modes, actions, and PACT allocation}
 \label{sec:packed-setup}
 
 This is an instance-wise algorithm-selection problem in the sense of
@@ -250,6 +307,10 @@ which solver will perform well on a previously unseen input
 the stronger hypothesis used here, namely that correlations in solver behavior
 can arise from unobserved subpopulations of problem
 instances~\citep{silverthorn2010latent}.
+We call the physically implemented retry regime below \emph{PACT}: Packed
+Allocation of Compute across Task modes.  PACT is an explanatory time-sharing
+model applied after proper time is observed, not a second definition of proper
+time.
 
 \begin{definition}[Task modes and task information]
 \label{def:packed-objects}
@@ -275,34 +336,43 @@ such as a dependency pattern, proof schema, edit locality, or algorithmic
 invariant.  The subfamilies and their interpretation are fixed independently
 of the candidate designs.
 
+For any design \(d\), the mode-conditioned proper time is
+\begin{equation}
+  T_d(\delta\mid s)
+  :=
+  \inf\left\{
+    B\ge0:
+    \Prob[\tau_d(X,\xi)\le B\mid S=s]\ge1-\delta
+  \right\}.
+  \label{eq:mode-proper-time}
+\end{equation}
+The overall \(T_d(\delta)\) is the quantile of the mixture over modes; it is not,
+in general, the average of the mode-conditioned proper times.
+
 A \emph{task-information signal} is a random variable
 \(Z\in\mathcal Z\), where \(\mathcal Z\) is the space of possible signal
-values.  Before effort is allocated, a predeclared, possibly randomized
+values.  Before a verified solution is available and before effort is
+allocated, a predeclared, possibly randomized
 observation channel \(\Prob_{Z\mid X}\)---the conditional distribution of
 \(Z\) given \(X\)---produces information acquired from or associated with the
 current task instance; \(Z\) need not be a static feature vector or a mode
-label.  The mixture above and \(\Prob_{Z\mid X}\) induce a joint probability
+label, and it is neither a solution nor a verifier outcome.  The mixture above
+and \(\Prob_{Z\mid X}\) induce a joint probability
 law \(\Prob\) for \((S,X,Z)\).  When the design observes the realized signal
 value \(z\), its uncertainty about the instance's latent mode changes from the
 prior \(\pi\) to the posterior
 \[
   \pi_z(s):=\Prob[S=s\mid Z=z].
 \]
-This posterior is a property of the joint law, not automatically a model
-output; in practice it is estimated from calibration data.  For discrete
-\(\mathcal Z\), estimates of the prior and mode-conditional signal channel give
-\begin{equation}
-  \widehat\pi_z(s)
-  =\frac{\widehat\pi(s)\widehat p(z\mid s)}
-  {\sum_{u\in\mathcal S}\widehat\pi(u)\widehat p(z\mid u)}.
-  \label{eq:posterior-estimation}
-\end{equation}
-For general signals, \(\widehat\pi_z\) may instead be any probabilistic
-predictor fitted and calibrated on data disjoint from evaluation.  Thus raw
-signal length alone does not determine information value.
+The signal may be informative, \(I(S;Z)>0\), or uninformative,
+\(Z\perp S\).  Its intended role is to guide the compute allocation toward the
+actions appropriate for the current mode.  The posterior \(\pi_z\) is a
+property of the joint law, not automatically a model output; any empirical
+estimation procedure is part of the experimental protocol rather than this
+definition.
 \end{definition}
 
-\begin{definition}[Fixed-backbone actions and packed allocator]
+\begin{definition}[Fixed-backbone actions and PACT allocator]
 \label{def:packed-allocator}
 Fix a design \(d\) with backbone model \(M_d\).  Its predeclared action bank is
 \[
@@ -311,33 +381,37 @@ Fix a design \(d\) with backbone model \(M_d\).  Its predeclared action bank is
   \qquad
   a_{d,s}:=(M_d,\rho_{d,s}),
 \]
-where \(\rho_{d,s}\) fixes the mode-directed context, prompt, tools, and
-generation procedure used in one complete generation-and-verification
-attempt.  Hence all actions within \(d\) share the same backbone; only their
-predeclared non-backbone procedure may differ.  The association
+where
+\[
+  \rho_{d,s}:=(P_{d,s},H_{d,s},G_{d,s})
+\]
+is a model configuration: \(P_{d,s}\) constructs the prompt and may include
+the observed task signal, \(H_{d,s}\) is the execution harness, and
+\(G_{d,s}\) is a finite policy of successive inference steps ending in one
+generation-and-verification attempt.  Hence all actions within \(d\) share the
+same backbone; only their predeclared non-backbone configuration may differ.
+Each \(\rho_{d,s}\) is designed for mode \(s\).  The association
 \(s\leftrightarrow a_{d,s}\) is fixed before evaluation.  It identifies the
 action intended to accumulate focused progress on mode \(s\), without
 revealing \(S\) at deployment or assuming that the association is empirically
-correct.  To audit it, let \(b_d(j,s)\in(0,\infty]\) be the calibrated
+correct.  To audit it, let \(b_d(j,s)\in(0,\infty]\) be the measured
 proper-time scale obtained by repeatedly applying action \(a_{d,j}\) to
 mode-\(s\) instances.  The declared association is supported when
 \[
   s\in\argmin_{j\in\mathcal S}b_d(j,s)
   \quad\text{for every }s\in\mathcal S.
 \]
-For example, \(\rho_{d,s}\) may select evidence shard \(s\) while leaving
-\(M_d\) fixed.
-
-A \emph{packed allocator} is a stochastic kernel
+A \emph{PACT allocator} is a predeclared deterministic map
 \[
-  Q_d:\mathcal Z\longrightarrow\Delta(\mathcal S),
+  q_d:\mathcal Z\longrightarrow\Delta(\mathcal S),
   \qquad
-  Q_d(s\mid z)=q_z(s),
+  z\longmapsto q_z,
   \qquad
   \Delta(\mathcal S)
   :=\left\{q\in[0,1]^m:\sum_{s\in\mathcal S}q(s)=1\right\}.
 \]
-After observing \(Z=z\), slot \(k\) draws an action index
+After observing \(Z=z\), the physical retry schedule may draw the action for
+attempt \(k\) according to
 \begin{equation}
   J_k\mid Z=z\overset{\mathrm{iid}}{\sim}\operatorname{Cat}(q_z),
   \qquad A_k:=a_{d,J_k},
@@ -345,31 +419,26 @@ After observing \(Z=z\), slot \(k\) draws an action index
 \end{equation}
 runs \(A_k\), invokes \(V\), and stops at the first verified artifact.
 Consequently, \(q_z(s)\) is both the conditional probability of assigning a
-slot to \(a_{d,s}\) and its long-run executed share.  A deterministic
+retry to \(a_{d,s}\) and its long-run executed share.  A deterministic
 assignment is the special case \(q_z=e_j\); the general allocator is
-stochastic.  We require \(q_z(s)>0\) whenever \(\pi_z(s)>0\), so a deterministic
+implemented through stochastic retries.  We require \(q_z(s)>0\) whenever
+\(\pi_z(s)>0\), so a deterministic
 assignment is admissible only when the posterior support is a singleton:
 excluding a still-possible mode gives infinite proper time under the packed
 law.
 
-The inference and control maps are distinct:
-\[
-  z\longmapsto\widehat\pi_z
-  \longmapsto q_z=g_d(\widehat\pi_z),
-  \qquad
-  g_d:\Delta(\mathcal S)\to\Delta(\mathcal S).
-\]
-The allocator \(g_d\) is frozen before evaluation and need not be
-posterior-matched.  Lemma~\ref{lem:conditional} shows that the expected-log
-population objective is minimized by \(q_z=\pi_z\); its empirical plug-in rule
-is \(q_z=\widehat\pi_z\).
+The allocation law \(z\mapsto q_z=q_d(z)\) is frozen before evaluation and
+need not be posterior-matched.  It may use an estimated posterior internally,
+but the theory requires only the executed allocation \(q_z\).
+Lemma~\ref{lem:conditional} shows that the expected-log population objective is
+minimized by the ideal allocation \(q_z=\pi_z\).
 
 A \emph{focused mode-\(s\) attempt} is one execution of \(a_{d,s}\).  Let
 \(t_0(d,s)>0\) be the expected number of such focused attempts to the first
 verified artifact, and let \(\kappa(d,s)>0\) be the expected cost of one global
-attempt slot on a mode-\(s\) instance in the declared proper-time unit,
+attempt on a mode-\(s\) instance in the declared proper-time unit,
 including natural output length and verification.  Exact packedness requires
-this slot-cost scale to be invariant to the allocation; departures caused by
+this attempt-cost scale to be invariant to the allocation; departures caused by
 action-dependent lengths or overhead are covered by
 Proposition~\ref{prop:approx-packed}.
 
@@ -424,7 +493,7 @@ information between data and a successful trajectory; ours is the Shannon
 mutual information between task information and a predeclared finite mode, a
 finite and experimentally estimable counterpart rather than the same object.
 
-\begin{assumption}[Packed inverse-share law]
+\begin{assumption}[PACT inverse-share law]
 \label{ass:packed}
 Conditional on \(S=s\) and \(Z=z\), interleaving the action bank changes the
 focused mode-\(s\) process only by assigning it the executed share \(q_z(s)\);
@@ -449,7 +518,7 @@ measure.  An additive or allocation-dependent signal cost cannot generally be
 absorbed into \(\kappa(d,s)\) without changing the factorization and therefore
 appears in the residual of Proposition~\ref{prop:approx-packed}.
 
-\begin{definition}[Packed expected log-proper-time]
+\begin{definition}[PACT expected log-proper-time]
 \label{def:packed-risk}
 For the joint law of \((S,Z)\), define
 \begin{equation}
@@ -478,7 +547,7 @@ must be reported separately.  Total proper time identifies only
 attempt-level measurement of \(\kappa\) in the declared unit.
 \end{remark}
 
-\section{Four-Term Proper-Time Accounting}
+\section{Four-Term PACT Proper-Time Accounting}
 \label{sec:accounting}
 
 The decomposition follows from the conditional cross-entropy incurred by the
@@ -499,7 +568,19 @@ log-proper-time, and its excess over the minimum is exactly
 \(\KL(\pi_z\Vert q_z)\).
 \end{lemma}
 
-\begin{theorem}[Design-aware four-term decomposition]
+\begin{corollary}[Uninformative signal]
+\label{cor:uninformative-signal}
+If \(Z\perp S\), then \(\pi_z=\pi\) almost surely and \(I(S;Z)=0\).
+Consequently, the PACT-optimal allocation is the fixed prior allocation
+\(q_z=\pi\).  Any other supported allocation incurs the nonnegative penalty
+\[
+  \E_Z\KL(\pi\Vert q_Z)
+\]
+without an information gain.  Thus an uninformative signal cannot improve
+expected log proper time through the information channel.
+\end{corollary}
+
+\begin{theorem}[PACT four-term expected-log proper-time decomposition]
 \label{thm:four-term}
 Let \((d_0,q_0)\) use a fixed baseline allocation and let \((d,q)\) use signal
 \(Z\).  Under Assumption~\ref{ass:packed}, define
@@ -666,6 +747,42 @@ stops at first success, its expected cost through depth \(D\) is instead
   \label{eq:stopped-retry-cost}
 \end{equation}
 \end{corollary}
+
+\clearpage
+\begin{algorithm}[How to Pick the Model]
+\label{alg:pick-model}
+\begin{tabular}{@{}r p{0.86\linewidth}@{}}
+\textit{Input:} &
+Verifiable task family, candidate designs \(\mathcal D\), verifier \(V\),
+proper-time unit, failure tolerance \(\delta\), maximum budget \(B_{\max}\),
+mode schema \(\mathcal S\), fixed-backbone actions, task signal, and allocation
+law.\\[0.25em]
+\textit{Output:} &
+An admissible design with minimum estimated proper time and its PACT
+accounting.\\[0.35em]
+1 &
+\textit{Declare the target.} Freeze \(V\), the proper-time unit, \(\delta\),
+and \(B_{\max}\) before comparing designs.\\
+2 &
+\textit{Measure first passage.} Run repeated trials, stopping each run at its
+first verified artifact or at \(B_{\max}\).\\
+3 &
+\textit{Estimate proper time.} Compute \(\widehat F_d(B)\),
+\(\widehat T_d(\delta)\), and \(\widehat T_d(\delta\mid s)\) for every design
+and mode; report unresolved targets as censored.\\
+4 &
+\textit{Filter and select.} Retain only
+\(\mathcal D_{\mathrm{adm}}(\delta,B_{\max})\) and choose the design with
+minimum held-out \(\widehat T_d(\delta)\).\\
+5 &
+\textit{Test PACT.} Vary the physically executed shares \(q_z(s)\), test the
+inverse-share law, and measure the closure residual.\\
+6 &
+\textit{Explain the decision.} Where PACT is supported, estimate relative
+unit cost, focused competence, mode information, and allocation mismatch;
+compare informative and \(Z\perp S\) controls.
+\end{tabular}
+\end{algorithm}
 
 Equations~\eqref{eq:four-term-general}--\eqref{eq:stopped-retry-cost} provide
 the complete theoretical chain used by the paper: define the deployment
