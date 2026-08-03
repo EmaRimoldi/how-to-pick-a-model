@@ -116,8 +116,8 @@ retain two principles from this theory: solutions must be
 defined by an external verifier, and information is valuable insofar as it buys
 speed.  We do not identify their path proper time with our deployment metric.
 Their framework supplies a computational foundation rather than a finite-sample
-rule for selecting from a deployed model menu.  For a design~\(d\), instance
-\(x\sim\mu\), and run randomness~\(\xi\), we define certified proper time
+rule for selecting from a deployed model menu.  For a design~\(d\) and instance
+\(x\sim\mu\), we define certified proper time
 \(T_d(\delta)\) as the \((1-\delta)\)-quantile of the first-passage proper time
 to a verified artifact.  The proper-time measure may be expressed in seconds,
 computation, energy, tokens, or money, but it is fixed before comparison and
@@ -212,24 +212,25 @@ resources.
 
 A \emph{deployment design} \(d\) fixes the complete solution procedure: backbone model
 and implementation, prompting and decoding, retry or allocation, and verifier invocation.
-Given instance \(x\) and run randomness \(\xi\), \(y_d(B;x,\xi)\) is the
-realized artifact after cumulative budget \(B\).
+Given instance \(x\), let \(y(B;x)\) be the generally random artifact available
+after cumulative budget \(B\).  Its law is induced by \(d\); throughout, the
+dependence of \(y\) on the design and its internal randomness is implicit.  All
+probabilities below are taken jointly over \(x\sim\mu\) and this randomness.
 
 \begin{definition}[Verified first passage]
 \label{def:first-passage}
-For a design \(d\), instance \(x\), and run randomness \(\xi\), define the
-verified first-passage budget
+For a design \(d\) and instance \(x\), define the verified first-passage budget
 \begin{equation}
-\tau_d(x,\xi)
+\tau_d(x)
 :=
 \begin{cases}
-\inf\{B\ge0:V(x,y_d(B;x,\xi))=1\},
+\inf\{B\ge0:V(x,y(B;x))=1\},
   & \text{if a verified artifact is reached},\\
 \infty, & \text{otherwise}.
 \end{cases}
 \label{eq:first-passage}
 \end{equation}
-Thus \(\tau_d(x,\xi)\) is the realized budget consumed before the first
+Thus \(\tau_d(x)\) is the realized budget consumed before the first
 verified artifact.
 \end{definition}
 
@@ -239,7 +240,7 @@ For failure tolerance \(\delta\in(0,1)\), define
 \begin{equation}
 T_d(\delta)
 :=\inf\{B\ge0:
-\Prob_{x\sim\mu,\xi}[\tau_d(x,\xi)\le B]\ge1-\delta\}.
+\Prob[\tau_d(x)\le B]\ge1-\delta\}.
 \label{eq:proper-time-system}
 \end{equation}
 The certified proper time \(T_d(\delta)\) is the population
@@ -253,8 +254,8 @@ For a baseline \(d_0\), the certified log-speedup is
 and positive.
 \end{definition}
 
-% For observed runs \((x_i,\xi_i)_{i=1}^n\), set
-% \(\tau_i:=\tau_d(x_i,\xi_i)\), with unsuccessful runs recorded as
+% For observed runs \((x_i)_{i=1}^n\), set
+% \(\tau_i:=\tau_d(x_i)\), with unsuccessful runs recorded as
 % \(\tau_i=\infty\).  The empirical first-passage curve and proper-time estimator
 % are
 % \begin{equation}
@@ -279,7 +280,7 @@ the admissible set
   :=
   \left\{
     d\in\mathcal D:
-    \Prob[\tau_d(x,\xi)\le B]\ge1-\delta
+    \Prob[\tau_d(x)\le B]\ge1-\delta
   \right\}.
   \label{eq:admissible-designs}
 \end{equation}
@@ -329,7 +330,7 @@ For any design \(d\), the mode-conditioned proper time is
   :=
   \inf\left\{
     B\ge0:
-    \Prob[\tau_d(x,\xi)\le B\mid S=s]\ge1-\delta
+    \Prob[\tau_d(x)\le B\mid S=s]\ge1-\delta
   \right\}.
   \label{eq:mode-proper-time}
 \end{equation}
@@ -361,21 +362,6 @@ Let \(\Delta(\mathcal S):=\{q\in[0,1]^m:\sum_{s\in\mathcal S}q(s)=1\}\)
 denote the probability simplex over modes. A \emph{PACT allocator} is a map
 \(q_d:\mathcal Z\longrightarrow\Delta(\mathcal S)\), written
 \(z\longmapsto q_z\).
-After observing \(Z=z\), the physical retry schedule may draw the action for
-attempt \(k\) according to
-\begin{equation}
-  J_k\mid Z=z\overset{\mathrm{iid}}{\sim}\operatorname{Cat}(q_z),
-  \qquad A_k:=a_{d,J_k},
-  \label{eq:physical-allocation}
-\end{equation}
-runs \(A_k\), invokes \(V\), and stops at the first verified artifact.
-Consequently, \(q_z(s)\) is both the conditional probability of assigning a
-retry to \(a_{d,s}\) and its long-run executed share.  
-
-It may use an estimated posterior internally,
-but the theory requires only the executed allocation \(q_z\).
-Lemma~\ref{lem:conditional} shows that the expected-log population objective is
-minimized by the ideal allocation \(q_z=\pi_z\).
 
 A \emph{focused mode-\(s\) attempt} is one execution of \(a_{d,s}\).  Let
 \(t_0(d,s)>0\) be the expected number of such focused attempts to the first
@@ -414,28 +400,26 @@ observation \(Z\).
 
 \begin{assumption}[PACT inverse-share law]
 \label{ass:packed}
-Conditional on \(S=s\) and \(Z=z\), interleaving the action bank changes the
-focused mode-\(s\) process only by assigning it the executed share \(q_z(s)\);
-slot costs remain represented by \(\kappa(d,s)\).  The resulting
-mode-conditioned packed proper time is
+Fix a task mode \(s\) and an observed signal value \(z\).  Every action attempts
+to produce a verified artifact, but \(a_{d,s}\) is specialized for mode \(s\)
+and is expected to reach verification with less proper budget than the other
+actions.  The exact PACT law models the regime in which this specialized action
+dominates mode-\(s\) first passage.  The allocator gives \(a_{d,s}\) the
+executed share \(q_z(s)\), while the cost scale of a global attempt remains
+\(\kappa(d,s)\).  The resulting mode-conditioned packed proper time is
 \begin{equation}
   T_{d,q}^{\mathrm{pack}}(s,z)
   =\kappa(d,s)\frac{t_0(d,s)}{q_z(s)}.
   \label{eq:packed-law}
 \end{equation}
-The factor \(1/q_z(s)\) states that assigning only a fraction \(q_z(s)\) of
-global attempts to the true mode dilates its focused attempts-to-solution by
-the inverse share.  Thus off-mode attempts provide no credited focused
-progress in the exact model.  The law applies only when the declared
-allocation is executed; transfer across actions, correlated attempts, or
-design-, mode-, and allocation-dependent overhead must enter the residual
-model below.
+The factor \(1/q_z(s)\) therefore states that assigning only a fraction
+\(q_z(s)\) of attempts to \(a_{d,s}\) dilates the specialized
+attempts-to-solution by the inverse share.  Other actions may still reach a
+verified solution on mode-\(s\) instances, but theoretically require more
+proper budget.  Non-negligible cross-mode success, interference, or changes in
+the slot-cost scale make the exact law depart from observed proper time and
+must enter the residual model below.
 \end{assumption}
-
-In particular, signal acquisition is included in the chosen proper-time
-measure.  An additive or allocation-dependent signal cost cannot generally be
-absorbed into \(\kappa(d,s)\) without changing the factorization and therefore
-appears in the residual of Proposition~\ref{prop:approx-packed}.
 
 \begin{definition}[PACT expected log-proper-time]
 \label{def:packed-risk}
@@ -444,7 +428,7 @@ For the joint law of \((S,Z)\), define
   \mathcal L(d,q):=\E[\log T_{d,q}^{\mathrm{pack}}(S,Z)].
   \label{eq:packed-risk}
 \end{equation}
-For a baseline design \(d_0\) with fixed allocation \(q_0\), define
+For a baseline design \(d_0\) with the baseline allocation \(q_0\), define
 \(
   \Delta_{\mathrm{pack}}
   :=\mathcal L(d_0,q_0)-\mathcal L(d,q)
@@ -501,7 +485,7 @@ expected log proper time through the information channel.
 
 \begin{theorem}[PACT four-term expected-log proper-time decomposition]
 \label{thm:four-term}
-Let \((d_0,q_0)\) use a fixed baseline allocation and let \((d,q)\) use signal
+Let \((d_0,q_0)\) use the baseline allocation \(q_0\) and let \((d,q)\) use signal
 \(Z\).  Under Assumption~\ref{ass:packed}, define
 \begin{align*}
   C(d_0,d)&:=\E_S\!\left[\log\frac{\kappa(d_0,S)}{\kappa(d,S)}\right],
@@ -598,7 +582,11 @@ and structural residual are both charged before changing the deployed model.
 \label{sec:quantile-bridge}
 
 The inverse-share factor \(1/q\) has an exact first-passage interpretation, but
-the interpretation depends on whether the target is a mean or a quantile.
+the interpretation depends on whether the target is a mean or a quantile.  The
+bridge below isolates the limiting case in which off-mode success is
+negligible.  If an off-mode attempt instead succeeds with probability \(r\),
+the per-slot success probability becomes \(qp+(1-q)r\), attenuating the
+inverse-share effect.
 
 \begin{theorem}[Geometric allocation bridge]
 \label{thm:geometric-bridge}
@@ -758,7 +746,7 @@ give
 &+\E_Z[H(\pi_Z)]+\varepsilon(d,q).
 \label{eq:proof-deployed-risk}
 \end{align}
-The fixed baseline allocation has cross-entropy
+The baseline allocation has cross-entropy
 \begin{equation}
   \E_S[-\log q_0(S)]=H(\pi)+\KL(\pi\Vert q_0),
   \label{eq:proof-baseline-crossentropy}
