@@ -1,29 +1,30 @@
 \subsection{Proof of Theorem~\ref{thm:finite-sample}}
 
 \begin{proof}
-For fixed \((d,g,b)\), the cluster scores
-\(U_{d,g,1}(b),\ldots,U_{d,g,n_g}(b)\) are independent random variables in
-\([0,1]\), even when retries and paired designs are dependent within a cluster.
-Their common mean is \(F_{d,g}(b)\).  Hoeffding's inequality therefore gives
+For fixed \((d,g,b)\), the scores \(\{U_i^d(b):i\in I_g\}\) are independent
+random variables in \([0,1]\), even when retries and paired designs are
+dependent within an instance.  Their average mean is \(F_g^d(b)\).
+Hoeffding's inequality therefore gives
 \[
-\Prob\{|\widehat F_{d,g}(b)-F_{d,g}(b)|>u\}
+\Prob\{|\widehat F_g^d(b)-F_g^d(b)|>u\}
 \le2e^{-2n_gu^2}.
 \]
 For the weighted mixture, write
-\(\widehat F_d(b)=\sum_{g,i}(w_g/n_g)U_{d,g,i}(b)\).  Weighted Hoeffding gives
+\(\widehat F^d(b)=\sum_g\sum_{i\in I_g}(w_g/n_g)U_i^d(b)\).  Weighted
+Hoeffding gives
 \[
-\Prob\{|\widehat F_d(b)-F_d(b)|>u\}
+\Prob\{|\widehat F^d(b)-F^d(b)|>u\}
 \le2\exp\!\left\{-\frac{2u^2}{\sum_gw_g^2/n_g}\right\}.
 \]
 Substitution of the radii in Equation~\eqref{eq:simultaneous-radii} makes each
 tail probability at most \(\alpha/M\).  A union bound over all designs, grid
 budgets, groups, and mixture curves proves Equation~\eqref{eq:simultaneous-bands}.
 
-On this event \(L_d(b)\le F_d(b)\le U_d(b)\) for every grid point.  For every
-\(b<T_d^-\), \(U_d(b)<1-\delta\), hence \(F_d(b)<1-\delta\) and
-\(T_d^-\le T_d\).  At \(b=T_d^+\), \(L_d(b)\ge1-\delta\), hence
-\(F_d(b)\ge1-\delta\) and \(T_d\le T_d^+\).  The lower-band
-admissibility claim follows from \(F_d(B)\ge L_d(B)\).  Finally, if
+On this event \(L^d(b)\le F^d(b)\le U^d(b)\) for every grid point.  For every
+\(b<T_d^-\), \(U^d(b)<1-\delta\), hence \(F^d(b)<1-\delta\) and
+\(T_d^-\le T_d\).  At \(b=T_d^+\), \(L^d(b)\ge1-\delta\), hence
+\(F^d(b)\ge1-\delta\) and \(T_d\le T_d^+\).  The lower-band
+admissibility claim follows from \(F^d(B)\ge L^d(B)\).  Finally, if
 \(T_{\widehat d}^+<T_d^-\) for every competitor, then
 \(T_{\widehat d}\le T_{\widehat d}^+<T_d^-\le T_d\), proving uniqueness.
 \end{proof}
@@ -33,14 +34,15 @@ admissibility claim follows from \(F_d(B)\ge L_d(B)\).  Finally, if
 \begin{proof}
 Conditional on \((S=s,Z=z)\), total probability over the sampled action gives
 one-slot success probability
-\(\lambda_d(s,z;q)=\sum_aq_z(a)p_d(s,z,a)\).  IID actions and conditional slot
+\(\lambda_{s,z}(q)=\sum_aq_z(a)p_{s,z}(a)\).  IID actions and conditional slot
 independence imply IID Bernoulli success indicators, so the first successful
-slot is geometric when \(\lambda_d>0\) and infinite when \(\lambda_d=0\).
-After paying \(c_d(z)\), budget \(B\) permits exactly \(m_d(B;s,z)\) complete
+slot is geometric when \(\lambda_{s,z}(q)>0\) and infinite when
+\(\lambda_{s,z}(q)=0\).  After paying \(c(z)\), budget \(B\) permits exactly
+\(m_B(s,z)\) complete
 slots.  Thus
 \[
-\Prob(\tau_{d,q}\le B\mid s,z)
-=1-\{1-\lambda_d(s,z;q)\}^{m_d(B;s,z)}.
+\Prob(\text{verified success by }B\mid s,z)
+=1-\{1-\lambda_{s,z}(q)\}^{m_B(s,z)}.
 \]
 Taking expectation over \((S,Z)\) proves Equation~\eqref{eq:action-mixture-cdf}.
 \end{proof}

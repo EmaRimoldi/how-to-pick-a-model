@@ -171,48 +171,81 @@ credibly scalarized require a Pareto frontier.
 \section{Finite-Sample Certification}
 \label{sec:finite-sample}
 
-Let \(\mathcal G\) be predeclared disjoint instance groups with deployment
-weights \(w_g\) summing to one.  They may be task modes or operationally
-important subpopulations.  For group \(g\), sample independent instances
-\(x_{g,1},\ldots,x_{g,n_g}\).  Run each design \(R_g\) times per instance and
-record failures as \(\tau=\infty\).  Retries, repeated runs, and paired designs
-may be dependent within an instance; independence is required only across
-distinct instances.  On a finite budget grid \(\mathcal B\), define
+Let \(\mathcal G\) be a finite collection of predeclared, disjoint instance
+groups.  The deployment weight \(w_g\ge0\) is the expected frequency of group
+\(g\), with \(\sum_{g\in\mathcal G}w_g=1\).
+Let \(x_1,\ldots,x_n\) be independent task instances.  Each instance \(i\)
+has a predeclared group label \(g_i\in\mathcal G\).  Define
+\[
+  I_g:=\{i:g_i=g\},
+  \qquad
+  n_g:=|I_g|.
+\]
+For each design \(d\), instance \(i\), and repetition \(r\in\{1,\ldots,R\}\),
+let \(\tau_{ir}^d\) be the verified first-passage resource.  Runs belonging
+to the same instance may be dependent; independence is required only across
+distinct instances.
+
+For a finite budget grid \(\mathcal B\), define
 \begin{equation}
-U_{d,g,i}(b):=\frac1{R_g}\sum_{r=1}^{R_g}
-\mathbf1\{\tau_{d,g,i,r}\le b\},\quad
-\widehat F_{d,g}(b):=\frac1{n_g}\sum_iU_{d,g,i}(b),\quad
-\widehat F_d(b):=\sum_gw_g\widehat F_{d,g}(b).
-\label{eq:cluster-cdf}
+  U_i^d(b)
+  :=
+  \frac{1}{R}\sum_{r=1}^R
+  \mathbf 1\{\tau_{ir}^d\le b\},
+  \qquad
+  \widehat F_g^d(b)
+  :=
+  \frac{1}{n_g}\sum_{i\in I_g}U_i^d(b),
+  \qquad
+  \widehat F^d(b)
+  :=
+  \sum_{g\in\mathcal G}w_g\widehat F_g^d(b).
+  \label{eq:cluster-cdf}
 \end{equation}
+Here \(U_i^d(b)\) is the fraction of repeated runs that solve instance \(i\)
+within budget \(b\), \(\widehat F_g^d\) is the empirical first-passage CDF
+within group \(g\), and \(\widehat F^d\) is the deployment-weighted CDF.  Write
+\(F_g^d(b):=\E[\widehat F_g^d(b)]\) and
+\(F^d(b):=\sum_{g\in\mathcal G}w_gF_g^d(b)\) for their population targets.
 
 \begin{theorem}[Simultaneous first-passage and selection certificate]
 \label{thm:finite-sample}
-Let \(M=|\mathcal D||\mathcal B|(|\mathcal G|+1)\) and \(\alpha\in(0,1)\).
-Set
+Let \(M:=|\mathcal D|\,|\mathcal B|\,(|\mathcal G|+1)\) and
+\(\alpha\in(0,1)\).  Set
 \begin{equation}
-\epsilon_g=\sqrt{\frac{\log(2M/\alpha)}{2n_g}},\qquad
-\epsilon=\sqrt{\frac{\log(2M/\alpha)}{2}
-                    \sum_g\frac{w_g^2}{n_g}}.
+  \epsilon_g
+  :=\sqrt{\frac{\log(2M/\alpha)}{2n_g}},
+  \qquad
+  \epsilon
+  :=\sqrt{\frac{\log(2M/\alpha)}{2}
+                    \sum_{g\in\mathcal G}\frac{w_g^2}{n_g}}.
 \label{eq:simultaneous-radii}
 \end{equation}
-With probability at least \(1-\alpha\), simultaneously for every design,
-budget, and group,
+With probability at least \(1-\alpha\), simultaneously for every
+\(d\in\mathcal D\), \(b\in\mathcal B\), and \(g\in\mathcal G\),
 \begin{equation}
-|\widehat F_{d,g}(b)-F_{d,g}(b)|\le\epsilon_g,qquad
-|\widehat F_d(b)-F_d(b)|\le\epsilon.
+  \left|\widehat F_g^d(b)-F_g^d(b)\right|\le\epsilon_g,
+  \qquad
+  \left|\widehat F^d(b)-F^d(b)\right|\le\epsilon.
 \label{eq:simultaneous-bands}
 \end{equation}
-Let \(L_d=(\widehat F_d-\epsilon)\vee0\) and
-\(U_d=(\widehat F_d+\epsilon)\wedge1\), and define
+Let
+\[
+  L^d(b):=\max\{0,\widehat F^d(b)-\epsilon\},
+  \qquad
+  U^d(b):=\min\{1,\widehat F^d(b)+\epsilon\},
+\]
+and define
 \begin{equation}
-T_d^-:=\inf\{b\in\mathcal B:U_d(b)\ge1-\delta\},\qquad
-T_d^+:=\inf\{b\in\mathcal B:L_d(b)\ge1-\delta\}.
+  T_d^-:=\inf\{b\in\mathcal B:U^d(b)\ge1-\delta\},
+  \qquad
+  T_d^+:=\inf\{b\in\mathcal B:L^d(b)\ge1-\delta\}.
 \label{eq:quantile-band}
 \end{equation}
 Then \(T_d^-\le T_d(\delta)\le T_d^+\), up to grid resolution.  A design is
-conservatively admissible at horizon \(B\) if \(L_d(B)\ge1-\delta\); replacing
-\(L_d\) by every groupwise lower band certifies groupwise reliability.  If an
+conservatively admissible at horizon \(B\) if \(L^d(B)\ge1-\delta\).  Requiring
+\(\max\{0,\widehat F_g^d(B)-\epsilon_g\}\ge1-\delta\) for every group certifies
+groupwise reliability.  If an
 admissible \(\widehat d\) satisfies
 \(T_{\widehat d}^+<\min_{d\ne\widehat d}T_d^-\), it is the unique proper-time
 winner over \(\mathcal D\) on the simultaneous event.  Otherwise the
@@ -242,40 +275,50 @@ confirmation.
 
 \begin{definition}[Frozen action process]
 \label{def:action-process}
-Fix design \(d\) and backbone \(M_d\).  A finite action bank \(\mathcal A_d\)
+Fix design \(d\) and its backbone \(M_d\), and suppress the design index within
+this definition and Theorem~\ref{thm:action-process}.  A finite action bank \(\mathcal A\)
 contains frozen configurations of that backbone: an action may specify a prompt,
 harness, decoding rule, or sequence of inference steps.  Acquiring \(Z=z\)
-costs \(c_d(z)\ge0\).  Let
-\(\mathcal Q_d=\{q\in[0,1]^{|\mathcal A_d|}:\sum_{a\in\mathcal A_d}q(a)=1\}\)
+costs \(c(z)\ge0\).  Let
+\(\mathcal Q=\{q\in[0,1]^{|\mathcal A|}:\sum_{a\in\mathcal A}q(a)=1\}\)
 be the set of allocation distributions.  Given \(z\), the allocator
-\(q_z\in\mathcal Q_d\) draws
+\(q_z\in\mathcal Q\) draws
 \(A_k\overset{\mathrm{iid}}{\sim}\operatorname{Cat}(q_z)\).  A canonical slot is
 one complete action execution followed by verification.  On mode \(s\), action
-\(a\) succeeds in one slot with probability \(p_d(s,z,a)\).  Conditional on
-\((S,Z)\), slots are independent and each costs \(\kappa_d(s)>0\).
+\(a\) succeeds in one slot with probability \(p_{s,z}(a)\).  Conditional on
+\((S,Z)\), slots are independent and each costs \(\kappa(s)>0\).
 \end{definition}
 
 \begin{theorem}[Action-success first-passage law]
 \label{thm:action-process}
 Under Definition~\ref{def:action-process}, let
 \begin{equation}
-\lambda_d(s,z;q):=\sum_{a\in\mathcal A_d}q_z(a)p_d(s,z,a),\qquad
-m_d(B;s,z):=\max\!\left\{0,
-\left\lfloor\frac{B-c_d(z)}{\kappa_d(s)}\right\rfloor\right\}.
+  \lambda_{s,z}(q)
+  :=\sum_{a\in\mathcal A}q_z(a)p_{s,z}(a),
+  \qquad
+  m_B(s,z)
+  :=\max\!\left\{0,
+    \left\lfloor\frac{B-c(z)}{\kappa(s)}\right\rfloor
+  \right\}.
 \label{eq:action-hazard}
 \end{equation}
-The successful slot index \(N_d\mid(s,z)\) is geometric with parameter
-\(\lambda_d(s,z;q)\), with \(N_d=\infty\) when \(\lambda_d=0\).  Hence
+The successful slot index \(N\mid(s,z)\) is geometric with parameter
+\(\lambda_{s,z}(q)\), with \(N=\infty\) when \(\lambda_{s,z}(q)=0\).  Hence
 \begin{equation}
-F_{d,q}(B)=\E_{S,Z}\!\left[
-1-\{1-\lambda_d(S,Z;q)\}^{m_d(B;S,Z)}
-\right].
+  F_q(B)
+  =\E_{S,Z}\!\left[
+    1-\{1-\lambda_{S,Z}(q)\}^{m_B(S,Z)}
+  \right].
 \label{eq:action-mixture-cdf}
 \end{equation}
-Consequently, population proper time follows by inserting this CDF into
-Definition~\ref{def:proper-time}; it is not an average of modewise quantiles.
+Consequently, the fixed design's population proper time follows by inserting
+\(F_q\) into Definition~\ref{def:proper-time}; it is not an average of
+modewise quantiles.
 Cross-action success, signal overhead, and positive unsolved mass are explicit.
 \end{theorem}
+
+When comparing designs, we restore the suppressed index and write
+\(F_{d,q}\), \(\lambda_d\), \(c_d\), and \(\kappa_d\).
 
 Unequal action costs or history-dependent allocations do not obey this simple
 geometric law.  They remain valid deployment designs, but their proper time must
