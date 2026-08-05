@@ -1,0 +1,105 @@
+\subsection{Proof of Theorem~\ref{thm:finite-sample}}
+
+\begin{proof}
+For fixed \((d,g,b)\), the cluster scores
+\(U_{d,g,1}(b),\ldots,U_{d,g,n_g}(b)\) are independent random variables in
+\([0,1]\), even when retries and paired designs are dependent within a cluster.
+Their common mean is \(F_{d,g}(b)\).  Hoeffding's inequality therefore gives
+\[
+\Prob\{|\widehat F_{d,g}(b)-F_{d,g}(b)|>u\}
+\le2e^{-2n_gu^2}.
+\]
+For the weighted mixture, write
+\(\widehat F_d(b)=\sum_{g,i}(w_g/n_g)U_{d,g,i}(b)\).  Weighted Hoeffding gives
+\[
+\Prob\{|\widehat F_d(b)-F_d(b)|>u\}
+\le2\exp\!\left\{-\frac{2u^2}{\sum_gw_g^2/n_g}\right\}.
+\]
+Substitution of the radii in Equation~\eqref{eq:simultaneous-radii} makes each
+tail probability at most \(\alpha/M\).  A union bound over all designs, grid
+budgets, groups, and mixture curves proves Equation~\eqref{eq:simultaneous-bands}.
+
+On this event \(L_d(b)\le F_d(b)\le U_d(b)\) for every grid point.  For every
+\(b<T_d^-\), \(U_d(b)<1-\delta\), hence \(F_d(b)<1-\delta\) and
+\(T_d^-\le T_d\).  At \(b=T_d^+\), \(L_d(b)\ge1-\delta\), hence
+\(F_d(b)\ge1-\delta\) and \(T_d\le T_d^+\).  The lower-band
+admissibility claim follows from \(F_d(B)\ge L_d(B)\).  Finally, if
+\(T_{\widehat d}^+<T_d^-\) for every competitor, then
+\(T_{\widehat d}\le T_{\widehat d}^+<T_d^-\le T_d\), proving uniqueness.
+\end{proof}
+
+\subsection{Proof of Theorem~\ref{thm:action-process}}
+
+\begin{proof}
+Conditional on \((S=s,Z=z)\), total probability over the sampled action gives
+one-slot success probability
+\(\lambda_d(s,z;q)=\sum_aq_z(a)p_d(s,z,a)\).  IID actions and conditional slot
+independence imply IID Bernoulli success indicators, so the first successful
+slot is geometric when \(\lambda_d>0\) and infinite when \(\lambda_d=0\).
+After paying \(c_d(z)\), budget \(B\) permits exactly \(m_d(B;s,z)\) complete
+slots.  Thus
+\[
+\Prob(\tau_{d,q}\le B\mid s,z)
+=1-\{1-\lambda_d(s,z;q)\}^{m_d(B;s,z)}.
+\]
+Taking expectation over \((S,Z)\) proves Equation~\eqref{eq:action-mixture-cdf}.
+\end{proof}
+
+\subsection{Proof of Lemma~\ref{lem:conditional}}
+
+\begin{proof}
+Taking logs in Equation~\eqref{eq:packed-law} and conditioning on \(Z=z\) gives
+\begin{align*}
+\E[\log\E(\tau_{d,q}\mid S,z)\mid z]
+={}&\E[\log\{\kappa(d,S)t_0(d,S)\}\mid z]
++\sum_s\pi_z(s)(-\log q_z(s)).
+\end{align*}
+The final sum is the cross-entropy
+\(H(\pi_z)+\KL(\pi_z\Vert q_z)\).  The support condition makes it finite, and
+nonnegativity of KL shows that its unique minimum is attained at
+\(q_z=\pi_z\).
+\end{proof}
+
+\subsection{Proof of Theorem~\ref{thm:four-term}}
+
+\begin{proof}
+Lemma~\ref{lem:conditional} and the tower property give
+\begin{align*}
+\mathcal L(d,q)
+&=\E_S\log\{\kappa(d,S)t_0(d,S)\}
+  +\E_ZH(\pi_Z)+\varepsilon\\
+&=\E_S\log\{\kappa(d,S)t_0(d,S)\}
+  +H(\pi)-I(S;Z)+\varepsilon.
+\end{align*}
+Applying the same expression to \((d_0,q^0,Z_0)\) and subtracting proves
+Equation~\eqref{eq:four-term-general}.  If \(Z_0\perp S\), then
+\(I(S;Z_0)=0\); if \(q^0=\pi\), then \(\varepsilon_0=0\), which yields
+Equation~\eqref{eq:four-term-baseline}.
+\end{proof}
+
+\subsection{Proof of Proposition~\ref{prop:objective-dependence}}
+
+\begin{proof}
+The expected-log statement is Lemma~\ref{lem:conditional}.  For expected
+resource, Cauchy--Schwarz gives
+\[
+\left(\sum_s\frac{\pi_z(s)a_s}{q_z(s)}\right)
+\left(\sum_sq_z(s)\right)
+\ge\left(\sum_s\sqrt{\pi_z(s)a_s}\right)^2.
+\]
+Because \(\sum_sq_z(s)=1\), equality holds exactly when
+\(q_z(s)\) is proportional to \(\sqrt{\pi_z(s)a_s}\), proving
+Equation~\eqref{eq:sqrt-allocation}.
+\end{proof}
+
+\subsection{Proof of Proposition~\ref{prop:off-mode}}
+
+\begin{proof}
+The general one-slot hazard is \(q_z(s)p_s+r_{s,z}^{\mathrm{off}}\).  The
+conditional mean resource excluding signal cost is therefore
+\(\kappa_d(s)/(q_z(s)p_s+r_{s,z}^{\mathrm{off}})\), while PACT predicts
+\(\kappa_d(s)/(q_z(s)p_s)\).  Taking their log ratio gives
+Equation~\eqref{eq:off-mode-residual}.  If the hazard ratio is at most \(\xi\),
+monotonicity of \(\log(1+u)\) yields the stated bound.  Adding \(c_d(z)\) gives
+the final nonadditive expression directly.
+\end{proof}

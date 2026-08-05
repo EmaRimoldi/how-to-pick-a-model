@@ -13,7 +13,12 @@
 \usepackage{enumitem}
 \usepackage{microtype}
 \usepackage{hyperref}
+\hypersetup{hidelinks}
 \setlength{\emergencystretch}{2em}
+
+\makeatletter
+\renewcommand{\@noticestring}{}
+\makeatother
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
@@ -43,10 +48,6 @@
 \DeclareMathOperator{\KL}{KL}
 \newcommand{\E}{\mathbb{E}}
 \newcommand{\Prob}{\mathbb{P}}
-\newcommand{\figureplaceholder}[2][0.16\textheight]{%
-  \fbox{\begin{minipage}[c][#1][c]{0.95\linewidth}
-  \centering\small #2
-  \end{minipage}}}
 
 \title{How to Pick a Model}
 \author{Anonymous Authors}
@@ -55,688 +56,58 @@
 
 \maketitle
 
-\section{Introduction}
-\label{sec:introduction}
-
-Which model should be deployed on a new task whose solution can be checked?
-Current practice often answers this question indirectly: evaluate candidate
-systems end to end on a benchmark and deploy the one with the best aggregate
-score.  We call this practice \emph{benchmark racing}.  It has produced
-increasingly realistic evaluations, from
-repository repair against executable tests to machine-learning engineering
-against held-out validation criteria~\citep{jimenez2024swebench,chan2024mlebench}.
-Yet an aggregate score is not sufficient for deployment when models
-differ in serving cost, can be retried, or exhibit complementary strengths
-across instances.  A system that is more accurate per attempt need not be the
-one that reaches the first verified solution with the least wall-clock time,
-computation, energy, tokens, or money.  Moreover, the same aggregate advantage
-can arise from cheaper attempts, greater competence on the relevant kind of
-instance, more informative pre-deployment evidence, or better allocation of
-effort.  These mechanisms imply different engineering decisions, but an
-end-to-end race reports only their net result.
-
-The problem has important antecedents.  Classical algorithm selection maps
-instance features to a solver from a portfolio; empirical performance models
-predict runtimes on unseen instances; and systems such as SATzilla demonstrate
-that the best solver can be instance dependent rather than
-global~\citep{rice1976algorithm,hutter2014runtime,xu2012satzilla,kotthoff2016algorithm}.
-Statistical racing and best-arm methods reduce the cost of identifying a winner
-from repeated evaluations~\citep{maron1993hoeffding,maron1997racing,kaufmann2016bestarm}.
-More recently, LLM cascades and routers have learned cost--quality policies over
-heterogeneous model pools~\citep{chen2023frugalgpt,ong2024routellm,hu2024routerbench},
-while test-time scaling and sample-allocation studies show that model size,
-sampling policy, and inference effort interact in task- and effort-dependent
-ways~\citep{brown2024monkeys,snell2025testtime,wu2025inference,osca2024}.
-These lines of work establish the relevance of per-instance choice and
-resource-aware inference.  Their primary output is a runtime predictor,
-selector, or allocation policy under a declared performance objective.  Our
-focus is complementary: an accounting law for the verified first-passage
-resource of a stochastic solver that separates the price of one attempt, its
-mode-conditional probability of success, the information available before
-deployment, and the extent to which the deployed allocation rule uses that
-information.
-
-Our conceptual foundation is the proper-time framework of Achille and
-Soatto~\citep{achille2025agents}.  They model an agent as a stochastic dynamical
-system acting on verifiable transductive tasks and argue that, because a
-universal search procedure may eventually find a valid witness, accuracy alone
-does not characterize useful intelligence.  Verification supplies an
-observable completion event, so the relevant question is how much resource is
-needed to reach it.  Without a finite resource penalty, exhaustive search can
-enumerate candidates until one is accepted.  Under the elementary IID retry
-idealization with per-attempt success probability \(p>0\), for example,
-\[
-  \Prob(\text{success by attempt }n)=1-(1-p)^n\longrightarrow1.
-\]
-Achille and Soatto call this unbounded-compute failure mode \emph{savantry}:
-eventual correctness can be obtained by brute force without an efficient,
-transferable solution strategy.  We instead require a verified solution within
-a predeclared budget and reliability target.  The relevant benefit of learning
-is therefore to reduce the resource needed to find a solution.  Their proper time
-for reaching a target state is a path quantity,
-\(
-  \tau_\nu(u\!\to\!v)=\min_{h:u\to v} T(h)/\nu(h\mid u)
-\),
-which divides trajectory length by the probability of realizing that path.  We
-retain two principles from this theory: solutions must be
-defined by an external verifier, and information is valuable insofar as it buys
-speed.  We do not identify their path proper time with our deployment metric.
-Their framework supplies a computational foundation rather than a finite-sample
-rule for selecting from a deployed model menu.  For a design~\(d\) and instance
-\(x\sim\mu\), we define certified proper time
-\(T_d(\delta)\) as the \((1-\delta)\)-quantile of the first-passage proper time
-to a verified artifact.  The proper-time measure may be expressed in seconds,
-computation, energy, tokens, or money, but it is fixed before comparison and
-supplies the unit in which \(T_d(\delta)\) is reported.
-
-For a tractable accounting, we introduce a solver-relevant mode \(S\),
-admissible evidence \(Z\), and a physically implemented effort share \(q_Z(S)\).
-The PACT hypothesis makes mode-conditioned proper time proportional to unit
-attempt cost \(\kappa(d,S)\), focused attempts-to-solution scale
-\(t_0(d,S)\), and \(1/q_Z(S)\).  The cost \(\kappa\) inherits the declared unit:
-seconds, tokens, energy, or price.
-Under a prior-matched baseline, the resulting expected log-proper-time gain is
-\begin{equation}
-\begin{aligned}
-\Delta_{\mathrm{pack}}
-={}&
-\underbrace{\mathbb E_S\!\left[\log
-  \frac{\kappa(d_0,S)}{\kappa(d,S)}\right]}_{\text{relative unit cost}}
-+
-\underbrace{\mathbb E_S\!\left[\log
-  \frac{t_0(d_0,S)}{t_0(d,S)}\right]}_{\text{focused competence}}
-\\[-0.15em]
-&+
-\underbrace{I(S;Z)}_{\text{mode information}}
--
-\underbrace{\mathbb E_Z\!\left[
-  \mathrm{KL}(\pi_Z\Vert q_Z)\right]}_{\text{allocation mismatch}}.
-\label{eq:intro-four-term}
-\end{aligned}
-\end{equation}
-The identity is exact inside PACT; it is not a general
-decomposition of \(\log T_d(\delta)\).  We therefore derive the corresponding
-residual form when inverse-share log-linearity is approximate and an exact
-geometric-retry bridge showing that, under IID mode-directed attempts, \(1/q\)
-governs mean first-passage attempts, whereas certified quantiles require an
-explicit correction.  This distinction makes the assumption testable rather
-than definitional.
-
-Equation~\eqref{eq:intro-four-term} turns model selection into a diagnostic and
-counterfactual calculation: it separates cheaper attempts, model competence,
-information acquisition, and allocation quality.  A structured pilot can then
-predict held-out expected log first-passage resource, while full deployment
-trials remain the confirmation standard.
-
-We make three contributions:
-\begin{enumerate}[leftmargin=1.5em,itemsep=0.2em,topsep=0.35em]
-  \item Starting from Achille and Soatto's time-centric principle, we formulate
-  finite, verifiable model selection through first-passage resource and its
-  certified population quantile, while keeping this deployment object distinct
-  from both
-  Achille--Soatto path proper time and the theorem-facing expected-log
-  functional.
-  \item We prove the four-term cost--competence--information--mismatch identity,
-  its approximate-PACT residual guarantee, and model-selection and retry
-  consequences.  Together these results specify which quantities must be
-  estimated and the assumptions under which their sum predicts a packed
-  expected-log deployment comparison.
-  \item We test those assumptions with real language models on a controlled,
-  execution-verified coding benchmark.  In a held-out study of 175,104 physical
-  trajectories over 768 unseen tasks using Qwen2.5-Coder 7B and 14B, the
-  inverse-share exponent is \(0.987\), the four-term prediction has residual RMS
-  \(0.015\) nat, and its model choice agrees with the held-out resource oracle in
-  all six conditions.  Because a strict residual omnibus rejects exact closure,
-  we interpret the decomposition as a falsifiable decision approximation, not
-  a universal equality.
-\end{enumerate}
-
-\section{Verifier-Backed Model Selection}
-\label{sec:problem}
-
-We first separate the deployment quantity that the builder ultimately cares
-about from the expected-log functional that admits the decomposition.  This
-distinction fixes the task, the proper-time unit, and the statistical estimand
-before introducing latent modes.
-
-\begin{definition}[Verifiable task family and proper-time measure]
-\label{def:task-family}
-A \emph{verifiable task family} is a tuple
-\(
-  \mathrm{T}=(\mathrm{X},\mathrm{Y},V,\mu)
-\).  Each \(x\in\mathrm{X}\) is a concrete problem instance: the
-observed input and context for which one artifact \(y\in\mathrm{Y}\) must be
-constructed.  The distribution \(\mu\) describes future instances, while the
-predeclared external verifier
-\(V:\mathrm{X}\times\mathrm{Y}\to\{0,1\}\) supplies the common success
-criterion: \(V(x,y)=1\) is the observable event that instance \(x\) has been
-completed.  A \emph{proper-time measure} assigns every partial execution a
-nonnegative, additive budget coordinate \(B\).  It may be measured in isolated
-GPU-seconds, joules, tokens, dollars, or a predeclared scalarization of several
-resources. 
-\end{definition}
-
-A \emph{deployment design} \(d\) fixes the complete solution procedure: backbone model
-and implementation, prompting and decoding, retry or allocation, and verifier invocation.
-Given instance \(x\), let \(y(B;x)\) be the generally random artifact available
-after cumulative budget \(B\).  Its law is induced by \(d\); throughout, the
-dependence of \(y\) on the design and its internal randomness is implicit.  All
-probabilities below are taken jointly over \(x\sim\mu\) and this randomness.
-
-\begin{definition}[Verified first passage]
-\label{def:first-passage}
-For a design \(d\) and instance \(x\), define the verified first-passage budget
-\begin{equation}
-\tau_d(x)
-:=
-\begin{cases}
-\inf\{B\ge0:V(x,y(B;x))=1\},
-  & \text{if a verified artifact is reached},\\
-\infty, & \text{otherwise}.
-\end{cases}
-\label{eq:first-passage}
-\end{equation}
-Thus \(\tau_d(x)\) is the realized budget consumed before the first
-verified artifact.
-\end{definition}
-
-\begin{definition}[Certified proper time]
-\label{def:certified-time}
-For failure tolerance \(\delta\in(0,1)\), define
-\begin{equation}
-T_d(\delta)
-:=\inf\{B\ge0:
-\Prob[\tau_d(x)\le B]\ge1-\delta\}.
-\label{eq:proper-time-system}
-\end{equation}
-The certified proper time \(T_d(\delta)\) is the population
-\((1-\delta)\)-quantile of the verified first passage: the smallest proper
-budget by which a verified artifact is produced with probability at least
-\(1-\delta\) over deployment instances and repeated runs.  Its unit is
-inherited from the chosen proper-time measure.
-For a baseline \(d_0\), the certified log-speedup is
-\(\Delta_{\mathrm{cert}}(d_0,d;\delta)
-=\log T_{d_0}(\delta)-\log T_d(\delta)\), whenever both quantiles are finite
-and positive.
-\end{definition}
-
-% For observed runs \((x_i)_{i=1}^n\), set
-% \(\tau_i:=\tau_d(x_i)\), with unsuccessful runs recorded as
-% \(\tau_i=\infty\).  The empirical first-passage curve and proper-time estimator
-% are
-% \begin{equation}
-%   \widehat F_d(B)
-%   :=\frac1n\sum_{i=1}^n\mathbf 1\{\tau_i\le B\},
-%   \qquad
-%   \widehat T_d(\delta)
-%   :=\inf\{B:\widehat F_d(B)\ge1-\delta\}.
-%   \label{eq:proper-time-estimator}
-% \end{equation}
-% If verified coverage does not reach \(1-\delta\) by the maximum observed
-% budget, \(\widehat T_d(\delta)\) is reported as censored rather than
-% extrapolated.
-
-\begin{problem}[Model selection]
-\label{prob:model-selection}
-Given a finite, predeclared design menu \(\mathcal D\), a task family, a common
-proper-time measure, failure tolerance \(\delta\), and budget \(B\), first form
-the admissible set
-\begin{equation}
-  \mathcal D_{\mathrm{adm}}(\delta,B)
-  :=
-  \left\{
-    d\in\mathcal D:
-    \Prob[\tau_d(x)\le B]\ge1-\delta
-  \right\}.
-  \label{eq:admissible-designs}
-\end{equation}
-Then select
-\begin{equation}
-  d^\star
-  \in
-  \argmin_{d\in\mathcal D_{\mathrm{adm}}(\delta,B)}
-  T_d(\delta).
-  \label{eq:deployment-selection}
-\end{equation}
-Thus reliability is declared and tested before proper time ranks the
-admissible candidates.
-Candidates must share the proper-time measure and verifier.  Repeating the
-analysis in another common unit gives another proper-time comparison;
-simultaneous resources require a scalarization or Pareto frontier.
-\end{problem}
-
-\subsection{Task modes, actions, and PACT allocation}
-\label{sec:packed-setup}
-
-\begin{definition}[Task modes and task information]
-\label{def:packed-objects}
-Fix the verifiable task family
-\(\mathrm{T}\) from
-Definition~\ref{def:task-family}.  The finite set
-\(\mathcal S=\{1,\ldots,m\}\) indexes predeclared, solver-relevant subfamilies
-of the instance space \(\mathrm{X}\).  For a task instance
-\(x\sim\mu\), the random variable \(S\in\mathcal S\) records which subfamily
-generated \(x\). Formally,
-\[
-  x\mid S=s\sim\mu_s,
-  \qquad
-  \pi(s):=\Prob[S=s],
-  \qquad
-  \mu=\sum_{s\in\mathcal S}\pi(s)\mu_s.
-\]
-Here \(\pi\) is the prior frequency of the subfamilies in deployment and
-\(\mu_s\) is the distribution of task instances within subfamily \(s\).  A
-mode therefore means shared structure among instances of the same task family,
-such as a dependency pattern, proof schema, edit locality, or algorithmic
-invariant.  The subfamilies are fixed. 
-
-For any design \(d\), the mode-conditioned proper time is
-\begin{equation}
-  T_d(\delta\mid s)
-  :=
-  \inf\left\{
-    B\ge0:
-    \Prob[\tau_d(x)\le B\mid S=s]\ge1-\delta
-  \right\}.
-  \label{eq:mode-proper-time}
-\end{equation}
-% The overall \(T_d(\delta)\) is the quantile of the mixture over modes.
-
-A \emph{task-information signal} is a random variable
-\(Z\in\mathcal Z\), where \(\mathcal Z\) is the space of possible signal
-values. When the design observes the realized signal
-value \(z\), its uncertainty about the instance's latent mode changes from the
-prior \(\pi\) to the posterior
-\[
-  \pi_z(s):=\Prob[S=s\mid Z=z].
-\]
-The signal may be informative, \(I(S;Z)>0\), or uninformative,
-\(Z\perp S\).  Its intended role is to guide the compute allocation toward the
-actions appropriate for the current mode. 
-\end{definition}
-
-\begin{definition}[Fixed-backbone actions and PACT allocator]
-\label{def:packed-allocator}
-Fix a design \(d\) with backbone model \(M_d\).  Its predeclared action bank is
-\[
-  \mathcal A_d
-  :=\{a_{d,s}:s\in\mathcal S\}
-\] 
-All actions within \(d\) share the
-same backbone. Each action is intended to be seen as a specific model configureation / harness / .. .che sia specifica per risolvere in task mode preciso. \(s\).
-Let \(\Delta(\mathcal S):=\{q\in[0,1]^m:\sum_{s\in\mathcal S}q(s)=1\}\)
-denote the probability simplex over modes. A \emph{PACT allocator} is a map
-\(q_d:\mathcal Z\longrightarrow\Delta(\mathcal S)\), written
-\(z\longmapsto q_z\).
-
-A \emph{focused mode-\(s\) attempt} is one execution of \(a_{d,s}\).  Let
-\(t_0(d,s)>0\) be the expected number of such focused attempts to the first
-verified artifact, and let \(\kappa(d,s)>0\) be the expected cost of one global
-attempt on a mode-\(s\) instance in the declared proper-time unit. Exact packedness requires
-this attempt-cost scale to be invariant to the allocation; departures caused by
-action-dependent lengths or overhead are covered by
-Proposition~\ref{prop:approx-packed}.
-\end{definition}
-
-For two mode distributions \(a,b\in\Delta(\mathcal S)\), write
-\[
-  H(a):=-\sum_s a(s)\log a(s),
-  \qquad
-  \KL(a\Vert b):=\sum_s a(s)\log\frac{a(s)}{b(s)},
-\]
-with \(0\log0:=0\).  Here \(H(a)\) is the Shannon entropy, measuring uncertainty
-about the mode in nats, and \(\KL(a\Vert b)\) is the nonnegative mismatch from
-using mode distribution \(b\) in place of \(a\).  The mutual information
-\[
-  I(S;Z)
-  :=H(\pi)-\E_ZH(\pi_Z)
-  =\E_Z\!\left[\KL(\pi_Z\Vert\pi)\right]
-\]
-is the expected reduction in mode uncertainty after the design observes the
-task information, where \(\pi_Z\) is the posterior evaluated at the random
-observation \(Z\).  
-% It is zero when \(Z\) and \(S\) are independent and reaches
-% \(H(\pi)\) when \(Z\) identifies the latent mode almost surely.  In this sense,
-% \(Z\) is the finite-mode analogue of the data or prompt that conditions the
-% search distribution in Achille and Soatto's ``information is speed''
-% result~\citep{achille2025agents}.  Their quantity is algorithmic mutual
-% information between data and a successful trajectory; ours is the Shannon
-% mutual information between task information and a predeclared finite mode, a
-% finite and experimentally estimable counterpart rather than the same object.
-
-\begin{assumption}[PACT inverse-share law]
-\label{ass:packed}
-Fix a task mode \(s\) and an observed signal value \(z\).  Every action attempts
-to produce a verified artifact, but \(a_{d,s}\) is specialized for mode \(s\)
-and is expected to reach verification with less proper budget than the other
-actions.  The exact PACT law models the regime in which this specialized action
-dominates mode-\(s\) first passage.  The allocator gives \(a_{d,s}\) the
-executed share \(q_z(s)\), while the cost scale of a global attempt remains
-\(\kappa(d,s)\).  The resulting mode-conditioned packed proper time is
-\begin{equation}
-  T_{d,q}^{\mathrm{pack}}(s,z)
-  =\kappa(d,s)\frac{t_0(d,s)}{q_z(s)}.
-  \label{eq:packed-law}
-\end{equation}
-The factor \(1/q_z(s)\) therefore states that assigning only a fraction
-\(q_z(s)\) of attempts to \(a_{d,s}\) dilates the specialized
-attempts-to-solution by the inverse share.  Other actions may still reach a
-verified solution on mode-\(s\) instances, but theoretically require more
-proper budget.  Non-negligible cross-mode success, interference, or changes in
-the slot-cost scale make the exact law depart from observed proper time and
-must enter the residual model below.
-\end{assumption}
-
-\begin{definition}[PACT expected log-proper-time]
-\label{def:packed-risk}
-For the joint law of \((S,Z)\), define
-\begin{equation}
-  \mathcal L(d,q):=\E[\log T_{d,q}^{\mathrm{pack}}(S,Z)].
-  \label{eq:packed-risk}
-\end{equation}
-For a baseline design \(d_0\) with the baseline allocation \(q_0\), define
-\(
-  \Delta_{\mathrm{pack}}
-  :=\mathcal L(d_0,q_0)-\mathcal L(d,q)
-\).
-We require \(q_0(s)>0\) whenever \(\pi(s)>0\).
-\end{definition}
-
-\begin{remark}[Metric and identifiability guardrails]
-\label{rem:guardrails}
-In general,
-\(
-  \Delta_{\mathrm{pack}}
-  \ne\Delta_{\mathrm{cert}}(d_0,d;\delta)
-\), and \(\E[\log T]\ne\log\E[T]\).  The theorem concerns packed expected
-log-proper-time; \(T_d(\delta)\) is a population quantile.  The IID geometric
-bridge in Section~\ref{sec:quantile-bridge} connects them, but otherwise they
-must be reported separately.  Total proper time identifies only
-\(\kappa(d,s)t_0(d,s)\); separating relative unit cost from competence requires
-attempt-level measurement of \(\kappa\) in the declared unit.
-\end{remark}
-
-\section{Four-Term PACT Proper-Time Accounting}
-\label{sec:accounting}
-
-The decomposition follows from the conditional cross-entropy incurred by the
-physical allocation.  Complete proofs of every result in this section and
-Section~\ref{sec:quantile-bridge} appear in Appendix~\ref{app:proofs}.
-
-\begin{lemma}[Conditional log-proper-time and posterior matching]
-\label{lem:conditional}
-Under Assumption~\ref{ass:packed}, for any signal value \(z\), write
-\(\E_z[\cdot]:=\E[\cdot\mid Z=z]\).  Then
-\begin{equation}
-\E_z[\log T_{d,q}^{\mathrm{pack}}(S,z)]
-=\E_z[\log(\kappa(d,S)t_0(d,S))]+H(\pi_z)+\KL(\pi_z\Vert q_z).
-\label{eq:conditional-decomposition}
-\end{equation}
-Consequently, \(q_z=\pi_z\) uniquely minimizes conditional expected
-log-proper-time, and its excess over the minimum is exactly
-\(\KL(\pi_z\Vert q_z)\).
-\end{lemma}
-
-\begin{corollary}[Uninformative signal]
-\label{cor:uninformative-signal}
-If \(Z\perp S\), then \(\pi_z=\pi\) almost surely and \(I(S;Z)=0\).
-Consequently, the PACT-optimal allocation is the fixed prior allocation
-\(q_z=\pi\).  Any other supported allocation incurs the nonnegative penalty
-\[
-  \E_Z\KL(\pi\Vert q_Z)
-\]
-without an information gain.  Thus an uninformative signal cannot improve
-expected log proper time through the information channel.
-\end{corollary}
-
-\begin{theorem}[PACT four-term expected-log proper-time decomposition]
-\label{thm:four-term}
-Let \((d_0,q_0)\) use the baseline allocation \(q_0\) and let \((d,q)\) use signal
-\(Z\).  Under Assumption~\ref{ass:packed}, define
-\begin{align*}
-  C(d_0,d)&:=\E_S\!\left[\log\frac{\kappa(d_0,S)}{\kappa(d,S)}\right],
-  &
-  \Phi(d_0,d)&:=\E_S\!\left[\log\frac{t_0(d_0,S)}{t_0(d,S)}\right],\\
-  G(d)&:=I(S;Z),
-  &
-  \varepsilon(d,q)&:=\E_Z[\KL(\pi_Z\Vert q_Z)].
-\end{align*}
-Then
-\begin{equation}
-  \boxed{
-  \Delta_{\mathrm{pack}}
-  =C(d_0,d)+\Phi(d_0,d)+G(d)
-   +\KL(\pi\Vert q_0)-\varepsilon(d,q).}
-  \label{eq:four-term-general}
-\end{equation}
-For the prior-matched baseline \(q_0=\pi\), the baseline mismatch vanishes,
-leaving the four terms \emph{unit cost}, \emph{focused competence},
-\emph{mode information}, and \emph{allocation mismatch}.
-\end{theorem}
-
-The identity is exact because Assumption~\ref{ass:packed} makes log-proper-time
-additive in these quantities.  Its value is diagnostic: it turns an aggregate
-gain into separately measurable mechanisms and exposes the assumption that
-must survive held-out residual tests.
-
-\begin{corollary}[Design-selection score]
-\label{cor:model-score}
-For candidate designs sharing \((\pi,\mathcal S)\), possibly with
-candidate-specific signals \(Z_d\), posteriors
-\(\pi_z^d(s):=\Prob[S=s\mid Z_d=z]\), and allocations \(q^d\), define
-\begin{equation}
-\mathcal J(d,q^d):=\E_S[\log(\kappa(d,S)t_0(d,S))]
--I(S;Z_d)+\E_{Z_d}[\KL(\pi^{d}_{Z_d}\Vert q^d_{Z_d})].
-\label{eq:model-score}
-\end{equation}
-Then \(\mathcal L(d,q^d)=H(\pi)+\mathcal J(d,q^d)\).
-Thus the packed-optimal candidate is any minimizer of \(\mathcal J\).
-\end{corollary}
-
-Exact packedness is not needed for a useful decision, but its failure must be
-quantified rather than hidden.
-
-\begin{proposition}[Approximate packedness]
-\label{prop:approx-packed}
-Let \(r_d(s,z,q)\in\mathbb R\) be the scalar cellwise log-residual, and let
-\(\eta\ge0\) be a uniform upper bound on its magnitude, measured in nats.
-Suppose the actual mode-conditioned scale satisfies
-\begin{equation}
-  \log\widetilde T_{d,q}(s,z)
-  =\log T_{d,q}^{\mathrm{pack}}(s,z)+r_d(s,z,q),
-  \qquad |r_d(s,z,q)|\le\eta
-  \label{eq:approx-packed}
-\end{equation}
-uniformly for both compared designs.  Define
-\(
-\widetilde{\mathcal L}(d,q):=\E[\log\widetilde T_{d,q}(S,Z)]
-\)
-and
-\(
-\widetilde\Delta:=
-\widetilde{\mathcal L}(d_0,q_0)-\widetilde{\mathcal L}(d,q)
-\).  For a prior-matched baseline,
-\begin{equation}
-  \widetilde\Delta
-  =\underbrace{C+\Phi+G-\varepsilon}_{\Delta_4}+R,
-  \qquad
-  R=\E[r_{d_0}(S,q_0)-r_d(S,Z,q)],
-  \qquad |R|\le2\eta.
-  \label{eq:residual-decomposition}
-\end{equation}
-Here \(R\in\mathbb R\) is the scalar difference between the expected baseline
-and candidate residuals, so \(|R|\) is the ordinary absolute value of a scalar,
-not a vector norm.  The bound \(2\eta\) follows because each of the two
-cellwise residuals has magnitude at most \(\eta\).
-The term \(r_{d_0}(s,q_0)\) has no signal argument because \(q_0\) is fixed.
-\end{proposition}
-
-\begin{corollary}[Residual-aware decision margin]
-\label{cor:robust-margin}
-Let \(\widehat\Delta_4\) estimate the four-term prediction with
-\(|\widehat\Delta_4-\Delta_4|\le e\), and suppose \(|R|\le\rho\).
-Then \(\widetilde\Delta>0\) whenever
-\(\widehat\Delta_4>e+\rho\), and \(\widetilde\Delta<0\) whenever
-\(\widehat\Delta_4<-e-\rho\).  Inside the band
-\(|\widehat\Delta_4|\le e+\rho\), the accounting does not certify a winner.
-\end{corollary}
-
-% This margin is the decision-theoretic output of the theory: estimation error
-% and structural residual are both charged before changing the deployed model.
-
-\section{From First-Passage Means to Certified Quantiles}
-\label{sec:quantile-bridge}
-
-The inverse-share factor \(1/q\) has an exact first-passage interpretation, but
-the interpretation depends on whether the target is a mean or a quantile.  The
-bridge below isolates the limiting case in which off-mode success is
-negligible.  If an off-mode attempt instead succeeds with probability \(r\),
-the per-slot success probability becomes \(qp+(1-q)r\), attenuating the
-inverse-share effect.
-
-\begin{theorem}[Geometric allocation bridge]
-\label{thm:geometric-bridge}
-Fix one mode.  In each global slot, independently allocate a mode-directed attempt
-to the true mode with probability \(q\in(0,1]\).  A true-mode attempt succeeds
-independently with probability \(p\in(0,1)\), and off-mode attempts cannot
-succeed.  If \(N_{p,q}\) is the first successful global slot, then
-\begin{equation}
-  N_{p,q}\sim\operatorname{Geom}(pq),
-  \qquad
-  \E[N_{p,q}]=\frac{1}{pq}.
-  \label{eq:geometric-mean}
-\end{equation}
-Its certified slot quantile is
-\begin{equation}
-  Q_{p,q}(\delta)
-  =\left\lceil\frac{\log\delta}{\log(1-pq)}\right\rceil.
-  \label{eq:geometric-quantile}
-\end{equation}
-Let \(h(x):=-\log(1-x)\) and remove the integer ceiling, so
-\(\widetilde Q_{p,q}(\delta)=-\log\delta/h(pq)\).  Comparing this quantity with
-the inverse-share extrapolation of its focused value,
-\(\widetilde Q_{p,1}(\delta)/q\), gives the log residual
-\begin{equation}
-  r_{\mathrm{inv}}(p,q)
-  :=\log\frac{\widetilde Q_{p,q}(\delta)}
-                    {\widetilde Q_{p,1}(\delta)/q}
-  =\log\frac{q\,h(p)}{h(pq)},
-  \qquad
-  0\le r_{\mathrm{inv}}(p,q)\le-\log(1-p).
-  \label{eq:quantile-residual}
-\end{equation}
-For the unrounded quantile \(\widetilde Q_{p,q}\), ceiling contributes at most
-\begin{equation}
-  0\le\log Q_{p,q}(\delta)-\log\widetilde Q_{p,q}(\delta)
-  <\log\!\left(1+\frac{1}{\widetilde Q_{p,q}(\delta)}\right).
-  \label{eq:ceiling-residual}
-\end{equation}
-\end{theorem}
-
-Thus \(1/q\) is exact for mean first passage and a controlled approximation for
-a cellwise quantile whose log residual vanishes as \(p\to0\).  For heterogeneous
-modes or success
-probabilities, the population quantity in Definition~\ref{def:certified-time}
-is a mixture quantile; it cannot in general be obtained by averaging cellwise
-quantiles.  Accordingly, \(t_0^{\mathrm{mean}}=1/p\) and the focused quantile
-in~\eqref{eq:geometric-quantile} are different estimands and must not be
-interchanged.
-
-\begin{corollary}[Single-mode retry crossover]
-\label{cor:retry-crossover}
-Let a high-cost system have one-attempt success \(p_h\) and cost \(\kappa_h\),
-and a lower-cost system have \(0<p_\ell<p_h<1\) and per-attempt cost
-\(\kappa_\ell\).  The minimum retry depth whose fixed block matches or exceeds
-the high-cost system's reliability is
-\begin{equation}
-  D_\times
-  =\left\lceil\frac{\log(1-p_h)}{\log(1-p_\ell)}\right\rceil.
-  \label{eq:retry-crossover}
-\end{equation}
-The lower-cost block is cheaper when \(D_\times\kappa_\ell<\kappa_h\).  If it
-stops at first success, its expected cost through depth \(D\) is instead
-\begin{equation}
-  \kappa_\ell\frac{1-(1-p_\ell)^D}{p_\ell}.
-  \label{eq:stopped-retry-cost}
-\end{equation}
-\end{corollary}
-
-\clearpage
-\begin{algorithm}[How to Pick the Model]
-\label{alg:pick-model}
-\begin{tabular}{@{}r p{0.86\linewidth}@{}}
-\textit{Input:} &
-Verifiable task family, candidate designs \(\mathcal D\), verifier \(V\),
-proper-time unit, failure tolerance \(\delta\), maximum budget \(B_{\max}\),
-mode schema \(\mathcal S\), fixed-backbone actions, task signal, and allocation
-law.\\[0.25em]
-\textit{Output:} &
-An admissible design with minimum estimated proper time and its PACT
-accounting.\\[0.35em]
-1 &
-\textit{Declare the target.} Freeze \(V\), the proper-time unit, \(\delta\),
-and \(B_{\max}\) before comparing designs.\\
-2 &
-\textit{Measure first passage.} Run repeated trials, stopping each run at its
-first verified artifact or at \(B_{\max}\).\\
-3 &
-\textit{Estimate proper time.} Compute \(\widehat F_d(B)\),
-\(\widehat T_d(\delta)\), and \(\widehat T_d(\delta\mid s)\) for every design
-and mode; report unresolved targets as censored.\\
-4 &
-\textit{Filter and select.} Retain only
-\(\mathcal D_{\mathrm{adm}}(\delta,B_{\max})\) and choose the design with
-minimum held-out \(\widehat T_d(\delta)\).\\
-5 &
-\textit{Test PACT.} Vary the physically executed shares \(q_z(s)\), test the
-inverse-share law, and measure the closure residual.\\
-6 &
-\textit{Explain the decision.} Where PACT is supported, estimate relative
-unit cost, focused competence, mode information, and allocation mismatch;
-compare informative and \(Z\perp S\) controls.
-\end{tabular}
-\end{algorithm}
-
-Equations~\eqref{eq:four-term-general}--\eqref{eq:stopped-retry-cost} provide
-the complete theoretical chain used by the paper: define the deployment
-target, decompose the expected-log packed surrogate, bound structural error,
-and certify a decision only outside the combined uncertainty margin.
-\label{sec:theory-end}
+\input{theory_revision}
 
 \section{Experiments}
 \label{sec:experiments}
 
+We ask four questions: whether direct proper-time measurement rejects
+unreliable candidates; whether physical allocation follows inverse-share
+scaling; whether independently estimated four-term mechanisms predict held-out
+resource; and whether conclusions transport beyond the controlled setting.
 
-\subsection{Benchmarks, systems, and evidence classes}
+\subsection{Benchmarks, models, and evidence classes}
 
-Table~\ref{tab:experimental-design} summarizes the four benchmark used in this study.  The SAI-3 experiment revolves around .. [to complete].  HumanEval+ and MBPP+
-provide execution-verified code generation tasks~\citep{chen2021humaneval,
-liu2023evalplus,austin2021mbpp}; their three reported groups are tertiles of
-reference-program length and should be read as precomputed difficulty strata; BBH supplies five cognitive
-families (algorithmic, arithmetic, language, logical deduction, and
-spatial--temporal)~\citep{suzgun2023bbh}.
-The models tested are differenti modelli di differenti size [di le size] della famiglia di Qwen2.5-Coder and BBH uses the corresponding general Qwen2.5 [Come mai checkoint generali? Forse perche il task non è coding) checkpoints~\citep{hui2024qwen25coder,yang2024qwen25}.
+Table~\ref{tab:experimental-design} summarizes four benchmarks.  SAI-3 is a
+procedural sharded API-integration benchmark with three hidden, mutually
+incompatible Python contracts.  Each action receives the common task and one
+contract-specific evidence shard; the verifier combines static-policy checks,
+hidden differential tests, metamorphic tests, and a mutation-score gate.  This
+construction creates a controlled action-success matrix without revealing the
+true mode.  HumanEval+ and MBPP+ provide execution-verified code generation
+tasks~\citep{chen2021humaneval,liu2023evalplus,austin2021mbpp}; their three
+reported groups are precomputed tertiles of reference-program length, not
+claims of latent semantic structure.  BBH supplies five cognitive families
+(algorithmic, arithmetic, language, logical deduction, and spatial--temporal)
+\citep{suzgun2023bbh}.  Coding tasks use 1.5B, 7B, and 32B Qwen2.5-Coder
+checkpoints where available; BBH uses the corresponding general Qwen2.5 1.5B
+and 7B checkpoints because its tasks are not code generation
+\citep{hui2024qwen25coder,yang2024qwen25}.
 
 \begin{table}[H]
 \centering
-\caption{Experimental design.  \(N_x\) counts distinct instances; retries on
-the same instance are not independent observations. [Inserisci la resource usata in questo caso, chiama task modes nella tabella al posto di systems usa models e spiega che cosa sono i records, poi usa il termine budget e speiga che budget hai usato] }
+\caption{Experimental design.  \(N_x\) counts distinct task instances.  A trace
+is one task--model trajectory through first verification or the horizon; SAI-3
+also varies frozen signal--allocation cells.  Retries within a trace are not
+independent observations.}
 \label{tab:experimental-design}
 \small
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{lrrrrll}
 \toprule
-Dataset & \(N_x\) & Modes & Systems & Records & Observed clock d\\
+Dataset & \(N_x\) & Task modes & Models & Traces & Resource budget & Horizon\\
 \midrule
-SAI-3       & 768   & 3 & 2 & 175,104 & normalized parameter--token slots \\
-HumanEval+  & 164   & 3 & 3 & 492     & generated tokens / seconds \\
-MBPP+       & 378   & 3 & 3 & 1,134   & generated tokens / seconds \\
-BBH         & 1,200 & 5 & 2 & 2,400   & generated tokens / seconds \\
+SAI-3       & 768   & 3 & 2 & 175,104 & normalized parameter--token slots & 256 slots\\
+HumanEval+  & 164   & 3 & 3 & 492     & generated tokens / seconds & 10 attempts\\
+MBPP+       & 378   & 3 & 3 & 1,134   & generated tokens / seconds & 10 attempts\\
+BBH         & 1,200 & 5 & 2 & 2,400   & generated tokens / seconds & 10 attempts\\
 \bottomrule
 \end{tabular}}
 \end{table}
 
-Every run stops at its first verified artifact or at the predeclared horizon \(B_{\max}\).  We record the event indicator, attempts, generated tokens, generation and verification time, and cumulative resource used.  We report
+Every run stops at its first verified artifact or at the predeclared horizon
+\(B\).  We record the event indicator, attempts, generated tokens, generation
+and verification time, and cumulative resource.  We report
 \(\widehat T_d(\delta)=\inf\{B:\widehat F_d(B)\ge1-\delta\}\) only when the target is reached. Otherwise it is right-censored, not extrapolated. Our primary reliability target is \(1-\delta=0.90\).  Following standard
 empirical reporting practice, tables give the point estimate, its standard
 error in parentheses, the number of independent instances, and the exact
@@ -752,9 +123,15 @@ rather than using significance stars as a substitute for engineering relevance.
 
 The SAI-3 baseline is Qwen2.5-Coder-14B with prior-matched allocation; the
 deployed candidate is Qwen2.5-Coder-7B under six frozen signal--allocation
-conditions.  Calibration estimates \(\kappa\), focused \(t_0\), the signal
-channel, and \(q_z\); confirmation opens 768 fresh tasks only after these
-objects and the analysis are frozen.  The public frontier executes 1.5B, 7B,
+conditions.  Its calibration split contains 768 distinct tasks, 256 per mode,
+disjoint from confirmation.  For each task and model, 64 matched-action attempts
+and four attempts per wrong action estimate focused success and the off-mode
+hazard; attempt ledgers estimate \(\kappa\).  The controlled signal channel and
+allocations are protocol constants rather than learned quantities.  A separate
+practical-router diagnostic fits multinomial logistic regression on stack-trace
+tokens and package metadata and estimates its posterior by a five-fold
+out-of-fold confusion matrix.  Confirmation opens 768 fresh tasks only after
+these objects and the analysis are frozen.  The public frontier executes 1.5B, 7B,
 and 32B Qwen2.5-Coder on HumanEval+ and MBPP+ and 1.5B and 7B Qwen2.5 on BBH,
 with temperature \(0.6\), top-\(p=0.95\), and at most ten attempts.  The
 calibrated simulation compares the pairs shown in
@@ -774,6 +151,15 @@ four-term residual is \(0.0100\) nat, its RMS is \(0.0147\) nat, and the 95\%
 bootstrap upper bound on RMS is \(0.0350\) nat.  The predicted design agrees
 with the held-out resource oracle in all six conditions; the minimum bootstrap
 selection probability is \(1.000\), and estimated oracle regret is zero.
+For the frozen seven-design, 256-budget-grid, three-stratum family at
+\(\alpha=0.05\), Theorem~\ref{thm:finite-sample} gives an overall radius of
+\(0.091\).  Zero horizon censoring therefore certifies overall 90\%
+admissibility (lower bound \(0.909\)).  The modewise radius is \(0.157\), so the
+same data do not certify 90\% reliability separately in every mode.  Moreover,
+the archived confirmation was frozen for expected-log closure and does not
+retain the clustered CDF bands needed to certify quantile separation.  Thus the
+six-of-six agreement is a mechanism result, not a unique proper-time winner
+certificate.
 
 Exact closure nevertheless fails its frozen omnibus criterion.  Residuals
 increase with allocation mismatch with slope \(0.0377\)
@@ -799,15 +185,16 @@ is not identified because the lower reliability bound misses the target.  The ot
 models do not reach 90\%.  The best MBPP+ rate is 323/378 for 32B,
 85.4\% \([81.5,88.7]\%\), and the best BBH rate is 951/1,200 for 7B,
 79.3\% \([76.9,81.5]\%\).  Their \(T_{90}\) values are therefore censored.
-Moreover, even HumanEval+ 7B does not meet the conservative admissibility rule
-based on the lower confidence bound.  The practical conclusion is not to
+Moreover, even HumanEval+ 7B does not meet a marginal lower-bound admissibility
+rule, so it necessarily fails the stronger simultaneous certificate.  The
+practical conclusion is not to
 declare another model the winner, but to increase the horizon, reduce the
 reliability target prospectively, or report that the candidate menu is
 inadmissible.
 
 \begin{table}[t]
 \centering
-\caption{Best observed public-frontier system at the ten-retry horizon.
+\caption{Best observed public-frontier model at the ten-retry horizon.
 Brackets are 95\% Wilson intervals across task instances.  A dash means that
 the empirical verified curve does not reach 90\%; no finite \(T_{90}\) is
 assigned.}
@@ -815,7 +202,7 @@ assigned.}
 \small
 \begin{tabular}{lrrrr}
 \toprule
-Dataset & Best system & Verified / \(N_x\) & Verified rate [95\% CI] & \(T_{90}\) \\
+Dataset & Best model & Verified / \(N_x\) & Verified rate [95\% CI] & \(T_{90}\) \\
 \midrule
 HumanEval+ & 7B  & 149 / 164   & 90.9\% [85.5, 94.4] & 736 tokens \\
 MBPP+      & 32B & 323 / 378   & 85.4\% [81.5, 88.7] & --- \\
@@ -826,24 +213,19 @@ BBH        & 7B  & 951 / 1,200 & 79.3\% [76.9, 81.5] & --- \\
 
 \begin{figure}[t]
 \centering
-\figureplaceholder[0.15\textheight]{%
-\textbf{Main figure: all-trial verified first-passage curves.}\\[0.4em]
-A \(2\times2\) panel for SAI-3, HumanEval+, MBPP+, and BBH.  Each task--model
-first hit is a visible point; their empirical cumulative ranks form the success
-curves.  The horizontal line is 90\% reliability, hollow markers are the two
-\(T_{90}\) values, and a vertical line fixes the common comparison budget.
-The intended message is that equal reliability can require sharply different
-resource and that the winner is benchmark dependent.}
-\caption{Concept for the principal result figure.  Axes use the predeclared
-resource unit and failed runs remain censored at the horizon.  Simulated
-previews and physical observations must be visually and caption-wise separated.}
-\label{fig:first-passage-placeholder}
+\includegraphics[width=0.96\linewidth]{figures/theory_revision/first_passage_simulation.pdf}
+\caption{Calibrated simulation used to freeze the first-passage visualization
+before additional model runs.  Curves show the fraction not yet verified over
+resource normalized by baseline \(T_{90}\); triangles mark the 90\% quantile.
+The underlying task-level points are drawn transparently.  This panel is design
+validation, not empirical benchmark evidence.}
+\label{fig:first-passage}
 \end{figure}
 
 \subsection{Reliability-first rankings are not universal}
 
 Table~\ref{tab:simulated-first-passage} reports the calibrated simulation used
-to finalize Figure~\ref{fig:first-passage-placeholder}.  Positive log-speedup
+to finalize Figure~\ref{fig:first-passage}.  Positive log-speedup
 favours the deployed model.  The 7B candidate reaches 90\% reliability with
 16.5\% less normalized resource on SAI-3 and 43.5\% fewer seconds on
 HumanEval+, but requires 34.3\% more seconds on MBPP+.  On BBH its simulated
@@ -852,7 +234,7 @@ a transportable winner.  At the budget where the baseline reaches exactly
 90\%, the candidate verifies 93.6\%, 97.9\%, 84.8\%, and 95.9\% of tasks,
 respectively.  This fixed-budget contrast is operational: it states how much
 reliability a deployment obtains without changing its resource envelope.  All
-four paired 95\% intervals for \(\Delta_{\rm cert}\) exclude zero; these
+four paired 95\% intervals for \(\Delta_T\) exclude zero; these
 intervals quantify Monte Carlo precision, not uncertainty about executed
 routers.
 
@@ -866,7 +248,7 @@ routers.
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{lrrrrr}
 \toprule
-Dataset & Baseline \(T_{90}\) & Candidate \(T_{90}\) & \(\widehat F_1(B_0)\) & \(\Delta_{\rm cert}\) [95\% CI] & Winner \\
+Dataset & Baseline \(T_{90}\) & Candidate \(T_{90}\) & \(\widehat F_1(B_0)\) & \(\Delta_T\) [95\% CI] & Winner \\
 \midrule
 SAI-3      & 2.052 & 1.713 & 93.6\% & \phantom{-}0.180 [0.178, 0.184] & 7B \\
 HumanEval+ & 30.36 & 17.14 & 97.9\% & \phantom{-}0.572 [0.531, 0.608] & 7B \\
@@ -912,36 +294,42 @@ after a \(-0.163\)-nat residual.  MBPP+ gives the opposite decision: the unit-co
 penalty dominates, so routing information cannot rescue the candidate.  Large
 SAI-3 and BBH residuals warn against transporting the exact packed identity
 when off-mode procedures can solve the task.  Most importantly, BBH has
-\(\Delta_{\rm cert}=1.074\) but \(\Delta_{\rm obs}=-0.846\): the candidate has a
-better 90th-percentile completion budget while a worse mean paired log-resource.
-This is not a contradiction.  Certified proper time is a population quantile;
+\(\Delta_T=1.074\) but \(\Delta_{\rm obs}=-0.846\): the candidate has a better
+90th-percentile completion budget while a worse mean paired log-resource.
+This is not a contradiction.  Verified proper time is a population quantile;
 the four-term theorem targets an expected log functional.  Crossing
 first-passage curves can rank the two objectives differently, which is why
 \(\delta\) and the deployment loss must be declared before model selection.
 
 \begin{figure}[H]
 \centering
-\figureplaceholder[0.08\textheight]{%
-\textbf{PACT validation and mechanism figure.}\\[0.35em]
-Panel A: held-out log resource against \(-\log q\), with primary and
-high-repetition slopes and confidence bands.  Panel B: four-term predictions
-against observed contrasts, with the 45-degree line and bootstrap intervals.
-Panel C: signed \(C,\Phi,G,-\varepsilon\) contributions and residuals.}
-\caption{Mechanism-figure concept: near-unit inverse-share scaling can select
-correctly despite structured residual rejection; points and intervals remain
-visible.}
-\label{fig:mechanism-placeholder}
+\begin{minipage}[t]{0.48\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/theory_revision/inverse_share_scaling.png}
+\small (a) Inverse-share response
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/theory_revision/four_term_observed_vs_predicted.png}
+\small (b) Held-out closure
+\end{minipage}
+\caption{Physical SAI-3 mechanism audit.  (a) Log first-passage resource tracks
+allocation dilution with near-unit slope.  (b) Independently estimated
+four-term predictions are close to held-out gains; points and intervals are
+held-out observations.  The strict residual omnibus nevertheless rejects exact
+closure.}
+\label{fig:mechanism}
 \end{figure}
 
 \section{Discussion}
 \label{sec:discussion}
 
 The results support reliability-first selection, not a universal winner.
-Freeze the verifier, resource clock, \(B\), and \(\delta\); admit \(d\) only if
+Freeze the verifier, resource unit, \(B\), and \(\delta\); admit \(d\) only if
 a lower confidence bound on \(\Prob(\tau_d\le B)\) reaches \(1-\delta\); then
-minimize held-out \(\widehat T_d(\delta)\).  Replace the incumbent only if the
-paired interval or residual-aware margin in
-Corollary~\ref{cor:robust-margin} excludes zero.
+minimize held-out \(\widehat T_d(\delta)\).  Replace the incumbent only when the
+simultaneous quantile bands in Theorem~\ref{thm:finite-sample} separate it from
+every competitor; otherwise report no winner.
 
 The terms prescribe interventions: negative cost calls for better serving;
 negative competence for another backbone or action; low information for a
@@ -972,7 +360,7 @@ calibration data and evaluated on disjoint instances.
 IID retries, stationary hazards, and allocation-invariant costs are
 approximations: history, correlation, caching, batching, verifier latency, and
 adaptive stopping can change \(t_0\) and \(\kappa\).  Charge signal acquisition
-to the same clock.  Verification certifies only the declared criterion, not
+to the same resource ledger.  Verification certifies only the declared criterion, not
 usefulness or safety.  If resources cannot be credibly scalarized, report a
 Pareto frontier rather than one ranking.
 
@@ -985,175 +373,7 @@ Pareto frontier rather than one ranking.
 \section{Proofs}
 \label{app:proofs}
 
-\subsection{Proof of Lemma~\ref{lem:conditional}}
-
-\begin{proof}
-Taking logs in~\eqref{eq:packed-law} and conditioning on \(Z=z\) gives
-\begin{align*}
-\E[\log T_{d,q}^{\mathrm{pack}}(S,z)\mid Z=z]
-={}&\E[\log(\kappa(d,S)t_0(d,S))\mid Z=z]\\
-&+\sum_{s\in\mathcal S}\pi_z(s)(-\log q_z(s)).
-\end{align*}
-The final sum is the cross-entropy between \(\pi_z\) and \(q_z\), and
-\begin{align*}
-\sum_s\pi_z(s)(-\log q_z(s))
-&=-\sum_s\pi_z(s)\log\pi_z(s)
-  +\sum_s\pi_z(s)\log\frac{\pi_z(s)}{q_z(s)}\\
-&=H(\pi_z)+\KL(\pi_z\Vert q_z).
-\end{align*}
-For completeness, Jensen's inequality for \(-\log\) gives
-\[
-\KL(\pi_z\Vert q_z)
-=\E_{\pi_z}\!\left[-\log\frac{q_z(S)}{\pi_z(S)}\right]
-\ge-\log\!\left(\sum_{s:\pi_z(s)>0}q_z(s)\right)\ge0.
-\]
-Equality requires all mass to lie on the posterior support and
-\(q_z(s)/\pi_z(s)\) to be constant there, hence \(q_z=\pi_z\).  The support
-condition in Definition~\ref{def:packed-allocator} makes every displayed
-quantity finite.
-\end{proof}
-
-\subsection{Proof of Theorem~\ref{thm:four-term}}
-
-\begin{proof}
-For the deployed design, Lemma~\ref{lem:conditional} and the tower property
-give
-\begin{align}
-\mathcal L(d,q)
-={}&\E_S[\log\kappa(d,S)]
- +\E_S[\log t_0(d,S)]\nonumber\\
-&+\E_Z[H(\pi_Z)]+\varepsilon(d,q).
-\label{eq:proof-deployed-risk}
-\end{align}
-The baseline allocation has cross-entropy
-\begin{equation}
-  \E_S[-\log q_0(S)]=H(\pi)+\KL(\pi\Vert q_0),
-  \label{eq:proof-baseline-crossentropy}
-\end{equation}
-and hence
-\begin{align}
-\mathcal L(d_0,q_0)
-={}&\E_S[\log\kappa(d_0,S)]
- +\E_S[\log t_0(d_0,S)]\nonumber\\
-&+H(\pi)+\KL(\pi\Vert q_0).
-\label{eq:proof-baseline-risk}
-\end{align}
-Subtracting~\eqref{eq:proof-deployed-risk} from
-\eqref{eq:proof-baseline-risk}, and using
-\(
-I(S;Z)=H(\pi)-\E_ZH(\pi_Z)
-\), yields~\eqref{eq:four-term-general}.  If \(q_0=\pi\), then
-\(\KL(\pi\Vert q_0)=0\).
-\end{proof}
-
-\subsection{Proof of Corollary~\ref{cor:model-score}}
-
-\begin{proof}
-Apply~\eqref{eq:proof-deployed-risk} to each candidate and substitute
-\(
-\E_{Z_d}H(\pi^d_{Z_d})=H(\pi)-I(S;Z_d)
-\).  The term \(H(\pi)\) is common to every candidate; the remaining terms are
-exactly \(\mathcal J(d,q^d)\).  Therefore the
-minimizers of \(\mathcal L\) and \(\mathcal J\) coincide.
-\end{proof}
-
-\subsection{Proof of Proposition~\ref{prop:approx-packed}}
-
-\begin{proof}
-Substitute~\eqref{eq:approx-packed} into the expected log-proper-time difference.
-The ideal terms equal \(\Delta_4\) by Theorem~\ref{thm:four-term}; the remaining
-terms are
-\(
-R=\E[r_{d_0}(S,q_0)-r_d(S,Z,q)]
-\).  The triangle inequality gives
-\[
-  |R|
-  \le\E|r_{d_0}(S,q_0)|+\E|r_d(S,Z,q)|
-  \le2\eta.
-\]
-\end{proof}
-
-\subsection{Proof of Corollary~\ref{cor:robust-margin}}
-
-\begin{proof}
-Write \(a=\widehat\Delta_4-\Delta_4\).  Then
-\(
-\widetilde\Delta=\widehat\Delta_4-a+R
-\), where \(|a|\le e\) and \(|R|\le\rho\).  Hence
-\[
-  \widehat\Delta_4-e-\rho
-  \le\widetilde\Delta
-  \le\widehat\Delta_4+e+\rho.
-\]
-The two sign claims follow from the corresponding strict endpoint inequality.
-If the interval contains zero, these bounds alone cannot determine the sign.
-\end{proof}
-
-\subsection{Proof of Theorem~\ref{thm:geometric-bridge}}
-
-\begin{proof}
-A global slot succeeds exactly when it is allocated to the true mode and that
-mode-directed attempt succeeds.  Independence therefore gives per-slot success
-probability \(pq\), so
-\[
-  \Prob[N_{p,q}=n]=(1-pq)^{n-1}pq,
-  \qquad
-  \Prob[N_{p,q}>n]=(1-pq)^n.
-\]
-The survival-sum formula yields
-\[
-  \E[N_{p,q}]
-  =\sum_{n\ge0}\Prob[N_{p,q}>n]
-  =\sum_{n\ge0}(1-pq)^n
-  =\frac{1}{pq}.
-\]
-Moreover,
-\(
-\Prob[N_{p,q}\le n]=1-(1-pq)^n
-\).  Requiring this probability to be at least \(1-\delta\) gives
-\(
-(1-pq)^n\le\delta
-\), which is equivalent to
-\(
-n\ge\log\delta/\log(1-pq)
-\); taking the least integer proves~\eqref{eq:geometric-quantile}.
-
-Let \(h(x)=-\log(1-x)\).  Convexity of \(h\), together with \(h(0)=0\), gives
-\(h(qp)\le qh(p)\), proving the lower residual bound.  Also,
-\[
-  h(x)=\int_0^x\frac{dt}{1-t}
-  \quad\Longrightarrow\quad
-  x\le h(x)\le\frac{x}{1-x}.
-\]
-Therefore
-\(
-q h(p)/h(qp)\le q[p/(1-p)]/(pq)=1/(1-p)
-\), proving the upper residual bound.  Finally, for every \(u>0\),
-\(u\le\lceil u\rceil<u+1\); applying \(\log\) with
-\(u=\widetilde Q_{p,q}(\delta)\) proves~\eqref{eq:ceiling-residual}.
-\end{proof}
-
-\subsection{Proof of Corollary~\ref{cor:retry-crossover}}
-
-\begin{proof}
-After \(D\) independent low-cost attempts, failure probability is
-\((1-p_\ell)^D\), so reliability is \(1-(1-p_\ell)^D\).  Matching the high-cost
-one-attempt reliability requires
-\[
-  1-(1-p_\ell)^D\ge p_h
-  \quad\Longleftrightarrow\quad
-  D\ge\frac{\log(1-p_h)}{\log(1-p_\ell)}.
-\]
-The least integer is~\eqref{eq:retry-crossover}; multiplying by
-\(\kappa_\ell\) gives the fixed-block cost condition.  With stopping, attempt
-\(d\) is incurred only if the first \(d-1\) attempts fail, which has probability
-\((1-p_\ell)^{d-1}\).  Therefore
-\[
-  \E[\text{cost through depth }D]
-  =\kappa_\ell\sum_{d=1}^{D}(1-p_\ell)^{d-1}
-  =\kappa_\ell\frac{1-(1-p_\ell)^D}{p_\ell}.
-\]
-\end{proof}
+\input{proofs_revision}
 
 \section{Synthetic Quantile Uncertainty}
 
@@ -1172,7 +392,7 @@ Table~\ref{tab:simulated-first-passage}.}
 \begin{tabular}{lrrr}
 \toprule
 Dataset & Baseline \(T_{90}\) [95\% CI] & Candidate \(T_{90}\) [95\% CI]
-& \(\Delta_{\rm cert}\) [95\% CI] \\
+& \(\Delta_T\) [95\% CI] \\
 \midrule
 SAI-3      & 2.052 [2.050, 2.053] & 1.713 [1.707, 1.718]
            & \phantom{-}0.180 [0.178, 0.184] \\

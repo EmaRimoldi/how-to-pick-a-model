@@ -1,0 +1,416 @@
+\begin{abstract}
+Model selection for verifiable tasks should ask how much resource is required
+to obtain a verified solution, not only which model has the highest one-shot
+accuracy.  We formalize this objective as a reliability-targeted quantile of
+verified first-passage resource, measured in a predeclared unit such as time,
+tokens, energy, or money.  Simultaneous finite-sample confidence bands provide
+a conservative rule for admitting and comparing a finite menu of deployment
+designs, including an explicit no-winner outcome.  To explain measured
+differences, we introduce a general action-success process and derive PACT,
+Pre-solution Allocation with Constant-cost Trials, as a restricted diagonal
+case.  Inside PACT, expected log conditional first-passage resource separates
+exactly into relative unit cost, focused competence, mode information, and
+allocation mismatch.  Controlled Qwen2.5-Coder experiments recover near-unit
+inverse-share scaling and decision-accurate accounting while rejecting exact
+closure; public benchmark traces further show that reliability targets are
+often unattained.  Thus verified proper time selects the deployment, whereas
+the four-term identity audits why that selection succeeds or fails.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:introduction}
+
+Which model should be deployed on a new task whose solution can be checked?
+Current practice often evaluates candidate systems end to end and deploys the
+one with the best aggregate score.  We call this \emph{benchmark racing}.  It
+has produced realistic evaluations, from repository repair against executable
+tests to machine-learning engineering against held-out criteria
+\citep{jimenez2024swebench,chan2024mlebench}.  Yet aggregate accuracy is
+insufficient when models differ in serving cost, can be retried, or have
+complementary strengths.  A model that is more accurate per attempt need not
+reach the first verified solution with the least time, computation, energy,
+tokens, or money.  The same aggregate gain can also arise from cheaper attempts,
+greater competence, better pre-solution information, or better allocation.
+These mechanisms imply different engineering interventions.
+
+Our conceptual foundation is the proper-time framework of Achille and Soatto
+\citep{achille2025agents}.  They study verifiable transductive tasks and argue
+that eventual correctness under unbounded search does not characterize useful
+intelligence.  Indeed, IID retries with success probability \(p>0\) satisfy
+\(\Prob(\text{success by }n)=1-(1-p)^n\to1\).  We therefore require a verified
+solution within a predeclared resource horizon and reliability target.  Their
+path proper time motivates the principle that information is useful insofar as
+it buys speed; our deployment quantity is different: a population quantile of
+observed verifier-backed first passage.
+
+Our primary contribution is a finite-sample selection rule for that quantile.
+It treats distinct task instances as independent clusters, allows arbitrary
+dependence among retries and paired model runs on the same instance, and either
+certifies separation or reports no winner.  A general action-success model then
+connects routing to the complete first-passage distribution.  Its restricted
+PACT case yields the diagnostic identity
+\begin{equation}
+\begin{aligned}
+\Delta_{\mathrm{pack}}
+={}&\underbrace{\E_S\!\left[\log
+  \frac{\kappa(d_0,S)}{\kappa(d,S)}\right]}_{\text{relative unit cost}}
++\underbrace{\E_S\!\left[\log
+  \frac{t_0(d_0,S)}{t_0(d,S)}\right]}_{\text{focused competence}}\\[-0.15em]
+&+\underbrace{I(S;Z)}_{\text{mode information}}
+-\underbrace{\E_Z\KL(\pi_Z\Vert q_Z)}_{\text{allocation mismatch}}.
+\label{eq:intro-four-term}
+\end{aligned}
+\end{equation}
+This identity concerns expected log \emph{conditional mean} resource inside
+PACT.  It does not decompose the proper-time quantile and is not used to select
+a model.  Direct quantile measurement selects; Equation~\eqref{eq:intro-four-term}
+explains the mechanism when its assumptions survive held-out diagnostics.
+
+We make three contributions.  First, we define reliability-targeted verified
+proper time and give simultaneous finite-sample CDF, quantile, admissibility,
+and winner guarantees for a finite model menu and predeclared subpopulations.
+Second, we derive the exact first-passage distribution of a routed action bank,
+including cross-action success, signal overhead, and unsolved mass.  PACT is a
+transparent special case whose four-term identity is explicitly
+objective-specific.  Third, we test these restrictions with real language
+models.  In 175,104 held-out trajectories over 768 controlled tasks, the
+inverse-share exponent is \(0.987\), the four-term residual RMS is \(0.015\)
+nat, and model choice agrees with the held-out oracle in all six conditions.
+A strict omnibus test rejects exact closure, so the result is
+decision-accurate approximate accounting rather than a universal equality.
+
+\section{Related Work}
+\label{sec:related}
+
+Classical algorithm selection maps instance features to a solver; empirical
+performance models and SATzilla show that runtime-optimal solvers can be
+instance dependent~\citep{rice1976algorithm,hutter2014runtime,xu2012satzilla,
+kotthoff2016algorithm}.  Racing and best-arm procedures reduce evaluation cost
+when identifying a winner~\citep{maron1993hoeffding,maron1997racing,
+kaufmann2016bestarm}.  Run2Survive models censored runtime distributions and
+risk-sensitive selection~\citep{tornede2020run2survive}, while preferences over
+runtime distributions formalize objectives beyond the mean
+\citep{graham2023runtime}.  Our target is likewise distributional, but
+specialized to verifier-backed first passage and simultaneous quantile
+selection.
+
+LLM cascades and routers learn cost--quality decisions over heterogeneous model
+pools~\citep{chen2023frugalgpt,ong2024routellm,hu2024routerbench,
+dekoninck2025routing}; test-time scaling further shows that sampling effort and
+model size interact~\citep{brown2024monkeys,snell2025testtime,wu2025inference,
+osca2024}.  We instead freeze the complete routed design and compare its
+first-passage distribution.  Finally, the information term in our restricted
+identity is the standard reduction in log loss supplied by side information
+\citep{jiao2014logloss}.  Our contribution is not a new characterization of
+mutual information, but its placement beside measured cost and competence in a
+falsifiable first-passage accounting.
+
+\section{Verifier-Backed Model Selection}
+\label{sec:problem}
+
+\begin{definition}[Verifiable task family and resource measure]
+\label{def:task-family}
+A \emph{verifiable task family} is a tuple
+\(\mathrm{T}=(\mathrm{X},\mathrm{Y},V,\mu)\).  Each \(x\in\mathrm{X}\) is a
+concrete instance for which an artifact \(y\in\mathrm{Y}\) must be constructed.
+The distribution \(\mu\) describes future instances, and the predeclared
+external verifier \(V:\mathrm{X}\times\mathrm{Y}\to\{0,1\}\) supplies the
+common success event.  A \emph{resource measure} assigns every partial
+execution a nonnegative additive coordinate \(B\), measured in isolated
+GPU-seconds, joules, tokens, dollars, or a predeclared scalarization.
+\end{definition}
+
+A \emph{deployment design} \(d\) freezes the backbone and implementation,
+prompting and decoding, routing or retry policy, signal acquisition, and
+verifier invocation.  Given \(x\), let \(y(B;x)\) be the generally random
+artifact available after cumulative resource \(B\).  Probabilities below are
+joint over \(x\sim\mu\) and run randomness.
+
+\begin{definition}[Verified first passage]
+\label{def:first-passage}
+The verified first-passage resource is
+\begin{equation}
+\tau_d(x):=
+\begin{cases}
+\inf\{B\ge0:V(x,y(B;x))=1\},&\text{if verification is reached},\\
+\infty,&\text{otherwise}.
+\end{cases}
+\label{eq:first-passage}
+\end{equation}
+\end{definition}
+
+\begin{definition}[Reliability-targeted verified proper time]
+\label{def:proper-time}
+For failure tolerance \(\delta\in(0,1)\), define
+\begin{equation}
+T_d(\delta):=\inf\{B\ge0:\Prob[\tau_d(x)\le B]\ge1-\delta\}.
+\label{eq:proper-time-system}
+\end{equation}
+This population \((1-\delta)\)-quantile is the smallest resource by which a
+verified artifact is produced with the target reliability.  It may be infinite.
+``Proper time'' is operational terminology for progress along a frozen design,
+not a relativistic invariant; when the resource is not seconds, it should be
+read as verified proper resource in the declared unit.
+The term \emph{statistically certified} is reserved for the finite-sample bounds
+in Section~\ref{sec:finite-sample}.  For finite positive quantiles, define the
+proper-time log-speedup
+\(\Delta_T(d_0,d;\delta)=\log T_{d_0}(\delta)-\log T_d(\delta)\).
+\end{definition}
+
+\begin{problem}[Reliability-first model selection]
+\label{prob:model-selection}
+Given a finite predeclared menu \(\mathcal D\), common verifier and resource
+unit, tolerance \(\delta\), and horizon \(B\), certify which designs satisfy
+\(\Prob(\tau_d\le B)\ge1-\delta\), optionally for every declared
+subpopulation, and select the admissible design with smallest \(T_d(\delta)\).
+If sampling uncertainty does not separate candidates, return no winner.
+Different units induce different comparisons; resources that cannot be
+credibly scalarized require a Pareto frontier.
+\end{problem}
+
+\section{Finite-Sample Certification}
+\label{sec:finite-sample}
+
+Let \(\mathcal G\) be predeclared disjoint instance groups with deployment
+weights \(w_g\) summing to one.  They may be task modes or operationally
+important subpopulations.  For group \(g\), sample independent instances
+\(x_{g,1},\ldots,x_{g,n_g}\).  Run each design \(R_g\) times per instance and
+record failures as \(\tau=\infty\).  Retries, repeated runs, and paired designs
+may be dependent within an instance; independence is required only across
+distinct instances.  On a finite budget grid \(\mathcal B\), define
+\begin{equation}
+U_{d,g,i}(b):=\frac1{R_g}\sum_{r=1}^{R_g}
+\mathbf1\{\tau_{d,g,i,r}\le b\},\quad
+\widehat F_{d,g}(b):=\frac1{n_g}\sum_iU_{d,g,i}(b),\quad
+\widehat F_d(b):=\sum_gw_g\widehat F_{d,g}(b).
+\label{eq:cluster-cdf}
+\end{equation}
+
+\begin{theorem}[Simultaneous first-passage and selection certificate]
+\label{thm:finite-sample}
+Let \(M=|\mathcal D||\mathcal B|(|\mathcal G|+1)\) and \(\alpha\in(0,1)\).
+Set
+\begin{equation}
+\epsilon_g=\sqrt{\frac{\log(2M/\alpha)}{2n_g}},\qquad
+\epsilon=\sqrt{\frac{\log(2M/\alpha)}{2}
+                    \sum_g\frac{w_g^2}{n_g}}.
+\label{eq:simultaneous-radii}
+\end{equation}
+With probability at least \(1-\alpha\), simultaneously for every design,
+budget, and group,
+\begin{equation}
+|\widehat F_{d,g}(b)-F_{d,g}(b)|\le\epsilon_g,qquad
+|\widehat F_d(b)-F_d(b)|\le\epsilon.
+\label{eq:simultaneous-bands}
+\end{equation}
+Let \(L_d=(\widehat F_d-\epsilon)\vee0\) and
+\(U_d=(\widehat F_d+\epsilon)\wedge1\), and define
+\begin{equation}
+T_d^-:=\inf\{b\in\mathcal B:U_d(b)\ge1-\delta\},\qquad
+T_d^+:=\inf\{b\in\mathcal B:L_d(b)\ge1-\delta\}.
+\label{eq:quantile-band}
+\end{equation}
+Then \(T_d^-\le T_d(\delta)\le T_d^+\), up to grid resolution.  A design is
+conservatively admissible at horizon \(B\) if \(L_d(B)\ge1-\delta\); replacing
+\(L_d\) by every groupwise lower band certifies groupwise reliability.  If an
+admissible \(\widehat d\) satisfies
+\(T_{\widehat d}^+<\min_{d\ne\widehat d}T_d^-\), it is the unique proper-time
+winner over \(\mathcal D\) on the simultaneous event.  Otherwise the
+certificate returns no winner.
+\end{theorem}
+
+The theorem supplies the statistical meaning of certification.  It is
+distribution free but conservative~\citep{hoeffding1963probability}; bootstrap or survival estimators can be
+reported descriptively, while winner claims must preserve task-level
+clustering and multiplicity.
+
+\section{Action Processes and PACT Accounting}
+\label{sec:action-process}
+
+\begin{definition}[Task modes and pre-solution information]
+\label{def:packed-objects}
+The finite variable \(S\in\mathcal S\) indexes predeclared solver-relevant
+subfamilies: \(x\mid S=s\sim\mu_s\), \(\pi(s)=\Prob(S=s)\), and
+\(\mu=\sum_s\pi(s)\mu_s\).  A mode represents shared structure that changes
+which procedure is effective, not merely a post-hoc label.  A signal
+\(Z\in\mathcal Z\) is computed only from information available before a
+candidate solution or verifier outcome.  It changes the prior \(\pi\) to
+\(\pi_z(s)=\Prob(S=s\mid Z=z)\) and may be informative or independent of \(S\).
+Modes, the signal extractor, and their estimation data are frozen before
+confirmation.
+\end{definition}
+
+\begin{definition}[Frozen action process]
+\label{def:action-process}
+Fix design \(d\) and backbone \(M_d\).  A finite action bank \(\mathcal A_d\)
+contains frozen configurations of that backbone: an action may specify a prompt,
+harness, decoding rule, or sequence of inference steps.  Acquiring \(Z=z\)
+costs \(c_d(z)\ge0\).  Let
+\(\mathcal Q_d=\{q\in[0,1]^{|\mathcal A_d|}:\sum_{a\in\mathcal A_d}q(a)=1\}\)
+be the set of allocation distributions.  Given \(z\), the allocator
+\(q_z\in\mathcal Q_d\) draws
+\(A_k\overset{\mathrm{iid}}{\sim}\operatorname{Cat}(q_z)\).  A canonical slot is
+one complete action execution followed by verification.  On mode \(s\), action
+\(a\) succeeds in one slot with probability \(p_d(s,z,a)\).  Conditional on
+\((S,Z)\), slots are independent and each costs \(\kappa_d(s)>0\).
+\end{definition}
+
+\begin{theorem}[Action-success first-passage law]
+\label{thm:action-process}
+Under Definition~\ref{def:action-process}, let
+\begin{equation}
+\lambda_d(s,z;q):=\sum_{a\in\mathcal A_d}q_z(a)p_d(s,z,a),\qquad
+m_d(B;s,z):=\max\!\left\{0,
+\left\lfloor\frac{B-c_d(z)}{\kappa_d(s)}\right\rfloor\right\}.
+\label{eq:action-hazard}
+\end{equation}
+The successful slot index \(N_d\mid(s,z)\) is geometric with parameter
+\(\lambda_d(s,z;q)\), with \(N_d=\infty\) when \(\lambda_d=0\).  Hence
+\begin{equation}
+F_{d,q}(B)=\E_{S,Z}\!\left[
+1-\{1-\lambda_d(S,Z;q)\}^{m_d(B;S,Z)}
+\right].
+\label{eq:action-mixture-cdf}
+\end{equation}
+Consequently, population proper time follows by inserting this CDF into
+Definition~\ref{def:proper-time}; it is not an average of modewise quantiles.
+Cross-action success, signal overhead, and positive unsolved mass are explicit.
+\end{theorem}
+
+Unequal action costs or history-dependent allocations do not obey this simple
+geometric law.  They remain valid deployment designs, but their proper time must
+be measured directly or modeled as a more general semi-Markov process.
+
+\subsection{PACT as a restricted diagnostic}
+
+PACT abbreviates \emph{Pre-solution Allocation with Constant-cost Trials}.  It
+specializes Definition~\ref{def:action-process}: actions are
+\(\{a_{d,s}:s\in\mathcal S\}\); signal cost is zero; the matching action succeeds
+with \(p_d(s)\in(0,1]\); off-mode actions have zero success; and every slot on
+mode \(s\) costs \(\kappa(d,s)>0\).  Mode sufficiency,
+\((p_d,\kappa_d)\perp Z\mid S\), prevents the signal from silently changing
+competence or cost.  The support condition
+\(\pi_z(s)>0\Rightarrow q_z(s)>0\) ensures finite expected resource.  Defining
+\(t_0(d,s)=1/p_d(s)\), Theorem~\ref{thm:action-process} gives
+\begin{equation}
+\E[\tau_{d,q}\mid S=s,Z=z]
+=\kappa(d,s)\frac{t_0(d,s)}{q_z(s)}.
+\label{eq:packed-law}
+\end{equation}
+
+For distributions \(a,b\) on \(\mathcal S\), let
+\(H(a)=-\sum_sa(s)\log a(s)\) and
+\(\KL(a\Vert b)=\sum_sa(s)\log\{a(s)/b(s)\}\), with standard extended-value
+conventions.  Mutual information is
+\(I(S;Z)=H(\pi)-\E_ZH(\pi_Z)\).  Define the PACT diagnostic
+\begin{equation}
+\mathcal L(d,q):=\E_{S,Z}\!\left[
+\log\E(\tau_{d,q}\mid S,Z)\right].
+\label{eq:packed-risk}
+\end{equation}
+It is neither \(\E\log\tau\), \(\log\E\tau\), nor \(\log T_d(\delta)\).
+
+\begin{lemma}[Conditional PACT cross-entropy]
+\label{lem:conditional}
+Under PACT and \(\pi_z\ll q_z\),
+\begin{equation}
+\E[\log\E(\tau_{d,q}\mid S,z)\mid Z=z]
+=\E[\log\{\kappa(d,S)t_0(d,S)\}\mid z]
++H(\pi_z)+\KL(\pi_z\Vert q_z).
+\label{eq:conditional-decomposition}
+\end{equation}
+Thus \(q_z=\pi_z\) uniquely minimizes this conditional expected-log objective.
+\end{lemma}
+
+\begin{theorem}[PACT four-term expected-log proper-time decomposition]
+\label{thm:four-term}
+Let designs \(d_0,d\) share \((S,\pi)\), satisfy PACT, and use signals
+\(Z_0,Z\) with supported allocations \(q^0,q\).  Define
+\begin{align*}
+C&:=\E_S\!\left[\log\frac{\kappa(d_0,S)}{\kappa(d,S)}\right],&
+\Phi&:=\E_S\!\left[\log\frac{t_0(d_0,S)}{t_0(d,S)}\right],\\
+\varepsilon_0&:=\E_{Z_0}\KL(\pi^0_{Z_0}\Vert q^0_{Z_0}),&
+\varepsilon&:=\E_Z\KL(\pi_Z\Vert q_Z).
+\end{align*}
+Then
+\begin{equation}
+\mathcal L(d_0,q^0)-\mathcal L(d,q)
+=C+\Phi+I(S;Z)-I(S;Z_0)+\varepsilon_0-\varepsilon.
+\label{eq:four-term-general}
+\end{equation}
+For an uninformative prior-matched baseline, \(Z_0\perp S\) and
+\(q^0=\pi\), so
+\begin{equation}
+\boxed{\Delta_{\mathrm{pack}}=C+\Phi+I(S;Z)-\varepsilon.}
+\label{eq:four-term-baseline}
+\end{equation}
+These are relative unit cost, focused competence, mode information, and
+allocation mismatch.
+\end{theorem}
+
+\begin{proposition}[Objective dependence]
+\label{prop:objective-dependence}
+Write \(a_s=\kappa(d,s)t_0(d,s)\).  Conditional on \(Z=z\), posterior matching
+\(q_z=\pi_z\) minimizes the expected-log PACT objective.  In contrast, the
+expected-resource objective \(\sum_s\pi_z(s)a_s/q_z(s)\) is minimized by
+\begin{equation}
+q_z^\star(s)=
+\frac{\sqrt{\pi_z(s)a_s}}{\sum_u\sqrt{\pi_z(u)a_u}}.
+\label{eq:sqrt-allocation}
+\end{equation}
+Thus the allocator depends on the declared deployment loss; posterior matching
+is not a universal routing rule.
+\end{proposition}
+
+\begin{proposition}[Testable off-mode departure]
+\label{prop:off-mode}
+Suppose the matching action has success \(p_s\), while off-mode actions
+contribute \(r_{s,z}^{\mathrm{off}}:=\sum_{a\ne a_s}q_z(a)p_d(s,z,a)\).  Ignoring
+signal cost, the actual and PACT conditional means have log residual
+\begin{equation}
+r_d(s,z)=
+-\log\!\left(1+\frac{r_{s,z}^{\mathrm{off}}}{q_z(s)p_s}\right).
+\label{eq:off-mode-residual}
+\end{equation}
+If \(r_{s,z}^{\mathrm{off}}/(q_z(s)p_s)\le\xi\), then
+\(|r_d(s,z)|\le\log(1+\xi)\).  A positive signal cost instead yields
+\(c_d(z)+\kappa_d(s)/\lambda_d(s,z;q)\) and breaks four-term log-additivity.
+\end{proposition}
+
+Only the product \(\kappa t_0\) is identified from conditional mean first
+passage.  Separating cost from competence requires attempt-level resource logs;
+both factors depend on the frozen definition of a slot and are mechanistic, not
+causal, without randomized interventions.
+
+\begin{algorithm}[How to Pick the Model]
+\label{alg:pick-model}
+\begin{tabular}{@{}r p{0.86\linewidth}@{}}
+\textit{Input:} &
+Verifiable task family, candidate designs \(\mathcal D\), verifier \(V\),
+resource unit, tolerance \(\delta\), horizon \(B\), budget grid \(\mathcal B\),
+confidence level \(1-\alpha\), and optional groups \(\mathcal G\).\\[0.25em]
+\textit{Output:} &
+A statistically certified winner or ``no winner,'' plus an optional PACT
+mechanism audit.\\[0.35em]
+1 & \textit{Freeze the target.} Declare \(V\), the resource unit, \(\delta\),
+\(B\), \(\mathcal B\), candidate menu, and groupwise constraints.\\
+2 & \textit{Measure first passage.} Stop each run at its first verified artifact
+or at \(B\); retain failures as infinite and cluster all paired runs by task.\\
+3 & \textit{Construct bands.} Compute Equation~\eqref{eq:cluster-cdf},
+simultaneous CDF bands, and \([T_d^-,T_d^+]\) for every design.\\
+4 & \textit{Certify or abstain.} Enforce overall and groupwise admissibility.
+Name a winner only if its upper proper-time bound lies below every competitor's
+lower bound.\\
+5 & \textit{Audit the mechanism.} On disjoint calibration and confirmation data,
+estimate the action-success matrix, signal cost, and slot cost; test PACT's
+diagonal, constant-cost, mode-sufficiency, and inverse-share restrictions.\\
+6 & \textit{Explain, do not rerank.} Where PACT is adequate, report the four
+terms and held-out residual; keep the direct certificate as selection authority.
+\end{tabular}
+\end{algorithm}
+
+The chain is explicit: Definition~\ref{def:proper-time} sets the deployment
+estimand; Theorem~\ref{thm:finite-sample} selects or abstains;
+Theorem~\ref{thm:action-process} models the full curve; and
+Theorem~\ref{thm:four-term} supplies a scoped mechanism audit.
+\label{sec:theory-end}
