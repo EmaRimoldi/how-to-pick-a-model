@@ -706,81 +706,41 @@ and certify a decision only outside the combined uncertainty margin.
 \section{Experiments}
 \label{sec:experiments}
 
-We ask four questions.  First, does reliability-first ranking differ from a
-single-attempt or model-size ranking?  Second, is the inverse-share response
-close enough to \(1/q\) for the PACT accounting to be decision-useful?  Third,
-do the independently estimated four terms predict held-out expected log
-resource?  Fourth, when the accounting fails, does its residual identify a
-concrete deployment failure such as cross-mode success or allocation-dependent
-cost?  The unit of analysis is a task instance, not an individual retry.
 
 \subsection{Benchmarks, systems, and evidence classes}
 
-Table~\ref{tab:experimental-design} summarizes the four benchmark panels.  The
-controlled SAI-3 experiment is the identification study: its three modes are
-mutually incompatible hidden API contracts, and its three mode-directed
-actions expose only the corresponding evidence shard.  HumanEval+ and MBPP+
+Table~\ref{tab:experimental-design} summarizes the four benchmark used in this study.  The SAI-3 experiment revolves around .. [to complete].  HumanEval+ and MBPP+
 provide execution-verified code generation tasks~\citep{chen2021humaneval,
 liu2023evalplus,austin2021mbpp}; their three reported groups are tertiles of
-reference-program length and should be read as precomputed difficulty strata,
-not as identified causal modes.  BBH supplies five predeclared cognitive
-families---algorithmic, arithmetic, language, logical deduction, and
-spatial--temporal---with exact-match verification~\citep{suzgun2023bbh}.
-The coding systems are Qwen2.5-Coder checkpoints and BBH uses the corresponding
-general Qwen2.5 checkpoints~\citep{hui2024qwen25coder,yang2024qwen25}.
+reference-program length and should be read as precomputed difficulty strata; BBH supplies five cognitive
+families (algorithmic, arithmetic, language, logical deduction, and
+spatial--temporal)~\citep{suzgun2023bbh}.
+The models tested are differenti modelli di differenti size [di le size] della famiglia di Qwen2.5-Coder and BBH uses the corresponding general Qwen2.5 [Come mai checkoint generali? Forse perche il task non è coding) checkpoints~\citep{hui2024qwen25coder,yang2024qwen25}.
 
 \begin{table}[H]
 \centering
 \caption{Experimental design.  \(N_x\) counts distinct instances; retries on
-the same instance are not independent observations.  Public-frontier records
-contain up to ten attempts and stop at the first verified solution.}
+the same instance are not independent observations. [Inserisci la resource usata in questo caso, chiama task modes nella tabella al posto di systems usa models e spiega che cosa sono i records, poi usa il termine budget e speiga che budget hai usato] }
 \label{tab:experimental-design}
 \small
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{lrrrrll}
 \toprule
-Dataset & \(N_x\) & Modes & Systems & Records & Observed clock & Primary role \\
+Dataset & \(N_x\) & Modes & Systems & Records & Observed clock d\\
 \midrule
-SAI-3       & 768   & 3 & 2 & 175,104 & normalized parameter--token slots & PACT identification \\
-HumanEval+  & 164   & 3 & 3 & 492     & generated tokens / seconds & public coding frontier \\
-MBPP+       & 378   & 3 & 3 & 1,134   & generated tokens / seconds & public coding robustness \\
-BBH         & 1,200 & 5 & 2 & 2,400   & generated tokens / seconds & reasoning transport \\
+SAI-3       & 768   & 3 & 2 & 175,104 & normalized parameter--token slots \\
+HumanEval+  & 164   & 3 & 3 & 492     & generated tokens / seconds \\
+MBPP+       & 378   & 3 & 3 & 1,134   & generated tokens / seconds \\
+BBH         & 1,200 & 5 & 2 & 2,400   & generated tokens / seconds \\
 \bottomrule
 \end{tabular}}
 \end{table}
 
-We keep three evidence classes separate.  \emph{Physical confirmation} denotes
-held-out model executions under a frozen protocol.  \emph{Observed frontier}
-denotes task-level public-benchmark traces, which identify first passage but do
-not manipulate a complete action--allocation grid.  Finally, a
-\emph{calibrated simulation} draws complete trajectories from the observed
-model--mode cells while imposing a symmetric signal channel with routing
-accuracy \(0.65\), allocation
-\(q_z=0.5\pi+0.5\pi_z\), and off-mode success scale \(0.25\).  It uses 10,000
-paired trajectories per dataset.  This last panel exercises every estimator
-and fixes the intended figures, but it is not model-execution evidence.
-
-\subsection{Estimands and statistical reporting}
-
-Every run stops at its first verified artifact or at the predeclared horizon
-\(B_{\max}\).  We record the event indicator, attempts, generated tokens,
-generation and verification time, and cumulative resource.  For common
-administrative censoring, the empirical success curve is
-\(
-\widehat F_d(B)=N_x^{-1}\sum_i
-\mathbf 1\{\tau_{d,i}\le B\}
-\); with unequal horizons we use the Kaplan--Meier product-limit estimator
-instead~\citep{kaplan1958nonparametric}.  We report
-\(\widehat T_d(\delta)=\inf\{B:\widehat F_d(B)\ge1-\delta\}\) only when the
-target is reached.  Otherwise it is right-censored, not extrapolated.
-
-Our primary reliability target is \(1-\delta=0.90\).  Following standard
+Every run stops at its first verified artifact or at the predeclared horizon \(B_{\max}\).  We record the event indicator, attempts, generated tokens, generation and verification time, and cumulative resource used.  We report
+\(\widehat T_d(\delta)=\inf\{B:\widehat F_d(B)\ge1-\delta\}\) only when the target is reached. Otherwise it is right-censored, not extrapolated. Our primary reliability target is \(1-\delta=0.90\).  Following standard
 empirical reporting practice, tables give the point estimate, its standard
 error in parentheses, the number of independent instances, and the exact
-resampling level.  Confidence intervals for proper-time quantiles invert the
-bootstrap success curve, in the spirit of survival-quantile inversion
-methods~\citep{brookmeyer1982confidence}; other nonlinear statistics use a
-nonparametric instance-block bootstrap~\citep{efron1993bootstrap}.  All retries,
+resampling level.  All retries,
 models, and allocation conditions for a sampled instance move together in one
 bootstrap block.  SAI-3 uses 5,000 bootstrap replications; public frontiers use
 1,000; synthetic proper-time quantiles use 2,000 paired instance-bootstrap
