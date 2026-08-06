@@ -54,8 +54,8 @@ uninformative, reference-prior-matched baseline,
 \begin{equation}
 \begin{aligned}
 \Delta_{\mathrm{tool}}
-={}&\underbrace{\E_{X,Z_0}\log\overline K_{\sigma_0}(X,Z_0)
--\E_{X,Z}\log\overline K_\sigma(X,Z)}_{\text{relative mean retry cost}}
+={}&\underbrace{\E_{X,Z_0}\log\overline k_{\sigma_0}(X,Z_0)
+-\E_{X,Z}\log\overline k_\sigma(X,Z)}_{\text{relative mean trial cost}}
 +\underbrace{\E_X\!\left[\log
   \frac{t_0(\sigma_0,X)}{t_0(\sigma,X)}\right]}_{\text{focused competence}}\\[-0.15em]
 &+\underbrace{G_Z}_{\text{tool information}}
@@ -122,16 +122,8 @@ execution a nonnegative additive coordinate \(B\), measured in isolated
 GPU-seconds, joules, tokens, dollars, or a predeclared scalarization.
 \end{definition}
 
-An \emph{agent system} \(\sigma\in\Sigma\) freezes a backbone model
-\(M_\sigma\), its implementation, prompting and decoding, available tools,
-memory and state, tool or sub-agent orchestration, and within-attempt
-termination.  Given \(x\), it produces a generally random execution and
-artifact \(y(B;x)\) after cumulative resource \(B\).  The evaluation protocol
-is external to \(\sigma\): it applies \(V\), meters the declared resource, and
-stops observation at the first verified artifact or the experimental horizon.
-Probabilities below are joint over \(x\sim\mu\) and system randomness.  When
-candidate systems differ only in \(M_\sigma\), the resulting comparison is
-model selection; otherwise it is agent-system selection.
+In this work, an \emph{agent system} \(\sigma\in\Sigma\) consists of a backbone model \(M_\sigma\), its prompting and decoding strategies, available tools,
+memory and state, tool and sub-agent orchestration.  Given \(x\), it produces a generally random execution and artifact \(y(B;x)\) using a resource \(B\), which could be tokens, time or money.  The verifier \(V\) is external to \(\sigma\).
 
 \begin{definition}[Verified first passage]
 \label{def:first-passage}
@@ -154,10 +146,7 @@ T_\sigma(\delta):=\inf\{B\ge0:\Prob[B_\sigma^{\mathrm{hit}}(x)\le B]\ge1-\delta\
 \label{eq:proper-time-system}
 \end{equation}
 This population \((1-\delta)\)-quantile is the smallest resource by which a
-verified artifact is produced with the target reliability.  It may be infinite.
-``Proper time'' is operational terminology for progress along a frozen agent system,
-not a relativistic invariant; when the resource is not seconds, it should be
-read as verified proper resource in the declared unit.
+verified artifact is produced with the target reliability.
 The term \emph{statistically certified} is reserved for the finite-sample bounds
 in Section~\ref{sec:finite-sample}.  For finite positive quantiles, define the
 proper-time log-speedup
@@ -171,19 +160,13 @@ Given a finite predeclared menu \(\Sigma\), common verifier and resource
 unit, tolerance \(\delta\), and horizon \(B\), certify which systems satisfy
 \(\Prob(B_\sigma^{\mathrm{hit}}\le B)\ge1-\delta\), and select the admissible
 system with smallest \(T_\sigma(\delta)\).
-If sampling uncertainty does not separate candidates, return no winner.
-Different units induce different comparisons; resources that cannot be
-credibly scalarized require a Pareto frontier.
 \end{problem}
 
 \section{Finite-Sample Certification}
 \label{sec:finite-sample}
 
 The proper time in Definition~\ref{def:proper-time} is a population quantity,
-whereas an experiment observes finitely many task instances.  Let
-\(x_1,\ldots,x_n\overset{\mathrm{iid}}{\sim}\mu\).  For each frozen agent
-system \(\sigma\), run the predeclared first-passage evaluation once on every
-instance, using independent system randomness across instances, and record
+whereas an experiment observes finitely many task instances.  For each selected agent system \(\sigma\), run the predeclared first-passage evaluation once on every instance, and record
 \(B_i^\sigma\in[0,\infty]\), with \(B_i^\sigma=\infty\)
 when no verified artifact is produced by the horizon.  Define
 \begin{equation}
@@ -207,7 +190,6 @@ with Massart's sharp constant~\citep{massart1990tight} gives
 \right)\le\alpha.
 \label{eq:dkw-system}
 \end{equation}
-Thus one set of bands covers every budget, without a budget grid.
 \end{theorem}
 
 \begin{corollary}[Simultaneous proper-time certificate]
@@ -254,167 +236,184 @@ winner claim across multiple systems.
 \section{Tool Allocation and Four-Term Accounting}
 \label{sec:tool-accounting}
 
-\begin{definition}[Available tools and reference tool combination]
+\begin{definition}[To be decided]
 \label{def:reference-tools}
 Fix a finite available tool set \(\mathcal A\): the external callable
-capabilities exposed by agent system \(\sigma\) to the agentic LLM.  Elements
-of \(\mathcal A\) may be functions, APIs, retrievers, code executors, browsers,
-or orchestration primitives such as spawning a sub-agent.
+capabilities available to the agentic LLM inside agent system \(\sigma\).
+Elements of \(\mathcal A\) may be functions, APIs, retrievers, code executors,
+browsers, or orchestration primitives such as spawning a sub-agent. Assume that
+every task instance \(x\) admits at least one finite combination of tool calls
+that can produce a verified artifact. We represent such a combination as a
+directed acyclic \emph{tool-call graph}: nodes are tool calls, and directed
+edges encode data or control dependencies between calls. A call with incoming
+edges may use the outputs of its parent calls, while calls with no dependency
+relation may be executed in parallel. The reference graph is not assumed to be
+unique; other finite tool-call graphs may also lead to a verified solution.
 
-Assume that every task instance \(x\) admits at least one finite combination of
-tool calls that can produce a verified artifact.  A reference combination is
-represented by a directed acyclic dependency graph
-\[
-\mathcal G^\star(x)
-=\bigl(\mathcal V^\star(x),\mathcal E^\star(x),\ell^\star_x\bigr),
-\qquad \ell_x^\star:\mathcal V^\star(x)\to\mathcal A,
-\]
-where each node is a tool call and an edge \(u\to v\) means that call \(v\) may
-depend on the output of call \(u\).  Independent nodes may execute in parallel.
-The graph identifies one successful tool combination; uniqueness is not
-assumed, and other combinations may also be verified.  Fix a topological batching
-\(\mathbf C^\star(x)=(C_1^\star(x),\ldots,C_{L(x)}^\star(x))\), where each
-\(C_k^\star(x)\) contains mutually independent reference calls that can be
-dispatched together.  Let \(H_k^\star\) contain the completed earlier batches
-and their outputs.  The pre-solution observation \(Z\) contains
-the visible task request and any optional side information made available to
-the tool-selection policy before the attempt begins; it contains neither a
-candidate solution nor a verifier outcome.  Without side information, \(Z\) is
-simply the visible task request.
+
 \end{definition}
 
-\begin{definition}[Batched tool-allocation policy]
+\begin{definition}[Tool-allocation policy]
 \label{def:tool-policy}
-Fix an agent system \(\sigma\) with backbone model \(M_\sigma\).
-At dispatch round \(k\) of one complete attempt, let
-\(\mathcal C_\sigma(H_k)\) be the set of admissible nonempty batches of calls from
-\(\mathcal A\).  The next batch satisfies
-\begin{equation}
-C_k\sim q_\sigma(\cdot\mid Z,H_k),
-\qquad C_k\in\mathcal C_\sigma(H_k),
-\label{eq:tool-policy}
-\end{equation}
-where the calls in \(C_k\) are launched concurrently and \(H_k\) contains the
-completed earlier calls and outputs.  A singleton batch recovers ordinary
-sequential tool use; a multi-call batch or a sub-agent-spawning primitive
-captures parallel execution.  Thus \(k\) indexes policy dispatches, not a
-forced serialization of physical calls.  Write
-\(\mathbf C=(C_1,\ldots,C_{\widehat L})\) for the executed batched plan.
+Fix an agent system with available tool set \(\mathcal A\). During one complete
+attempt, the agent produces a tool-use trace
+\(\tau=(C_1,\ldots,C_L)\), where each \(C_k\subseteq\mathcal A\) is the batch of
+tool calls dispatched at step \(k\). The empty batch \(C_k=\varnothing\) means
+that no external tool is called at that step; batches with multiple elements
+represent parallel tool use.
 
-If tool outputs and the dispatcher are deterministic along the reference
-histories, the probability that \(\sigma\) reproduces the selected reference
-combination and batching is
-\begin{equation}
-q_\sigma^\star(x,z)
-:=\prod_{k=1}^{L(x)}
-q_\sigma\!\left(C_k^\star(x)\mid z,h_k^\star(x)\right).
-\label{eq:reference-combination-probability}
-\end{equation}
-Interpretation of outputs and final-answer generation remain part of agent
-system \(\sigma\); the policy above isolates allocation among available tools
-and parallel call batches.
+Given a pre-solution signal \(z\) and the previous tool-call prefix
+\(\tau_{<k}=(C_1,\ldots,C_{k-1})\), the next batch is drawn from
+\[
+C_k\sim q(\cdot\mid z,\tau_{<k}),
+\qquad
+C_k\in 2^{\mathcal A}.
+\]
+Thus \(q\) is the agent's tool-allocation policy: it specifies how the system
+allocates execution across available tools as the attempt unfolds. If
+\(\tau^\star(x)=(C_1^\star,\ldots,C_L^\star)\) is a reference successful trace
+for instance \(x\), then the probability that the agent reproduces that trace is
+\[
+q^\star(x,z)
+=
+\prod_{k=1}^{L}
+q\!\left(C_k^\star\mid z,\tau^\star_{<k}\right).
+\]
 \end{definition}
 
-\begin{proposition}[Variable-cost retry identity]
-\label{prop:retry-first-passage}
-Fix \((x,z)\).  For retry \(r\), let \(Y_r\) be the resulting artifact and
-\(K_{\sigma,r}>0\) its realized resource cost.  Assume that, conditional on
-\((x,z)\), the pairs \(\bigl(K_{\sigma,r},V(x,Y_r)\bigr)\) are IID across complete
-retries.  Define
+With retries, the verified first-passage budget is the cumulative resource
+consumed until the first verified artifact.  For an agent system \(\sigma\), task
+instance \(x\), and optional pre-solution signal \(Z=z\), if retry \(r\) produces
+artifact \(Y_r\) at cost \(k_r>0\), then
 \[
-\lambda_\sigma(x,z):=\Prob(V(x,Y_r)=1\mid x,z)>0,
+B_\sigma^{\mathrm{hit}}(x,z)
+=
+c_\sigma(z)+\sum_{r=1}^{R_\sigma(x,z)} k_r,
 \qquad
-\overline K_\sigma(x,z):=\E[K_{\sigma,r}\mid x,z],
+R_\sigma(x,z):=\min\{r\ge1:V(x,Y_r)=1\}.
 \]
-and let \(R_\sigma(x,z):=\inf\{r\ge1:V(x,Y_r)=1\}\).  Then
-\begin{equation}
-B_\sigma^{\mathrm{hit}}(x)
-=c_\sigma(z)+\sum_{r=1}^{R_\sigma(x,z)}K_{\sigma,r},
-\qquad
-\E[B_\sigma^{\mathrm{hit}}(x)\mid x,z]
-=c_\sigma(z)+\frac{\overline K_\sigma(x,z)}{\lambda_\sigma(x,z)}.
-\label{eq:variable-cost-first-passage}
-\end{equation}
-Here \(c_\sigma(z)\ge0\) is only the incremental cost of acquiring the signal.
-Set \(c_\sigma(z)=0\) when the signal is supplied with the task or its cost is
-already included in \(K_{\sigma,r}\).
-\end{proposition}
-
-The IID assumption means that the external evaluation protocol restarts the
-same frozen agent system with
-fresh run randomness and carries no state across retries.  Stateful or adaptive
-retry policies remain covered by direct proper-time measurement, but not by
-Proposition~\ref{prop:retry-first-passage} without further analysis.
+Here \(c_\sigma(z)\ge0\) is the incremental cost of obtaining the signal; set
+\(c_\sigma(z)=0\) when the signal is supplied with the task or its cost is
+already included in the retry costs.  Thus an agent system improves proper time
+by reducing the cost of its attempts, increasing the probability that attempts
+verify, or using pre-solution information to do both.
 
 \subsection{Reference-combination regime}
 
-To obtain an exact accounting identity, suppose that reproducing
-\(\mathcal G^\star(x)\) through its selected batching succeeds with probability
-\(p_\sigma(x)>0\), executions that
-deviate from it have zero verified-success probability, and the signal affects
-success only through tool allocation.  Define
-\(t_0(\sigma,x):=1/p_\sigma(x)\).  This
-restriction is deliberately stronger than
-Definition~\ref{def:reference-tools}: it isolates one reference combination to
-obtain an exact identity, while Proposition~\ref{prop:off-reference} measures
-verified success contributed by alternatives.
+Fix an agent
+system, and let \(\tau^\star(x)\) be one successful tool-use trace for instance
+\(x\), obtained either from benchmark-provided tool traces or from a teacher
+system that has solved the instance at least once and therefore provides an
+oracle reference trace. Verifiable tasks, such as code repair with unit tests,
+formal theorem proving, exact-answer reasoning, database queries, or games with
+a checkable terminal state, have an objective stopping criterion and often admit
+structured solution paths. In this setting, using one known successful trace as
+a reference is a useful approximation for accounting: it is not assumed to be
+the only possible way to solve \(x\), but it gives a concrete baseline for
+measuring tool selection, detours, and resource waste. Successes obtained
+through other valid traces are possible and are treated separately below.
+
+In the reference-trace regime, a generation trial verifies only when it produces
+\(\tau^\star(x)\). Conditional on producing this reference trace, verification
+succeeds with probability \(p(x)>0\). Let \(q^\star(x,z)\) be the probability,
+under the tool-allocation policy \(q(\cdot\mid z,\tau_{<k})\), of producing
+\(\tau^\star(x)\). Define
+\[
+t_0(x):=\frac{1}{p(x)},
+\]
+the expected number of trials needed to verify if the reference trace were
+produced on every trial. Empirically, \(p(x)\) can be estimated by repeatedly
+executing the agent while forcing, replaying, or conditioning on
+\(\tau^\star(x)\), and measuring the fraction of trials that verify.
 
 \begin{proposition}[Tool-allocation first-passage identity]
 \label{prop:tool-first-passage}
-In the reference-combination regime,
+In the reference-trace regime, the per-trial verification probability is
+\[
+\Prob(V(x,Y)=1\mid x,z)
+=
+q^\star(x,z)p(x).
+\]
+If each trial has conditional mean cost \(\overline k_\sigma(x,z)\), and any signal cost
+is zero or already included in the trial cost, then
 \begin{equation}
-\lambda_\sigma(x,z)=q_\sigma^\star(x,z)p_\sigma(x).
-\label{eq:reference-success-probability}
-\end{equation}
-If the signal has no separate incremental cost, or that cost is included in
-the retry ledger, then
-\begin{equation}
-\E[B_\sigma^{\mathrm{hit}}\mid x,z]
-=\overline K_\sigma(x,z)\frac{t_0(\sigma,x)}{q_\sigma^\star(x,z)}.
+\E\!\left[B^{\mathrm{hit}}(x,z)\mid x,z\right]
+=
+\overline k_\sigma(x,z)\,
+\frac{t_0(x)}{q^\star(x,z)},
+\qquad
+t_0(x):=\frac{1}{p(x)}.
 \label{eq:tool-first-passage}
 \end{equation}
 \end{proposition}
 
-We now introduce the reference distribution needed for the decomposition.  At
-reference dispatch \(k\), let
+We now decompose the tool-allocation penalty. Across deployment instances,
+reference traces may share latent solution modes: groups of instances that can
+be solved by a common solution pattern, such as a similar reasoning structure,
+tool-use pattern, or sequence of external calls. For each instance \(x\), let
+\(\tau^\star(x)=(C_1^\star,\ldots,C_{L(x)}^\star)\) be the selected reference
+tool-use trace. At step \(k\), define
 \begin{equation}
-\rho_k(c\mid z,h)
-:=\Prob(C_k^\star=c\mid Z=z,H_k^\star=h,L\ge k).
+\rho_k(c\mid z,\tau_{<k})
+:=
+\Prob\!\left(
+C_k^\star=c
+\,\middle|\,
+Z=z,\tau^\star_{<k}=\tau_{<k},L\ge k
+\right).
 \label{eq:reference-batch-posterior}
 \end{equation}
-This is a posterior over the next reference call batch, not a distribution
-over tool availability.  It may be one-hot when the batch is determined by the
-observed context; the distributional notation also covers residual uncertainty
-across instances with the same context.  Assume \(\rho_k(c\mid z,h)>0\) implies
-\(q_\sigma(c\mid z,h)>0\).  Define
+This is an oracle distribution over the next reference batch of tool calls. It
+is one-hot when the next batch is fixed by the reference trace, and
+non-degenerate when several successful reference continuations remain possible
+under the same signal and prefix. Assume
+\(\rho_k(c\mid z,\tau_{<k})>0\) implies
+\(q_\sigma(c\mid z,\tau_{<k})>0\). Define
 \begin{align}
-\mathcal H_{\mathrm{ref}}
-&:=\sum_{k\ge1}\Prob(L\ge k)
-H(C_k^\star\mid H_k^\star,L\ge k),\nonumber\\
 G_Z
 &:=\sum_{k\ge1}\Prob(L\ge k)
-I(C_k^\star;Z\mid H_k^\star,L\ge k),\nonumber\\
+I(C_k^\star;Z\mid \tau_{<k}^\star,L\ge k),\nonumber\\
 \varepsilon_\sigma
 &:=\sum_{k\ge1}\Prob(L\ge k)
 \E\!\left[
-\KL\!\left(\rho_k(\cdot\mid Z,H_k^\star)
-\Vert q_\sigma(\cdot\mid Z,H_k^\star)\right)
+\KL\!\left(
+\rho_k(\cdot\mid Z,\tau_{<k}^\star)
+\Vert
+q_\sigma(\cdot\mid Z,\tau_{<k}^\star)
+\right)
 \,\middle|\,L\ge k\right].
 \label{eq:batched-tool-mismatch}
 \end{align}
 
-\begin{lemma}[Batched tool-allocation decomposition]
+The term \(G_Z\) is the useful information supplied by the signal about which
+next tool batch should be used. The only mismatch term is \(\varepsilon_\sigma\):
+it is small when the agent assigns high probability to the reference next batch,
+and large when it calls the wrong tools, calls them in the wrong order, or
+allocates probability to irrelevant batches. Operationally, \(\rho_k\) is
+estimated from benchmark or teacher reference traces, while \(q_\sigma\) is
+estimated by repeated generation trials of the same agent system on the same
+instance or on instances from the same latent solution mode.
+
+\begin{lemma}[Batched tool-allocation gap]
 \label{lem:tool-cross-entropy}
-The expected negative log probability assigned to the reference call batches is
-\begin{equation}
+For a system \(\sigma\) using signal \(Z\), write
+\[
+\Xi(\sigma,Z)
+:=
 \E\!\left[-\sum_{k=1}^{L}
-\log q_\sigma(C_k^\star\mid Z,H_k^\star)\right]
-=\mathcal H_{\mathrm{ref}}-G_Z+\varepsilon_\sigma.
+\log q_\sigma(C_k^\star\mid Z,\tau_{<k}^\star)\right].
+\]
+If two systems \(\sigma_0,\sigma\) share the same deployment distribution and
+reference call batches, then
+\begin{equation}
+\Xi(\sigma_0,Z_0)-\Xi(\sigma,Z)
+=G_Z-G_{Z_0}+\varepsilon_{\sigma_0}-\varepsilon_\sigma.
 \label{eq:tool-cross-entropy}
 \end{equation}
-Thus \(G_Z\) measures how much the signal reduces uncertainty about appropriate
-tool batches, while \(\varepsilon_\sigma\) measures the remaining mismatch with the
-model's allocation policy.
+Thus \(G_Z\) measures how much the signal helps identify appropriate tool
+batches, while \(\varepsilon_\sigma\) is the single tool-policy mismatch term.
+The intrinsic diversity of reference tool-use patterns is common to both
+systems and cancels in this relative accounting.
 \end{lemma}
 
 Define the expected-log conditional first-passage diagnostic
@@ -432,8 +431,8 @@ Let agent systems \(\sigma_0,\sigma\) share the task distribution, tool set,
 and reference tool combinations, and use signals \(Z_0,Z\).  Suppose both satisfy the
 reference-combination regime and have no separate signal cost.  Define
 \begin{align*}
-C&:=\E_{X,Z_0}\log\overline K_{\sigma_0}(X,Z_0)
--\E_{X,Z}\log\overline K_\sigma(X,Z),\\
+C&:=\E_{X,Z_0}\log\overline k_{\sigma_0}(X,Z_0)
+-\E_{X,Z}\log\overline k_\sigma(X,Z),\\
 \Phi&:=\E_X\!\left[\log\frac{t_0(\sigma_0,X)}{t_0(\sigma,X)}\right].
 \end{align*}
 Then
@@ -449,9 +448,9 @@ and the baseline policy matches the corresponding prior, then
 \boxed{\Delta_{\mathrm{tool}}=C+\Phi+G_Z-\varepsilon_\sigma.}
 \label{eq:four-term-baseline}
 \end{equation}
-The four terms are relative mean retry cost, focused competence, signal
+The four terms are relative mean trial cost, focused competence, signal
 information about appropriate tool use, and batched tool-policy mismatch.
-Because the policy can change the retry-cost distribution, this is a
+Because the policy can change the trial-cost distribution, this is a
 mechanistic accounting rather than a causal separation.
 \end{theorem}
 
@@ -477,8 +476,8 @@ log-additivity.  The verifier still accepts every valid non-reference
 execution; the proposition only tests the adequacy of the diagnostic regime.
 \end{proposition}
 
-Separating \(\overline K_\sigma\) from \(t_0\) requires retry-level resource and
-verification logs.  A policy change can alter both mean retry cost and
+Separating \(\overline k_\sigma\) from \(t_0\) requires trial-level resource and
+verification logs.  A policy change can alter both mean trial cost and
 tool-policy mismatch, so the terms are not causal without randomized
 interventions.  Proper time remains the model-selection criterion and is
 measured directly; Theorem~\ref{thm:four-term} audits why expected log
@@ -514,7 +513,7 @@ residual; keep the direct proper-time certificate as selection authority.
 
 The chain is explicit: Definition~\ref{def:proper-time} sets the deployment
 estimand; Corollary~\ref{thm:finite-sample} selects or abstains;
-Proposition~\ref{prop:retry-first-passage} links variable retry costs to mean
-first passage; and Theorem~\ref{thm:four-term} supplies a scoped tool-policy
+the retry ledger links variable trial costs to mean first passage; and
+Theorem~\ref{thm:four-term} supplies a scoped tool-policy
 mechanism audit.
 \label{sec:theory-end}

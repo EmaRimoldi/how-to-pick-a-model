@@ -25,39 +25,18 @@ bound is vacuous.  Admissibility follows from
 unique winner.
 \end{proof}
 
-\subsection{Proof of Proposition~\ref{prop:retry-first-passage}}
-
-\begin{proof}
-Conditional on \((x,z)\), retry success indicators are IID Bernoulli with
-parameter \(\lambda_\sigma(x,z)>0\), hence \(R_\sigma(x,z)\) is geometric on
-\(\{1,2,\ldots\}\).  The first identity is the resource ledger: the external
-evaluation protocol pays any incremental signal cost and every realized retry
-cost through the first verified artifact.  Moreover,
-\begin{align*}
-\E\!\left[\sum_{r=1}^{R_\sigma}K_{\sigma,r}\,\middle|\,x,z\right]
-&=\sum_{r\ge1}\E[K_{\sigma,r}\mathbf 1\{R_\sigma\ge r\}\mid x,z]\\
-&=\overline K_\sigma(x,z)\sum_{r\ge1}\{1-\lambda_\sigma(x,z)\}^{r-1}\\
-&=\frac{\overline K_\sigma(x,z)}{\lambda_\sigma(x,z)}.
-\end{align*}
-The second equality holds because \(\{R_\sigma\ge r\}\) depends only on the first
-\(r-1\) retry outcomes and is therefore independent of current cost
-\(K_{\sigma,r}\) under the IID-pair assumption.  Adding \(c_\sigma(z)\) proves
-Equation~\eqref{eq:variable-cost-first-passage}.
-\end{proof}
-
 \subsection{Proof of Proposition~\ref{prop:tool-first-passage}}
 
 \begin{proof}
-In the reference-combination regime, a complete retry succeeds only when the
-tool policy reproduces \(\mathcal G^\star(x)\) through the selected batching,
-an event of probability
-\(q_\sigma^\star(x,z)\), and the resulting execution is verified with
-conditional
-probability \(p_\sigma(x)\).  Therefore
-\(\lambda_\sigma(x,z)=q_\sigma^\star(x,z)p_\sigma(x)\).  Substituting this
-identity and \(t_0(\sigma,x)=1/p_\sigma(x)\) into
-Proposition~\ref{prop:retry-first-passage}, with no
-separate signal cost, proves Equation~\eqref{eq:tool-first-passage}.
+In the reference-trace regime, a generation trial verifies only when the tool
+policy produces \(\tau^\star(x)\), an event of probability \(q^\star(x,z)\), and
+the resulting execution is verified with conditional probability \(p(x)\).
+Thus the per-trial verification probability is \(q^\star(x,z)p(x)\).  The
+first-hit identity for IID trials with mean cost \(\overline k_\sigma(x,z)\)
+gives
+\(\E[B^{\mathrm{hit}}(x,z)\mid x,z]
+=\overline k_\sigma(x,z)/\{q^\star(x,z)p(x)\}\), which is
+Equation~\eqref{eq:tool-first-passage} because \(t_0(x)=1/p(x)\).
 \end{proof}
 
 \subsection{Proof of Lemma~\ref{lem:tool-cross-entropy}}
@@ -65,18 +44,20 @@ separate signal cost, proves Equation~\eqref{eq:tool-first-passage}.
 \begin{proof}
 At dispatch \(k\), conditional on \(L\ge k\), the cross-entropy identity gives
 \begin{align*}
-&\E[-\log q_\sigma(C_k^\star\mid Z,H_k^\star)\mid L\ge k]\\
-&\quad=H(C_k^\star\mid Z,H_k^\star,L\ge k)
-+\E\!\left[\KL\!\left(\rho_k(\cdot\mid Z,H_k^\star)
-\Vert q_\sigma(\cdot\mid Z,H_k^\star)\right)\middle|L\ge k\right].
+&\E[-\log q_\sigma(C_k^\star\mid Z,\tau_{<k}^\star)\mid L\ge k]\\
+&\quad=H(C_k^\star\mid Z,\tau_{<k}^\star,L\ge k)
++\E\!\left[\KL\!\left(\rho_k(\cdot\mid Z,\tau_{<k}^\star)
+\Vert q_\sigma(\cdot\mid Z,\tau_{<k}^\star)\right)\middle|L\ge k\right].
 \end{align*}
-The definition of conditional mutual information also gives
+The definition of conditional mutual information gives
 \[
-H(C_k^\star\mid Z,H_k^\star,L\ge k)
-=H(C_k^\star\mid H_k^\star,L\ge k)
--I(C_k^\star;Z\mid H_k^\star,L\ge k).
+H(C_k^\star\mid Z,\tau_{<k}^\star,L\ge k)
+=H(C_k^\star\mid \tau_{<k}^\star,L\ge k)
+-I(C_k^\star;Z\mid \tau_{<k}^\star,L\ge k).
 \]
-Multiplying by \(\Prob(L\ge k)\) and summing over \(k\) proves
+Applying the same identity to \(\sigma_0\), multiplying by \(\Prob(L\ge k)\),
+and summing over \(k\) cancels the common entropy
+\(H(C_k^\star\mid \tau_{<k}^\star,L\ge k)\) and proves
 Equation~\eqref{eq:tool-cross-entropy}.
 \end{proof}
 
@@ -87,13 +68,12 @@ Taking logarithms in Equation~\eqref{eq:tool-first-passage}, then averaging over
 \((X,Z)\), gives
 \begin{align*}
 \mathcal L(\sigma)
-={}&\E_{X,Z}\log\overline K_\sigma(X,Z)+\E_X\log t_0(\sigma,X)\\
+={}&\E_{X,Z}\log\overline k_\sigma(X,Z)+\E_X\log t_0(\sigma,X)\\
 &+\E\!\left[-\sum_{k=1}^{L}
-\log q_\sigma(C_k^\star\mid Z,H_k^\star)\right].
+\log q_\sigma(C_k^\star\mid Z,\tau_{<k}^\star)\right].
 \end{align*}
-Lemma~\ref{lem:tool-cross-entropy} turns the last term into
-\(\mathcal H_{\mathrm{ref}}-G_Z+\varepsilon_\sigma\).  Applying the same expression
-to \(\sigma_0\) and subtracting cancels the common reference entropy and yields
+Subtracting the expression for \(\sigma\) from the expression for \(\sigma_0\)
+and applying Lemma~\ref{lem:tool-cross-entropy} yields
 Equation~\eqref{eq:four-term-general}.  If \(Z_0\) is conditionally
 uninformative, \(G_{Z_0}=0\); if its policy matches the corresponding
 reference-batch prior, \(\varepsilon_{\sigma_0}=0\).  This proves
@@ -103,17 +83,17 @@ Equation~\eqref{eq:four-term-baseline}.
 \subsection{Proof of Proposition~\ref{prop:off-reference}}
 
 \begin{proof}
-Reference and non-reference success are disjoint, so the actual complete-retry
-success probability is
+Reference and non-reference success are disjoint, so the actual per-trial
+verification probability is
 \[
 q_\sigma^\star(x,z)p_\sigma(x)+r_\sigma^{\mathrm{alt}}(x,z).
 \]
-Excluding separate signal cost, Proposition~\ref{prop:retry-first-passage}
-therefore gives actual conditional mean
-\(\overline K_\sigma(x,z)/
+Excluding separate signal cost, the first-hit identity for IID trials gives
+actual conditional mean
+\(\overline k_\sigma(x,z)/
 \{q_\sigma^\star(x,z)p_\sigma(x)+r_\sigma^{\mathrm{alt}}(x,z)\}\),
 whereas the reference-combination regime predicts
-\(\overline K_\sigma(x,z)/\{q_\sigma^\star(x,z)p_\sigma(x)\}\).  The logarithm
+\(\overline k_\sigma(x,z)/\{q_\sigma^\star(x,z)p_\sigma(x)\}\).  The logarithm
 of the first
 quantity minus the logarithm of the second is exactly
 Equation~\eqref{eq:off-reference-residual}.  If the displayed hazard ratio is

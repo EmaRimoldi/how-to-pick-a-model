@@ -127,7 +127,7 @@ conditions.  Its calibration split contains 768 distinct tasks, 256 per correct
 action,
 disjoint from confirmation.  For each task and model, 64 matched-action attempts
 and four attempts per wrong action estimate focused success and off-reference
-hazard; attempt ledgers estimate mean retry cost \(\overline K\).  The controlled signal channel and
+hazard; attempt ledgers estimate mean trial cost \(\overline k\).  The controlled signal channel and
 allocations are protocol constants rather than learned quantities.  A separate
 practical-router diagnostic fits multinomial logistic regression on stack-trace
 tokens and package metadata and estimates its posterior by a five-fold
@@ -368,7 +368,7 @@ held-out instances.
 IID retries, reference-combination success restrictions, and stable retry laws are
 approximations:
 history, correlation, caching, batching, verifier latency, and adaptive stopping
-can change \(t_0\) and \(\overline K\).  Charge signal acquisition
+can change \(t_0\) and \(\overline k\).  Charge signal acquisition
 to the same resource ledger.  Verification certifies only the declared criterion, not
 usefulness or safety.  If resources cannot be credibly scalarized, report a
 Pareto frontier rather than one ranking.
