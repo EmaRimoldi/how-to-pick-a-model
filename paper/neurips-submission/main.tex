@@ -108,7 +108,7 @@ BBH         & 1,200 & 5 & 2 & 2,400   & generated tokens / seconds & 10 attempts
 Every run stops at its first verified artifact or at the predeclared horizon
 \(B\).  We record the event indicator, attempts, generated tokens, generation
 and verification time, and cumulative resource.  We report
-\(\widehat T_d(\delta)=\inf\{B:\widehat F_d(B)\ge1-\delta\}\) only when the target is reached. Otherwise it is right-censored, not extrapolated. Our primary reliability target is \(1-\delta=0.90\).  Following standard
+\(\widehat T_\sigma(\delta)=\inf\{B:\widehat F_\sigma(B)\ge1-\delta\}\) only when the target is reached. Otherwise it is right-censored, not extrapolated. Our primary reliability target is \(1-\delta=0.90\).  Following standard
 empirical reporting practice, tables give the point estimate, its standard
 error in parentheses, the number of independent instances, and the exact
 resampling level.  All retries,
@@ -139,7 +139,7 @@ calibrated simulation compares the pairs shown in
 Table~\ref{tab:simulated-first-passage}; it uses seconds for the public panels
 and normalized parameter--token slots for SAI-3.
 SAI-3 instantiates the one-dispatch case \(L(x)=1\), so
-\(q_d^\star(x,z)=q_d(C_1^\star(x)\mid z)\); it does not test
+\(q_\sigma^\star(x,z)=q_\sigma(C_1^\star(x)\mid z)\); it does not test
 history-dependent tool use.
 
 \section{Results}
@@ -152,13 +152,13 @@ or wrong-shard success.  Regressing held-out mean log first-passage resource on
 \(-\log q\) gives an inverse-share exponent of \(0.9868\), with 90\% bootstrap
 interval \([0.9784,0.9952]\).  Across the six primary contrasts, the mean
 four-term residual is \(0.0100\) nat, its RMS is \(0.0147\) nat, and the 95\%
-bootstrap upper bound on RMS is \(0.0350\) nat.  The predicted design agrees
+bootstrap upper bound on RMS is \(0.0350\) nat.  The predicted agent system agrees
 with the held-out resource oracle in all six conditions; the minimum bootstrap
 selection probability is \(1.000\), and estimated oracle regret is zero.
-For the frozen seven-design, 256-budget-grid family at \(\alpha=0.05\),
-Theorem~\ref{thm:finite-sample} gives an overall radius of \(0.085\).  Zero
+For the frozen seven-system comparison at \(\alpha=0.05\),
+Corollary~\ref{thm:finite-sample} gives an overall radius of \(0.061\).  Zero
 horizon censoring therefore certifies overall 90\% admissibility (lower bound
-\(0.915\)).  Moreover,
+\(0.939\)).  Moreover,
 the archived confirmation was frozen for expected-log closure and does not
 retain the clustered CDF bands needed to certify quantile separation.  Thus the
 six-of-six agreement is a mechanism result, not a unique proper-time winner
@@ -330,11 +330,11 @@ closure.}
 \label{sec:discussion}
 
 The results support reliability-first selection, not a universal winner.
-Freeze the verifier, resource unit, \(B\), and \(\delta\); admit \(d\) only if
-a lower confidence bound on \(\Prob(B_d^{\mathrm{hit}}\le B)\) reaches
+Freeze the verifier, resource unit, \(B\), and \(\delta\); admit \(\sigma\) only if
+a lower confidence bound on \(\Prob(B_\sigma^{\mathrm{hit}}\le B)\) reaches
 \(1-\delta\); then
-minimize held-out \(\widehat T_d(\delta)\).  Replace the incumbent only when the
-simultaneous quantile bands in Theorem~\ref{thm:finite-sample} separate it from
+minimize held-out \(\widehat T_\sigma(\delta)\).  Replace the incumbent only when the
+simultaneous quantile bands in Corollary~\ref{thm:finite-sample} separate it from
 every competitor; otherwise report no winner.
 
 The terms prescribe interventions: negative cost calls for better serving;

@@ -4,8 +4,8 @@ to obtain a verified solution, not only which model has the highest one-shot
 accuracy.  We formalize this objective as a reliability-targeted quantile of
 verified first-passage resource, measured in a predeclared unit such as time,
 tokens, energy, or money.  Simultaneous finite-sample confidence bands provide
-a conservative rule for admitting and comparing a finite menu of deployment
-designs, including an explicit no-winner outcome.  To explain measured
+a conservative rule for admitting and comparing a finite menu of agent
+systems, including an explicit no-winner outcome.  To explain measured
 differences, we introduce a batched tool-allocation process and isolate
 a restricted reference-combination regime.  In that regime, expected log
 conditional first-passage resource separates exactly into relative mean retry
@@ -45,21 +45,21 @@ it buys speed; our deployment quantity is different: a population quantile of
 observed verifier-backed first passage.
 
 Our primary contribution is a finite-sample selection rule for that quantile.
-It treats distinct task instances as independent clusters, allows arbitrary
-dependence among retries and paired model runs on the same instance, and either
-certifies separation or reports no winner.  A batched tool-allocation model
+It treats distinct task instances as independent observations, permits paired
+agent-system runs on the same instance, and either certifies separation or
+reports no winner.  A batched tool-allocation model
 then connects tool selection to first-passage resource.  Its restricted
 reference-combination regime yields the diagnostic identity against an
 uninformative, reference-prior-matched baseline,
 \begin{equation}
 \begin{aligned}
 \Delta_{\mathrm{tool}}
-={}&\underbrace{\E_{X,Z_0}\log\overline K_{d_0}(X,Z_0)
--\E_{X,Z}\log\overline K_d(X,Z)}_{\text{relative mean retry cost}}
+={}&\underbrace{\E_{X,Z_0}\log\overline K_{\sigma_0}(X,Z_0)
+-\E_{X,Z}\log\overline K_\sigma(X,Z)}_{\text{relative mean retry cost}}
 +\underbrace{\E_X\!\left[\log
-  \frac{t_0(d_0,X)}{t_0(d,X)}\right]}_{\text{focused competence}}\\[-0.15em]
+  \frac{t_0(\sigma_0,X)}{t_0(\sigma,X)}\right]}_{\text{focused competence}}\\[-0.15em]
 &+\underbrace{G_Z}_{\text{tool information}}
--\underbrace{\varepsilon_d}_{\text{tool-policy mismatch}}.
+-\underbrace{\varepsilon_\sigma}_{\text{tool-policy mismatch}}.
 \label{eq:intro-four-term}
 \end{aligned}
 \end{equation}
@@ -70,7 +70,7 @@ explains the mechanism when its assumptions survive held-out diagnostics.
 
 We make three contributions.  First, we define reliability-targeted verified
 proper time and give simultaneous finite-sample CDF, quantile, admissibility,
-and winner guarantees for a finite model menu.
+and winner guarantees for a finite agent-system menu.
 Second, we derive the exact mean first-passage resource of a batched tool
 policy under complete IID retries.  A transparent reference-combination
 specialization yields a mismatch that is a sum of per-decision tool-policy
@@ -100,19 +100,19 @@ LLM cascades and routers learn cost--quality decisions over heterogeneous model
 pools~\citep{chen2023frugalgpt,ong2024routellm,hu2024routerbench,
 dekoninck2025routing}; test-time scaling further shows that sampling effort and
 model size interact~\citep{brown2024monkeys,snell2025testtime,wu2025inference,
-osca2024}.  We instead freeze the complete routed design and compare its
+osca2024}.  We instead freeze the complete agent system and compare its
 first-passage distribution.  Finally, the information term in our restricted
 identity is the standard reduction in log loss supplied by side information
 \citep{jiao2014logloss}.  Our contribution is not a new characterization of
 mutual information, but its placement beside measured cost and competence in a
 falsifiable first-passage accounting.
 
-\section{Verifier-Backed Model Selection}
+\section{Verifier-Backed Agent-System Selection}
 \label{sec:problem}
 
-\begin{definition}[Verifiable task family and resource measure]
+\begin{definition}[Verifiable task]
 \label{def:task-family}
-A \emph{verifiable task family} is a tuple
+A \emph{verifiable task} is a tuple
 \(\mathrm{T}=(\mathrm{X},\mathrm{Y},V,\mu)\).  Each \(x\in\mathrm{X}\) is a
 concrete instance for which an artifact \(y\in\mathrm{Y}\) must be constructed.
 The distribution \(\mu\) describes future instances, and the predeclared
@@ -122,17 +122,22 @@ execution a nonnegative additive coordinate \(B\), measured in isolated
 GPU-seconds, joules, tokens, dollars, or a predeclared scalarization.
 \end{definition}
 
-A \emph{deployment design} \(d\) freezes the backbone and implementation,
-prompting and decoding, routing or retry policy, signal acquisition, and
-verifier invocation.  Given \(x\), let \(y(B;x)\) be the generally random
-artifact available after cumulative resource \(B\).  Probabilities below are
-joint over \(x\sim\mu\) and run randomness.
+An \emph{agent system} \(\sigma\in\Sigma\) freezes a backbone model
+\(M_\sigma\), its implementation, prompting and decoding, available tools,
+memory and state, tool or sub-agent orchestration, and within-attempt
+termination.  Given \(x\), it produces a generally random execution and
+artifact \(y(B;x)\) after cumulative resource \(B\).  The evaluation protocol
+is external to \(\sigma\): it applies \(V\), meters the declared resource, and
+stops observation at the first verified artifact or the experimental horizon.
+Probabilities below are joint over \(x\sim\mu\) and system randomness.  When
+candidate systems differ only in \(M_\sigma\), the resulting comparison is
+model selection; otherwise it is agent-system selection.
 
 \begin{definition}[Verified first passage]
 \label{def:first-passage}
 The verified first-passage resource is
 \begin{equation}
-B_d^{\mathrm{hit}}(x):=
+B_\sigma^{\mathrm{hit}}(x):=
 \begin{cases}
 \inf\{B\ge0:V(x,y(B;x))=1\},&\text{if verification is reached},\\
 \infty,&\text{otherwise}.
@@ -145,26 +150,27 @@ B_d^{\mathrm{hit}}(x):=
 \label{def:proper-time}
 For failure tolerance \(\delta\in(0,1)\), define
 \begin{equation}
-T_d(\delta):=\inf\{B\ge0:\Prob[B_d^{\mathrm{hit}}(x)\le B]\ge1-\delta\}.
+T_\sigma(\delta):=\inf\{B\ge0:\Prob[B_\sigma^{\mathrm{hit}}(x)\le B]\ge1-\delta\}.
 \label{eq:proper-time-system}
 \end{equation}
 This population \((1-\delta)\)-quantile is the smallest resource by which a
 verified artifact is produced with the target reliability.  It may be infinite.
-``Proper time'' is operational terminology for progress along a frozen design,
+``Proper time'' is operational terminology for progress along a frozen agent system,
 not a relativistic invariant; when the resource is not seconds, it should be
 read as verified proper resource in the declared unit.
 The term \emph{statistically certified} is reserved for the finite-sample bounds
 in Section~\ref{sec:finite-sample}.  For finite positive quantiles, define the
 proper-time log-speedup
-\(\Delta_T(d_0,d;\delta)=\log T_{d_0}(\delta)-\log T_d(\delta)\).
+\(\Delta_T(\sigma_0,\sigma;\delta)=
+\log T_{\sigma_0}(\delta)-\log T_\sigma(\delta)\).
 \end{definition}
 
-\begin{problem}[Reliability-first model selection]
+\begin{problem}[Reliability-first agent-system selection]
 \label{prob:model-selection}
-Given a finite predeclared menu \(\mathcal D\), common verifier and resource
-unit, tolerance \(\delta\), and horizon \(B\), certify which designs satisfy
-\(\Prob(B_d^{\mathrm{hit}}\le B)\ge1-\delta\), and select the admissible design
-with smallest \(T_d(\delta)\).
+Given a finite predeclared menu \(\Sigma\), common verifier and resource
+unit, tolerance \(\delta\), and horizon \(B\), certify which systems satisfy
+\(\Prob(B_\sigma^{\mathrm{hit}}\le B)\ge1-\delta\), and select the admissible
+system with smallest \(T_\sigma(\delta)\).
 If sampling uncertainty does not separate candidates, return no winner.
 Different units induce different comparisons; resources that cannot be
 credibly scalarized require a Pareto frontier.
@@ -174,135 +180,84 @@ credibly scalarized require a Pareto frontier.
 \label{sec:finite-sample}
 
 The proper time in Definition~\ref{def:proper-time} is a population quantity,
-but an experiment observes only finitely many task instances.  We therefore
-need to determine whether the observed first-passage curves are sufficiently
-precise to certify a reliability target and distinguish candidate designs.
-
-Let \(x_1,\ldots,x_n\overset{\mathrm{iid}}{\sim}\mu\) be independent task
-instances.  For every design \(d\in\mathcal D\), instance \(x_i\), and retry
-\(r\in\{1,\ldots,R\}\), let \(B_{ir}^d\in[0,\infty]\) denote the verified
-first-passage resource.  Runs that do not produce a verified artifact within
-the experimental horizon are recorded as \(B_{ir}^d=\infty\).
-
-For a finite predeclared budget grid \(\mathcal B\), define
+whereas an experiment observes finitely many task instances.  Let
+\(x_1,\ldots,x_n\overset{\mathrm{iid}}{\sim}\mu\).  For each frozen agent
+system \(\sigma\), run the predeclared first-passage evaluation once on every
+instance, using independent system randomness across instances, and record
+\(B_i^\sigma\in[0,\infty]\), with \(B_i^\sigma=\infty\)
+when no verified artifact is produced by the horizon.  Define
 \begin{equation}
-U_i^d(b)
-:=
-\frac{1}{R}\sum_{r=1}^{R}
-\mathbf 1\{B_{ir}^d\le b\},
+\widehat F_\sigma(b):=\frac{1}{n}\sum_{i=1}^{n}
+\mathbf 1\{B_i^\sigma\le b\},
 \qquad
-\widehat F_d(b)
-:=
-\frac{1}{n}\sum_{i=1}^{n}U_i^d(b).
-\label{eq:cluster-cdf}
+F_\sigma(b):=\Prob(B_\sigma^{\mathrm{hit}}\le b).
+\label{eq:empirical-cdf}
 \end{equation}
-Here \(U_i^d(b)\) is the fraction of retries that solve instance \(x_i\)
-within budget \(b\), while \(\widehat F_d(b)\) estimates the population
-first-passage CDF
-\[
-F_d(b):=\Pr(B_d^{\mathrm{hit}}\le b).
-\]
-Retries and paired design runs may be arbitrarily dependent within the same
-instance.  The independent statistical units are the \(n\) task instances,
-not the \(nR\) executions.
+The independent units are the task instances.  Runs of different systems on
+the same instance may be paired and dependent.
 
-
-Fix a confidence level \(1-\alpha\).  Define the simultaneous uncertainty
-radius
+\begin{theorem}[Instance-level DKW band]
+\label{thm:dkw-system}
+For a fixed agent system \(\sigma\), the Dvoretzky--Kiefer--Wolfowitz inequality
+with Massart's sharp constant~\citep{massart1990tight} gives
 \begin{equation}
-\eta_n(\alpha)
-:=
-\sqrt{
-\frac{
-\log\!\left(2|\mathcal D||\mathcal B|/\alpha\right)
-}{
-2n
-}
-}.
-\label{eq:simultaneous-radius}
+\Prob\!\left(
+\sup_{b\ge0}|\widehat F_\sigma(b)-F_\sigma(b)|
+>\sqrt{\frac{\log(2/\alpha)}{2n}}
+\right)\le\alpha.
+\label{eq:dkw-system}
 \end{equation}
-The radius \(\eta_n(\alpha)\) is the finite-sample uncertainty in the estimated
-first-passage curves.  It decreases with the number of independent instances
-and accounts for comparing every candidate design at every declared budget.
-
-Define the lower and upper confidence bands
-\begin{equation}
-L_d(b)
-:=
-\max\{0,\widehat F_d(b)-\eta_n(\alpha)\},
-\qquad
-U_d(b)
-:=
-\min\{1,\widehat F_d(b)+\eta_n(\alpha)\}.
-\label{eq:cdf-bands}
-\end{equation}
-
-\begin{theorem}[Finite-sample selection certificate]
-\label{thm:finite-sample}
-With probability at least \(1-\alpha\),
-\begin{equation}
-L_d(b)\le F_d(b)\le U_d(b)
-\label{eq:simultaneous-bands}
-\end{equation}
-simultaneously for every \(d\in\mathcal D\) and \(b\in\mathcal B\).
-
-For a target reliability \(1-\delta\), define
-\begin{equation}
-T_d^-
-:=
-\inf\{b\in\mathcal B:U_d(b)\ge1-\delta\},
-\qquad
-T_d^+
-:=
-\inf\{b\in\mathcal B:L_d(b)\ge1-\delta\},
-\label{eq:quantile-band}
-\end{equation}
-with \(\inf\varnothing=\infty\).  Then the grid-resolved proper time satisfies
-\begin{equation}
-T_d^-\le T_d(\delta)\le T_d^+,
-\label{eq:proper-time-band}
-\end{equation}
-up to the resolution of \(\mathcal B\).
-
-At a predeclared deployment horizon \(B\in\mathcal B\), design \(d\) is
-statistically certified to meet the reliability target if
-\begin{equation}
-L_d(B)\ge1-\delta.
-\label{eq:certified-admissibility}
-\end{equation}
-
-A certified design \(\widehat d\) is the unique proper-time winner over
-\(\mathcal D\) if
-\begin{equation}
-T_{\widehat d}^{+}
-<
-\min_{d\neq\widehat d}T_d^{-}.
-\label{eq:certified-winner}
-\end{equation}
-If this separation condition does not hold, the certificate returns
-\emph{no winner}.
+Thus one set of bands covers every budget, without a budget grid.
 \end{theorem}
 
-The certificate distinguishes three outcomes.  A design may fail to attain the
-required reliability, it may attain the target without being statistically
-separable from its competitors, or it may be certified as the unique
-proper-time winner.  Increasing the number of retries improves the estimate
-for each instance, but only additional independent task instances directly
-shrink the distribution-free radius in
-Equation~\eqref{eq:simultaneous-radius}.
+\begin{corollary}[Simultaneous proper-time certificate]
+\label{thm:finite-sample}
+For a finite candidate menu \(\Sigma\), let
+\begin{equation}
+\begin{aligned}
+\eta_n(\alpha)&:=\sqrt{\frac{\log(2|\Sigma|/\alpha)}{2n}},\\
+L_\sigma(b)&:=\max\{0,\widehat F_\sigma(b)-\eta_n(\alpha)\},\qquad
+U_\sigma(b):=\min\{1,\widehat F_\sigma(b)+\eta_n(\alpha)\}.
+\end{aligned}
+\label{eq:simultaneous-radius}
+\end{equation}
+With probability at least \(1-\alpha\),
+\(L_\sigma(b)\le F_\sigma(b)\le U_\sigma(b)\) simultaneously for every
+\(\sigma\in\Sigma\) and every \(b\ge0\).  For target reliability
+\(1-\delta\), define
+\begin{equation}
+T_\sigma^-:=\inf\{b\ge0:U_\sigma(b)\ge1-\delta\},
+\qquad
+T_\sigma^+:=\inf\{b\ge0:L_\sigma(b)\ge1-\delta\},
+\label{eq:quantile-band}
+\end{equation}
+with \(\inf\varnothing=\infty\).  On the same event,
+\begin{equation}
+T_\sigma^-\le T_\sigma(\delta)\le T_\sigma^+.
+\label{eq:proper-time-band}
+\end{equation}
+At horizon \(B\), system \(\sigma\) is certified to meet the target when
+\(L_\sigma(B)\ge1-\delta\).  A certified system \(\widehat\sigma\) is the
+unique proper-time winner when
+\begin{equation}
+T_{\widehat\sigma}^{+}<
+\min_{\sigma\ne\widehat\sigma}T_\sigma^{-};
+\label{eq:certified-winner}
+\end{equation}
+otherwise the certificate returns \emph{no winner}.
+\end{corollary}
+
+For inference about one fixed system, set \(|\Sigma|=1\).  The simultaneous
+correction is needed only when the same experiment supports a comparison or a
+winner claim across multiple systems.
 
 \section{Tool Allocation and Four-Term Accounting}
 \label{sec:tool-accounting}
 
-The tool-use literature describes callable capabilities as external tools,
-APIs, functions, or actions~\citep{schick2023toolformer,yao2023react}.  We use
-\emph{available tool set}; independent calls may be dispatched in parallel, as
-in parallel function-calling systems~\citep{kim2024llmcompiler}.
-
 \begin{definition}[Available tools and reference tool combination]
 \label{def:reference-tools}
 Fix a finite available tool set \(\mathcal A\): the external callable
-capabilities exposed by deployment design \(d\) to the agentic LLM.  Elements
+capabilities exposed by agent system \(\sigma\) to the agentic LLM.  Elements
 of \(\mathcal A\) may be functions, APIs, retrievers, code executors, browsers,
 or orchestration primitives such as spawning a sub-agent.
 
@@ -330,13 +285,13 @@ simply the visible task request.
 
 \begin{definition}[Batched tool-allocation policy]
 \label{def:tool-policy}
-Fix a backbone model \(M\) and a deployment design \(d\) built on \(M\).
+Fix an agent system \(\sigma\) with backbone model \(M_\sigma\).
 At dispatch round \(k\) of one complete attempt, let
-\(\mathcal C_d(H_k)\) be the set of admissible nonempty batches of calls from
+\(\mathcal C_\sigma(H_k)\) be the set of admissible nonempty batches of calls from
 \(\mathcal A\).  The next batch satisfies
 \begin{equation}
-C_k\sim q_d(\cdot\mid Z,H_k),
-\qquad C_k\in\mathcal C_d(H_k),
+C_k\sim q_\sigma(\cdot\mid Z,H_k),
+\qquad C_k\in\mathcal C_\sigma(H_k),
 \label{eq:tool-policy}
 \end{equation}
 where the calls in \(C_k\) are launched concurrently and \(H_k\) contains the
@@ -347,45 +302,46 @@ forced serialization of physical calls.  Write
 \(\mathbf C=(C_1,\ldots,C_{\widehat L})\) for the executed batched plan.
 
 If tool outputs and the dispatcher are deterministic along the reference
-histories, the probability that \(d\) reproduces the selected reference
+histories, the probability that \(\sigma\) reproduces the selected reference
 combination and batching is
 \begin{equation}
-q_d^\star(x,z)
+q_\sigma^\star(x,z)
 :=\prod_{k=1}^{L(x)}
-q_d\!\left(C_k^\star(x)\mid z,h_k^\star(x)\right).
+q_\sigma\!\left(C_k^\star(x)\mid z,h_k^\star(x)\right).
 \label{eq:reference-combination-probability}
 \end{equation}
-Interpretation of outputs and final-answer generation remain part of design
-\(d\); the policy above isolates allocation among available tools and parallel
-call batches.
+Interpretation of outputs and final-answer generation remain part of agent
+system \(\sigma\); the policy above isolates allocation among available tools
+and parallel call batches.
 \end{definition}
 
 \begin{proposition}[Variable-cost retry identity]
 \label{prop:retry-first-passage}
 Fix \((x,z)\).  For retry \(r\), let \(Y_r\) be the resulting artifact and
-\(K_{d,r}>0\) its realized resource cost.  Assume that, conditional on
-\((x,z)\), the pairs \(\bigl(K_{d,r},V(x,Y_r)\bigr)\) are IID across complete
+\(K_{\sigma,r}>0\) its realized resource cost.  Assume that, conditional on
+\((x,z)\), the pairs \(\bigl(K_{\sigma,r},V(x,Y_r)\bigr)\) are IID across complete
 retries.  Define
 \[
-\lambda_d(x,z):=\Prob(V(x,Y_r)=1\mid x,z)>0,
+\lambda_\sigma(x,z):=\Prob(V(x,Y_r)=1\mid x,z)>0,
 \qquad
-\overline K_d(x,z):=\E[K_{d,r}\mid x,z],
+\overline K_\sigma(x,z):=\E[K_{\sigma,r}\mid x,z],
 \]
-and let \(R_d(x,z):=\inf\{r\ge1:V(x,Y_r)=1\}\).  Then
+and let \(R_\sigma(x,z):=\inf\{r\ge1:V(x,Y_r)=1\}\).  Then
 \begin{equation}
-B_d^{\mathrm{hit}}(x)
-=c_d(z)+\sum_{r=1}^{R_d(x,z)}K_{d,r},
+B_\sigma^{\mathrm{hit}}(x)
+=c_\sigma(z)+\sum_{r=1}^{R_\sigma(x,z)}K_{\sigma,r},
 \qquad
-\E[B_d^{\mathrm{hit}}(x)\mid x,z]
-=c_d(z)+\frac{\overline K_d(x,z)}{\lambda_d(x,z)}.
+\E[B_\sigma^{\mathrm{hit}}(x)\mid x,z]
+=c_\sigma(z)+\frac{\overline K_\sigma(x,z)}{\lambda_\sigma(x,z)}.
 \label{eq:variable-cost-first-passage}
 \end{equation}
-Here \(c_d(z)\ge0\) is only the incremental cost of acquiring the signal.  Set
-\(c_d(z)=0\) when the signal is supplied with the task or its cost is already
-included in \(K_{d,r}\).
+Here \(c_\sigma(z)\ge0\) is only the incremental cost of acquiring the signal.
+Set \(c_\sigma(z)=0\) when the signal is supplied with the task or its cost is
+already included in \(K_{\sigma,r}\).
 \end{proposition}
 
-The IID assumption means that every retry restarts the same frozen design with
+The IID assumption means that the external evaluation protocol restarts the
+same frozen agent system with
 fresh run randomness and carries no state across retries.  Stateful or adaptive
 retry policies remain covered by direct proper-time measurement, but not by
 Proposition~\ref{prop:retry-first-passage} without further analysis.
@@ -394,9 +350,10 @@ Proposition~\ref{prop:retry-first-passage} without further analysis.
 
 To obtain an exact accounting identity, suppose that reproducing
 \(\mathcal G^\star(x)\) through its selected batching succeeds with probability
-\(p_d(x)>0\), executions that
+\(p_\sigma(x)>0\), executions that
 deviate from it have zero verified-success probability, and the signal affects
-success only through tool allocation.  Define \(t_0(d,x):=1/p_d(x)\).  This
+success only through tool allocation.  Define
+\(t_0(\sigma,x):=1/p_\sigma(x)\).  This
 restriction is deliberately stronger than
 Definition~\ref{def:reference-tools}: it isolates one reference combination to
 obtain an exact identity, while Proposition~\ref{prop:off-reference} measures
@@ -406,14 +363,14 @@ verified success contributed by alternatives.
 \label{prop:tool-first-passage}
 In the reference-combination regime,
 \begin{equation}
-\lambda_d(x,z)=q_d^\star(x,z)p_d(x).
+\lambda_\sigma(x,z)=q_\sigma^\star(x,z)p_\sigma(x).
 \label{eq:reference-success-probability}
 \end{equation}
 If the signal has no separate incremental cost, or that cost is included in
 the retry ledger, then
 \begin{equation}
-\E[B_d^{\mathrm{hit}}\mid x,z]
-=\overline K_d(x,z)\frac{t_0(d,x)}{q_d^\star(x,z)}.
+\E[B_\sigma^{\mathrm{hit}}\mid x,z]
+=\overline K_\sigma(x,z)\frac{t_0(\sigma,x)}{q_\sigma^\star(x,z)}.
 \label{eq:tool-first-passage}
 \end{equation}
 \end{proposition}
@@ -429,7 +386,7 @@ This is a posterior over the next reference call batch, not a distribution
 over tool availability.  It may be one-hot when the batch is determined by the
 observed context; the distributional notation also covers residual uncertainty
 across instances with the same context.  Assume \(\rho_k(c\mid z,h)>0\) implies
-\(q_d(c\mid z,h)>0\).  Define
+\(q_\sigma(c\mid z,h)>0\).  Define
 \begin{align}
 \mathcal H_{\mathrm{ref}}
 &:=\sum_{k\ge1}\Prob(L\ge k)
@@ -437,11 +394,11 @@ H(C_k^\star\mid H_k^\star,L\ge k),\nonumber\\
 G_Z
 &:=\sum_{k\ge1}\Prob(L\ge k)
 I(C_k^\star;Z\mid H_k^\star,L\ge k),\nonumber\\
-\varepsilon_d
+\varepsilon_\sigma
 &:=\sum_{k\ge1}\Prob(L\ge k)
 \E\!\left[
 \KL\!\left(\rho_k(\cdot\mid Z,H_k^\star)
-\Vert q_d(\cdot\mid Z,H_k^\star)\right)
+\Vert q_\sigma(\cdot\mid Z,H_k^\star)\right)
 \,\middle|\,L\ge k\right].
 \label{eq:batched-tool-mismatch}
 \end{align}
@@ -451,45 +408,45 @@ I(C_k^\star;Z\mid H_k^\star,L\ge k),\nonumber\\
 The expected negative log probability assigned to the reference call batches is
 \begin{equation}
 \E\!\left[-\sum_{k=1}^{L}
-\log q_d(C_k^\star\mid Z,H_k^\star)\right]
-=\mathcal H_{\mathrm{ref}}-G_Z+\varepsilon_d.
+\log q_\sigma(C_k^\star\mid Z,H_k^\star)\right]
+=\mathcal H_{\mathrm{ref}}-G_Z+\varepsilon_\sigma.
 \label{eq:tool-cross-entropy}
 \end{equation}
 Thus \(G_Z\) measures how much the signal reduces uncertainty about appropriate
-tool batches, while \(\varepsilon_d\) measures the remaining mismatch with the
+tool batches, while \(\varepsilon_\sigma\) measures the remaining mismatch with the
 model's allocation policy.
 \end{lemma}
 
 Define the expected-log conditional first-passage diagnostic
 \begin{equation}
-\mathcal L(d):=\E_{X,Z}\!\left[
-\log\E(B_d^{\mathrm{hit}}\mid X,Z)\right].
+\mathcal L(\sigma):=\E_{X,Z}\!\left[
+\log\E(B_\sigma^{\mathrm{hit}}\mid X,Z)\right].
 \label{eq:tool-risk}
 \end{equation}
-It is neither \(\E\log B_d^{\mathrm{hit}}\),
-\(\log\E B_d^{\mathrm{hit}}\), nor \(\log T_d(\delta)\).
+It is neither \(\E\log B_\sigma^{\mathrm{hit}}\),
+\(\log\E B_\sigma^{\mathrm{hit}}\), nor \(\log T_\sigma(\delta)\).
 
 \begin{theorem}[Four-term tool-allocation decomposition]
 \label{thm:four-term}
-Let designs \(d_0,d\) share the task distribution, tool set, and reference
-tool combinations, and use signals \(Z_0,Z\).  Suppose both satisfy the
+Let agent systems \(\sigma_0,\sigma\) share the task distribution, tool set,
+and reference tool combinations, and use signals \(Z_0,Z\).  Suppose both satisfy the
 reference-combination regime and have no separate signal cost.  Define
 \begin{align*}
-C&:=\E_{X,Z_0}\log\overline K_{d_0}(X,Z_0)
--\E_{X,Z}\log\overline K_d(X,Z),\\
-\Phi&:=\E_X\!\left[\log\frac{t_0(d_0,X)}{t_0(d,X)}\right].
+C&:=\E_{X,Z_0}\log\overline K_{\sigma_0}(X,Z_0)
+-\E_{X,Z}\log\overline K_\sigma(X,Z),\\
+\Phi&:=\E_X\!\left[\log\frac{t_0(\sigma_0,X)}{t_0(\sigma,X)}\right].
 \end{align*}
 Then
 \begin{equation}
-\mathcal L(d_0)-\mathcal L(d)
-=C+\Phi+G_Z-G_{Z_0}+\varepsilon_{d_0}-\varepsilon_d.
+\mathcal L(\sigma_0)-\mathcal L(\sigma)
+=C+\Phi+G_Z-G_{Z_0}+\varepsilon_{\sigma_0}-\varepsilon_\sigma.
 \label{eq:four-term-general}
 \end{equation}
 If \(Z_0\) is conditionally uninformative about every reference dispatch
 and the baseline policy matches the corresponding prior, then
-\(G_{Z_0}=\varepsilon_{d_0}=0\), and
+\(G_{Z_0}=\varepsilon_{\sigma_0}=0\), and
 \begin{equation}
-\boxed{\Delta_{\mathrm{tool}}=C+\Phi+G_Z-\varepsilon_d.}
+\boxed{\Delta_{\mathrm{tool}}=C+\Phi+G_Z-\varepsilon_\sigma.}
 \label{eq:four-term-baseline}
 \end{equation}
 The four terms are relative mean retry cost, focused competence, signal
@@ -502,25 +459,25 @@ mechanistic accounting rather than a causal separation.
 \label{prop:off-reference}
 Let
 \[
-r_d^{\mathrm{alt}}(x,z)
+r_\sigma^{\mathrm{alt}}(x,z)
 :=\Prob(V(x,Y_r)=1,\mathbf C\ne\mathbf C^\star(x)\mid x,z)
 \]
 be the per-retry verified-success probability contributed by non-reference
 executions.  Ignoring signal cost, define the log residual as the actual
 conditional mean minus the reference-combination prediction:
 \begin{equation}
-r_d(x,z)=-\log\!\left(
-1+\frac{r_d^{\mathrm{alt}}(x,z)}{q_d^\star(x,z)p_d(x)}
+r_\sigma(x,z)=-\log\!\left(
+1+\frac{r_\sigma^{\mathrm{alt}}(x,z)}{q_\sigma^\star(x,z)p_\sigma(x)}
 \right).
 \label{eq:off-reference-residual}
 \end{equation}
 If the ratio inside the logarithm is at most \(\xi\), then
-\(|r_d(x,z)|\le\log(1+\xi)\).  A separate signal cost breaks the exact
+\(|r_\sigma(x,z)|\le\log(1+\xi)\).  A separate signal cost breaks the exact
 log-additivity.  The verifier still accepts every valid non-reference
 execution; the proposition only tests the adequacy of the diagnostic regime.
 \end{proposition}
 
-Separating \(\overline K_d\) from \(t_0\) requires retry-level resource and
+Separating \(\overline K_\sigma\) from \(t_0\) requires retry-level resource and
 verification logs.  A policy change can alter both mean retry cost and
 tool-policy mismatch, so the terms are not causal without randomized
 interventions.  Proper time remains the model-selection criterion and is
@@ -531,18 +488,18 @@ conditional first-passage resource differs when its assumptions are adequate.
 \label{alg:pick-model}
 \begin{tabular}{@{}r p{0.86\linewidth}@{}}
 \textit{Input:} &
-Verifiable task family, candidate designs \(\mathcal D\), verifier \(V\),
-resource unit, tolerance \(\delta\), horizon \(B\), budget grid \(\mathcal B\),
+Verifiable task, candidate agent systems \(\Sigma\), verifier \(V\),
+resource unit, tolerance \(\delta\), horizon \(B\),
 and confidence level \(1-\alpha\).\\[0.25em]
 \textit{Output:} &
 A statistically certified winner or ``no winner,'' plus an optional batched
 tool-allocation mechanism audit.\\[0.35em]
 1 & \textit{Freeze the target.} Declare \(V\), the resource unit, \(\delta\),
-\(B\), \(\mathcal B\), and the candidate menu.\\
+\(B\), and the candidate menu.\\
 2 & \textit{Measure first passage.} Stop each run at its first verified artifact
-or at \(B\); retain failures as infinite and cluster paired runs by task.\\
-3 & \textit{Construct bands.} Compute Equation~\eqref{eq:cluster-cdf}, the
-simultaneous CDF bands, and \([T_d^-,T_d^+]\) for every design.\\
+or at \(B\); retain failures as infinite and pair system runs by task instance.\\
+3 & \textit{Construct bands.} Compute Equation~\eqref{eq:empirical-cdf}, the
+simultaneous DKW bands, and \([T_\sigma^-,T_\sigma^+]\) for every system.\\
 4 & \textit{Certify or abstain.} Name a winner only if it is admissible and its
 upper proper-time bound lies below every competitor's lower bound.\\
 5 & \textit{Audit the mechanism.} On disjoint calibration and confirmation data,
@@ -556,7 +513,7 @@ residual; keep the direct proper-time certificate as selection authority.
 \end{algorithm}
 
 The chain is explicit: Definition~\ref{def:proper-time} sets the deployment
-estimand; Theorem~\ref{thm:finite-sample} selects or abstains;
+estimand; Corollary~\ref{thm:finite-sample} selects or abstains;
 Proposition~\ref{prop:retry-first-passage} links variable retry costs to mean
 first passage; and Theorem~\ref{thm:four-term} supplies a scoped tool-policy
 mechanism audit.
