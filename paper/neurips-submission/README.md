@@ -8,7 +8,8 @@ evidence stay co-located.
 
 | File | Role |
 | --- | --- |
-| `arxiv.tex` | Active AutoResearch manuscript anchor. |
+| `main.tex` | New NeurIPS manuscript scaffold and active drafting target. |
+| `arxiv.tex` | Existing AutoResearch manuscript retained as a source draft. |
 | `references.bib` | Active bibliography. |
 | `figures/` | Paper-ready figure copies used for compilation. |
 
@@ -18,8 +19,10 @@ Build from the repository root when TeX Live is available:
 make paper-build
 ```
 
-The build script compiles `arxiv.tex` into a `/tmp/...` output directory, so
-the Overleaf-compatible source tree stays clean.
+The build script compiles `arxiv.tex` by default into a `/tmp/...` output
+directory. Compile the new scaffold with
+`python scripts/check_paper_build.py --source main.tex`; both commands keep the
+Overleaf-compatible source tree clean.
 
 ## Archive
 

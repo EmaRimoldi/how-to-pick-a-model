@@ -1,0 +1,414 @@
+\documentclass{article}
+
+\PassOptionsToPackage{numbers,sort&compress}{natbib}
+\usepackage[preprint]{neurips_2026}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{hyperref}
+\hypersetup{hidelinks}
+\setlength{\emergencystretch}{2em}
+
+\makeatletter
+\renewcommand{\@noticestring}{}
+\makeatother
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{problem}[definition]{Problem}
+\newtheorem{assumption}[definition]{Assumption}
+\theoremstyle{plain}
+\newtheorem{lemma}[definition]{Lemma}
+\newtheorem{theorem}[definition]{Theorem}
+\newtheorem{proposition}[definition]{Proposition}
+\newtheorem{corollary}[definition]{Corollary}
+\theoremstyle{remark}
+\newtheorem{remark}[definition]{Remark}
+
+\newcounter{algorithm}
+\newenvironment{algorithm}[1][]{%
+  \refstepcounter{algorithm}%
+  \par\medskip
+  \noindent\textbf{Algorithm~\thealgorithm}%
+  \if\relax\detokenize{#1}\relax\else\ \normalfont(#1).\fi%
+  \par\vspace{0.45em}%
+  \normalfont\small
+}{%
+  \par\medskip
+}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator{\KL}{KL}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prob}{\mathbb{P}}
+
+\title{How to Pick a Model}
+\author{Anonymous Authors}
+
+\begin{document}
+
+\maketitle
+
+\input{theory_revision}
+
+\section{Experiments}
+\label{sec:experiments}
+
+We ask four questions: whether direct proper-time measurement rejects
+unreliable candidates; whether physical allocation follows inverse-share
+scaling; whether independently estimated four-term mechanisms predict held-out
+resource; and whether conclusions transport beyond the controlled setting.
+
+\subsection{Benchmarks, models, and evidence classes}
+
+Table~\ref{tab:experimental-design} summarizes four benchmarks.  SAI-3 is a
+procedural sharded API-integration benchmark with three hidden, mutually
+incompatible Python contracts.  Each action receives the common task and one
+contract-specific evidence shard; the verifier combines static-policy checks,
+hidden differential tests, metamorphic tests, and a mutation-score gate.  This
+construction creates a controlled action-success matrix without revealing the
+true mode.  HumanEval+ and MBPP+ provide execution-verified code generation
+tasks~\citep{chen2021humaneval,liu2023evalplus,austin2021mbpp}; their three
+reported groups are precomputed tertiles of reference-program length, not
+claims of latent semantic structure.  BBH supplies five cognitive families
+(algorithmic, arithmetic, language, logical deduction, and spatial--temporal)
+\citep{suzgun2023bbh}.  Coding tasks use 1.5B, 7B, and 32B Qwen2.5-Coder
+checkpoints where available; BBH uses the corresponding general Qwen2.5 1.5B
+and 7B checkpoints because its tasks are not code generation
+\citep{hui2024qwen25coder,yang2024qwen25}.
+
+\begin{table}[H]
+\centering
+\caption{Experimental design.  \(N_x\) counts distinct task instances.  A trace
+is one task--model trajectory through first verification or the horizon; SAI-3
+also varies frozen signal--allocation cells.  Retries within a trace are not
+independent observations.}
+\label{tab:experimental-design}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lrrrrll}
+\toprule
+Dataset & \(N_x\) & Task modes & Models & Traces & Resource budget & Horizon\\
+\midrule
+SAI-3       & 768   & 3 & 2 & 175,104 & normalized parameter--token slots & 256 slots\\
+HumanEval+  & 164   & 3 & 3 & 492     & generated tokens / seconds & 10 attempts\\
+MBPP+       & 378   & 3 & 3 & 1,134   & generated tokens / seconds & 10 attempts\\
+BBH         & 1,200 & 5 & 2 & 2,400   & generated tokens / seconds & 10 attempts\\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+Every run stops at its first verified artifact or at the predeclared horizon
+\(B\).  We record the event indicator, attempts, generated tokens, generation
+and verification time, and cumulative resource.  We report
+\(\widehat T_d(\delta)=\inf\{B:\widehat F_d(B)\ge1-\delta\}\) only when the target is reached. Otherwise it is right-censored, not extrapolated. Our primary reliability target is \(1-\delta=0.90\).  Following standard
+empirical reporting practice, tables give the point estimate, its standard
+error in parentheses, the number of independent instances, and the exact
+resampling level.  All retries,
+models, and allocation conditions for a sampled instance move together in one
+bootstrap block.  SAI-3 uses 5,000 bootstrap replications; public frontiers use
+1,000; synthetic proper-time quantiles use 2,000 paired instance-bootstrap
+replications.  Simulation standard errors are the paired trial standard
+deviation divided by \(\sqrt{10{,}000}\).  We report effect sizes and intervals
+rather than using significance stars as a substitute for engineering relevance.
+
+\subsection{Frozen comparisons}
+
+The SAI-3 baseline is Qwen2.5-Coder-14B with prior-matched allocation; the
+deployed candidate is Qwen2.5-Coder-7B under six frozen signal--allocation
+conditions.  Its calibration split contains 768 distinct tasks, 256 per mode,
+disjoint from confirmation.  For each task and model, 64 matched-action attempts
+and four attempts per wrong action estimate focused success and the off-mode
+hazard; attempt ledgers estimate \(\kappa\).  The controlled signal channel and
+allocations are protocol constants rather than learned quantities.  A separate
+practical-router diagnostic fits multinomial logistic regression on stack-trace
+tokens and package metadata and estimates its posterior by a five-fold
+out-of-fold confusion matrix.  Confirmation opens 768 fresh tasks only after
+these objects and the analysis are frozen.  The public frontier executes 1.5B, 7B,
+and 32B Qwen2.5-Coder on HumanEval+ and MBPP+ and 1.5B and 7B Qwen2.5 on BBH,
+with temperature \(0.6\), top-\(p=0.95\), and at most ten attempts.  The
+calibrated simulation compares the pairs shown in
+Table~\ref{tab:simulated-first-passage}; it uses seconds for the public panels
+and normalized parameter--token slots for SAI-3.
+SAI-3 instantiates the one-step case
+\(\tau_s^\star=(a_{d,s},\bot)\); it does not test history-dependent tool use.
+
+\section{Results}
+\label{sec:results}
+
+\subsection{Controlled confirmation: accurate decisions, rejected exactness}
+
+The SAI-3 confirmation contains 175,104 physical trajectories and no censoring
+or wrong-shard success.  Regressing held-out mean log first-passage resource on
+\(-\log q\) gives an inverse-share exponent of \(0.9868\), with 90\% bootstrap
+interval \([0.9784,0.9952]\).  Across the six primary contrasts, the mean
+four-term residual is \(0.0100\) nat, its RMS is \(0.0147\) nat, and the 95\%
+bootstrap upper bound on RMS is \(0.0350\) nat.  The predicted design agrees
+with the held-out resource oracle in all six conditions; the minimum bootstrap
+selection probability is \(1.000\), and estimated oracle regret is zero.
+For the frozen seven-design, 256-budget-grid, three-stratum family at
+\(\alpha=0.05\), Theorem~\ref{thm:finite-sample} gives an overall radius of
+\(0.091\).  Zero horizon censoring therefore certifies overall 90\%
+admissibility (lower bound \(0.909\)).  The modewise radius is \(0.157\), so the
+same data do not certify 90\% reliability separately in every mode.  Moreover,
+the archived confirmation was frozen for expected-log closure and does not
+retain the clustered CDF bands needed to certify quantile separation.  Thus the
+six-of-six agreement is a mechanism result, not a unique proper-time winner
+certificate.
+
+Exact closure nevertheless fails its frozen omnibus criterion.  Residuals
+increase with one-step trajectory mismatch with slope \(0.0377\)
+(95\% interval \([0.0108,0.0647]\), Holm-adjusted \(p=0.0224\)).  This is about
+\(0.0299\) nat, or 3.0\% in multiplicative resource, at the largest tested
+mismatch.  A fresh 122,880-trajectory diagnostic raises repetitions per task
+cell from 6 to 32: the mismatch slope falls to \(0.0150\)
+(95\% interval \([-0.0098,0.0394]\), adjusted \(p=0.487\)), while the
+inverse-share exponent is \(0.9944\) (90\% interval \([0.9865,1.0021]\)).
+This attenuation supports finite-repetition bias as a mechanism, but does not
+reverse the preregistered rejection.  The defensible result is therefore
+\emph{decision-accurate approximate accounting}, not an empirical proof of an
+exact universal identity.
+
+\subsection{Observed public frontiers: reliability is often unattained}
+
+The observed ten-retry frontiers provide a necessary negative control.  On
+HumanEval+, the best final verified rate is 149/164 for the 7B model,
+90.9\% with 95\% Wilson interval \([85.5,94.4]\%\)~\citep{wilson1927probable};
+its descriptive empirical
+\(T_{90}\) is 736 generated tokens (38.27 seconds), but a finite 95\% interval
+is not identified because the lower reliability bound misses the target.  The other HumanEval+
+models do not reach 90\%.  The best MBPP+ rate is 323/378 for 32B,
+85.4\% \([81.5,88.7]\%\), and the best BBH rate is 951/1,200 for 7B,
+79.3\% \([76.9,81.5]\%\).  Their \(T_{90}\) values are therefore censored.
+Moreover, even HumanEval+ 7B does not meet a marginal lower-bound admissibility
+rule, so it necessarily fails the stronger simultaneous certificate.  The
+practical conclusion is not to
+declare another model the winner, but to increase the horizon, reduce the
+reliability target prospectively, or report that the candidate menu is
+inadmissible.
+
+\begin{table}[t]
+\centering
+\caption{Best observed public-frontier model at the ten-retry horizon.
+Brackets are 95\% Wilson intervals across task instances.  A dash means that
+the empirical verified curve does not reach 90\%; no finite \(T_{90}\) is
+assigned.}
+\label{tab:observed-frontier}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+Dataset & Best model & Verified / \(N_x\) & Verified rate [95\% CI] & \(T_{90}\) \\
+\midrule
+HumanEval+ & 7B  & 149 / 164   & 90.9\% [85.5, 94.4] & 736 tokens \\
+MBPP+      & 32B & 323 / 378   & 85.4\% [81.5, 88.7] & --- \\
+BBH        & 7B  & 951 / 1,200 & 79.3\% [76.9, 81.5] & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.96\linewidth]{figures/theory_revision/first_passage_simulation.pdf}
+\caption{Calibrated simulation used to freeze the first-passage visualization
+before additional model runs.  Curves show the fraction not yet verified over
+resource normalized by baseline \(T_{90}\); triangles mark the 90\% quantile.
+The underlying task-level points are drawn transparently.  This panel is design
+validation, not empirical benchmark evidence.}
+\label{fig:first-passage}
+\end{figure}
+
+\subsection{Reliability-first rankings are not universal}
+
+Table~\ref{tab:simulated-first-passage} reports the calibrated simulation used
+to finalize Figure~\ref{fig:first-passage}.  Positive log-speedup
+favours the deployed model.  The 7B candidate reaches 90\% reliability with
+16.5\% less normalized resource on SAI-3 and 43.5\% fewer seconds on
+HumanEval+, but requires 34.3\% more seconds on MBPP+.  On BBH its simulated
+\(T_{90}\) is 65.8\% lower.  Thus neither model size nor one benchmark supplies
+a transportable winner.  At the budget where the baseline reaches exactly
+90\%, the candidate verifies 93.6\%, 97.9\%, 84.8\%, and 95.9\% of tasks,
+respectively.  This fixed-budget contrast is operational: it states how much
+reliability a deployment obtains without changing its resource envelope.  All
+four paired 95\% intervals for \(\Delta_T\) exclude zero; these
+intervals quantify Monte Carlo precision, not uncertainty about executed
+routers.
+
+\begin{table}[t]
+\centering
+\caption{Calibrated 90\% simulation (\(10{,}000\) pairs/dataset).
+\(B_0\) is baseline \(T_{90}\); \(\widehat F_1(B_0)\) is candidate accuracy at
+\(B_0\).  Design validation only, not benchmark execution.}
+\label{tab:simulated-first-passage}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lrrrrr}
+\toprule
+Dataset & Baseline \(T_{90}\) & Candidate \(T_{90}\) & \(\widehat F_1(B_0)\) & \(\Delta_T\) [95\% CI] & Winner \\
+\midrule
+SAI-3      & 2.052 & 1.713 & 93.6\% & \phantom{-}0.180 [0.178, 0.184] & 7B \\
+HumanEval+ & 30.36 & 17.14 & 97.9\% & \phantom{-}0.572 [0.531, 0.608] & 7B \\
+MBPP+      & 53.13 & 71.34 & 84.8\% &          -0.295 [-0.354, -0.242] & 1.5B \\
+BBH        & 1,887.6 & 644.8 & 95.9\% & \phantom{-}1.074 [0.966, 1.181] & 7B \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\subsection{What the four terms explain---and what they do not}
+
+Table~\ref{tab:simulated-accounting} applies the complete estimator to the same
+paired simulations.  Parentheses under \(\Delta_{\rm obs}\) are Monte Carlo
+standard errors; trial-level standard deviations are \(0.322\), \(1.106\),
+\(1.280\), and \(1.992\) nat in table order.  The identity closes numerically
+inside the packed construction by design.  The residual shown here instead
+compares that prediction with end-to-end first passage under nonzero success of
+alternative one-step trajectories, and is therefore a test of transport beyond
+PACT.
+
+\begin{table}[t]
+\centering
+\caption{Four-term simulation (\(10{,}000\) pairs/dataset; nats).
+\(\Delta_4=C+\Phi+G-\varepsilon\), \(R=\Delta_{\rm obs}-\Delta_4\); positive
+speedup favours the candidate.  Standard errors are in parentheses.}
+\label{tab:simulated-accounting}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lrrrrrrr}
+\toprule
+Dataset & Cost \(C\) & Competence \(\Phi\) & Information \(G\) & Mismatch \(\varepsilon\) & \(\Delta_4\) & \(\Delta_{\rm obs}\) & Residual \(R\) \\
+\midrule
+SAI-3      & \phantom{-}0.696 & -0.719 & 0.206 & 0.050 & \phantom{-}0.134 & \phantom{-}0.626 (0.003) & \phantom{-}0.492 \\
+HumanEval+ & \phantom{-}0.066 & \phantom{-}0.337 & 0.217 & 0.055 & \phantom{-}0.566 & \phantom{-}0.402 (0.011) & -0.163 \\
+MBPP+      & -0.587 & \phantom{-}0.002 & 0.200 & 0.046 & -0.431 & -0.518 (0.013) & -0.086 \\
+BBH        & -1.433 & \phantom{-}1.028 & 0.466 & 0.100 & -0.039 & -0.846 (0.020) & -0.807 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+HumanEval+ illustrates the intended positive case: competence and information
+more than offset cost and mismatch, and the end-to-end gain remains positive
+after a \(-0.163\)-nat residual.  MBPP+ gives the opposite decision: the unit-cost
+penalty dominates, so routing information cannot rescue the candidate.  Large
+SAI-3 and BBH residuals warn against transporting the exact packed identity
+when alternative trajectories can solve the task.  Most importantly, BBH has
+\(\Delta_T=1.074\) but \(\Delta_{\rm obs}=-0.846\): the candidate has a better
+90th-percentile completion budget while a worse mean paired log-resource.
+This is not a contradiction.  Verified proper time is a population quantile;
+the four-term theorem targets an expected log functional.  Crossing
+first-passage curves can rank the two objectives differently, which is why
+\(\delta\) and the deployment loss must be declared before model selection.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.48\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/theory_revision/inverse_share_scaling.png}
+\small (a) Inverse-share response
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/theory_revision/four_term_observed_vs_predicted.png}
+\small (b) Held-out closure
+\end{minipage}
+\caption{Physical SAI-3 mechanism audit.  (a) Log first-passage resource tracks
+allocation dilution with near-unit slope.  (b) Independently estimated
+four-term predictions are close to held-out gains; points and intervals are
+held-out observations.  The strict residual omnibus nevertheless rejects exact
+closure.}
+\label{fig:mechanism}
+\end{figure}
+
+\section{Discussion}
+\label{sec:discussion}
+
+The results support reliability-first selection, not a universal winner.
+Freeze the verifier, resource unit, \(B\), and \(\delta\); admit \(d\) only if
+a lower confidence bound on \(\Prob(B_d^{\mathrm{hit}}\le B)\) reaches
+\(1-\delta\); then
+minimize held-out \(\widehat T_d(\delta)\).  Replace the incumbent only when the
+simultaneous quantile bands in Theorem~\ref{thm:finite-sample} separate it from
+every competitor; otherwise report no winner.
+
+The terms prescribe interventions: negative cost calls for better serving;
+negative competence for another backbone; low information for a better signal;
+and high mismatch for a better tool policy.  A large residual
+invalidates the surrogate and returns the decision to direct measurement.
+Proper time selects; four-term accounting audits the mechanism.
+
+The BBH reversal shows that average log resource and SLA-like \(T_{90}\) can
+disagree.  The objective must be declared before observing results; the full
+curve exposes this tradeoff and permits reranking at another reliability level
+without rerunning inference.
+
+\section{Limitations}
+\label{sec:limitations}
+
+The four-dataset accounting is calibrated simulation: it validates estimators,
+power, and figure design, not executed-router performance.  Its signal, action
+overlap, and BBH cells require held-out randomized runs.  Physical SAI-3 uses a
+synthetic benchmark, one dense family, fixed-length slots, and nearly zero
+off-reference one-step success; external validity is narrow, and exact closure fails even
+there.
+
+HumanEval+ and MBPP+ modes are length strata, not learned solver structures;
+BBH lacks a 32B run; and cells below 90\% after ten attempts remain censored,
+without finite \(T_{90}\).  The present experiments identify only the one-step
+special case of the trajectory KL; sequential tool-call mismatch requires a
+tool benchmark with frozen reference trajectories and held-out instances.
+
+IID retries, stationary hazards, and allocation-invariant costs are
+approximations: history, correlation, caching, batching, verifier latency, and
+adaptive stopping can change \(t_0\) and \(\kappa\).  Charge signal acquisition
+to the same resource ledger.  Verification certifies only the declared criterion, not
+usefulness or safety.  If resources cannot be credibly scalarized, report a
+Pareto frontier rather than one ranking.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\clearpage
+\appendix
+
+\section{Proofs}
+\label{app:proofs}
+
+\input{proofs_revision}
+
+\section{Synthetic Quantile Uncertainty}
+
+Table~\ref{tab:synthetic-quantile-ci} reports the separate percentile intervals
+underlying Table~\ref{tab:simulated-first-passage}.  Each bootstrap resamples
+the 10,000 paired task trajectories within a dataset and recomputes both
+quantiles and their log ratio; the fixed random seed is 20260803.
+
+\begin{table}[H]
+\centering
+\caption{Synthetic \(T_{90}\) estimates and 95\% paired instance-bootstrap
+intervals (2,000 replications).  Resource units match
+Table~\ref{tab:simulated-first-passage}.}
+\label{tab:synthetic-quantile-ci}
+\small
+\begin{tabular}{lrrr}
+\toprule
+Dataset & Baseline \(T_{90}\) [95\% CI] & Candidate \(T_{90}\) [95\% CI]
+& \(\Delta_T\) [95\% CI] \\
+\midrule
+SAI-3      & 2.052 [2.050, 2.053] & 1.713 [1.707, 1.718]
+           & \phantom{-}0.180 [0.178, 0.184] \\
+HumanEval+ & 30.36 [29.49, 31.11] & 17.14 [16.61, 17.68]
+           & \phantom{-}0.572 [0.531, 0.608] \\
+MBPP+      & 53.13 [50.89, 55.63] & 71.34 [68.57, 74.86]
+           &          -0.295 [-0.354, -0.242] \\
+BBH        & 1,887.6 [1,686.0, 2,108.8] & 644.8 [582.7, 712.5]
+           & \phantom{-}1.074 [0.966, 1.181] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}

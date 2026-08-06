@@ -1,0 +1,123 @@
+\subsection{Proof of Theorem~\ref{thm:finite-sample}}
+
+\begin{proof}
+For fixed \((d,g,b)\), the scores \(\{U_i^d(b):i\in I_g\}\) are independent
+random variables in \([0,1]\), even when retries and paired designs are
+dependent within an instance.  Their average mean is \(F_g^d(b)\).
+Hoeffding's inequality therefore gives
+\[
+\Prob\{|\widehat F_g^d(b)-F_g^d(b)|>u\}
+\le2e^{-2n_gu^2}.
+\]
+For the weighted mixture, write
+\(\widehat F^d(b)=\sum_g\sum_{i\in I_g}(w_g/n_g)U_i^d(b)\).  Weighted
+Hoeffding gives
+\[
+\Prob\{|\widehat F^d(b)-F^d(b)|>u\}
+\le2\exp\!\left\{-\frac{2u^2}{\sum_gw_g^2/n_g}\right\}.
+\]
+Substitution of the radii in Equation~\eqref{eq:simultaneous-radii} makes each
+tail probability at most \(\alpha/M\).  A union bound over all designs, grid
+budgets, groups, and mixture curves proves Equation~\eqref{eq:simultaneous-bands}.
+
+On this event \(L^d(b)\le F^d(b)\le U^d(b)\) for every grid point.  For every
+\(b<T_d^-\), \(U^d(b)<1-\delta\), hence \(F^d(b)<1-\delta\) and
+\(T_d^-\le T_d\).  At \(b=T_d^+\), \(L^d(b)\ge1-\delta\), hence
+\(F^d(b)\ge1-\delta\) and \(T_d\le T_d^+\).  The lower-band
+admissibility claim follows from \(F^d(B)\ge L^d(B)\).  Finally, if
+\(T_{\widehat d}^+<T_d^-\) for every competitor, then
+\(T_{\widehat d}\le T_{\widehat d}^+<T_d^-\le T_d\), proving uniqueness.
+\end{proof}
+
+\subsection{Proof of Theorem~\ref{thm:action-process}}
+
+\begin{proof}
+Conditional on \((X=x,Z=z)\), total probability over tool trajectories gives
+the complete-attempt success probability
+\(\lambda_d(x,z)=\sum_\tau Q_d(\tau\mid x,z)p_d(x,z,\tau)\).
+IID complete attempts imply IID Bernoulli success indicators, so the first
+successful attempt is geometric when \(\lambda_d(x,z)>0\) and infinite when
+\(\lambda_d(x,z)=0\).  After paying \(c_d(x,z)\), budget \(B\) permits exactly
+\(m_B(x,z)\) complete attempts.  Thus
+\[
+\Prob(\text{verified success by }B\mid x,z)
+=1-\{1-\lambda_d(x,z)\}^{m_B(x,z)}.
+\]
+Taking expectation over \((X,Z)\) proves Equation~\eqref{eq:action-mixture-cdf}.
+\end{proof}
+
+\subsection{Proof of Lemma~\ref{lem:conditional}}
+
+\begin{proof}
+Taking logs in Equation~\eqref{eq:packed-law} and conditioning on \(Z=z\) gives
+\begin{align*}
+\E[\log\E(B_d^{\mathrm{hit}}\mid S,z)\mid z]
+={}&\E[\log\{\kappa(d,S)t_0(d,S)\}\mid z]
++\sum_s\pi_z(s)\{-\log Q_{d,z}(\tau_s^\star)\}.
+\end{align*}
+Because \(s\mapsto\tau_s^\star\) is injective, the final sum is the trajectory
+cross-entropy \(H(\rho_z)+\KL(\rho_z\Vert Q_{d,z})\).  The support condition
+makes it finite, and nonnegativity of KL gives the stated unconstrained minimum.
+\end{proof}
+
+\subsection{Proof of Lemma~\ref{lem:sequential-kl}}
+
+\begin{proof}
+Apply the chain rule for relative entropy to the reference and model laws over
+the stopped sequence of tool identities.  The resulting log likelihood ratio
+is the sum over decisions, including stop, of the conditional ratios given the
+previous tool-identity prefix.  Taking expectation under \(\rho_z\) proves
+Equation~\eqref{eq:sequential-kl}.  If the reference is deterministic, each
+reference conditional is a point mass, whose KL contribution is
+\(-\log q_d(a_k^\star\mid z,a_{<k}^\star)\).
+\end{proof}
+
+\subsection{Proof of Theorem~\ref{thm:four-term}}
+
+\begin{proof}
+Lemma~\ref{lem:conditional} and the tower property give
+\begin{align*}
+\mathcal L(d)
+&=\E_S\log\{\kappa(d,S)t_0(d,S)\}
+  +\E_ZH(\rho_Z)+\varepsilon\\
+&=\E_S\log\{\kappa(d,S)t_0(d,S)\}
+  +H(\pi)-I(S;Z)+\varepsilon.
+\end{align*}
+The second equality uses injectivity of the canonical map, hence
+\(H(\rho_z)=H(\pi_z)\).  Applying the same expression to
+\((d_0,Q^0,Z_0)\) and subtracting proves
+Equation~\eqref{eq:four-term-general}.  If \(Z_0\perp S\), then
+\(I(S;Z_0)=0\); if \(Q^0_{d_0,Z_0}=\rho^0_{Z_0}\), then
+\(\varepsilon_0=0\), which yields
+Equation~\eqref{eq:four-term-baseline}.
+\end{proof}
+
+\subsection{Proof of Proposition~\ref{prop:objective-dependence}}
+
+\begin{proof}
+The expected-log statement is Lemma~\ref{lem:conditional}.  For expected
+resource, Cauchy--Schwarz gives
+\[
+\left(\sum_s\frac{\pi_z(s)a_s}{Q_{d,z}(\tau_s^\star)}\right)
+\left(\sum_sQ_{d,z}(\tau_s^\star)\right)
+\ge\left(\sum_s\sqrt{\pi_z(s)a_s}\right)^2.
+\]
+Restricting support to the canonical trajectories makes the second factor one.
+Equality holds exactly when \(Q_{d,z}(\tau_s^\star)\) is proportional to
+\(\sqrt{\pi_z(s)a_s}\), proving
+Equation~\eqref{eq:sqrt-allocation}.
+\end{proof}
+
+\subsection{Proof of Proposition~\ref{prop:off-reference}}
+
+\begin{proof}
+The general complete-attempt hazard is
+\(Q_{d,z}(\tau_s^\star)p_s+r_{s,z}^{\mathrm{alt}}\).  The
+conditional mean resource excluding signal cost is therefore
+\(\kappa_d(s)/\{Q_{d,z}(\tau_s^\star)p_s+r_{s,z}^{\mathrm{alt}}\}\), while
+tool-PACT predicts \(\kappa_d(s)/\{Q_{d,z}(\tau_s^\star)p_s\}\).  Taking their
+log ratio gives
+Equation~\eqref{eq:off-reference-residual}.  If the hazard ratio is at most \(\xi\),
+monotonicity of \(\log(1+u)\) yields the stated bound.  Adding \(c_d(z)\) gives
+the final nonadditive expression directly.
+\end{proof}
