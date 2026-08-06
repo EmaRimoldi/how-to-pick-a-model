@@ -126,7 +126,7 @@ deployed candidate is Qwen2.5-Coder-7B under six frozen signal--allocation
 conditions.  Its calibration split contains 768 distinct tasks, 256 per mode,
 disjoint from confirmation.  For each task and model, 64 matched-action attempts
 and four attempts per wrong action estimate focused success and the off-mode
-hazard; attempt ledgers estimate \(\kappa\).  The controlled signal channel and
+hazard; attempt ledgers estimate mean retry cost \(\overline K\).  The controlled signal channel and
 allocations are protocol constants rather than learned quantities.  A separate
 practical-router diagnostic fits multinomial logistic regression on stack-trace
 tokens and package metadata and estimates its posterior by a five-fold
@@ -138,7 +138,7 @@ calibrated simulation compares the pairs shown in
 Table~\ref{tab:simulated-first-passage}; it uses seconds for the public panels
 and normalized parameter--token slots for SAI-3.
 SAI-3 instantiates the one-step case
-\(\tau_s^\star=(a_{d,s},\bot)\); it does not test history-dependent tool use.
+\(\tau_s^\star=(a_{d,s})\); it does not test history-dependent tool use.
 
 \section{Results}
 \label{sec:results}
@@ -266,10 +266,10 @@ Table~\ref{tab:simulated-accounting} applies the complete estimator to the same
 paired simulations.  Parentheses under \(\Delta_{\rm obs}\) are Monte Carlo
 standard errors; trial-level standard deviations are \(0.322\), \(1.106\),
 \(1.280\), and \(1.992\) nat in table order.  The identity closes numerically
-inside the packed construction by design.  The residual shown here instead
+inside the canonical one-step construction by design.  The residual shown here instead
 compares that prediction with end-to-end first passage under nonzero success of
 alternative one-step trajectories, and is therefore a test of transport beyond
-PACT.
+the canonical regime.
 
 \begin{table}[t]
 \centering
@@ -293,9 +293,9 @@ BBH        & -1.433 & \phantom{-}1.028 & 0.466 & 0.100 & -0.039 & -0.846 (0.020)
 
 HumanEval+ illustrates the intended positive case: competence and information
 more than offset cost and mismatch, and the end-to-end gain remains positive
-after a \(-0.163\)-nat residual.  MBPP+ gives the opposite decision: the unit-cost
+after a \(-0.163\)-nat residual.  MBPP+ gives the opposite decision: the mean-retry-cost
 penalty dominates, so routing information cannot rescue the candidate.  Large
-SAI-3 and BBH residuals warn against transporting the exact packed identity
+SAI-3 and BBH residuals warn against transporting the exact canonical identity
 when alternative trajectories can solve the task.  Most importantly, BBH has
 \(\Delta_T=1.074\) but \(\Delta_{\rm obs}=-0.846\): the candidate has a better
 90th-percentile completion budget while a worse mean paired log-resource.
@@ -362,9 +362,9 @@ without finite \(T_{90}\).  The present experiments identify only the one-step
 special case of the trajectory KL; sequential tool-call mismatch requires a
 tool benchmark with frozen reference trajectories and held-out instances.
 
-IID retries, stationary hazards, and allocation-invariant costs are
-approximations: history, correlation, caching, batching, verifier latency, and
-adaptive stopping can change \(t_0\) and \(\kappa\).  Charge signal acquisition
+IID retries, mode-sufficient hazards, and stable retry laws are approximations:
+history, correlation, caching, batching, verifier latency, and adaptive stopping
+can change \(t_0\) and \(\overline K\).  Charge signal acquisition
 to the same resource ledger.  Verification certifies only the declared criterion, not
 usefulness or safety.  If resources cannot be credibly scalarized, report a
 Pareto frontier rather than one ranking.

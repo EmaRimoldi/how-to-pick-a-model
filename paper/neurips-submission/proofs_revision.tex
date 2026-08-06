@@ -29,43 +29,62 @@ admissibility claim follows from \(F^d(B)\ge L^d(B)\).  Finally, if
 \(T_{\widehat d}\le T_{\widehat d}^+<T_d^-\le T_d\), proving uniqueness.
 \end{proof}
 
-\subsection{Proof of Theorem~\ref{thm:action-process}}
+\subsection{Proof of Proposition~\ref{prop:retry-first-passage}}
 
 \begin{proof}
-Conditional on \((X=x,Z=z)\), total probability over tool trajectories gives
-the complete-attempt success probability
-\(\lambda_d(x,z)=\sum_\tau Q_d(\tau\mid x,z)p_d(x,z,\tau)\).
-IID complete attempts imply IID Bernoulli success indicators, so the first
-successful attempt is geometric when \(\lambda_d(x,z)>0\) and infinite when
-\(\lambda_d(x,z)=0\).  After paying \(c_d(x,z)\), budget \(B\) permits exactly
-\(m_B(x,z)\) complete attempts.  Thus
+Conditional on \((x,z)\), the retry success indicators are IID Bernoulli with
+parameter \(\lambda_d(x,z)\).  Hence \(R_d(x,z)\) is geometric on
+\(\{1,2,\ldots\}\).  The first identity follows directly from the resource
+ledger: the design pays any incremental signal cost and then the realized cost
+of every retry through the first verified one.  Moreover,
+\begin{align*}
+\E\!\left[\sum_{r=1}^{R_d}K_{d,r}\,\middle|\,x,z\right]
+&=\sum_{r\ge1}\E[K_{d,r}\mathbf 1\{R_d\ge r\}\mid x,z]\\
+&=\overline K_d(x,z)\sum_{r\ge1}\{1-\lambda_d(x,z)\}^{r-1}\\
+&=\frac{\overline K_d(x,z)}{\lambda_d(x,z)}.
+\end{align*}
+The second equality holds because \(\{R_d\ge r\}\) depends only on the first
+\(r-1\) retry outcomes and is therefore independent of the current retry cost
+under the IID-pair assumption.  Adding \(c_d(z)\) proves
+Equation~\eqref{eq:variable-cost-first-passage}.
+\end{proof}
+
+\subsection{Proof of Proposition~\ref{prop:canonical-first-passage}}
+
+\begin{proof}
+Total probability over trajectories and Equation~\eqref{eq:canonical-success}
+give
 \[
-\Prob(\text{verified success by }B\mid x,z)
-=1-\{1-\lambda_d(x,z)\}^{m_B(x,z)}.
+\lambda_d(s,z)
+=\sum_\tau Q_{d,z}(\tau)p_d(s)\mathbf 1\{\tau=\tau_s^\star\}
+=Q_{d,z}(\tau_s^\star)p_d(s).
 \]
-Taking expectation over \((X,Z)\) proves Equation~\eqref{eq:action-mixture-cdf}.
+Apply Proposition~\ref{prop:retry-first-passage} at fixed \((s,z)\), set the
+separate signal cost to zero, and substitute \(t_0(d,s)=1/p_d(s)\) to obtain
+Equation~\eqref{eq:canonical-law}.
 \end{proof}
 
 \subsection{Proof of Lemma~\ref{lem:conditional}}
 
 \begin{proof}
-Taking logs in Equation~\eqref{eq:packed-law} and conditioning on \(Z=z\) gives
+Taking logs in Equation~\eqref{eq:canonical-law} and conditioning on \(Z=z\) gives
 \begin{align*}
 \E[\log\E(B_d^{\mathrm{hit}}\mid S,z)\mid z]
-={}&\E[\log\{\kappa(d,S)t_0(d,S)\}\mid z]
+={}&\E[\log\{\overline K_d(S,z)t_0(d,S)\}\mid z]
 +\sum_s\pi_z(s)\{-\log Q_{d,z}(\tau_s^\star)\}.
 \end{align*}
 Because \(s\mapsto\tau_s^\star\) is injective, the final sum is the trajectory
 cross-entropy \(H(\rho_z)+\KL(\rho_z\Vert Q_{d,z})\).  The support condition
-makes it finite, and nonnegativity of KL gives the stated unconstrained minimum.
+makes it finite.  Nonnegativity of KL gives the stated minimum when the
+mean-cost term is held fixed.
 \end{proof}
 
 \subsection{Proof of Lemma~\ref{lem:sequential-kl}}
 
 \begin{proof}
 Apply the chain rule for relative entropy to the reference and model laws over
-the stopped sequence of tool identities.  The resulting log likelihood ratio
-is the sum over decisions, including stop, of the conditional ratios given the
+the stopped sequence of tool identities.  Because termination is deterministic,
+the resulting log likelihood ratio is the sum over tool selections of the conditional ratios given the
 previous tool-identity prefix.  Taking expectation under \(\rho_z\) proves
 Equation~\eqref{eq:sequential-kl}.  If the reference is deterministic, each
 reference conditional is a point mass, whose KL contribution is
@@ -78,9 +97,9 @@ reference conditional is a point mass, whose KL contribution is
 Lemma~\ref{lem:conditional} and the tower property give
 \begin{align*}
 \mathcal L(d)
-&=\E_S\log\{\kappa(d,S)t_0(d,S)\}
+&=\E_{S,Z}\log\overline K_d(S,Z)+\E_S\log t_0(d,S)
   +\E_ZH(\rho_Z)+\varepsilon\\
-&=\E_S\log\{\kappa(d,S)t_0(d,S)\}
+&=\E_{S,Z}\log\overline K_d(S,Z)+\E_S\log t_0(d,S)
   +H(\pi)-I(S;Z)+\varepsilon.
 \end{align*}
 The second equality uses injectivity of the canonical map, hence
@@ -95,17 +114,10 @@ Equation~\eqref{eq:four-term-baseline}.
 \subsection{Proof of Proposition~\ref{prop:objective-dependence}}
 
 \begin{proof}
-The expected-log statement is Lemma~\ref{lem:conditional}.  For expected
-resource, Cauchy--Schwarz gives
-\[
-\left(\sum_s\frac{\pi_z(s)a_s}{Q_{d,z}(\tau_s^\star)}\right)
-\left(\sum_sQ_{d,z}(\tau_s^\star)\right)
-\ge\left(\sum_s\sqrt{\pi_z(s)a_s}\right)^2.
-\]
-Restricting support to the canonical trajectories makes the second factor one.
-Equality holds exactly when \(Q_{d,z}(\tau_s^\star)\) is proportional to
-\(\sqrt{\pi_z(s)a_s}\), proving
-Equation~\eqref{eq:sqrt-allocation}.
+Equation~\eqref{eq:cost-policy-coupling} is the law of total expectation over
+the policy-induced trajectory.  If the conditional retry cost is constant in
+\(\tau\), it factors out of the sum and the remaining trajectory probabilities
+sum to one.  The remaining claims follow from Lemma~\ref{lem:conditional}.
 \end{proof}
 
 \subsection{Proof of Proposition~\ref{prop:off-reference}}
@@ -114,8 +126,9 @@ Equation~\eqref{eq:sqrt-allocation}.
 The general complete-attempt hazard is
 \(Q_{d,z}(\tau_s^\star)p_s+r_{s,z}^{\mathrm{alt}}\).  The
 conditional mean resource excluding signal cost is therefore
-\(\kappa_d(s)/\{Q_{d,z}(\tau_s^\star)p_s+r_{s,z}^{\mathrm{alt}}\}\), while
-tool-PACT predicts \(\kappa_d(s)/\{Q_{d,z}(\tau_s^\star)p_s\}\).  Taking their
+\(\overline K_d(s,z)/\{Q_{d,z}(\tau_s^\star)p_s+r_{s,z}^{\mathrm{alt}}\}\),
+while the canonical regime predicts
+\(\overline K_d(s,z)/\{Q_{d,z}(\tau_s^\star)p_s\}\).  Taking their
 log ratio gives
 Equation~\eqref{eq:off-reference-residual}.  If the hazard ratio is at most \(\xi\),
 monotonicity of \(\log(1+u)\) yields the stated bound.  Adding \(c_d(z)\) gives
