@@ -46,8 +46,9 @@ Equation~\eqref{eq:variable-cost-first-passage}.
 \subsection{Proof of Proposition~\ref{prop:tool-first-passage}}
 
 \begin{proof}
-In the reference-sequence regime, a complete retry succeeds only when the tool
-policy reproduces \(\mathbf a^\star(x)\), an event of probability
+In the reference-combination regime, a complete retry succeeds only when the
+tool policy reproduces \(\mathcal G^\star(x)\) through the selected batching,
+an event of probability
 \(q_d^\star(x,z)\), and the resulting execution is verified with conditional
 probability \(p_d(x)\).  Therefore
 \(\lambda_d(x,z)=q_d^\star(x,z)p_d(x)\).  Substituting this identity and
@@ -58,18 +59,18 @@ separate signal cost, proves Equation~\eqref{eq:tool-first-passage}.
 \subsection{Proof of Lemma~\ref{lem:tool-cross-entropy}}
 
 \begin{proof}
-At decision \(k\), conditional on \(L\ge k\), the cross-entropy identity gives
+At dispatch \(k\), conditional on \(L\ge k\), the cross-entropy identity gives
 \begin{align*}
-&\E[-\log q_d(A_k^\star\mid Z,H_k^\star)\mid L\ge k]\\
-&\quad=H(A_k^\star\mid Z,H_k^\star,L\ge k)
+&\E[-\log q_d(C_k^\star\mid Z,H_k^\star)\mid L\ge k]\\
+&\quad=H(C_k^\star\mid Z,H_k^\star,L\ge k)
 +\E\!\left[\KL\!\left(\rho_k(\cdot\mid Z,H_k^\star)
 \Vert q_d(\cdot\mid Z,H_k^\star)\right)\middle|L\ge k\right].
 \end{align*}
 The definition of conditional mutual information also gives
 \[
-H(A_k^\star\mid Z,H_k^\star,L\ge k)
-=H(A_k^\star\mid H_k^\star,L\ge k)
--I(A_k^\star;Z\mid H_k^\star,L\ge k).
+H(C_k^\star\mid Z,H_k^\star,L\ge k)
+=H(C_k^\star\mid H_k^\star,L\ge k)
+-I(C_k^\star;Z\mid H_k^\star,L\ge k).
 \]
 Multiplying by \(\Prob(L\ge k)\) and summing over \(k\) proves
 Equation~\eqref{eq:tool-cross-entropy}.
@@ -84,14 +85,14 @@ Taking logarithms in Equation~\eqref{eq:tool-first-passage}, then averaging over
 \mathcal L(d)
 ={}&\E_{X,Z}\log\overline K_d(X,Z)+\E_X\log t_0(d,X)\\
 &+\E\!\left[-\sum_{k=1}^{L}
-\log q_d(A_k^\star\mid Z,H_k^\star)\right].
+\log q_d(C_k^\star\mid Z,H_k^\star)\right].
 \end{align*}
 Lemma~\ref{lem:tool-cross-entropy} turns the last term into
 \(\mathcal H_{\mathrm{ref}}-G_Z+\varepsilon_d\).  Applying the same expression
 to \(d_0\) and subtracting cancels the common reference entropy and yields
 Equation~\eqref{eq:four-term-general}.  If \(Z_0\) is conditionally
 uninformative, \(G_{Z_0}=0\); if its policy matches the corresponding
-reference-tool prior, \(\varepsilon_{d_0}=0\).  This proves
+reference-batch prior, \(\varepsilon_{d_0}=0\).  This proves
 Equation~\eqref{eq:four-term-baseline}.
 \end{proof}
 
@@ -106,7 +107,7 @@ q_d^\star(x,z)p_d(x)+r_d^{\mathrm{alt}}(x,z).
 Excluding separate signal cost, Proposition~\ref{prop:retry-first-passage}
 therefore gives actual conditional mean
 \(\overline K_d(x,z)/\{q_d^\star(x,z)p_d(x)+r_d^{\mathrm{alt}}(x,z)\}\),
-whereas the reference-sequence regime predicts
+whereas the reference-combination regime predicts
 \(\overline K_d(x,z)/\{q_d^\star(x,z)p_d(x)\}\).  The logarithm of the first
 quantity minus the logarithm of the second is exactly
 Equation~\eqref{eq:off-reference-residual}.  If the displayed hazard ratio is

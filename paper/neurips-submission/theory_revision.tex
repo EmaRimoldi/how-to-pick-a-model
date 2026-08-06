@@ -6,12 +6,12 @@ verified first-passage resource, measured in a predeclared unit such as time,
 tokens, energy, or money.  Simultaneous finite-sample confidence bands provide
 a conservative rule for admitting and comparing a finite menu of deployment
 designs, including an explicit no-winner outcome.  To explain measured
-differences, we introduce a sequential tool-allocation process and isolate
-a restricted reference-sequence regime.  In that regime, expected log
+differences, we introduce a batched tool-allocation process and isolate
+a restricted reference-combination regime.  In that regime, expected log
 conditional first-passage resource separates exactly into relative mean retry
 cost, focused competence, signal information about appropriate tool use, and
-sequential tool-policy mismatch.  Controlled Qwen2.5-Coder
-experiments recover the one-step special case with near-unit inverse-share
+batched tool-policy mismatch.  Controlled Qwen2.5-Coder
+experiments recover the one-dispatch special case with near-unit inverse-share
 scaling and decision-accurate accounting while rejecting exact closure; public
 benchmark traces further show that reliability targets are often unattained.
 Thus verified proper time selects the deployment, whereas the four-term
@@ -47,9 +47,9 @@ observed verifier-backed first passage.
 Our primary contribution is a finite-sample selection rule for that quantile.
 It treats distinct task instances as independent clusters, allows arbitrary
 dependence among retries and paired model runs on the same instance, and either
-certifies separation or reports no winner.  A sequential tool-allocation model
+certifies separation or reports no winner.  A batched tool-allocation model
 then connects tool selection to first-passage resource.  Its restricted
-reference-sequence regime yields the diagnostic identity against an
+reference-combination regime yields the diagnostic identity against an
 uninformative, reference-prior-matched baseline,
 \begin{equation}
 \begin{aligned}
@@ -71,10 +71,10 @@ explains the mechanism when its assumptions survive held-out diagnostics.
 We make three contributions.  First, we define reliability-targeted verified
 proper time and give simultaneous finite-sample CDF, quantile, admissibility,
 and winner guarantees for a finite model menu.
-Second, we derive the exact mean first-passage resource of a sequential tool
-policy under complete IID retries.  A transparent reference-sequence
+Second, we derive the exact mean first-passage resource of a batched tool
+policy under complete IID retries.  A transparent reference-combination
 specialization yields a mismatch that is a sum of per-decision tool-policy
-divergences.  Third, we test the one-step restriction with
+divergences.  Third, we test the one-dispatch restriction with
 real language models.  In 175,104 held-out executions over 768 controlled
 tasks, the inverse-share exponent is \(0.987\), the four-term residual RMS is
 \(0.015\) nat, and model choice agrees with the held-out oracle in all six conditions.
@@ -294,49 +294,70 @@ Equation~\eqref{eq:simultaneous-radius}.
 \section{Tool Allocation and Four-Term Accounting}
 \label{sec:tool-accounting}
 
-\begin{definition}[Reference tool-call sequence]
+The tool-use literature describes callable capabilities as external tools,
+APIs, functions, or actions~\citep{schick2023toolformer,yao2023react}.  We use
+\emph{available tool set}; independent calls may be dispatched in parallel, as
+in parallel function-calling systems~\citep{kim2024llmcompiler}.
+
+\begin{definition}[Available tools and reference tool combination]
 \label{def:reference-tools}
-Fix a finite tool set \(\mathcal A\).  Each task instance \(x\) is associated
-with a reference tool-call sequence
+Fix a finite available tool set \(\mathcal A\): the external callable
+capabilities exposed by deployment design \(d\) to the agentic LLM.  Elements
+of \(\mathcal A\) may be functions, APIs, retrievers, code executors, browsers,
+or orchestration primitives such as spawning a sub-agent.
+
+Assume that every task instance \(x\) admits at least one finite combination of
+tool calls that can produce a verified artifact.  A reference combination is
+represented by a directed acyclic dependency graph
 \[
-\mathbf a^\star(x)
-=\bigl(a_1^\star(x),\ldots,a_{L(x)}^\star(x)\bigr),
-\qquad a_k^\star(x)\in\mathcal A.
+\mathcal G^\star(x)
+=\bigl(\mathcal V^\star(x),\mathcal E^\star(x),\ell^\star_x\bigr),
+\qquad \ell_x^\star:\mathcal V^\star(x)\to\mathcal A,
 \]
-It represents one successful ordered pattern of tool use for solving \(x\),
-but need not be the unique successful sequence.  Let \(A_k^\star\) be the
-reference tool at decision \(k\), and let \(H_k^\star\) contain the preceding
-reference tool calls and outputs.  The pre-solution observation \(Z\) contains
+where each node is a tool call and an edge \(u\to v\) means that call \(v\) may
+depend on the output of call \(u\).  Independent nodes may execute in parallel.
+The graph identifies one successful tool combination; uniqueness is not
+assumed, and other combinations may also be verified.  Fix a topological batching
+\(\mathbf C^\star(x)=(C_1^\star(x),\ldots,C_{L(x)}^\star(x))\), where each
+\(C_k^\star(x)\) contains mutually independent reference calls that can be
+dispatched together.  Let \(H_k^\star\) contain the completed earlier batches
+and their outputs.  The pre-solution observation \(Z\) contains
 the visible task request and any optional side information made available to
 the tool-selection policy before the attempt begins; it contains neither a
 candidate solution nor a verifier outcome.  Without side information, \(Z\) is
 simply the visible task request.
 \end{definition}
 
-\begin{definition}[Sequential tool-allocation policy]
+\begin{definition}[Batched tool-allocation policy]
 \label{def:tool-policy}
 Fix a backbone model \(M\) and a deployment design \(d\) built on \(M\).
-Within one complete attempt, the next tool identity satisfies
+At dispatch round \(k\) of one complete attempt, let
+\(\mathcal C_d(H_k)\) be the set of admissible nonempty batches of calls from
+\(\mathcal A\).  The next batch satisfies
 \begin{equation}
-A_k\sim q_d(\cdot\mid Z,H_k),
-\qquad A_k\in\mathcal A,
+C_k\sim q_d(\cdot\mid Z,H_k),
+\qquad C_k\in\mathcal C_d(H_k),
 \label{eq:tool-policy}
 \end{equation}
-where \(H_k\) contains the preceding tool calls and outputs.  Thus
-\(q_d(a\mid z,h)\) is the allocation probability assigned to tool \(a\) at
-that decision.  Write \(\mathbf A=(A_1,\ldots,A_{\widehat L})\) for the
-complete executed sequence, where \(\widehat L\) is its possibly random number
-of tool calls.  If tool outputs are deterministic and design \(d\) terminates
-after \(L(x)\) calls along the reference histories, the probability that it
-reproduces the reference sequence for \(x\) is
+where the calls in \(C_k\) are launched concurrently and \(H_k\) contains the
+completed earlier calls and outputs.  A singleton batch recovers ordinary
+sequential tool use; a multi-call batch or a sub-agent-spawning primitive
+captures parallel execution.  Thus \(k\) indexes policy dispatches, not a
+forced serialization of physical calls.  Write
+\(\mathbf C=(C_1,\ldots,C_{\widehat L})\) for the executed batched plan.
+
+If tool outputs and the dispatcher are deterministic along the reference
+histories, the probability that \(d\) reproduces the selected reference
+combination and batching is
 \begin{equation}
 q_d^\star(x,z)
 :=\prod_{k=1}^{L(x)}
-q_d\!\left(a_k^\star(x)\mid z,h_k^\star(x)\right).
-\label{eq:reference-sequence-probability}
+q_d\!\left(C_k^\star(x)\mid z,h_k^\star(x)\right).
+\label{eq:reference-combination-probability}
 \end{equation}
-Interpretation of tool outputs and final-answer generation remain part of
-design \(d\).
+Interpretation of outputs and final-answer generation remain part of design
+\(d\); the policy above isolates allocation among available tools and parallel
+call batches.
 \end{definition}
 
 \begin{proposition}[Variable-cost retry identity]
@@ -369,16 +390,21 @@ fresh run randomness and carries no state across retries.  Stateful or adaptive
 retry policies remain covered by direct proper-time measurement, but not by
 Proposition~\ref{prop:retry-first-passage} without further analysis.
 
-\subsection{Reference-sequence regime}
+\subsection{Reference-combination regime}
 
 To obtain an exact accounting identity, suppose that reproducing
-\(\mathbf a^\star(x)\) succeeds with probability \(p_d(x)>0\), executions that
+\(\mathcal G^\star(x)\) through its selected batching succeeds with probability
+\(p_d(x)>0\), executions that
 deviate from it have zero verified-success probability, and the signal affects
-success only through tool allocation.  Define \(t_0(d,x):=1/p_d(x)\).
+success only through tool allocation.  Define \(t_0(d,x):=1/p_d(x)\).  This
+restriction is deliberately stronger than
+Definition~\ref{def:reference-tools}: it isolates one reference combination to
+obtain an exact identity, while Proposition~\ref{prop:off-reference} measures
+verified success contributed by alternatives.
 
 \begin{proposition}[Tool-allocation first-passage identity]
 \label{prop:tool-first-passage}
-In the reference-sequence regime,
+In the reference-combination regime,
 \begin{equation}
 \lambda_d(x,z)=q_d^\star(x,z)p_d(x).
 \label{eq:reference-success-probability}
@@ -393,45 +419,45 @@ the retry ledger, then
 \end{proposition}
 
 We now introduce the reference distribution needed for the decomposition.  At
-reference decision \(k\), let
+reference dispatch \(k\), let
 \begin{equation}
-\rho_k(a\mid z,h)
-:=\Prob(A_k^\star=a\mid Z=z,H_k^\star=h,L\ge k).
-\label{eq:reference-tool-posterior}
+\rho_k(c\mid z,h)
+:=\Prob(C_k^\star=c\mid Z=z,H_k^\star=h,L\ge k).
+\label{eq:reference-batch-posterior}
 \end{equation}
-This is a posterior over the next reference tool, not a distribution over tool
-availability.  It may be one-hot when the reference tool is determined by the
+This is a posterior over the next reference call batch, not a distribution
+over tool availability.  It may be one-hot when the batch is determined by the
 observed context; the distributional notation also covers residual uncertainty
-across instances with the same context.  Assume \(\rho_k(a\mid z,h)>0\) implies
-\(q_d(a\mid z,h)>0\).  Define
+across instances with the same context.  Assume \(\rho_k(c\mid z,h)>0\) implies
+\(q_d(c\mid z,h)>0\).  Define
 \begin{align}
 \mathcal H_{\mathrm{ref}}
 &:=\sum_{k\ge1}\Prob(L\ge k)
-H(A_k^\star\mid H_k^\star,L\ge k),\nonumber\\
+H(C_k^\star\mid H_k^\star,L\ge k),\nonumber\\
 G_Z
 &:=\sum_{k\ge1}\Prob(L\ge k)
-I(A_k^\star;Z\mid H_k^\star,L\ge k),\nonumber\\
+I(C_k^\star;Z\mid H_k^\star,L\ge k),\nonumber\\
 \varepsilon_d
 &:=\sum_{k\ge1}\Prob(L\ge k)
 \E\!\left[
 \KL\!\left(\rho_k(\cdot\mid Z,H_k^\star)
 \Vert q_d(\cdot\mid Z,H_k^\star)\right)
 \,\middle|\,L\ge k\right].
-\label{eq:sequential-tool-mismatch}
+\label{eq:batched-tool-mismatch}
 \end{align}
 
-\begin{lemma}[Sequential tool-allocation decomposition]
+\begin{lemma}[Batched tool-allocation decomposition]
 \label{lem:tool-cross-entropy}
-The expected negative log probability assigned to the reference tool calls is
+The expected negative log probability assigned to the reference call batches is
 \begin{equation}
 \E\!\left[-\sum_{k=1}^{L}
-\log q_d(A_k^\star\mid Z,H_k^\star)\right]
+\log q_d(C_k^\star\mid Z,H_k^\star)\right]
 =\mathcal H_{\mathrm{ref}}-G_Z+\varepsilon_d.
 \label{eq:tool-cross-entropy}
 \end{equation}
 Thus \(G_Z\) measures how much the signal reduces uncertainty about appropriate
-tool decisions, while \(\varepsilon_d\) measures the remaining mismatch with
-the model policy.
+tool batches, while \(\varepsilon_d\) measures the remaining mismatch with the
+model's allocation policy.
 \end{lemma}
 
 Define the expected-log conditional first-passage diagnostic
@@ -446,8 +472,8 @@ It is neither \(\E\log B_d^{\mathrm{hit}}\),
 \begin{theorem}[Four-term tool-allocation decomposition]
 \label{thm:four-term}
 Let designs \(d_0,d\) share the task distribution, tool set, and reference
-tool-call sequences, and use signals \(Z_0,Z\).  Suppose both satisfy the
-reference-sequence regime and have no separate signal cost.  Define
+tool combinations, and use signals \(Z_0,Z\).  Suppose both satisfy the
+reference-combination regime and have no separate signal cost.  Define
 \begin{align*}
 C&:=\E_{X,Z_0}\log\overline K_{d_0}(X,Z_0)
 -\E_{X,Z}\log\overline K_d(X,Z),\\
@@ -459,7 +485,7 @@ Then
 =C+\Phi+G_Z-G_{Z_0}+\varepsilon_{d_0}-\varepsilon_d.
 \label{eq:four-term-general}
 \end{equation}
-If \(Z_0\) is conditionally uninformative about every reference tool decision
+If \(Z_0\) is conditionally uninformative about every reference dispatch
 and the baseline policy matches the corresponding prior, then
 \(G_{Z_0}=\varepsilon_{d_0}=0\), and
 \begin{equation}
@@ -467,7 +493,7 @@ and the baseline policy matches the corresponding prior, then
 \label{eq:four-term-baseline}
 \end{equation}
 The four terms are relative mean retry cost, focused competence, signal
-information about appropriate tool use, and sequential tool-policy mismatch.
+information about appropriate tool use, and batched tool-policy mismatch.
 Because the policy can change the retry-cost distribution, this is a
 mechanistic accounting rather than a causal separation.
 \end{theorem}
@@ -477,11 +503,11 @@ mechanistic accounting rather than a causal separation.
 Let
 \[
 r_d^{\mathrm{alt}}(x,z)
-:=\Prob(V(x,Y_r)=1,\mathbf A\ne\mathbf a^\star(x)\mid x,z)
+:=\Prob(V(x,Y_r)=1,\mathbf C\ne\mathbf C^\star(x)\mid x,z)
 \]
 be the per-retry verified-success probability contributed by non-reference
 executions.  Ignoring signal cost, define the log residual as the actual
-conditional mean minus the reference-regime prediction:
+conditional mean minus the reference-combination prediction:
 \begin{equation}
 r_d(x,z)=-\log\!\left(
 1+\frac{r_d^{\mathrm{alt}}(x,z)}{q_d^\star(x,z)p_d(x)}
@@ -509,7 +535,7 @@ Verifiable task family, candidate designs \(\mathcal D\), verifier \(V\),
 resource unit, tolerance \(\delta\), horizon \(B\), budget grid \(\mathcal B\),
 and confidence level \(1-\alpha\).\\[0.25em]
 \textit{Output:} &
-A statistically certified winner or ``no winner,'' plus an optional sequential
+A statistically certified winner or ``no winner,'' plus an optional batched
 tool-allocation mechanism audit.\\[0.35em]
 1 & \textit{Freeze the target.} Declare \(V\), the resource unit, \(\delta\),
 \(B\), \(\mathcal B\), and the candidate menu.\\
@@ -520,11 +546,11 @@ simultaneous CDF bands, and \([T_d^-,T_d^+]\) for every design.\\
 4 & \textit{Certify or abstain.} Name a winner only if it is admissible and its
 upper proper-time bound lies below every competitor's lower bound.\\
 5 & \textit{Audit the mechanism.} On disjoint calibration and confirmation data,
-estimate reference tool-call probabilities, conditional success, variable
+estimate reference call-batch probabilities, conditional success, variable
 retry costs, and any incremental signal cost; test IID retries,
-reference-sequence adequacy, and off-reference success.\\
-6 & \textit{Explain, do not rerank.} Where the reference-sequence regime is
-adequate, report the four terms, sequential tool-policy mismatch, and held-out
+reference-combination adequacy, and off-reference success.\\
+6 & \textit{Explain, do not rerank.} Where the reference-combination regime is
+adequate, report the four terms, batched tool-policy mismatch, and held-out
 residual; keep the direct proper-time certificate as selection authority.
 \end{tabular}
 \end{algorithm}

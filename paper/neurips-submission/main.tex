@@ -138,8 +138,8 @@ with temperature \(0.6\), top-\(p=0.95\), and at most ten attempts.  The
 calibrated simulation compares the pairs shown in
 Table~\ref{tab:simulated-first-passage}; it uses seconds for the public panels
 and normalized parameter--token slots for SAI-3.
-SAI-3 instantiates the one-step case \(L(x)=1\), so
-\(q_d^\star(x,z)=q_d(a_1^\star(x)\mid z)\); it does not test
+SAI-3 instantiates the one-dispatch case \(L(x)=1\), so
+\(q_d^\star(x,z)=q_d(C_1^\star(x)\mid z)\); it does not test
 history-dependent tool use.
 
 \section{Results}
@@ -267,10 +267,10 @@ Table~\ref{tab:simulated-accounting} applies the complete estimator to the same
 paired simulations.  Parentheses under \(\Delta_{\rm obs}\) are Monte Carlo
 standard errors; trial-level standard deviations are \(0.322\), \(1.106\),
 \(1.280\), and \(1.992\) nat in table order.  The identity closes numerically
-inside the exact one-step reference-sequence construction by design.  The
+inside the exact one-dispatch reference-combination construction by design.  The
 residual shown here instead compares that prediction with end-to-end first
 passage under nonzero success of alternative one-step tool choices, and is
-therefore a test of transport beyond the reference-sequence regime.
+therefore a test of transport beyond the reference-combination regime.
 
 \begin{table}[t]
 \centering
@@ -297,7 +297,7 @@ HumanEval+ illustrates the intended positive case: competence and information
 more than offset cost and mismatch, and the end-to-end gain remains positive
 after a \(-0.163\)-nat residual.  MBPP+ gives the opposite decision: the mean-retry-cost
 penalty dominates, so routing information cannot rescue the candidate.  Large
-SAI-3 and BBH residuals warn against transporting the exact reference-sequence
+SAI-3 and BBH residuals warn against transporting the exact reference-combination
 identity when alternative tool choices can solve the task.  Most importantly, BBH has
 \(\Delta_T=1.074\) but \(\Delta_{\rm obs}=-0.846\): the candidate has a better
 90th-percentile completion budget while a worse mean paired log-resource.
@@ -361,11 +361,11 @@ there.
 HumanEval+ and MBPP+ classes are length strata, not learned solver structures;
 BBH lacks a 32B run; and cells below 90\% after ten attempts remain censored,
 without finite \(T_{90}\).  The present experiments identify only the one-step
-special case of the sequential tool-policy mismatch; history-dependent
-evaluation requires a tool benchmark with frozen reference sequences and
+special case of the batched tool-policy mismatch; history-dependent
+evaluation requires a tool benchmark with frozen reference combinations and
 held-out instances.
 
-IID retries, reference-sequence success restrictions, and stable retry laws are
+IID retries, reference-combination success restrictions, and stable retry laws are
 approximations:
 history, correlation, caching, batching, verifier latency, and adaptive stopping
 can change \(t_0\) and \(\overline K\).  Charge signal acquisition
