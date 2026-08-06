@@ -6,11 +6,11 @@ verified first-passage resource, measured in a predeclared unit such as time,
 tokens, energy, or money.  Simultaneous finite-sample confidence bands provide
 a conservative rule for admitting and comparing a finite menu of deployment
 designs, including an explicit no-winner outcome.  To explain measured
-differences, we introduce a general tool-trajectory success process and derive
-PACT, Pre-solution Allocation with Constant-cost Trials, as a restricted
-canonical-trajectory case.  Inside PACT, expected log conditional first-passage
-resource separates exactly into relative unit cost, focused competence, mode
-information, and sequential tool-policy mismatch.  Controlled Qwen2.5-Coder
+differences, we introduce a general tool-trajectory success process and isolate
+a restricted canonical-trajectory regime.  In that regime, expected log
+conditional first-passage resource separates exactly into relative mean retry
+cost, focused competence, mode information, and sequential tool-policy
+mismatch.  Controlled Qwen2.5-Coder
 experiments recover the one-step special case with near-unit inverse-share
 scaling and decision-accurate accounting while rejecting exact closure; public
 benchmark traces further show that reliability targets are often unattained.
@@ -48,13 +48,14 @@ Our primary contribution is a finite-sample selection rule for that quantile.
 It treats distinct task instances as independent clusters, allows arbitrary
 dependence among retries and paired model runs on the same instance, and either
 certifies separation or reports no winner.  A general tool-trajectory model then
-connects tool selection to the complete first-passage distribution.  Its restricted
-PACT case yields the diagnostic identity
+connects tool selection to first-passage resource.  Its restricted
+canonical-trajectory regime yields the diagnostic identity against an
+uninformative, reference-prior-matched baseline,
 \begin{equation}
 \begin{aligned}
-\Delta_{\mathrm{pack}}
-={}&\underbrace{\E_S\!\left[\log
-  \frac{\kappa(d_0,S)}{\kappa(d,S)}\right]}_{\text{relative unit cost}}
+\Delta_{\mathrm{traj}}
+={}&\underbrace{\E_{S,Z_0}\log\overline K_{d_0}(S,Z_0)
+-\E_{S,Z}\log\overline K_d(S,Z)}_{\text{relative mean retry cost}}
 +\underbrace{\E_S\!\left[\log
   \frac{t_0(d_0,S)}{t_0(d,S)}\right]}_{\text{focused competence}}\\[-0.15em]
 &+\underbrace{I(S;Z)}_{\text{mode information}}
@@ -63,16 +64,16 @@ PACT case yields the diagnostic identity
 \end{aligned}
 \end{equation}
 This identity concerns expected log \emph{conditional mean} resource inside
-PACT.  It does not decompose the proper-time quantile and is not used to select
+this regime.  It does not decompose the proper-time quantile and is not used to select
 a model.  Direct quantile measurement selects; Equation~\eqref{eq:intro-four-term}
 explains the mechanism when its assumptions survive held-out diagnostics.
 
 We make three contributions.  First, we define reliability-targeted verified
 proper time and give simultaneous finite-sample CDF, quantile, admissibility,
 and winner guarantees for a finite model menu and predeclared subpopulations.
-Second, we derive the exact first-passage distribution of a sequential tool
-policy under complete IID retries.  PACT is a transparent canonical-trajectory
-special case whose mismatch is a KL over tool trajectories and decomposes into
+Second, we derive the exact mean first-passage resource of a sequential tool
+policy under complete IID retries.  A transparent canonical-trajectory
+specialization has a KL mismatch over tool trajectories that decomposes into
 per-step tool-call divergences.  Third, we test the one-step restriction with
 real language models.  In 175,104 held-out trajectories over 768 controlled
 tasks, the inverse-share exponent is \(0.987\), the four-term residual RMS is
@@ -172,20 +173,8 @@ credibly scalarized require a Pareto frontier.
 \section{Finite-Sample Certification}
 \label{sec:finite-sample}
 
-Let \(\mathcal G\) be a finite collection of predeclared, disjoint instance
-groups.  The deployment weight \(w_g\ge0\) is the expected frequency of group
-\(g\), with \(\sum_{g\in\mathcal G}w_g=1\).
-Let \(x_1,\ldots,x_n\) be independent task instances.  Each instance \(i\)
-has a predeclared group label \(g_i\in\mathcal G\).  Define
-\[
-  I_g:=\{i:g_i=g\},
-  \qquad
-  n_g:=|I_g|.
-\]
-For each design \(d\), instance \(i\), and repetition \(r\in\{1,\ldots,R\}\),
-let \(B_{ir}^d\) be the verified first-passage resource.  Runs belonging
-to the same instance may be dependent; independence is required only across
-distinct instances.
+Let \(x_1,\ldots,x_n\) be independent task instances. For each design \(d\), instance \(x_i\), and retrial \(r\in\{1,\ldots,R\}\),
+let \(B_{ir}^d\) be the verified first-passage resource.
 
 For a finite budget grid \(\mathcal B\), define
 \begin{equation}
@@ -258,181 +247,230 @@ distribution free but conservative~\citep{hoeffding1963probability}; bootstrap o
 reported descriptively, while winner claims must preserve task-level
 clustering and multiplicity.
 
-\section{Tool Trajectories and PACT Accounting}
+\section{Tool Trajectories and Four-Term Accounting}
 \label{sec:action-process}
 
-\begin{definition}[Task modes and pre-solution information]
-\label{def:packed-objects}
-The finite variable \(S\in\mathcal S\) indexes predeclared solver-relevant
-subfamilies: \(x\mid S=s\sim\mu_s\), \(\pi(s)=\Prob(S=s)\), and
-\(\mu=\sum_s\pi(s)\mu_s\).  A mode represents shared structure that changes
-which tool trajectory is effective, not merely a post-hoc label.  A signal
-\(Z\in\mathcal Z\) is computed only from information available before a
-candidate solution or verifier outcome.  It changes the prior \(\pi\) to
-\(\pi_z(s)=\Prob(S=s\mid Z=z)\) and may be informative or independent of \(S\).
-Modes, the signal extractor, and their estimation data are frozen before
-confirmation.
+\begin{definition}[Latent task modes and canonical tool trajectories]
+\label{def:canonical-objects}
+Let \(X\sim\mu\) be a task instance.  The finite latent variable
+\(S\in\mathcal S\) groups instances that share solver-relevant structural
+regularities.  In particular, instances in the same mode can be addressed by
+the same canonical tool trajectory.  For every \(s\in\mathcal S\), fix one
+canonical trajectory \(\tau_s^\star\).  If two proposed groups have the same
+canonical trajectory, they are treated as one mode in this analysis.
+
+Let \(\pi(s)=\Prob(S=s)\).  An optional pre-solution signal
+\(Z\in\mathcal Z\), available before the first tool call, induces the posterior
+\(\pi_z(s)=\Prob(S=s\mid Z=z)\).  If no signal is used, \(Z\) is constant and
+\(\pi_z=\pi\).  Define the corresponding reference-trajectory distribution by
+\begin{equation}
+\rho_z(\tau)
+:=\sum_{s\in\mathcal S}\pi_z(s)
+\mathbf 1\{\tau=\tau_s^\star\}.
+\label{eq:reference-trajectory-law}
+\end{equation}
+Equivalently, \(\rho_z(\tau_s^\star)=\pi_z(s)\).  Thus \(\rho_z\) is the
+posterior over the canonical trajectories after observing \(z\): it describes
+which reference trajectory is appropriate for the current instance, not which
+trajectory the model generates.  Modes, canonical trajectories, and the signal
+extractor are frozen before confirmation.
 \end{definition}
 
 \begin{definition}[Sequential tool policy and trajectory]
 \label{def:action-process}
-Fix a deployment design \(d\), a finite tool set \(\mathcal A\), and a stop
-symbol \(\bot\).  Before decision \(k\), the history \(H_k\) contains the
-instance, the pre-solution signal, and all previous tool calls, arguments, and
-outputs.  The random variable \(A_k\) is the next tool identity, drawn from the
-frozen policy
+Fix a backbone model \(M\), a deployment design \(d\) built on \(M\), and a
+finite tool set \(\mathcal A\). Consider one complete attempt, suppressing the
+retry index. Before the \(k\)-th tool selection within that attempt, the history
+\(H_k\) contains the task instance, previously selected tools, and their outputs.
+Given the pre-solution signal \(Z\), the next tool identity satisfies
 \begin{equation}
-q_d(a\mid Z,H_k),\qquad a\in\mathcal A\cup\{\bot\}.
+A_k\sim q_d(\cdot\mid Z,H_k),
+\qquad A_k\in\mathcal A.
 \label{eq:tool-policy}
 \end{equation}
-A realization \(\tau=(a_1,\ldots,a_K,\bot)\) is a \emph{tool trajectory};
-\(\boldsymbol{\tau}\) denotes the corresponding random trajectory.  The policy,
-together with the frozen tool environment, induces a distribution
-\(Q_d(\cdot\mid x,z)\) over tool trajectories.  In a deterministic environment
-its probability along the realized histories is
+Let \(L\) be the number of tool calls made before the design terminates.
+A realization
+\[
+\tau=(a_1,\ldots,a_L)
+\]
+is a \emph{tool trajectory}: the ordered sequence of tool identities selected
+during one complete attempt. The policy, interacting with the fixed tool set,
+induces a distribution \(Q_d(\cdot\mid x,z)\) over variable-length tool
+trajectories.  If termination is a deterministic rule in design \(d\), its
+probability along deterministic tool outputs is
 \begin{equation}
 Q_d(\tau\mid x,z)
-=\prod_{k=1}^{K+1}q_d(a_k\mid z,h_k),
-\qquad a_{K+1}=\bot.
+=
+\prod_{k=1}^{L}q_d(a_k\mid z,h_k).
 \label{eq:trajectory-policy}
 \end{equation}
-Arguments, use of tool outputs, and final-answer generation remain part of
-design \(d\); conditioning on tool identities will separate these capabilities
-from tool selection below.
+Interpretation of tool outputs and final-answer generation remain part of
+design \(d\).
 \end{definition}
 
-\begin{theorem}[Tool-trajectory first-passage law]
-\label{thm:action-process}
-For a complete attempt on \((x,z)\), let
-\(p_d(x,z,\tau)\) be the probability of a verified artifact conditional on
-tool trajectory \(\tau\).  Its unconditional success probability is
-\begin{equation}
-  \lambda_d(x,z)
-  :=\sum_{\tau}Q_d(\tau\mid x,z)p_d(x,z,\tau).
-\label{eq:action-hazard}
-\end{equation}
-Suppose acquiring the signal costs \(c_d(x,z)\ge0\), complete attempts are IID
-conditional on \((x,z)\), and each attempt costs \(\kappa_d(x,z)>0\).  Let
-\begin{equation}
-  m_B(x,z)
-  :=\max\!\left\{0,
-    \left\lfloor\frac{B-c_d(x,z)}{\kappa_d(x,z)}\right\rfloor
-  \right\}.
-\label{eq:trajectory-attempts}
-\end{equation}
-The successful-attempt index is geometric with parameter \(\lambda_d(x,z)\),
-with infinite value when \(\lambda_d(x,z)=0\), and
-\begin{equation}
-  F_d(B)
-  =\E_{X,Z}\!\left[
-    1-\{1-\lambda_d(X,Z)\}^{m_B(X,Z)}
-  \right].
-\label{eq:action-mixture-cdf}
-\end{equation}
-Consequently, the design's population proper time follows by inserting
-\(F_d\) into Definition~\ref{def:proper-time}; it is not an average of
-instance- or modewise quantiles.  Alternative successful tool trajectories,
-signal overhead, and positive unsolved mass are explicit in this law.
-\end{theorem}
+\begin{proposition}[Variable-cost retry identity]
+\label{prop:retry-first-passage}
+Fix an instance \(x\) and, when available, a realized pre-solution signal \(z\).
+For retry \(r\), let \(Y_r\) be the resulting artifact and \(K_{d,r}>0\) its
+realized resource cost.  Assume that, conditional on \((x,z)\), the pairs
+\(\bigl(K_{d,r},V(x,Y_r)\bigr)\) are IID across complete retries.
 
-Unequal attempt costs, state carried across retries, or adaptive retry policies
-do not obey this geometric law.  They remain valid deployment designs, but
-their proper time must be measured directly or modeled as a semi-Markov process.
-
-\subsection{PACT as a canonical-trajectory diagnostic}
-
-PACT abbreviates \emph{Pre-solution Allocation with Constant-cost Trials}.  For
-each mode \(s\), fix a distinct canonical tool trajectory \(\tau_s^\star\).  Let
-\(\rho_z\) denote the distribution of that reference trajectory after observing
-the signal:
+Define
 \begin{equation}
-\rho_z(\tau):=\Prob(\tau_S^\star=\tau\mid Z=z).
-\label{eq:reference-trajectory-law}
+\lambda_d(x,z)
+:=
+\Prob\!\left(V(x,Y_r)=1\mid x,z\right)
+=
+\sum_\tau Q_d(\tau\mid x,z)
+\Prob\!\left(V(x,Y_r)=1\mid x,z,\tau\right).
+\label{eq:per-retry-success}
 \end{equation}
-Distinctness makes \(s\mapsto\tau_s^\star\) injective and therefore
-\(H(\rho_z)=H(\pi_z)\).  Tool-PACT restricts
-Theorem~\ref{thm:action-process} as follows: signal cost is zero; conditional on
-\(S=s\), following \(\tau_s^\star\) succeeds with probability
-\(p_d(s)\in(0,1]\); other tool trajectories have zero success; and every
-complete attempt costs \(\kappa(d,s)>0\).  Mode sufficiency requires these
-cost and competence quantities to depend on the instance only through \(s\).
-In addition, after observing \(z\), the PACT allocator samples a complete
-tool-identity trajectory from one distribution \(Q_{d,z}\) shared by all
-instances with that signal.  The sequential policy is an autoregressive
-factorization of this distribution and, inside PACT, ignores components of
-\(H_k\) other than \(z\) and the preceding tool identities.  Acquiring further
-mode information from tool outputs lies outside PACT and is handled by the
-general first-passage law.
-The support condition \(\rho_z\ll Q_{d,z}\) ensures finite expected resource.
-Defining \(t_0(d,s)=1/p_d(s)\),
-Theorem~\ref{thm:action-process} gives
+Thus, \(\lambda_d(x,z)\) is the probability that one complete retry produces
+a verified solution.
+
+Define
+\begin{equation}
+\overline K_d(x,z)
+:=
+\E[K_{d,r}\mid x,z]
+=
+\sum_\tau Q_d(\tau\mid x,z)
+\E[K_{d,r}\mid x,z,\tau].
+\label{eq:mean-retry-cost}
+\end{equation}
+Thus, \(\overline K_d(x,z)\) is the expected resource cost of one complete
+retry, averaged over the tool trajectories generated by the policy.
+
+Let
+\begin{equation}
+R_d(x,z)
+:=
+\inf\{r\ge1:V(x,Y_r)=1\}
+\end{equation}
+be the index of the first retry that produces a verified solution. Then
+\begin{equation}
+B_d^{\mathrm{hit}}(x)
+=
+c_d(z)+\sum_{r=1}^{R_d(x,z)}K_{d,r},
+\end{equation}
+and, whenever \(\lambda_d(x,z)>0\),
+\begin{equation}
+\E[B_d^{\mathrm{hit}}(x)\mid x,z]
+=
+c_d(z)
++
+\frac{\overline K_d(x,z)}{\lambda_d(x,z)}.
+\label{eq:variable-cost-first-passage}
+\end{equation}
+Here \(c_d(z)\ge0\) is only the incremental cost of acquiring the signal.  Set
+\(c_d(z)=0\) when the signal is supplied with the task or its cost is already
+included in \(K_{d,r}\).  If no signal is used, omit \(z\) throughout.
+\end{proposition}
+
+
+\subsection{Canonical tool-trajectory regime}
+
+To obtain a four-term identity, consider the following scoped regime.  After
+observing \(z\), design \(d\) induces a supported trajectory law \(Q_{d,z}\),
+with \(\rho_z\ll Q_{d,z}\).  This restriction requires the policy's trajectory
+law, conditional on the pre-solution signal, to be common across instances;
+the task affects success through its mode and canonical trajectory.  Conditional
+on \((S=s,Z=z)\), complete retries are IID and their success and cost laws are
+common to the instances in that mode.  For an instance of mode \(s\), assume
+\begin{equation}
+\Prob\!\left(V(X,Y_r)=1\mid
+S=s,Z=z,\boldsymbol{\tau}_r=\tau\right)
+=p_d(s)\mathbf 1\{\tau=\tau_s^\star\},
+\qquad p_d(s)>0.
+\label{eq:canonical-success}
+\end{equation}
+Thus the canonical trajectory succeeds with probability \(p_d(s)\), while
+alternative trajectories have zero success in the exact regime.  The verifier
+may accept alternatives in the general deployment; Proposition~\ref{prop:off-reference}
+quantifies the resulting departure.  Let \(\overline K_d(s,z)\) be the mean
+retry cost from Proposition~\ref{prop:retry-first-passage}, conditional on
+\((S=s,Z=z)\), and define \(t_0(d,s)=1/p_d(s)\).
+
+\begin{proposition}[Canonical-trajectory first-passage identity]
+\label{prop:canonical-first-passage}
+In the canonical tool-trajectory regime,
+\begin{equation}
+\lambda_d(s,z)=Q_{d,z}(\tau_s^\star)p_d(s).
+\label{eq:canonical-success-probability}
+\end{equation}
+If the signal has no separate incremental cost, or that cost is included in the
+retry ledger, then
 \begin{equation}
 \E[B_d^{\mathrm{hit}}\mid S=s,Z=z]
-=\kappa(d,s)\frac{t_0(d,s)}{Q_{d,z}(\tau_s^\star)}.
-\label{eq:packed-law}
+=\overline K_d(s,z)
+\frac{t_0(d,s)}{Q_{d,z}(\tau_s^\star)}.
+\label{eq:canonical-law}
 \end{equation}
-The controlled allocation model is the one-step special case
-\(\tau_s^\star=(a_{d,s},\bot)\) and
+With a separate one-time signal cost, \(c_d(z)\) is added to the right-hand
+side and the log-additive decomposition below is no longer exact.
+\end{proposition}
+
+The previous controlled allocation model is the one-step special case
+\(\tau_s^\star=(a_{d,s})\) and
 \(Q_{d,z}(\tau_s^\star)=q_z(s)\).
-The canonical trajectory is a diagnostic reference, not a claim that the
-verifier admits no alternative solution; Proposition~\ref{prop:off-reference}
-quantifies the resulting departure.
 
 For distributions \(a,b\) on the tool-trajectory space, let
 \(H(a)=-\sum_\tau a(\tau)\log a(\tau)\) and
 \(\KL(a\Vert b)=\sum_\tau a(\tau)\log\{a(\tau)/b(\tau)\}\), with standard
 extended-value conventions.  Mutual information remains
-\(I(S;Z)=H(\pi)-\E_ZH(\pi_Z)\).  Define the PACT diagnostic
+\(I(S;Z)=H(\pi)-\E_ZH(\pi_Z)\).  Define the canonical-regime diagnostic
 \begin{equation}
 \mathcal L(d):=\E_{S,Z}\!\left[
 \log\E(B_d^{\mathrm{hit}}\mid S,Z)\right].
-\label{eq:packed-risk}
+\label{eq:canonical-risk}
 \end{equation}
 It is neither \(\E\log B_d^{\mathrm{hit}}\),
 \(\log\E B_d^{\mathrm{hit}}\), nor \(\log T_d(\delta)\).
 
 \begin{lemma}[Conditional tool-trajectory cross-entropy]
 \label{lem:conditional}
-Under tool-PACT and \(\rho_z\ll Q_{d,z}\),
+Under the canonical tool-trajectory regime and \(\rho_z\ll Q_{d,z}\),
 \begin{equation}
 \E[\log\E(B_d^{\mathrm{hit}}\mid S,z)\mid Z=z]
-=\E[\log\{\kappa(d,S)t_0(d,S)\}\mid z]
+=\E[\log\{\overline K_d(S,z)t_0(d,S)\}\mid z]
 +H(\rho_z)+\KL(\rho_z\Vert Q_{d,z}).
 \label{eq:conditional-decomposition}
 \end{equation}
-Thus \(Q_{d,z}=\rho_z\) minimizes this conditional expected-log objective
-among unconstrained supported trajectory distributions.
+The KL term is minimized by \(Q_{d,z}=\rho_z\) when the mean-cost term is held
+fixed.  With trajectory-dependent costs, changing \(Q_{d,z}\) generally changes
+both \(\overline K_d(S,z)\) and the KL term.
 \end{lemma}
 
 \begin{lemma}[Sequential tool-call form of the mismatch]
 \label{lem:sequential-kl}
-Under tool-PACT, write \(A_{<k}=(A_1,\ldots,A_{k-1})\) for the sampled
+Under the canonical regime, write \(A_{<k}=(A_1,\ldots,A_{k-1})\) for the sampled
 tool-identity prefix.  Factoring the reference and model trajectory laws over
 these prefixes gives
 \begin{equation}
 \KL(\rho_z\Vert Q_{d,z})
 =\E_{\boldsymbol{\tau}\sim\rho_z}\!\left[
-\sum_{k=1}^{K+1}
+\sum_{k=1}^{L}
 \KL\!\left(\rho(\cdot\mid z,A_{<k})\Vert
 q_d(\cdot\mid z,A_{<k})\right)\right],
 \label{eq:sequential-kl}
 \end{equation}
-where \(q_d(\cdot\mid z,A_{<k})\) abbreviates the PACT policy after ignoring
-the remaining components of \(H_k\), and the final decision is \(\bot\).  For
-a single deterministic reference trajectory, the contribution along its
+where \(q_d(\cdot\mid z,A_{<k})\) is the next-tool policy induced by the
+trajectory law.  For a single deterministic reference trajectory, the contribution along its
 tool-identity prefixes is
-\(-\sum_{k=1}^{K+1}\log q_d(a_k^\star\mid z,a_{<k}^\star)\).  Thus the trajectory
+\(-\sum_{k=1}^{L}\log q_d(a_k^\star\mid z,a_{<k}^\star)\).  Thus the trajectory
 KL is operationally a sum of next-tool mismatches, not a divergence between
 mode frequencies.
 \end{lemma}
 
-\begin{theorem}[PACT four-term expected-log first-passage decomposition]
+\begin{theorem}[Four-term expected-log first-passage decomposition]
 \label{thm:four-term}
 Let designs \(d_0,d\) share \((S,\pi)\) and the canonical map
-\(s\mapsto\tau_s^\star\), satisfy tool-PACT, and use signals \(Z_0,Z\) with
-supported trajectory laws \(Q^0,Q\).  Define
+\(s\mapsto\tau_s^\star\), satisfy the canonical tool-trajectory regime, and use
+signals \(Z_0,Z\) with supported trajectory laws \(Q^0,Q\).  Assume separate
+signal costs are zero or included in the retry ledgers.  Define
 \begin{align*}
-C&:=\E_S\!\left[\log\frac{\kappa(d_0,S)}{\kappa(d,S)}\right],&
+C&:=\E_{S,Z_0}\log\overline K_{d_0}(S,Z_0)
+-\E_{S,Z}\log\overline K_d(S,Z),&
 \Phi&:=\E_S\!\left[\log\frac{t_0(d_0,S)}{t_0(d,S)}\right],\\
 \varepsilon_0&:=\E_{Z_0}\KL(\rho^0_{Z_0}\Vert Q^0_{d_0,Z_0}),&
 \varepsilon&:=\E_Z\KL(\rho_Z\Vert Q_{d,Z}).
@@ -446,27 +484,30 @@ Then
 For an uninformative reference-prior-matched baseline, \(Z_0\perp S\) and
 \(Q^0_{d_0,Z_0}=\rho^0_{Z_0}\), so
 \begin{equation}
-\boxed{\Delta_{\mathrm{pack}}=C+\Phi+I(S;Z)-\varepsilon.}
+\boxed{\Delta_{\mathrm{traj}}=C+\Phi+I(S;Z)-\varepsilon.}
 \label{eq:four-term-baseline}
 \end{equation}
-The four terms remain relative unit cost, focused competence, mode information,
-and mismatch; only the last is now a sequential tool-trajectory divergence.
+The terms are relative mean retry cost, focused competence, mode information,
+and sequential tool-trajectory mismatch.  Because trajectory costs vary,
+\(C\) depends on the policy-induced trajectory law; the decomposition is
+mechanistic rather than a causal separation.
 \end{theorem}
 
-\begin{proposition}[Objective dependence]
+\begin{proposition}[Cost--policy coupling]
 \label{prop:objective-dependence}
-Write \(a_s=\kappa(d,s)t_0(d,s)\).  Conditional on \(Z=z\), reference matching
-\(Q_{d,z}=\rho_z\) minimizes the expected-log PACT objective.  In contrast,
-among distributions supported on the canonical trajectories, the
-expected-resource objective
-\(\sum_s\pi_z(s)a_s/Q_{d,z}(\tau_s^\star)\) is minimized by
+Let
 \begin{equation}
-Q_{d,z}^\star(\tau_s^\star)=
-\frac{\sqrt{\pi_z(s)a_s}}{\sum_u\sqrt{\pi_z(u)a_u}}.
-\label{eq:sqrt-allocation}
+k_d(s,z,\tau):=\E[K_{d,r}\mid S=s,Z=z,\boldsymbol\tau_r=\tau].
 \end{equation}
-Thus the optimal tool policy depends on the declared deployment loss;
-reference matching is not a universal routing rule.
+Then
+\begin{equation}
+\overline K_d(s,z)=\sum_\tau Q_{d,z}(\tau)k_d(s,z,\tau).
+\label{eq:cost-policy-coupling}
+\end{equation}
+Consequently, changing the trajectory policy generally changes both the mean
+retry-cost term and the trajectory-mismatch term.  Reference matching minimizes
+the KL contribution only when the mean-cost term is held fixed.  If
+\(k_d(s,z,\tau)\) is constant in \(\tau\), the cost term is policy invariant.
 \end{proposition}
 
 \begin{proposition}[Testable off-reference departure]
@@ -474,8 +515,9 @@ reference matching is not a universal routing rule.
 Suppose the canonical trajectory has success \(p_s\), while alternative
 trajectories contribute
 \(r_{s,z}^{\mathrm{alt}}:=\sum_{\tau\ne\tau_s^\star}
-Q_{d,z}(\tau)p_d(s,z,\tau)\).  Ignoring signal cost, the actual and tool-PACT
-conditional means have log residual
+Q_{d,z}(\tau)\Prob(V(X,Y_r)=1\mid
+S=s,Z=z,\boldsymbol\tau_r=\tau)\).  Ignoring signal cost, the actual and
+canonical-regime conditional means have log residual
 \begin{equation}
 r_d(s,z)=
 -\log\!\left(1+\frac{r_{s,z}^{\mathrm{alt}}}
@@ -485,15 +527,17 @@ r_d(s,z)=
 If \(r_{s,z}^{\mathrm{alt}}/
 \{Q_{d,z}(\tau_s^\star)p_s\}\le\xi\), then
 \(|r_d(s,z)|\le\log(1+\xi)\).  A positive signal cost instead yields
-\(c_d(z)+\kappa_d(s)/\lambda_d(s,z)\) and breaks four-term log-additivity.
+\(c_d(z)+\overline K_d(s,z)/\lambda_d(s,z)\) and breaks four-term
+log-additivity.
 The verifier still accepts every valid alternative trajectory; the proposition
 only quantifies when the canonical-trajectory diagnostic ceases to be exact.
 \end{proposition}
 
-Only the product \(\kappa t_0\) is identified from conditional mean first
-passage.  Separating cost from competence requires attempt-level resource logs;
-both factors depend on the frozen definition of a complete attempt and are
-mechanistic, not causal, without randomized interventions.
+Separating \(\overline K_d\) from \(t_0\) requires retry-level resource and
+verification logs.  Because \(\overline K_d\) is averaged under \(Q_{d,z}\), a
+policy change can alter both cost and mismatch.  The four terms are therefore a
+mechanistic accounting, not a causal separation without randomized
+interventions.
 
 \begin{algorithm}[How to Pick the Model]
 \label{alg:pick-model}
@@ -504,7 +548,7 @@ resource unit, tolerance \(\delta\), horizon \(B\), budget grid \(\mathcal B\),
 confidence level \(1-\alpha\), and optional groups \(\mathcal G\).\\[0.25em]
 \textit{Output:} &
 A statistically certified winner or ``no winner,'' plus an optional
-tool-trajectory PACT mechanism audit.\\[0.35em]
+canonical-trajectory mechanism audit.\\[0.35em]
 1 & \textit{Freeze the target.} Declare \(V\), the resource unit, \(\delta\),
 \(B\), \(\mathcal B\), candidate menu, and groupwise constraints.\\
 2 & \textit{Measure first passage.} Stop each run at its first verified artifact
@@ -515,10 +559,10 @@ simultaneous CDF bands, and \([T_d^-,T_d^+]\) for every design.\\
 Name a winner only if its upper proper-time bound lies below every competitor's
 lower bound.\\
 5 & \textit{Audit the mechanism.} On disjoint calibration and confirmation data,
-estimate canonical-trajectory probabilities, conditional success, signal cost,
-and attempt cost; test constant-cost, mode-sufficiency, off-reference-success,
-and inverse-probability restrictions.\\
-6 & \textit{Explain, do not rerank.} Where tool-PACT is adequate, report the four
+estimate canonical-trajectory probabilities, conditional success, variable
+retry costs, and any incremental signal cost; test IID retries, the common
+trajectory law, canonical success, and off-reference success.\\
+6 & \textit{Explain, do not rerank.} Where the canonical regime is adequate, report the four
 terms, per-step tool-call KL, and held-out residual; keep the direct certificate
 as selection authority.
 \end{tabular}
@@ -526,6 +570,7 @@ as selection authority.
 
 The chain is explicit: Definition~\ref{def:proper-time} sets the deployment
 estimand; Theorem~\ref{thm:finite-sample} selects or abstains;
-Theorem~\ref{thm:action-process} models the full curve; and
+Proposition~\ref{prop:retry-first-passage} links variable retry costs to mean
+first passage; and
 Theorem~\ref{thm:four-term} supplies a scoped tool-policy mechanism audit.
 \label{sec:theory-end}
