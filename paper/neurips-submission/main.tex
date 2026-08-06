@@ -137,6 +137,8 @@ with temperature \(0.6\), top-\(p=0.95\), and at most ten attempts.  The
 calibrated simulation compares the pairs shown in
 Table~\ref{tab:simulated-first-passage}; it uses seconds for the public panels
 and normalized parameter--token slots for SAI-3.
+SAI-3 instantiates the one-step case
+\(\tau_s^\star=(a_{d,s},\bot)\); it does not test history-dependent tool use.
 
 \section{Results}
 \label{sec:results}
@@ -162,7 +164,7 @@ six-of-six agreement is a mechanism result, not a unique proper-time winner
 certificate.
 
 Exact closure nevertheless fails its frozen omnibus criterion.  Residuals
-increase with allocation mismatch with slope \(0.0377\)
+increase with one-step trajectory mismatch with slope \(0.0377\)
 (95\% interval \([0.0108,0.0647]\), Holm-adjusted \(p=0.0224\)).  This is about
 \(0.0299\) nat, or 3.0\% in multiplicative resource, at the largest tested
 mismatch.  A fresh 122,880-trajectory diagnostic raises repetitions per task
@@ -265,8 +267,9 @@ paired simulations.  Parentheses under \(\Delta_{\rm obs}\) are Monte Carlo
 standard errors; trial-level standard deviations are \(0.322\), \(1.106\),
 \(1.280\), and \(1.992\) nat in table order.  The identity closes numerically
 inside the packed construction by design.  The residual shown here instead
-compares that prediction with end-to-end first passage under nonzero cross-mode
-success, and is therefore a test of transport beyond PACT.
+compares that prediction with end-to-end first passage under nonzero success of
+alternative one-step trajectories, and is therefore a test of transport beyond
+PACT.
 
 \begin{table}[t]
 \centering
@@ -293,7 +296,7 @@ more than offset cost and mismatch, and the end-to-end gain remains positive
 after a \(-0.163\)-nat residual.  MBPP+ gives the opposite decision: the unit-cost
 penalty dominates, so routing information cannot rescue the candidate.  Large
 SAI-3 and BBH residuals warn against transporting the exact packed identity
-when off-mode procedures can solve the task.  Most importantly, BBH has
+when alternative trajectories can solve the task.  Most importantly, BBH has
 \(\Delta_T=1.074\) but \(\Delta_{\rm obs}=-0.846\): the candidate has a better
 90th-percentile completion budget while a worse mean paired log-resource.
 This is not a contradiction.  Verified proper time is a population quantile;
@@ -326,14 +329,15 @@ closure.}
 
 The results support reliability-first selection, not a universal winner.
 Freeze the verifier, resource unit, \(B\), and \(\delta\); admit \(d\) only if
-a lower confidence bound on \(\Prob(\tau_d\le B)\) reaches \(1-\delta\); then
+a lower confidence bound on \(\Prob(B_d^{\mathrm{hit}}\le B)\) reaches
+\(1-\delta\); then
 minimize held-out \(\widehat T_d(\delta)\).  Replace the incumbent only when the
 simultaneous quantile bands in Theorem~\ref{thm:finite-sample} separate it from
 every competitor; otherwise report no winner.
 
 The terms prescribe interventions: negative cost calls for better serving;
-negative competence for another backbone or action; low information for a
-better signal; and high mismatch for a better allocator.  A large residual
+negative competence for another backbone; low information for a better signal;
+and high mismatch for a better tool policy.  A large residual
 invalidates the surrogate and returns the decision to direct measurement.
 Proper time selects; four-term accounting audits the mechanism.
 
@@ -349,13 +353,14 @@ The four-dataset accounting is calibrated simulation: it validates estimators,
 power, and figure design, not executed-router performance.  Its signal, action
 overlap, and BBH cells require held-out randomized runs.  Physical SAI-3 uses a
 synthetic benchmark, one dense family, fixed-length slots, and nearly zero
-off-mode success; external validity is narrow, and exact closure fails even
+off-reference one-step success; external validity is narrow, and exact closure fails even
 there.
 
 HumanEval+ and MBPP+ modes are length strata, not learned solver structures;
 BBH lacks a 32B run; and cells below 90\% after ten attempts remain censored,
-without finite \(T_{90}\).  Modes, actions, and routers must be frozen on
-calibration data and evaluated on disjoint instances.
+without finite \(T_{90}\).  The present experiments identify only the one-step
+special case of the trajectory KL; sequential tool-call mismatch requires a
+tool benchmark with frozen reference trajectories and held-out instances.
 
 IID retries, stationary hazards, and allocation-invariant costs are
 approximations: history, correlation, caching, batching, verifier latency, and
