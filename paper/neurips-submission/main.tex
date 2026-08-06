@@ -62,7 +62,7 @@
 \label{sec:experiments}
 
 We ask four questions: whether direct proper-time measurement rejects
-unreliable candidates; whether physical allocation follows inverse-share
+unreliable candidates; whether tool allocation follows inverse-share
 scaling; whether independently estimated four-term mechanisms predict held-out
 resource; and whether conclusions transport beyond the controlled setting.
 
@@ -74,10 +74,10 @@ incompatible Python contracts.  Each action receives the common task and one
 contract-specific evidence shard; the verifier combines static-policy checks,
 hidden differential tests, metamorphic tests, and a mutation-score gate.  This
 construction creates a controlled action-success matrix without revealing the
-true mode.  HumanEval+ and MBPP+ provide execution-verified code generation
-tasks~\citep{chen2021humaneval,liu2023evalplus,austin2021mbpp}; their three
-reported groups are precomputed tertiles of reference-program length, not
-claims of latent semantic structure.  BBH supplies five cognitive families
+correct evidence shard.  HumanEval+ and MBPP+ provide execution-verified code
+generation tasks~\citep{chen2021humaneval,liu2023evalplus,austin2021mbpp}; their
+three reported classes are precomputed tertiles of reference-program length,
+not claims of latent semantic structure.  BBH supplies five cognitive families
 (algorithmic, arithmetic, language, logical deduction, and spatial--temporal)
 \citep{suzgun2023bbh}.  Coding tasks use 1.5B, 7B, and 32B Qwen2.5-Coder
 checkpoints where available; BBH uses the corresponding general Qwen2.5 1.5B
@@ -86,8 +86,8 @@ and 7B checkpoints because its tasks are not code generation
 
 \begin{table}[H]
 \centering
-\caption{Experimental design.  \(N_x\) counts distinct task instances.  A trace
-is one task--model trajectory through first verification or the horizon; SAI-3
+\caption{Experimental design.  \(N_x\) counts distinct task instances.  A run
+is one task--model execution through first verification or the horizon; SAI-3
 also varies frozen signal--allocation cells.  Retries within a trace are not
 independent observations.}
 \label{tab:experimental-design}
@@ -95,7 +95,7 @@ independent observations.}
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{lrrrrll}
 \toprule
-Dataset & \(N_x\) & Task modes & Models & Traces & Resource budget & Horizon\\
+Dataset & \(N_x\) & Reported classes & Models & Runs & Resource budget & Horizon\\
 \midrule
 SAI-3       & 768   & 3 & 2 & 175,104 & normalized parameter--token slots & 256 slots\\
 HumanEval+  & 164   & 3 & 3 & 492     & generated tokens / seconds & 10 attempts\\
@@ -123,9 +123,10 @@ rather than using significance stars as a substitute for engineering relevance.
 
 The SAI-3 baseline is Qwen2.5-Coder-14B with prior-matched allocation; the
 deployed candidate is Qwen2.5-Coder-7B under six frozen signal--allocation
-conditions.  Its calibration split contains 768 distinct tasks, 256 per mode,
+conditions.  Its calibration split contains 768 distinct tasks, 256 per correct
+action,
 disjoint from confirmation.  For each task and model, 64 matched-action attempts
-and four attempts per wrong action estimate focused success and the off-mode
+and four attempts per wrong action estimate focused success and off-reference
 hazard; attempt ledgers estimate mean retry cost \(\overline K\).  The controlled signal channel and
 allocations are protocol constants rather than learned quantities.  A separate
 practical-router diagnostic fits multinomial logistic regression on stack-trace
@@ -137,15 +138,16 @@ with temperature \(0.6\), top-\(p=0.95\), and at most ten attempts.  The
 calibrated simulation compares the pairs shown in
 Table~\ref{tab:simulated-first-passage}; it uses seconds for the public panels
 and normalized parameter--token slots for SAI-3.
-SAI-3 instantiates the one-step case
-\(\tau_s^\star=(a_{d,s})\); it does not test history-dependent tool use.
+SAI-3 instantiates the one-step case \(L(x)=1\), so
+\(q_d^\star(x,z)=q_d(a_1^\star(x)\mid z)\); it does not test
+history-dependent tool use.
 
 \section{Results}
 \label{sec:results}
 
 \subsection{Controlled confirmation: accurate decisions, rejected exactness}
 
-The SAI-3 confirmation contains 175,104 physical trajectories and no censoring
+The SAI-3 confirmation contains 175,104 executions and no censoring
 or wrong-shard success.  Regressing held-out mean log first-passage resource on
 \(-\log q\) gives an inverse-share exponent of \(0.9868\), with 90\% bootstrap
 interval \([0.9784,0.9952]\).  Across the six primary contrasts, the mean
@@ -153,21 +155,20 @@ four-term residual is \(0.0100\) nat, its RMS is \(0.0147\) nat, and the 95\%
 bootstrap upper bound on RMS is \(0.0350\) nat.  The predicted design agrees
 with the held-out resource oracle in all six conditions; the minimum bootstrap
 selection probability is \(1.000\), and estimated oracle regret is zero.
-For the frozen seven-design, 256-budget-grid, three-stratum family at
-\(\alpha=0.05\), Theorem~\ref{thm:finite-sample} gives an overall radius of
-\(0.091\).  Zero horizon censoring therefore certifies overall 90\%
-admissibility (lower bound \(0.909\)).  The modewise radius is \(0.157\), so the
-same data do not certify 90\% reliability separately in every mode.  Moreover,
+For the frozen seven-design, 256-budget-grid family at \(\alpha=0.05\),
+Theorem~\ref{thm:finite-sample} gives an overall radius of \(0.085\).  Zero
+horizon censoring therefore certifies overall 90\% admissibility (lower bound
+\(0.915\)).  Moreover,
 the archived confirmation was frozen for expected-log closure and does not
 retain the clustered CDF bands needed to certify quantile separation.  Thus the
 six-of-six agreement is a mechanism result, not a unique proper-time winner
 certificate.
 
 Exact closure nevertheless fails its frozen omnibus criterion.  Residuals
-increase with one-step trajectory mismatch with slope \(0.0377\)
+increase with one-step tool-policy mismatch with slope \(0.0377\)
 (95\% interval \([0.0108,0.0647]\), Holm-adjusted \(p=0.0224\)).  This is about
 \(0.0299\) nat, or 3.0\% in multiplicative resource, at the largest tested
-mismatch.  A fresh 122,880-trajectory diagnostic raises repetitions per task
+mismatch.  A fresh 122,880-execution diagnostic raises repetitions per task
 cell from 6 to 32: the mismatch slope falls to \(0.0150\)
 (95\% interval \([-0.0098,0.0394]\), adjusted \(p=0.487\)), while the
 inverse-share exponent is \(0.9944\) (90\% interval \([0.9865,1.0021]\)).
@@ -266,22 +267,23 @@ Table~\ref{tab:simulated-accounting} applies the complete estimator to the same
 paired simulations.  Parentheses under \(\Delta_{\rm obs}\) are Monte Carlo
 standard errors; trial-level standard deviations are \(0.322\), \(1.106\),
 \(1.280\), and \(1.992\) nat in table order.  The identity closes numerically
-inside the canonical one-step construction by design.  The residual shown here instead
-compares that prediction with end-to-end first passage under nonzero success of
-alternative one-step trajectories, and is therefore a test of transport beyond
-the canonical regime.
+inside the exact one-step reference-sequence construction by design.  The
+residual shown here instead compares that prediction with end-to-end first
+passage under nonzero success of alternative one-step tool choices, and is
+therefore a test of transport beyond the reference-sequence regime.
 
 \begin{table}[t]
 \centering
 \caption{Four-term simulation (\(10{,}000\) pairs/dataset; nats).
-\(\Delta_4=C+\Phi+G-\varepsilon\), \(R=\Delta_{\rm obs}-\Delta_4\); positive
+\(\Delta_{\rm tool}=C+\Phi+G-\varepsilon\),
+\(R=\Delta_{\rm obs}-\Delta_{\rm tool}\); positive
 speedup favours the candidate.  Standard errors are in parentheses.}
 \label{tab:simulated-accounting}
 \small
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{lrrrrrrr}
 \toprule
-Dataset & Cost \(C\) & Competence \(\Phi\) & Information \(G\) & Mismatch \(\varepsilon\) & \(\Delta_4\) & \(\Delta_{\rm obs}\) & Residual \(R\) \\
+Dataset & Cost \(C\) & Competence \(\Phi\) & Information \(G\) & Mismatch \(\varepsilon\) & \(\Delta_{\rm tool}\) & \(\Delta_{\rm obs}\) & Residual \(R\) \\
 \midrule
 SAI-3      & \phantom{-}0.696 & -0.719 & 0.206 & 0.050 & \phantom{-}0.134 & \phantom{-}0.626 (0.003) & \phantom{-}0.492 \\
 HumanEval+ & \phantom{-}0.066 & \phantom{-}0.337 & 0.217 & 0.055 & \phantom{-}0.566 & \phantom{-}0.402 (0.011) & -0.163 \\
@@ -295,8 +297,8 @@ HumanEval+ illustrates the intended positive case: competence and information
 more than offset cost and mismatch, and the end-to-end gain remains positive
 after a \(-0.163\)-nat residual.  MBPP+ gives the opposite decision: the mean-retry-cost
 penalty dominates, so routing information cannot rescue the candidate.  Large
-SAI-3 and BBH residuals warn against transporting the exact canonical identity
-when alternative trajectories can solve the task.  Most importantly, BBH has
+SAI-3 and BBH residuals warn against transporting the exact reference-sequence
+identity when alternative tool choices can solve the task.  Most importantly, BBH has
 \(\Delta_T=1.074\) but \(\Delta_{\rm obs}=-0.846\): the candidate has a better
 90th-percentile completion budget while a worse mean paired log-resource.
 This is not a contradiction.  Verified proper time is a population quantile;
@@ -316,7 +318,7 @@ first-passage curves can rank the two objectives differently, which is why
 \includegraphics[width=\linewidth]{figures/theory_revision/four_term_observed_vs_predicted.png}
 \small (b) Held-out closure
 \end{minipage}
-\caption{Physical SAI-3 mechanism audit.  (a) Log first-passage resource tracks
+\caption{Controlled SAI-3 mechanism audit.  (a) Log first-passage resource tracks
 allocation dilution with near-unit slope.  (b) Independently estimated
 four-term predictions are close to held-out gains; points and intervals are
 held-out observations.  The strict residual omnibus nevertheless rejects exact
@@ -356,13 +358,15 @@ synthetic benchmark, one dense family, fixed-length slots, and nearly zero
 off-reference one-step success; external validity is narrow, and exact closure fails even
 there.
 
-HumanEval+ and MBPP+ modes are length strata, not learned solver structures;
+HumanEval+ and MBPP+ classes are length strata, not learned solver structures;
 BBH lacks a 32B run; and cells below 90\% after ten attempts remain censored,
 without finite \(T_{90}\).  The present experiments identify only the one-step
-special case of the trajectory KL; sequential tool-call mismatch requires a
-tool benchmark with frozen reference trajectories and held-out instances.
+special case of the sequential tool-policy mismatch; history-dependent
+evaluation requires a tool benchmark with frozen reference sequences and
+held-out instances.
 
-IID retries, mode-sufficient hazards, and stable retry laws are approximations:
+IID retries, reference-sequence success restrictions, and stable retry laws are
+approximations:
 history, correlation, caching, batching, verifier latency, and adaptive stopping
 can change \(t_0\) and \(\overline K\).  Charge signal acquisition
 to the same resource ledger.  Verification certifies only the declared criterion, not

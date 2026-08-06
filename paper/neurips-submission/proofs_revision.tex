@@ -1,42 +1,36 @@
 \subsection{Proof of Theorem~\ref{thm:finite-sample}}
 
 \begin{proof}
-For fixed \((d,g,b)\), the scores \(\{U_i^d(b):i\in I_g\}\) are independent
-random variables in \([0,1]\), even when retries and paired designs are
-dependent within an instance.  Their average mean is \(F_g^d(b)\).
-Hoeffding's inequality therefore gives
+For fixed \((d,b)\), the variables
+\(U_1^d(b),\ldots,U_n^d(b)\) are independent across task instances, lie in
+\([0,1]\), and have mean \(F_d(b)\).  This remains true when retries and paired
+design runs are dependent within an instance.  Hoeffding's inequality gives
 \[
-\Prob\{|\widehat F_g^d(b)-F_g^d(b)|>u\}
-\le2e^{-2n_gu^2}.
+\Prob\!\left(\left|\widehat F_d(b)-F_d(b)\right|>u\right)
+\le 2e^{-2nu^2}.
 \]
-For the weighted mixture, write
-\(\widehat F^d(b)=\sum_g\sum_{i\in I_g}(w_g/n_g)U_i^d(b)\).  Weighted
-Hoeffding gives
-\[
-\Prob\{|\widehat F^d(b)-F^d(b)|>u\}
-\le2\exp\!\left\{-\frac{2u^2}{\sum_gw_g^2/n_g}\right\}.
-\]
-Substitution of the radii in Equation~\eqref{eq:simultaneous-radii} makes each
-tail probability at most \(\alpha/M\).  A union bound over all designs, grid
-budgets, groups, and mixture curves proves Equation~\eqref{eq:simultaneous-bands}.
+At \(u=\eta_n(\alpha)\), the right-hand side is
+\(\alpha/(|\mathcal D||\mathcal B|)\).  A union bound over all designs and
+declared grid budgets proves Equation~\eqref{eq:simultaneous-bands}.
 
-On this event \(L^d(b)\le F^d(b)\le U^d(b)\) for every grid point.  For every
-\(b<T_d^-\), \(U^d(b)<1-\delta\), hence \(F^d(b)<1-\delta\) and
-\(T_d^-\le T_d\).  At \(b=T_d^+\), \(L^d(b)\ge1-\delta\), hence
-\(F^d(b)\ge1-\delta\) and \(T_d\le T_d^+\).  The lower-band
-admissibility claim follows from \(F^d(B)\ge L^d(B)\).  Finally, if
+On this event, for every \(b<T_d^-\), \(U_d(b)<1-\delta\), so
+\(F_d(b)<1-\delta\) and \(T_d^-\le T_d(\delta)\).  At \(b=T_d^+\),
+\(L_d(b)\ge1-\delta\), so \(F_d(b)\ge1-\delta\) and
+\(T_d(\delta)\le T_d^+\), up to grid resolution.  The admissibility statement
+follows from \(F_d(B)\ge L_d(B)\).  Finally, if
 \(T_{\widehat d}^+<T_d^-\) for every competitor, then
-\(T_{\widehat d}\le T_{\widehat d}^+<T_d^-\le T_d\), proving uniqueness.
+\(T_{\widehat d}(\delta)\le T_{\widehat d}^+<T_d^-\le T_d(\delta)\), proving
+that \(\widehat d\) is the unique winner.
 \end{proof}
 
 \subsection{Proof of Proposition~\ref{prop:retry-first-passage}}
 
 \begin{proof}
-Conditional on \((x,z)\), the retry success indicators are IID Bernoulli with
-parameter \(\lambda_d(x,z)\).  Hence \(R_d(x,z)\) is geometric on
-\(\{1,2,\ldots\}\).  The first identity follows directly from the resource
-ledger: the design pays any incremental signal cost and then the realized cost
-of every retry through the first verified one.  Moreover,
+Conditional on \((x,z)\), retry success indicators are IID Bernoulli with
+parameter \(\lambda_d(x,z)>0\), hence \(R_d(x,z)\) is geometric on
+\(\{1,2,\ldots\}\).  The first identity is the resource ledger: the design
+pays any incremental signal cost and every realized retry cost through the
+first verified artifact.  Moreover,
 \begin{align*}
 \E\!\left[\sum_{r=1}^{R_d}K_{d,r}\,\middle|\,x,z\right]
 &=\sum_{r\ge1}\E[K_{d,r}\mathbf 1\{R_d\ge r\}\mid x,z]\\
@@ -44,93 +38,77 @@ of every retry through the first verified one.  Moreover,
 &=\frac{\overline K_d(x,z)}{\lambda_d(x,z)}.
 \end{align*}
 The second equality holds because \(\{R_d\ge r\}\) depends only on the first
-\(r-1\) retry outcomes and is therefore independent of the current retry cost
-under the IID-pair assumption.  Adding \(c_d(z)\) proves
+\(r-1\) retry outcomes and is therefore independent of current cost
+\(K_{d,r}\) under the IID-pair assumption.  Adding \(c_d(z)\) proves
 Equation~\eqref{eq:variable-cost-first-passage}.
 \end{proof}
 
-\subsection{Proof of Proposition~\ref{prop:canonical-first-passage}}
+\subsection{Proof of Proposition~\ref{prop:tool-first-passage}}
 
 \begin{proof}
-Total probability over trajectories and Equation~\eqref{eq:canonical-success}
-give
-\[
-\lambda_d(s,z)
-=\sum_\tau Q_{d,z}(\tau)p_d(s)\mathbf 1\{\tau=\tau_s^\star\}
-=Q_{d,z}(\tau_s^\star)p_d(s).
-\]
-Apply Proposition~\ref{prop:retry-first-passage} at fixed \((s,z)\), set the
-separate signal cost to zero, and substitute \(t_0(d,s)=1/p_d(s)\) to obtain
-Equation~\eqref{eq:canonical-law}.
+In the reference-sequence regime, a complete retry succeeds only when the tool
+policy reproduces \(\mathbf a^\star(x)\), an event of probability
+\(q_d^\star(x,z)\), and the resulting execution is verified with conditional
+probability \(p_d(x)\).  Therefore
+\(\lambda_d(x,z)=q_d^\star(x,z)p_d(x)\).  Substituting this identity and
+\(t_0(d,x)=1/p_d(x)\) into Proposition~\ref{prop:retry-first-passage}, with no
+separate signal cost, proves Equation~\eqref{eq:tool-first-passage}.
 \end{proof}
 
-\subsection{Proof of Lemma~\ref{lem:conditional}}
+\subsection{Proof of Lemma~\ref{lem:tool-cross-entropy}}
 
 \begin{proof}
-Taking logs in Equation~\eqref{eq:canonical-law} and conditioning on \(Z=z\) gives
+At decision \(k\), conditional on \(L\ge k\), the cross-entropy identity gives
 \begin{align*}
-\E[\log\E(B_d^{\mathrm{hit}}\mid S,z)\mid z]
-={}&\E[\log\{\overline K_d(S,z)t_0(d,S)\}\mid z]
-+\sum_s\pi_z(s)\{-\log Q_{d,z}(\tau_s^\star)\}.
+&\E[-\log q_d(A_k^\star\mid Z,H_k^\star)\mid L\ge k]\\
+&\quad=H(A_k^\star\mid Z,H_k^\star,L\ge k)
++\E\!\left[\KL\!\left(\rho_k(\cdot\mid Z,H_k^\star)
+\Vert q_d(\cdot\mid Z,H_k^\star)\right)\middle|L\ge k\right].
 \end{align*}
-Because \(s\mapsto\tau_s^\star\) is injective, the final sum is the trajectory
-cross-entropy \(H(\rho_z)+\KL(\rho_z\Vert Q_{d,z})\).  The support condition
-makes it finite.  Nonnegativity of KL gives the stated minimum when the
-mean-cost term is held fixed.
-\end{proof}
-
-\subsection{Proof of Lemma~\ref{lem:sequential-kl}}
-
-\begin{proof}
-Apply the chain rule for relative entropy to the reference and model laws over
-the stopped sequence of tool identities.  Because termination is deterministic,
-the resulting log likelihood ratio is the sum over tool selections of the conditional ratios given the
-previous tool-identity prefix.  Taking expectation under \(\rho_z\) proves
-Equation~\eqref{eq:sequential-kl}.  If the reference is deterministic, each
-reference conditional is a point mass, whose KL contribution is
-\(-\log q_d(a_k^\star\mid z,a_{<k}^\star)\).
+The definition of conditional mutual information also gives
+\[
+H(A_k^\star\mid Z,H_k^\star,L\ge k)
+=H(A_k^\star\mid H_k^\star,L\ge k)
+-I(A_k^\star;Z\mid H_k^\star,L\ge k).
+\]
+Multiplying by \(\Prob(L\ge k)\) and summing over \(k\) proves
+Equation~\eqref{eq:tool-cross-entropy}.
 \end{proof}
 
 \subsection{Proof of Theorem~\ref{thm:four-term}}
 
 \begin{proof}
-Lemma~\ref{lem:conditional} and the tower property give
+Taking logarithms in Equation~\eqref{eq:tool-first-passage}, then averaging over
+\((X,Z)\), gives
 \begin{align*}
 \mathcal L(d)
-&=\E_{S,Z}\log\overline K_d(S,Z)+\E_S\log t_0(d,S)
-  +\E_ZH(\rho_Z)+\varepsilon\\
-&=\E_{S,Z}\log\overline K_d(S,Z)+\E_S\log t_0(d,S)
-  +H(\pi)-I(S;Z)+\varepsilon.
+={}&\E_{X,Z}\log\overline K_d(X,Z)+\E_X\log t_0(d,X)\\
+&+\E\!\left[-\sum_{k=1}^{L}
+\log q_d(A_k^\star\mid Z,H_k^\star)\right].
 \end{align*}
-The second equality uses injectivity of the canonical map, hence
-\(H(\rho_z)=H(\pi_z)\).  Applying the same expression to
-\((d_0,Q^0,Z_0)\) and subtracting proves
-Equation~\eqref{eq:four-term-general}.  If \(Z_0\perp S\), then
-\(I(S;Z_0)=0\); if \(Q^0_{d_0,Z_0}=\rho^0_{Z_0}\), then
-\(\varepsilon_0=0\), which yields
+Lemma~\ref{lem:tool-cross-entropy} turns the last term into
+\(\mathcal H_{\mathrm{ref}}-G_Z+\varepsilon_d\).  Applying the same expression
+to \(d_0\) and subtracting cancels the common reference entropy and yields
+Equation~\eqref{eq:four-term-general}.  If \(Z_0\) is conditionally
+uninformative, \(G_{Z_0}=0\); if its policy matches the corresponding
+reference-tool prior, \(\varepsilon_{d_0}=0\).  This proves
 Equation~\eqref{eq:four-term-baseline}.
-\end{proof}
-
-\subsection{Proof of Proposition~\ref{prop:objective-dependence}}
-
-\begin{proof}
-Equation~\eqref{eq:cost-policy-coupling} is the law of total expectation over
-the policy-induced trajectory.  If the conditional retry cost is constant in
-\(\tau\), it factors out of the sum and the remaining trajectory probabilities
-sum to one.  The remaining claims follow from Lemma~\ref{lem:conditional}.
 \end{proof}
 
 \subsection{Proof of Proposition~\ref{prop:off-reference}}
 
 \begin{proof}
-The general complete-attempt hazard is
-\(Q_{d,z}(\tau_s^\star)p_s+r_{s,z}^{\mathrm{alt}}\).  The
-conditional mean resource excluding signal cost is therefore
-\(\overline K_d(s,z)/\{Q_{d,z}(\tau_s^\star)p_s+r_{s,z}^{\mathrm{alt}}\}\),
-while the canonical regime predicts
-\(\overline K_d(s,z)/\{Q_{d,z}(\tau_s^\star)p_s\}\).  Taking their
-log ratio gives
-Equation~\eqref{eq:off-reference-residual}.  If the hazard ratio is at most \(\xi\),
-monotonicity of \(\log(1+u)\) yields the stated bound.  Adding \(c_d(z)\) gives
-the final nonadditive expression directly.
+Reference and non-reference success are disjoint, so the actual complete-retry
+success probability is
+\[
+q_d^\star(x,z)p_d(x)+r_d^{\mathrm{alt}}(x,z).
+\]
+Excluding separate signal cost, Proposition~\ref{prop:retry-first-passage}
+therefore gives actual conditional mean
+\(\overline K_d(x,z)/\{q_d^\star(x,z)p_d(x)+r_d^{\mathrm{alt}}(x,z)\}\),
+whereas the reference-sequence regime predicts
+\(\overline K_d(x,z)/\{q_d^\star(x,z)p_d(x)\}\).  The logarithm of the first
+quantity minus the logarithm of the second is exactly
+Equation~\eqref{eq:off-reference-residual}.  If the displayed hazard ratio is
+at most \(\xi\), monotonicity of \(\log(1+u)\) gives the stated bound.
 \end{proof}
