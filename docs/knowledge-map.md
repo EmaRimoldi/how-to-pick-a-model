@@ -1,5 +1,10 @@
 # Knowledge Map
 
+Prospective feedback-only stage: [protocol and exact new-task manifest](../experiments/bigcodebench/feedback-only-routing/README.md),
+`src/vao/decisions/feedback_routing.py` (fixed trajectories), `bigcode.py` and
+`bigcode_worker.py` (reference qualification and isolated verification),
+`scripts/analyze_feedback_routing.py` (receipt/prompt audit and paired analysis).
+
 The current research direction is defined in [decision protocol](decision-protocol.md).
 The retained studies provide baselines. The
 [OpenRouter development pilot](../experiments/humaneval-plus/openrouter-continuation-pilot/README.md)

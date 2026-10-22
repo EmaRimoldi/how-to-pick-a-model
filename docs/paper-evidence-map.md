@@ -51,6 +51,13 @@ not establish that a state-conditioned continue/restart/handoff controller works
 
 ## Recovery evidence and remaining gaps
 
+The next [feedback-only fixed-policy protocol](../experiments/bigcodebench/feedback-only-routing/PROTOCOL.md)
+uses new BigCodeBench tasks and actual sequential feedback, without code transfer
+or a new predictor. It is prospective preparation, not an additional paper result.
+Keep its 157 task clusters distinct from within-task sampling and from
+the already observed HumanEval+/MBPP+ banks. A selector remains gated on a useful
+intervention and a subsequent independently held-out evaluation.
+
 The [OpenRouter development pilot](../experiments/humaneval-plus/openrouter-continuation-pilot/README.md)
 provides a collector and matched continuations on two failed development states.
 The [context-value diagnostic](../experiments/humaneval-plus/context-value/README.md)

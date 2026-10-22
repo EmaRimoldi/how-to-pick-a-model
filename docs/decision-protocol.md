@@ -21,6 +21,14 @@ defines a frozen one-checkpoint protocol and cost-limited runner.
 
 ## Observable state and actions
 
+The next stage holds the interface to **feedback only** and tests a useful fixed
+intervention before any new selector. The [BigCodeBench protocol](../experiments/bigcodebench/feedback-only-routing/PROTOCOL.md)
+compares immediate/delayed escalation, repeated 9B and direct 27B on previously
+unqueried reference-qualified tasks, with genuine step-by-step feedback updates.
+The primary comparison is immediate escalation versus repeated 9B at the same
+API-dollar admission cap. Old tasks remain development evidence. This stage
+does not test whether feedback itself is better than no feedback.
+
 Take decisions at explicit edit/verify checkpoints. Record the task, current
 artifact and hash, visible interaction context, verifier feedback, recent
 progress/errors, current model, usage so far, and remaining budget.

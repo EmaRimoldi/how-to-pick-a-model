@@ -1,5 +1,9 @@
 # Experiments
 
+New prospective stage: [feedback-only fixed-policy evaluation](bigcodebench/feedback-only-routing/README.md)
+on 157 previously unqueried, reference-qualified BigCodeBench tasks. Compare
+fixed policies before training another selector; preparation is not a result.
+
 Eight baseline bundles, API discovery and a frozen transfer evaluation support the sequential-decision question in
 `docs/decision-protocol.md`. Each is grouped by benchmark and research question. A bundle owns its configs, launchers, inputs, processed
 results, figures, and run metadata whenever those artifacts are available.
@@ -17,12 +21,14 @@ results, figures, and run metadata whenever those artifacts are available.
 | HumanEval+ | [`openrouter-continuation-pilot/`](humaneval-plus/openrouter-continuation-pilot/) | development pilot | 24 tasks, 88 calls, two failed checkpoints, receipts and separate public/full-suite scoring |
 | HumanEval+ | [`context-value/`](humaneval-plus/context-value/) | discovery + producer-transfer evaluation | Discovery: 30 tasks/132 calls. Transfer: 83 development + 60 evaluation tasks, 1,353 responses, frozen policies, forecasts, controls and cost audit |
 | MBPP+ | [`context-value-transfer/`](mbpp-plus/context-value-transfer/) | collection finished; censored descriptive bank | 94/96 complete failures, 2,878 recovery responses, two censored solver cells, 288 API forecasts, fixed comparisons and full accounting |
+| BigCodeBench standard-library subset | [`feedback-only-routing/`](bigcodebench/feedback-only-routing/) | prospective preparation | 157 new reference-qualified tasks; frozen fixed-policy comparison, no new model outcomes yet |
 
 ## Families
 
 - [`autoresearch-cifar10/`](autoresearch-cifar10/)
 - [`humaneval-plus/`](humaneval-plus/)
 - [`mbpp-plus/context-value-transfer/`](mbpp-plus/context-value-transfer/)
+- [`bigcodebench/feedback-only-routing/`](bigcodebench/feedback-only-routing/)
 
 The former `stateful-query-engine` implementation had no run, result, figure,
 or report evidence. It was retired from the working tree and remains available

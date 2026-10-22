@@ -5,7 +5,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 
 ## Summary
 
-- Bundles indexed: `11`
+- Bundles indexed: `12`
 - Missing bundle paths: `0`
 - Missing README files: `0`
 
@@ -13,7 +13,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 
 | Class | Bundles |
 | --- | --- |
-| `inspect-readme` | 3 |
+| `inspect-readme` | 4 |
 | `paper-supporting-evidence` | 7 |
 | `partial-evidence` | 1 |
 
@@ -23,7 +23,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | --- | --- |
 | `Tier 1: Main Evidence` | 6 |
 | `Tier 2: Supporting Or Diagnostic Evidence` | 4 |
-| `not tiered` | 1 |
+| `not tiered` | 2 |
 
 ## Bundle Assets
 
@@ -40,6 +40,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | `experiments/humaneval-plus/openrouter-continuation-pilot/` | development pilot | not tiered | `inspect-readme` | 13 | 1 | 0 | 10 | 1 | 0 | 0 | 0 | 1 |
 | `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 46 | 5 | 0 | 39 | 3 | 0 | 0 | 0 | 4 |
 | `experiments/mbpp-plus/context-value-transfer/` | collection finished; censored descriptive bank | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 72 | 6 | 2 | 59 | 4 | 3 | 0 | 0 | 6 |
+| `experiments/bigcodebench/feedback-only-routing/` | prospective preparation | not tiered | `inspect-readme` | 7 | 1 | 4 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 ## Key Files
 
@@ -203,3 +204,11 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 - `experiments/mbpp-plus/context-value-transfer/results/replication-20261022/summary.json`
 - `experiments/mbpp-plus/context-value-transfer/configs/frozen-policy.json`
 - `experiments/mbpp-plus/context-value-transfer/configs/interaction-freeze.json`
+
+### `experiments/bigcodebench/feedback-only-routing/`
+
+- Title: Feedback-only fixed-policy evaluation
+- Evidence: 157 new reference-qualified tasks; frozen fixed-policy comparison, no new model outcomes yet
+- Asset directories: `configs, data`
+- `experiments/bigcodebench/feedback-only-routing/README.md`
+- `experiments/bigcodebench/feedback-only-routing/configs/evaluation.json`

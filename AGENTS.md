@@ -20,6 +20,7 @@ verifiable tasks. Read:
 | `experiments/autoresearch-cifar10/` | Calibration, memory, and routing baseline evidence |
 | `experiments/humaneval-plus/` | Completed retry, strategy, and context-routing evidence |
 | `experiments/mbpp-plus/context-value-transfer/` | Focused, prospectively frozen cross-benchmark recovery replication |
+| `experiments/bigcodebench/feedback-only-routing/` | New-task feedback-only fixed-policy study; read its freeze before any calls |
 | `src/vao/` | Verified execution, model adapters, and observable run records |
 | `src/agent_workflow/` | Existing baseline CLI, instrumentation, and reporting |
 | `src/*.py` | HumanEval+ worker traces and routing analysis |
@@ -47,6 +48,10 @@ verifiable tasks. Read:
   frozen protocol before collection and preserve all selected missing states.
 - Existing CLI modes are baseline execution tools, not evidence of an optimal
   multi-agent architecture or a state-conditioned controller.
+- The next BigCodeBench stage tests fixed feedback-only policies first. Do not
+  train a new selector, recycle observed tasks as fresh, or change its frozen
+  intervention/primary comparison after calls. Its new $5 authorization is
+  separate from the completed $2 campaign; collection itself is capped at $4.80.
 
 ## Editing and verification
 

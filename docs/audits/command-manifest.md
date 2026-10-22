@@ -5,8 +5,8 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `47`
-- Default-safe commands: `29`
+- Commands indexed: `49`
+- Default-safe commands: `30`
 - Missing required Make targets: `0`
 
 ## Safety Classes
@@ -16,9 +16,9 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `artifact-builder` | 1 |
 | `cluster-setup` | 2 |
 | `live-cluster` | 3 |
-| `live-local` | 11 |
+| `live-local` | 12 |
 | `mixed-cli` | 1 |
-| `read-only-analysis` | 11 |
+| `read-only-analysis` | 12 |
 | `safe-figure-regeneration` | 6 |
 | `safe-local` | 10 |
 | `safe-local-optional-tool` | 2 |
@@ -30,7 +30,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `Makefile` | 7 |
 | `autoresearch/scripts` | 16 |
 | `pyproject` | 1 |
-| `scripts` | 23 |
+| `scripts` | 25 |
 
 ## Commands
 
@@ -60,6 +60,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python autoresearch/scripts/generate_autoresearch_current_plots.py` | autoresearch/scripts | `read-only-analysis` | yes | inspect script before running | Generate current snapshot plots for the AutoResearch CIFAR-10 campaign. |
 | `python scripts/analyze_context_value.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit prospective context-value records and compare matched outcomes by task cluster. |
 | `python scripts/analyze_continuation_pilot.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit saved pilot receipts/outcomes and render an exploratory cost/success plot. |
+| `python scripts/analyze_feedback_routing.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit and analyze fixed feedback-only trajectories without making model calls. |
 | `python scripts/analyze_recovery_transfer.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit recorded MBPP+ recovery evidence and reproduce the frozen statistical comparisons. |
 | `python scripts/analyze_recovery_validation.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit frozen held-out recovery data and replay its finite budgeted policy bank. |
 | `python scripts/analyze_runs.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | analyze_runs.py — Analysis pipeline for agent parallelisation experiment results. Repository structure assumed (verified from runs/): runs/<experiment_id>/ config.json mode_parallel/ agent_<N>/ results/ trajectory.jsonl ← {step, val_bpb} per training run metadata.json ← summary (best_val_bpb, total_training_runs, …) snapshots/ step_NNN/ train.py ← frozen snapshot of train.py at this step metadata.json ← git_message, val_bpb_after, accepted, … workspace/ train.py.baseline ← original unmodified train.py Usage: python scripts/analyze_runs.py # latest experiment python scripts/analyze_runs.py --runs-dir runs/ # all experiments python scripts/analyze_runs.py --experiment exp_20260401_013535 python scripts/analyze_runs.py --output-dir my_analysis/ |
@@ -74,6 +75,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/run_best_params_merge.py` | scripts | `live-local` | no | model access, isolated worktree, output root | Best-params merge: read agent results.tsv + git history, build merged train.py. Strategy: 1. For each agent, parse results/results.tsv (commit_hash, val_bpb, status) 2. For each accepted ("keep") run, extract hyperparameters from that git commit 3. Find best val_bpb value per hyperparameter across all agents 4. Build merged train.py and submit to SLURM Usage: python scripts/run_best_params_merge.py --run-id exp_20260401_120000 python scripts/run_best_params_merge.py --run-id exp_20260401_120000 --submit |
 | `python scripts/run_context_value.py` | scripts | `live-local` | no | model access, isolated worktree, output root | Plan or explicitly run a budgeted artifact/feedback and prospective-forecast study. |
 | `python scripts/run_continuation_pilot.py` | scripts | `live-local` | no | model access, isolated worktree, output root | Run the explicit-budget OpenRouter/HumanEval+ pilot; defaults to plan only. |
+| `python scripts/run_feedback_routing.py` | scripts | `live-local` | no | model access, isolated worktree, output root | Plan or explicitly run new-task, feedback-only fixed-policy trajectories. |
 | `python scripts/run_merge_phase.py` | scripts | `live-local` | no | model access, isolated worktree, output root | CLI: run the merge phase on a completed parallel experiment. Given an experiment directory produced by run_parallel_experiment.py, this script: 1. Gathers all agent snapshots, reasoning traces, and metrics 2. Selects the best and most informative train.py variants 3. Analyses per-parameter improvement correlations 4. Produces a merged train.py candidate 5. Runs evaluation via SLURM (always; workspace auto-detected if not provided) 6. Writes a merge report and comparison table Usage: python scripts/run_merge_phase.py --experiment-dir runs/experiment_parallel_20260331_120000 python scripts/run_merge_phase.py --experiment-dir runs/exp_... --source-mode parallel |
 | `python scripts/run_parallel_experiment.py` | scripts | `live-local` | no | model access, isolated worktree, output root | CLI: launch Mode 1 (2 agents × T budget). |
 | `python scripts/run_recovery_transfer.py` | scripts | `live-local` | no | model access, isolated worktree, output root | Plan or explicitly collect the cumulative-budgeted MBPP+ recovery replication. |

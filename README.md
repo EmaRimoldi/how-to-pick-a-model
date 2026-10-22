@@ -6,6 +6,12 @@ We study whether code and verifier feedback from a failed attempt help the next
 attempt, and whether that benefit can be predicted before paying for it. The
 longer-term goal is cost-aware continue/restart/switch/stop decisions for agents.
 
+**Next evaluation:** [feedback-only fixed policies on new BigCodeBench tasks](experiments/bigcodebench/feedback-only-routing/README.md).
+Before training another selector, compare repeated 9B, immediate/delayed 27B
+escalation and direct 27B at the same API-dollar admission cap. The protocol
+freezes 157 reference-qualified tasks and one replicate per task. Preparation
+is not evidence that escalation or feedback has already improved outcomes.
+
 This repository retains the AutoResearch/CIFAR-10 and HumanEval+ evidence needed
 to study that question: verified trajectories, retry-allocation baselines,
 context/routing experiments, cost accounting, and reproducible figures.

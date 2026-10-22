@@ -101,6 +101,25 @@ It reproduces the recorded analysis before generating tables and figures, then
 compiles three times out of tree. Known campaign charges plus every unresolved
 reservation total $1.39600335 under the original $2 cap; collection is finished.
 
+## Feedback-only fixed policies on new tasks
+
+The [BigCodeBench protocol](../experiments/bigcodebench/feedback-only-routing/PROTOCOL.md)
+uses 157 reference-qualified, previously unqueried tasks and no new selector.
+Planning reads the pinned task/source hashes and makes no provider call:
+
+```bash
+.venv/bin/python scripts/run_feedback_routing.py \
+  --config experiments/bigcodebench/feedback-only-routing/configs/evaluation.json
+```
+
+Collection additionally requires macOS sandbox-exec, the optional EvalPlus
+profile for the isolation probe, a clean committed freeze, a fresh ignored
+output directory, explicit `--execute`, and a key on un-echoed stdin. Its new
+$4.80 collection ceiling fits the separately authorized $5 additional budget;
+it must never resume the completed $2 campaign. No uncertain call is retried.
+`scripts/analyze_feedback_routing.py` audits saved receipts/messages without
+provider calls; it refuses treatment analysis before `summary.json` exists.
+
 ## AutoResearch evidence
 
 The four retained bundles cover initial-model calibration, controlled evaluator
