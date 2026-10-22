@@ -6,7 +6,8 @@
 `agents/` provide edit/verify execution, observable records, model adapters,
 and supported session behavior. These are the starting points for matched
 checkpoint continuations. The proposed state-conditioned controller is not yet
-implemented; use `docs/decision-protocol.md` before extending the runtime.
+implemented. `decisions/` adds budgeted OpenRouter calls and a matched
+one-checkpoint HumanEval+ collector with separate visible and evaluation channels; use `docs/decision-protocol.md` before extending the runtime.
 
 ## Baseline CLI: `agent_workflow/`
 

@@ -5,7 +5,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 
 ## Summary
 
-- Bundles indexed: `8`
+- Bundles indexed: `9`
 - Missing bundle paths: `0`
 - Missing README files: `0`
 
@@ -13,6 +13,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 
 | Class | Bundles |
 | --- | --- |
+| `inspect-readme` | 1 |
 | `paper-supporting-evidence` | 7 |
 | `partial-evidence` | 1 |
 
@@ -22,6 +23,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | --- | --- |
 | `Tier 1: Main Evidence` | 6 |
 | `Tier 2: Supporting Or Diagnostic Evidence` | 2 |
+| `not tiered` | 1 |
 
 ## Bundle Assets
 
@@ -35,6 +37,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | `experiments/humaneval-plus/retry-allocation-router/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 7 | 1 | 0 | 3 | 0 | 2 | 0 | 0 | 1 |
 | `experiments/humaneval-plus/strategy-by-difficulty-grid/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 115 | 1 | 27 | 0 | 4 | 7 | 27 | 106 | 2 |
 | `experiments/humaneval-plus/llm-router-context-search/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 24 | 0 | 0 | 0 | 1 | 1 | 0 | 22 | 0 |
+| `experiments/humaneval-plus/openrouter-continuation-pilot/` | development pilot | not tiered | `inspect-readme` | 13 | 1 | 0 | 10 | 1 | 0 | 0 | 0 | 1 |
 
 ## Key Files
 
@@ -152,3 +155,13 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 - `experiments/humaneval-plus/llm-router-context-search/README.md`
 - `experiments/humaneval-plus/llm-router-context-search/runs/router-search-20260712/confirmatory_speedup.pdf`
 - `experiments/humaneval-plus/llm-router-context-search/scripts/slurm_router_search_select.sbatch`
+
+### `experiments/humaneval-plus/openrouter-continuation-pilot/`
+
+- Title: OpenRouter continuation pilot
+- Evidence: 24 tasks, 88 calls, two failed checkpoints, receipts and separate public/full-suite scoring
+- Asset directories: `configs, results`
+- `experiments/humaneval-plus/openrouter-continuation-pilot/README.md`
+- `experiments/humaneval-plus/openrouter-continuation-pilot/results/pilot-20261022/summary.json`
+- `experiments/humaneval-plus/openrouter-continuation-pilot/configs/pilot.json`
+- `experiments/humaneval-plus/openrouter-continuation-pilot/results/pilot-20261022/cost_success.png`

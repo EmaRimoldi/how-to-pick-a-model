@@ -5,9 +5,11 @@
 After observing a verifiable task's execution history, which additional action
 is worth its incremental cost: continue, restart, switch models, or stop?
 
-The initial substrate is AutoResearch/CIFAR-10. Completed HumanEval+ studies
-supply retry and routing baselines. Existing experiments are baseline evidence,
-not validation of the proposed state-conditioned policy.
+The first inexpensive API pilot uses HumanEval+ coding tasks and public-example
+feedback; AutoResearch/CIFAR-10 remains a subsequent transfer environment.
+Completed studies supply baselines, not validation of an adaptive policy. The
+[OpenRouter pilot](../experiments/humaneval-plus/openrouter-continuation-pilot/README.md)
+defines a frozen one-checkpoint protocol and cost-limited runner.
 
 ## Observable state and actions
 
@@ -84,5 +86,6 @@ explicit dependency model before invoking index-policy optimality guarantees.
 
 This repository does not claim these ideas as new. Its proposed experiment tests
 observable verifier feedback and artifact/context transfer in edit/verify loops.
-The state-conditioned forecaster, matched handoff dataset, and controller remain
-to be implemented and validated. No new live runs were launched for this cleanup.
+The state-conditioned forecaster and learned controller remain to be implemented
+and validated. The one-checkpoint pilot collected matched handoff outcomes on two failed states;
+its development pilot is not a held-out evaluation of an adaptive controller.
