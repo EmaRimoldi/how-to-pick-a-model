@@ -74,6 +74,7 @@ CORE_CODE_MODULES = {
     "src/vao/decisions/context_value.py",
     "src/vao/decisions/recovery.py",
     "src/vao/decisions/recovery_policy.py",
+    "src/vao/decisions/recovery_import.py",
     "src/vao/decisions/openrouter.py",
     "src/vao/decisions/verification.py",
     "src/load_traces.py",

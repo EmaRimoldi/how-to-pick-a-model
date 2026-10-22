@@ -128,6 +128,26 @@ uv run python scripts/run_recovery_validation.py \
 Planning makes no model calls. Authorized live collection uses a fresh output
 directory and adds `--live --budget-usd 1.97 --key-stdin`.
 
+### Transport correction before evaluation
+
+The first development collection stopped after 151 requests because one explicit
+empty provider error had no usage receipt. Its generation lookup returned 404.
+OpenRouter's [zero-completion insurance](https://openrouter.ai/blog/announcements/never-pay-for-empty-ai-responses-again/)
+and [pricing policy](https://openrouter.ai/pricing) specify zero model-token charge
+for error responses; an authenticated aggregate-credit comparison matched all
+other settled receipts to numerical precision. Record that draw as a failed
+observation with a **policy-backed zero**, preserving the raw missing usage and
+the reconciliation, rather than pretending it supplied a measured token receipt.
+
+An explicit `--import-run` creates a fresh journal, imports every known response
+and charge, verifies the unchanged evaluator and config, and reuses each job at
+most once. Existing observations and the failed provider response are not
+resampled. Only jobs without a prior response are generated. Imported inference
+costs remain part of the same $1.97 run ceiling, not a new allowance. Unknown
+non-error billing and requests lacking response identity still stop/refuse import.
+This transport correction precedes policy fitting and all held-out calls; task
+IDs, hypotheses, features, penalties and budgets are unchanged.
+
 Produce an auditable report, figures, and a blog draft that includes negative
 findings. A paper claim additionally needs a broader novelty review and stronger
 replication; collecting data until a favorable result appears is not the plan.

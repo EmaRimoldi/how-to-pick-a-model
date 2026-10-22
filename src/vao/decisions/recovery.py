@@ -21,6 +21,7 @@ from .context_value import ARMS, parse_forecast
 from .openrouter import BackendStopped, BudgetLedger, BudgetStopped, OpenRouterClient, append_json
 from .pilot import SYSTEM, digest
 from .recovery_policy import features, fit_policy, predict
+from .recovery_import import ImportedClient, import_completed, records
 from .verification import SandboxVerifier
 
 
@@ -143,7 +144,9 @@ def run(config: dict, problems: dict, split: dict, client: OpenRouterClient,
                     predictions.append(row)
                     complete.append(row)
                     continue
-                scored = evaluate(problems[job["task_id"]], call, verifier)
+                cached = getattr(client, "cached_evaluation", lambda _: None)(call["call"])
+                scored = ({k: cached[k] for k in ("solution", "solution_sha256", "visible", "heldout", "verifier_seconds")}
+                          if cached else evaluate(problems[job["task_id"]], call, verifier))
                 record = {"call": call["call"], "task_id": job["task_id"], "split": job["split"], **scored}
                 append_json(output / "evaluations.jsonl", record)
                 evaluations.append(record)
@@ -262,6 +265,8 @@ def main() -> int:
     parser.add_argument("--live", action="store_true")
     parser.add_argument("--budget-usd", type=float)
     parser.add_argument("--key-stdin", action="store_true")
+    parser.add_argument("--import-run", help="Explicit stopped-run import into a fresh output/journal; never automatic")
+    parser.add_argument("--reconciliation", help="Account-level zero-charge reconciliation for insured source errors")
     args = parser.parse_args()
     config = json.loads(Path(args.config).read_text())
     problems, split = load_experiment(config)
@@ -285,14 +290,23 @@ def main() -> int:
     if not key:
         parser.error("Supply key through stdin or environment")
     ledger = BudgetLedger(output / "budget.jsonl", args.budget_usd)
+    imported = []
+    if args.import_run:
+        imported, provenance = import_completed(Path(args.import_run), output, ledger, config,
+            Path(args.reconciliation) if args.reconciliation else None)
+        manifest["import_provenance"] = provenance
     verifier = SandboxVerifier()
     manifest["sandbox"] = verifier.preflight()
-    for t in ids:
-        p = problems[t]
-        for mode in ("base_feedback", "heldout"):
-            if not verifier.check(p, p["prompt"] + p["canonical_solution"], mode)["passed"]:
-                raise RuntimeError("Reference failed " + mode + ": " + t)
-    client = OpenRouterClient(key, config, output, ledger)
+    if args.import_run:
+        manifest["reference_preflight_reused_with_identical_evaluator"] = True
+    else:
+        for t in ids:
+            p = problems[t]
+            for mode in ("base_feedback", "heldout"):
+                if not verifier.check(p, p["prompt"] + p["canonical_solution"], mode)["passed"]:
+                    raise RuntimeError("Reference failed " + mode + ": " + t)
+    client = (ImportedClient(key, config, output, ledger, imported, records(Path(args.import_run), "evaluations"))
+              if args.import_run else OpenRouterClient(key, config, output, ledger))
     manifest["preflight"] = client.preflight()
     (output / "manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
     result = run(config, problems, split, client, verifier, output)

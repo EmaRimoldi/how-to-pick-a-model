@@ -14,6 +14,23 @@ from typing import Any
 
 API_ROOT = "https://openrouter.ai/api/v1"
 _APPEND_LOCK = threading.Lock()
+ZERO_ERROR_POLICY = "https://openrouter.ai/blog/announcements/never-pay-for-empty-ai-responses-again/"
+
+
+def insured_empty_error(record: dict) -> bool:
+    """Normalize only explicit empty provider errors covered by published zero-charge insurance.
+
+    This is a policy-backed zero, not a reported token receipt. Raw usage and
+    billing provenance remain visible; ordinary missing billing still stops.
+    """
+    if ((record.get("usage") or {}).get("cost") is None and record.get("finish_reason") == "error"
+            and not record.get("content") and record.get("generation_id") and record.get("provider")):
+        record["reported_usage"] = record.get("usage") or {}
+        record["usage"] = {"cost": 0, "prompt_tokens": None, "completion_tokens": None}
+        record["billing_source"] = "published_zero_completion_insurance"
+        record["billing_policy_url"] = ZERO_ERROR_POLICY
+        return True
+    return False
 
 
 def read_stream(response) -> dict:
@@ -29,11 +46,14 @@ def read_stream(response) -> dict:
         if data == "[DONE]":
             break
         event = json.loads(data)
-        if event.get("error"):
-            raise BackendStopped("OpenRouter streaming error; billing unresolved")
         for field in ("id", "provider", "model", "usage"):
             if event.get(field) is not None:
                 payload[field] = event[field]
+        if event.get("error"):
+            if payload.get("id") and payload.get("provider"):
+                finish = "error"
+                break  # Preserve explicit failure identity; never retry inference.
+            raise BackendStopped("OpenRouter streaming error; billing unresolved")
         for choice in event.get("choices", []):
             if choice.get("index", 0) != 0:
                 raise BackendStopped("Unexpected multiple completion choices")
@@ -234,6 +254,8 @@ class OpenRouterClient:
                   "content": content, "finish_reason": choice.get("finish_reason"),
                   "usage": usage, "elapsed_seconds": elapsed, "draw_seed": seed,
                   "seed_sent": body.get("seed")}
+        insured_empty_error(record)
+        usage = record["usage"]
         append_json(self.output / "calls.jsonl", record)
         self.ledger.settle(call, usage.get("cost"))
         expected_provider = model.get("provider_name", "SiliconFlow")
@@ -241,8 +263,9 @@ class OpenRouterClient:
             raise BackendStopped("Returned provider differs from the pinned provider")
         if (usage.get("completion_tokens_details") or {}).get("reasoning_tokens", 0):
             raise BackendStopped("Reasoning tokens returned despite disabled reasoning")
-        if usage.get("prompt_tokens", input_cap + 1) > input_cap or usage.get(
-                "completion_tokens", max_tokens + 1) > max_tokens:
+        if record.get("billing_source") != "published_zero_completion_insurance" and (
+                usage.get("prompt_tokens", input_cap + 1) > input_cap or usage.get(
+                "completion_tokens", max_tokens + 1) > max_tokens):
             raise BackendStopped("Reported token usage exceeds the admitted token ceiling")
         record["cost_usd"] = usage["cost"]
         return record
