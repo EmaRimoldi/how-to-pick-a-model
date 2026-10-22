@@ -495,7 +495,10 @@ def analyze_semantic(data,root,*,freeze_path=Path("experiments/mbpp-plus/context
     require(manifest["source_file_sha256"]==frozen["source_file_sha256"],"Semantic prompt/source changed")
     require(manifest["config"]==cfg and manifest["source_policy_sha256"]==digest(policy),"Semantic prior/config changed")
     require(same(manifest["prior_upper_usd"],data["collection"]["campaign_upper_usd"]),"Semantic budget omits prior charges/reservations")
-    calls={r["call"]:r for r in records(root,"calls")}
+    call_rows=records(root,"calls")
+    calls={r["call"]:r for r in call_rows}
+    require(len(calls)==len(call_rows),"Duplicate semantic response identity")
+    require(len({r["generation_id"] for r in call_rows})==len(calls),"Duplicate semantic generation identity")
     ledger=records(root,"budget")
     reserved,settled={},{}
     cap=Decimal(str(manifest["maximum_new_budget_usd"]))
@@ -511,6 +514,17 @@ def analyze_semantic(data,root,*,freeze_path=Path("experiments/mbpp-plus/context
             require(0<=settled[c]<=reserved[c],"Semantic over-reservation charge")
         require(sum(settled.values())+sum(v for k,v in reserved.items() if k not in settled)<=cap,"Semantic budget exceeded")
     require(set(calls)==set(settled),"Semantic response/receipt census")
+    transport=records(root,"transport")
+    require(len({r["call"] for r in transport})==len(transport),"Repeated uncertain semantic admission")
+    require(set(reserved)-set(settled)=={r["call"] for r in transport},"Unexplained unresolved semantic reservation")
+    admitted_cells=[(r["checkpoint_id"],r["view"]) for r in call_rows]
+    for r in transport:
+        require(r["action"]=="forecast" and r["model_name"]=="small"
+                and r["checkpoint_id"] in data["selected"] and r["view"] in API_VIEWS,
+                "Unplanned censored semantic request")
+        require(r["task_id"]==data["checkpoints"][r["checkpoint_id"]]["task_id"],"Censored semantic task identity")
+        admitted_cells.append((r["checkpoint_id"],r["view"]))
+    require(len(set(admitted_cells))==len(admitted_cells),"Repeated semantic state/view admission")
     prediction_rows=records(root,"predictions")
     by_call={r["call"]:r for r in prediction_rows}
     require(len(calls)==len(prediction_rows)==len(by_call),"Missing/repeated semantic observation")

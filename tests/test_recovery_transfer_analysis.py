@@ -141,6 +141,24 @@ def test_offline_audit_roundtrip_from_mocked_collection_and_rejects_model_drift(
     assert semantic["prediction_metrics"]["state"]["brier"]<semantic["prediction_metrics"]["feedback_only"]["brier"]
     assert semantic["state_feedback_utility"]["estimate"]==pytest.approx(0)
     assert semantic["collection"]["known_cost_usd"]==pytest.approx(.000006)
+    # Publishing must reject duplicated provider responses and unexplained or
+    # repeated uncertain admissions, even when the small dollar amount fits.
+    call_path=forecasts/"calls.jsonl";original_calls=call_path.read_bytes()
+    call_path.write_bytes(original_calls+original_calls.splitlines(keepends=True)[0])
+    with pytest.raises(ValueError,match="Duplicate semantic response identity"):
+        a.analyze_semantic(data,forecasts,freeze_path=frozen_path)
+    call_path.write_bytes(original_calls)
+    budget_path=forecasts/"budget.jsonl";original_budget=budget_path.read_bytes()
+    append_json(budget_path,{"event":"reserve","call":7,"model":"small","reserved_usd":.002688})
+    with pytest.raises(ValueError,match="Unexplained unresolved semantic reservation"):
+        a.analyze_semantic(data,forecasts,freeze_path=frozen_path)
+    cp=data["checkpoints"][data["complete"][0]]
+    append_json(forecasts/"transport.jsonl",{"call":7,"action":"forecast","model_name":"small",
+        "checkpoint_id":cp["checkpoint_id"],"task_id":cp["task_id"],"view":"state"})
+    with pytest.raises(ValueError,match="Repeated semantic state/view admission"):
+        a.analyze_semantic(data,forecasts,freeze_path=frozen_path)
+    budget_path.write_bytes(original_budget);(forecasts/"transport.jsonl").unlink()
+    a.analyze_semantic(data,forecasts,freeze_path=frozen_path)
     rows=[json.loads(s) for s in (final/"calls.jsonl").read_text().splitlines()]
     rows[0]["returned_model"]="unplanned/model"
     (final/"calls.jsonl").write_text("".join(json.dumps(r)+"\n" for r in rows))
