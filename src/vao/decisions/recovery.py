@@ -180,7 +180,8 @@ def run(config: dict, problems: dict, split: dict, client: OpenRouterClient,
         return complete
 
     def prefix_jobs(task_ids, label):
-        return [{"task_id": task, "split": label, "action": "initial", "model_name": config["producer"],
+        model = config.get("evaluation_producer", config["producer"]) if label == "evaluation" else config["producer"]
+        return [{"task_id": task, "split": label, "action": "initial", "model_name": model,
                  "messages": producer_messages(problems[task])} for task in task_ids]
 
     def branch_jobs(states, development_states):

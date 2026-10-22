@@ -37,7 +37,15 @@ def continue_frozen_development(source: Path, output: Path, ledger, config: dict
     policy = json.loads((source / "frozen-policy.json").read_text())
     policy["priors"] = {m + "." + a: policy["priors"][m + "." + a]
                         for m in config["target_models"] for a in ARMS}
-    if manifest["config_sha256"] != digest(config) or not summary["status"].startswith("BackendStopped: OpenRouter HTTP 429"):
+    frozen_config = json.loads(json.dumps(config))
+    if "evaluation_producer" in frozen_config:
+        alias = frozen_config.pop("evaluation_producer")
+        endpoint = frozen_config["models"].pop(alias)
+        original = frozen_config["models"][frozen_config["producer"]]
+        if {k: v for k, v in endpoint.items() if k not in {"provider", "provider_name"}} != {
+                k: v for k, v in original.items() if k not in {"provider", "provider_name"}}:
+            raise ValueError("Provider transfer must keep model, precision and all price ceilings identical")
+    if manifest["config_sha256"] != digest(frozen_config) or not summary["status"].startswith("BackendStopped: OpenRouter HTTP 429"):
         raise ValueError("Only the explicit pre-evaluation rate-limit stop may continue here")
     for name in ("verification.py", "verifier_worker.py", "recovery_policy.py"):
         relative = "src/vao/decisions/" + name
@@ -60,13 +68,13 @@ def continue_frozen_development(source: Path, output: Path, ledger, config: dict
     if any(Decimal(str(c["usage"]["cost"])) != settled[c["call"]] for c in calls):
         raise ValueError("Development receipts changed")
     pending = {i: reserve[i] for i in missing}
-    if len(missing) > config["workers"] or any(e["model"] != config["models"][config["producer"]]["id"]
+    if len(missing) > config["workers"] + 1 or any(e["model"] != config["models"][config["producer"]]["id"]
             for e in events if e["event"] == "reserve" and e["call"] in missing):
         raise ValueError("Censored requests are not the bounded producer phase")
     if sum(settled.values()) + sum(pending.values()) > ledger.limit:
         raise ValueError("Known charges plus all unknown reserves exceed the unchanged ceiling")
     for name in ("calls.jsonl", "budget.jsonl", "initial.jsonl", "checkpoints.jsonl", "branches.jsonl",
-                 "evaluations.jsonl", "frozen-policy.json", "phases.jsonl", "import-provenance.json", "import-uses.jsonl"):
+                 "evaluations.jsonl", "frozen-policy.json", "phases.jsonl", "import-provenance.json", "import-uses.jsonl", "transport.jsonl"):
         if (source / name).exists():
             shutil.copyfile(source / name, output / name)
     proof = {"source_status": summary["status"], "source_collector_git_sha": manifest["git_sha"],
@@ -75,6 +83,9 @@ def continue_frozen_development(source: Path, output: Path, ledger, config: dict
         "censored_request_ids": sorted(missing), "censored_reserved_usd": float(sum(pending.values())),
         "rule": "All unknown reservations remain held; no zero-cost receipts or outcomes are invented.",
         "evaluation_prefix_workers": 1, "frozen_policy_sha256": digest(policy)}
+    proof["original_config_sha256"] = manifest["config_sha256"]
+    proof["evaluation_config_sha256"] = digest(config)
+    proof["evaluation_producer"] = config["models"][config.get("evaluation_producer", config["producer"])]
     (output / "transport-censoring.json").write_text(json.dumps(proof, indent=2, sort_keys=True) + "\n")
     ledger.spent, ledger.calls, ledger.pending = sum(settled.values()), max(reserve), pending
     return {"initial": initial, "checkpoints": checkpoints, "branches": branches,

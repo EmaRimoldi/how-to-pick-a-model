@@ -153,12 +153,21 @@ def test_explicit_phase_continuation_keeps_unknown_reserves_and_exact_frozen_wei
     monkeypatch.setattr(first, "request", stopped_request)
     assert run(config, problems, split, first, Verifier(), source)["status"].startswith("BackendStopped")
     original_policy = (source / "frozen-policy.json").read_bytes()
+    config["evaluation_producer"] = "producer_evaluation"
+    config["models"]["producer_evaluation"] = {**config["models"]["producer"], "provider": "parasail/bf16", "provider_name": "Parasail"}
+    manifest.update(config=config, config_sha256=digest(config))
+    (destination / "manifest.json").write_text(json.dumps(manifest))
     ledger = BudgetLedger(destination / "budget.jsonl", 1.97)
     development = continue_frozen_development(source, destination, ledger, config)
     held_reserve = sum(ledger.pending.values())
     assert held_reserve == reservation(config, "producer")
     continued = OpenRouterClient("dummy", config, destination, ledger)
-    monkeypatch.setattr(continued, "request", request)
+    def transferred_request(endpoint, body):
+        response = request(endpoint, body)
+        if body["provider"]["only"] == ["parasail/bf16"]:
+            response["provider"] = "Parasail"
+        return response
+    monkeypatch.setattr(continued, "request", transferred_request)
     result = run(config, problems, split, continued, Verifier(), destination, development)
     assert result["status"] == "complete" and result["unresolved_reserved_usd"] == float(held_reserve)
     assert (destination / "frozen-policy.json").read_bytes() == original_policy

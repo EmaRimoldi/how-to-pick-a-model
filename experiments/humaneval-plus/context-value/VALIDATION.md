@@ -184,6 +184,23 @@ unknown request still stops collection; there is no automatic retry. The ordinar
 all collection charges have been reconciled or use the account's unrelated spend
 as experiment billing.
 
+The single serial DeepInfra probe also returned 429, with
+`limit_source=upstream_provider_shared_pool` and no Retry-After. Thus five
+admissions now remain censored, with **$0.006912 held**. Before any evaluation
+response, `configs/validation-provider-transfer.json` pins only the evaluation
+producer to `parasail/bf16` (same `google/gemma-3-4b-it` and BF16). Declared price
+ceilings and every other protocol parameter stay identical. Parasail's endpoint
+snapshot lists $0.04/$0.05 per million tokens, below the retained $0.05/$0.10
+ceilings. No different API key is used to evade limits. No fallback is automatic.
+
+This is now explicitly a **producer-provider transfer evaluation**, not an
+identical-provider IID validation: nominal weights/precision do not guarantee
+identical serving behavior. Keep this limitation in the report and blog. The
+frozen training bank, weights, primary comparison and evaluation task IDs remain
+unchanged. Unknown charges remain bounded collection overhead, outside measured
+policy-replay bills; deployment-level outage/retry cost is not fully identified.
+A same-provider replication is still needed for that stronger claim.
+
 Produce an auditable report, figures, and a blog draft that includes negative
 findings. A paper claim additionally needs a broader novelty review and stronger
 replication; collecting data until a favorable result appears is not the plan.

@@ -82,7 +82,7 @@ def audit(root: Path) -> dict:
     held = sum((reserves[i] for i in missing), Decimal(0))
     require(summary["requests"] == len(calls) + len(missing), "Request count changed")
     if censor:
-        require(held == Decimal(str(censor["censored_reserved_usd"])) and len(missing) <= config["workers"], "Censored reservation changed")
+        require(held == Decimal(str(censor["censored_reserved_usd"])) and len(missing) <= config["workers"] + 1, "Censored reservation changed")
         require(digest(calls[:censor["source_responses"]]) == censor["source_calls_sha256"]
                 and digest(ledger[:censor["source_budget_events"]]) == censor["source_budget_sha256"], "Stopped source journal changed")
         require(censor["frozen_policy_sha256"] == digest(policy), "Policy changed after transport stop")
@@ -126,7 +126,8 @@ def audit(root: Path) -> dict:
         prompts[row["task_id"]] = prompt
         require(call["messages"] == producer_messages({"prompt": prompt}), "Producer framing changed")
         label = "development" if row["task_id"] in sets[0] else "evaluation"
-        require(row["split"] == call["split"] == label and call["model_name"] == config["producer"], "Initial split/model changed")
+        producer = config.get("evaluation_producer", config["producer"]) if label == "evaluation" else config["producer"]
+        require(row["split"] == call["split"] == label and call["model_name"] == producer, "Initial split/model changed")
         require(row["passed"] == by_eval[row["call"]]["heldout"]["passed"]
                 and row["visible_passed"] == by_eval[row["call"]]["visible"]["passed"], "Initial score changed")
         require(Decimal(str(row["cost_usd"])) == settled[row["call"]], "Producer price changed")
