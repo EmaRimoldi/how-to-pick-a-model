@@ -3,11 +3,13 @@
 The current research direction is defined in [decision protocol](decision-protocol.md).
 The retained studies provide baselines. The
 [OpenRouter development pilot](../experiments/humaneval-plus/openrouter-continuation-pilot/README.md)
-adds a one-checkpoint collector and small development dataset; learned policies
-and held-out validation remain future work.
+adds a one-checkpoint collector and small development dataset.
 The [context-value diagnostic](../experiments/humaneval-plus/context-value/README.md)
-adds a code/feedback factorial and prospective zero-shot forecasts, without
-fitting a controller.
+adds a code/feedback factorial and prospective zero-shot forecasts. Its separate
+[frozen transfer protocol](../experiments/humaneval-plus/context-value/VALIDATION.md)
+implements development-trained task/state ridge baselines, prospective API
+forecasts and budgeted replay on task-disjoint, different-producer failures.
+The general multi-step controller remains future work.
 
 ## Evidence
 
@@ -30,7 +32,11 @@ Use `experiments/README.md` and bundle-local READMEs before citing results.
 - `src/vao/orchestrator.py`, `src/vao/schemas.py`: execution and observable state.
 - `src/vao/agents/`: model adapters and supported session behavior.
 - `src/vao/decisions/`: budgeted OpenRouter calls, observable checkpoints,
-  isolated public-example feedback and evaluation-only EvalPlus scoring.
+  isolated public feedback and evaluation-only EvalPlus scoring.
+- `src/vao/decisions/recovery_policy.py`: frozen, inexpensive probability baselines.
+- `src/vao/decisions/recovery.py`: development/frozen-evaluation collection.
+- `src/vao/decisions/recovery_import.py`: explicit phase transitions and preserved charges/reservations.
+- `scripts/analyze_recovery_validation.py`: offline receipt/provenance audit and finite policy replay.
 - `src/agent_workflow/`: baseline CLI, snapshots, cost/trace collection, reports.
 - `autoresearch/benchmark/cifar10/`: workloads and verifier.
 - `autoresearch/analysis/`, `autoresearch/scripts/`: accounting and reproduction.

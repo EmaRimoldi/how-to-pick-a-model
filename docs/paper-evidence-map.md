@@ -33,13 +33,22 @@ not establish that a state-conditioned continue/restart/handoff controller works
 ## Missing evidence for the next question
 
 The [OpenRouter development pilot](../experiments/humaneval-plus/openrouter-continuation-pilot/README.md)
-provides a collector and matched continuations on two failed development states. Calibrated forecasts and
-held-out policy comparisons including switching/context costs remain planned.
+provides a collector and matched continuations on two failed development states.
 The [context-value diagnostic](../experiments/humaneval-plus/context-value/README.md)
 adds prospectively recorded zero-shot forecasts and a code/feedback factorial;
-it is diagnostic evidence, not an additional manuscript result or a trained-policy evaluation.
-Development results do not establish a learned controller gain. Re-FORC and AI Functions are related-work/baseline
-references, not implemented integrations or new results in this repository.
+its discovery is diagnostic evidence rather than an additional manuscript result.
+The separate [frozen transfer protocol](../experiments/humaneval-plus/context-value/VALIDATION.md)
+implements task/state ridge baselines, prospective API forecasts, matched context
+controls and budgeted replay. The original same-producer evaluation was stopped
+before any observed evaluation response; the declared substitute uses Ministral
+failures with the same frozen Gemma-trained policy. Do not describe transfer as
+same-producer IID validation or equate a predictor's Brier score with a policy gain.
+
+The current manuscripts are unchanged. Any new method claim still needs direct
+comparisons with the [closest prior work](recovery-related-work.md), a feedback-only
+prediction ablation, independent task-family/provider replication and realistic
+multi-step tests. Re-FORC, AI Functions, CodeRescue and the other cited systems are
+references, not reproduced implementations in this repository.
 
 Run `make check` for structure and unit tests, and
 `make paper-figures-autoresearch` to regenerate three baseline figures.

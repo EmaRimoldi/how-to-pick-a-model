@@ -1,12 +1,17 @@
 # Reproducibility
 
 The retained evidence is AutoResearch/CIFAR-10 and completed HumanEval+ studies.
-The next state-conditioned policy experiment is specified in
+The state-conditioned policy question is specified in
 [decision protocol](decision-protocol.md). A cost-bounded API pilot now has a
 [separate protocol and runner](../experiments/humaneval-plus/openrouter-continuation-pilot/README.md).
 The subsequent [context-value diagnostic](../experiments/humaneval-plus/context-value/README.md)
 uses the same optional environment and billing/isolation controls, with separate
 code/feedback conditions and saved prospective forecasts.
+The [frozen recovery protocol](../experiments/humaneval-plus/context-value/VALIDATION.md)
+adds a trained one-checkpoint selector and a task-disjoint producer-transfer
+evaluation. Its saved-data analyzer requires no credentials, GPU or candidate
+execution. Optional EvalPlus is needed for new collection, not for replaying
+recorded results.
 
 ## Safe environment and checks
 

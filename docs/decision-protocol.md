@@ -9,12 +9,13 @@ The immediate question is narrower: **after visible failure, is the previous
 artifact useful to the next solver, and can its value be forecast before another
 attempt?** The [context-value diagnostic](../experiments/humaneval-plus/context-value/README.md)
 separates code from verifier feedback in matched conditions for 9B and 27B,
-and records task-only/state forecasts before any branch outcome. It evaluates
-zero-shot forecasts, not a learned policy.
+and records task-only/state forecasts before any branch outcome. Its discovery
+study evaluates zero-shot forecasts. A separate [frozen transfer protocol](../experiments/humaneval-plus/context-value/VALIDATION.md)
+adds development-trained ridge baselines and finite budgeted policy replay.
 
 The first inexpensive API pilot uses HumanEval+ coding tasks and public-example
 feedback; AutoResearch/CIFAR-10 remains a subsequent transfer environment.
-Completed studies supply baselines, not validation of an adaptive policy. The
+Historical studies supply baseline evidence. The
 [OpenRouter pilot](../experiments/humaneval-plus/openrouter-continuation-pilot/README.md)
 defines a frozen one-checkpoint protocol and cost-limited runner.
 
@@ -94,6 +95,17 @@ explicit dependency model before invoking index-policy optimality guarantees.
 This repository does not claim these ideas as new. Its proposed experiment tests
 observable verifier feedback and artifact/context transfer in edit/verify loops.
 The context-value diagnostic implements a prospective zero-shot API forecaster.
-A calibrated learned forecaster and learned controller remain to be developed
-and validated. The one-checkpoint pilot collected matched handoff outcomes on two failed states;
-its development pilot is not a held-out evaluation of an adaptive controller.
+Simple task/state ridge predictors and their one-checkpoint action selection are
+now implemented. The transfer protocol freezes development weights before any
+evaluation response, includes direct-model/static-action controls, and measures
+benefit prediction separately from outcome prediction. Its Gemma-to-Ministral
+producer change is an explicit limitation; it does not complete the originally
+planned same-producer validation. Every censored transport admission retains its
+full reservation in collection accounting. Replay costs do not fully identify
+deployment outage/retry costs.
+
+The [related-work check](recovery-related-work.md) identifies closer precedents,
+including CodeRescue, feedback decomposition and selective recovery. Do not claim
+post-failure routing or context repair as a new idea. The general multi-step
+controller, semantic benefit prediction and production integration remain future
+work; a state gain alone cannot isolate code information from verifier feedback.

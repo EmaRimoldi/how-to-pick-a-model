@@ -63,6 +63,15 @@ def test_direct_control_does_not_pay_the_producer(replay_data):
     assert r["passed"] and r["cost_usd"] == 0.0001
 
 
+def test_development_static_selection_keeps_its_original_producer_admission(replay_data):
+    replay_data["config"]["evaluation_producer"] = "evaluation_only"
+    replay_data["config"]["models"]["evaluation_only"] = {"input_per_million": 10, "output_per_million": 10}
+    for row in replay_data["branches"]:
+        row["split"] = "development"
+    assert rollout("t", "fixed:small.fresh", 0.0003, replay_data, "development")["passed"]
+    assert not rollout("t", "fixed:small.fresh", 0.0003, replay_data, "evaluation")["passed"]
+
+
 def test_state_policy_uses_only_budget_admissible_actions(replay_data):
     r = rollout("t", "state", 0.0003, replay_data)
     assert r["selected_action"] == "small.fresh"

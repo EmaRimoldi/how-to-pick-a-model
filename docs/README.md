@@ -14,6 +14,8 @@
 | [Engineering](engineering/README.md) | Existing baseline runner architecture |
 | [Evaluations](evals/README.md) | Evaluator calibration and controls |
 | [Context value](../experiments/humaneval-plus/context-value/README.md) | Matched code/feedback conditions and prospective forecasts after failure |
+| [Frozen recovery protocol](../experiments/humaneval-plus/context-value/VALIDATION.md) | Development-trained selectors, task holdout, transfer amendment and accounting |
+| [Recovery related work](recovery-related-work.md) | Closest precedents and boundaries for a new paper claim |
 | [History](history-merge.md) | Source provenance and recoverable cleanup snapshots |
 
 Generated navigation maps: [inventory](audits/repo-inventory.md),

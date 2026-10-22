@@ -91,7 +91,7 @@ def audit(root: Path) -> dict:
         charge = Decimal(str(call["usage"]["cost"]))
         require(charge.is_finite() and 0 <= charge == settled[call["call"]] <= reserves[call["call"]], "Charge mismatch")
         require(reserves[call["call"]] == reservation(config, call["model_name"]), "Admission ceiling changed")
-        require(call["provider"] == model.get("provider_name", "SiliconFlow") and call["model"] == model["id"], "Model/provider changed")
+        require(str(call["provider"]).lower() == model.get("provider_name", "SiliconFlow").lower() and call["model"] == model["id"], "Model/provider changed")
         require(call["seed_sent"] is None and not (call["usage"].get("completion_tokens_details") or {}).get("reasoning_tokens", 0), "Sampler/reasoning changed")
         if call.get("billing_source") == "published_zero_completion_insurance":
             require(call["finish_reason"] == "error" and charge == 0 and not call["content"], "Invalid insured zero")
@@ -146,6 +146,9 @@ def audit(root: Path) -> dict:
     refitted = fit_policy(sorted([c for c in checkpoints if c["split"] == "development"], key=lambda c: c["task_id"]),
         [r for r in branches if r["split"] == "development"], prompts, config)
     require(refitted["priors"] == policy["priors"] and refitted["best_fixed_action"] == policy["best_fixed_action"], "Fitted priors changed")
+    require(policy["ridge_penalty"] == config["ridge_penalty"] and policy["solution_value_usd"] == config["solution_value_usd"], "Policy objective changed")
+    for key, value in refitted["mean_action_cost_usd"].items():
+        require(np.isclose(value, policy["mean_action_cost_usd"][key], atol=1e-12, rtol=1e-10), "Development action cost changed")
     # The saved JSON sorts keys; the live instruction lists the original
     # declared model/arm order. Reconstruct that order for exact prompt auditing.
     prompt_policy = {**policy, "priors": refitted["priors"]}
@@ -217,7 +220,8 @@ def rollout(task: str, policy_name: str, budget: float, data: dict, partition: s
     if policy_name.startswith("direct_"):
         choice = policy_name.removeprefix("direct_") + ".fresh"
     else:
-        if reservation(cfg, cfg.get("evaluation_producer", cfg["producer"])) > ceiling:
+        producer = cfg.get("evaluation_producer", cfg["producer"]) if partition == "evaluation" else cfg["producer"]
+        if reservation(cfg, producer) > ceiling:
             return finish()
         spent += Decimal(str(initial["cost_usd"]))
         if initial["visible_passed"]:
@@ -324,7 +328,8 @@ def analyze(data: dict) -> tuple[dict, list[dict]]:
             recovery[model + "." + arm]["mean_api_cost_usd"] = mean(r["incremental_cost_usd"] for r in rows) if rows else None
             call_ids = {r["call"] for r in rows}
             tokens = [c["usage"]["prompt_tokens"] for c in data["calls"] if c["call"] in call_ids and c["usage"].get("prompt_tokens") is not None]
-            token_stats[model + "." + arm] = {"mean": mean(tokens) if tokens else None, "min": min(tokens) if tokens else None, "max": max(tokens) if tokens else None}
+            token_stats[model + "." + arm] = {"mean": mean(tokens) if tokens else None, "min": min(tokens) if tokens else None,
+                "max": max(tokens) if tokens else None, "reported_token_receipts": len(tokens), "draws": len(rows)}
         for name, positive, negative in (("both_minus_fresh", "artifact_feedback", "fresh"),
                                          ("code_minus_fresh", "artifact", "fresh"),
                                          ("feedback_minus_fresh", "feedback", "fresh"),
