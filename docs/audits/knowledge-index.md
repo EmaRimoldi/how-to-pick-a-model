@@ -9,8 +9,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `11`
-- Script entrypoints indexed: `38`
-- Code modules indexed: `135`
+- Script entrypoints indexed: `39`
+- Code modules indexed: `136`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `7`
@@ -194,6 +194,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/run_recovery_transfer.py` | python | Plan or explicitly collect the cumulative-budgeted MBPP+ recovery replication. |
 | `scripts/run_recovery_validation.py` | python | Plan or explicitly run the task-held-out recovery validation within its cumulative budget. |
 | `scripts/run_single_long_experiment.py` | python | CLI: launch Mode 2 (1 agent × 2T budget). |
+| `scripts/run_transfer_forecasts.py` | python | Plan or explicitly collect the prespecified outcome-blind semantic forecast control. |
 | `scripts/validate_agent_readiness.py` | python | Validate that the repository is ready for LLM-agent navigation. |
 | `autoresearch/scripts/analyze_autoresearch_allocation_router.py` | python | Analyze allocation-router outputs against mode labels and calibration tables. |
 | `autoresearch/scripts/analyze_autoresearch_threeworker_final.py` | python | Frozen three-worker analysis for the AutoResearch CIFAR-10 paper experiments. |
@@ -316,6 +317,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/decisions/recovery_import.py` | Explicitly import a stopped run into a fresh journal without repeating paid jobs. | records, job_key, continue_frozen_development, import_completed, ImportedClient |
 | verified orchestration runtime | `src/vao/decisions/recovery_policy.py` | Small frozen ridge probability baselines for selecting a recovery action. | features, fit_policy, predict |
 | verified orchestration runtime | `src/vao/decisions/transfer.py` | Prospective cross-benchmark recovery replication, with a fixed source-trained policy. | records, file_hash, reservation, source_data, choose, replay, freeze, load_tasks |
+| verified orchestration runtime | `src/vao/decisions/transfer_forecast.py` | Frozen outcome-blind semantic forecast control; separate from the primary transfer run. | messages, public_inputs, main |
 | verified orchestration runtime | `src/vao/decisions/verification.py` | Run public doctest feedback and private EvalPlus scoring in an OS sandbox. | visible_examples, sandbox_profile, SandboxVerifier |
 | verified orchestration runtime | `src/vao/decisions/verifier_worker.py` | Standalone sandbox child: public doctests or official EvalPlus base/plus checks. | public_examples_doc, ExampleChecker, LimitedOutput, probe, check, main |
 | verified orchestration runtime | `src/vao/estimators.py` | Estimator functions for branch tensors and run records. | gain, productive_mode_proxy, routing_regret, jsd, routing_mismatch_jsd, routing_mismatch_jSd, gains_by_mode, runtime_phi |

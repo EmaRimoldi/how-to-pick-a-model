@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import random
 from collections import Counter
 from decimal import Decimal
 from pathlib import Path
@@ -44,6 +45,16 @@ def interval(values, alpha=.05):
 def audit(root: Path) -> dict:
     manifest = json.loads((root / "manifest.json").read_text())
     cfg = manifest["config"]
+    reference_path = Path(cfg["reference_audit"])
+    require(file_hash(reference_path) == cfg["reference_audit_sha256"], "Reference census changed")
+    reference = [json.loads(s) for s in reference_path.read_text().splitlines()]
+    require(len(reference) == len({r["task_id"] for r in reference}) == 378, "Reference census incomplete/duplicated")
+    excluded = [r["task_id"] for r in reference if not r["base_feedback"]["passed"] or not r["heldout"]["passed"]]
+    require(sorted(excluded) == sorted(cfg["reference_exclusions"]), "Reference exclusions changed")
+    task_order = sorted({r["task_id"] for r in reference} - set(excluded),key=lambda t:int(t.split("/")[1]))
+    random.Random(cfg["seed"]).shuffle(task_order)
+    require(task_order == manifest["task_order"], "Frozen external task order changed")
+    require(Decimal(str(cfg["run_ceiling_usd"])) + Decimal(str(cfg["prior_committed_usd"])) <= Decimal(str(cfg["campaign_ceiling_usd"])), "Declared cap double-spends prior reservations")
     if (root / "checksums.json").exists():
         for name, expected in json.loads((root / "checksums.json").read_text()).items():
             require(file_hash(root/name) == expected, "Curated checksum: " + name)
@@ -55,6 +66,7 @@ def audit(root: Path) -> dict:
     calls = records(root, "calls")
     call_by_id = {r["call"]: r for r in calls}
     require(len(calls) == len(call_by_id), "Duplicated response identity")
+    require(len({r["generation_id"] for r in calls}) == len(calls), "Duplicated provider generation identity")
     ledger = records(root, "budget")
     reserves, settlements = {}, {}
     for r in ledger:
@@ -75,8 +87,10 @@ def audit(root: Path) -> dict:
         require(Decimal(str(r["usage"]["cost"])) == settlements[c], "Receipt differs from settlement")
         require(reserves[c] == reservation(cfg,r["model_name"]), "Wrong advance reservation")
         require(r["model"] == cfg["models"][r["model_name"]]["id"], "Unplanned model")
+        require(r["returned_model"] == r["model"], "Returned model differs from request")
         require(r["provider"].lower() == cfg["models"][r["model_name"]].get("provider_name", "SiliconFlow").lower(), "Unplanned provider")
         require(r.get("seed_sent") is None, "Sampler seed differs from protocol")
+        require(not (r["usage"].get("completion_tokens_details") or {}).get("reasoning_tokens",0), "Unexpected reasoning tokens")
     initial = records(root, "initial")
     require([r["task_id"] for r in initial] == manifest["task_order"][:len(initial)], "Initial task selection/order drift")
     require(len({r["task_id"] for r in initial}) == len(initial), "Repeated initial task")
@@ -108,6 +122,7 @@ def audit(root: Path) -> dict:
     selected = selection["selected_checkpoint_ids"]
     require(selected == [c["checkpoint_id"] for c in cp_list[:cfg["maximum_checkpoints"]]], "Recovery selection drift")
     require(len(initial) == len(manifest["task_order"]), "Initial census is incomplete; no confirmatory result")
+    require(selection["last_admitted_call"] == max(r["call"] for r in initial), "Selection boundary changed")
     predictions = records(root, "local-predictions")
     pred = {r["checkpoint_id"]: r for r in predictions}
     require(list(pred) == selected, "Predictions not saved for every selected failure")
@@ -141,6 +156,21 @@ def audit(root: Path) -> dict:
     require(complete == selected[:len(complete)], "Complete blocks are not an ordered prefix")
     for id_ in complete:
         require(sum(k[0] == id_ for k in cells) == len(CONDITIONS) * len(cfg["target_models"]) * cfg["branch_repeats"], "Incomplete declared block")
+    # Reconstruct each complete-block admission from the budget journal, before
+    # seeing any of that block's eventual receipts or outcomes.
+    first_calls = {min(r["call"] for r in branches if r["checkpoint_id"] == id_): id_
+                   for id_ in selected if any(r["checkpoint_id"] == id_ for r in branches)}
+    block_ceiling = sum(reservation(cfg,m)*len(CONDITIONS)*cfg["branch_repeats"] for m in cfg["target_models"])
+    prior_spent, pending_costs = Decimal(0), {}
+    for r in ledger:
+        c = r["call"]
+        if r["event"] == "reserve":
+            if c in first_calls:
+                require(prior_spent + sum(pending_costs.values()) + block_ceiling <= Decimal(str(cfg["run_ceiling_usd"])), "Block was not fully affordable at admission")
+            pending_costs[c] = Decimal(str(r["reserved_usd"]))
+        else:
+            pending_costs.pop(c)
+            prior_spent += Decimal(str(r["cost_usd"]))
     known = sum(settlements.values())
     held = sum(v for k,v in reserves.items() if k not in settlements)
     total = known + held + Decimal(str(cfg["prior_committed_usd"]))

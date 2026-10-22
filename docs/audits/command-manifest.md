@@ -5,7 +5,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `46`
+- Commands indexed: `47`
 - Default-safe commands: `29`
 - Missing required Make targets: `0`
 
@@ -16,7 +16,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `artifact-builder` | 1 |
 | `cluster-setup` | 2 |
 | `live-cluster` | 3 |
-| `live-local` | 10 |
+| `live-local` | 11 |
 | `mixed-cli` | 1 |
 | `read-only-analysis` | 11 |
 | `safe-figure-regeneration` | 6 |
@@ -30,7 +30,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `Makefile` | 7 |
 | `autoresearch/scripts` | 16 |
 | `pyproject` | 1 |
-| `scripts` | 22 |
+| `scripts` | 23 |
 
 ## Commands
 
@@ -79,6 +79,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/run_recovery_transfer.py` | scripts | `live-local` | no | model access, isolated worktree, output root | Plan or explicitly collect the cumulative-budgeted MBPP+ recovery replication. |
 | `python scripts/run_recovery_validation.py` | scripts | `live-local` | no | model access, isolated worktree, output root | Plan or explicitly run the task-held-out recovery validation within its cumulative budget. |
 | `python scripts/run_single_long_experiment.py` | scripts | `live-local` | no | model access, isolated worktree, output root | CLI: launch Mode 2 (1 agent × 2T budget). |
+| `python scripts/run_transfer_forecasts.py` | scripts | `live-local` | no | model access, isolated worktree, output root | Plan or explicitly collect the prespecified outcome-blind semantic forecast control. |
 | `autoresearch/scripts/run_threshold_calibration_array_task.sh` | autoresearch/scripts | `live-cluster` | no | Slurm, model access, compute allocation | Run one Slurm array task for AutoResearch threshold-calibration sweeps. |
 | `autoresearch/scripts/run_z_probe_array_task.sh` | autoresearch/scripts | `live-cluster` | no | Slurm, model access, compute allocation | Run one Slurm array task for AutoResearch zero-step probe baselines. |
 | `autoresearch/scripts/slurm_autoresearch_worker_array.sh` | autoresearch/scripts | `live-cluster` | no | Slurm, model access, compute allocation | Run one AutoResearch CIFAR-10 worker task from a Slurm manifest row. |

@@ -191,3 +191,34 @@ draft. A positive controller result, top-conference acceptance or broad software
 engineering generalization is not promised. Report null and negative results,
 prior-art overlap, benchmark contamination risk and the single-provider,
 single-checkpoint limitation. Existing historical manuscripts remain separate.
+
+## Secondary semantic control, frozen before recovery outcomes
+
+Addendum fixed after initial-producer collection began (84 prefix responses,
+zero target/recovery responses at the engineering check), before any recovery
+outcome. The primary, bank, learned weights, task selection and budgets above
+remain unchanged. This control addresses the weakness of prompt-length-only
+features; it is not selected after inspecting recovery wins/losses.
+
+Freeze `transfer_forecast.py` now. If budget remains after the primary collection,
+collect Qwen 9B forecasts with three views: task-only, public-feedback-only, and
+full state (feedback plus failed program). All share the same eight source priors,
+source mean costs, solve-probability instruction and target-model identities.
+No recovery response, evaluation label or Plus datum enters the forecaster.
+Record all malformed forecasts with the existing 0.5 fallback and their full fee.
+Four network workers, same pinned small-model endpoint/parameters, no retries.
+
+To avoid overlapping budget allowances, this separate run begins only after
+primary collection ends. Its ceiling is min($0.08, $2 minus every prior known
+charge and unresolved reservation). Weights/prompts are fixed before recovery
+outcomes; **forecast responses themselves are collected after them**, so describe
+this as a prespecified outcome-blind semantic control, not a physically prospective
+deployment trial. The primary local predictions remain physically prospective.
+
+Secondary analysis: the same Brier and benefit-MSE diagnostics, plus two-draw
+budgeted replay with each forecast's measured fee charged before the chosen
+action. Admission first reserves the worst-case forecaster call and then the
+chosen solver call. Compare full-state versus feedback-only, task-only and
+the strong static rule, with task-bootstrap intervals. All are secondary,
+without replacing the primary or a multiple-testing win claim. Missing forecasts
+are explicit; do not substitute free forecasts or silently drop expensive failures.
