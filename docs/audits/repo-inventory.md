@@ -55,7 +55,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `src` | 137 | 1.0M |
 | `uv.lock` | 1 | 972.4K |
 | `autoresearch` | 59 | 460.7K |
-| `scripts` | 25 | 268.1K |
+| `scripts` | 25 | 269.7K |
 | `tests` | 41 | 161.3K |
 | `docs` | 23 | 89.2K |
 | `prompts` | 6 | 21.6K |

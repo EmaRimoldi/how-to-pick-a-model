@@ -504,7 +504,10 @@ def plot(r, path):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    fig,ax = plt.subplots(1,2,figsize=(12,4.5),layout="constrained")
+    plt.rcParams.update({"font.size": 9, "axes.titlesize": 10, "axes.labelsize": 9,
+                         "pdf.fonttype": 42, "ps.fonttype": 42})
+    # Seven-inch width preserves readable labels when included at full paper width.
+    fig,ax = plt.subplots(2,1,figsize=(7,6.8),layout="constrained")
     labels, points, lows, highs = [],[],[],[]
     for m in r["effects"]:
         for name,pair in r["effects"][m].items():
@@ -513,16 +516,37 @@ def plot(r, path):
             points.append(100*a["estimate"]); lows.append(100*(a["estimate"]-a["low"])); highs.append(100*(a["high"]-a["estimate"]))
     y = np.arange(len(labels))
     ax[0].errorbar(points,y,xerr=[lows,highs],fmt="o",capsize=3)
-    ax[0].axvline(0,color="gray",lw=1); ax[0].set_yticks(y,labels,fontsize=8); ax[0].invert_yaxis()
-    ax[0].set_xlabel("Success difference (percentage points)"); ax[0].set_title("Context contrasts: simultaneous intervals")
+    ax[0].axvline(0,color="gray",lw=1); ax[0].set_yticks(y,labels); ax[0].invert_yaxis()
+    ax[0].set_xlabel("Full-suite success difference (percentage points)")
+    ax[0].set_title("A. Context effects: 99.583% intervals (12-comparison family)",loc="left")
     names = ["best_static", "feedback", "state", "state_model_only"]
+    policy_labels = {"best_static":"Source-selected static", "feedback":"Feedback-only selector",
+                     "state":"State selector", "state_model_only":"Model-only selector"}
     for name in names:
         row=r["policy_summary"]["0.01"][name]
-        ax[1].scatter(row["cost_usd"]*1000,row["success"]*100,label=name)
-    ax[1].set_xlabel("Mean API dollars × 1,000"); ax[1].set_ylabel("Conditional recovery success (%)")
-    ax[1].set_title("Recovery replay at $0.01 (prefix charged)"); ax[1].legend(fontsize=8)
-    fig.suptitle(f"MBPP+ replication: {r['complete_states']} independent failed tasks")
+        ax[1].scatter(row["cost_usd"]*1000,row["success"]*100,label=policy_labels[name],s=45)
+    ax[1].set_xlabel("Mean API cost per failed task (USD × 1,000)")
+    ax[1].set_ylabel("Recovery success (%)")
+    ax[1].set_title("B. Two-draw replay at $0.01; producer charged",loc="left")
+    ax[1].legend(fontsize=8,loc="best")
+    fig.suptitle(f"MBPP+ replication: {r['complete_states']} failed tasks")
     fig.savefig(path,dpi=180); fig.savefig(path.with_suffix(".pdf")); plt.close(fig)
+
+    # Primary decision comparison is displayed directly, rather than inferred
+    # from an unpaired cost/success scatter. Other comparators are secondary.
+    fig,ax = plt.subplots(figsize=(3.35,3.0),layout="constrained")
+    controls = ["feedback", "best_static", "state_model_only", "task", "global", "escalation_diagnostic"]
+    labels = ["Feedback (primary)", "Static (source)", "Model only", "Task only", "Global prior", "Escalation*"]
+    for i,name in enumerate(controls):
+        ci=r["policy_comparisons"]["0"][name]["net_utility_usd"]
+        ax.errorbar(1000*ci["estimate"],i,
+                    xerr=[[1000*(ci["estimate"]-ci["low"])],[1000*(ci["high"]-ci["estimate"])]],
+                    fmt="o",capsize=3,color="C0" if i==0 else "0.45")
+    ax.axvline(0,color="0.65",lw=1); ax.set_yticks(range(len(controls)),labels)
+    ax.invert_yaxis(); ax.set_xlabel("State minus control utility\n(USD × 1,000/task)")
+    ax.set_title("Paired utility differences\n95% task-bootstrap intervals",fontsize=9)
+    fig.savefig(path.with_name("policy-utility.png"),dpi=180)
+    fig.savefig(path.with_name("policy-utility.pdf")); plt.close(fig)
 
 
 def main():
