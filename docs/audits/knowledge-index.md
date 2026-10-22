@@ -9,7 +9,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `12`
-- Script entrypoints indexed: `41`
+- Script entrypoints indexed: `43`
 - Code modules indexed: `140`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
@@ -168,7 +168,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | HumanEval+ | `experiments/humaneval-plus/openrouter-continuation-pilot/` | development pilot | not tiered | 24 tasks, 88 calls, two failed checkpoints, receipts and separate public/full-suite scoring |
 | HumanEval+ | `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | Discovery: 30 tasks/132 calls. Transfer: 83 development + 60 evaluation tasks, 1,353 responses, frozen policies, forecasts, controls and cost audit |
 | MBPP+ | `experiments/mbpp-plus/context-value-transfer/` | collection finished; censored descriptive bank | Tier 2: Supporting Or Diagnostic Evidence | 94/96 complete failures, 2,878 recovery responses, two censored solver cells, 288 API forecasts, fixed comparisons and full accounting |
-| BigCodeBench standard-library subset | `experiments/bigcodebench/feedback-only-routing/` | prospective preparation | not tiered | 157 new reference-qualified tasks; frozen fixed-policy comparison, no new model outcomes yet |
+| BigCodeBench standard-library subset | `experiments/bigcodebench/feedback-only-routing/` | collection active; analysis pending | not tiered | 157 new reference-qualified tasks, four fixed policies; source/protocol frozen before calls, no treatment-rate analysis during collection |
 
 ## Script Entrypoints
 
@@ -188,6 +188,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/build_repo_inventory.py` | python | Build a deterministic repository inventory for agents and reviewers. |
 | `scripts/check_paper_build.py` | python | Compile active paper TeX sources into an out-of-tree build directory. |
 | `scripts/compare_experiments.py` | python | CLI: compare two experiment directories (parallel vs single). |
+| `scripts/prepare_feedback_routing.py` | python | Verify the pinned BigCodeBench download and reproduce reference-only eligibility. |
+| `scripts/report_feedback_routing.py` | python | Publish a completed feedback-only bank, audited statistics and static figures. |
 | `scripts/run_best_params_merge.py` | python | Best-params merge: read agent results.tsv + git history, build merged train.py. Strategy: 1. For each agent, parse results/results.tsv (commit_hash, val_bpb, status) 2. For each accepted ("keep") run, extract hyperparameters from that git commit 3. Find best val_bpb value per hyperparameter across all agents 4. Build merged train.py and submit to SLURM Usage: python scripts/run_best_params_merge.py --run-id exp_20260401_120000 python scripts/run_best_params_merge.py --run-id exp_20260401_120000 --submit |
 | `scripts/run_context_value.py` | python | Plan or explicitly run a budgeted artifact/feedback and prospective-forecast study. |
 | `scripts/run_continuation_pilot.py` | python | Run the explicit-budget OpenRouter/HumanEval+ pilot; defaults to plan only. |

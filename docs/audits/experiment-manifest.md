@@ -40,7 +40,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | `experiments/humaneval-plus/openrouter-continuation-pilot/` | development pilot | not tiered | `inspect-readme` | 13 | 1 | 0 | 10 | 1 | 0 | 0 | 0 | 1 |
 | `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 46 | 5 | 0 | 39 | 3 | 0 | 0 | 0 | 4 |
 | `experiments/mbpp-plus/context-value-transfer/` | collection finished; censored descriptive bank | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 72 | 6 | 2 | 59 | 4 | 3 | 0 | 0 | 6 |
-| `experiments/bigcodebench/feedback-only-routing/` | prospective preparation | not tiered | `inspect-readme` | 8 | 1 | 4 | 0 | 0 | 0 | 0 | 0 | 0 |
+| `experiments/bigcodebench/feedback-only-routing/` | collection active; analysis pending | not tiered | `inspect-readme` | 8 | 1 | 4 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 ## Key Files
 
@@ -208,7 +208,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 ### `experiments/bigcodebench/feedback-only-routing/`
 
 - Title: Feedback-only fixed-policy evaluation
-- Evidence: 157 new reference-qualified tasks; frozen fixed-policy comparison, no new model outcomes yet
+- Evidence: 157 new reference-qualified tasks, four fixed policies; source/protocol frozen before calls, no treatment-rate analysis during collection
 - Asset directories: `configs, data`
 - `experiments/bigcodebench/feedback-only-routing/README.md`
 - `experiments/bigcodebench/feedback-only-routing/configs/evaluation.json`

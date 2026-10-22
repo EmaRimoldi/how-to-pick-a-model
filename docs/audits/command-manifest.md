@@ -5,8 +5,8 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `49`
-- Default-safe commands: `30`
+- Commands indexed: `51`
+- Default-safe commands: `32`
 - Missing required Make targets: `0`
 
 ## Safety Classes
@@ -18,7 +18,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `live-cluster` | 3 |
 | `live-local` | 12 |
 | `mixed-cli` | 1 |
-| `read-only-analysis` | 12 |
+| `read-only-analysis` | 14 |
 | `safe-figure-regeneration` | 6 |
 | `safe-local` | 10 |
 | `safe-local-optional-tool` | 2 |
@@ -30,7 +30,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `Makefile` | 7 |
 | `autoresearch/scripts` | 16 |
 | `pyproject` | 1 |
-| `scripts` | 25 |
+| `scripts` | 27 |
 
 ## Commands
 
@@ -66,6 +66,8 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/analyze_runs.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | analyze_runs.py — Analysis pipeline for agent parallelisation experiment results. Repository structure assumed (verified from runs/): runs/<experiment_id>/ config.json mode_parallel/ agent_<N>/ results/ trajectory.jsonl ← {step, val_bpb} per training run metadata.json ← summary (best_val_bpb, total_training_runs, …) snapshots/ step_NNN/ train.py ← frozen snapshot of train.py at this step metadata.json ← git_message, val_bpb_after, accepted, … workspace/ train.py.baseline ← original unmodified train.py Usage: python scripts/analyze_runs.py # latest experiment python scripts/analyze_runs.py --runs-dir runs/ # all experiments python scripts/analyze_runs.py --experiment exp_20260401_013535 python scripts/analyze_runs.py --output-dir my_analysis/ |
 | `python scripts/benchmark_parallel_capacity.py` | scripts | `read-only-analysis` | yes | inspect script before running | CLI: run the parallel-capacity benchmark. Measures the empirical upper bound on the number of sub-agents that can run concurrently in this environment. Usage: python scripts/benchmark_parallel_capacity.py python scripts/benchmark_parallel_capacity.py --max-n 6 --duration 3.0 python scripts/benchmark_parallel_capacity.py --output-dir runs/bench_capacity |
 | `python scripts/compare_experiments.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | CLI: compare two experiment directories (parallel vs single). |
+| `python scripts/prepare_feedback_routing.py` | scripts | `read-only-analysis` | yes | inspect script before running | Verify the pinned BigCodeBench download and reproduce reference-only eligibility. |
+| `python scripts/report_feedback_routing.py` | scripts | `read-only-analysis` | yes | inspect script before running | Publish a completed feedback-only bank, audited statistics and static figures. |
 | `python autoresearch/scripts/make_neurips2026_artifact.py` | autoresearch/scripts | `artifact-builder` | no | checked-in files, dist output review | Build an anonymous NeurIPS 2026 supplementary ZIP. The builder is intentionally whitelist-based and non-invasive: it reads from the development workspace and writes a clean export under ``dist/`` without touching live campaigns, raw run directories, or git metadata. |
 | `uv run agent-workflow` | pyproject | `mixed-cli` | no | subcommand-specific; run --help or doctor before live workflows | Console entrypoint `agent_workflow.cli:main`. |
 | `python autoresearch/scripts/generate_autoresearch_campaign_tasks.py` | autoresearch/scripts | `cluster-setup` | no | campaign config, output review | Generate TSV task manifests for AutoResearch CIFAR-10 Slurm arrays. |

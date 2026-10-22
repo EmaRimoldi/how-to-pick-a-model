@@ -6,7 +6,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `2467`
+- Files indexed: `2470`
 - Bytes indexed: `93.1M`
 
 ## Canonical Entrypoints
@@ -55,8 +55,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `src` | 141 | 1.1M |
 | `uv.lock` | 1 | 972.4K |
 | `autoresearch` | 59 | 460.7K |
-| `scripts` | 27 | 288.8K |
-| `tests` | 43 | 178.5K |
+| `scripts` | 29 | 301.2K |
+| `tests` | 44 | 179.6K |
 | `docs` | 23 | 97.8K |
 | `prompts` | 6 | 21.6K |
 | `configs` | 7 | 12.7K |
@@ -83,8 +83,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.jsonl` | 291 | 49.8M |
 | `.txt` | 275 | 4.2M |
 | `.yaml` | 270 | 316.1K |
-| `.py` | 250 | 2.0M |
-| `.md` | 98 | 361.6K |
+| `.py` | 253 | 2.0M |
+| `.md` | 98 | 362.5K |
 | `.png` | 62 | 7.7M |
 | `.pdf` | 37 | 745.3K |
 | `.csv` | 26 | 581.1K |
@@ -164,6 +164,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/build_repo_inventory.py`
 - `scripts/check_paper_build.py`
 - `scripts/compare_experiments.py`
+- `scripts/prepare_feedback_routing.py`
+- `scripts/report_feedback_routing.py`
 - `scripts/run_best_params_merge.py`
 - `scripts/run_context_value.py`
 - `scripts/run_continuation_pilot.py`
