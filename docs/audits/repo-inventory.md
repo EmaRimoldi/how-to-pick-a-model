@@ -6,7 +6,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `2300`
+- Files indexed: `2302`
 - Bytes indexed: `61.9M`
 
 ## Canonical Entrypoints
@@ -52,11 +52,11 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `experiments` | 1948 | 36.7M |
 | `artifacts` | 21 | 20.0M |
 | `paper` | 29 | 2.4M |
-| `src` | 131 | 979.6K |
+| `src` | 131 | 979.7K |
 | `uv.lock` | 1 | 972.4K |
 | `autoresearch` | 59 | 460.7K |
-| `scripts` | 17 | 159.4K |
-| `tests` | 32 | 108.0K |
+| `scripts` | 18 | 165.0K |
+| `tests` | 33 | 110.7K |
 | `docs` | 28 | 103.2K |
 | `prompts` | 6 | 21.6K |
 | `configs` | 7 | 12.7K |
@@ -83,7 +83,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.yaml` | 270 | 316.1K |
 | `.txt` | 260 | 3.9M |
 | `.jsonl` | 254 | 22.9M |
-| `.py` | 214 | 1.6M |
+| `.py` | 216 | 1.7M |
 | `.md` | 89 | 258.4K |
 | `.png` | 57 | 7.2M |
 | `.pdf` | 34 | 687.0K |
@@ -145,6 +145,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `autoresearch/scripts/run_threshold_calibration_array_task.sh`
 - `autoresearch/scripts/run_z_probe_array_task.sh`
 - `autoresearch/scripts/slurm_autoresearch_worker_array.sh`
+- `scripts/analyze_continuation_pilot.py`
 - `scripts/analyze_runs.py`
 - `scripts/benchmark_parallel_capacity.py`
 - `scripts/bootstrap_engaging.sh`

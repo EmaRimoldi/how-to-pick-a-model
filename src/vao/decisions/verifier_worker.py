@@ -89,7 +89,9 @@ def check(payload: dict) -> dict:
         try:
             namespace = {}
             with contextlib.redirect_stdout(capture), contextlib.redirect_stderr(capture):
-                exec(compile(solution, "candidate.py", "exec"), namespace)
+                # Match EvalPlus compilation: do not inherit this worker's
+                # __future__.annotations and hide missing typing imports.
+                exec(compile(solution, "candidate.py", "exec", dont_inherit=True), namespace)
                 test = doctest.DocTestParser().get_doctest(public_examples_doc(problem["prompt"]), namespace,
                     problem["entry_point"], "public_examples", 0)
                 for example in test.examples:

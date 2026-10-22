@@ -189,3 +189,6 @@ def test_real_sandbox_blocks_home_and_network_and_runs_public_examples():
     predicate = {"prompt": 'def f(x):\n    """\n    >>> f(2) == 3\n    """\n', "entry_point": "f"}
     assert verifier.check(predicate, "def f(x): return x+1", "visible")["passed"]
     assert not verifier.check(predicate, "def f(x): return x", "visible")["passed"]
+    missing_import = verifier.check(problem, "def f(x: List[int]): return x+1", "visible")
+    assert not missing_import["passed"]
+    assert "NameError" in missing_import["feedback"]

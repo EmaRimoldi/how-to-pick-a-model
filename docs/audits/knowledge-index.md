@@ -9,7 +9,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `9`
-- Script entrypoints indexed: `31`
+- Script entrypoints indexed: `32`
 - Code modules indexed: `130`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
@@ -171,6 +171,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 
 | Path | Kind | Summary |
 | --- | --- | --- |
+| `scripts/analyze_continuation_pilot.py` | python | Audit saved pilot receipts/outcomes and render an exploratory cost/success plot. |
 | `scripts/analyze_runs.py` | python | analyze_runs.py — Analysis pipeline for agent parallelisation experiment results. Repository structure assumed (verified from runs/): runs/<experiment_id>/ config.json mode_parallel/ agent_<N>/ results/ trajectory.jsonl ← {step, val_bpb} per training run metadata.json ← summary (best_val_bpb, total_training_runs, …) snapshots/ step_NNN/ train.py ← frozen snapshot of train.py at this step metadata.json ← git_message, val_bpb_after, accepted, … workspace/ train.py.baseline ← original unmodified train.py Usage: python scripts/analyze_runs.py # latest experiment python scripts/analyze_runs.py --runs-dir runs/ # all experiments python scripts/analyze_runs.py --experiment exp_20260401_013535 python scripts/analyze_runs.py --output-dir my_analysis/ |
 | `scripts/benchmark_parallel_capacity.py` | python | CLI: run the parallel-capacity benchmark. Measures the empirical upper bound on the number of sub-agents that can run concurrently in this environment. Usage: python scripts/benchmark_parallel_capacity.py python scripts/benchmark_parallel_capacity.py --max-n 6 --duration 3.0 python scripts/benchmark_parallel_capacity.py --output-dir runs/bench_capacity |
 | `scripts/bootstrap_engaging.sh` | shell | Bootstrap the cluster Python environment for HumanEval+ routing runs. |
