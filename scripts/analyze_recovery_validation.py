@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import platform
 import time
 from collections import Counter, defaultdict
 from decimal import Decimal
@@ -199,7 +200,11 @@ def audit(root: Path) -> dict:
     for row in local:
         cp = by_cp[row["checkpoint_id"]]
         require(row["policy_sha256"] == digest(policy), "Local model changed")
-        require(row["probabilities"] == {v: predict(policy, prompts[row["task_id"]], cp, v) for v in ("global", "task", "state")}, "Local forecast changed")
+        for view in ("global", "task", "state"):
+            expected = predict(policy, prompts[row["task_id"]], cp, view)
+            saved = row["probabilities"][view]
+            require(set(saved) == set(expected) and np.allclose([saved[k] for k in expected], list(expected.values()),
+                atol=1e-12, rtol=1e-10), "Local forecast changed")
         require(row["last_admitted_call"] < min(b["call"] for b in branches if b["checkpoint_id"] == cp["checkpoint_id"]), "Local forecast was not prospective")
     return {"config": config, "split": split, "summary": summary, "policy": policy, "calls": calls,
             "initial": initial, "checkpoints": checkpoints, "branches": branches, "forecasts": forecasts,
@@ -393,9 +398,12 @@ def analyze(data: dict) -> tuple[dict, list[dict]]:
 def markdown(report: dict) -> str:
     """Report the prespecified primary result before attractive secondary plots."""
     primary = report["primary"]["net_utility_difference_usd"]
-    lines = ["# Held-out recovery validation", "",
+    title = "# Held-out producer-transfer recovery evaluation" if report["producer_model_transfer"] else "# Held-out recovery validation"
+    lines = [title, "",
         f"{report['development_tasks']} development tasks ({report['development_failed_tasks']} failed); "
         f"{report['evaluation_tasks']} untouched evaluation tasks ({report['evaluation_failed_tasks']} failed).", "",
+        f"Development producer: `{report['development_producer_model']}`; evaluation producer: `{report['evaluation_producer_model']}`. "
+        "The original same-producer evaluation is not claimed complete." if report["producer_model_transfer"] else "Same nominal producer model across splits.", "",
         f"Development-selected fixed action: `{report['best_fixed_action_from_development']}`.", "",
         f"Primary state-ridge minus best-fixed net utility at $0.01/task: {primary['mean']:+.8f} USD; "
         f"task-bootstrap 95% interval {primary['bootstrap_95']}.", "",
@@ -423,7 +431,7 @@ def markdown(report: dict) -> str:
         lines.append(f"| {key} | {first['mean']:+.6f}, {first['bootstrap_95']} | {second['mean']:+.6f}, {second['bootstrap_95']} |")
     total = report["collection"]["collection_cost_usd"]
     held = report["collection"]["unresolved_reserved_usd"]
-    lines += ["", f"Collection: {report['collection']['requests']} model requests, ${total:.8f}; "
+    lines += ["", f"Collection: {report['collection']['requests']} request admissions, ${total:.8f}; "
               f"previous committed spend ${report['collection']['prior_committed_usd']:.8f}; "
               f"known combined ${total + report['collection']['prior_committed_usd']:.8f}. "
               f"Unobserved transport admissions retain ${held:.8f}; conservative combined upper bound "
@@ -467,6 +475,7 @@ def benchmark_local_prediction(data: dict) -> dict:
         timing[view] = {"predictions": operations,
                         "mean_cpu_ms": 1000 * (time.process_time() - start) / operations if operations else None}
     return {"kind": "offline_replay_microbenchmark_not_live_latency", "measurements": timing,
+            "environment": {"system": platform.system(), "architecture": platform.machine(), "python": platform.python_version()},
             "dollar_conversion": None}
 
 
@@ -490,22 +499,27 @@ def plot(report: dict, output: Path) -> None:
     axes[0].set_ylim(0, 105)
     axes[0].set_title("Conditional next-attempt success (%)")
     axes[0].legend(frameon=False)
-    chosen = ["direct_small", "direct_large", "best_fixed", "state", "api_state"]
-    display = ["9B direct", "27B direct", "Best fixed", "State ridge", "State API"]
+    chosen = ["direct_small", "direct_large", "best_fixed", "development_replay_best", "state", "api_state"]
+    display = ["9B direct", "27B direct", "Primary fixed", "Replay fixed", "State ridge", "State API"]
     for key, label in zip(chosen, display):
         row = report["policies"]["0.01"][key]
         axes[1].scatter(1000 * row["mean_api_cost_usd"], 100 * row["success_rate"], s=55)
-        axes[1].annotate(label, (1000 * row["mean_api_cost_usd"], 100 * row["success_rate"]), xytext=(3, 5), textcoords="offset points", fontsize=8)
+        axes[1].annotate(label, (1000 * row["mean_api_cost_usd"], 100 * row["success_rate"]),
+            xytext=(3, -15 if key == "development_replay_best" else 5), textcoords="offset points", fontsize=8)
+    axes[1].margins(x=0.17, y=0.15)
     axes[1].set_xlabel("Mean API cost (milli-USD/task)")
     axes[1].set_ylabel("Full held-out success (%)")
     axes[1].set_title("Whole-task policies, $0.01 ceiling")
     names = ["global", "task", "state", "api_task_only", "api_state"]
-    axes[2].bar(range(5), [report["forecast_brier"].get(n, {}).get("mean", 0) for n in names], color="#708a81")
-    axes[2].set_xticks(range(5), ["Global", "Task ridge", "State ridge", "Task API", "State API"], rotation=30, ha="right")
-    axes[2].set_title("Prospective Brier score (lower better)")
-    axes[3].bar(range(5), [report["observed_benefit_mse"].get(n, {}).get("mean", 0) for n in names], color="#9b83a1")
-    axes[3].set_xticks(range(5), ["Global", "Task ridge", "State ridge", "Task API", "State API"], rotation=30, ha="right")
-    axes[3].set_title("MSE of predicted context benefit\nAgainst noisy two-draw differences")
+    for ax, metric, color, title in ((axes[2], "forecast_brier", "#708a81", "Prospective Brier score (lower better)"),
+            (axes[3], "observed_benefit_mse", "#9b83a1", "MSE of predicted context benefit\nAgainst noisy two-draw differences")):
+        records = [report[metric][n] for n in names]
+        values = [r["mean"] for r in records]
+        errors = [[max(0, v - r["bootstrap_95"][0]) if r["bootstrap_95"] else 0 for v, r in zip(values, records)],
+                  [max(0, r["bootstrap_95"][1] - v) if r["bootstrap_95"] else 0 for v, r in zip(values, records)]]
+        ax.bar(range(5), values, yerr=errors, capsize=3, color=color)
+        ax.set_xticks(range(5), ["Global", "Task ridge", "State ridge", "Task API", "State API"], rotation=30, ha="right")
+        ax.set_title(title)
     for ax in axes:
         ax.spines[["top", "right"]].set_visible(False)
     fig.suptitle(f"Frozen task holdout: {report['evaluation_tasks']} tasks, {report['evaluation_failed_tasks']} natural failures\n"

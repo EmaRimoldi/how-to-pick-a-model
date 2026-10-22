@@ -13,6 +13,7 @@ not establish that a state-conditioned continue/restart/handoff controller works
 | Cost/competence/information/mismatch | `thm:four-term` | AutoResearch accounting and HumanEval+ routing | Diagnostic under assumptions, not an exact law for arbitrary workflows |
 | Retry crossover | `thm:retry-crossover` | `experiments/humaneval-plus/retry-allocation-router/` | Replay follows the recorded retry protocol, not arbitrary handoffs |
 | Memory/context effects | `theory_anchor.tex` | `experiments/autoresearch-cifar10/shared-memory-ablation/` | Substrate-specific baseline, not proof of a cross-model transfer benefit |
+| Failed-code value and one-checkpoint selection | Frozen empirical protocol | `experiments/humaneval-plus/context-value/` | 25 evaluation failures; producer transfer; no reliable gain over stronger static control |
 
 ## Evidence tiers
 
@@ -29,8 +30,9 @@ not establish that a state-conditioned continue/restart/handoff controller works
 
 - `experiments/autoresearch-cifar10/starting-model-calibration/`
 - `experiments/humaneval-plus/qwen-model-size-frontier/`
+- `experiments/humaneval-plus/context-value/` (discovery and amended transfer; not a current manuscript claim)
 
-## Missing evidence for the next question
+## Recovery evidence and remaining gaps
 
 The [OpenRouter development pilot](../experiments/humaneval-plus/openrouter-continuation-pilot/README.md)
 provides a collector and matched continuations on two failed development states.
@@ -43,6 +45,12 @@ controls and budgeted replay. The original same-producer evaluation was stopped
 before any observed evaluation response; the declared substitute uses Ministral
 failures with the same frozen Gemma-trained policy. Do not describe transfer as
 same-producer IID validation or equate a predictor's Brier score with a policy gain.
+The [completed report](../experiments/humaneval-plus/context-value/results/validation-20261022/report.md)
+finds a positive primary utility difference against the per-draw fixed control,
+but the interval against the stronger replay-selected fixed control spans zero.
+The [blog draft](blog/when-to-keep-failed-code.md) includes both comparisons and
+negative benefit-prediction findings. Its 60 evaluation tasks are now observed;
+future tuning needs a fresh holdout. The original 19 reserve tasks remain unused.
 
 The current manuscripts are unchanged. Any new method claim still needs direct
 comparisons with the [closest prior work](recovery-related-work.md), a feedback-only

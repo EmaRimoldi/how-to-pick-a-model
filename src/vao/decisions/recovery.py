@@ -223,7 +223,8 @@ def run(config: dict, problems: dict, split: dict, client: OpenRouterClient,
                 "last_admitted_call": client.ledger.calls, "created_utc": datetime.now(timezone.utc).isoformat()})
             print(json.dumps({"phase": "policy_frozen", "development_failed_tasks": len(dev_states),
                               "spent_usd": float(client.ledger.spent)}), flush=True)
-        batch(prefix_jobs(split["evaluation_task_ids"], "evaluation"), workers=1 if development else None)
+        batch(prefix_jobs(split["evaluation_task_ids"], "evaluation"),
+              workers=1 if development or config.get("evaluation_producer") else None)
         test_states = [c for c in checkpoints if c["split"] == "evaluation"]
         forecasts = []
         for cp in test_states:

@@ -46,6 +46,33 @@ uv sync --dev --extra other-experiments --frozen
 Read the command safety manifest before unfamiliar scripts. Live model, provider,
 cluster, or training runs require explicit authorization and an isolated workspace.
 
+## Recorded recovery replay
+
+```bash
+uv run python scripts/analyze_recovery_validation.py \
+  --input experiments/humaneval-plus/context-value/results/validation-20261022 \
+  --output runs/recovery-reanalysis
+```
+
+Use a fresh output directory. The analyzer reads the saved prompts, observations,
+policy weights and billing journal; it does not contact a provider or run candidate
+programs. It refits the development policy as an integrity check, validates the
+prospective forecast boundary and reconstructs finite budgeted rollouts. Outputs
+include JSON, Markdown, a PNG and a vector PDF. Scalar estimates are deterministic;
+CPU microbenchmarks and figure metadata can differ across machines.
+
+The bundle's `checksums.json` records curated-file integrity. Account balances and
+credentials are omitted. Six unknown transport admissions retain their full cost
+reservation; seven explicit empty provider errors use disclosed policy-backed zero
+charges. Deployment outage/retry cost remains incompletely identified. See the
+[blog](blog/when-to-keep-failed-code.md) and [protocol amendments](../experiments/humaneval-plus/context-value/VALIDATION.md)
+for the producer substitution and claim boundaries.
+
+Fresh collection additionally needs `--extra continuation-pilot`, explicit
+live/budget arguments and a new output path. Default planning makes no model
+calls. The original and amended configs remain separate; no account key belongs
+in a config, command argument or tracked file.
+
 ## AutoResearch evidence
 
 The four retained bundles cover initial-model calibration, controlled evaluator

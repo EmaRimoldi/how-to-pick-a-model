@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `2339`
-- Bytes indexed: `63.0M`
+- Files indexed: `2367`
+- Bytes indexed: `71.1M`
 
 ## Canonical Entrypoints
 
@@ -49,28 +49,28 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 1978 | 37.7M |
+| `experiments` | 2005 | 45.8M |
 | `artifacts` | 21 | 20.0M |
 | `paper` | 29 | 2.4M |
 | `src` | 135 | 1.0M |
 | `uv.lock` | 1 | 972.4K |
 | `autoresearch` | 59 | 460.7K |
-| `scripts` | 22 | 225.2K |
-| `tests` | 38 | 142.6K |
-| `docs` | 22 | 65.2K |
+| `scripts` | 22 | 227.1K |
+| `tests` | 38 | 143.7K |
+| `docs` | 23 | 88.2K |
 | `prompts` | 6 | 21.6K |
 | `configs` | 7 | 12.7K |
-| `README.md` | 1 | 4.0K |
+| `README.md` | 1 | 5.4K |
 | `.claude` | 4 | 3.3K |
 | `NOTES.md` | 1 | 3.2K |
-| `AGENTS.md` | 1 | 2.8K |
-| `.github` | 5 | 2.1K |
+| `AGENTS.md` | 1 | 3.0K |
+| `.github` | 5 | 2.3K |
 | `pyproject.toml` | 1 | 1.6K |
 | `.gitignore` | 1 | 1.5K |
+| `CLAUDE.md` | 1 | 1.4K |
 | `Makefile` | 1 | 1.1K |
 | `LICENSE` | 1 | 1.0K |
 | `.env.example` | 1 | 1.0K |
-| `CLAUDE.md` | 1 | 1.0K |
 | `.vscode` | 1 | 445B |
 | `requirements-cluster.txt` | 1 | 123B |
 | `.gitattributes` | 1 | 82B |
@@ -79,14 +79,14 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.json` | 1054 | 3.1M |
+| `.json` | 1066 | 3.3M |
+| `.jsonl` | 276 | 31.3M |
 | `.yaml` | 270 | 316.1K |
-| `.jsonl` | 264 | 23.7M |
 | `.txt` | 260 | 3.9M |
 | `.py` | 229 | 1.8M |
-| `.md` | 88 | 265.2K |
-| `.png` | 59 | 7.4M |
-| `.pdf` | 34 | 687.0K |
+| `.md` | 90 | 299.3K |
+| `.png` | 60 | 7.6M |
+| `.pdf` | 35 | 712.5K |
 | `.csv` | 26 | 581.1K |
 | `.part-000` | 18 | 20.0M |
 | `.sh` | 13 | 24.8K |
@@ -100,7 +100,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.sty` | 1 | 13.2K |
 | `.toml` | 1 | 1.6K |
 | `.tsv` | 1 | 790B |
-| `.yml` | 1 | 407B |
+| `.yml` | 1 | 688B |
 
 ## Experiment Readmes
 

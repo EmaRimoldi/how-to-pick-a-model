@@ -118,6 +118,18 @@ def test_end_to_end_audit_refits_frozen_policy_and_reproduces_forecast_prompts(t
     assert report["audit_passed"] and report["evaluation_tasks"] == 1
     assert report["primary"]["net_utility_difference_usd"]["mean"] == 0
     assert all(r["cost_usd"] <= r["budget_usd"] for r in rows)
+    local_path = tmp_path / "local-predictions.jsonl"
+    original = local_path.read_text()
+    local = json.loads(original)
+    key = next(iter(local["probabilities"]["state"]))
+    local["probabilities"]["state"][key] += 1e-14
+    local_path.write_text(json.dumps(local) + "\n")
+    audit(tmp_path)  # BLAS/platform rounding is not a changed forecast.
+    local["probabilities"]["state"][key] += 0.1
+    local_path.write_text(json.dumps(local) + "\n")
+    with pytest.raises(ValueError, match="Local forecast changed"):
+        audit(tmp_path)
+    local_path.write_text(original)
     # A score must stay attached to the exact requested draw, even when every
     # receipt and probability is otherwise internally consistent.
     branch_path = tmp_path / "branches.jsonl"
