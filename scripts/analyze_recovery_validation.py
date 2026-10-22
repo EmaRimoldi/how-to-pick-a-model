@@ -321,6 +321,7 @@ def analyze(data: dict) -> tuple[dict, list[dict]]:
             rows = [r for r in data["branches"] if r["split"] == "evaluation" and r["action"] == "branch" and r["model_name"] == model and r["arm"] == arm]
             per_task = [mean(float(r["passed"]) for r in rows if r["task_id"] == cp["task_id"]) for cp in states]
             recovery[model + "." + arm] = paired_interval(per_task)
+            recovery[model + "." + arm]["mean_api_cost_usd"] = mean(r["incremental_cost_usd"] for r in rows) if rows else None
             call_ids = {r["call"] for r in rows}
             tokens = [c["usage"]["prompt_tokens"] for c in data["calls"] if c["call"] in call_ids and c["usage"].get("prompt_tokens") is not None]
             token_stats[model + "." + arm] = {"mean": mean(tokens) if tokens else None, "min": min(tokens) if tokens else None, "max": max(tokens) if tokens else None}
@@ -353,6 +354,9 @@ def analyze(data: dict) -> tuple[dict, list[dict]]:
         "analysis_source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "collection": data["summary"], "development_tasks": len(data["split"]["development_task_ids"]),
         "producer_provider_transfer": cfg.get("evaluation_producer") is not None,
+        "producer_model_transfer": cfg["models"][cfg["producer"]]["id"] != cfg["models"][cfg.get("evaluation_producer", cfg["producer"])]["id"],
+        "development_producer_model": cfg["models"][cfg["producer"]]["id"],
+        "evaluation_producer_model": cfg["models"][cfg.get("evaluation_producer", cfg["producer"])]["id"],
         "development_producer_endpoint": cfg["models"][cfg["producer"]].get("provider"),
         "evaluation_producer_endpoint": cfg["models"][cfg.get("evaluation_producer", cfg["producer"])].get("provider"),
         "evaluation_tasks": len(ids), "development_failed_tasks": len(data["policy"]["training_task_ids"]),
@@ -390,10 +394,10 @@ def markdown(report: dict) -> str:
                 "state_model_only", "state_context_small", "state_context_large"):
         row = report["policies"]["0.01"][key]
         lines.append(f"| {key} | {row['success_rate']:.1%} | {row['mean_api_cost_usd']:.8f} | {row['mean_net_utility_usd']:.8f} |")
-    lines += ["", "| Conditional recovery | Success | Task-bootstrap 95% interval |", "| --- | --- | --- |"]
+    lines += ["", "| Conditional recovery | Success | Mean next-attempt API USD | Task-bootstrap 95% interval |", "| --- | --- | --- | --- |"]
     for key, row in report["conditional_recovery"].items():
         rate = f"{row['mean']:.1%}" if row["mean"] is not None else "n/a"
-        lines.append(f"| {key} | {rate} | {row['bootstrap_95']} |")
+        lines.append(f"| {key} | {rate} | {row['mean_api_cost_usd']} | {row['bootstrap_95']} |")
     lines += ["", "| Paired context contrast | Success difference | Task-bootstrap 95% interval |", "| --- | --- | --- |"]
     for key, row in report["paired_context_contrasts"].items():
         delta = f"{row['mean']:+.1%}" if row["mean"] is not None else "n/a"
@@ -424,9 +428,9 @@ def markdown(report: dict) -> str:
               f"State-ridge minus this stronger fixed comparator at $0.01/task: "
               f"{report['secondary_state_minus_development_replay_best_utility_usd']}.", ""]
     if report["producer_provider_transfer"]:
-        lines += [f"Producer provider changed from `{report['development_producer_endpoint']}` to "
-                  f"`{report['evaluation_producer_endpoint']}` before any evaluation response, after rate-limit stops. "
-                  "This is a provider-transfer evaluation, not identical-provider IID validation. All five unknown "
+        lines += [f"Producer changed from `{report['development_producer_model']}` via `{report['development_producer_endpoint']}` to "
+                  f"`{report['evaluation_producer_model']}` via `{report['evaluation_producer_endpoint']}` before any evaluation response, after rate-limit stops. "
+                  "This is a producer-transfer evaluation, not same-producer IID validation. All unknown "
                   "admissions remain reserved as collection overhead; no zero-cost receipts or task outcomes are invented. "
                   "Policy replay bills concern the complete observed bank and do not fully identify deployment outage/retry cost.", ""]
     return "\n".join(lines)
@@ -489,7 +493,7 @@ def plot(report: dict, output: Path) -> None:
     for ax in axes:
         ax.spines[["top", "right"]].set_visible(False)
     fig.suptitle(f"Frozen task holdout: {report['evaluation_tasks']} tasks, {report['evaluation_failed_tasks']} natural failures\n"
-                 "Two-draw bank; producer-provider transfer; primary result and uncertainty in report", fontsize=11)
+                 "Two-draw bank; producer transfer; primary result and uncertainty in report", fontsize=11)
     fig.savefig(output, dpi=180)
     fig.savefig(output.with_suffix(".pdf"))
     plt.close(fig)
