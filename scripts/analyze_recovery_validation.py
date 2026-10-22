@@ -129,6 +129,9 @@ def audit(root: Path) -> dict:
     # declared model/arm order. Reconstruct that order for exact prompt auditing.
     prompt_policy = {**policy, "priors": refitted["priors"]}
     for view in ("task", "state"):
+        require(refitted["fits"][view]["features"] == policy["fits"][view]["features"], "Fitted feature order changed")
+        for field in ("mean", "scale"):
+            require(np.allclose(refitted["fits"][view][field], policy["fits"][view][field], atol=1e-12, rtol=1e-10), "Fitted feature normalization changed")
         for key, coefficients in refitted["fits"][view]["coefficients"].items():
             require(np.allclose(coefficients, policy["fits"][view]["coefficients"][key], atol=1e-12, rtol=1e-10), "Fitted weights differ from development data")
     seen = set()
@@ -137,6 +140,8 @@ def audit(root: Path) -> dict:
         require(identity not in seen, "Duplicate recovery cell")
         seen.add(identity)
         call = by_call[row["call"]]
+        require(all(row.get(k) == call.get(k) for k in ("task_id", "split", "action", "model_name", "arm", "draw",
+                "checkpoint_id", "parent_call", "donor_checkpoint_id")), "Recovery receipt metadata changed")
         cp = by_cp.get(row["checkpoint_id"])
         donor = by_cp.get(row["donor_checkpoint_id"])
         if row["action"] == "branch":
@@ -157,6 +162,8 @@ def audit(root: Path) -> dict:
     for row in forecasts:
         cp = by_cp[row["checkpoint_id"]]
         call = by_call[row["call"]]
+        require(all(row[k] == call[k] for k in ("task_id", "split", "checkpoint_id", "parent_call", "view"))
+                and call["model_name"] == "small", "Forecast receipt metadata changed")
         require(call["messages"] == forecast_messages({"prompt": prompts[row["task_id"]]}, row["view"], cp, prompt_policy, config), "Forecast prompt changed")
         probabilities, valid = parse_forecast(call, config)
         require(probabilities == row["probabilities"] and valid == row["valid"], "Forecast parse changed")

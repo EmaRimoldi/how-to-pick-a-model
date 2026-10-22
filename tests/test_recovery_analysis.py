@@ -107,3 +107,12 @@ def test_end_to_end_audit_refits_frozen_policy_and_reproduces_forecast_prompts(t
     assert report["audit_passed"] and report["evaluation_tasks"] == 1
     assert report["primary"]["net_utility_difference_usd"]["mean"] == 0
     assert all(r["cost_usd"] <= r["budget_usd"] for r in rows)
+    # A score must stay attached to the exact requested draw, even when every
+    # receipt and probability is otherwise internally consistent.
+    branch_path = tmp_path / "branches.jsonl"
+    saved = [json.loads(line) for line in branch_path.read_text().splitlines()]
+    evaluation_row = next(row for row in saved if row["split"] == "evaluation")
+    evaluation_row["draw"] = 99
+    branch_path.write_text("".join(json.dumps(row) + "\n" for row in saved))
+    with pytest.raises(ValueError, match="Recovery receipt metadata changed"):
+        audit(tmp_path)
