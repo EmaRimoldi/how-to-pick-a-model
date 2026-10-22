@@ -74,8 +74,18 @@ def audit(root: Path) -> dict:
     settled = {r["call"]: Decimal(str(r["cost_usd"])) for r in ledger if r["event"] == "settle"}
     require(len(reserves) == sum(r["event"] == "reserve" for r in ledger)
             and len(settled) == sum(r["event"] == "settle" for r in ledger), "Duplicate ledger event")
-    require(set(by_call) == set(reserves) == set(settled), "Unresolved or missing billed request")
-    require(summary["requests"] == len(calls), "Request count changed")
+    censor_path = root / "transport-censoring.json"
+    censor = json.loads(censor_path.read_text()) if censor_path.exists() else None
+    missing = set(censor["censored_request_ids"]) if censor else set()
+    require(set(by_call) == set(settled) and set(reserves) == set(settled) | missing
+            and not missing & set(settled), "Unresolved or missing billed request")
+    held = sum((reserves[i] for i in missing), Decimal(0))
+    require(summary["requests"] == len(calls) + len(missing), "Request count changed")
+    if censor:
+        require(held == Decimal(str(censor["censored_reserved_usd"])) and len(missing) <= config["workers"], "Censored reservation changed")
+        require(digest(calls[:censor["source_responses"]]) == censor["source_calls_sha256"]
+                and digest(ledger[:censor["source_budget_events"]]) == censor["source_budget_sha256"], "Stopped source journal changed")
+        require(censor["frozen_policy_sha256"] == digest(policy), "Policy changed after transport stop")
     for call in calls:
         model = config["models"][call["model_name"]]
         charge = Decimal(str(call["usage"]["cost"]))
@@ -89,9 +99,9 @@ def audit(root: Path) -> dict:
             require(call["usage"]["prompt_tokens"] <= config["input_token_ceiling"]
                     and call["usage"]["completion_tokens"] <= config["max_tokens"], "Token ceiling exceeded")
     paid = sum(settled.values())
-    require(paid == Decimal(str(summary["collection_cost_usd"])) and summary["unresolved_reserved_usd"] == 0, "Summary billing mismatch")
-    require(paid <= Decimal(str(summary["budget_usd"])) <= Decimal(str(config["run_ceiling_usd"])), "Run ceiling exceeded")
-    require(paid + Decimal(str(config["prior_committed_usd"])) <= Decimal(str(config["campaign_ceiling_usd"])), "Campaign ceiling exceeded")
+    require(paid == Decimal(str(summary["collection_cost_usd"])) and held == Decimal(str(summary["unresolved_reserved_usd"])), "Summary billing mismatch")
+    require(paid + held <= Decimal(str(summary["budget_usd"])) <= Decimal(str(config["run_ceiling_usd"])), "Run ceiling exceeded")
+    require(paid + held + Decimal(str(config["prior_committed_usd"])) <= Decimal(str(config["campaign_ceiling_usd"])), "Campaign ceiling exceeded")
     if (root / "import-provenance.json").exists():
         provenance = json.loads((root / "import-provenance.json").read_text())
         uses = read(root, "import-uses")
@@ -432,7 +442,8 @@ def plot(report: dict, output: Path) -> None:
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    fig, axes = plt.subplots(1, 3, figsize=(14, 4.6), layout="constrained")
+    fig, grid = plt.subplots(2, 2, figsize=(11, 8.2), layout="constrained")
+    axes = grid.ravel()
     labels = ["Fresh", "Code", "Feedback", "Both", "Distractor"]
     x = np.arange(5)
     for model, offset, color in (("small", -0.18, "#4479a2"), ("large", 0.18, "#cf8853")):
@@ -459,6 +470,9 @@ def plot(report: dict, output: Path) -> None:
     axes[2].bar(range(5), [report["forecast_brier"].get(n, {}).get("mean", 0) for n in names], color="#708a81")
     axes[2].set_xticks(range(5), ["Global", "Task ridge", "State ridge", "Task API", "State API"], rotation=30, ha="right")
     axes[2].set_title("Prospective Brier score (lower better)")
+    axes[3].bar(range(5), [report["observed_benefit_mse"].get(n, {}).get("mean", 0) for n in names], color="#9b83a1")
+    axes[3].set_xticks(range(5), ["Global", "Task ridge", "State ridge", "Task API", "State API"], rotation=30, ha="right")
+    axes[3].set_title("MSE of predicted context benefit\nAgainst noisy two-draw differences")
     for ax in axes:
         ax.spines[["top", "right"]].set_visible(False)
     fig.suptitle(f"Frozen task holdout: {report['evaluation_tasks']} tasks, {report['evaluation_failed_tasks']} natural failures\n"

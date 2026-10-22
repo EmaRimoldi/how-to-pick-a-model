@@ -162,6 +162,28 @@ non-error billing and requests lacking response identity still stop/refuse impor
 This transport correction precedes policy fitting and all held-out calls; task
 IDs, hypotheses, features, penalties and budgets are unchanged.
 
+### Explicit phase continuation after the pre-evaluation rate limit
+
+The complete development bank has 83 prefixes and 520 branch responses. Its
+weights were frozen before four evaluation-prefix admissions had no preserved
+response identity; the recorded first failure is HTTP 429. No evaluation response
+or outcome was available. The account aggregate cannot reconcile these requests
+because it includes unrelated activity. Their **entire $0.0055296 reservation
+remains held**, in addition to all known charges, under the same $1.97 run ceiling.
+They have no invented receipt, outcome, provider identity, or task association.
+
+An explicit `--continue-evaluation-from` starts a fresh journal with the unchanged
+development observations, exact frozen policy, original phase marker and all
+budget events. It skips development collection and fitting. Evaluation prefixes
+are now sent by one network worker to reduce bursts; recovery/forecast workers
+remain four. This transport amendment occurs before any evaluation response.
+The four censored admissions are reported separately from the complete measured
+bank and held at their full worst-case cost as collection overhead. Any new
+unknown request still stops collection; there is no automatic retry. The ordinary
+`--import-run` continues to refuse missing response identities. Do not claim that
+all collection charges have been reconciled or use the account's unrelated spend
+as experiment billing.
+
 Produce an auditable report, figures, and a blog draft that includes negative
 findings. A paper claim additionally needs a broader novelty review and stronger
 replication; collecting data until a favorable result appears is not the plan.

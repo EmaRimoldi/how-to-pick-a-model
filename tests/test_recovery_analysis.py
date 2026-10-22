@@ -3,14 +3,16 @@ from __future__ import annotations
 from copy import deepcopy
 import json
 from pathlib import Path
+import subprocess
 
 import pytest
 
 from scripts.analyze_recovery_validation import analyze, audit, paired_interval, reservation, rollout
 from vao.decisions.context_value import ARMS
-from vao.decisions.openrouter import BudgetLedger, OpenRouterClient
+from vao.decisions.openrouter import BackendStopped, BudgetLedger, OpenRouterClient
 from vao.decisions.pilot import digest
 from vao.decisions.recovery import run
+from vao.decisions.recovery_import import continue_frozen_development
 
 
 @pytest.fixture
@@ -116,3 +118,50 @@ def test_end_to_end_audit_refits_frozen_policy_and_reproduces_forecast_prompts(t
     branch_path.write_text("".join(json.dumps(row) + "\n" for row in saved))
     with pytest.raises(ValueError, match="Recovery receipt metadata changed"):
         audit(tmp_path)
+
+
+def test_explicit_phase_continuation_keeps_unknown_reserves_and_exact_frozen_weights(tmp_path, monkeypatch):
+    config = json.loads(Path("experiments/humaneval-plus/context-value/configs/validation.json").read_text())
+    config["minimum_development_failed_tasks"] = 2
+    split = {"development_task_ids": ["HumanEval/0", "HumanEval/1"], "evaluation_task_ids": ["HumanEval/2"],
+             "reserved_task_ids": [], "reference_exclusions": []}
+    problems = {t: {"prompt": "public task " + t} for t in split["development_task_ids"] + split["evaluation_task_ids"]}
+    manifest = {"config": config, "config_sha256": digest(config), "split": split,
+                "git_sha": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+                "prompt_sha256": {t: digest(p["prompt"]) for t, p in problems.items()}}
+    source, destination = tmp_path / "source", tmp_path / "continued"
+    source.mkdir()
+    destination.mkdir()
+    for path in (source, destination):
+        (path / "manifest.json").write_text(json.dumps(manifest))
+    def request(endpoint, body):
+        forecast = body["messages"][0]["content"].startswith("A previous Python")
+        model = next(k for k, v in config["models"].items() if v["id"] == body["model"])
+        content = {"probabilities": {m + "." + a: 0.8 for m in config["target_models"] for a in ARMS}} if forecast else {"solution": "def f(): return " + ("1" if model == "large" else "0")}
+        return {"id": "test", "model": body["model"], "provider": "DeepInfra" if model == "producer" else "SiliconFlow",
+                "usage": {"cost": 0.0001 if model == "large" else 0.00001, "prompt_tokens": 20, "completion_tokens": 20},
+                "choices": [{"finish_reason": "stop", "message": {"content": json.dumps(content)}}]}
+    def stopped_request(endpoint, body):
+        if "HumanEval/2" in body["messages"][0]["content"]:
+            raise BackendStopped("OpenRouter HTTP 429; no automatic retry")
+        return request(endpoint, body)
+    class Verifier:
+        def check(self, problem, solution, mode):
+            passed = "return 1" in solution
+            return {"passed": passed, "status": "pass" if passed else "fail", "attempted": 2, "failed": 0 if passed else 1, "feedback": "public failure"}
+    first = OpenRouterClient("dummy", config, source, BudgetLedger(source / "budget.jsonl", 1.97))
+    monkeypatch.setattr(first, "request", stopped_request)
+    assert run(config, problems, split, first, Verifier(), source)["status"].startswith("BackendStopped")
+    original_policy = (source / "frozen-policy.json").read_bytes()
+    ledger = BudgetLedger(destination / "budget.jsonl", 1.97)
+    development = continue_frozen_development(source, destination, ledger, config)
+    held_reserve = sum(ledger.pending.values())
+    assert held_reserve == reservation(config, "producer")
+    continued = OpenRouterClient("dummy", config, destination, ledger)
+    monkeypatch.setattr(continued, "request", request)
+    result = run(config, problems, split, continued, Verifier(), destination, development)
+    assert result["status"] == "complete" and result["unresolved_reserved_usd"] == float(held_reserve)
+    assert (destination / "frozen-policy.json").read_bytes() == original_policy
+    audited = audit(destination)
+    assert len(audited["initial"]) == 3 and result["requests"] == len(audited["calls"]) + 1
+    assert (source / "frozen-policy.json").read_bytes() == original_policy

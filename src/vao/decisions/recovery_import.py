@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
 import subprocess
 import threading
 from decimal import Decimal
 from pathlib import Path
 
+from .context_value import ARMS
 from .openrouter import OpenRouterClient, append_json, insured_empty_error
 from .pilot import digest
 
@@ -21,6 +23,62 @@ def job_key(model: str, messages: list[dict], metadata: dict) -> str:
     keys = ("task_id", "split", "action", "arm", "draw", "checkpoint_id", "parent_call", "donor_checkpoint_id", "view", "model_name")
     return digest({"model_name": model, "messages": messages,
                    "metadata": {k: metadata[k] for k in keys if k in metadata}})
+
+
+def continue_frozen_development(source: Path, output: Path, ledger, config: dict) -> dict:
+    """Explicit phase transition; quarantine unknown requests at their FULL reserve.
+
+    Never import an unknown response as a failed/zero-cost draw. Only a fully
+    observed development bank with frozen weights and zero evaluation responses
+    may take this path. No individual model observation is regenerated.
+    """
+    manifest = json.loads((source / "manifest.json").read_text())
+    summary = json.loads((source / "summary.json").read_text())
+    policy = json.loads((source / "frozen-policy.json").read_text())
+    policy["priors"] = {m + "." + a: policy["priors"][m + "." + a]
+                        for m in config["target_models"] for a in ARMS}
+    if manifest["config_sha256"] != digest(config) or not summary["status"].startswith("BackendStopped: OpenRouter HTTP 429"):
+        raise ValueError("Only the explicit pre-evaluation rate-limit stop may continue here")
+    for name in ("verification.py", "verifier_worker.py", "recovery_policy.py"):
+        relative = "src/vao/decisions/" + name
+        if subprocess.check_output(["git", "show", manifest["git_sha"] + ":" + relative]) != Path(relative).read_bytes():
+            raise ValueError("Evaluator or fitted-policy code changed")
+    calls, events = records(source, "calls"), records(source, "budget")
+    initial, checkpoints, branches = (records(source, n) for n in ("initial", "checkpoints", "branches"))
+    if any(c["split"] != "development" for c in calls) or len(initial) != len(manifest["split"]["development_task_ids"]):
+        raise ValueError("Phase continuation requires zero observed evaluation responses and complete development")
+    phases = records(source, "phases")
+    freeze = [p for p in phases if p["event"] == "policy_frozen"]
+    if len(freeze) != 1 or freeze[0]["policy_sha256"] != digest(policy) or policy["training_branches_sha256"] != digest(branches):
+        raise ValueError("Original policy freeze changed")
+    reserve = {e["call"]: Decimal(str(e["reserved_usd"])) for e in events if e["event"] == "reserve"}
+    settled = {e["call"]: Decimal(str(e["cost_usd"])) for e in events if e["event"] == "settle"}
+    known = {c["call"] for c in calls}
+    missing = set(reserve) - known
+    if set(settled) != known or not missing or any(i <= freeze[0]["last_admitted_call"] for i in missing):
+        raise ValueError("Incomplete development or invalid censored transport boundary")
+    if any(Decimal(str(c["usage"]["cost"])) != settled[c["call"]] for c in calls):
+        raise ValueError("Development receipts changed")
+    pending = {i: reserve[i] for i in missing}
+    if len(missing) > config["workers"] or any(e["model"] != config["models"][config["producer"]]["id"]
+            for e in events if e["event"] == "reserve" and e["call"] in missing):
+        raise ValueError("Censored requests are not the bounded producer phase")
+    if sum(settled.values()) + sum(pending.values()) > ledger.limit:
+        raise ValueError("Known charges plus all unknown reserves exceed the unchanged ceiling")
+    for name in ("calls.jsonl", "budget.jsonl", "initial.jsonl", "checkpoints.jsonl", "branches.jsonl",
+                 "evaluations.jsonl", "frozen-policy.json", "phases.jsonl", "import-provenance.json", "import-uses.jsonl"):
+        if (source / name).exists():
+            shutil.copyfile(source / name, output / name)
+    proof = {"source_status": summary["status"], "source_collector_git_sha": manifest["git_sha"],
+        "source_calls_sha256": digest(calls), "source_budget_sha256": digest(events),
+        "source_budget_events": len(events), "source_responses": len(calls),
+        "censored_request_ids": sorted(missing), "censored_reserved_usd": float(sum(pending.values())),
+        "rule": "All unknown reservations remain held; no zero-cost receipts or outcomes are invented.",
+        "evaluation_prefix_workers": 1, "frozen_policy_sha256": digest(policy)}
+    (output / "transport-censoring.json").write_text(json.dumps(proof, indent=2, sort_keys=True) + "\n")
+    ledger.spent, ledger.calls, ledger.pending = sum(settled.values()), max(reserve), pending
+    return {"initial": initial, "checkpoints": checkpoints, "branches": branches,
+            "evaluations": records(source, "evaluations"), "policy": policy, "provenance": proof}
 
 
 def import_completed(source: Path, output: Path, ledger, config: dict, reconciliation: Path | None) -> tuple[list[dict], dict]:

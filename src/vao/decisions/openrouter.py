@@ -170,7 +170,16 @@ class OpenRouterClient:
             with urllib.request.build_opener(NoRedirects).open(request, timeout=180) as response:
                 return read_stream(response) if body and body.get("stream") else json.loads(response.read())
         except urllib.error.HTTPError as exc:
-            raise BackendStopped(f"OpenRouter HTTP {exc.code}; no automatic retry") from None
+            failure = BackendStopped(f"OpenRouter HTTP {exc.code}; no automatic retry")
+            failure.http_status = exc.code
+            failure.retry_after = (exc.headers or {}).get("Retry-After")
+            try:
+                metadata = (json.loads(exc.read()).get("error") or {}).get("metadata") or {}
+                failure.http_metadata = {k: metadata[k] for k in ("error_type", "provider_code", "limit_source")
+                    if isinstance(metadata.get(k), str) and len(metadata[k]) < 100 and "sk-" not in metadata[k]}
+            except (ValueError, TypeError, AttributeError):
+                failure.http_metadata = {}
+            raise failure from None
         except (OSError, ValueError) as exc:
             raise BackendStopped(f"OpenRouter {type(exc).__name__}; no automatic retry") from None
 
@@ -241,7 +250,12 @@ class OpenRouterClient:
         start = time.perf_counter()
         try:
             payload = self.request("/chat/completions", body)
-        except BackendStopped:
+        except BackendStopped as exc:
+            append_json(self.output / "transport.jsonl", {**metadata, "call": call,
+                "http_status": getattr(exc, "http_status", None),
+                "http_metadata": getattr(exc, "http_metadata", {}),
+                "retry_after": getattr(exc, "retry_after", None),
+                "outcome": "no_preserved_response_identity; reservation retained"})
             self.ledger.stopped = True  # Unknown billing: keep the reservation.
             raise
         elapsed = time.perf_counter() - start

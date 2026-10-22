@@ -21,7 +21,7 @@ from .context_value import ARMS, parse_forecast
 from .openrouter import BackendStopped, BudgetLedger, BudgetStopped, OpenRouterClient, append_json
 from .pilot import SYSTEM, digest
 from .recovery_policy import features, fit_policy, predict
-from .recovery_import import ImportedClient, import_completed, records
+from .recovery_import import ImportedClient, continue_frozen_development, import_completed, records
 from .verification import SandboxVerifier
 
 
@@ -115,17 +115,19 @@ def evaluate(problem: dict, call: dict, verifier: SandboxVerifier) -> dict:
 
 
 def run(config: dict, problems: dict, split: dict, client: OpenRouterClient,
-        verifier: SandboxVerifier, output: Path) -> dict:
+        verifier: SandboxVerifier, output: Path, development: dict | None = None) -> dict:
     """Finish development, freeze weights, then start untouched evaluation calls."""
     checkpoints, branches, predictions, initial, evaluations = [], [], [], [], []
+    if development:
+        initial, checkpoints, branches, evaluations = (development[k] for k in ("initial", "checkpoints", "branches", "evaluations"))
     status = "complete"
 
-    def batch(jobs: list[dict]) -> list[dict]:
+    def batch(jobs: list[dict], workers: int | None = None) -> list[dict]:
         jobs = list(jobs)
         random.Random(config["seed"] + len(initial) + len(branches)).shuffle(jobs)
         complete = []
         error = None
-        with ThreadPoolExecutor(max_workers=config["workers"]) as pool:
+        with ThreadPoolExecutor(max_workers=workers or config["workers"]) as pool:
             pending = {pool.submit(client.complete, j["model_name"], j["messages"], config["seed"] + i,
                 {k: v for k, v in j.items() if k not in {"messages", "model_name"}} | {"model_name": j["model_name"]}): j
                 for i, j in enumerate(jobs)}
@@ -198,23 +200,29 @@ def run(config: dict, problems: dict, split: dict, client: OpenRouterClient,
         return jobs
 
     try:
-        dev_ids = split["development_task_ids"]
-        batch(prefix_jobs(dev_ids[:3], "development"))
-        if all(e["visible"]["status"] == "format_error" for e in evaluations):
-            raise BackendStopped("All three smoke outputs malformed; inspect before further spending")
-        batch(prefix_jobs(dev_ids[3:], "development"))
-        dev_states = sorted(checkpoints, key=lambda c: c["task_id"])
-        if len(dev_states) < config["minimum_development_failed_tasks"]:
-            raise BackendStopped("Development failure coverage below the frozen fitting gate")
-        batch(branch_jobs(dev_states, dev_states))
-        policy = fit_policy(dev_states, branches, {t: p["prompt"] for t, p in problems.items()}, config)
-        policy.update(training_branches_sha256=digest(branches), collector_git_sha=subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip())
-        (output / "frozen-policy.json").write_text(json.dumps(policy, indent=2, sort_keys=True) + "\n")
-        append_json(output / "phases.jsonl", {"event": "policy_frozen", "policy_sha256": digest(policy),
-            "last_admitted_call": client.ledger.calls, "created_utc": datetime.now(timezone.utc).isoformat()})
-        print(json.dumps({"phase": "policy_frozen", "development_failed_tasks": len(dev_states),
-                          "spent_usd": float(client.ledger.spent)}), flush=True)
-        batch(prefix_jobs(split["evaluation_task_ids"], "evaluation"))
+        if development:
+            dev_states = sorted(checkpoints, key=lambda c: c["task_id"])
+            policy = development["policy"]
+            append_json(output / "phases.jsonl", {"event": "explicit_evaluation_continuation",
+                "policy_sha256": digest(policy), "last_admitted_call": client.ledger.calls})
+        else:
+            dev_ids = split["development_task_ids"]
+            batch(prefix_jobs(dev_ids[:3], "development"))
+            if all(e["visible"]["status"] == "format_error" for e in evaluations):
+                raise BackendStopped("All three smoke outputs malformed; inspect before further spending")
+            batch(prefix_jobs(dev_ids[3:], "development"))
+            dev_states = sorted(checkpoints, key=lambda c: c["task_id"])
+            if len(dev_states) < config["minimum_development_failed_tasks"]:
+                raise BackendStopped("Development failure coverage below the frozen fitting gate")
+            batch(branch_jobs(dev_states, dev_states))
+            policy = fit_policy(dev_states, branches, {t: p["prompt"] for t, p in problems.items()}, config)
+            policy.update(training_branches_sha256=digest(branches), collector_git_sha=subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip())
+            (output / "frozen-policy.json").write_text(json.dumps(policy, indent=2, sort_keys=True) + "\n")
+            append_json(output / "phases.jsonl", {"event": "policy_frozen", "policy_sha256": digest(policy),
+                "last_admitted_call": client.ledger.calls, "created_utc": datetime.now(timezone.utc).isoformat()})
+            print(json.dumps({"phase": "policy_frozen", "development_failed_tasks": len(dev_states),
+                              "spent_usd": float(client.ledger.spent)}), flush=True)
+        batch(prefix_jobs(split["evaluation_task_ids"], "evaluation"), workers=1 if development else None)
         test_states = [c for c in checkpoints if c["split"] == "evaluation"]
         forecasts = []
         for cp in test_states:
@@ -267,7 +275,10 @@ def main() -> int:
     parser.add_argument("--key-stdin", action="store_true")
     parser.add_argument("--import-run", help="Explicit stopped-run import into a fresh output/journal; never automatic")
     parser.add_argument("--reconciliation", help="Account-level zero-charge reconciliation for insured source errors")
+    parser.add_argument("--continue-evaluation-from", help="Explicit frozen-development phase transition; all unknown reserves stay held")
     args = parser.parse_args()
+    if args.import_run and args.continue_evaluation_from:
+        parser.error("Select one explicit continuation mode")
     config = json.loads(Path(args.config).read_text())
     problems, split = load_experiment(config)
     output = Path(args.output)
@@ -291,13 +302,17 @@ def main() -> int:
         parser.error("Supply key through stdin or environment")
     ledger = BudgetLedger(output / "budget.jsonl", args.budget_usd)
     imported = []
+    development = None
+    if args.continue_evaluation_from:
+        development = continue_frozen_development(Path(args.continue_evaluation_from), output, ledger, config)
+        manifest["continuation_provenance"] = development["provenance"]
     if args.import_run:
         imported, provenance = import_completed(Path(args.import_run), output, ledger, config,
             Path(args.reconciliation) if args.reconciliation else None)
         manifest["import_provenance"] = provenance
     verifier = SandboxVerifier()
     manifest["sandbox"] = verifier.preflight()
-    if args.import_run:
+    if args.import_run or args.continue_evaluation_from:
         manifest["reference_preflight_reused_with_identical_evaluator"] = True
     else:
         for t in ids:
@@ -309,7 +324,7 @@ def main() -> int:
               if args.import_run else OpenRouterClient(key, config, output, ledger))
     manifest["preflight"] = client.preflight()
     (output / "manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
-    result = run(config, problems, split, client, verifier, output)
+    result = run(config, problems, split, client, verifier, output, development)
     print(json.dumps(result), flush=True)
     return 0 if result["status"] == "complete" else 2
 
