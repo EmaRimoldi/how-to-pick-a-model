@@ -13,6 +13,67 @@ its overall accuracy while ranking the available actions poorly.
 
 Status: research blog draft, 2026-10-22. [Audited data and full report](../../experiments/humaneval-plus/context-value/results/validation-20261022/report.md); [frozen protocol and amendments](../../experiments/humaneval-plus/context-value/VALIDATION.md).
 
+## External MBPP+ replication
+
+The [new audited bank](../../experiments/mbpp-plus/context-value-transfer/results/replication-20261022/README.md)
+adds a different benchmark and the missing feedback-only prediction control.
+All 51 previously observed HumanEval+ failures become training data; none are
+reused as new evaluation. The models, prompts, weights and main comparison were
+fixed before target recovery. A [separate paper draft](../../paper/recovery-value/README.md)
+contains methods, full comparisons and standard diagnostic identities.
+
+We recorded **2,878 recovery responses and 288 valid API forecasts**. Two solver
+responses have no preserved identity, so 94 of the 96 selected failures have
+all 30 observations. They were never retried. After a disclosed partial audit,
+the user authorized only requests that had never been admitted; two continuations
+preserve their exact allowlists and source journals. The resulting complete-case
+intervals are **descriptive**, including those adjusted for twelve comparisons.
+All 96 selected states remain in missing-state utility bounds.
+
+| Next-attempt context | Qwen3.5 9B | Qwen3.5 27B |
+| --- | --- | --- |
+| Fresh | 48.6% | 61.3% |
+| Code | 26.6% | 50.4% |
+| Feedback | 52.8% | 62.4% |
+| Code + feedback | 30.9% | 58.5% |
+| Unrelated package | 43.3% | 61.7% |
+
+Each rate uses three draws on the same 94 complete failed tasks. Adding code to
+feedback changes success by **−22.0 points for 9B** and **−3.9 for 27B**. The
+direct difference between these effects is **−18.1 points**, nominal
+family-adjusted interval **[−31.6, −5.3]**. Code alone also hurts the larger model
+relative to fresh generation; model size does not supply a universal reuse rule.
+The irrelevant control matches characters, not tokens, so this does not identify
+an internal anchoring mechanism.
+
+The fixed primary asks whether adding artifact features improves a selector
+beyond public feedback. Its mean utility difference is **+$0.00011119 per
+failure**, descriptive 95% interval **[−$0.00042595, +$0.00064848]**. The all-96
+missing-state bounds also span zero. State and feedback policies solve 50/94
+and 49/94; a source-selected static rule solves 60/94. Lower state-policy cost
+does not establish the same reliability or a better utility tradeoff.
+
+The prespecified API forecaster also does not establish a code-information
+gain. Its state-minus-feedback utility interval spans zero; state Brier is
+0.3294 versus feedback-only's 0.2920. The full-state forecast fee averages
+$0.00011077, about **2.05 times a fresh 9B draw**, before paying for the chosen
+solver. Forecast prompts were fixed before recovery, but forecast responses were
+collected afterwards; this is an outcome-blind control, not physically
+prospective prediction.
+
+Exploratory noise-adjusted diagnostics suggest context benefits vary across
+states under independent-draw assumptions. That leaves a prediction problem
+worth studying; failure of these structural and zero-shot baselines does not
+prove the value intrinsically unpredictable. Future tuning needs fresh tasks.
+The cumulative known charges and all reservations are **$1.39600335 of $2**.
+Collection is finished. The [result README](../../experiments/mbpp-plus/context-value-transfer/results/replication-20261022/README.md)
+gives offline reproduction and accounting.
+
+## Earlier HumanEval+ producer-transfer study
+
+The remaining sections describe that earlier protocol and its original results.
+Its former evaluation failures are now explicitly training data for MBPP+.
+
 We collected **1,353 model responses**, including 1,020 matched recovery draws
 across 51 naturally failed tasks: 26 development failures and 25 evaluation
 failures. The result is useful evidence for a blog, with a limited conclusion:
@@ -227,9 +288,10 @@ We also ask a 9B API forecaster for task-only and state-conditioned predictions.
 Both see the same development priors and costs. Forecasts are saved before the
 recovery outcomes. A malformed forecast falls back to 0.5 and still costs money.
 
-The state view adds code and feedback together. Even if it improves prediction,
+In this earlier study, the state view adds code and feedback together. Even if it improves prediction,
 this comparison cannot isolate code's information from the verifier's. We have
-not run a feedback-only predictor ablation. The model-only and context-only
+not run a feedback-only predictor ablation within that protocol; the external
+MBPP+ replication above now includes it. The model-only and context-only
 *action* controls test different restrictions on the same state predictions.
 
 The decision rule values a fully verified solution at $0.01, chooses an admissible
@@ -300,10 +362,10 @@ verifier feedback support a useful, inexpensive choice of recovery context.
 
 ## What would support a paper
 
-This study can support a reproducible technical blogpost with an honest positive
-or negative result. A broader method claim needs an independent task family,
-another producer and provider snapshot, more repeated draws on diverse failed
-tasks, and a locked policy that improves on strong static controls. Repository-
+The source study and external replica support a reproducible empirical draft
+with negative and unresolved results. A broader method claim still needs a fresh
+task family, another producer and provider snapshot, more repeated draws on
+diverse failed tasks, and a locked policy that improves on strong static controls. Repository-
 level coding or AutoResearch would test whether the signal survives beyond short
 functions. Any new experiment needs a fresh holdout and an explicit budget;
 collecting until a favorable interval appears would answer a different question.

@@ -1,0 +1,1571 @@
+{
+  "benefit_mse": {
+    "feedback": 0.15774402680278468,
+    "global": 0.14919348316826836,
+    "state": 0.15968143380117025,
+    "task": 0.1623683936530074
+  },
+  "branch_public_false_positives": 360,
+  "brier": {
+    "feedback": 0.47145844674109966,
+    "global": 0.27999627554660284,
+    "state": 0.4711002831524656,
+    "task": 0.4171790128288523
+  },
+  "censored_branch_requests": [
+    {
+      "action": "branch",
+      "arm": "artifact",
+      "call": 1791,
+      "checkpoint_id": "130",
+      "donor_checkpoint_id": null,
+      "draw": 2,
+      "http_metadata": {},
+      "http_status": null,
+      "model_name": "large",
+      "outcome": "no_preserved_response_identity; reservation retained",
+      "parent_call": 130,
+      "retry_after": null,
+      "task_id": "Mbpp/426"
+    },
+    {
+      "action": "branch",
+      "arm": "fresh",
+      "call": 2817,
+      "checkpoint_id": "237",
+      "donor_checkpoint_id": null,
+      "draw": 0,
+      "http_metadata": {},
+      "http_status": null,
+      "model_name": "small",
+      "outcome": "no_preserved_response_identity; reservation retained",
+      "parent_call": 237,
+      "retry_after": null,
+      "task_id": "Mbpp/84"
+    }
+  ],
+  "collection": {
+    "admissions": 3257,
+    "campaign_upper_usd": 1.36747315,
+    "known_cost_usd": 0.83799455,
+    "prior_upper_usd": 0.5149634,
+    "responses": 3254,
+    "unresolved_reservations_usd": 0.0145152
+  },
+  "complete_states": 94,
+  "effects": {
+    "large": {
+      "artifact-fresh": {
+        "ordinary_95": {
+          "alpha": 0.05,
+          "estimate": -0.1099290780141844,
+          "high": -0.04609929078014185,
+          "low": -0.1773049645390071,
+          "tasks": 94
+        },
+        "simultaneous_99_583": {
+          "alpha": 0.004166666666666667,
+          "estimate": -0.1099290780141844,
+          "high": -0.01773049645390071,
+          "low": -0.2127659574468085,
+          "tasks": 94
+        }
+      },
+      "artifact_feedback-distractor": {
+        "ordinary_95": {
+          "alpha": 0.05,
+          "estimate": -0.031914893617021274,
+          "high": 0.03191489361702128,
+          "low": -0.09929078014184396,
+          "tasks": 94
+        },
+        "simultaneous_99_583": {
+          "alpha": 0.004166666666666667,
+          "estimate": -0.031914893617021274,
+          "high": 0.060283687943262415,
+          "low": -0.13120567375886524,
+          "tasks": 94
+        }
+      },
+      "artifact_feedback-feedback": {
+        "ordinary_95": {
+          "alpha": 0.05,
+          "estimate": -0.03900709219858156,
+          "high": 0.028368794326241127,
+          "low": -0.10992907801418439,
+          "tasks": 94
+        },
+        "simultaneous_99_583": {
+          "alpha": 0.004166666666666667,
+          "estimate": -0.03900709219858156,
+          "high": 0.05319148936170213,
+          "low": -0.14184397163120568,
+          "tasks": 94
+        }
+      },
+      "artifact_feedback-fresh": {
+        "ordinary_95": {
+          "alpha": 0.05,
+          "estimate": -0.028368794326241138,
+          "high": 0.039007092198581554,
+          "low": -0.09574468085106383,
+          "tasks": 94
+        },
+        "simultaneous_99_583": {
+          "alpha": 0.004166666666666667,
+          "estimate": -0.028368794326241138,
+          "high": 0.0673758865248227,
+          "low": -0.1276595744680851,
+          "tasks": 94
+        }
+      }
+    },
+    "small": {
+      "artifact-fresh": {
+        "ordinary_95": {
+          "alpha": 0.05,
+          "estimate": -0.21985815602836878,
+          "high": -0.14184397163120566,
+          "low": -0.2978723404255319,
+          "tasks": 94
+        },
+        "simultaneous_99_583": {
+          "alpha": 0.004166666666666667,
+          "estimate": -0.21985815602836878,
+          "high": -0.10638297872340426,
+          "low": -0.33687943262411346,
+          "tasks": 94
+        }
+      },
+      "artifact_feedback-distractor": {
+        "ordinary_95": {
+          "alpha": 0.05,
+          "estimate": -0.12411347517730498,
+          "high": -0.04964539007092198,
+          "low": -0.20212765957446804,
+          "tasks": 94
+        },
+        "simultaneous_99_583": {
+          "alpha": 0.004166666666666667,
+          "estimate": -0.12411347517730498,
+          "high": -0.007092198581560293,
+          "low": -0.2417331560283688,
+          "tasks": 94
+        }
+      },
+      "artifact_feedback-feedback": {
+        "ordinary_95": {
+          "alpha": 0.05,
+          "estimate": -0.2198581560283688,
+          "high": -0.1453900709219858,
+          "low": -0.301418439716312,
+          "tasks": 94
+        },
+        "simultaneous_99_583": {
+          "alpha": 0.004166666666666667,
+          "estimate": -0.2198581560283688,
+          "high": -0.1099290780141844,
+          "low": -0.33687943262411346,
+          "tasks": 94
+        }
+      },
+      "artifact_feedback-fresh": {
+        "ordinary_95": {
+          "alpha": 0.05,
+          "estimate": -0.17730496453900707,
+          "high": -0.10283687943262411,
+          "low": -0.2553191489361702,
+          "tasks": 94
+        },
+        "simultaneous_99_583": {
+          "alpha": 0.004166666666666667,
+          "estimate": -0.17730496453900707,
+          "high": -0.0673758865248227,
+          "low": -0.29432624113475175,
+          "tasks": 94
+        }
+      }
+    }
+  },
+  "escalation_note": "Fixed 9B-fresh then 27B-fresh, added after recovery collection began. Diagnostic only, no target-outcome fitting or change to primary. Both requests use original checkpoint, no new child handoff.",
+  "explicit_provider_errors": 3,
+  "failure_statuses": {
+    "error": 87,
+    "fail": 1013,
+    "format_error": 109,
+    "pass": 2045
+  },
+  "feature_shift": {
+    "base_failure_fraction": {
+      "outside_source_range": 0,
+      "source_mean": 0.5776647916353799,
+      "target_mean": 0.8812056737588652
+    },
+    "format_error": {
+      "outside_source_range": 1,
+      "source_mean": 0.0,
+      "target_mean": 0.010638297872340425
+    },
+    "log_ast_nodes": {
+      "outside_source_range": 3,
+      "source_mean": 3.9891516012313475,
+      "target_mean": 3.9104570948828834
+    },
+    "log_code_characters": {
+      "outside_source_range": 2,
+      "source_mean": 5.94966975295484,
+      "target_mean": 5.27363348173348
+    },
+    "log_prompt_characters": {
+      "outside_source_range": 60,
+      "source_mean": 6.1864212440394715,
+      "target_mean": 4.992536935341212
+    },
+    "log_prompt_lines": {
+      "outside_source_range": 94,
+      "source_mean": 2.7341108039283615,
+      "target_mean": 1.6094379124340992
+    },
+    "name_error": {
+      "outside_source_range": 0,
+      "source_mean": 0.0,
+      "target_mean": 0.0
+    },
+    "syntax_error": {
+      "outside_source_range": 0,
+      "source_mean": 0.0784313725490196,
+      "target_mean": 0.010638297872340425
+    },
+    "syntax_valid": {
+      "outside_source_range": 0,
+      "source_mean": 0.9215686274509803,
+      "target_mean": 1.0
+    },
+    "timeout": {
+      "outside_source_range": 0,
+      "source_mean": 0.0,
+      "target_mean": 0.0
+    },
+    "type_error": {
+      "outside_source_range": 0,
+      "source_mean": 0.0,
+      "target_mean": 0.0
+    }
+  },
+  "initial_censored_tasks": 1,
+  "initial_eligible_tasks": 377,
+  "initial_full_successes": 202,
+  "initial_public_failures": 134,
+  "initial_public_false_positives": 40,
+  "initial_tasks": 376,
+  "latent_benefit_variance_diagnostic": {
+    "large:feedback": {
+      "high": 0.12791504613742086,
+      "low": 0.0329691908792801,
+      "unclipped_variance": 0.07768372353135565
+    },
+    "large:fresh": {
+      "high": 0.13637929281374717,
+      "low": 0.025381300999008614,
+      "unclipped_variance": 0.07839548539617174
+    },
+    "small:feedback": {
+      "high": 0.1474497318182974,
+      "low": 0.06187148885330078,
+      "unclipped_variance": 0.10570934695848902
+    },
+    "small:fresh": {
+      "high": 0.14775509036833676,
+      "low": 0.04607259971021124,
+      "unclipped_variance": 0.09781641627901065
+    }
+  },
+  "missing_state_utility_bounds": {
+    "high": 0.0005255416666666666,
+    "low": -0.00030779166666666677
+  },
+  "model_context_interactions": {
+    "artifact-fresh": {
+      "ordinary_95": {
+        "alpha": 0.05,
+        "estimate": -0.1099290780141844,
+        "high": -0.02482269503546099,
+        "low": -0.19858156028368792,
+        "tasks": 94
+      },
+      "simultaneous_99_583": {
+        "alpha": 0.004166666666666667,
+        "estimate": -0.1099290780141844,
+        "high": 0.014184397163120565,
+        "low": -0.24468085106382975,
+        "tasks": 94
+      }
+    },
+    "artifact_feedback-distractor": {
+      "ordinary_95": {
+        "alpha": 0.05,
+        "estimate": -0.09219858156028368,
+        "high": -0.0035460992907801435,
+        "low": -0.1773049645390071,
+        "tasks": 94
+      },
+      "simultaneous_99_583": {
+        "alpha": 0.004166666666666667,
+        "estimate": -0.09219858156028368,
+        "high": 0.03546099290780142,
+        "low": -0.2198581560283688,
+        "tasks": 94
+      }
+    },
+    "artifact_feedback-feedback": {
+      "ordinary_95": {
+        "alpha": 0.05,
+        "estimate": -0.18085106382978727,
+        "high": -0.0921985815602837,
+        "low": -0.276595744680851,
+        "tasks": 94
+      },
+      "simultaneous_99_583": {
+        "alpha": 0.004166666666666667,
+        "estimate": -0.18085106382978727,
+        "high": -0.052593085106380395,
+        "low": -0.3156028368794327,
+        "tasks": 94
+      }
+    },
+    "artifact_feedback-fresh": {
+      "ordinary_95": {
+        "alpha": 0.05,
+        "estimate": -0.14893617021276595,
+        "high": -0.05319148936170213,
+        "low": -0.24468085106382978,
+        "tasks": 94
+      },
+      "simultaneous_99_583": {
+        "alpha": 0.004166666666666667,
+        "estimate": -0.14893617021276595,
+        "high": -0.010638297872340425,
+        "low": -0.2949246453900709,
+        "tasks": 94
+      }
+    }
+  },
+  "note_verifier_time": "Sum of per-candidate elapsed times; concurrent workers mean this is not pipeline wall time, CPU time or a monetary charge.",
+  "policy_comparisons": {
+    "0": {
+      "best_static": {
+        "cost_usd": {
+          "alpha": 0.05,
+          "estimate": -0.0004392010638297872,
+          "high": -0.0003601107579787233,
+          "low": -0.0005321050265957447,
+          "tasks": 94
+        },
+        "net_utility_usd": {
+          "alpha": 0.05,
+          "estimate": -0.0006246287234042555,
+          "high": 0.00010829630319148922,
+          "low": -0.0014294812234042556,
+          "tasks": 94
+        },
+        "passed": {
+          "alpha": 0.05,
+          "estimate": -0.10638297872340426,
+          "high": -0.031914893617021274,
+          "low": -0.18085106382978725,
+          "tasks": 94
+        }
+      },
+      "escalation_diagnostic": {
+        "cost_usd": {
+          "alpha": 0.05,
+          "estimate": -0.0001532627659574468,
+          "high": -8.660291223404259e-05,
+          "low": -0.00023359606382978722,
+          "tasks": 94
+        },
+        "net_utility_usd": {
+          "alpha": 0.05,
+          "estimate": -0.0006978010638297871,
+          "high": 3.701188829787195e-05,
+          "low": -0.0014973389228723404,
+          "tasks": 94
+        },
+        "passed": {
+          "alpha": 0.05,
+          "estimate": -0.0851063829787234,
+          "high": -0.010638297872340425,
+          "low": -0.1702127659574468,
+          "tasks": 94
+        }
+      },
+      "feedback": {
+        "cost_usd": {
+          "alpha": 0.05,
+          "estimate": -4.8085106382978715e-06,
+          "high": 6.190478723404254e-06,
+          "low": -1.4124667553191489e-05,
+          "tasks": 94
+        },
+        "net_utility_usd": {
+          "alpha": 0.05,
+          "estimate": 0.00011119148936170201,
+          "high": 0.0006484772340425532,
+          "low": -0.0004259513430851064,
+          "tasks": 94
+        },
+        "passed": {
+          "alpha": 0.05,
+          "estimate": 0.010638297872340425,
+          "high": 0.06382978723404255,
+          "low": -0.0425531914893617,
+          "tasks": 94
+        }
+      },
+      "global": {
+        "cost_usd": {
+          "alpha": 0.05,
+          "estimate": -0.0005741079787234043,
+          "high": -0.0004535403058510639,
+          "low": -0.0007112658377659576,
+          "tasks": 94
+        },
+        "net_utility_usd": {
+          "alpha": 0.05,
+          "estimate": -0.0005961047872340427,
+          "high": 0.00027253867021276486,
+          "low": -0.0015060812632978725,
+          "tasks": 94
+        },
+        "passed": {
+          "alpha": 0.05,
+          "estimate": -0.11702127659574468,
+          "high": -0.031914893617021274,
+          "low": -0.20212765957446807,
+          "tasks": 94
+        }
+      },
+      "state_model_only": {
+        "cost_usd": {
+          "alpha": 0.05,
+          "estimate": -1.5911702127659572e-05,
+          "high": 1.2916223404254734e-07,
+          "low": -3.1086462765957444e-05,
+          "tasks": 94
+        },
+        "net_utility_usd": {
+          "alpha": 0.05,
+          "estimate": 0.001398890425531915,
+          "high": 0.002269109321808511,
+          "low": 0.0005237096808510637,
+          "tasks": 94
+        },
+        "passed": {
+          "alpha": 0.05,
+          "estimate": 0.13829787234042554,
+          "high": 0.22340425531914893,
+          "low": 0.05319148936170213,
+          "tasks": 94
+        }
+      },
+      "task": {
+        "cost_usd": {
+          "alpha": 0.05,
+          "estimate": -2.0563297872340427e-05,
+          "high": -6.399468085106384e-06,
+          "low": -3.618055851063831e-05,
+          "tasks": 94
+        },
+        "net_utility_usd": {
+          "alpha": 0.05,
+          "estimate": -0.0004049686170212767,
+          "high": 0.00013850147606382968,
+          "low": -0.0010472421808510638,
+          "tasks": 94
+        },
+        "passed": {
+          "alpha": 0.05,
+          "estimate": -0.0425531914893617,
+          "high": 0.010638297872340425,
+          "low": -0.10638297872340426,
+          "tasks": 94
+        }
+      }
+    },
+    "1": {
+      "best_static": {
+        "cost_usd": {
+          "alpha": 0.05,
+          "estimate": -0.00048189361702127663,
+          "high": -0.000367464960106383,
+          "low": -0.0006086502260638296,
+          "tasks": 94
+        },
+        "net_utility_usd": {
+          "alpha": 0.05,
+          "estimate": -0.00047555319148936167,
+          "high": 0.00031867984042553194,
+          "low": -0.0013182786569148936,
+          "tasks": 94
+        },
+        "passed": {
+          "alpha": 0.05,
+          "estimate": -0.09574468085106383,
+          "high": -0.02127659574468085,
+          "low": -0.18085106382978725,
+          "tasks": 94
+        }
+      },
+      "escalation_diagnostic": {
+        "cost_usd": {
+          "alpha": 0.05,
+          "estimate": -0.0002216473404255319,
+          "high": -0.00011683010638297874,
+          "low": -0.0003471696409574468,
+          "tasks": 94
+        },
+        "net_utility_usd": {
+          "alpha": 0.05,
+          "estimate": -0.000629416489361702,
+          "high": 0.00013387723404255307,
+          "low": -0.001420736143617021,
+          "tasks": 94
+        },
+        "passed": {
+          "alpha": 0.05,
+          "estimate": -0.0851063829787234,
+          "high": -0.010638297872340425,
+          "low": -0.1595744680851064,
+          "tasks": 94
+        }
+      },
+      "feedback": {
+        "cost_usd": {
+          "alpha": 0.05,
+          "estimate": -4.3670212765957447e-07,
+          "high": 1.1996901595744682e-05,
+          "low": -1.1193098404255316e-05,
+          "tasks": 94
+        },
+        "net_utility_usd": {
+          "alpha": 0.05,
+          "estimate": 0.00021320265957446805,
+          "high": 0.0007431012367021274,
+          "low": -0.0003100666356382978,
+          "tasks": 94
+        },
+        "passed": {
+          "alpha": 0.05,
+          "estimate": 0.02127659574468085,
+          "high": 0.07446808510638298,
+          "low": -0.031914893617021274,
+          "tasks": 94
+        }
+      },
+      "global": {
+        "cost_usd": {
+          "alpha": 0.05,
+          "estimate": -0.0005058510638297874,
+          "high": -0.00042237039893617027,
+          "low": -0.000605005585106383,
+          "tasks": 94
+        },
+        "net_utility_usd": {
+          "alpha": 0.05,
+          "estimate": -0.0005579787234042551,
+          "high": 0.00024365972074468062,
+          "low": -0.0014050143484042553,
+          "tasks": 94
+        },
+        "passed": {
+          "alpha": 0.05,
+          "estimate": -0.10638297872340426,
+          "high": -0.031914893617021274,
+          "low": -0.19148936170212766,
+          "tasks": 94
+        }
+      },
+      "state_model_only": {
+        "cost_usd": {
+          "alpha": 0.05,
+          "estimate": -3.2944148936170215e-05,
+          "high": -1.102227393617025e-05,
+          "low": -5.46913829787234e-05,
+          "tasks": 94
+        },
+        "net_utility_usd": {
+          "alpha": 0.05,
+          "estimate": 0.0020542207446808515,
+          "high": 0.0029384099734042386,
+          "low": 0.0011900756648936175,
+          "tasks": 94
+        },
+        "passed": {
+          "alpha": 0.05,
+          "estimate": 0.20212765957446807,
+          "high": 0.28749999999999615,
+          "low": 0.11702127659574468,
+          "tasks": 94
+        }
+      },
+      "task": {
+        "cost_usd": {
+          "alpha": 0.05,
+          "estimate": -1.216436170212766e-05,
+          "high": 2.918856382978721e-06,
+          "low": -2.7499534574468085e-05,
+          "tasks": 94
+        },
+        "net_utility_usd": {
+          "alpha": 0.05,
+          "estimate": -0.0004133675531914894,
+          "high": 2.2464215425531926e-05,
+          "low": -0.0009494594015957448,
+          "tasks": 94
+        },
+        "passed": {
+          "alpha": 0.05,
+          "estimate": -0.0425531914893617,
+          "high": 0.0,
+          "low": -0.09574468085106383,
+          "tasks": 94
+        }
+      }
+    },
+    "2": {
+      "best_static": {
+        "cost_usd": {
+          "alpha": 0.05,
+          "estimate": -0.0004303553191489361,
+          "high": -0.0003467798271276596,
+          "low": -0.0005263808776595744,
+          "tasks": 94
+        },
+        "net_utility_usd": {
+          "alpha": 0.05,
+          "estimate": -0.0007398574468085107,
+          "high": 8.485640957446773e-05,
+          "low": -0.001602350598404255,
+          "tasks": 94
+        },
+        "passed": {
+          "alpha": 0.05,
+          "estimate": -0.11702127659574468,
+          "high": -0.031914893617021274,
+          "low": -0.20212765957446807,
+          "tasks": 94
+        }
+      },
+      "escalation_diagnostic": {
+        "cost_usd": {
+          "alpha": 0.05,
+          "estimate": -0.0002287803191489362,
+          "high": -0.0001366614494680851,
+          "low": -0.0003402516356382978,
+          "tasks": 94
+        },
+        "net_utility_usd": {
+          "alpha": 0.05,
+          "estimate": -0.0008350494680851064,
+          "high": -0.00010133753989361742,
+          "low": -0.0016306898005319147,
+          "tasks": 94
+        },
+        "passed": {
+          "alpha": 0.05,
+          "estimate": -0.10638297872340426,
+          "high": -0.031914893617021274,
+          "low": -0.18085106382978725,
+          "tasks": 94
+        }
+      },
+      "feedback": {
+        "cost_usd": {
+          "alpha": 0.05,
+          "estimate": -5.923404255319149e-06,
+          "high": 8.848138297872306e-07,
+          "low": -1.2192287234042552e-05,
+          "tasks": 94
+        },
+        "net_utility_usd": {
+          "alpha": 0.05,
+          "estimate": 0.00011230638297872338,
+          "high": 0.0005435096675531915,
+          "low": -0.00031562305851063835,
+          "tasks": 94
+        },
+        "passed": {
+          "alpha": 0.05,
+          "estimate": 0.010638297872340425,
+          "high": 0.05319148936170213,
+          "low": -0.031914893617021274,
+          "tasks": 94
+        }
+      },
+      "global": {
+        "cost_usd": {
+          "alpha": 0.05,
+          "estimate": -0.0005510574468085106,
+          "high": -0.00044746860372340435,
+          "low": -0.0006704821808510639,
+          "tasks": 94
+        },
+        "net_utility_usd": {
+          "alpha": 0.05,
+          "estimate": -0.0006191553191489363,
+          "high": 0.00018449396276595744,
+          "low": -0.001475049428191489,
+          "tasks": 94
+        },
+        "passed": {
+          "alpha": 0.05,
+          "estimate": -0.11702127659574468,
+          "high": -0.031914893617021274,
+          "low": -0.20212765957446807,
+          "tasks": 94
+        }
+      },
+      "state_model_only": {
+        "cost_usd": {
+          "alpha": 0.05,
+          "estimate": -2.9510106382978727e-05,
+          "high": -1.0850664893617046e-05,
+          "low": -4.6818670212765966e-05,
+          "tasks": 94
+        },
+        "net_utility_usd": {
+          "alpha": 0.05,
+          "estimate": 0.0017316377659574468,
+          "high": 0.002583289920212766,
+          "low": 0.0008891732313829787,
+          "tasks": 94
+        },
+        "passed": {
+          "alpha": 0.05,
+          "estimate": 0.1702127659574468,
+          "high": 0.2553191489361702,
+          "low": 0.0851063829787234,
+          "tasks": 94
+        }
+      },
+      "task": {
+        "cost_usd": {
+          "alpha": 0.05,
+          "estimate": -1.3693085106382978e-05,
+          "high": -5.074175531914898e-06,
+          "low": -2.2974308510638298e-05,
+          "tasks": 94
+        },
+        "net_utility_usd": {
+          "alpha": 0.05,
+          "estimate": -0.00041183882978723413,
+          "high": 2.0640093085106316e-05,
+          "low": -0.0009486269281914896,
+          "tasks": 94
+        },
+        "passed": {
+          "alpha": 0.05,
+          "estimate": -0.0425531914893617,
+          "high": 0.0,
+          "low": -0.09574468085106383,
+          "tasks": 94
+        }
+      }
+    }
+  },
+  "policy_summary": {
+    "0.003": {
+      "best_static": {
+        "cost_usd": 9.646436170212768e-05,
+        "net_utility_usd": 0.005541833510638297,
+        "selected_actions": {
+          "small.fresh": 94
+        },
+        "success": 0.5638297872340425
+      },
+      "direct_large": {
+        "cost_usd": 0.0,
+        "net_utility_usd": 0.0,
+        "selected_actions": {
+          "large.fresh": 94
+        },
+        "success": 0.0
+      },
+      "direct_small": {
+        "cost_usd": 7.481755319148937e-05,
+        "net_utility_usd": 0.005563480319148936,
+        "selected_actions": {
+          "small.fresh": 94
+        },
+        "success": 0.5638297872340425
+      },
+      "escalation_diagnostic": {
+        "cost_usd": 7.305159574468086e-05,
+        "net_utility_usd": 0.0051397143617021275,
+        "selected_actions": {
+          "small.fresh->large.fresh": 94
+        },
+        "success": 0.5212765957446809
+      },
+      "feedback": {
+        "cost_usd": 0.00011773829787234042,
+        "net_utility_usd": 0.005095027659574468,
+        "selected_actions": {
+          "small.artifact": 17,
+          "small.feedback": 77
+        },
+        "success": 0.5212765957446809
+      },
+      "fixed:large.artifact": {
+        "cost_usd": 2.1646808510638294e-05,
+        "net_utility_usd": -2.1646808510638294e-05,
+        "selected_actions": {
+          "large.artifact": 94
+        },
+        "success": 0.0
+      },
+      "fixed:large.artifact_feedback": {
+        "cost_usd": 2.1646808510638294e-05,
+        "net_utility_usd": -2.1646808510638294e-05,
+        "selected_actions": {
+          "large.artifact_feedback": 94
+        },
+        "success": 0.0
+      },
+      "fixed:large.feedback": {
+        "cost_usd": 2.1646808510638294e-05,
+        "net_utility_usd": -2.1646808510638294e-05,
+        "selected_actions": {
+          "large.feedback": 94
+        },
+        "success": 0.0
+      },
+      "fixed:large.fresh": {
+        "cost_usd": 2.1646808510638294e-05,
+        "net_utility_usd": -2.1646808510638294e-05,
+        "selected_actions": {
+          "large.fresh": 94
+        },
+        "success": 0.0
+      },
+      "fixed:small.artifact": {
+        "cost_usd": 9.945797872340426e-05,
+        "net_utility_usd": 0.003198414361702128,
+        "selected_actions": {
+          "small.artifact": 94
+        },
+        "success": 0.32978723404255317
+      },
+      "fixed:small.artifact_feedback": {
+        "cost_usd": 0.0001274276595744681,
+        "net_utility_usd": 0.0038087425531914895,
+        "selected_actions": {
+          "small.artifact_feedback": 94
+        },
+        "success": 0.39361702127659576
+      },
+      "fixed:small.feedback": {
+        "cost_usd": 0.00013349308510638298,
+        "net_utility_usd": 0.005611187765957446,
+        "selected_actions": {
+          "small.feedback": 94
+        },
+        "success": 0.574468085106383
+      },
+      "fixed:small.fresh": {
+        "cost_usd": 9.646436170212768e-05,
+        "net_utility_usd": 0.005541833510638297,
+        "selected_actions": {
+          "small.fresh": 94
+        },
+        "success": 0.5638297872340425
+      },
+      "global": {
+        "cost_usd": 0.00013349308510638298,
+        "net_utility_usd": 0.005611187765957446,
+        "selected_actions": {
+          "small.feedback": 94
+        },
+        "success": 0.574468085106383
+      },
+      "state": {
+        "cost_usd": 0.00011292978723404256,
+        "net_utility_usd": 0.00520621914893617,
+        "selected_actions": {
+          "small.artifact": 9,
+          "small.artifact_feedback": 1,
+          "small.feedback": 37,
+          "small.fresh": 47
+        },
+        "success": 0.5319148936170213
+      },
+      "state_model_only": {
+        "cost_usd": 0.0001274276595744681,
+        "net_utility_usd": 0.0038087425531914895,
+        "selected_actions": {
+          "small.artifact_feedback": 94
+        },
+        "success": 0.39361702127659576
+      },
+      "task": {
+        "cost_usd": 0.00013349308510638298,
+        "net_utility_usd": 0.005611187765957446,
+        "selected_actions": {
+          "small.feedback": 94
+        },
+        "success": 0.574468085106383
+      }
+    },
+    "0.01": {
+      "best_static": {
+        "cost_usd": 0.0005550510638297872,
+        "net_utility_usd": 0.00582792765957447,
+        "selected_actions": {
+          "large.fresh": 94
+        },
+        "success": 0.6382978723404256
+      },
+      "direct_large": {
+        "cost_usd": 0.0005334042553191489,
+        "net_utility_usd": 0.005849574468085108,
+        "selected_actions": {
+          "large.fresh": 94
+        },
+        "success": 0.6382978723404256
+      },
+      "direct_small": {
+        "cost_usd": 7.481755319148937e-05,
+        "net_utility_usd": 0.005563480319148936,
+        "selected_actions": {
+          "small.fresh": 94
+        },
+        "success": 0.5638297872340425
+      },
+      "escalation_diagnostic": {
+        "cost_usd": 0.0002691127659574469,
+        "net_utility_usd": 0.005901100000000001,
+        "selected_actions": {
+          "small.fresh->large.fresh": 94
+        },
+        "success": 0.6170212765957447
+      },
+      "feedback": {
+        "cost_usd": 0.00012065851063829788,
+        "net_utility_usd": 0.0050921074468085106,
+        "selected_actions": {
+          "small.artifact": 17,
+          "small.feedback": 77
+        },
+        "success": 0.5212765957446809
+      },
+      "fixed:large.artifact": {
+        "cost_usd": 0.0006549207446808511,
+        "net_utility_usd": 0.004770611170212768,
+        "selected_actions": {
+          "large.artifact": 94
+        },
+        "success": 0.5425531914893617
+      },
+      "fixed:large.artifact_feedback": {
+        "cost_usd": 0.0006516627659574469,
+        "net_utility_usd": 0.0056249329787234036,
+        "selected_actions": {
+          "large.artifact_feedback": 94
+        },
+        "success": 0.6276595744680851
+      },
+      "fixed:large.feedback": {
+        "cost_usd": 0.0006899579787234043,
+        "net_utility_usd": 0.005799403723404256,
+        "selected_actions": {
+          "large.feedback": 94
+        },
+        "success": 0.648936170212766
+      },
+      "fixed:large.fresh": {
+        "cost_usd": 0.0005550510638297872,
+        "net_utility_usd": 0.00582792765957447,
+        "selected_actions": {
+          "large.fresh": 94
+        },
+        "success": 0.6382978723404256
+      },
+      "fixed:small.artifact": {
+        "cost_usd": 0.0001035313829787234,
+        "net_utility_usd": 0.0031943409574468084,
+        "selected_actions": {
+          "small.artifact": 94
+        },
+        "success": 0.32978723404255317
+      },
+      "fixed:small.artifact_feedback": {
+        "cost_usd": 0.00013176170212765958,
+        "net_utility_usd": 0.0038044085106382977,
+        "selected_actions": {
+          "small.artifact_feedback": 94
+        },
+        "success": 0.39361702127659576
+      },
+      "fixed:small.feedback": {
+        "cost_usd": 0.00013641329787234045,
+        "net_utility_usd": 0.005608267553191489,
+        "selected_actions": {
+          "small.feedback": 94
+        },
+        "success": 0.574468085106383
+      },
+      "fixed:small.fresh": {
+        "cost_usd": 9.646436170212768e-05,
+        "net_utility_usd": 0.005541833510638297,
+        "selected_actions": {
+          "small.fresh": 94
+        },
+        "success": 0.5638297872340425
+      },
+      "global": {
+        "cost_usd": 0.0006899579787234043,
+        "net_utility_usd": 0.005799403723404256,
+        "selected_actions": {
+          "large.feedback": 94
+        },
+        "success": 0.648936170212766
+      },
+      "state": {
+        "cost_usd": 0.00011585000000000001,
+        "net_utility_usd": 0.005203298936170212,
+        "selected_actions": {
+          "small.artifact": 9,
+          "small.artifact_feedback": 1,
+          "small.feedback": 37,
+          "small.fresh": 47
+        },
+        "success": 0.5319148936170213
+      },
+      "state_model_only": {
+        "cost_usd": 0.00013176170212765958,
+        "net_utility_usd": 0.0038044085106382977,
+        "selected_actions": {
+          "small.artifact_feedback": 94
+        },
+        "success": 0.39361702127659576
+      },
+      "task": {
+        "cost_usd": 0.00013641329787234045,
+        "net_utility_usd": 0.005608267553191489,
+        "selected_actions": {
+          "small.feedback": 94
+        },
+        "success": 0.574468085106383
+      }
+    },
+    "0.02": {
+      "best_static": {
+        "cost_usd": 0.0007238489361702128,
+        "net_utility_usd": 0.005871895744680852,
+        "selected_actions": {
+          "large.fresh": 94
+        },
+        "success": 0.6595744680851063
+      },
+      "direct_large": {
+        "cost_usd": 0.0007022021276595746,
+        "net_utility_usd": 0.00589354255319149,
+        "selected_actions": {
+          "large.fresh": 94
+        },
+        "success": 0.6595744680851063
+      },
+      "direct_small": {
+        "cost_usd": 7.481755319148937e-05,
+        "net_utility_usd": 0.005563480319148936,
+        "selected_actions": {
+          "small.fresh": 94
+        },
+        "success": 0.5638297872340425
+      },
+      "escalation_diagnostic": {
+        "cost_usd": 0.0002691127659574469,
+        "net_utility_usd": 0.005901100000000001,
+        "selected_actions": {
+          "small.fresh->large.fresh": 94
+        },
+        "success": 0.6170212765957447
+      },
+      "feedback": {
+        "cost_usd": 0.00012065851063829788,
+        "net_utility_usd": 0.0050921074468085106,
+        "selected_actions": {
+          "small.artifact": 17,
+          "small.feedback": 77
+        },
+        "success": 0.5212765957446809
+      },
+      "fixed:large.artifact": {
+        "cost_usd": 0.0007431574468085106,
+        "net_utility_usd": 0.0047887574468085115,
+        "selected_actions": {
+          "large.artifact": 94
+        },
+        "success": 0.5531914893617021
+      },
+      "fixed:large.artifact_feedback": {
+        "cost_usd": 0.0007686601063829787,
+        "net_utility_usd": 0.005614318617021277,
+        "selected_actions": {
+          "large.artifact_feedback": 94
+        },
+        "success": 0.6382978723404256
+      },
+      "fixed:large.feedback": {
+        "cost_usd": 0.0007564632978723405,
+        "net_utility_usd": 0.005839281382978723,
+        "selected_actions": {
+          "large.feedback": 94
+        },
+        "success": 0.6595744680851063
+      },
+      "fixed:large.fresh": {
+        "cost_usd": 0.0007238489361702128,
+        "net_utility_usd": 0.005871895744680852,
+        "selected_actions": {
+          "large.fresh": 94
+        },
+        "success": 0.6595744680851063
+      },
+      "fixed:small.artifact": {
+        "cost_usd": 0.0001035313829787234,
+        "net_utility_usd": 0.0031943409574468084,
+        "selected_actions": {
+          "small.artifact": 94
+        },
+        "success": 0.32978723404255317
+      },
+      "fixed:small.artifact_feedback": {
+        "cost_usd": 0.00013176170212765958,
+        "net_utility_usd": 0.0038044085106382977,
+        "selected_actions": {
+          "small.artifact_feedback": 94
+        },
+        "success": 0.39361702127659576
+      },
+      "fixed:small.feedback": {
+        "cost_usd": 0.00013641329787234045,
+        "net_utility_usd": 0.005608267553191489,
+        "selected_actions": {
+          "small.feedback": 94
+        },
+        "success": 0.574468085106383
+      },
+      "fixed:small.fresh": {
+        "cost_usd": 9.646436170212768e-05,
+        "net_utility_usd": 0.005541833510638297,
+        "selected_actions": {
+          "small.fresh": 94
+        },
+        "success": 0.5638297872340425
+      },
+      "global": {
+        "cost_usd": 0.0007564632978723405,
+        "net_utility_usd": 0.005839281382978723,
+        "selected_actions": {
+          "large.feedback": 94
+        },
+        "success": 0.6595744680851063
+      },
+      "state": {
+        "cost_usd": 0.00011585000000000001,
+        "net_utility_usd": 0.005203298936170212,
+        "selected_actions": {
+          "small.artifact": 9,
+          "small.artifact_feedback": 1,
+          "small.feedback": 37,
+          "small.fresh": 47
+        },
+        "success": 0.5319148936170213
+      },
+      "state_model_only": {
+        "cost_usd": 0.00013176170212765958,
+        "net_utility_usd": 0.0038044085106382977,
+        "selected_actions": {
+          "small.artifact_feedback": 94
+        },
+        "success": 0.39361702127659576
+      },
+      "task": {
+        "cost_usd": 0.00013641329787234045,
+        "net_utility_usd": 0.005608267553191489,
+        "selected_actions": {
+          "small.feedback": 94
+        },
+        "success": 0.574468085106383
+      }
+    }
+  },
+  "primary": {
+    "alpha": 0.05,
+    "estimate": 0.00011119148936170201,
+    "high": 0.0006484772340425532,
+    "low": -0.0004259513430851064,
+    "tasks": 94
+  },
+  "rates": {
+    "large": {
+      "artifact": {
+        "cost_usd": 0.00044652393617021274,
+        "draws": 282,
+        "finish_reasons": {
+          "length": 5,
+          "stop": 277
+        },
+        "format_failures": 5,
+        "mean_input_tokens": 250.43617021276594,
+        "mean_output_tokens": 191.95744680851064,
+        "public_false_positives": 43,
+        "success": {
+          "alpha": 0.05,
+          "estimate": 0.5035460992907802,
+          "high": 0.5992907801418439,
+          "low": 0.40780141843971623,
+          "tasks": 94
+        },
+        "token_receipts": 282
+      },
+      "artifact_feedback": {
+        "cost_usd": 0.0005195017730496454,
+        "draws": 282,
+        "finish_reasons": {
+          "length": 6,
+          "stop": 276
+        },
+        "format_failures": 6,
+        "mean_input_tokens": 439.4255319148936,
+        "mean_output_tokens": 204.82269503546098,
+        "public_false_positives": 43,
+        "success": {
+          "alpha": 0.05,
+          "estimate": 0.5851063829787234,
+          "high": 0.6737588652482269,
+          "low": 0.49290780141843976,
+          "tasks": 94
+        },
+        "token_receipts": 282
+      },
+      "distractor": {
+        "cost_usd": 0.000552720744680851,
+        "draws": 282,
+        "finish_reasons": {
+          "length": 6,
+          "stop": 276
+        },
+        "format_failures": 6,
+        "mean_input_tokens": 389.3510638297872,
+        "mean_output_tokens": 227.69148936170214,
+        "public_false_positives": 41,
+        "success": {
+          "alpha": 0.05,
+          "estimate": 0.6170212765957446,
+          "high": 0.7056737588652483,
+          "low": 0.524822695035461,
+          "tasks": 94
+        },
+        "token_receipts": 282
+      },
+      "feedback": {
+        "cost_usd": 0.000570979609929078,
+        "draws": 282,
+        "finish_reasons": {
+          "length": 9,
+          "stop": 273
+        },
+        "format_failures": 9,
+        "mean_input_tokens": 349.56382978723406,
+        "mean_output_tokens": 241.79432624113474,
+        "public_false_positives": 53,
+        "success": {
+          "alpha": 0.05,
+          "estimate": 0.624113475177305,
+          "high": 0.7127659574468085,
+          "low": 0.5319148936170212,
+          "tasks": 94
+        },
+        "token_receipts": 282
+      },
+      "fresh": {
+        "cost_usd": 0.000488313829787234,
+        "draws": 282,
+        "finish_reasons": {
+          "length": 6,
+          "stop": 276
+        },
+        "format_failures": 6,
+        "mean_input_tokens": 160.5744680851064,
+        "mean_output_tokens": 224.08510638297872,
+        "public_false_positives": 44,
+        "success": {
+          "alpha": 0.05,
+          "estimate": 0.6134751773049645,
+          "high": 0.7021276595744681,
+          "low": 0.5177304964539008,
+          "tasks": 94
+        },
+        "token_receipts": 282
+      }
+    },
+    "small": {
+      "artifact": {
+        "cost_usd": 4.8784042553191486e-05,
+        "draws": 282,
+        "finish_reasons": {
+          "length": 5,
+          "stop": 277
+        },
+        "format_failures": 5,
+        "mean_input_tokens": 250.43617021276594,
+        "mean_output_tokens": 158.2695035460993,
+        "public_false_positives": 15,
+        "success": {
+          "alpha": 0.05,
+          "estimate": 0.26595744680851063,
+          "high": 0.3475177304964539,
+          "low": 0.18794326241134748,
+          "tasks": 94
+        },
+        "token_receipts": 282
+      },
+      "artifact_feedback": {
+        "cost_usd": 7.392907801418439e-05,
+        "draws": 282,
+        "finish_reasons": {
+          "error": 1,
+          "length": 13,
+          "missing": 2,
+          "stop": 266
+        },
+        "format_failures": 16,
+        "mean_input_tokens": 439.5409252669039,
+        "mean_output_tokens": 201.58718861209965,
+        "public_false_positives": 28,
+        "success": {
+          "alpha": 0.05,
+          "estimate": 0.30851063829787234,
+          "high": 0.39361702127659576,
+          "low": 0.22695035460992907,
+          "tasks": 94
+        },
+        "token_receipts": 281
+      },
+      "distractor": {
+        "cost_usd": 7.944734042553192e-05,
+        "draws": 282,
+        "finish_reasons": {
+          "length": 17,
+          "missing": 1,
+          "stop": 264
+        },
+        "format_failures": 18,
+        "mean_input_tokens": 389.3510638297872,
+        "mean_output_tokens": 270.08156028368796,
+        "public_false_positives": 29,
+        "success": {
+          "alpha": 0.05,
+          "estimate": 0.4326241134751774,
+          "high": 0.5212765957446809,
+          "low": 0.3404255319148936,
+          "tasks": 94
+        },
+        "token_receipts": 282
+      },
+      "feedback": {
+        "cost_usd": 7.508297872340425e-05,
+        "draws": 282,
+        "finish_reasons": {
+          "error": 1,
+          "length": 19,
+          "stop": 262
+        },
+        "format_failures": 20,
+        "mean_input_tokens": 349.56939501779357,
+        "mean_output_tokens": 269.288256227758,
+        "public_false_positives": 33,
+        "success": {
+          "alpha": 0.05,
+          "estimate": 0.5283687943262412,
+          "high": 0.6205673758865249,
+          "low": 0.4326241134751774,
+          "tasks": 94
+        },
+        "token_receipts": 281
+      },
+      "fresh": {
+        "cost_usd": 5.4031382978723406e-05,
+        "draws": 282,
+        "finish_reasons": {
+          "error": 1,
+          "length": 13,
+          "missing": 2,
+          "stop": 266
+        },
+        "format_failures": 16,
+        "mean_input_tokens": 160.58007117437722,
+        "mean_output_tokens": 254.43772241992883,
+        "public_false_positives": 31,
+        "success": {
+          "alpha": 0.05,
+          "estimate": 0.48581560283687947,
+          "high": 0.574468085106383,
+          "low": 0.3936170212765958,
+          "tasks": 94
+        },
+        "token_receipts": 281
+      }
+    }
+  },
+  "recovery_continuation_note": "Human-authorized continuation after a transport stop and partial descriptive audit; only never-admitted cells. Original estimands/weights fixed, but bank remains incomplete and intervals descriptive.",
+  "selected_nonempty_artifacts": 95,
+  "selected_state_statuses": {
+    "error": 3,
+    "fail": 92,
+    "format_error": 1
+  },
+  "selected_states": 96,
+  "selected_syntax_valid_artifacts": 96,
+  "semantic_control": {
+    "collection": {
+      "campaign_upper_usd": 1.39600335,
+      "known_cost_usd": 0.0285302,
+      "responses": 288,
+      "unresolved_reservations_usd": 0.0
+    },
+    "complete_states": 94,
+    "malformed_forecasts": 0,
+    "policy_summary": {
+      "0.003": {
+        "feedback_only": {
+          "cost_usd": 0.0002265590425531915,
+          "net_utility_usd": 0.0038159941489361708,
+          "success": 0.40425531914893614
+        },
+        "state": {
+          "cost_usd": 0.0002317186170212766,
+          "net_utility_usd": 0.0037044515957446802,
+          "success": 0.39361702127659576
+        },
+        "task_only": {
+          "cost_usd": 0.00021101648936170213,
+          "net_utility_usd": 0.0037251537234042555,
+          "success": 0.39361702127659576
+        }
+      },
+      "0.01": {
+        "feedback_only": {
+          "cost_usd": 0.0005043914893617022,
+          "net_utility_usd": 0.004389225531914894,
+          "success": 0.48936170212765956
+        },
+        "state": {
+          "cost_usd": 0.00047710744680851065,
+          "net_utility_usd": 0.0047356585106382975,
+          "success": 0.5212765957446809
+        },
+        "task_only": {
+          "cost_usd": 0.0005583047872340426,
+          "net_utility_usd": 0.004867227127659575,
+          "success": 0.5425531914893617
+        }
+      },
+      "0.02": {
+        "feedback_only": {
+          "cost_usd": 0.0005433382978723405,
+          "net_utility_usd": 0.004350278723404256,
+          "success": 0.48936170212765956
+        },
+        "state": {
+          "cost_usd": 0.0005099691489361702,
+          "net_utility_usd": 0.004702796808510638,
+          "success": 0.5212765957446809
+        },
+        "task_only": {
+          "cost_usd": 0.0006654005319148938,
+          "net_utility_usd": 0.004866514361702128,
+          "success": 0.5531914893617021
+        }
+      }
+    },
+    "prediction_metrics": {
+      "feedback_only": {
+        "benefit_mse": 0.2640675827423168,
+        "brier": 0.2919940159574469
+      },
+      "state": {
+        "benefit_mse": 0.27225596926713946,
+        "brier": 0.329436835106383
+      },
+      "task_only": {
+        "benefit_mse": 0.22214514095258575,
+        "brier": 0.3326690833492541
+      }
+    },
+    "selected_states": 96,
+    "state_feedback_benefit_mse_difference": {
+      "alpha": 0.05,
+      "estimate": 0.008188386524822682,
+      "high": 0.027600199468085083,
+      "low": -0.011756320921985834,
+      "tasks": 94
+    },
+    "state_feedback_brier_difference": {
+      "alpha": 0.05,
+      "estimate": 0.03744281914893617,
+      "high": 0.06273888408687939,
+      "low": 0.01318008421985816,
+      "tasks": 94
+    },
+    "state_feedback_utility": {
+      "alpha": 0.05,
+      "estimate": 0.0003464329787234042,
+      "high": 0.0010246263829787226,
+      "low": -0.00030521819148936164,
+      "tasks": 94
+    },
+    "state_utility_comparisons": {
+      "best_static": {
+        "alpha": 0.05,
+        "estimate": -0.0010922691489361701,
+        "high": -0.00012983345744680867,
+        "low": -0.0020920647074468084,
+        "tasks": 94
+      },
+      "feedback_only": {
+        "alpha": 0.05,
+        "estimate": 0.0003464329787234042,
+        "high": 0.0010246263829787226,
+        "low": -0.00030521819148936164,
+        "tasks": 94
+      },
+      "task_only": {
+        "alpha": 0.05,
+        "estimate": -0.00013156861702127667,
+        "high": 0.0006435682845744682,
+        "low": -0.0009146884441489363,
+        "tasks": 94
+      }
+    }
+  },
+  "state_feedback_benefit_mse_difference": {
+    "alpha": 0.05,
+    "estimate": 0.0019374069983856034,
+    "high": 0.00732630086147294,
+    "low": -0.0029058348149686086,
+    "tasks": 94
+  },
+  "state_feedback_brier_difference": {
+    "alpha": 0.05,
+    "estimate": -0.000358163588633879,
+    "high": 0.0061947837113286285,
+    "low": -0.007755758590530258,
+    "tasks": 94
+  },
+  "status": "incomplete_descriptive_bank",
+  "verifier_elapsed_seconds_median": 2.9851186454761773,
+  "verifier_elapsed_seconds_sum": 10143.051807475334
+}

@@ -8,9 +8,9 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Canonical docs present: `22/22`
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
-- Experiment bundles indexed: `10`
-- Script entrypoints indexed: `36`
-- Code modules indexed: `134`
+- Experiment bundles indexed: `11`
+- Script entrypoints indexed: `39`
+- Code modules indexed: `137`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `7`
@@ -167,6 +167,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | HumanEval+ | `experiments/humaneval-plus/llm-router-context-search/` | completed | Tier 1: Main Evidence | validation selection, held-out test evaluation, logs, figure |
 | HumanEval+ | `experiments/humaneval-plus/openrouter-continuation-pilot/` | development pilot | not tiered | 24 tasks, 88 calls, two failed checkpoints, receipts and separate public/full-suite scoring |
 | HumanEval+ | `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | Discovery: 30 tasks/132 calls. Transfer: 83 development + 60 evaluation tasks, 1,353 responses, frozen policies, forecasts, controls and cost audit |
+| MBPP+ | `experiments/mbpp-plus/context-value-transfer/` | collection finished; censored descriptive bank | Tier 2: Supporting Or Diagnostic Evidence | 94/96 complete failures, 2,878 recovery responses, two censored solver cells, 288 API forecasts, fixed comparisons and full accounting |
 
 ## Script Entrypoints
 
@@ -174,6 +175,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | --- | --- | --- |
 | `scripts/analyze_context_value.py` | python | Audit prospective context-value records and compare matched outcomes by task cluster. |
 | `scripts/analyze_continuation_pilot.py` | python | Audit saved pilot receipts/outcomes and render an exploratory cost/success plot. |
+| `scripts/analyze_recovery_transfer.py` | python | Audit recorded MBPP+ recovery evidence and reproduce the frozen statistical comparisons. |
 | `scripts/analyze_recovery_validation.py` | python | Audit frozen held-out recovery data and replay its finite budgeted policy bank. |
 | `scripts/analyze_runs.py` | python | analyze_runs.py — Analysis pipeline for agent parallelisation experiment results. Repository structure assumed (verified from runs/): runs/<experiment_id>/ config.json mode_parallel/ agent_<N>/ results/ trajectory.jsonl ← {step, val_bpb} per training run metadata.json ← summary (best_val_bpb, total_training_runs, …) snapshots/ step_NNN/ train.py ← frozen snapshot of train.py at this step metadata.json ← git_message, val_bpb_after, accepted, … workspace/ train.py.baseline ← original unmodified train.py Usage: python scripts/analyze_runs.py # latest experiment python scripts/analyze_runs.py --runs-dir runs/ # all experiments python scripts/analyze_runs.py --experiment exp_20260401_013535 python scripts/analyze_runs.py --output-dir my_analysis/ |
 | `scripts/benchmark_parallel_capacity.py` | python | CLI: run the parallel-capacity benchmark. Measures the empirical upper bound on the number of sub-agents that can run concurrently in this environment. Usage: python scripts/benchmark_parallel_capacity.py python scripts/benchmark_parallel_capacity.py --max-n 6 --duration 3.0 python scripts/benchmark_parallel_capacity.py --output-dir runs/bench_capacity |
@@ -189,8 +191,10 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/run_continuation_pilot.py` | python | Run the explicit-budget OpenRouter/HumanEval+ pilot; defaults to plan only. |
 | `scripts/run_merge_phase.py` | python | CLI: run the merge phase on a completed parallel experiment. Given an experiment directory produced by run_parallel_experiment.py, this script: 1. Gathers all agent snapshots, reasoning traces, and metrics 2. Selects the best and most informative train.py variants 3. Analyses per-parameter improvement correlations 4. Produces a merged train.py candidate 5. Runs evaluation via SLURM (always; workspace auto-detected if not provided) 6. Writes a merge report and comparison table Usage: python scripts/run_merge_phase.py --experiment-dir runs/experiment_parallel_20260331_120000 python scripts/run_merge_phase.py --experiment-dir runs/exp_... --source-mode parallel |
 | `scripts/run_parallel_experiment.py` | python | CLI: launch Mode 1 (2 agents × T budget). |
+| `scripts/run_recovery_transfer.py` | python | Plan or explicitly collect the cumulative-budgeted MBPP+ recovery replication. |
 | `scripts/run_recovery_validation.py` | python | Plan or explicitly run the task-held-out recovery validation within its cumulative budget. |
 | `scripts/run_single_long_experiment.py` | python | CLI: launch Mode 2 (1 agent × 2T budget). |
+| `scripts/run_transfer_forecasts.py` | python | Plan or explicitly collect the prespecified outcome-blind semantic forecast control. |
 | `scripts/validate_agent_readiness.py` | python | Validate that the repository is ready for LLM-agent navigation. |
 | `autoresearch/scripts/analyze_autoresearch_allocation_router.py` | python | Analyze allocation-router outputs against mode labels and calibration tables. |
 | `autoresearch/scripts/analyze_autoresearch_threeworker_final.py` | python | Frozen three-worker analysis for the AutoResearch CIFAR-10 paper experiments. |
@@ -312,6 +316,9 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/decisions/recovery.py` | Task-held-out recovery collection with public base feedback and frozen policies. | load_experiment, producer_messages, resized, recovery_messages, forecast_messages, evaluate, run, main |
 | verified orchestration runtime | `src/vao/decisions/recovery_import.py` | Explicitly import a stopped run into a fresh journal without repeating paid jobs. | records, job_key, continue_frozen_development, import_completed, ImportedClient |
 | verified orchestration runtime | `src/vao/decisions/recovery_policy.py` | Small frozen ridge probability baselines for selecting a recovery action. | features, fit_policy, predict |
+| verified orchestration runtime | `src/vao/decisions/transfer.py` | Prospective cross-benchmark recovery replication, with a fixed source-trained policy. | records, file_hash, reservation, source_data, choose, replay, replay_escalation, freeze |
+| verified orchestration runtime | `src/vao/decisions/transfer_continuation.py` | Explicitly authorized transport continuation: never repeat an admitted cell. | cell, remaining_jobs, import_bank, collect_unadmitted, main |
+| verified orchestration runtime | `src/vao/decisions/transfer_forecast.py` | Frozen outcome-blind semantic forecast control; separate from the primary transfer run. | messages, public_inputs, main |
 | verified orchestration runtime | `src/vao/decisions/verification.py` | Run public doctest feedback and private EvalPlus scoring in an OS sandbox. | visible_examples, sandbox_profile, SandboxVerifier |
 | verified orchestration runtime | `src/vao/decisions/verifier_worker.py` | Standalone sandbox child: public doctests or official EvalPlus base/plus checks. | public_examples_doc, ExampleChecker, LimitedOutput, probe, check, main |
 | verified orchestration runtime | `src/vao/estimators.py` | Estimator functions for branch tensors and run records. | gain, productive_mode_proxy, routing_regret, jsd, routing_mismatch_jsd, routing_mismatch_jSd, gains_by_mode, runtime_phi |

@@ -55,10 +55,23 @@ class SandboxVerifier:
         """Keep hidden tests out of the visible-feedback channel."""
         if mode not in {"visible", "heldout", "probe", "base_feedback"}:
             raise ValueError("Unknown verifier mode")
+        dataset = problem.get("dataset", "humaneval")
+        task_id = problem.get("task_id")
+        if dataset not in {"humaneval", "mbpp"}:
+            raise ValueError("Unsupported verifier dataset")
         if mode == "visible":
             problem = {"prompt": problem["prompt"], "entry_point": problem["entry_point"]}
         elif mode == "base_feedback":
             problem = {k: problem[k] for k in ("prompt", "entry_point", "canonical_solution", "base_input", "atol")}
+        if dataset == "mbpp":
+            # Use EvalPlus's official task-specific wire format (including complex
+            # values), rather than silently changing tuples/complex inputs via JSON.
+            from evalplus.data.mbpp import mbpp_serialize_inputs
+            problem = dict(problem, dataset=dataset, task_id=task_id)
+            for suite in ("base", "plus"):
+                key = suite + "_input"
+                if key in problem:
+                    problem[key] = mbpp_serialize_inputs(task_id, problem[key])
         with tempfile.TemporaryDirectory(prefix="decision-verifier-") as temp:
             work = Path(temp)
             env = {"PATH": "/usr/bin:/bin", "HOME": temp, "TMPDIR": temp,

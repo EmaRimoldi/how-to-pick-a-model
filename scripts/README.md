@@ -1,5 +1,12 @@
 # Repository Scripts
 
+`run_recovery_transfer.py` defaults to planning the prospectively frozen MBPP+
+replication. Live calls need explicit live, stdin-key and remaining-budget
+arguments; read the [protocol](../experiments/mbpp-plus/context-value-transfer/PROTOCOL.md).
+`analyze_recovery_transfer.py` audits recorded receipts, frozen source-trained
+weights and matched cells, then reproduces the specified comparisons without
+provider access or candidate execution.
+
 ## Navigation and validation
 
 - `build_repo_inventory.py`: retained-tree inventory, with logical LFS sizes.

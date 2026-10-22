@@ -38,11 +38,18 @@ task family, a stronger semantics-aware benefit predictor, realistic multi-step
 state transfer, and direct comparable recovery-router baselines. Replication of
 our present result is valuable even if that novelty claim does not materialize.
 
-The current task-versus-state predictors also add code features and verifier
+The earlier HumanEval+ task-versus-state predictors add code features and verifier
 features together. A state advantage cannot be attributed specifically to code
 information without a feedback-only prediction baseline and feature ablations.
 The frozen model/context action ablations answer a different question: which
 actions are useful once the same state probabilities have been computed.
+
+The [completed MBPP+ replication](../experiments/mbpp-plus/context-value-transfer/results/replication-20261022/README.md)
+now includes that feedback-only control, all twelve context/model contrasts,
+and a prespecified outcome-blind API forecaster. Its primary selector advantage
+is not established. Two missing solver cells leave 94/96 complete cases and
+descriptive intervals. This adds external measurement evidence rather than a
+validated new recovery-routing method.
 
 Keep benchmark/product utility and scientific novelty separate: an inexpensive,
 auditable benchmark can support a useful blog and integration work without

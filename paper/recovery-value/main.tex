@@ -1,0 +1,733 @@
+\documentclass[10pt,twocolumn]{article}
+\usepackage[letterpaper,margin=0.76in,columnsep=0.26in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,microtype,amsmath,amssymb,booktabs,graphicx}
+\usepackage{xcolor}
+\usepackage{xurl}
+\usepackage[colorlinks=true,allcolors=blue!45!black]{hyperref}
+\hypersetup{pdftitle={Measuring the Value of Failed Code in Budgeted Model Recovery},pdfsubject={Audited recovery study; incomplete descriptive MBPP+ bank}}
+\usepackage{enumitem}
+\setlist{nosep,leftmargin=*}
+\setlength{\parskip}{2pt}
+\renewcommand{\topfraction}{0.92}
+\renewcommand{\dbltopfraction}{0.92}
+\renewcommand{\textfraction}{0.06}
+\renewcommand{\floatpagefraction}{0.75}
+\renewcommand{\dblfloatpagefraction}{0.75}
+\newcommand{\Usd}{\mathrm{USD}}
+\input{generated/results-macros.tex}
+\title{Measuring the Value of Failed Code in Budgeted Model Recovery}
+\author{}
+\date{Research draft, 22 October 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+After a coding attempt fails, a downstream model can solve the task again,
+reuse the failed program, inspect public test feedback, or combine these inputs.
+The value of the program to the solver need not equal its value to a controller
+choosing the next action. We study both quantities with matched, independently
+sampled recovery requests and frozen, source-trained selectors. An initial
+HumanEval+ producer-transfer study does not establish an advantage over a strong
+development-selected static recovery rule. We therefore freeze an external
+MBPP+ replication that adds a feedback-only prediction control, direct
+model-by-context interactions, conservative billing, and an outcome-blind
+semantic forecast baseline. Among 94 complete external failure states, adding
+failed code to feedback reduces 9B success by 22.0 percentage points and 27B
+success by 3.9 points. The direct model interaction is $-18.1$ points, with a
+nominal family-adjusted 99.583\% interval $[-31.6,-5.3]$. However, the frozen
+artifact-feature selector's primary utility advantage over feedback-only is
+\$0.000111 per failure, with a descriptive 95\% interval spanning zero.
+Two permanently missing solver responses prevent the planned complete-bank
+confirmatory analysis. These results support a reproducible measurement study;
+they do not establish a new routing method or a validated agent controller.
+\end{abstract}
+
+\section{Introduction}
+
+A failed program is an ambiguous input to the next coding attempt. It can
+contain a useful interface, a nearly correct algorithm, or an attractive
+implementation of the wrong interpretation. Test feedback can clarify the
+mistake without requiring that implementation to be preserved. A controller
+that observes both inputs must consequently answer two different questions:
+which information should the next solver receive, and which information helps
+predict that choice?
+
+These questions matter when choosing whether to pay for another attempt.
+Code reuse adds input tokens and can constrain the next response. A forecaster
+adds a separate inference charge. A controller therefore needs to improve the
+verified outcome enough to offset both the chosen action's cost and its own
+overhead. Better average probability calibration does not by itself establish
+better decisions: action selection depends on differences between probabilities
+and costs.
+
+Recovery routing is already studied by CodeRescue~\cite{coderescue}, and
+packet decomposition with placebo controls is central to Falsification, Not
+Exposure~\cite{falsification}. Our aim is narrower than proposing another
+reflect/replan/escalate interface. We measure the added value of artifact
+information relative to verifier feedback, distinguish context selection from
+model selection, and ask whether frozen predictors transfer to a different
+benchmark. We publish all matched observations, forecasts, billing reservations
+and the replay needed to inspect those claims.
+
+Our initial HumanEval+ evaluation exposes a baseline-selection issue. A state
+selector improves utility against a static action selected using single-draw
+priors, but its advantage over a static action selected using the actual
+two-draw replay objective is uncertain. This motivates a stricter external
+test with a feedback-only predictor and a static comparator chosen for the
+same finite decision horizon. The earlier held-out failures become explicit
+training data for that test; they are not counted again as fresh evaluation.
+
+\section{Related work}
+
+CodeRescue trains a post-failure recovery router and calibrates its budget
+penalty~\cite{coderescue}. Its disclosed routing idea remains prior art despite
+the preprint's administrative withdrawal; our experiments do not reproduce its
+trained system. Falsification, Not Exposure decomposes repair inputs and
+compares them with resampling and shape-matched placebos~\cite{falsification}.
+Our code/feedback factorial and irrelevant-context control are therefore not
+novel contributions. DARC freezes diagnosis-guided admissible recovery
+interventions from development failures~\cite{darc}. DDBench compares bounded
+debugging context with symptom-only requests in distributed-system
+repair~\cite{ddbench}. These settings differ from our short-function
+checkpoint bank, but already show why generic context expansion is not a new
+research premise.
+
+Self-repair and self-debugging already examine the use of failed code and
+execution feedback~\cite{selfrepair,selfdebug}. Re-FORC predicts future reasoning
+reward and cost for decisions that include stopping and model
+selection~\cite{reforc}; AI Functions documents economic routing and forecasting
+interfaces~\cite{aifunctions}. We compare limited local and API forecasting
+baselines rather than claiming these general decision ideas as new.
+HumanEval+ and MBPP+ provide the executable checks in our
+study~\cite{evalplus,mbpp}. They are small-program benchmarks, not substitutes
+for repository-level agent evaluation.
+
+\section{Problem and estimands}
+
+Let a visible failure state be $s=(x,a,f)$: task text $x$, failed artifact $a$,
+and public verifier feedback $f$. A next-solver action is a model $m$ and context
+condition $c$. The selectable conditions are fresh task text, artifact only,
+feedback only, and both. An irrelevant artifact-plus-feedback package is a
+diagnostic control.
+
+For a fixed state, let $p_{m,c}(s)$ be the probability that a requested action
+returns a complete solution passing both the public and evaluation-only test suites. One relevant
+quantity is the incremental artifact effect given feedback,
+\[
+  \delta_{a\mid f,m}(s)
+    =p_{m,\mathrm{both}}(s)-p_{m,\mathrm{feedback}}(s).
+\]
+The comparison with fresh generation answers a different operational question:
+it includes the value of public feedback as well as that of the artifact.
+Neither comparison identifies a cognitive mechanism such as anchoring.
+
+The selector observes a specified view of $s$ and estimates success for each
+action. With declared solution value $v$, it chooses an admissible action to
+maximize $v\widehat p_{m,c}(s)-\widehat k_{m,c}$. Costs used for this choice come
+from source training observations. Actual evaluation receipts determine the
+reported cost, while worst-case token reservations determine advance admission.
+The policy abstains when no admissible action has positive predicted net value.
+
+Our primary contrast asks whether adding artifact features to an otherwise
+identical feedback view improves the utility of the resulting frozen selector.
+This differs from asking whether supplying the artifact to the \emph{solver}
+improves generation. A controller may profit from inspecting an artifact and
+then discard it, or reuse an artifact without deriving any benefit from artifact
+features in its own decision model.
+
+\section{Experimental design}
+
+\subsection{Benchmarks and visible information}
+
+We pin EvalPlus 0.3.1, HumanEval+ v0.1.10 and MBPP+ v0.2.0 by dataset checksums.
+The public channel explicitly exposes the official base test inputs and
+acceptable reference outputs, at most three failing examples, the failed
+fraction and verdict. Plus tests remain evaluation-only and are absent from the
+public-verifier subprocess payload and all model requests. Full success requires
+base and Plus success. A replay stops on a public pass, including a public false
+positive later rejected by Plus.
+
+Canonical references undergo the same public and full-suite verification before
+model collection. HumanEval/47 has a contradictory public example and
+HumanEval/32 is incompatible with the pinned checker's special success path;
+both are excluded from the source study. For MBPP+, all 378 base reference
+checks pass and 377 full-suite checks pass. Mbpp/599's official sum-of-range
+implementation exceeds the isolated full-suite verifier limit, so it is excluded
+before model responses. A separate public-prompt assertion audit finds all
+378 examples compatible with their references when the test harness supplies
+\texttt{math}. That check does not prove every English specification correct.
+
+Generated code runs in macOS OS sandboxes without network, credentials,
+private user files or access to the evidence bank. Public and full-suite payloads
+remain separate. MBPP input transport uses EvalPlus's task-specific serializers,
+including complex values, and its official special-oracle rules.
+
+\subsection{Source study and transfer cohort}
+
+The earlier source study generated 83 development prefixes with Gemma 3 4B IT
+and 60 evaluation prefixes with Ministral 3B 2512, after a disclosed producer
+availability amendment. It observed 26 development and 25 evaluation failures.
+The evaluation was consequently a Gemma-to-Ministral producer-transfer test,
+not a completed same-producer validation. These 51 failed states are now all
+source training data for the new MBPP+ experiment.
+
+For MBPP+, we numerically sort the 377 eligible task IDs, shuffle them once with
+seed 20261025 and generate one Ministral prefix per task. Prefix parameters are
+temperature 0.6 and a 1536-token output ceiling, with a user-only JSON solve
+instruction. The producer is pinned to Mistral's endpoint, whose precision is
+reported as unknown. Only a public failure triggers recovery; format, provider,
+syntax and ordinary wrong-answer failures are retained.
+
+The first at most 96 failures in the frozen shuffled order form the recovery
+cohort. We do not select by Plus scores, replace unhelpful artifacts or collect
+until a significance threshold is crossed. One late prefix transport failure
+after 347 observed prefixes has no preserved response identity. All 96 selected
+failures precede it, so its unobserved outcome cannot change the cohort.
+The continuation keeps its full reservation, does not reissue that task or any
+observed request, and completes only unadmitted prefixes. It yields 376 observed
+prefixes and one censored prefix among 377 eligible tasks.
+
+\subsection{Matched recovery requests}
+
+Each selected failure receives three independent draws in five context
+conditions for Qwen3.5 9B and 27B. Both consumers are pinned to
+\texttt{siliconflow/fp8}, with reasoning and fallbacks disabled and no provider
+sampler seed. They use the same solve instruction, temperature 0.6 and 1536-token
+output ceiling. This is a practical comparison of two nominal model capacities,
+not an identified causal effect of parameter count or intelligence.
+
+The five conditions are fresh, code, feedback, both, and distractor. The
+distractor is a different HumanEval+ training failure, chosen deterministically.
+Its code and feedback fields are independently truncated or padded to the
+relevant fields' character lengths. This is \emph{not token matching}; we report
+input-token receipts and retain that limitation when interpreting relevance.
+Distractors are never selectable actions.
+
+Submission order is randomized within each checkpoint. Four bounded network
+workers collect responses; two isolated verifier workers score recovery
+candidates. Prefixes and canonical reference audits are serial. We admit a
+complete 30-request checkpoint block only if its sum of worst-case reservations
+fits the uncommitted collection budget. No automatic inference retry or provider
+substitution is allowed after uncertain transport.
+
+Two subsequent recovery requests have no preserved response identity: a 27B
+code-only third draw on Mbpp/426 and a 9B fresh first draw on Mbpp/84. Neither
+request is repeated and both full reservations remain held. After the first
+recovery stop and a disclosed descriptive audit of 47 complete states, the user
+explicitly authorizes only the 1,466 planned requests never admitted before that
+stop. A later 433-request segment is a strict subset of this same allowlist,
+with source hashes, earlier lineages and journal prefixes preserved. Models,
+prompts, weights, verifier and estimands do not change. This exception does not
+restore the original complete-bank design: at most 94/96 selected states can
+have all 30 draws. All complete-case intervals are consequently descriptive.
+We also retain all 96 selected states in worst-case missing-state utility bounds;
+these bounds are not confidence intervals and do not impute missing responses.
+
+\subsection{Frozen local predictors and policies}
+
+Source fitting uses Beta(1,1) action priors, ridge penalty 10, source-only feature
+normalization and clipping to $[0.01,0.99]$, without target fitting or a feature
+search. The task view contains log prompt length and line count. The feedback
+view adds the public failure fraction and NameError, SyntaxError, TypeError,
+timeout and format indicators. The state view adds exactly three artifact
+features: log code length, log AST size and syntax validity. A global prior is an
+additional control. These structural features do not exhaust semantic artifact
+information.
+
+Weights and training-source hashes are committed before any MBPP response.
+All selected-state predictions are saved before the first target recovery
+request. The verified-solution value is fixed at \$0.01 and task ceilings are
+\$0.003, \$0.01 and \$0.02. A policy uses at most two independent draws of its
+chosen fixed action from the original checkpoint; it does not update from the
+first child's code or feedback.
+
+The strong static comparator is selected by complete two-draw replay on the
+51 source failures separately for each budget. Its choices are small-fresh at
+\$0.003 and large-fresh at \$0.01 and \$0.02. A model-only ablation selects the
+consumer while always supplying both code and feedback. All eight fixed actions
+are reported. Conditional fresh-model controls without a producer charge are
+diagnostics for this failed-prefix cohort, not whole-benchmark deployment
+strategies; passing-prefix direct controls are not collected in the replica.
+
+An additional constant escalation diagnostic, added after recovery collection
+began and before treatment statistics were computed, tries 9B fresh and then
+27B fresh after public failure. Both calls start from the original task, without
+a new child artifact handoff. It consumes recorded draws, not additional model
+calls, and does not replace the primary or its frozen comparisons.
+
+\subsection{Semantic forecast control}
+
+Before any recovery response, we additionally fix a Qwen 9B forecaster with
+task-only, feedback-only and full-state views. All views receive identical
+source action priors, source mean costs, model identities and forecast
+instructions. Only the full-state view receives the failed program. No Plus
+datum or recovery outcome enters its request.
+
+To avoid overlapping budget allowances, these API forecasts are collected only
+after the primary bank is finished, with their prompt and code already fixed.
+They are a prespecified outcome-blind control, \emph{not physically prospective
+forecast responses}. Invalid outputs retain their fee and use the declared
+0.5 probability fallback. In replay the forecast must first be admitted under
+its worst-case reservation and its measured fee is charged before solver
+selection.
+
+\subsection{Statistics and accounting}
+
+The primary statistic is state-minus-feedback policy mean net utility at the
+\$0.01 task ceiling, using draws 0 and 1. We bootstrap independent task clusters
+10,000 times, seed 20261025, and report a two-sided 95\% percentile interval.
+Success and cost differences accompany utility. An interval spanning zero is not
+evidence of equivalence. Resampling is over target tasks only, conditional on
+the saved source-trained weights; it does not propagate source-training
+uncertainty or refit a predictor on target outcomes.
+
+Prespecified secondary context contrasts are code-fresh, both-fresh,
+both-feedback and both-distractor for each model, plus the four corresponding
+small-minus-large interactions. All twelve use Bonferroni-adjusted nominal
+99.583\% intervals as well as ordinary 95\% intervals. The interaction family was
+fixed before any target response; separate significance results for two models
+would not themselves establish an interaction.
+
+We also report Brier scores, squared errors for predicted both-feedback and
+both-fresh differences, and replay sensitivity to draw orders (1,2) and (2,0).
+Observed three-draw effects remain noisy. An exploratory cross-draw-product
+variance diagnostic estimates between-task benefit variation without treating
+all sampling noise as signal; negative finite-sample estimates remain
+unclipped. It assumes conditionally independent provider draws and is not a new
+estimator or proof of predictability.
+
+Every inference admission reserves the conservative input/output token ceiling
+before network activity. Known charges use provider receipts. Unknown billing
+retains the full reservation. Explicit, identified empty provider errors use a
+disclosed policy-backed zero only when covered by OpenRouter's published
+insurance~\cite{openrouter}; that is not a token receipt. Training-data collection,
+evaluation collection and forecaster fees are disclosed separately. Local
+verifier elapsed time is not converted into a fabricated dollar charge.
+The approved additional campaign ceiling is \$2. Prior charges and reservations
+contribute \$0.5149634; the separate primary replication cap is \$1.48, giving a
+combined upper allowance of \$1.9949634 before optional semantic calls. The latter
+may use at most \$0.08 and must additionally fit the remaining campaign balance
+after all known charges and outstanding reservations. No continuation receives
+a fresh allowance.
+
+\section{Results}
+
+\subsection{Earlier HumanEval+ transfer result}
+
+\begin{table}[t]
+\centering
+\caption{Single-draw full-suite success on 25 previously held-out HumanEval+
+failures. Two draws per cell; all 51 source failures subsequently become training
+data for MBPP+.}
+\label{tab:source}
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+Model & Fresh & Code & Feedback & Both & Irrel.\\
+\midrule
+9B & 66\% & 50\% & 64\% & 62\% & 64\%\\
+27B & 84\% & 86\% & 80\% & 86\% & 86\%\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+On the earlier 25 failed evaluation tasks, code-only recovery changes 9B success
+by $-16$ percentage points relative to fresh generation, with an exploratory,
+unadjusted 95\% interval $[-30,-4]$. The corresponding 27B point difference is
+$+2$ points. These separate intervals do not establish a cross-model interaction,
+nor do they justify a universal rule to discard failed code.
+
+Across all 60 original evaluation tasks, the state selector and strong
+source-selected static rule each solve 55/60 tasks at the \$0.01 ceiling.
+Mean API costs are \$0.00037164 and \$0.00040016, respectively. Their utility
+difference is \$0.00002851 per task, with 95\% interval
+$[-\$0.00046099,+\$0.00054027]$. Against the original static action chosen using
+single-draw priors, the utility difference is positive
+(\$0.00040765, interval $[\$0.00003482,\$0.00095225]$).
+Both comparisons are retained: the apparent improvement depends materially on
+matching the static comparator to the decision horizon.
+
+Benefit prediction is not established in that study. State-minus-task Brier
+and observed-benefit-MSE differences both have intervals spanning zero. A
+model-only ablation solves 56/60 tasks, so the joint selector does not establish
+added value from context choice over model routing. These findings motivate the
+new feedback-only control and external evaluation; they are not refit into a
+positive source evaluation claim.
+
+\subsection{Frozen MBPP+ replication}
+\input{generated/bank-status.tex}
+
+\begin{table}[t]
+\centering\small
+\caption{Conditional single-draw full-suite success on MBPP+ failed tasks.
+Three independent draws per model/context cell. Rates use the same complete
+cases across all ten cells; missing observations are retained in the archive.}
+\label{tab:mbpp-context}
+\input{generated/context-rates.tex}
+\end{table}
+
+\begin{table}[t]
+\centering\small
+\caption{Two-draw MBPP+ replay at the \$0.01 task ceiling. Cost and utility are
+USD $\times1{,}000$ per failed task, including the producer. Escalation* is the
+additional diagnostic added during collection.}
+\label{tab:mbpp-policy}
+\input{generated/policy-results.tex}
+\end{table}
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\textwidth]{evidence-audit/replication.pdf}
+\caption{Descriptive MBPP+ complete-case comparisons. Top: context effects with
+nominal 99.583\% task-bootstrap intervals for the twelve-comparison family;
+the four direct model interactions are in Table~\ref{tab:all-context-effects}.
+Bottom: two-draw recovery success and mean API cost on the same failed tasks,
+with producer cost charged. The scatter does not replace a paired utility
+comparison. Both panels exclude the same incomplete states; all-selected-state
+bounds remain explicit in the text.}
+\label{fig:mbpp}
+\end{figure*}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{evidence-audit/policy-utility.pdf}
+\caption{Paired state-minus-control mean utility on MBPP+ at the \$0.01
+ceiling. The feedback comparison is primary; others are secondary. Intervals
+are descriptive 95\% task-bootstrap intervals. Escalation* was added during
+collection and starts both models from the original task.}
+\label{fig:paired-utility}
+\end{figure}
+
+\begin{table}[t]
+\centering\small
+\caption{Frozen local predictor scores on MBPP+ complete cases.
+Benefit MSE averages both-minus-feedback and both-minus-fresh losses for
+each model and includes three-draw outcome noise.}
+\label{tab:mbpp-prediction}
+\input{generated/prediction-results.tex}
+\end{table}
+
+All authorized primary requests are accounted for: 2,878 observed recovery
+responses and two censored cells among the 2,880 planned requests. Complete-case
+comparisons use 94 states, three draws per model/context cell, and therefore
+282 observations per reported success rate (Table~\ref{tab:mbpp-context}). The
+40 public false positives among initial responses and 360 among recovery
+responses remain failures under the full-suite criterion. Three identified
+empty provider errors are retained rather than dropped as missing generations.
+
+For 9B, code alone reduces success from 48.6\% fresh to 26.6\%; both code and
+feedback reach 30.9\% versus 52.8\% with feedback alone. For 27B, the analogous
+rates are 61.3\%, 50.4\%, 58.5\% and 62.4\%. The both-minus-feedback effect is
+$-22.0$ points for 9B (nominal adjusted interval $[-33.7,-11.0]$) and $-3.9$
+points for 27B ($[-14.2,+5.3]$). Their direct difference is $-18.1$ points
+($[-31.6,-5.3]$); this interaction, rather than separate significance labels,
+supports different context effects in this particular comparison.
+Code-only versus fresh is negative for both models, including the larger one.
+The results consequently do not imply that larger models always benefit from
+failed code. Both-versus-irrelevant is also negative for 9B, but the
+character-matched control cannot isolate a cognitive anchoring mechanism.
+
+The primary state-minus-feedback utility difference is
+\$\PrimaryEstimate{} per failed task, with descriptive 95\% interval
+[\$\PrimaryLow, \$\PrimaryHigh]. State and feedback selectors solve 50/94 and
+49/94 tasks at mean API costs \$0.00011585 and \$0.00012066. The source-selected
+static rule solves 60/94 for \$0.00055505. Its state-minus-static utility
+difference is $-\$0.00062463$, with interval
+$[-\$0.00142948,+\$0.00010830]$. Lower state-policy cost therefore does not
+establish equal reliability or a utility improvement. The added escalation
+diagnostic solves 58/94 for \$0.00026911, but is not substituted for the primary.
+
+Local prediction adds no established artifact-feature benefit. State-minus-
+feedback Brier difference is $-0.000358$, interval $[-0.007756,+0.006195]$;
+the benefit-MSE difference is $+0.001937$, interval $[-0.002906,+0.007326]$.
+All views' absolute losses are in Table~\ref{tab:mbpp-prediction}. The state
+view's Brier score (0.471100) is much worse than the global prior's (0.279996).
+The prespecified shift diagnostic finds 60/94 target prompts outside the source
+character-length range and all 94 outside its line-count range. This diagnoses
+a transfer limitation of these fitted structural baselines, without proving
+that semantic artifact value is intrinsically unpredictable.
+
+The two alternate draw rotations also leave the primary utility interval
+spanning zero: estimates are \$0.00021320 for draws (1,2) and \$0.00011231 for
+(2,0), compared with \$0.00011119 for (0,1). An exploratory noise-adjusted
+heterogeneity diagnostic is positive for all four model/benefit combinations.
+Both-minus-feedback latent-variance estimates are 0.1057 for 9B and 0.0777 for
+27B, with descriptive intervals [0.0619,0.1474] and [0.0330,0.1279]. Under
+conditionally independent draws, this suggests state variation beyond simple
+three-draw noise; it does not show that the available predictors capture it.
+
+\subsection{Semantic forecast control}
+\begin{table*}[t]
+\centering\small
+\caption{Prespecified API forecast control, restricted to tasks with all
+three forecast views and all thirty recovery observations. Success and cost
+use two-draw replay at \$0.01, including the producer and forecaster fees.
+Cost is USD $\times1{,}000$ per failed task.}
+\label{tab:semantic}
+\input{generated/semantic-results.tex}
+\end{table*}
+All 288 forecasts parse correctly and incur \$0.0285302, without additional
+uncertain admissions. Prediction and policy comparisons use the same 94 complete
+recovery states (Table~\ref{tab:semantic}); the two incomplete solver states
+remain excluded even though all their forecasts exist.
+
+The full-state API view has a worse Brier score than feedback-only:
+0.329437 versus 0.291994, difference $+0.037443$ with descriptive 95\% interval
+$[+0.013180,+0.062739]$. Its benefit-MSE difference is $+0.008188$, interval
+$[-0.011756,+0.027600]$. At the \$0.01 ceiling, full-state replay solves 49/94
+tasks versus feedback-only's 46/94, at mean costs \$0.00047711 and
+\$0.00050439. Their utility difference is \$0.00034643, interval
+$[-\$0.00030522,+\$0.00102463]$; this does not establish an artifact-information
+gain. Against the source-selected static rule on those same tasks, API state
+utility is lower by \$0.00109227, interval
+$[-\$0.00209206,-\$0.00012983]$. These secondary, complete-case comparisons are
+descriptive and unadjusted, not a replacement primary or a result about every
+possible semantic predictor.
+
+The mean full-state forecast fee is \$0.00011077, about 2.05 times the mean
+single fresh 9B solver draw (\$0.00005403) in this bank. Its full fee is paid
+before choosing a solver, even when the resulting forecast is unhelpful.
+
+Primary collection costs \$0.83799455 in known charges and retains
+\$0.0145152 in reservations. Including the \$0.5149634 prior campaign upper
+amount and the semantic control, cumulative charges plus all reservations are
+\$1.39600335, below the unchanged \$2 ceiling. The cost of collecting this bank
+is separate from the per-task replay bills and does not claim deployment
+outage costs are identified.
+
+\section{Interpretation and scope}
+
+Artifact reuse and artifact-aware selection are separate interventions.
+A positive both-versus-fresh difference can arise from feedback without any
+benefit from retaining code. A selector's advantage over an unconditional prior
+can arise from model choice without demonstrating that it knows which work to
+preserve. We therefore require the feedback-only and model-only comparisons
+before attributing a result to the failed artifact.
+
+A forecasting system must also pay for its decision. In the source study,
+the mean state-forecast fee is about 1.7 times the price of a fresh 9B recovery
+draw. Better success estimates would therefore need a decision benefit large
+enough to cover that overhead. Conversely, a static rule selected for the actual
+two-draw objective can match a learned selector even when a weaker static
+baseline makes the latter look beneficial.
+
+The complete-case context interaction and the uncertain primary decision gain
+answer different questions. This particular 9B solver suffers more from adding
+failed code than the 27B solver, while a frozen selector with cheap artifact
+features does not demonstrate that it can identify the right action per task.
+The source-trained global and static controls remain essential: the richer
+feature models transfer poorly, and a lower monetary cost alone does not imply
+an improved reliability--cost tradeoff.
+
+The positive exploratory heterogeneity diagnostic leaves open a useful research
+question, rather than closing it with a universal fresh-generation rule.
+Context has different observed value across states, but learning that value
+economically requires another task-disjoint test. Every MBPP+ result in this
+report is now observed; using these tasks to design a new predictor would make
+them development data. A later study should compare stronger semantic and
+recovery-routing systems on a fresh task family, retain feedback-only and
+strong static controls, and measure genuine multi-step child-artifact handoff.
+
+\section{Limitations}
+
+This study evaluates one visible checkpoint on small Python functions.
+Two attempts reuse the original parent context; they do not implement or
+validate a general multi-step agent controller. A different model from the
+producer performs recovery, so this is not a controlled same-model self-repair
+study. Provider versions and quantization may affect behavior, and model sizes
+are not randomized interventions.
+
+The public feedback is a particular regime of base inputs and acceptable outputs,
+not complete execution traces, all actual wrong outputs, or a repository's test
+suite. Public passes can be false positives, and full-suite success remains
+oracle-relative. Reference compatibility and public-example audits do not
+establish semantic correctness for every specification. Pretraining overlap or
+semantic similarity between these public benchmarks cannot be ruled out.
+
+Three draws per condition do not reveal a state's true individual context effect.
+One failed artifact per task does not isolate within-task variation across
+different failed programs. Structural ridge baselines and one zero-shot 9B
+forecaster do not exhaust learnable semantic predictors. Failure to improve with
+these baselines would not prove artifact value intrinsically unpredictable.
+Task-level intervals rely on the declared sampling and dependence assumptions,
+and small effects may remain unresolved. The two permanently missing recovery
+cells prevent the frozen full-bank confirmatory analysis. Complete-case results
+may be sensitive to censoring and to the disclosed continuation after a partial
+audit; all-selected-state bounds preserve this uncertainty without asserting
+missing at random.
+
+The distractor is character-matched rather than token-matched. Its effect can
+therefore combine content relevance, tokenization and packaging. Hard admission
+uses deliberately conservative token ceilings; the resulting budget frontier
+is not an optimal tokenizer-aware deployment frontier. API charges exclude
+local compute and hardware opportunity cost. Unknown service admissions remain
+reserved collection overhead, so complete deployment outage/retry cost is not
+identified. Semantic forecast responses are collected after outcomes despite
+their earlier-frozen, outcome-blind requests.
+
+\section{Reproducibility}
+
+The repository releases task/split hashes, frozen weights, public checkpoints,
+matched requests and responses, predictions, reservation and settlement journals,
+transport censoring, finite replay and plotting code. Offline reproduction
+requires neither credentials, model calls, candidate execution nor GPUs.
+Numerical refits tolerate floating-point platform roundoff; policy replay uses
+the saved predictions. Transport continuation imports known observations once
+and preserves every unknown admission rather than silently rerunning it.
+
+The canonical bundle is
+\path{experiments/mbpp-plus/context-value-transfer/results/replication-20261022}
+in \url{https://github.com/EmaRimoldi/how-to-pick-a-model}. Its checksums cover
+the raw journal, archived segment history, provenance, and saved analysis.
+Source snapshots preserve the original freeze, the actual prefix collector,
+both actual recovery collectors, the semantic collector and their shared
+helpers. Each snapshot records whether its anchor is a directly recorded
+runtime hash or a frozen Git commit; inert \texttt{.py.txt} copies are evidence,
+not extra runnable entry points.
+
+The separate paper builder, \path{paper/recovery-value/build.py}, audits the
+primary and semantic journals, requires the recomputed report to match the saved
+analysis up to floating-point roundoff, regenerates tables and figures, and
+compiles this manuscript in a fresh output directory. Its table generator
+requires an explicit descriptive mode for incomplete banks and prints selected
+coverage. The existing \texttt{main.tex}, \texttt{arxiv.tex} and theory anchor
+remain separate research artifacts.
+
+\newpage
+\begin{thebibliography}{11}
+\bibitem{coderescue} Q. He et al. \emph{CodeRescue: Budget-Calibrated Recovery
+Routing for Coding Agents}. arXiv:2607.19338v1, 2026.
+\url{https://arxiv.org/html/2607.19338v1}. The later withdrawal is administrative.
+\bibitem{falsification} M. Iscan. \emph{Falsification, Not Exposure}.
+arXiv:2606.31511, 2026. \url{https://arxiv.org/abs/2606.31511}.
+\bibitem{darc} P. Wang et al. \emph{Diagnosis Before Recovery: Turning Agent
+Failures into Selective Self-Correction}. 2026.
+\url{https://arxiv.org/abs/2608.11772}.
+\bibitem{ddbench} Y. Yan et al. \emph{Evaluating Agentic Code Repair
+Capabilities in Distributed Systems}. 2026.
+\url{https://arxiv.org/abs/2608.14863}.
+\bibitem{selfrepair} T. X. Olausson et al. \emph{Is Self-Repair a Silver Bullet
+for Code Generation?} ICLR, 2024. \url{https://arxiv.org/abs/2306.09896}.
+\bibitem{selfdebug} X. Chen et al. \emph{Teaching Large Language Models to
+Self-Debug}. \url{https://arxiv.org/abs/2304.05128}.
+\bibitem{reforc} \emph{Re-FORC: Adaptive Reward Prediction for Efficient
+Chain-of-Thought Reasoning}. \url{https://arxiv.org/html/2511.02130v2}.
+\bibitem{aifunctions} Strands Labs. \emph{AI Functions economics}.
+\url{https://github.com/strands-labs/ai-functions/blob/8f1485c2b685c83560bd91a0569cdf3af3176e75/docs/economics.md}.
+\bibitem{evalplus} J. Liu, C. S. Xia, Y. Wang and L. Zhang.
+\emph{Is Your Code Generated by ChatGPT Really Correct?}
+NeurIPS, 2023. \url{https://arxiv.org/abs/2305.01210}.
+\bibitem{mbpp} J. Austin et al. \emph{Program Synthesis with Large Language
+Models}. 2021. \url{https://arxiv.org/abs/2108.07732}.
+\bibitem{openrouter} OpenRouter. \emph{Zero-completion insurance and pricing}.
+\url{https://openrouter.ai/blog/announcements/never-pay-for-empty-ai-responses-again/};
+\url{https://openrouter.ai/pricing}.
+\end{thebibliography}
+
+\clearpage
+\onecolumn
+\appendix
+\section{Full descriptive comparison tables}
+
+\begin{table}[!ht]
+\centering\small
+\caption{All twelve MBPP+ context comparisons in percentage points.
+The ordinary 95\% and nominal Bonferroni-adjusted 99.583\% intervals share
+the same task clusters. The latter correct the declared family, while all
+complete-case intervals remain descriptive under censored collection.}
+\label{tab:all-context-effects}
+\input{generated/context-effects.tex}
+\end{table}
+
+\begin{table}[!ht]
+\centering\small
+\caption{Paired state-minus-control utility on MBPP+ at the \$0.01 ceiling,
+original draws 0 and 1. Units are USD $\times1{,}000$ per failed task.
+Only the feedback comparison is primary; escalation is an added diagnostic.}
+\label{tab:all-policy-comparisons}
+\input{generated/policy-comparisons.tex}
+\end{table}
+
+\begin{table}[!ht]
+\centering\small
+\caption{All eight fixed actions on MBPP+ at the \$0.01 ceiling. Cost and
+utility are USD $\times1{,}000$ per failed task, including producer cost.
+These target outcomes do not select the source-frozen static baseline.}
+\label{tab:all-fixed}
+\input{generated/all-fixed-policies.tex}
+\end{table}
+
+\clearpage
+\twocolumn
+\section{Noisy benefits and finite decision horizons}
+
+\subsection{Paired benefit prediction losses}
+
+Let $D$ be an unbiased noisy estimate of a fixed state's true context benefit
+$\delta$, and let $h_1,h_0$ be predictions fixed independently of the branch
+outcomes conditional on that state. A standard squared-error identity gives
+\begin{align*}
+ &\mathbb E[(h_1-D)^2-(h_0-D)^2\mid s]\\
+ &\qquad=(h_1-\delta)^2-(h_0-\delta)^2.
+\end{align*}
+The common sampling-noise contribution cancels in the paired loss difference.
+This explains why we report paired prediction-risk differences while refusing
+to treat a three-draw observed effect as a state's ground truth. It does not
+remove sampling uncertainty, establish generalization beyond the task
+population, or make absolute observed-benefit MSE a noise-free quantity.
+
+For the exploratory heterogeneity diagnostic, write $D_{ir}$ for draw $r$'s
+both-minus-feedback (or both-minus-fresh) difference in state $i$, with $R=3$.
+Under conditional independence of repeated draws and independence of states,
+the cross-product estimator
+\begin{align*}
+\widehat V={}&\frac1n\sum_i\frac{\sum_{r\ne t}D_{ir}D_{it}}{R(R-1)}\\
+ &-\frac{\sum_{i\ne j}\overline D_i\overline D_j}{n(n-1)}
+\end{align*}
+targets between-state variance of the latent benefit. A finite-sample estimate
+can be negative; we retain that value and its bootstrap interval. This is a
+diagnostic application of cross-products, not a new estimator or evidence that
+the remaining heterogeneity is predictable from the available features.
+
+\subsection{Why a one-draw static rule can be weak at two draws}
+
+Consider an illustrative fixed action with full-suite pass probability $p$,
+public false-positive probability $q$, and public failure probability
+$r=1-p-q$. Suppose two independent calls from the same original checkpoint are
+always admissible, have mean cost $c$, and execution stops on a public pass.
+Then
+\[
+ P(\text{full success by two draws})=p(1+r),
+\]
+and expected inference cost is $c(1+r)$. For solution value $v$ and common
+prefix cost $k_0$, expected net utility is
+\[
+ (vp-c)(1+r)-k_0.
+\]
+Ranking actions by the one-draw score $vp-c$ need not rank them by this two-draw
+objective: public false positives and the chance of admitting a second attempt
+matter. Real hard-budget admission and variable costs add further constraints;
+we therefore use recorded source replay rather than this simplifying formula
+to select the static comparator. The calculation supplies no optimality
+guarantee for the learned greedy selector or a multi-step agent.
+
+\subsection{A limited decision-risk bound}
+
+For a binary context choice with known incremental cost $\Delta k$, let
+$g=v\delta-\Delta k$ and $\widehat g=v\widehat\delta-\Delta k$.
+The oracle chooses the added context exactly when $g>0$, and a predictor chooses
+it when $\widehat g>0$. Pointwise decision regret satisfies
+\[
+ |g|\,\mathbf1\{\mathbf1[g>0]\ne\mathbf1[\widehat g>0]\}
+ \le v|\delta-\widehat\delta|.
+\]
+On a wrong-sign choice, the estimation error must span zero and hence exceed
+$|g|$; on a correct choice regret is zero. Cauchy--Schwarz then gives the
+illustrative bound $\mathbb E[\mathrm{regret}]\le
+v\sqrt{\mathbb E[(\delta-\widehat\delta)^2]}$.
+Cost-estimation error contributes its own term when costs are unknown. This
+binary, known-cost statement does not imply a measured gain for our eight-action,
+budget-constrained policies, whose costs and stopping behavior are empirical.
+
+
+\end{document}

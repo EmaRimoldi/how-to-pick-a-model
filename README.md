@@ -10,22 +10,25 @@ This repository retains the AutoResearch/CIFAR-10 and HumanEval+ evidence needed
 to study that question: verified trajectories, retry-allocation baselines,
 context/routing experiments, cost accounting, and reproducible figures.
 
-**Latest result:** an [audited producer-transfer experiment](experiments/humaneval-plus/context-value/results/validation-20261022/report.md)
-contains **1,353 model responses, 83 development tasks and 60 evaluation tasks**.
-On 25 evaluation failures, 9B fresh recovery succeeds 66% of the time versus 50%
-with failed code alone. In budgeted replay, the state selector solves 55/60 whole tasks, matching the
-stronger development-selected static rule; its utility advantage over that rule
-has an interval spanning zero. Reliable prediction of context benefit remains
-unproven. Read the [blog draft](docs/blog/when-to-keep-failed-code.md) for results,
-costs, controls and the closest prior work.
+**Latest result:** the [external MBPP+ replication](experiments/mbpp-plus/context-value-transfer/results/replication-20261022/README.md)
+contains **2,878 recovery responses and 288 API forecasts**. On its 94 complete
+failed tasks, 9B recovery succeeds 52.8% with feedback alone versus 30.9% when
+failed code is added; the 27B rates are 62.4% and 58.5%. Two solver responses
+remain censored: complete-case comparisons are descriptive, with all 96 selected
+failures retained in missing-state bounds. The primary selector advantage over
+feedback-only remains unproven. Read the [report](experiments/mbpp-plus/context-value-transfer/results/replication-20261022/report.md),
+[paper draft](paper/recovery-value/README.md), or [blog](docs/blog/when-to-keep-failed-code.md).
 
-The policy was trained on Gemma failures and evaluated on Ministral failures
+The [earlier HumanEval+ study](experiments/humaneval-plus/context-value/results/validation-20261022/report.md)
+trained on Gemma failures and evaluated on Ministral failures
 after Gemma's upstream pool became unavailable. This is a declared transfer test;
 the original same-producer validation is not complete. Simple one-checkpoint
 selectors and replay are implemented. A general multi-step controller remains
-future work. Historical traces cannot score an unobserved handoff.
+future work. All 51 observed HumanEval+ failures are training data for MBPP+;
+they are not counted again as a fresh holdout. Historical traces cannot score
+an unobserved handoff.
 
-![Recovery outcomes, policy costs and prediction errors on the frozen task holdout](experiments/humaneval-plus/context-value/results/validation-20261022/validation.png)
+![Descriptive MBPP+ context effects and cost/success replay on 94 of 96 selected failures](experiments/mbpp-plus/context-value-transfer/results/replication-20261022/replication.png)
 
 Start with the [decision protocol](docs/decision-protocol.md), the
 [experiment index](experiments/README.md), and the
@@ -37,10 +40,12 @@ Start with the [decision protocol](docs/decision-protocol.md), the
   shared-memory ablation, and three-worker routing/first-hit accounting.
 - **HumanEval+:** model-size frontier, retry allocation, strategy routing,
   and held-out router-context search.
+- **MBPP+:** frozen cross-benchmark recovery evaluation with feedback-only,
+  artifact-aware, static and API forecasting controls.
 - **Runtime:** existing edit/verify execution, session handling, snapshots,
   token/cost records, and the historical `agent-workflow` baseline CLI.
-- **Manuscripts:** the two existing paper sources and consolidated theory,
-  with only their referenced figures vendored under `paper/`.
+- **Manuscripts:** the two existing sources, consolidated theory, and a separate
+  empirical recovery draft built from the audited data.
 
 ## Quick start
 
@@ -49,17 +54,21 @@ calls, candidate execution or GPUs:
 
 ```bash
 uv sync --dev --frozen
-uv run python scripts/analyze_recovery_validation.py \
-  --input experiments/humaneval-plus/context-value/results/validation-20261022 \
-  --output runs/recovery-reanalysis
+uv run python scripts/analyze_recovery_transfer.py \
+  --input experiments/mbpp-plus/context-value-transfer/results/replication-20261022 \
+  --forecasts experiments/mbpp-plus/context-value-transfer/results/replication-20261022/semantic-control \
+  --expected-analysis experiments/mbpp-plus/context-value-transfer/results/replication-20261022/analysis.json \
+  --output runs/mbpp-reanalysis
 ```
 
 Use a fresh output directory. Historical LFS archives are unnecessary for this
 analysis; new clones can use
 `GIT_LFS_SKIP_SMUDGE=1 git clone https://github.com/EmaRimoldi/how-to-pick-a-model.git`.
 The saved data include forecasts, frozen weights, task-level replays, receipts,
-and six unresolved admissions held at their full reservation. Known charges plus
-all reservations and the prior discovery total **$0.5149634**, below the $2 cap.
+and every unresolved admission held at its full reservation. The cumulative
+amount, including earlier studies and every reservation, is **$1.39600335**, below
+the same $2 cap. See [the reproduction guide](docs/reproducibility.md) for the
+earlier HumanEval+ replay and the separate paper build.
 
 Repository checks and the historical fixture demo:
 
