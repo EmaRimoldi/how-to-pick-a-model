@@ -350,6 +350,11 @@ def analyze(data: dict) -> tuple[dict, list[dict]]:
             delta_error[view].append(mean(((probabilities[m + "." + a] - probabilities[m + ".fresh"])
                 - (actual[m + "." + a] - actual[m + ".fresh"])) ** 2 for m in cfg["target_models"] for a in ("artifact", "artifact_feedback")))
     initial_eval = [r for r in data["initial"] if r["split"] == "evaluation"]
+    forecast_comparisons = {}
+    for first, second in (("state", "task"), ("state", "global"), ("api_state", "api_task_only")):
+        forecast_comparisons[first + "_minus_" + second] = {
+            "brier_difference": paired_interval([a - b for a, b in zip(brier[first], brier[second])]),
+            "observed_benefit_mse_difference": paired_interval([a - b for a, b in zip(delta_error[first], delta_error[second])])}
     report = {"audit_passed": True, "collector_git_sha": data["collector_git_sha"],
         "analysis_source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "collection": data["summary"], "development_tasks": len(data["split"]["development_task_ids"]),
@@ -370,6 +375,7 @@ def analyze(data: dict) -> tuple[dict, list[dict]]:
         "forecast_brier": {v: paired_interval(a) for v, a in brier.items()},
         "observed_benefit_mse": {v: paired_interval(a) for v, a in delta_error.items()},
         "invalid_api_forecasts": dict(failures), "prompt_token_controls": token_stats,
+        "secondary_paired_forecast_comparisons": forecast_comparisons,
         "policy_backed_zero_charge_provider_errors": sum(c.get("billing_source") == "published_zero_completion_insurance" for c in data["calls"]),
         "provider_error_counts": dict(Counter(c["split"] + "." + c["model_name"] for c in data["calls"] if c["finish_reason"] == "error")),
         "public_pass_but_full_fail_draws": dict(Counter(r["model_name"] + "." + r["arm"] for r in data["branches"]
@@ -405,6 +411,11 @@ def markdown(report: dict) -> str:
     lines += ["", "| Predictor | Brier | Observed benefit MSE |", "| --- | --- | --- |"]
     for key, row in report["forecast_brier"].items():
         lines.append(f"| {key} | {row['mean']:.6f} | {report['observed_benefit_mse'][key]['mean']:.6f} |")
+    lines += ["", "| Secondary paired predictor difference (negative favors first) | Brier difference, 95% interval | Benefit MSE difference, 95% interval |",
+              "| --- | --- | --- |"]
+    for key, row in report["secondary_paired_forecast_comparisons"].items():
+        first, second = row["brier_difference"], row["observed_benefit_mse_difference"]
+        lines.append(f"| {key} | {first['mean']:+.6f}, {first['bootstrap_95']} | {second['mean']:+.6f}, {second['bootstrap_95']} |")
     total = report["collection"]["collection_cost_usd"]
     held = report["collection"]["unresolved_reserved_usd"]
     lines += ["", f"Collection: {report['collection']['requests']} model requests, ${total:.8f}; "
