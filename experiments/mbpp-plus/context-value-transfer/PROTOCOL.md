@@ -40,6 +40,11 @@ isolated verifier's limit on the additional inputs. It is the only exclusion.
 The complete [reference journal](data/reference-audit.jsonl) and
 [frozen config](configs/replication.json) preserve this decision before model
 responses. The [source policy](configs/frozen-policy.json) is also fixed in Git.
+An additional [public-spec check](data/public-spec-audit.json), completed before
+recovery responses, finds all 378 prompt assertions compatible with their
+references when `math` is supplied by the assertion harness. This does not prove
+that the references capture every English specification correctly. It changes
+no primary exclusions or selected task.
 
 Sort eligible task IDs numerically, shuffle once with seed 20261025, then generate
 one initial program per task in that order. Use Ministral 3B 2512, Mistral's
@@ -149,7 +154,9 @@ Prespecified secondary diagnostics:
   routing distinct from deciding which context to preserve.
 - For each model: artifact-fresh, both-fresh, both-feedback and both-distractor
   task-mean success differences over all three draws. Report ordinary 95% and
-  Bonferroni simultaneous 99.375% intervals for this family of eight contrasts.
+  Bonferroni simultaneous 99.583% intervals for the family of twelve contrasts
+  (eight within-model contrasts plus the four corresponding small-minus-large
+  differences in context effect).
   Do not selectively promote an unadjusted secondary interval.
 - All rates, input/output tokens, actual API cost, format/provider failures,
   public false positives, missing cells and source-to-target feature shifts.
@@ -192,9 +199,16 @@ engineering generalization is not promised. Report null and negative results,
 prior-art overlap, benchmark contamination risk and the single-provider,
 single-checkpoint limitation. Existing historical manuscripts remain separate.
 
+Before any recovery response, the secondary contrast family was extended from
+eight to twelve to test model-by-context interactions directly. A difference
+between a significant small-model effect and a nonsignificant large-model effect
+does not establish an interaction. All twelve therefore use the stricter
+Bonferroni interval above. The primary remains unchanged; the pre-recovery
+amendment and zero-target-response check are preserved in Git and the freeze log.
+
 ## Secondary semantic control, frozen before recovery outcomes
 
-Addendum fixed after initial-producer collection began (84 prefix responses,
+Addendum fixed after initial-producer collection began (123 prefix responses,
 zero target/recovery responses at the engineering check), before any recovery
 outcome. The primary, bank, learned weights, task selection and budgets above
 remain unchanged. This control addresses the weakness of prompt-length-only

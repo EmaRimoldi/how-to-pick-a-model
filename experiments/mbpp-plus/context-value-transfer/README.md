@@ -31,3 +31,14 @@ python scripts/run_recovery_transfer.py \
 
 This defaults to planning only. Live collection additionally requires explicit
 `--live --budget-usd 1.48 --key-stdin` and the optional EvalPlus environment.
+
+The [public-spec audit](data/public-spec-audit.json) additionally checks every
+prompt's assertion against the reference, with no Plus input. All 378 pass.
+Reproduce it with the optional environment on macOS:
+
+```bash
+python experiments/mbpp-plus/context-value-transfer/source/audit_public_spec.py \
+  --output runs/mbpp-public-spec-audit.json
+```
+
+This runs trusted benchmark references in the OS sandbox, with no model calls.

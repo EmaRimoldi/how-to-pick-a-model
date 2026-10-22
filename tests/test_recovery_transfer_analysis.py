@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import importlib.util
+import itertools
+import json
+import random
 from pathlib import Path
 
 import numpy as np
@@ -37,3 +40,49 @@ def test_frozen_comparison_tolerates_roundoff_but_rejects_material_changes():
     assert a.same({"coefficient": [.1]}, {"coefficient": [.1+1e-14]})
     assert not a.same({"coefficient": [.1]}, {"coefficient": [.11]})
     assert not a.same({"coefficient": [.1]}, {"different": [.1]})
+
+
+def test_offline_audit_roundtrip_from_mocked_collection_and_rejects_model_drift(tmp_path):
+    """Exercise journals, prospective order and matched-cell statistics without APIs/program execution."""
+    from vao.decisions.openrouter import BudgetLedger, OpenRouterClient
+    from vao.decisions.pilot import digest
+    from vao.decisions.transfer import collect, freeze
+    cfg=json.loads(Path("experiments/mbpp-plus/context-value-transfer/configs/replication.json").read_text())
+    cfg["maximum_checkpoints"]=2
+    reference=[json.loads(s) for s in Path(cfg["reference_audit"]).read_text().splitlines()]
+    tasks=sorted({r["task_id"] for r in reference}-set(cfg["reference_exclusions"]),key=lambda t:int(t.split("/")[1]))
+    random.Random(cfg["seed"]).shuffle(tasks)
+    problems={t:{"prompt":"public synthetic task "+t} for t in tasks}
+    policy,source=freeze(cfg)
+    manifest={"config":cfg,"task_order":tasks,"policy_sha256":digest(policy),
+        "prompt_sha256":{t:digest(p["prompt"]) for t,p in problems.items()}}
+    (tmp_path/"manifest.json").write_text(json.dumps(manifest))
+    (tmp_path/"frozen-policy.json").write_text(json.dumps(policy,sort_keys=True,indent=2)+"\n")
+    client=OpenRouterClient("dummy",cfg,tmp_path,BudgetLedger(tmp_path/"budget.jsonl",1))
+    counter=itertools.count()
+    def request(endpoint,body):
+        model=next(k for k,v in cfg["models"].items() if v["id"]==body["model"])
+        passing=model=="large"
+        if model=="small":
+            payload=json.loads(body["messages"][1]["content"].split("\n",1)[1])
+            passing=payload["previous_solution"] is None
+        return {"id":"mock-"+str(next(counter)),"model":body["model"],"provider":"Mistral" if model=="producer" else "SiliconFlow",
+            "usage":{"cost":.000001,"prompt_tokens":10,"completion_tokens":10},
+            "choices":[{"finish_reason":"stop","message":{"content":json.dumps({"solution":"def f(): return "+("1" if passing else "0")})}}]}
+    client.request=request
+    class Verifier:
+        def check(self,problem,solution,mode):
+            passed="return 1" in solution
+            status="pass" if passed else "fail"
+            return {"passed":passed,"status":{"base":status,"plus":status} if mode=="heldout" else status,
+                "attempted":3,"failed":0 if passed else 1,"feedback":"public"}
+    result=collect(cfg,tasks,problems,policy,source,client,Verifier(),tmp_path)
+    assert result["status"]=="complete" and result["branch_responses"]==60
+    a=analyzer();data=a.audit(tmp_path);report,_=a.analyze(data)
+    assert report["status"]=="complete_confirmatory_bank"
+    assert report["effects"]["small"]["artifact_feedback-feedback"]["ordinary_95"]["estimate"]==-1
+    assert report["model_context_interactions"]["artifact_feedback-feedback"]["ordinary_95"]["estimate"]==-1
+    rows=[json.loads(s) for s in (tmp_path/"calls.jsonl").read_text().splitlines()]
+    rows[0]["returned_model"]="unplanned/model"
+    (tmp_path/"calls.jsonl").write_text("".join(json.dumps(r)+"\n" for r in rows))
+    with pytest.raises(ValueError,match="Returned model"):a.audit(tmp_path)
