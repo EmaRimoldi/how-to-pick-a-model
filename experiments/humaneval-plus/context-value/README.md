@@ -1,11 +1,69 @@
 # Value of work after failure
 
-Status: prospective diagnostic collected on 2026-10-22. No learned controller.
+Status: discovery diagnostic and a completed, amended producer-transfer evaluation
+collected on 2026-10-22. Simple one-checkpoint selectors; no general multi-step controller.
 
 Question: after a visible failure, does the previous artifact help the next
 attempt, and can this benefit be forecast before paying for that attempt?
 
-## What this iteration found
+A subsequent [frozen transfer evaluation](VALIDATION.md) uses public-base feedback,
+character-matched distractors, development-trained policies and task-disjoint
+evaluation. Do not pool its outcomes with the doctest-only discovery below.
+
+## Frozen producer-transfer result
+
+The [audited bank](results/validation-20261022/report.md) contains 83 development
+tasks (26 public failures) and 60 evaluation tasks (25 public failures):
+**1,353 observed responses**, 1,020 matched recovery draws, 140 additional direct
+controls and 50 prospective API forecasts. Gemma 3 4B / DeepInfra produced the
+development failures. After explicit upstream-pool 429 stops before any observed
+evaluation response, the unchanged frozen policy was tested on Ministral 3B / Mistral
+failures. This is cross-producer transfer, not the original same-producer validation.
+
+| Next solver, conditional on evaluation failure | Fresh | Code | Feedback | Both | Distractor |
+| --- | --- | --- | --- | --- | --- |
+| 9B | 66% | 50% | 64% | 62% | 64% |
+| 27B | 84% | 86% | 80% | 86% | 86% |
+
+Each cell has two draws on 25 independent failed tasks. The exploratory 9B
+code-minus-fresh difference is −16 points, task-bootstrap interval [−30, −4],
+without multiple-comparison adjustment. Relevant code+feedback does not clearly
+outperform its character-matched unrelated control in this cohort. Provider token
+lengths differ and are reported, not assumed equal.
+
+At $0.01/task, state ridge solves 55/60 versus 53/60 for the prespecified per-draw
+fixed rule. Its primary net-utility difference is +$0.00040765/task, 95% interval
+[+$0.00003482, +$0.00095225]. The stronger development-replay fixed rule also solves
+55/60; that utility difference is only +$0.00002851, interval
+[−$0.00046099, +$0.00054027]. This does not establish a reliable gain over the
+stronger static control. State/task Brier scores are nearly identical, and state
+benefit MSE is worse in point estimate than unconditional priors. A model-only
+ablation also reaches 56/60, without selecting the context package.
+
+Known collection charges are $0.4836466. Six admissions without preserved response
+identities retain $0.0082944; with the prior $0.0230224 discovery, the conservative
+campaign amount is **$0.5149634** under the approved $2 ceiling. Seven explicit
+empty provider errors remain failed draws at policy-backed zero charge. See the
+receipts, stopped manifests and engineering disclosure in the results directory.
+CPU verification and prediction time are recorded separately from API dollars.
+
+Read the [blog draft](../../../docs/blog/when-to-keep-failed-code.md),
+[related-work check](../../../docs/recovery-related-work.md), and full report
+before making a method claim. The 60 evaluation tasks are now observed; future
+tuning cannot reuse them as an untouched test. The 19 reserve tasks remain unused.
+
+```bash
+uv sync --dev --frozen
+uv run python scripts/analyze_recovery_validation.py \
+  --input experiments/humaneval-plus/context-value/results/validation-20261022 \
+  --output runs/recovery-reanalysis
+```
+
+This audits saved data without model calls, credentials or candidate execution.
+New collection requires optional EvalPlus, explicit intent/budget and a fresh
+output directory. The protocol preserves both original and amended configs.
+
+## What discovery found
 
 The [audited collection](results/study-20261022/report.md) has **30 new tasks,
 60 initial attempts, four failed checkpoints across three tasks, 64 matched

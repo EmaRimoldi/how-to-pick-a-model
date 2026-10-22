@@ -1,0 +1,31 @@
+{
+  "censored_request_ids": [
+    604,
+    605,
+    606,
+    607,
+    608,
+    609
+  ],
+  "censored_reserved_usd": 0.0082944,
+  "evaluation_config_sha256": "a0f7a283f438823ce53ff81937e863370482990e1a71df5a8161c5afaeb92189",
+  "evaluation_prefix_workers": 1,
+  "evaluation_producer": {
+    "id": "mistralai/ministral-3b-2512",
+    "input_per_million": 0.1,
+    "output_per_million": 0.1,
+    "provider": "mistral",
+    "provider_name": "Mistral",
+    "quantization": "unknown",
+    "reasoning_parameter": false
+  },
+  "frozen_policy_sha256": "be4ddd7b135481816780a07507083e331b25735c0fa2d7af9f4201d725d33fd2",
+  "original_config_sha256": "9beae749bf61a187a7b6d973dd0cafcad4fed3daefc1cd509fe8d92cac15eb82",
+  "rule": "All unknown reservations remain held; no zero-cost receipts or outcomes are invented.",
+  "source_budget_events": 1212,
+  "source_budget_sha256": "845f035a9883e14cdfdccbb87fcb5ebd1f3c6aba33872332aabef1413822ae9d",
+  "source_calls_sha256": "9efc5d7e67699d0c3ba7beaf4f1bdd8895d62f4f915dac1d745de9910987c572",
+  "source_collector_git_sha": "f8f7b5cdde9000ace932ed58f2248212b075d18c",
+  "source_responses": 603,
+  "source_status": "BackendStopped: OpenRouter HTTP 429; no automatic retry"
+}

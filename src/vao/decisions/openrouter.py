@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import time
+import threading
 import urllib.error
 import urllib.request
 from decimal import Decimal
@@ -12,6 +13,24 @@ from typing import Any
 
 
 API_ROOT = "https://openrouter.ai/api/v1"
+_APPEND_LOCK = threading.Lock()
+ZERO_ERROR_POLICY = "https://openrouter.ai/blog/announcements/never-pay-for-empty-ai-responses-again/"
+
+
+def insured_empty_error(record: dict) -> bool:
+    """Normalize only explicit empty provider errors covered by published zero-charge insurance.
+
+    This is a policy-backed zero, not a reported token receipt. Raw usage and
+    billing provenance remain visible; ordinary missing billing still stops.
+    """
+    if ((record.get("usage") or {}).get("cost") is None and record.get("finish_reason") == "error"
+            and not record.get("content") and record.get("generation_id") and record.get("provider")):
+        record["reported_usage"] = record.get("usage") or {}
+        record["usage"] = {"cost": 0, "prompt_tokens": None, "completion_tokens": None}
+        record["billing_source"] = "published_zero_completion_insurance"
+        record["billing_policy_url"] = ZERO_ERROR_POLICY
+        return True
+    return False
 
 
 def read_stream(response) -> dict:
@@ -27,11 +46,14 @@ def read_stream(response) -> dict:
         if data == "[DONE]":
             break
         event = json.loads(data)
-        if event.get("error"):
-            raise BackendStopped("OpenRouter streaming error; billing unresolved")
         for field in ("id", "provider", "model", "usage"):
             if event.get(field) is not None:
                 payload[field] = event[field]
+        if event.get("error"):
+            if payload.get("id") and payload.get("provider"):
+                finish = "error"
+                break  # Preserve explicit failure identity; never retry inference.
+            raise BackendStopped("OpenRouter streaming error; billing unresolved")
         for choice in event.get("choices", []):
             if choice.get("index", 0) != 0:
                 raise BackendStopped("Unexpected multiple completion choices")
@@ -54,9 +76,10 @@ class BackendStopped(RuntimeError):
 
 def append_json(path: Path, record: dict) -> None:
     """Append and flush one public experiment record, never request headers."""
-    with path.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(record, sort_keys=True, allow_nan=False) + "\n")
-        handle.flush()
+    with _APPEND_LOCK:
+        with path.open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(record, sort_keys=True, allow_nan=False) + "\n")
+            handle.flush()
 
 
 class BudgetLedger:
@@ -77,9 +100,14 @@ class BudgetLedger:
         self.pending: dict[int, Decimal] = {}
         self.stopped = False
         self.calls = 0
+        self._lock = threading.RLock()
 
     def reserve(self, dollars: Decimal, model: str) -> int:
         """Persist admission before network activity; account for unresolved calls."""
+        with self._lock:
+            return self._reserve(dollars, model)
+
+    def _reserve(self, dollars: Decimal, model: str) -> int:
         if not dollars.is_finite() or dollars <= 0:
             raise ValueError("Reservation must be finite and positive")
         committed = self.spent + sum(self.pending.values())
@@ -93,6 +121,10 @@ class BudgetLedger:
 
     def settle(self, call: int, cost: object) -> None:
         """Use measured account charge; stop on missing/invalid/over-ceiling usage."""
+        with self._lock:
+            self._settle(call, cost)
+
+    def _settle(self, call: int, cost: object) -> None:
         try:
             amount = Decimal(str(cost))
         except Exception:
@@ -138,7 +170,16 @@ class OpenRouterClient:
             with urllib.request.build_opener(NoRedirects).open(request, timeout=180) as response:
                 return read_stream(response) if body and body.get("stream") else json.loads(response.read())
         except urllib.error.HTTPError as exc:
-            raise BackendStopped(f"OpenRouter HTTP {exc.code}; no automatic retry") from None
+            failure = BackendStopped(f"OpenRouter HTTP {exc.code}; no automatic retry")
+            failure.http_status = exc.code
+            failure.retry_after = (exc.headers or {}).get("Retry-After")
+            try:
+                metadata = (json.loads(exc.read()).get("error") or {}).get("metadata") or {}
+                failure.http_metadata = {k: metadata[k] for k in ("error_type", "provider_code", "limit_source")
+                    if isinstance(metadata.get(k), str) and len(metadata[k]) < 100 and "sk-" not in metadata[k]}
+            except (ValueError, TypeError, AttributeError):
+                failure.http_metadata = {}
+            raise failure from None
         except (OSError, ValueError) as exc:
             raise BackendStopped(f"OpenRouter {type(exc).__name__}; no automatic retry") from None
 
@@ -158,15 +199,19 @@ class OpenRouterClient:
         snapshots = {}
         for name, model in self.config["models"].items():
             endpoints = self.request("/models/" + model["id"] + "/endpoints")["data"]["endpoints"]
-            found = [e for e in endpoints if e.get("tag") == self.config["provider"]]
-            if len(found) != 1 or found[0].get("quantization") != "fp8":
-                raise BackendStopped("The declared FP8 provider endpoint is unavailable")
+            provider = model.get("provider", self.config["provider"])
+            precision = model.get("quantization", "fp8")
+            found = [e for e in endpoints if e.get("tag") == provider]
+            if len(found) != 1 or found[0].get("quantization") != precision:
+                raise BackendStopped("The declared provider/precision endpoint is unavailable")
             endpoint = found[0]
             for field, ceiling in (("prompt", model["input_per_million"]),
                                    ("completion", model["output_per_million"])):
                 if Decimal(endpoint["pricing"][field]) * 1_000_000 > Decimal(str(ceiling)):
                     raise BackendStopped("Endpoint price increased; revise the protocol before running")
-            required = {"max_tokens", "reasoning", "response_format", "temperature"}
+            required = {"max_tokens", "response_format", "temperature"}
+            if model.get("reasoning_parameter", True):
+                required.add("reasoning")
             if self.config.get("request_seed", False):
                 required.add("seed")
             if not required <= set(endpoint.get("supported_parameters", [])):
@@ -178,6 +223,8 @@ class OpenRouterClient:
     def complete(self, model_name: str, messages: list[dict], seed: int, metadata: dict) -> dict:
         """Record all billed responses, including invalid or truncated solutions."""
         model = self.config["models"][model_name]
+        provider = model.get("provider", self.config["provider"])
+        precision = model.get("quantization", "fp8")
         input_cap = int(self.config["input_token_ceiling"])
         max_tokens = int(self.config["max_tokens"])
         # UTF-8 byte bound plus generous framing allowance; no images or tools.
@@ -190,18 +237,25 @@ class OpenRouterClient:
             "model": model["id"], "messages": messages, "max_tokens": max_tokens,
             "stream": self.config.get("stream", False),
             "temperature": self.config["temperature"],
-            "reasoning": {"enabled": False}, "response_format": {"type": "json_object"},
-            "provider": {"only": [self.config["provider"]], "allow_fallbacks": False,
-                         "require_parameters": True, "quantizations": ["fp8"],
+            "response_format": {"type": "json_object"},
+            "provider": {"only": [provider], "allow_fallbacks": False,
+                         "require_parameters": True, "quantizations": [precision],
                          "max_price": {"prompt": model["input_per_million"],
                                        "completion": model["output_per_million"]}},
         }
+        if model.get("reasoning_parameter", True):
+            body["reasoning"] = {"enabled": False}
         if self.config.get("request_seed", False):
             body["seed"] = seed
         start = time.perf_counter()
         try:
             payload = self.request("/chat/completions", body)
-        except BackendStopped:
+        except BackendStopped as exc:
+            append_json(self.output / "transport.jsonl", {**metadata, "call": call,
+                "http_status": getattr(exc, "http_status", None),
+                "http_metadata": getattr(exc, "http_metadata", {}),
+                "retry_after": getattr(exc, "retry_after", None),
+                "outcome": "no_preserved_response_identity; reservation retained"})
             self.ledger.stopped = True  # Unknown billing: keep the reservation.
             raise
         elapsed = time.perf_counter() - start
@@ -214,14 +268,18 @@ class OpenRouterClient:
                   "content": content, "finish_reason": choice.get("finish_reason"),
                   "usage": usage, "elapsed_seconds": elapsed, "draw_seed": seed,
                   "seed_sent": body.get("seed")}
+        insured_empty_error(record)
+        usage = record["usage"]
         append_json(self.output / "calls.jsonl", record)
         self.ledger.settle(call, usage.get("cost"))
-        if str(payload.get("provider") or "").lower() != "siliconflow":
+        expected_provider = model.get("provider_name", "SiliconFlow")
+        if str(payload.get("provider") or "").lower() != expected_provider.lower():
             raise BackendStopped("Returned provider differs from the pinned provider")
         if (usage.get("completion_tokens_details") or {}).get("reasoning_tokens", 0):
             raise BackendStopped("Reasoning tokens returned despite disabled reasoning")
-        if usage.get("prompt_tokens", input_cap + 1) > input_cap or usage.get(
-                "completion_tokens", max_tokens + 1) > max_tokens:
+        if record.get("billing_source") != "published_zero_completion_insurance" and (
+                usage.get("prompt_tokens", input_cap + 1) > input_cap or usage.get(
+                "completion_tokens", max_tokens + 1) > max_tokens):
             raise BackendStopped("Reported token usage exceeds the admitted token ceiling")
         record["cost_usd"] = usage["cost"]
         return record

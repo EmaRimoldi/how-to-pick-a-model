@@ -41,3 +41,15 @@ flags for the [context-value diagnostic](../experiments/humaneval-plus/context-v
 `analyze_context_value.py --input RUN --output NEW_DIRECTORY` audits saved
 receipts, parent identities, observable prompts and forecast order, then writes
 paired task-cluster analysis and a figure. It makes no provider calls.
+
+`run_recovery_validation.py` plans the task-held-out validation by default.
+Live collection requires its explicit remaining campaign budget; it freezes
+development-trained policies before evaluation calls. The
+[frozen protocol](../experiments/humaneval-plus/context-value/VALIDATION.md)
+defines the new public-base feedback regime and reserved tasks.
+
+`analyze_recovery_validation.py --input RUN --output NEW_DIRECTORY` audits recorded
+data and replays the fixed two-draw policy bank, including all static controls.
+It makes no provider call and executes no candidate. The
+[curated transfer report](../experiments/humaneval-plus/context-value/results/validation-20261022/report.md)
+and [blog draft](../docs/blog/when-to-keep-failed-code.md) explain the results.

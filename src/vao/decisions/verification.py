@@ -53,10 +53,12 @@ class SandboxVerifier:
 
     def check(self, problem: dict, solution: str, mode: str) -> dict:
         """Keep hidden tests out of the visible-feedback channel."""
-        if mode not in {"visible", "heldout", "probe"}:
+        if mode not in {"visible", "heldout", "probe", "base_feedback"}:
             raise ValueError("Unknown verifier mode")
         if mode == "visible":
             problem = {"prompt": problem["prompt"], "entry_point": problem["entry_point"]}
+        elif mode == "base_feedback":
+            problem = {k: problem[k] for k in ("prompt", "entry_point", "canonical_solution", "base_input", "atol")}
         with tempfile.TemporaryDirectory(prefix="decision-verifier-") as temp:
             work = Path(temp)
             env = {"PATH": "/usr/bin:/bin", "HOME": temp, "TMPDIR": temp,

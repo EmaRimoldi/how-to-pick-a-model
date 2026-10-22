@@ -1,6 +1,6 @@
 # Experiments
 
-Eight baseline bundles and two API diagnostics support the sequential-decision question in
+Eight baseline bundles, API discovery and a frozen transfer evaluation support the sequential-decision question in
 `docs/decision-protocol.md`. Each is grouped by benchmark and research question. A bundle owns its configs, launchers, inputs, processed
 results, figures, and run metadata whenever those artifacts are available.
 
@@ -15,7 +15,7 @@ results, figures, and run metadata whenever those artifacts are available.
 | HumanEval+ | [`strategy-by-difficulty-grid/`](humaneval-plus/strategy-by-difficulty-grid/) | completed | full run, source/config snapshot, raw shards, summaries, figures |
 | HumanEval+ | [`llm-router-context-search/`](humaneval-plus/llm-router-context-search/) | completed | validation selection, held-out test evaluation, logs, figure |
 | HumanEval+ | [`openrouter-continuation-pilot/`](humaneval-plus/openrouter-continuation-pilot/) | development pilot | 24 tasks, 88 calls, two failed checkpoints, receipts and separate public/full-suite scoring |
-| HumanEval+ | [`context-value/`](humaneval-plus/context-value/) | prospective diagnostic | 30 new tasks, 132 calls, four failed checkpoints across three tasks, code/feedback factorial, forecasts and receipt audit |
+| HumanEval+ | [`context-value/`](humaneval-plus/context-value/) | discovery + producer-transfer evaluation | Discovery: 30 tasks/132 calls. Transfer: 83 development + 60 evaluation tasks, 1,353 responses, frozen policies, forecasts, controls and cost audit |
 
 ## Families
 
@@ -31,4 +31,6 @@ Reproduction guidance lives in [`../docs/reproducibility.md`](../docs/reproducib
 The focused tree retires peripheral benchmark families and incomplete scaffolds.
 Their history is recoverable via `docs/history-merge.md`. Historical baseline data
 cannot score unobserved handoffs. The API diagnostics collect matched outcomes
-under separate protocols; they do not establish learned-controller gains.
+under separate protocols. The frozen transfer evaluates a one-checkpoint selector;
+its gain over a stronger static control remains inconclusive. It does not validate
+a general multi-step controller or complete the originally planned same-producer test.

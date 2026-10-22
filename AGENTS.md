@@ -36,6 +36,9 @@ verifiable tasks. Read:
   user explicitly approves their deletion.
 - Current logs cannot establish outcomes for unobserved continuation actions.
   Do not present planned forecasters or handoff experiments as implemented.
+- The context-value bundle now includes a limited trained one-checkpoint selector
+  and an amended producer-transfer evaluation. Read its report and limitations;
+  this does not establish a general multi-step controller or a robust method gain.
 - Existing CLI modes are baseline execution tools, not evidence of an optimal
   multi-agent architecture or a state-conditioned controller.
 
