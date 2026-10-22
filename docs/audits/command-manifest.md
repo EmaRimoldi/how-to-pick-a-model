@@ -5,7 +5,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `42`
+- Commands indexed: `43`
 - Default-safe commands: `27`
 - Missing required Make targets: `0`
 
@@ -16,7 +16,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `artifact-builder` | 1 |
 | `cluster-setup` | 2 |
 | `live-cluster` | 3 |
-| `live-local` | 8 |
+| `live-local` | 9 |
 | `mixed-cli` | 1 |
 | `read-only-analysis` | 9 |
 | `safe-figure-regeneration` | 6 |
@@ -30,7 +30,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `Makefile` | 7 |
 | `autoresearch/scripts` | 16 |
 | `pyproject` | 1 |
-| `scripts` | 18 |
+| `scripts` | 19 |
 
 ## Commands
 
@@ -74,6 +74,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/run_continuation_pilot.py` | scripts | `live-local` | no | model access, isolated worktree, output root | Run the explicit-budget OpenRouter/HumanEval+ pilot; defaults to plan only. |
 | `python scripts/run_merge_phase.py` | scripts | `live-local` | no | model access, isolated worktree, output root | CLI: run the merge phase on a completed parallel experiment. Given an experiment directory produced by run_parallel_experiment.py, this script: 1. Gathers all agent snapshots, reasoning traces, and metrics 2. Selects the best and most informative train.py variants 3. Analyses per-parameter improvement correlations 4. Produces a merged train.py candidate 5. Runs evaluation via SLURM (always; workspace auto-detected if not provided) 6. Writes a merge report and comparison table Usage: python scripts/run_merge_phase.py --experiment-dir runs/experiment_parallel_20260331_120000 python scripts/run_merge_phase.py --experiment-dir runs/exp_... --source-mode parallel |
 | `python scripts/run_parallel_experiment.py` | scripts | `live-local` | no | model access, isolated worktree, output root | CLI: launch Mode 1 (2 agents × T budget). |
+| `python scripts/run_recovery_validation.py` | scripts | `live-local` | no | model access, isolated worktree, output root | Plan or explicitly run the task-held-out recovery validation within its cumulative budget. |
 | `python scripts/run_single_long_experiment.py` | scripts | `live-local` | no | model access, isolated worktree, output root | CLI: launch Mode 2 (1 agent × 2T budget). |
 | `autoresearch/scripts/run_threshold_calibration_array_task.sh` | autoresearch/scripts | `live-cluster` | no | Slurm, model access, compute allocation | Run one Slurm array task for AutoResearch threshold-calibration sweeps. |
 | `autoresearch/scripts/run_z_probe_array_task.sh` | autoresearch/scripts | `live-cluster` | no | Slurm, model access, compute allocation | Run one Slurm array task for AutoResearch zero-step probe baselines. |

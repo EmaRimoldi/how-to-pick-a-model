@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `2325`
-- Bytes indexed: `62.9M`
+- Files indexed: `2332`
+- Bytes indexed: `63.0M`
 
 ## Canonical Entrypoints
 
@@ -49,14 +49,14 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 1973 | 37.7M |
+| `experiments` | 1976 | 37.7M |
 | `artifacts` | 21 | 20.0M |
 | `paper` | 29 | 2.4M |
-| `src` | 132 | 994.1K |
+| `src` | 134 | 1018.5K |
 | `uv.lock` | 1 | 972.4K |
 | `autoresearch` | 59 | 460.7K |
-| `scripts` | 20 | 186.5K |
-| `tests` | 35 | 121.4K |
+| `scripts` | 21 | 187.1K |
+| `tests` | 36 | 128.2K |
 | `docs` | 21 | 61.2K |
 | `prompts` | 6 | 21.6K |
 | `configs` | 7 | 12.7K |
@@ -79,12 +79,12 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.json` | 1050 | 3.1M |
+| `.json` | 1052 | 3.1M |
 | `.yaml` | 270 | 316.1K |
 | `.jsonl` | 264 | 23.7M |
 | `.txt` | 260 | 3.9M |
-| `.py` | 221 | 1.7M |
-| `.md` | 86 | 246.6K |
+| `.py` | 225 | 1.7M |
+| `.md` | 87 | 255.3K |
 | `.png` | 59 | 7.4M |
 | `.pdf` | 34 | 687.0K |
 | `.csv` | 26 | 581.1K |
@@ -162,6 +162,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/run_continuation_pilot.py`
 - `scripts/run_merge_phase.py`
 - `scripts/run_parallel_experiment.py`
+- `scripts/run_recovery_validation.py`
 - `scripts/run_single_long_experiment.py`
 - `scripts/validate_agent_readiness.py`
 

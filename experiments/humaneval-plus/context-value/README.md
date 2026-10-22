@@ -5,6 +5,11 @@ Status: prospective diagnostic collected on 2026-10-22. No learned controller.
 Question: after a visible failure, does the previous artifact help the next
 attempt, and can this benefit be forecast before paying for that attempt?
 
+A subsequent [task-held-out validation](VALIDATION.md) is frozen separately. It
+uses a smaller producer, public-base feedback, character-matched distractors,
+development-trained policies and untouched evaluation tasks. Do not pool its
+outcomes with the doctest-only discovery results below.
+
 ## What this iteration found
 
 The [audited collection](results/study-20261022/report.md) has **30 new tasks,

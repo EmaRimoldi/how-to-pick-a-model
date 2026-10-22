@@ -9,8 +9,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `10`
-- Script entrypoints indexed: `34`
-- Code modules indexed: `131`
+- Script entrypoints indexed: `35`
+- Code modules indexed: `133`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `7`
@@ -188,6 +188,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/run_continuation_pilot.py` | python | Run the explicit-budget OpenRouter/HumanEval+ pilot; defaults to plan only. |
 | `scripts/run_merge_phase.py` | python | CLI: run the merge phase on a completed parallel experiment. Given an experiment directory produced by run_parallel_experiment.py, this script: 1. Gathers all agent snapshots, reasoning traces, and metrics 2. Selects the best and most informative train.py variants 3. Analyses per-parameter improvement correlations 4. Produces a merged train.py candidate 5. Runs evaluation via SLURM (always; workspace auto-detected if not provided) 6. Writes a merge report and comparison table Usage: python scripts/run_merge_phase.py --experiment-dir runs/experiment_parallel_20260331_120000 python scripts/run_merge_phase.py --experiment-dir runs/exp_... --source-mode parallel |
 | `scripts/run_parallel_experiment.py` | python | CLI: launch Mode 1 (2 agents × T budget). |
+| `scripts/run_recovery_validation.py` | python | Plan or explicitly run the task-held-out recovery validation within its cumulative budget. |
 | `scripts/run_single_long_experiment.py` | python | CLI: launch Mode 2 (1 agent × 2T budget). |
 | `scripts/validate_agent_readiness.py` | python | Validate that the repository is ready for LLM-agent navigation. |
 | `autoresearch/scripts/analyze_autoresearch_allocation_router.py` | python | Analyze allocation-router outputs against mode labels and calibration tables. |
@@ -307,6 +308,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/decisions/context_value.py` | Prospective forecasts and matched artifact/feedback ablations after visible failure. | select_tasks, observable_features, branch_messages, forecast_messages, parse_forecast, collect_context, main |
 | verified orchestration runtime | `src/vao/decisions/openrouter.py` | Pinned OpenRouter completions with an append-only dollar reservation ledger. | read_stream, BudgetStopped, BackendStopped, append_json, BudgetLedger, NoRedirects, OpenRouterClient |
 | verified orchestration runtime | `src/vao/decisions/pilot.py` | Collect matched one-checkpoint HumanEval+ continuations through OpenRouter. | digest, load_tasks, messages_for, evaluate_response, summarize, write_report, collect, main |
+| verified orchestration runtime | `src/vao/decisions/recovery.py` | Task-held-out recovery collection with public base feedback and frozen policies. | load_experiment, producer_messages, resized, recovery_messages, forecast_messages, evaluate, run, main |
+| verified orchestration runtime | `src/vao/decisions/recovery_policy.py` | Small frozen ridge probability baselines for selecting a recovery action. | features, fit_policy, predict |
 | verified orchestration runtime | `src/vao/decisions/verification.py` | Run public doctest feedback and private EvalPlus scoring in an OS sandbox. | visible_examples, sandbox_profile, SandboxVerifier |
 | verified orchestration runtime | `src/vao/decisions/verifier_worker.py` | Standalone sandbox child: public doctests or official EvalPlus base/plus checks. | public_examples_doc, ExampleChecker, LimitedOutput, probe, check, main |
 | verified orchestration runtime | `src/vao/estimators.py` | Estimator functions for branch tensors and run records. | gain, productive_mode_proxy, routing_regret, jsd, routing_mismatch_jsd, routing_mismatch_jSd, gains_by_mode, runtime_phi |

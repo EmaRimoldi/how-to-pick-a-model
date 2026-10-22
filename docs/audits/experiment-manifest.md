@@ -38,7 +38,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | `experiments/humaneval-plus/strategy-by-difficulty-grid/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 115 | 1 | 27 | 0 | 4 | 7 | 27 | 106 | 2 |
 | `experiments/humaneval-plus/llm-router-context-search/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 24 | 0 | 0 | 0 | 1 | 1 | 0 | 22 | 0 |
 | `experiments/humaneval-plus/openrouter-continuation-pilot/` | development pilot | not tiered | `inspect-readme` | 13 | 1 | 0 | 10 | 1 | 0 | 0 | 0 | 1 |
-| `experiments/humaneval-plus/context-value/` | prospective diagnostic | not tiered | `inspect-readme` | 14 | 1 | 0 | 12 | 1 | 0 | 0 | 0 | 2 |
+| `experiments/humaneval-plus/context-value/` | prospective diagnostic | not tiered | `inspect-readme` | 17 | 3 | 0 | 12 | 1 | 0 | 0 | 0 | 2 |
 
 ## Key Files
 
@@ -176,4 +176,6 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 - `experiments/humaneval-plus/context-value/results/study-20261022/analysis.json`
 - `experiments/humaneval-plus/context-value/results/study-20261022/summary.json`
 - `experiments/humaneval-plus/context-value/configs/study.json`
+- `experiments/humaneval-plus/context-value/configs/validation-split.json`
+- `experiments/humaneval-plus/context-value/configs/validation.json`
 - `experiments/humaneval-plus/context-value/results/study-20261022/context_value.png`
