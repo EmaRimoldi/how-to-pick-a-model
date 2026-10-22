@@ -6,7 +6,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `2313`
+- Files indexed: `2318`
 - Bytes indexed: `62.3M`
 
 ## Canonical Entrypoints
@@ -49,14 +49,14 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 1959 | 37.1M |
+| `experiments` | 1961 | 37.1M |
 | `artifacts` | 21 | 20.0M |
 | `paper` | 29 | 2.4M |
-| `src` | 131 | 981.2K |
+| `src` | 132 | 993.9K |
 | `uv.lock` | 1 | 972.4K |
 | `autoresearch` | 59 | 460.7K |
-| `scripts` | 18 | 165.6K |
-| `tests` | 33 | 111.8K |
+| `scripts` | 19 | 165.8K |
+| `tests` | 34 | 116.9K |
 | `docs` | 28 | 103.3K |
 | `prompts` | 6 | 21.6K |
 | `configs` | 7 | 12.7K |
@@ -79,12 +79,12 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.json` | 1045 | 3.1M |
+| `.json` | 1046 | 3.1M |
 | `.yaml` | 270 | 316.1K |
 | `.txt` | 260 | 3.9M |
 | `.jsonl` | 258 | 23.3M |
-| `.py` | 216 | 1.7M |
-| `.md` | 91 | 276.0K |
+| `.py` | 219 | 1.7M |
+| `.md` | 92 | 280.2K |
 | `.png` | 58 | 7.3M |
 | `.pdf` | 34 | 687.0K |
 | `.csv` | 26 | 581.1K |
@@ -121,6 +121,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/archive/distribution-aware-orchestration/README.md`
 - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/README.md`
 - `experiments/humaneval-plus/README.md`
+- `experiments/humaneval-plus/context-value/README.md`
 - `experiments/humaneval-plus/llm-router-context-search/README.md`
 - `experiments/humaneval-plus/openrouter-continuation-pilot/README.md`
 - `experiments/humaneval-plus/qwen-model-size-frontier/README.md`
@@ -156,6 +157,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/check_paper_build.py`
 - `scripts/compare_experiments.py`
 - `scripts/run_best_params_merge.py`
+- `scripts/run_context_value.py`
 - `scripts/run_continuation_pilot.py`
 - `scripts/run_merge_phase.py`
 - `scripts/run_parallel_experiment.py`

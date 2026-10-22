@@ -5,7 +5,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `40`
+- Commands indexed: `41`
 - Default-safe commands: `26`
 - Missing required Make targets: `0`
 
@@ -16,7 +16,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `artifact-builder` | 1 |
 | `cluster-setup` | 2 |
 | `live-cluster` | 3 |
-| `live-local` | 7 |
+| `live-local` | 8 |
 | `mixed-cli` | 1 |
 | `read-only-analysis` | 8 |
 | `safe-figure-regeneration` | 6 |
@@ -30,7 +30,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `Makefile` | 7 |
 | `autoresearch/scripts` | 16 |
 | `pyproject` | 1 |
-| `scripts` | 16 |
+| `scripts` | 17 |
 
 ## Commands
 
@@ -69,6 +69,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `autoresearch/scripts/run_autoresearch_allocation_router_batch.sh` | autoresearch/scripts | `live-local` | no | model access, isolated worktree, output root | Run allocation-router decision batches for the AutoResearch CIFAR-10 campaign. |
 | `autoresearch/scripts/run_autoresearch_cifar10_cnn4096_router_test.sh` | autoresearch/scripts | `live-local` | no | model access, isolated worktree, output root | Run the CNN-4096 AutoResearch router solver/probe comparison panel. |
 | `python scripts/run_best_params_merge.py` | scripts | `live-local` | no | model access, isolated worktree, output root | Best-params merge: read agent results.tsv + git history, build merged train.py. Strategy: 1. For each agent, parse results/results.tsv (commit_hash, val_bpb, status) 2. For each accepted ("keep") run, extract hyperparameters from that git commit 3. Find best val_bpb value per hyperparameter across all agents 4. Build merged train.py and submit to SLURM Usage: python scripts/run_best_params_merge.py --run-id exp_20260401_120000 python scripts/run_best_params_merge.py --run-id exp_20260401_120000 --submit |
+| `python scripts/run_context_value.py` | scripts | `live-local` | no | model access, isolated worktree, output root | Plan or explicitly run a budgeted artifact/feedback and prospective-forecast study. |
 | `python scripts/run_continuation_pilot.py` | scripts | `live-local` | no | model access, isolated worktree, output root | Run the explicit-budget OpenRouter/HumanEval+ pilot; defaults to plan only. |
 | `python scripts/run_merge_phase.py` | scripts | `live-local` | no | model access, isolated worktree, output root | CLI: run the merge phase on a completed parallel experiment. Given an experiment directory produced by run_parallel_experiment.py, this script: 1. Gathers all agent snapshots, reasoning traces, and metrics 2. Selects the best and most informative train.py variants 3. Analyses per-parameter improvement correlations 4. Produces a merged train.py candidate 5. Runs evaluation via SLURM (always; workspace auto-detected if not provided) 6. Writes a merge report and comparison table Usage: python scripts/run_merge_phase.py --experiment-dir runs/experiment_parallel_20260331_120000 python scripts/run_merge_phase.py --experiment-dir runs/exp_... --source-mode parallel |
 | `python scripts/run_parallel_experiment.py` | scripts | `live-local` | no | model access, isolated worktree, output root | CLI: launch Mode 1 (2 agents × T budget). |
