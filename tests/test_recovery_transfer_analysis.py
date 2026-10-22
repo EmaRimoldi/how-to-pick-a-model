@@ -56,6 +56,9 @@ def test_offline_audit_roundtrip_from_mocked_collection_and_rejects_model_drift(
     random.Random(cfg["seed"]).shuffle(tasks)
     problems={t:{"prompt":"public synthetic task "+t} for t in tasks}
     policy,source=freeze(cfg)
+    # This is a newly frozen synthetic fixture on the current BLAS platform,
+    # rather than the campaign's already committed macOS weight bytes.
+    cfg["source_policy_digest"]=digest(policy)
     manifest={"config":cfg,"task_order":tasks,"policy_sha256":digest(policy),
         "prompt_sha256":{t:digest(p["prompt"]) for t,p in problems.items()},
         "source_sha256":{str(p):file_hash(p) for p in Path("src/vao/decisions").glob("*.py")}}
