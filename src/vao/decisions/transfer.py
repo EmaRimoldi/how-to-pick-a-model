@@ -7,6 +7,7 @@ import hashlib
 import importlib.metadata
 import json
 import random
+import shutil
 import subprocess
 import sys
 import threading
@@ -149,10 +150,78 @@ def load_tasks(config: dict) -> tuple[dict, list[str]]:
     return problems, tasks
 
 
+def import_prefixes(source: Path, output: Path, ledger: BudgetLedger, config: dict,
+                    policy: dict, tasks: list[str]) -> dict:
+    """Explicit pre-bank transport continuation; never regenerate the unknown prefix.
+
+    A late missing prefix cannot change the first N failures if N were already
+    fully observed before it. Preserve the original experimental manifest and
+    record the new collector/preflight separately as engineering lineage.
+    """
+    manifest=json.loads((source/"manifest.json").read_text())
+    summary=json.loads((source/"summary.json").read_text())
+    calls=records(source,"calls");initial=records(source,"initial");cps=records(source,"checkpoints")
+    if (manifest["config"]!=config or manifest["task_order"]!=tasks
+            or not summary["status"].startswith("BackendStopped: OpenRouter URLError")
+            or records(source,"branches") or records(source,"local-predictions")
+            or any(c["action"]!="initial" for c in calls)
+            or len(calls)!=len(initial) or len(cps)<config["maximum_checkpoints"]
+            or (source/"prefix-continuation.json").exists()):
+        raise ValueError("Only the explicit late-prefix transport stop with a complete selected cohort may continue")
+    for relative,expected in manifest["source_sha256"].items():
+        if Path(relative).name!="transfer.py" and file_hash(Path(relative))!=expected:
+            raise ValueError("Evaluator, policy, messages or billing transport changed")
+    if json.loads((source/"frozen-policy.json").read_text())!=policy:
+        raise ValueError("Frozen weights changed")
+    events=records(source,"budget")
+    reserved={r["call"]:r for r in events if r["event"]=="reserve"}
+    settled={r["call"]:r for r in events if r["event"]=="settle"}
+    unknown=set(reserved)-set(settled)
+    transport=records(source,"transport")
+    if (len(unknown)!=1 or len(transport)!=1 or transport[0]["call"] not in unknown
+            or transport[0]["action"]!="initial" or transport[0]["model_name"]!="producer"
+            or transport[0]["task_id"]!=tasks[len(initial)]
+            or [r["task_id"] for r in initial]!=tasks[:len(initial)]
+            or set(settled)!={r["call"] for r in calls}):
+        raise ValueError("Unknown prefix identity/order is not uniquely preserved")
+    missing=transport[0]
+    selected=cps[:config["maximum_checkpoints"]]
+    if any(tasks.index(c["task_id"])>=tasks.index(missing["task_id"]) for c in selected):
+        raise ValueError("Missing prefix could change the selected recovery population")
+    for call in calls:
+        if Decimal(str(call["usage"]["cost"]))!=Decimal(str(settled[call["call"]]["cost_usd"])):
+            raise ValueError("Known receipt mismatch")
+    if len(records(source,"evaluations"))!=len(calls):
+        raise ValueError("Known prefix evaluations are incomplete")
+    for event in events:
+        if event["event"]=="reserve":
+            if (Decimal(str(event["reserved_usd"]))!=reservation(config,"producer")
+                    or event["model"]!=config["models"]["producer"]["id"]):
+                raise ValueError("Prefix reservation differs from the frozen provider/model ceiling")
+            if ledger.reserve(Decimal(str(event["reserved_usd"])),event["model"])!=event["call"]:
+                raise ValueError("Imported admission sequence changed")
+        else:
+            ledger.settle(event["call"],event["cost_usd"])
+    for name in ("calls.jsonl","initial.jsonl","checkpoints.jsonl","evaluations.jsonl","transport.jsonl","frozen-policy.json","manifest.json"):
+        shutil.copyfile(source/name,output/name)
+    provenance={"event":"explicit_late_prefix_continuation","created_utc":datetime.now(timezone.utc).isoformat(),
+        "source_manifest_sha256":file_hash(source/"manifest.json"),"source_summary":summary,
+        "source_hashes":{n:file_hash(source/n) for n in ("calls.jsonl","initial.jsonl","checkpoints.jsonl","evaluations.jsonl","budget.jsonl","transport.jsonl")},
+        "imported_observed_prefixes":len(initial),"censored_prefix":missing,
+        "imported_budget_events":len(events),"imported_checkpoints":len(cps),
+        "selected_checkpoint_ids_unchanged":[c["checkpoint_id"] for c in selected],
+        "new_collector_git_sha":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
+        "new_collector_sha256":file_hash(Path(__file__)),
+        "manifest_note":"manifest.json remains the original frozen experimental identity; this file records the continuation implementation."}
+    (output/"prefix-continuation.json").write_text(json.dumps(provenance,sort_keys=True,indent=2)+"\n")
+    return {"initial":initial,"checkpoints":cps,"censored_tasks":[missing["task_id"]]}
+
+
 def collect(config: dict, tasks: list[str], problems: dict, policy: dict, source: dict,
-            client: OpenRouterClient, verifier: SandboxVerifier, output: Path) -> dict:
+            client: OpenRouterClient, verifier: SandboxVerifier, output: Path, prefixes: dict | None = None) -> dict:
     """No automatic retries/resume; keep every response and every unresolved admission."""
-    initial, checkpoints, branches = [], [], []
+    initial, checkpoints, branches = (list(prefixes["initial"]),list(prefixes["checkpoints"]),[]) if prefixes else ([],[],[])
+    censored=prefixes["censored_tasks"] if prefixes else []
 
     score_lock = threading.Lock()
 
@@ -184,7 +253,8 @@ def collect(config: dict, tasks: list[str], problems: dict, policy: dict, source
 
     status = "complete"
     try:
-        for t in tasks:
+        done={r["task_id"] for r in initial}|set(censored)
+        for t in (t for t in tasks if t not in done):
             job = {"task_id": t, "action": "initial", "model_name": "producer", "messages": producer_messages(problems[t])}
             call = client.complete("producer", job["messages"], config["seed"], {k: v for k,v in job.items() if k != "messages"})
             score(job, call)
@@ -240,10 +310,12 @@ def collect(config: dict, tasks: list[str], problems: dict, policy: dict, source
                               "responses": len(branches), "spent_usd": float(client.ledger.spent)}), flush=True)
     except (BudgetStopped, BackendStopped) as exc:
         status = type(exc).__name__ + ": " + str(exc)
+    if status=="complete" and censored:
+        status="complete_with_censored_prefix"
     summary = {"status": status, "initial_tasks": len(initial), "failed_checkpoints": len(checkpoints),
         "branch_responses": len(branches), "known_cost_usd": float(client.ledger.spent),
         "unresolved_reservations_usd": float(sum(client.ledger.pending.values())),
-        "prior_campaign_upper_usd": config["prior_committed_usd"]}
+        "prior_campaign_upper_usd": config["prior_committed_usd"],"censored_initial_tasks":censored}
     (output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
     return summary
 
@@ -255,6 +327,7 @@ def main() -> int:
     parser.add_argument("--live", action="store_true")
     parser.add_argument("--budget-usd", type=float)
     parser.add_argument("--key-stdin", action="store_true")
+    parser.add_argument("--continue-prefix-from",type=Path)
     args = parser.parse_args()
     config = json.loads(args.config.read_text())
     if args.live and (not args.key_stdin or args.budget_usd is None or args.budget_usd <= 0
@@ -283,16 +356,23 @@ def main() -> int:
     if not key:
         parser.error("Missing stdin key")
     ledger = BudgetLedger(args.output / "budget.jsonl", args.budget_usd)
+    prefixes=None
+    if args.continue_prefix_from:
+        prefixes=import_prefixes(args.continue_prefix_from,args.output,ledger,config,policy,tasks)
     verifier = SandboxVerifier()
-    manifest["sandbox"] = verifier.preflight()
+    probe=verifier.preflight()
     client = OpenRouterClient(key, config, args.output, ledger)
     preflight = client.preflight()
     # Curatable manifest: never persist personal balances/keys.
-    manifest["endpoints"] = preflight["endpoints"]
-    (args.output / "manifest.json").write_text(json.dumps(manifest, sort_keys=True, indent=2) + "\n")
-    result = collect(config, tasks, problems, policy, source, client, verifier, args.output)
+    if prefixes:
+        (args.output/"continuation-preflight.json").write_text(json.dumps({"sandbox":probe,"endpoints":preflight["endpoints"],
+            "created_utc":datetime.now(timezone.utc).isoformat()},sort_keys=True,indent=2)+"\n")
+    else:
+        manifest.update(sandbox=probe,endpoints=preflight["endpoints"])
+        (args.output / "manifest.json").write_text(json.dumps(manifest, sort_keys=True, indent=2) + "\n")
+    result = collect(config, tasks, problems, policy, source, client, verifier, args.output,prefixes)
     print(json.dumps(result), flush=True)
-    return 0 if result["status"] == "complete" else 2
+    return 0 if result["status"].startswith("complete") else 2
 
 
 if __name__ == "__main__":

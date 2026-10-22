@@ -45,6 +45,18 @@ def interval(values, alpha=.05):
 def audit(root: Path) -> dict:
     manifest = json.loads((root / "manifest.json").read_text())
     cfg = manifest["config"]
+    continuation=json.loads((root/"prefix-continuation.json").read_text()) if (root/"prefix-continuation.json").exists() else None
+    censored=[continuation["censored_prefix"]] if continuation else []
+    censored_tasks={r["task_id"] for r in censored}
+    if continuation:
+        require(continuation["source_manifest_sha256"]==file_hash(root/"manifest.json"),"Original experimental identity changed")
+        counts={"calls.jsonl":continuation["imported_observed_prefixes"],"initial.jsonl":continuation["imported_observed_prefixes"],
+            "evaluations.jsonl":continuation["imported_observed_prefixes"],"checkpoints.jsonl":continuation["imported_checkpoints"],
+            "budget.jsonl":continuation["imported_budget_events"],"transport.jsonl":1}
+        import hashlib
+        for name,count in counts.items():
+            prefix=b"".join((root/name).read_bytes().splitlines(keepends=True)[:count])
+            require(hashlib.sha256(prefix).hexdigest()==continuation["source_hashes"][name],"Imported evidence changed: "+name)
     reference_path = Path(cfg["reference_audit"])
     require(file_hash(reference_path) == cfg["reference_audit_sha256"], "Reference census changed")
     reference = [json.loads(s) for s in reference_path.read_text().splitlines()]
@@ -92,7 +104,8 @@ def audit(root: Path) -> dict:
         require(r.get("seed_sent") is None, "Sampler seed differs from protocol")
         require(not (r["usage"].get("completion_tokens_details") or {}).get("reasoning_tokens",0), "Unexpected reasoning tokens")
     initial = records(root, "initial")
-    require([r["task_id"] for r in initial] == manifest["task_order"][:len(initial)], "Initial task selection/order drift")
+    observed_order=[t for t in manifest["task_order"] if t not in censored_tasks]
+    require([r["task_id"] for r in initial] == observed_order[:len(initial)], "Initial task selection/order drift")
     require(len({r["task_id"] for r in initial}) == len(initial), "Repeated initial task")
     prompts = {}
     for r in initial:
@@ -121,7 +134,12 @@ def audit(root: Path) -> dict:
     selection = json.loads((root / "selection.json").read_text())
     selected = selection["selected_checkpoint_ids"]
     require(selected == [c["checkpoint_id"] for c in cp_list[:cfg["maximum_checkpoints"]]], "Recovery selection drift")
-    require(len(initial) == len(manifest["task_order"]), "Initial census is incomplete; no confirmatory result")
+    require(len(initial)+len(censored) == len(manifest["task_order"]), "Initial census has unaccounted missing tasks")
+    if censored:
+        require(continuation["selected_checkpoint_ids_unchanged"]==selected,"Selected cohort changed during continuation")
+        missing=censored[0]
+        require(missing["call"] in reserves and missing["call"] not in settlements and missing["action"]=="initial", "Censored prefix lost its full reservation")
+        require(all(manifest["task_order"].index(cps[id_]["task_id"])<manifest["task_order"].index(missing["task_id"]) for id_ in selected), "Censored prefix could change selected failures")
     require(selection["last_admitted_call"] == max(r["call"] for r in initial), "Selection boundary changed")
     predictions = records(root, "local-predictions")
     pred = {r["checkpoint_id"]: r for r in predictions}
@@ -296,6 +314,7 @@ def analyze(data):
     report = {"status": "complete_confirmatory_bank" if selected == complete else "incomplete_descriptive_bank",
         "primary": primary, "selected_states": selected, "complete_states": complete, "missing_state_utility_bounds": incomplete_bound,
         "initial_tasks": len(data["initial"]), "initial_public_failures": len(data["checkpoints"]),
+        "initial_eligible_tasks":len(data["manifest"]["task_order"]),"initial_censored_tasks":len(data["manifest"]["task_order"])-len(data["initial"]),
         "initial_full_successes": sum(r["passed"] for r in data["initial"]),
         "initial_public_false_positives": sum(r["visible_passed"] and not r["passed"] for r in data["initial"]),
         "collection": data["collection"], "rates": rates, "effects": effects, "model_context_interactions":interactions,"policy_summary": summaries,
@@ -306,6 +325,12 @@ def analyze(data):
         "latent_benefit_variance_diagnostic": heterogeneity, "feature_shift": featureshift,
         "failure_statuses": dict(Counter(str(e["visible"]["status"]) for e in data["evaluations"].values())),
         "branch_public_false_positives": sum(r["visible_passed"] and not r["passed"] for r in data["branches"]),
+        "selected_state_statuses":dict(Counter(str(data["checkpoints"][id_]["feedback"]["status"]) for id_ in data["selected"])),
+        "selected_nonempty_artifacts":sum(bool(data["checkpoints"][id_]["solution"].strip()) for id_ in data["selected"]),
+        "selected_syntax_valid_artifacts":sum(bool(features(data["prompts"][data["checkpoints"][id_]["task_id"]],data["checkpoints"][id_])["syntax_valid"]) for id_ in data["selected"]),
+        "verifier_elapsed_seconds_sum":sum(e["verifier_seconds"] for e in data["evaluations"].values()),
+        "verifier_elapsed_seconds_median":float(np.median([e["verifier_seconds"] for e in data["evaluations"].values()])),
+        "note_verifier_time":"Sum of per-candidate elapsed times; concurrent workers mean this is not pipeline wall time, CPU time or a monetary charge.",
         "explicit_provider_errors": sum(r.get("finish_reason") == "error" for r in data["calls"].values())}
     return report, rollouts
 
@@ -474,18 +499,18 @@ def plot(r, path):
     for m in r["effects"]:
         for name,pair in r["effects"][m].items():
             a = pair["simultaneous_99_583"]
-            labels.append(m+" / "+name.replace("artifact_feedback","both").replace("artifact","code"))
+            labels.append({"small":"9B","large":"27B"}[m]+" / "+name.replace("artifact_feedback","both").replace("artifact","code"))
             points.append(100*a["estimate"]); lows.append(100*(a["estimate"]-a["low"])); highs.append(100*(a["high"]-a["estimate"]))
     y = np.arange(len(labels))
     ax[0].errorbar(points,y,xerr=[lows,highs],fmt="o",capsize=3)
     ax[0].axvline(0,color="gray",lw=1); ax[0].set_yticks(y,labels,fontsize=8); ax[0].invert_yaxis()
     ax[0].set_xlabel("Success difference (percentage points)"); ax[0].set_title("Context contrasts: simultaneous intervals")
-    names = ["best_static", "feedback", "state", "state_model_only", "direct_small", "direct_large"]
+    names = ["best_static", "feedback", "state", "state_model_only"]
     for name in names:
         row=r["policy_summary"]["0.01"][name]
         ax[1].scatter(row["cost_usd"]*1000,row["success"]*100,label=name)
     ax[1].set_xlabel("Mean API dollars × 1,000"); ax[1].set_ylabel("Conditional recovery success (%)")
-    ax[1].set_title("Two-draw replay at $0.01"); ax[1].legend(fontsize=8)
+    ax[1].set_title("Recovery replay at $0.01 (prefix charged)"); ax[1].legend(fontsize=8)
     fig.suptitle(f"MBPP+ replication: {r['complete_states']} independent failed tasks")
     fig.savefig(path,dpi=180); fig.savefig(path.with_suffix(".pdf")); plt.close(fig)
 

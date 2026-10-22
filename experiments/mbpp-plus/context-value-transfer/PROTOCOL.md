@@ -236,3 +236,34 @@ chosen solver call. Compare full-state versus feedback-only, task-only and
 the strong static rule, with task-bootstrap intervals. All are secondary,
 without replacing the primary or a multiple-testing win claim. Missing forecasts
 are explicit; do not substitute free forecasts or silently drop expensive failures.
+
+## Explicit late-prefix transport continuation, before any recovery response
+
+Initial collection stopped after **347 observed prefixes** and 120 public
+failures. Admission 348, `Mbpp/74`, returned no preserved response identity
+(`URLError`); its **entire $0.0026112 reservation stays held**, alongside
+$0.0061082 of observed prefix charges. No recovery response existed at this stop.
+The original run journal remains immutable.
+
+The first 96 failures were already observed before admission 348. Therefore this
+late missing prefix cannot change the selected recovery cohort, regardless of
+its unobserved outcome. An explicit `--continue-prefix-from` imports every known
+response/evaluation and every budget event into a fresh directory, preserving
+call IDs and the unknown reservation. It **never reissues** the 347 observed
+prefixes or the unknown `Mbpp/74` request. It completes only the 29 unadmitted
+prefix tasks, then collects the unchanged first 96 matched recovery blocks.
+The same $1.48 run limit includes all imported charges and reservations.
+
+The original `manifest.json` remains the frozen experimental identity so that
+source weights, task order and semantic-control identity stay unchanged.
+`prefix-continuation.json` separately records the new collector Git/source hash,
+source-file hashes, exact imported counts, censored identity and proof that the
+selected IDs are unchanged. A separate sanitized preflight records current
+endpoint availability. Evaluator, policy, prompt and billing-transport helpers
+must match the original hashes. No provider, model, sampler or hypothesis changes.
+
+Report **376 observed prefixes plus one censored prefix among 377 eligible
+tasks**, rather than a complete benchmark census or a zero-cost/model-failure
+imputation. Whole-benchmark initial success has a one-task uncertainty bound.
+The selected 96-state primary bank remains fully defined and unaffected by this
+late censoring; missing recovery cells would still make its inference incomplete.
