@@ -28,8 +28,10 @@ paper should connect:
 | `docs/audits/theory-consolidation.md` | Theorem genealogy, validation notes, and source disposition. |
 | `docs/audits/paper-archive-manifest.md` | File-level policy for archived drafts, local snapshots, PDFs, and nearest text neighbors. |
 
-Do not treat `archive/*_local.tex`, old `main_*` drafts, or retained PDFs as
-active manuscript sources unless the task explicitly asks for archival review.
+Superseded `*_local.tex` and `main_*` drafts and compiled manuscript snapshots
+were removed from the working tree. Consult the
+[cleanup record](history-merge.md#working-tree-cleanup) for their Git history.
+Retained reference PDFs are not active manuscript sources.
 
 ## Empirical Evidence
 
@@ -96,14 +98,13 @@ and `autoresearch/scripts/README.md`.
 
 ## Archive Policy
 
-- `paper/neurips-submission/archive/` contains historical manuscripts and
-  references. It is readable context, not active source. Use
+- `paper/neurips-submission/archive/` contains consolidated theory, planning
+  notes, and references. It is readable context, not active source. Use
   `docs/audits/paper-archive-manifest.md` before mining or deleting anything
   in that directory.
-- `experiments/archive/` contains historical benchmark implementations outside
-  active evidence.
-- `artifacts/source-snapshots/` preserves source-state provenance and should not
-  be imported as active code.
+- Retired benchmark implementations and source-state snapshots are recoverable
+  through Git history, as recorded in `docs/history-merge.md`.
+- `artifacts/raw/` retains raw campaign archives needed for reproducibility.
 - `paper/neurips-submission/figures/` intentionally vendors paper-ready copies
   of figures. The generating experiment remains canonical.
 

@@ -129,7 +129,6 @@ CODE_MODULE_EXCLUDED_PARTS = {
 PAPER_FIGURE_ROOT = Path("paper/neurips-submission/figures")
 PAPER_FIGURE_SUFFIXES = {".pdf", ".png"}
 FIGURE_GENERATOR_HINTS = {
-    "candidates": "src/plot_humaneval_candidates.py",
     "humaneval": "src/plot_humaneval_paper.py",
     "strategy_routing": "src/plot_strategy_results.py",
     "autoresearch": "autoresearch/scripts",

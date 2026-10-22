@@ -12,7 +12,7 @@ clear experimental boundaries.
 
 - `AGENTS.md` and `docs/knowledge-map.md`: agent-facing entry points that
   explain what is canonical, what is archive, and where evidence lives.
-- `paper/`: submitted manuscript, LaTeX sources, historical drafts, references,
+- `paper/`: active LaTeX manuscripts, consolidated theory, references,
   and paper figures.
 - `autoresearch/`: runnable CIFAR-10 edit--verify benchmark and analysis code.
 - `experiments/autoresearch-cifar10/`: AutoResearch-only experiments and evidence.
@@ -20,10 +20,8 @@ clear experimental boundaries.
   `experiments/bbh/`: worker-frontier and routing studies grouped by benchmark.
 - `experiments/swebench-verified/`: SWE-bench scaffolds, shared runtime, and the
   dated open-source meta-loop evidence archive.
-- `experiments/archive/`: historical benchmark implementations that are not
-  part of the active empirical evidence.
-- `artifacts/raw/` and `artifacts/source-snapshots/`: Git LFS archives and exact
-  working-tree files retained from the source folders for provenance.
+- `artifacts/raw/`: Git LFS archives of raw AutoResearch campaigns retained
+  for reproducibility.
 - `src/agent_workflow/` and `src/vao/`: orchestration runtime imported from
   `agentops-lab-public`.
 - `src/*.py`: shared HumanEval+, MBPP+, BBH, and retry-routing pipeline inherited
@@ -105,17 +103,22 @@ The original repository roots and path mapping are documented in
 
 ## Manuscript status
 
-The original submitted manuscript is preserved as
-[`paper/neurips-submission/archive/submitted-manuscript.pdf`](paper/neurips-submission/archive/submitted-manuscript.pdf). The
-reproducibility audit found that its promoted deployment-loss table used a
+The historical submitted manuscript is available in
+[Git history](https://github.com/EmaRimoldi/how-to-pick-a-model/blob/d98e3f2209c6e470885e748aafb0a41ea6395291/paper/neurips-submission/archive/submitted-manuscript.pdf).
+It was removed from the current tree after a text-layer anomaly was confirmed;
+build current PDFs from the active sources with `make paper-build`.
+The reproducibility audit also found that its promoted deployment-loss table used a
 legacy full-horizon composite loss rather than the first-passage loss stated in
 the text. The corrected accounting and later three-worker analysis are the
 canonical computational results in this repository. Details are recorded in
 [`docs/audits/manuscript-reproducibility.md`](docs/audits/manuscript-reproducibility.md).
 The theorem-level consolidation of the manuscript family is documented in
 [`docs/audits/theory-consolidation.md`](docs/audits/theory-consolidation.md).
-The root-level paper archive is classified in
+The retained paper archive is classified in
 [`docs/audits/paper-archive-manifest.md`](docs/audits/paper-archive-manifest.md).
+Removed backups, local snapshots, launch material, and retired benchmark code
+remain recoverable through Git history; see the
+[cleanup record](docs/history-merge.md#working-tree-cleanup).
 
 ## Historical names
 

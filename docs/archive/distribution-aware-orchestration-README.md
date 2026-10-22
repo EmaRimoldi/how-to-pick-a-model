@@ -1,9 +1,11 @@
 # Verifiable Agentic Optimization for AutoResearch Routing
 
 > Historical source README. Paths below describe the former standalone tree.
-> The `stateful_query_engine` directory now lives at
-> `experiments/archive/stateful-query-engine/` because it contains no
+> Historical snapshot: the `stateful_query_engine` directory was imported to
+> `experiments/archive/stateful-query-engine/` because it contained no
 > experimental result, report, or run evidence.
+> That implementation was retired from the working tree in October 2026;
+> see `docs/history-merge.md` for the preserved Git snapshot.
 
 This repository contains the active benchmark harness and analysis code for
 **verifiable agentic optimization on AutoResearch-style CIFAR-10 training

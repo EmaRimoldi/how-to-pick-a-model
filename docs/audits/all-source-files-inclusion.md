@@ -2,6 +2,12 @@
 
 Date: 2026-07-28
 
+Historical inclusion audit for the
+[pre-cleanup tree](https://github.com/EmaRimoldi/how-to-pick-a-model/tree/d98e3f2209c6e470885e748aafb0a41ea6395291).
+The October cleanup removed the source snapshots and Python caches described
+below. Raw LFS campaign archives and the Step 1 evidence remain tracked; the
+current inventory and cleanup record describe the current tree.
+
 This audit records the material added after the repository-history merge at
 `71aeb45200d55c326aee685b04313bdc85c62764`. The purpose is to preserve files
 that existed outside the source Git commits without making raw or

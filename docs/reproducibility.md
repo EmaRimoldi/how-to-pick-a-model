@@ -222,8 +222,9 @@ per-agent logs, `results/trajectory.jsonl`, `results/results.tsv`,
 
 ## Paper
 
-The submitted artifact and source are under `paper/`. When TeX Live is
-available, compile the active manuscript sources out of tree:
+Active manuscript sources and retained theory references are under `paper/`.
+Historical compiled manuscripts are available through Git history. When TeX
+Live is available, compile the active manuscript sources out of tree:
 
 ```bash
 make paper-build

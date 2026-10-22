@@ -25,21 +25,28 @@ directories, so the Overleaf-compatible source tree stays clean.
 
 ## Archive
 
-`archive/` contains historical drafts, extracted references, local snapshots,
-and retained PDFs. The important anchors are:
+`archive/` contains consolidated theory, planning notes, extracted references,
+and reference PDFs. The important anchors are:
 
 | File | Role |
 | --- | --- |
 | `archive/theory_anchor.tex` | Maximal validated theory anchor. |
 | `archive/Beneventano_Poggio.tex` | Mechanical extraction retained for theory audit context. |
 | `archive/next_steps.tex` | Independent planning document; keep separate. |
-| `archive/submitted-manuscript.pdf` | Immutable submitted manuscript snapshot. |
 | `archive/BP.pdf` and `archive/Achille & Soatto.pdf` | External/reference PDFs retained for provenance. |
 
 The generated file-level manifest is
 [`../../docs/audits/paper-archive-manifest.md`](../../docs/audits/paper-archive-manifest.md).
 It classifies all archived root files and records nearest-neighbor similarity
 among archived text sources.
+
+Superseded drafts, local snapshots, and compiled manuscript snapshots were
+removed from the current tree after theory consolidation. They remain in
+[Git history](https://github.com/EmaRimoldi/how-to-pick-a-model/tree/d98e3f2209c6e470885e748aafb0a41ea6395291/paper/neurips-submission).
+The historical submitted PDF has a known text-layer anomaly; use
+`make paper-build` to produce PDFs from the active sources. The accounting
+discrepancy is documented in
+[`../../docs/audits/manuscript-reproducibility.md`](../../docs/audits/manuscript-reproducibility.md).
 
 Do not edit archive files as the active paper unless the task explicitly asks
 for archival consolidation.

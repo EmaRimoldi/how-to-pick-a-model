@@ -6,12 +6,12 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 ## Summary
 
 - Canonical docs present: `23/23`
-- Paper TeX sources indexed: `14`
+- Paper TeX sources indexed: `6`
 - Formal objects in canonical TeX anchors: `97`
-- Experiment bundles indexed: `20`
+- Experiment bundles indexed: `19`
 - Script entrypoints indexed: `35`
-- Code modules indexed: `134`
-- Paper figures indexed: `125`
+- Code modules indexed: `133`
+- Paper figures indexed: `111`
 - Active paper references indexed: `20`
 - Command targets indexed: `7`
 
@@ -48,17 +48,9 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | Path | Role | Lines | Formal Objects | Canonical |
 | --- | --- | --- | --- | --- |
 | `paper/neurips-submission/archive/Beneventano_Poggio.tex` | mechanical historical theory extraction | 1954 | 0 | yes |
-| `paper/neurips-submission/archive/final_paper.tex` | archived draft or provenance source | 1339 | 15 | archive |
-| `paper/neurips-submission/archive/final_paper_local.tex` | archived draft or provenance source | 1564 | 20 | archive |
-| `paper/neurips-submission/archive/main_1.tex` | archived draft or provenance source | 945 | 10 | archive |
-| `paper/neurips-submission/archive/main_3.tex` | archived draft or provenance source | 2271 | 31 | archive |
-| `paper/neurips-submission/archive/main_3_local.tex` | archived draft or provenance source | 2352 | 31 | archive |
-| `paper/neurips-submission/archive/main_local.tex` | archived draft or provenance source | 967 | 17 | archive |
-| `paper/neurips-submission/archive/neurips_old.tex` | archived draft or provenance source | 1166 | 13 | archive |
 | `paper/neurips-submission/archive/next_steps.tex` | independent planning document | 2308 | 0 | yes |
 | `paper/neurips-submission/archive/theory_anchor.tex` | maximal validated theory anchor | 2073 | 62 | yes |
 | `paper/neurips-submission/arxiv.tex` | long AutoResearch manuscript anchor | 2171 | 17 | yes |
-| `paper/neurips-submission/arxiv_backup.tex` | paper source | 1918 | 17 | archive |
 | `paper/neurips-submission/main.tex` | current compact submission anchor | 1206 | 18 | yes |
 | `paper/neurips-submission/piers_macro.tex` | macro file | 227 | 0 | archive |
 
@@ -187,7 +179,6 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | SWE-bench Verified | `experiments/swebench-verified/open-source-orchestration-scaffold/` | scaffold | Tier 3: Future Work Or Scaffold | worker/meta-design configs and prompt-safe data manifests |
 | SWE-bench Verified | `experiments/swebench-verified/open-source-meta-loop-2026-06-07/` | historical result archive | not tiered | official evaluation manifests, failure analyses, plots, selected designs |
 | SWE-bench Verified | `experiments/swebench-verified/shared-runtime/` | implementation | not tiered | orchestration code, Slurm launcher, and tests shared by the SWE studies |
-| Historical | `experiments/archive/stateful-query-engine/` | archived benchmark | not tiered | 61 implementation/config/test files; no runs, results, figures, or reports |
 
 ## Script Entrypoints
 
@@ -252,7 +243,6 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | model-routing root modules | `src/mbpp_data.py` | Exports: load_mbpp_plus, description_from_prompt, signature_for_problem, problem_for_tagging | load_mbpp_plus, description_from_prompt, signature_for_problem, problem_for_tagging |
 | model-routing root modules | `src/models.py` | Exports: ModelUnavailableError, ModelInfo, Generation, resolve_model_info, generate_ollama, make_completion_prompt, strip_markdown_fences, build_solution | ModelUnavailableError, ModelInfo, Generation, resolve_model_info, generate_ollama, make_completion_prompt, strip_markdown_fences, build_solution |
 | model-routing root modules | `src/plot.py` | Exports: load_config, load_json, split_key, save_figure, finite_positive, plot_frontier, plot_disagreement, plot_success_curves | load_config, load_json, split_key, save_figure, finite_positive, plot_frontier, plot_disagreement, plot_success_curves |
-| model-routing root modules | `src/plot_humaneval_candidates.py` | Exports: configure_style, read_json, read_jsonl, save, clean_axis, load_trace_bank, allocation_grid, execute | configure_style, read_json, read_jsonl, save, clean_axis, load_trace_bank, allocation_grid, execute |
 | model-routing root modules | `src/plot_humaneval_paper.py` | Exports: configure_style, read_json, read_jsonl, save, clean_axis, plot_speed_accounting, first_pass_index, plot_retry_and_frontier | configure_style, read_json, read_jsonl, save, clean_axis, plot_speed_accounting, first_pass_index, plot_retry_and_frontier |
 | model-routing root modules | `src/plot_router.py` | Exports: load_json, save_figure, ci_yerr, ordered_modes, plot_time_vs_accuracy, plot_time_saved_by_mode, plot_alloc_distribution, plot_gap_to_oracle | load_json, save_figure, ci_yerr, ordered_modes, plot_time_vs_accuracy, plot_time_saved_by_mode, plot_alloc_distribution, plot_gap_to_oracle |
 | model-routing root modules | `src/plot_router_search.py` | Exports: main | main |
@@ -468,20 +458,6 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/threeworker_threshold_sensitivity.png` | png | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_threshold_sensitivity.png` |
 | autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/threeworker_worker_cost_quality_diagnostics.pdf` | pdf | same-name experiment artifact | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_worker_cost_quality_diagnostics.pdf` |
 | autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/threeworker_worker_cost_quality_diagnostics.png` | png | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_worker_cost_quality_diagnostics.png` |
-| candidates | `paper/neurips-submission/figures/candidates/candidate_alluvial_flow.pdf` | pdf | generated paper figure | `src/plot_humaneval_candidates.py` |
-| candidates | `paper/neurips-submission/figures/candidates/candidate_alluvial_flow.png` | png | generated paper figure | `src/plot_humaneval_candidates.py` |
-| candidates | `paper/neurips-submission/figures/candidates/candidate_first_hit_survival.pdf` | pdf | generated paper figure | `src/plot_humaneval_candidates.py` |
-| candidates | `paper/neurips-submission/figures/candidates/candidate_first_hit_survival.png` | png | generated paper figure | `src/plot_humaneval_candidates.py` |
-| candidates | `paper/neurips-submission/figures/candidates/candidate_pareto_frontier.pdf` | pdf | generated paper figure | `src/plot_humaneval_candidates.py` |
-| candidates | `paper/neurips-submission/figures/candidates/candidate_pareto_frontier.png` | png | generated paper figure | `src/plot_humaneval_candidates.py` |
-| candidates | `paper/neurips-submission/figures/candidates/candidate_plot_gallery.pdf` | pdf | generated paper figure | `src/plot_humaneval_candidates.py` |
-| candidates | `paper/neurips-submission/figures/candidates/candidate_plot_gallery.png` | png | generated paper figure | `src/plot_humaneval_candidates.py` |
-| candidates | `paper/neurips-submission/figures/candidates/candidate_raincloud_speedup.pdf` | pdf | generated paper figure | `src/plot_humaneval_candidates.py` |
-| candidates | `paper/neurips-submission/figures/candidates/candidate_raincloud_speedup.png` | png | generated paper figure | `src/plot_humaneval_candidates.py` |
-| candidates | `paper/neurips-submission/figures/candidates/candidate_regret_landscape.pdf` | pdf | generated paper figure | `src/plot_humaneval_candidates.py` |
-| candidates | `paper/neurips-submission/figures/candidates/candidate_regret_landscape.png` | png | generated paper figure | `src/plot_humaneval_candidates.py` |
-| candidates | `paper/neurips-submission/figures/candidates/candidate_ternary_allocation.pdf` | pdf | generated paper figure | `src/plot_humaneval_candidates.py` |
-| candidates | `paper/neurips-submission/figures/candidates/candidate_ternary_allocation.png` | png | generated paper figure | `src/plot_humaneval_candidates.py` |
 | humaneval | `paper/neurips-submission/figures/humaneval/humaneval_data_profiles.pdf` | pdf | generated paper figure | `src/plot_humaneval_paper.py` |
 | humaneval | `paper/neurips-submission/figures/humaneval/humaneval_data_profiles.png` | png | generated paper figure | `src/plot_humaneval_paper.py` |
 | humaneval | `paper/neurips-submission/figures/humaneval/humaneval_information_speed_effect.pdf` | pdf | generated paper figure | `src/plot_humaneval_paper.py` |
