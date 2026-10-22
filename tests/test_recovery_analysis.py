@@ -1,10 +1,16 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import json
+from pathlib import Path
 
 import pytest
 
-from scripts.analyze_recovery_validation import paired_interval, reservation, rollout
+from scripts.analyze_recovery_validation import analyze, audit, paired_interval, reservation, rollout
+from vao.decisions.context_value import ARMS
+from vao.decisions.openrouter import BudgetLedger, OpenRouterClient
+from vao.decisions.pilot import digest
+from vao.decisions.recovery import run
 
 
 @pytest.fixture
@@ -62,7 +68,42 @@ def test_state_policy_uses_only_budget_admissible_actions(replay_data):
     assert r["passed"] and r["cost_usd"] <= 0.0003
 
 
+def test_routing_and_context_ablations_restrict_the_action_menu(replay_data):
+    assert rollout("t", "state_model_only", 0.01, replay_data)["selected_action"] == "large.artifact_feedback"
+    assert rollout("t", "state_context_small", 0.01, replay_data)["selected_action"] == "small.fresh"
+
+
 def test_task_bootstrap_includes_zero_and_negative_outcomes():
     r = paired_interval([0, -1, 1, 0, 0])
     assert r["mean"] == 0 and r["task_clusters"] == 5
     assert r["bootstrap_95"][0] < 0 < r["bootstrap_95"][1]
+
+
+def test_end_to_end_audit_refits_frozen_policy_and_reproduces_forecast_prompts(tmp_path, monkeypatch):
+    config = json.loads(Path("experiments/humaneval-plus/context-value/configs/validation.json").read_text())
+    config["minimum_development_failed_tasks"] = 2
+    split = {"development_task_ids": ["HumanEval/0", "HumanEval/1"], "evaluation_task_ids": ["HumanEval/2"],
+             "reserved_task_ids": [], "reference_exclusions": []}
+    problems = {task: {"prompt": "public task " + task} for task in split["development_task_ids"] + split["evaluation_task_ids"]}
+    manifest = {"config": config, "config_sha256": digest(config), "split": split, "git_sha": "source",
+                "prompt_sha256": {task: digest(p["prompt"]) for task, p in problems.items()}}
+    (tmp_path / "manifest.json").write_text(json.dumps(manifest))
+    client = OpenRouterClient("dummy", config, tmp_path, BudgetLedger(tmp_path / "budget.jsonl", 1.97))
+    def request(endpoint, body):
+        forecast = body["messages"][0]["content"].startswith("A previous Python")
+        model = next(k for k, v in config["models"].items() if v["id"] == body["model"])
+        content = {"probabilities": {m + "." + a: 0.8 for m in config["target_models"] for a in ARMS}} if forecast else {"solution": "def f(): return " + ("1" if model == "large" else "0")}
+        return {"id": "test", "model": body["model"], "provider": "DeepInfra" if model == "producer" else "SiliconFlow",
+                "usage": {"cost": 0.0001 if model == "large" else 0.00001, "prompt_tokens": 20, "completion_tokens": 20},
+                "choices": [{"finish_reason": "stop", "message": {"content": json.dumps(content)}}]}
+    monkeypatch.setattr(client, "request", request)
+    class Verifier:
+        def check(self, problem, solution, mode):
+            passed = "return 1" in solution
+            return {"passed": passed, "status": "pass" if passed else "fail", "attempted": 2, "failed": 0 if passed else 1, "feedback": "public failure"}
+    assert run(config, problems, split, client, Verifier(), tmp_path)["status"] == "complete"
+    audited = audit(tmp_path)
+    report, rows = analyze(audited)
+    assert report["audit_passed"] and report["evaluation_tasks"] == 1
+    assert report["primary"]["net_utility_difference_usd"]["mean"] == 0
+    assert all(r["cost_usd"] <= r["budget_usd"] for r in rows)

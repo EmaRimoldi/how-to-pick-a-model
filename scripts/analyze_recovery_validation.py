@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import time
 from collections import Counter, defaultdict
 from decimal import Decimal
 from pathlib import Path
@@ -200,9 +201,15 @@ def rollout(task: str, policy_name: str, budget: float, data: dict, partition: s
             choice = policy_name.removeprefix("fixed:")
         elif policy_name == "best_fixed":
             choice = fitted["best_fixed_action"]
-        elif policy_name in {"global", "task", "state"}:
+        elif policy_name in {"global", "task", "state", "state_model_only", "state_context_small", "state_context_large"}:
             local = next(r for r in data["local"] if r["task_id"] == task)
-            probabilities = local["probabilities"][policy_name]
+            view = "state" if policy_name.startswith("state_") else policy_name
+            probabilities = local["probabilities"][view]
+            if policy_name == "state_model_only":
+                probabilities = {k: v for k, v in probabilities.items() if k.endswith(".artifact_feedback")}
+            elif policy_name.startswith("state_context_"):
+                model = policy_name.removeprefix("state_context_")
+                probabilities = {k: v for k, v in probabilities.items() if k.startswith(model + ".")}
         elif policy_name.startswith("api_"):
             if spent + reservation(cfg, "small") > ceiling:
                 reason = "forecast_not_admitted"
@@ -252,7 +259,8 @@ def analyze(data: dict) -> tuple[dict, list[dict]]:
     cfg = data["config"]
     ids = sorted(data["split"]["evaluation_task_ids"])
     options = [m + "." + a for m in cfg["target_models"] for a in ARMS]
-    policies = ["direct_small", "direct_large", "best_fixed", "global", "task", "state", "api_task_only", "api_state"] + ["fixed:" + k for k in options]
+    policies = ["direct_small", "direct_large", "best_fixed", "global", "task", "state", "api_task_only", "api_state",
+                "state_model_only", "state_context_small", "state_context_large"] + ["fixed:" + k for k in options]
     rollouts = [rollout(t, p, b, data) for b in cfg["task_budgets_usd"] for p in policies for t in ids]
     summary = {}
     replay_best = {}
@@ -343,7 +351,8 @@ def markdown(report: dict) -> str:
         f"task-bootstrap 95% interval {primary['bootstrap_95']}.", "",
         "| Policy at $0.01/task | Full verified success | Mean API USD | Mean net utility USD |",
         "| --- | --- | --- | --- |"]
-    for key in ("direct_small", "direct_large", "best_fixed", "development_replay_best", "global", "task", "state", "api_task_only", "api_state"):
+    for key in ("direct_small", "direct_large", "best_fixed", "development_replay_best", "global", "task", "state", "api_task_only", "api_state",
+                "state_model_only", "state_context_small", "state_context_large"):
         row = report["policies"]["0.01"][key]
         lines.append(f"| {key} | {row['success_rate']:.1%} | {row['mean_api_cost_usd']:.8f} | {row['mean_net_utility_usd']:.8f} |")
     lines += ["", "| Conditional recovery | Success | Task-bootstrap 95% interval |", "| --- | --- | --- |"]
@@ -373,7 +382,28 @@ def markdown(report: dict) -> str:
         "Distractor fields are character matched; provider token counts are recorded in analysis.json. "
         "The producer and next solvers differ in family/training/precision. Task-level holdout does not remove "
         "possible pretraining contamination of HumanEval+. This remains one benchmark family and one live provider snapshot.", ""]
+    lines += [f"Secondary replay-selected fixed actions by budget: {report['development_replay_best_actions']}.",
+              f"State-ridge minus this stronger fixed comparator at $0.01/task: "
+              f"{report['secondary_state_minus_development_replay_best_utility_usd']}.", ""]
     return "\n".join(lines)
+
+
+def benchmark_local_prediction(data: dict) -> dict:
+    """Offline CPU microbenchmark, separately labeled from original collection timing."""
+    states = [cp for cp in data["checkpoints"] if cp["split"] == "evaluation"]
+    by_call = {c["call"]: c for c in data["calls"]}
+    timing = {}
+    for view in ("global", "task", "state"):
+        start = time.process_time()
+        for _ in range(20):
+            for cp in states:
+                prompt = by_call[cp["parent_call"]]["messages"][0]["content"][len(SYSTEM) + 2:]
+                predict(data["policy"], prompt, cp, view)
+        operations = 20 * len(states)
+        timing[view] = {"predictions": operations,
+                        "mean_cpu_ms": 1000 * (time.process_time() - start) / operations if operations else None}
+    return {"kind": "offline_replay_microbenchmark_not_live_latency", "measurements": timing,
+            "dollar_conversion": None}
 
 
 def plot(report: dict, output: Path) -> None:
@@ -425,6 +455,7 @@ def main() -> int:
     args = parser.parse_args()
     data = audit(Path(args.input))
     report, rows = analyze(data)
+    report["local_prediction_timing"] = benchmark_local_prediction(data)
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=False)
     (output / "analysis.json").write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")

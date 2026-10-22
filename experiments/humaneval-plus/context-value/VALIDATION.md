@@ -111,6 +111,13 @@ tests sensitivity to the collector's original per-draw-prior fixed selection.
 Both static choices use development only; neither is chosen from held-out scores.
 The original primary comparison remains unchanged.
 
+Secondary ablations separate generic model routing from context selection:
+state-model-only chooses the next model while always supplying code+feedback;
+state-context-small and state-context-large choose the context condition while
+fixing the next model. They use the same frozen probabilities, value/cost rule,
+admission caps and observed draws. Joint selection gains alone must not be
+attributed to deciding what work to preserve without checking these controls.
+
 Also report conditional recovery rates, false positives, censoring/incomplete
 cells, abstentions, predictor Brier scores, errors on the **predicted difference**
 between both-versus-fresh and artifact-versus-fresh, and forecasting overhead.
