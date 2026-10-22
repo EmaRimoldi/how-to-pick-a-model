@@ -76,6 +76,8 @@ def test_transport_is_pinned_and_invalid_output_is_still_billed(tmp_path, config
     assert bodies[0]["provider"]["allow_fallbacks"] is False
     assert bodies[0]["provider"]["require_parameters"] is True
     assert bodies[0]["reasoning"] == {"enabled": False}
+    assert "seed" not in bodies[0]
+    assert result["seed_sent"] is None
     assert "dummy-private-key" not in (tmp_path / "calls.jsonl").read_text()
 
 

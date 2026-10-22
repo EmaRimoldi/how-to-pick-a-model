@@ -136,7 +136,9 @@ class OpenRouterClient:
                                    ("completion", model["output_per_million"])):
                 if Decimal(endpoint["pricing"][field]) * 1_000_000 > Decimal(str(ceiling)):
                     raise BackendStopped("Endpoint price increased; revise the protocol before running")
-            required = {"max_tokens", "reasoning", "response_format", "temperature", "seed"}
+            required = {"max_tokens", "reasoning", "response_format", "temperature"}
+            if self.config.get("request_seed", False):
+                required.add("seed")
             if not required <= set(endpoint.get("supported_parameters", [])):
                 raise BackendStopped("Endpoint does not support all protocol parameters")
             snapshots[name] = endpoint
@@ -156,13 +158,15 @@ class OpenRouterClient:
         call = self.ledger.reserve(reserve, model["id"])
         body = {
             "model": model["id"], "messages": messages, "max_tokens": max_tokens,
-            "temperature": self.config["temperature"], "seed": seed,
+            "temperature": self.config["temperature"],
             "reasoning": {"enabled": False}, "response_format": {"type": "json_object"},
             "provider": {"only": [self.config["provider"]], "allow_fallbacks": False,
                          "require_parameters": True, "quantizations": ["fp8"],
                          "max_price": {"prompt": model["input_per_million"],
                                        "completion": model["output_per_million"]}},
         }
+        if self.config.get("request_seed", False):
+            body["seed"] = seed
         start = time.perf_counter()
         try:
             payload = self.request("/chat/completions", body)
@@ -177,7 +181,8 @@ class OpenRouterClient:
                   "returned_model": payload.get("model"), "provider": payload.get("provider"),
                   "generation_id": payload.get("id"), "messages": messages,
                   "content": content, "finish_reason": choice.get("finish_reason"),
-                  "usage": usage, "elapsed_seconds": elapsed, "seed": seed}
+                  "usage": usage, "elapsed_seconds": elapsed, "draw_seed": seed,
+                  "seed_sent": body.get("seed")}
         append_json(self.output / "calls.jsonl", record)
         self.ledger.settle(call, usage.get("cost"))
         if str(payload.get("provider") or "").lower() != "siliconflow":

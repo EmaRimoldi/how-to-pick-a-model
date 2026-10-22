@@ -52,11 +52,11 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `experiments` | 1948 | 36.7M |
 | `artifacts` | 21 | 20.0M |
 | `paper` | 29 | 2.4M |
-| `src` | 131 | 979.3K |
+| `src` | 131 | 979.6K |
 | `uv.lock` | 1 | 972.4K |
 | `autoresearch` | 59 | 460.7K |
 | `scripts` | 17 | 159.4K |
-| `tests` | 32 | 107.9K |
+| `tests` | 32 | 108.0K |
 | `docs` | 28 | 103.2K |
 | `prompts` | 6 | 21.6K |
 | `configs` | 7 | 12.7K |
@@ -84,7 +84,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.txt` | 260 | 3.9M |
 | `.jsonl` | 254 | 22.9M |
 | `.py` | 214 | 1.6M |
-| `.md` | 89 | 258.3K |
+| `.md` | 89 | 258.4K |
 | `.png` | 57 | 7.2M |
 | `.pdf` | 34 | 687.0K |
 | `.csv` | 26 | 581.1K |

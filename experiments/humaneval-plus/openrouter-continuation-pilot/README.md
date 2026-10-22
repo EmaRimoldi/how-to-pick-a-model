@@ -16,7 +16,8 @@ intervention that holds pretraining and post-training fixed.
   full benchmark. Exclude these tasks from future held-out controller evaluation.
 - One initial 9B attempt and two independent direct 27B attempts per task.
   Temperature 0.6, maximum 1536 output tokens, reasoning disabled, JSON with a
-  complete Python solution. Save seeds and requests; determinism is not assumed.
+  complete Python solution. SiliconFlow does not advertise a sampler seed, so
+  none is sent. Local seeds fix selection/order, not generation; save requests.
   Reference solutions must pass visible and full tests before spending.
 - Visible feedback uses only examples already in the prompt. Compare equivalent
   Python literals despite quote-style differences; a public predicate without

@@ -188,7 +188,8 @@ def collect(config: dict, problems: list[dict], client: OpenRouterClient,
                     outcome(problem, action, draw, prefix, initial, reused=True)
                     continue
                 model = "small" if action in {"continue", "restart"} else "large"
-                call, scored = sample(problem, model, action, draw, checkpoint, prefix)
+                call, scored = sample(problem, model, action, draw, checkpoint,
+                                      prefix if action in ACTIONS else None)
                 outcome(problem, action, draw, call, scored,
                         prefix if action in ACTIONS else None)
             print(json.dumps({"tasks_completed": index + 1, "tasks_total": len(problems),
