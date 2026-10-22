@@ -174,11 +174,11 @@ def audit(root: Path) -> dict:
             "local": local, "evaluations": evaluations, "collector_git_sha": manifest["git_sha"]}
 
 
-def rollout(task: str, policy_name: str, budget: float, data: dict) -> dict:
+def rollout(task: str, policy_name: str, budget: float, data: dict, partition: str = "evaluation") -> dict:
     """Replay only observed draws; make admission decisions before looking at each bill."""
     cfg, fitted = data["config"], data["policy"]
     ceiling, spent = Decimal(str(budget)), Decimal(0)
-    rows = [r for r in data["branches"] if r["task_id"] == task and r["split"] == "evaluation"]
+    rows = [r for r in data["branches"] if r["task_id"] == task and r["split"] == partition]
     initial = next(r for r in data["initial"] if r["task_id"] == task)
     passed, attempts, reason, choice = False, 0, "budget", None
     def finish():
@@ -195,13 +195,13 @@ def rollout(task: str, policy_name: str, budget: float, data: dict) -> dict:
             passed, reason = initial["passed"], "public_pass"
             return finish()
         cp = next(c for c in data["checkpoints"] if c["task_id"] == task)
-        local = next(r for r in data["local"] if r["task_id"] == task)
         probabilities = None
         if policy_name.startswith("fixed:"):
             choice = policy_name.removeprefix("fixed:")
         elif policy_name == "best_fixed":
             choice = fitted["best_fixed_action"]
         elif policy_name in {"global", "task", "state"}:
+            local = next(r for r in data["local"] if r["task_id"] == task)
             probabilities = local["probabilities"][policy_name]
         elif policy_name.startswith("api_"):
             if spent + reservation(cfg, "small") > ceiling:
@@ -238,6 +238,15 @@ def rollout(task: str, policy_name: str, budget: float, data: dict) -> dict:
     return finish()
 
 
+def development_replay_best(data: dict, budget: float) -> str:
+    """Select a stronger static comparator using development-only two-draw rollouts."""
+    cfg = data["config"]
+    keys = [m + "." + a for m in cfg["target_models"] for a in ARMS]
+    scores = {key: mean(rollout(t, "fixed:" + key, budget, data, "development")["net_utility_usd"]
+                        for t in data["split"]["development_task_ids"]) for key in keys}
+    return max(keys, key=lambda key: scores[key])
+
+
 def analyze(data: dict) -> tuple[dict, list[dict]]:
     """Compute declared primary utility comparison and explicitly secondary diagnostics."""
     cfg = data["config"]
@@ -246,21 +255,30 @@ def analyze(data: dict) -> tuple[dict, list[dict]]:
     policies = ["direct_small", "direct_large", "best_fixed", "global", "task", "state", "api_task_only", "api_state"] + ["fixed:" + k for k in options]
     rollouts = [rollout(t, p, b, data) for b in cfg["task_budgets_usd"] for p in policies for t in ids]
     summary = {}
+    replay_best = {}
     for b in cfg["task_budgets_usd"]:
+        best_action = development_replay_best(data, b)
+        replay_best[str(b)] = best_action
+        for t in ids:
+            row = rollout(t, "fixed:" + best_action, b, data)
+            row["policy"] = "development_replay_best"
+            rollouts.append(row)
         summary[str(b)] = {}
-        for p in policies:
+        for p in policies + ["development_replay_best"]:
             rows = [r for r in rollouts if r["budget_usd"] == b and r["policy"] == p]
             summary[str(b)][p] = {"tasks": len(rows), "success_rate": mean(r["passed"] for r in rows),
                 "mean_api_cost_usd": mean(r["cost_usd"] for r in rows), "mean_net_utility_usd": mean(r["net_utility_usd"] for r in rows),
                 "terminations": dict(Counter(r["termination"] for r in rows))}
     baseline = {r["task_id"]: r for r in rollouts if r["budget_usd"] == 0.01 and r["policy"] == "best_fixed"}
     proposed = {r["task_id"]: r for r in rollouts if r["budget_usd"] == 0.01 and r["policy"] == "state"}
+    stronger = {r["task_id"]: r for r in rollouts if r["budget_usd"] == 0.01 and r["policy"] == "development_replay_best"}
     primary = {"budget_usd": 0.01, "comparison": "state ridge minus development-selected best fixed recovery action",
         "net_utility_difference_usd": paired_interval([proposed[t]["net_utility_usd"] - baseline[t]["net_utility_usd"] for t in ids]),
         "success_difference": paired_interval([float(proposed[t]["passed"]) - float(baseline[t]["passed"]) for t in ids]),
         "api_cost_difference_usd": paired_interval([proposed[t]["cost_usd"] - baseline[t]["cost_usd"] for t in ids])}
+    secondary_strong = paired_interval([proposed[t]["net_utility_usd"] - stronger[t]["net_utility_usd"] for t in ids])
     states = [cp for cp in data["checkpoints"] if cp["split"] == "evaluation"]
-    recovery, token_stats = {}, {}
+    recovery, token_stats, contrasts = {}, {}, {}
     for model in cfg["target_models"]:
         for arm in CONDITIONS:
             rows = [r for r in data["branches"] if r["split"] == "evaluation" and r["action"] == "branch" and r["model_name"] == model and r["arm"] == arm]
@@ -269,6 +287,16 @@ def analyze(data: dict) -> tuple[dict, list[dict]]:
             call_ids = {r["call"] for r in rows}
             tokens = [c["usage"]["prompt_tokens"] for c in data["calls"] if c["call"] in call_ids and c["usage"].get("prompt_tokens") is not None]
             token_stats[model + "." + arm] = {"mean": mean(tokens) if tokens else None, "min": min(tokens) if tokens else None, "max": max(tokens) if tokens else None}
+        for name, positive, negative in (("both_minus_fresh", "artifact_feedback", "fresh"),
+                                         ("code_minus_fresh", "artifact", "fresh"),
+                                         ("feedback_minus_fresh", "feedback", "fresh"),
+                                         ("both_minus_distractor", "artifact_feedback", "distractor")):
+            differences = []
+            for cp in states:
+                rows = [r for r in data["branches"] if r["checkpoint_id"] == cp["checkpoint_id"] and r["model_name"] == model]
+                differences.append(mean(float(r["passed"]) for r in rows if r["arm"] == positive)
+                                   - mean(float(r["passed"]) for r in rows if r["arm"] == negative))
+            contrasts[model + "." + name] = paired_interval(differences)
     brier, delta_error, failures = defaultdict(list), defaultdict(list), Counter()
     for cp in states:
         rows = [r for r in data["branches"] if r["checkpoint_id"] == cp["checkpoint_id"] and r["arm"] in ARMS]
@@ -291,7 +319,10 @@ def analyze(data: dict) -> tuple[dict, list[dict]]:
         "evaluation_failed_tasks": len(states), "evaluation_initial_full_passes": sum(r["passed"] for r in initial_eval),
         "evaluation_initial_false_positives": sum(r["visible_passed"] and not r["passed"] for r in initial_eval),
         "best_fixed_action_from_development": data["policy"]["best_fixed_action"],
+        "development_replay_best_actions": replay_best,
+        "secondary_state_minus_development_replay_best_utility_usd": secondary_strong,
         "primary": primary, "policies": summary, "conditional_recovery": recovery,
+        "paired_context_contrasts": contrasts,
         "forecast_brier": {v: paired_interval(a) for v, a in brier.items()},
         "observed_benefit_mse": {v: paired_interval(a) for v, a in delta_error.items()},
         "invalid_api_forecasts": dict(failures), "prompt_token_controls": token_stats,
@@ -312,13 +343,17 @@ def markdown(report: dict) -> str:
         f"task-bootstrap 95% interval {primary['bootstrap_95']}.", "",
         "| Policy at $0.01/task | Full verified success | Mean API USD | Mean net utility USD |",
         "| --- | --- | --- | --- |"]
-    for key in ("direct_small", "direct_large", "best_fixed", "global", "task", "state", "api_task_only", "api_state"):
+    for key in ("direct_small", "direct_large", "best_fixed", "development_replay_best", "global", "task", "state", "api_task_only", "api_state"):
         row = report["policies"]["0.01"][key]
         lines.append(f"| {key} | {row['success_rate']:.1%} | {row['mean_api_cost_usd']:.8f} | {row['mean_net_utility_usd']:.8f} |")
     lines += ["", "| Conditional recovery | Success | Task-bootstrap 95% interval |", "| --- | --- | --- |"]
     for key, row in report["conditional_recovery"].items():
         rate = f"{row['mean']:.1%}" if row["mean"] is not None else "n/a"
         lines.append(f"| {key} | {rate} | {row['bootstrap_95']} |")
+    lines += ["", "| Paired context contrast | Success difference | Task-bootstrap 95% interval |", "| --- | --- | --- |"]
+    for key, row in report["paired_context_contrasts"].items():
+        delta = f"{row['mean']:+.1%}" if row["mean"] is not None else "n/a"
+        lines.append(f"| {key} | {delta} | {row['bootstrap_95']} |")
     lines += ["", "| Predictor | Brier | Observed benefit MSE |", "| --- | --- | --- |"]
     for key, row in report["forecast_brier"].items():
         lines.append(f"| {key} | {row['mean']:.6f} | {report['observed_benefit_mse'][key]['mean']:.6f} |")
@@ -350,9 +385,12 @@ def plot(report: dict, output: Path) -> None:
     labels = ["Fresh", "Code", "Feedback", "Both", "Distractor"]
     x = np.arange(5)
     for model, offset, color in (("small", -0.18, "#4479a2"), ("large", 0.18, "#cf8853")):
-        values = [report["conditional_recovery"][model + "." + a]["mean"] for a in CONDITIONS]
-        axes[0].bar(x + offset, [100 * v if v is not None else 0 for v in values], 0.36,
-                    label="9B" if model == "small" else "27B", color=color)
+        records = [report["conditional_recovery"][model + "." + a] for a in CONDITIONS]
+        values = [100 * r["mean"] if r["mean"] is not None else 0 for r in records]
+        lower = [max(0, v - 100 * r["bootstrap_95"][0]) if r["bootstrap_95"] else 0 for v, r in zip(values, records)]
+        upper = [max(0, 100 * r["bootstrap_95"][1] - v) if r["bootstrap_95"] else 0 for v, r in zip(values, records)]
+        axes[0].errorbar(x + offset, values, yerr=[lower, upper], fmt="o", capsize=3,
+                         label="9B" if model == "small" else "27B", color=color)
     axes[0].set_xticks(x, labels, rotation=25, ha="right")
     axes[0].set_ylim(0, 105)
     axes[0].set_title("Conditional next-attempt success (%)")
@@ -375,6 +413,7 @@ def plot(report: dict, output: Path) -> None:
     fig.suptitle(f"Frozen task holdout: {report['evaluation_tasks']} tasks, {report['evaluation_failed_tasks']} natural failures\n"
                  "Two-draw bank; primary utility result and uncertainty in report", fontsize=11)
     fig.savefig(output, dpi=180)
+    fig.savefig(output.with_suffix(".pdf"))
     plt.close(fig)
 
 

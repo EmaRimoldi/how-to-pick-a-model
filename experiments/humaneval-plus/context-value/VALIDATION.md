@@ -104,6 +104,13 @@ $0.01 whole-task budget. Bootstrap held-out task clusters, 4000 resamples, seed
 Task-ridge, global, API policies, other budgets and per-condition contrasts are
 secondary exploratory comparisons; no multiple-testing significance claim.
 
+A stricter secondary static comparator is also specified before evaluation:
+choose the fixed action with the best **complete two-draw development replay**
+utility separately at each budget, including prefix charges and stopping. This
+tests sensitivity to the collector's original per-draw-prior fixed selection.
+Both static choices use development only; neither is chosen from held-out scores.
+The original primary comparison remains unchanged.
+
 Also report conditional recovery rates, false positives, censoring/incomplete
 cells, abstentions, predictor Brier scores, errors on the **predicted difference**
 between both-versus-fresh and artifact-versus-fresh, and forecasting overhead.
