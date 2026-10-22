@@ -9,6 +9,7 @@ import json
 import random
 import subprocess
 import sys
+import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from decimal import Decimal
@@ -153,8 +154,9 @@ def collect(config: dict, tasks: list[str], problems: dict, policy: dict, source
     """No automatic retries/resume; keep every response and every unresolved admission."""
     initial, checkpoints, branches = [], [], []
 
-    def score(job: dict, call: dict) -> dict:
-        scored = evaluate(problems[job["task_id"]], call, verifier)
+    score_lock = threading.Lock()
+
+    def record_score(job: dict, call: dict, scored: dict) -> dict:
         append_json(output / "evaluations.jsonl", {"call": call["call"], "task_id": job["task_id"], **scored})
         if job["action"] == "initial":
             row = {"task_id": job["task_id"], "call": call["call"], "passed": scored["heldout"]["passed"],
@@ -174,6 +176,11 @@ def collect(config: dict, tasks: list[str], problems: dict, policy: dict, source
             branches.append(row)
             append_json(output / "branches.jsonl", row)
         return row
+
+    def score(job: dict, call: dict) -> dict:
+        scored = evaluate(problems[job["task_id"]], call, verifier)
+        with score_lock:
+            return record_score(job, call, scored)
 
     status = "complete"
     try:
@@ -211,14 +218,19 @@ def collect(config: dict, tasks: list[str], problems: dict, policy: dict, source
                     for m in config["target_models"] for a in CONDITIONS for d in range(config["branch_repeats"])]
             random.Random(config["seed"] + int(cp["checkpoint_id"])).shuffle(jobs)
             error = None
-            with ThreadPoolExecutor(max_workers=config["workers"]) as pool:
+            scored_futures = []
+            with ThreadPoolExecutor(max_workers=config["workers"]) as pool, ThreadPoolExecutor(
+                    max_workers=config["verifier_workers"]) as scoring_pool:
                 pending = {pool.submit(client.complete, j["model_name"], j["messages"], config["seed"] + i,
                     {k: v for k, v in j.items() if k != "messages"}): j for i, j in enumerate(jobs)}
                 for future in as_completed(pending):
                     try:
-                        score(pending[future], future.result())
+                        call = future.result()
+                        scored_futures.append(scoring_pool.submit(score, pending[future], call))
                     except (BudgetStopped, BackendStopped) as exc:
                         error = error or exc
+                for future in as_completed(scored_futures):
+                    future.result()
             if error:
                 raise error
             complete += 1
@@ -251,6 +263,8 @@ def main() -> int:
         parser.error("Live collection needs stdin key and a declared cumulative-safe budget")
     problems, tasks = load_tasks(config)
     policy, source = freeze(config)
+    if digest(policy) != config["source_policy_digest"]:
+        raise ValueError("Source policy differs from the prospectively committed weights")
     args.output.mkdir(parents=True, exist_ok=False)
     (args.output / "frozen-policy.json").write_text(json.dumps(policy, sort_keys=True, indent=2) + "\n")
     manifest = {"config": config, "task_order": tasks, "git_sha": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),

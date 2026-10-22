@@ -28,6 +28,19 @@ special-oracle semantics, including set equality and output-not-None. Use
 EvalPlus's task-specific input serialization/deserialization, including complex
 inputs. Do not patch the benchmark to improve model results.
 
+Dataset references: [MBPP](https://arxiv.org/abs/2108.07732),
+[EvalPlus](https://arxiv.org/abs/2305.01210), and the pinned
+[checker implementation](https://github.com/evalplus/evalplus/blob/v0.3.1/evalplus/eval/__init__.py).
+Reference infrastructure-limit failures are compatibility exclusions too: their
+exact recorded status remains visible instead of being presented as model errors.
+
+Pre-call reference census: all 378 base checks pass; 377 full-suite checks pass.
+`Mbpp/599` passes base but its official sum-of-range implementation exceeds the
+isolated verifier's limit on the additional inputs. It is the only exclusion.
+The complete [reference journal](data/reference-audit.jsonl) and
+[frozen config](configs/replication.json) preserve this decision before model
+responses. The [source policy](configs/frozen-policy.json) is also fixed in Git.
+
 Sort eligible task IDs numerically, shuffle once with seed 20261025, then generate
 one initial program per task in that order. Use Ministral 3B 2512, Mistral's
 pinned endpoint, temperature 0.6, 1536 output tokens, user-only JSON solve
@@ -60,8 +73,12 @@ On each selected failure collect **three draws** for every combination of:
 
 The same solve instruction, 1536-output-token ceiling and temperature 0.6 apply.
 Reasoning and fallbacks are disabled. No sampler seed is sent; local seeds only
-order jobs. Four bounded network workers, serialized isolated evaluation, and
-randomized submission within each checkpoint. The two models are a practical
+order jobs. Four bounded network workers, two isolated verifier workers, and
+randomized submission within each checkpoint. Initial-prefix collection and
+reference compatibility checks are serial; recovery verification uses two
+workers to reduce wall time. This resource choice is fixed before model calls;
+each candidate retains the same subprocess CPU/wall limits and separate
+public/private payloads. The two models are a practical
 capacity comparison, not an identified causal effect of parameter count.
 
 Donor choice is deterministic: numerically parse the MBPP task ID and take its

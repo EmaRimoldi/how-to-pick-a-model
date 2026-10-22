@@ -17,3 +17,17 @@ The protocol, reference census, frozen configuration and weights must be saved
 and committed before live calls. Results and a reproduction command will be
 linked here after auditing the collected journal. A prospective design is not a
 completed result or a guarantee of a publishable method improvement.
+
+Pre-call reference census: 377/378 tasks compatible; `Mbpp/599` is excluded
+because its canonical implementation exceeds the full-suite verifier limit.
+All 378 base reference checks passed. The config and policy are committed before
+model calls.
+
+```bash
+python scripts/run_recovery_transfer.py \
+  --config experiments/mbpp-plus/context-value-transfer/configs/replication.json \
+  --output runs/mbpp-recovery-plan
+```
+
+This defaults to planning only. Live collection additionally requires explicit
+`--live --budget-usd 1.48 --key-stdin` and the optional EvalPlus environment.

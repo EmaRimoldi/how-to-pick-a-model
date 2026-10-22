@@ -51,6 +51,7 @@ def audit(root: Path) -> dict:
     refit, source = freeze(cfg)
     require(same(saved, refit), "Frozen source policy cannot be reproduced")
     require(digest(saved) == manifest["policy_sha256"], "Frozen weight hash changed")
+    require(digest(saved) == cfg["source_policy_digest"], "Weights differ from prospective config")
     calls = records(root, "calls")
     call_by_id = {r["call"]: r for r in calls}
     require(len(calls) == len(call_by_id), "Duplicated response identity")

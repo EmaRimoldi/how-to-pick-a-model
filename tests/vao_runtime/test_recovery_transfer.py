@@ -62,14 +62,16 @@ def test_model_only_cannot_select_a_different_context():
     assert choose(policy, p, cfg, .02, .0001, "model_only").endswith(".artifact_feedback")
 
 
-def test_budget_block_gate_preserves_all_selected_states_and_prospective_predictions(tmp_path, monkeypatch):
-    cfg = dict(config(), maximum_checkpoints=96, seed=20261025, workers=4, prior_committed_usd=.5149634)
+@pytest.mark.parametrize("budget", [.1, 1.0])
+def test_budget_block_gate_preserves_all_selected_states_and_prospective_predictions(tmp_path, monkeypatch, budget):
+    cfg = dict(config(), maximum_checkpoints=96, seed=20261025, workers=4, verifier_workers=2, prior_committed_usd=.5149634)
     policy, source = freeze(cfg)
     class Client:
-        ledger = BudgetLedger(tmp_path / "budget.jsonl", .1)
+        ledger = BudgetLedger(tmp_path / "budget.jsonl", budget)
         def complete(self, model, messages, seed, metadata):
-            # A whole 30-request block cannot fit, so no target call is permitted.
-            assert metadata["action"] == "initial"
+            if metadata["action"] != "initial":
+                assert budget == 1.0
+                assert len((tmp_path / "local-predictions.jsonl").read_text().splitlines()) == 3
             call = self.ledger.reserve(Decimal(".001"), model)
             self.ledger.settle(call, .00001)
             return {**metadata,"call":call,"cost_usd":.00001}
@@ -78,8 +80,8 @@ def test_budget_block_gate_preserves_all_selected_states_and_prospective_predict
         "visible":{"passed":False,"status":"fail","attempted":3,"failed":1},"heldout":{"passed":False}})
     tasks = ["Mbpp/2", "Mbpp/3", "Mbpp/4"]
     outcome = collect(cfg,tasks,{t:{"prompt":"public"} for t in tasks},policy,source,Client(),None,tmp_path)
-    assert outcome["status"] == "budget_block_gate"
-    assert outcome["branch_responses"] == 0
+    assert outcome["status"] == ("budget_block_gate" if budget == .1 else "complete")
+    assert outcome["branch_responses"] == (0 if budget == .1 else 90)
     selected = json.loads((tmp_path / "selection.json").read_text())["selected_checkpoint_ids"]
     predictions = [json.loads(s) for s in (tmp_path / "local-predictions.jsonl").read_text().splitlines()]
     assert len(selected) == len(predictions) == 3

@@ -1,5 +1,11 @@
 # Paper Evidence Map
 
+The [prospective MBPP+ replica](../experiments/mbpp-plus/context-value-transfer/PROTOCOL.md)
+adds an external benchmark and the missing feedback-only prediction control.
+For that new study, all 51 prior HumanEval+ failures are training data, including
+the 25 formerly held-out failures. Keep the original frozen result intact and
+separate. Do not count those tasks as a second independent evaluation.
+
 The existing manuscripts and theory are baseline research for the sequential
 model-decision question in [decision protocol](decision-protocol.md). They do
 not establish that a state-conditioned continue/restart/handoff controller works.
