@@ -639,12 +639,17 @@ def main():
     parser.add_argument("--input",type=Path,required=True)
     parser.add_argument("--output",type=Path,required=True)
     parser.add_argument("--forecasts",type=Path)
+    parser.add_argument("--expected-analysis",type=Path,
+                        help="Require the recomputed report to match a saved analysis, allowing only floating-point roundoff.")
     args=parser.parse_args()
     data=audit(args.input)
     report,rollouts=analyze(data)
     if args.forecasts:
         report["semantic_control"],extra=analyze_semantic(data,args.forecasts)
         rollouts+=extra
+    if args.expected_analysis:
+        require(same(report,json.loads(args.expected_analysis.read_text())),
+                "Recomputed report differs from the saved analysis")
     args.output.mkdir(parents=True,exist_ok=False)
     (args.output/"analysis.json").write_text(json.dumps(report,sort_keys=True,indent=2)+"\n")
     (args.output/"rollouts.jsonl").write_text("".join(json.dumps(r,sort_keys=True)+"\n" for r in rollouts))
