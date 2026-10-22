@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from collections import Counter, defaultdict
 from decimal import Decimal
@@ -69,6 +70,7 @@ def paired_analysis(checkpoints: list[dict], branches: list[dict], predictions: 
     contrasts = {m + "." + contrast: defaultdict(list) for m in config["target_models"]
                  for contrast in ("artifact_minus_fresh", "feedback_minus_fresh", "both_minus_fresh", "interaction")}
     brier = {view: defaultdict(list) for view in (*VIEWS, "constant_0.5")}
+    forecast_cost = {view: defaultdict(list) for view in VIEWS}
     brier_difference = defaultdict(list)
     checkpoints_detail = []
     invalid = Counter()
@@ -92,6 +94,7 @@ def paired_analysis(checkpoints: list[dict], branches: list[dict], predictions: 
             scores[view] = mean((forecast["probabilities"][key] - float(row["passed"])) ** 2
                                 for key in keys for row in grouped[cp][key])
             brier[view][task].append(scores[view])
+            forecast_cost[view][task].append(forecast["cost_usd"])
         brier["constant_0.5"][task].append(0.25)
         brier_difference[task].append(scores["state"] - scores["task_only"])
         checkpoints_detail.append({"checkpoint_id": cp, "task_id": task, "success_rates": outcomes,
@@ -103,6 +106,7 @@ def paired_analysis(checkpoints: list[dict], branches: list[dict], predictions: 
             "cells": {key: {"success": estimate_by_task(cells[key]), "incremental_api_usd": estimate_by_task(costs[key])} for key in keys},
             "contrasts": {key: estimate_by_task(values) for key, values in contrasts.items()},
             "forecast_brier": {view: estimate_by_task(values) for view, values in brier.items()},
+            "forecast_api_usd": {view: estimate_by_task(values) for view, values in forecast_cost.items()},
             "state_minus_task_brier": estimate_by_task(brier_difference),
             "invalid_forecasts_in_paired_sample": dict(invalid), "checkpoints": checkpoints_detail}
 
@@ -145,6 +149,12 @@ def audit(root: Path) -> dict:
     require(paid == Decimal(str(summary["collection_cost_usd"])) and pending == Decimal(str(summary["unresolved_reserved_usd"])), "Summary billing mismatch")
     require(paid + pending <= Decimal(str(summary["budget_usd"])), "Budget exceeded")
     initial = [c for c in calls if c["action"] == "initial"]
+    prefix_ids = {(c["task_id"], c["draw"]) for c in initial}
+    require(len(prefix_ids) == len(initial), "Duplicate initial attempt")
+    require(all(c["model"] == config["models"]["small"]["id"] for c in initial), "Prefix model changed")
+    if summary["status"] == "complete":
+        expected = {(task, draw) for task in manifest["task_ids"] for draw in range(config["prefix_repeats"])}
+        require(prefix_ids == expected, "Completed run lacks initial task/draw coverage")
     failed = {c["call"] for c in initial if not by_eval[c["call"]]["visible"]["passed"]}
     require({c["parent_call"] for c in checkpoints} == failed, "Checkpoint selection differs from visible failures")
     require(len(initial) == summary["initial_checkpoints"] and len(branches) == summary["branches"]
@@ -165,6 +175,7 @@ def audit(root: Path) -> dict:
                 and cp["task_id"] == call["task_id"] == record["task_id"], "Parent identity changed")
         problem = {"prompt": parent["messages"][1]["content"]}
         if call["action"] == "forecast":
+            require(call["model"] == config["models"]["small"]["id"], "Forecaster model changed")
             require(call["messages"] == forecast_messages(problem, record["view"], cp, config), "Forecast prompt changed")
             probs, valid = parse_forecast(call, config)
             require(probs == record["probabilities"] and valid == record["valid"], "Forecast parse changed")
@@ -179,8 +190,12 @@ def audit(root: Path) -> dict:
             preds = [p for p in predictions if p["checkpoint_id"] == record["checkpoint_id"]]
             require(len(preds) == 2 and all(parent["call"] < p["call"] < record["call"] for p in preds), "Forecasts were not prospective")
     analysis = paired_analysis(checkpoints, branches, predictions, config)
+    if summary["status"] == "complete":
+        require(not analysis["incomplete_checkpoint_ids"], "Completed run lacks matched branches")
     false_positives = [c for c in initial if by_eval[c["call"]]["visible"]["passed"] and not by_eval[c["call"]]["heldout"]["passed"]]
     return {"billing_and_prospective_order_verified": True, "collection": summary,
+            "collector_git_sha": manifest.get("git_sha"),
+            "analysis_source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
             "initial_full_suite_passes": sum(by_eval[c["call"]]["heldout"]["passed"] for c in initial),
             "initial_visible_false_positive_count": len(false_positives),
             "initial_visible_false_positive_tasks": sorted({c["task_id"] for c in false_positives}),
@@ -230,6 +245,12 @@ def report_markdown(report: dict) -> str:
         "Artifact/feedback inclusion also changes prompt length. Feedback can quote code. No length-matched "
         "irrelevant-context control or equal-dollar adaptive-policy comparison is present. Public feedback may "
         "miss failures detected by the broader evaluation suite. No novelty, policy-superiority or general-gain claim.", ""]
+    lines += ["## Forecast overhead", ""]
+    for view, value in analysis["forecast_api_usd"].items():
+        if value["mean"] is not None:
+            lines.append(f"Mean {view} forecast API cost per failed checkpoint (task macro): ${value['mean']:.8f}.")
+    lines += ["", "A better forecast is economically useful only when the resulting decisions recover "
+              "its overhead. This analysis does not equate lower Brier score with net cost savings.", ""]
     return "\n".join(lines)
 
 

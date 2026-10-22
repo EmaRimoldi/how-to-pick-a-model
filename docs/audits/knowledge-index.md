@@ -8,7 +8,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Canonical docs present: `22/22`
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
-- Experiment bundles indexed: `9`
+- Experiment bundles indexed: `10`
 - Script entrypoints indexed: `34`
 - Code modules indexed: `131`
 - Paper figures indexed: `19`
@@ -166,6 +166,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | HumanEval+ | `experiments/humaneval-plus/strategy-by-difficulty-grid/` | completed | Tier 1: Main Evidence | full run, source/config snapshot, raw shards, summaries, figures |
 | HumanEval+ | `experiments/humaneval-plus/llm-router-context-search/` | completed | Tier 1: Main Evidence | validation selection, held-out test evaluation, logs, figure |
 | HumanEval+ | `experiments/humaneval-plus/openrouter-continuation-pilot/` | development pilot | not tiered | 24 tasks, 88 calls, two failed checkpoints, receipts and separate public/full-suite scoring |
+| HumanEval+ | `experiments/humaneval-plus/context-value/` | prospective diagnostic | not tiered | 30 new tasks, 132 calls, four failed checkpoints across three tasks, code/feedback factorial, forecasts and receipt audit |
 
 ## Script Entrypoints
 

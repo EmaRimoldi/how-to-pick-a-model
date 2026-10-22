@@ -11,6 +11,7 @@
 - Are state-dependent forecasts calibrated against outcomes rather than verbal confidence?
 - Do conclusions stay within the recorded protocol and coverage?
 
-Current data supplies baseline evidence. The next policy and matched handoff
-experiment remain planned in `docs/decision-protocol.md`. `make check` verifies
+Current data supplies baseline and matched development evidence. The context-value
+diagnostic adds prospective forecasts; learned policies and their validation
+remain planned in `docs/decision-protocol.md`. `make check` verifies
 structure and unit behavior, not the scientific validity of new policy claims.

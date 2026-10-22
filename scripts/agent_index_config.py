@@ -71,6 +71,7 @@ CORE_CODE_MODULES = {
     "src/agent_workflow/communication/blackboard.py",
     "src/vao/schemas.py",
     "src/vao/decisions/pilot.py",
+    "src/vao/decisions/context_value.py",
     "src/vao/decisions/openrouter.py",
     "src/vao/decisions/verification.py",
     "src/load_traces.py",

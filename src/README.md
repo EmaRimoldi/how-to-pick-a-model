@@ -7,7 +7,10 @@
 and supported session behavior. These are the starting points for matched
 checkpoint continuations. The proposed state-conditioned controller is not yet
 implemented. `decisions/` adds budgeted OpenRouter calls and a matched
-one-checkpoint HumanEval+ collector with separate visible and evaluation channels; use `docs/decision-protocol.md` before extending the runtime.
+one-checkpoint HumanEval+ collector with separate visible and evaluation channels.
+`decisions/context_value.py` adds code/feedback ablations and prospective zero-shot
+API forecasts; it does not fit or deploy a learned policy. Use
+`docs/decision-protocol.md` before extending the runtime.
 
 ## Baseline CLI: `agent_workflow/`
 

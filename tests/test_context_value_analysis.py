@@ -25,7 +25,7 @@ def test_paired_analysis_excludes_partial_checkpoints_and_rejects_duplicates():
     rows = [{"checkpoint_id": cp, "task_id": task, "model_name": "small", "arm": arm,
              "draw": 0, "passed": arm != "fresh", "incremental_cost_usd": 0.1}
             for cp, task in (("1", "a"), ("2", "b")) for arm in (ARMS if cp == "1" else ARMS[:1])]
-    predictions = [{"checkpoint_id": cp, "view": view, "valid": True,
+    predictions = [{"checkpoint_id": cp, "view": view, "valid": True, "cost_usd": 0.01,
                     "probabilities": {"small." + a: 0.7 for a in ARMS}}
                    for cp in ("1", "2") for view in ("task_only", "state")]
     result = paired_analysis(checkpoints, rows, predictions, config)

@@ -4,6 +4,9 @@ The retained evidence is AutoResearch/CIFAR-10 and completed HumanEval+ studies.
 The next state-conditioned policy experiment is specified in
 [decision protocol](decision-protocol.md). A cost-bounded API pilot now has a
 [separate protocol and runner](../experiments/humaneval-plus/openrouter-continuation-pilot/README.md).
+The subsequent [context-value diagnostic](../experiments/humaneval-plus/context-value/README.md)
+uses the same optional environment and billing/isolation controls, with separate
+code/feedback conditions and saved prospective forecasts.
 
 ## Safe environment and checks
 
