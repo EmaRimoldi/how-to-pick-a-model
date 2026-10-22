@@ -27,5 +27,7 @@ architecture is best or that dynamic continuation decisions already work.
 - `run_strategy*.py`, `run_router*.py`: experiment launch surfaces; inspect their
   configs and model-access requirements before live use.
 
-MBPP/BBH-specific loaders and analyses have been retired with their bundles.
+Historical MBPP/BBH loaders and analyses remain retired. The focused
+`decisions/transfer.py` collector extends the retained recovery experiment to
+MBPP+, with official input/oracle handling and a frozen cross-benchmark protocol.
 Safe checks: `make check`. Do not start live model or cluster work during an audit.

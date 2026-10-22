@@ -5,7 +5,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 
 ## Summary
 
-- Bundles indexed: `10`
+- Bundles indexed: `11`
 - Missing bundle paths: `0`
 - Missing README files: `0`
 
@@ -13,7 +13,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 
 | Class | Bundles |
 | --- | --- |
-| `inspect-readme` | 2 |
+| `inspect-readme` | 3 |
 | `paper-supporting-evidence` | 7 |
 | `partial-evidence` | 1 |
 
@@ -23,7 +23,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | --- | --- |
 | `Tier 1: Main Evidence` | 6 |
 | `Tier 2: Supporting Or Diagnostic Evidence` | 3 |
-| `not tiered` | 1 |
+| `not tiered` | 2 |
 
 ## Bundle Assets
 
@@ -39,6 +39,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | `experiments/humaneval-plus/llm-router-context-search/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 24 | 0 | 0 | 0 | 1 | 1 | 0 | 22 | 0 |
 | `experiments/humaneval-plus/openrouter-continuation-pilot/` | development pilot | not tiered | `inspect-readme` | 13 | 1 | 0 | 10 | 1 | 0 | 0 | 0 | 1 |
 | `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 46 | 5 | 0 | 39 | 3 | 0 | 0 | 0 | 4 |
+| `experiments/mbpp-plus/context-value-transfer/` | prospective replication | not tiered | `inspect-readme` | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 ## Key Files
 
@@ -184,3 +185,10 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 - `experiments/humaneval-plus/context-value/configs/validation.json`
 - `experiments/humaneval-plus/context-value/results/study-20261022/context_value.png`
 - `experiments/humaneval-plus/context-value/results/validation-20261022/validation.pdf`
+
+### `experiments/mbpp-plus/context-value-transfer/`
+
+- Title: Cross-benchmark recovery replication
+- Evidence: Frozen cross-benchmark design; source-trained feedback/artifact ablation, matched recovery bank and cumulative budget
+- Asset directories: `none`
+- `experiments/mbpp-plus/context-value-transfer/README.md`

@@ -10,6 +10,8 @@ adds a code/feedback factorial and prospective zero-shot forecasts. Its separate
 implements development-trained task/state ridge baselines, prospective API
 forecasts and budgeted replay on task-disjoint, different-producer failures.
 The general multi-step controller remains future work.
+The focused [MBPP+ replication](../experiments/mbpp-plus/context-value-transfer/README.md)
+tests transfer to a fresh benchmark and adds a feedback-only predictor ablation.
 The [audited transfer report](../experiments/humaneval-plus/context-value/results/validation-20261022/report.md)
 and [blog draft](blog/when-to-keep-failed-code.md) give the current results and limits.
 

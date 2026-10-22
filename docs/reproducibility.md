@@ -73,6 +73,14 @@ live/budget arguments and a new output path. Default planning makes no model
 calls. The original and amended configs remain separate; no account key belongs
 in a config, command argument or tracked file.
 
+## Cross-benchmark replication
+
+The [MBPP+ replication protocol](../experiments/mbpp-plus/context-value-transfer/PROTOCOL.md)
+uses the same optional EvalPlus environment and macOS sandbox. Its former
+HumanEval+ evaluation data are now explicitly training data. Live collection
+shares the existing cumulative $2 cap and never retries unknown paid requests
+automatically. Its separate offline analyzer executes no candidate code.
+
 ## AutoResearch evidence
 
 The four retained bundles cover initial-model calibration, controlled evaluator

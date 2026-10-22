@@ -19,6 +19,7 @@ verifiable tasks. Read:
 | `autoresearch/` | CIFAR-10 edit/verify benchmark and accounting |
 | `experiments/autoresearch-cifar10/` | Calibration, memory, and routing baseline evidence |
 | `experiments/humaneval-plus/` | Completed retry, strategy, and context-routing evidence |
+| `experiments/mbpp-plus/context-value-transfer/` | Focused, prospectively frozen cross-benchmark recovery replication |
 | `src/vao/` | Verified execution, model adapters, and observable run records |
 | `src/agent_workflow/` | Existing baseline CLI, instrumentation, and reporting |
 | `src/*.py` | HumanEval+ worker traces and routing analysis |
@@ -39,6 +40,10 @@ verifiable tasks. Read:
 - The context-value bundle now includes a limited trained one-checkpoint selector
   and an amended producer-transfer evaluation. Read its report and limitations;
   this does not establish a general multi-step controller or a robust method gain.
+- The MBPP+ replication uses the previously observed 51 HumanEval+ failures as
+  training data. Never describe the former evaluation set as a fresh holdout
+  again, or pool protocols to manufacture independent task counts. Read its
+  frozen protocol before collection and preserve all selected missing states.
 - Existing CLI modes are baseline execution tools, not evidence of an optimal
   multi-agent architecture or a state-conditioned controller.
 

@@ -113,6 +113,16 @@ def check(payload: dict) -> dict:
                     "feedback": f"{type(exc).__name__}: {str(exc)[:1000]}"}
     from evalplus.eval import untrusted_check
     from evalplus.gen.util import trusted_exec
+    dataset = problem.get("dataset", "humaneval")
+    output_not_none = False
+    if dataset == "mbpp":
+        from evalplus.data.mbpp import mbpp_deserialize_inputs
+        from evalplus.eval._special_oracle import MBPP_OUTPUT_NOT_NONE_TASKS
+        output_not_none = problem["entry_point"] in MBPP_OUTPUT_NOT_NONE_TASKS
+        for suite in ("base", "plus"):
+            key = suite + "_input"
+            if key in problem:
+                problem[key] = mbpp_deserialize_inputs(problem["task_id"], problem[key])
     reference = problem["prompt"] + problem["canonical_solution"]
     if payload["mode"] == "base_feedback":
         # This protocol explicitly publishes base cases; Plus cases are absent
@@ -125,8 +135,9 @@ def check(payload: dict) -> dict:
             return {"passed": False, "status": "error", "attempted": len(problem["base_input"]),
                     "failed": len(problem["base_input"]), "feedback": f"{type(exc).__name__}: {str(exc)[:500]}"}
         inputs = problem["base_input"]
-        expected, timings = trusted_exec(reference, deepcopy(inputs), problem["entry_point"], record_time=True)
-        status, details = untrusted_check("humaneval", solution, deepcopy(inputs), problem["entry_point"],
+        expected, timings = trusted_exec(reference, deepcopy(inputs), problem["entry_point"], record_time=True,
+                                        output_not_none=output_not_none)
+        status, details = untrusted_check(dataset, solution, deepcopy(inputs), problem["entry_point"],
             expected, problem["atol"], timings, fast_check=False)
         failing = [i for i in range(len(inputs)) if i >= len(details) or not details[i]]
         examples = [{"arguments": repr(inputs[i])[:250], "acceptable_reference_output": repr(expected[i])[:250]}
@@ -137,8 +148,9 @@ def check(payload: dict) -> dict:
     results = {}
     for suite in ("base", "plus"):
         inputs = problem[suite + "_input"]
-        expected, timings = trusted_exec(reference, deepcopy(inputs), problem["entry_point"], record_time=True)
-        status, _ = untrusted_check("humaneval", solution, deepcopy(inputs),
+        expected, timings = trusted_exec(reference, deepcopy(inputs), problem["entry_point"], record_time=True,
+                                        output_not_none=output_not_none)
+        status, _ = untrusted_check(dataset, solution, deepcopy(inputs),
             problem["entry_point"], expected, problem["atol"], timings, fast_check=True)
         results[suite] = status
     return {"passed": all(v == "pass" for v in results.values()), "status": results}

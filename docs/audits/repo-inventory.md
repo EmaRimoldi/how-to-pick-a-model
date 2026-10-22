@@ -6,7 +6,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `2367`
+- Files indexed: `2374`
 - Bytes indexed: `71.1M`
 
 ## Canonical Entrypoints
@@ -49,21 +49,21 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 2005 | 45.8M |
+| `experiments` | 2007 | 45.8M |
 | `artifacts` | 21 | 20.0M |
 | `paper` | 29 | 2.4M |
-| `src` | 135 | 1.0M |
+| `src` | 136 | 1.0M |
 | `uv.lock` | 1 | 972.4K |
 | `autoresearch` | 59 | 460.7K |
-| `scripts` | 22 | 227.1K |
-| `tests` | 38 | 143.7K |
-| `docs` | 23 | 88.2K |
+| `scripts` | 24 | 251.5K |
+| `tests` | 40 | 150.4K |
+| `docs` | 23 | 88.8K |
 | `prompts` | 6 | 21.6K |
 | `configs` | 7 | 12.7K |
 | `README.md` | 1 | 5.4K |
+| `AGENTS.md` | 1 | 3.4K |
 | `.claude` | 4 | 3.3K |
 | `NOTES.md` | 1 | 3.2K |
-| `AGENTS.md` | 1 | 3.0K |
 | `.github` | 5 | 2.3K |
 | `pyproject.toml` | 1 | 1.6K |
 | `.gitignore` | 1 | 1.5K |
@@ -83,8 +83,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.jsonl` | 276 | 31.3M |
 | `.yaml` | 270 | 316.1K |
 | `.txt` | 260 | 3.9M |
-| `.py` | 229 | 1.8M |
-| `.md` | 90 | 299.3K |
+| `.py` | 234 | 1.8M |
+| `.md` | 92 | 312.4K |
 | `.png` | 60 | 7.6M |
 | `.pdf` | 35 | 712.5K |
 | `.csv` | 26 | 581.1K |
@@ -127,6 +127,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/humaneval-plus/qwen-model-size-frontier/README.md`
 - `experiments/humaneval-plus/retry-allocation-router/README.md`
 - `experiments/humaneval-plus/strategy-by-difficulty-grid/README.md`
+- `experiments/mbpp-plus/context-value-transfer/README.md`
 
 ## Script Entrypoints
 
@@ -148,6 +149,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `autoresearch/scripts/slurm_autoresearch_worker_array.sh`
 - `scripts/analyze_context_value.py`
 - `scripts/analyze_continuation_pilot.py`
+- `scripts/analyze_recovery_transfer.py`
 - `scripts/analyze_recovery_validation.py`
 - `scripts/analyze_runs.py`
 - `scripts/benchmark_parallel_capacity.py`
@@ -163,6 +165,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/run_continuation_pilot.py`
 - `scripts/run_merge_phase.py`
 - `scripts/run_parallel_experiment.py`
+- `scripts/run_recovery_transfer.py`
 - `scripts/run_recovery_validation.py`
 - `scripts/run_single_long_experiment.py`
 - `scripts/validate_agent_readiness.py`
