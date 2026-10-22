@@ -39,7 +39,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | `experiments/humaneval-plus/llm-router-context-search/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 24 | 0 | 0 | 0 | 1 | 1 | 0 | 22 | 0 |
 | `experiments/humaneval-plus/openrouter-continuation-pilot/` | development pilot | not tiered | `inspect-readme` | 13 | 1 | 0 | 10 | 1 | 0 | 0 | 0 | 1 |
 | `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 46 | 5 | 0 | 39 | 3 | 0 | 0 | 0 | 4 |
-| `experiments/mbpp-plus/context-value-transfer/` | prospective replication | not tiered | `inspect-readme` | 10 | 5 | 2 | 0 | 0 | 1 | 0 | 0 | 0 |
+| `experiments/mbpp-plus/context-value-transfer/` | prospective replication | not tiered | `inspect-readme` | 11 | 6 | 2 | 0 | 0 | 1 | 0 | 0 | 0 |
 
 ## Key Files
 
@@ -196,5 +196,6 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 - `experiments/mbpp-plus/context-value-transfer/configs/frozen-policy.json`
 - `experiments/mbpp-plus/context-value-transfer/configs/interaction-freeze.json`
 - `experiments/mbpp-plus/context-value-transfer/configs/recovery-continuation-freeze.json`
+- `experiments/mbpp-plus/context-value-transfer/configs/recovery-continuation-segment2-freeze.json`
 - `experiments/mbpp-plus/context-value-transfer/configs/replication.json`
 - `experiments/mbpp-plus/context-value-transfer/configs/semantic-control-freeze.json`

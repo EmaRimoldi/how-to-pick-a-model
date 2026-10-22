@@ -314,3 +314,17 @@ complete. Under the original completeness rule, complete-case intervals remain
 **descriptive**, and all 96 selected states remain represented in missing-state
 bounds. Report the observed partial audit and this continuation timing; do not
 silently replace the primary or promote a favorable secondary contrast.
+
+A later transport failure stopped the authorized continuation at 80 complete
+checkpoints and 2,445 observed recovery responses. Admission 2817 (`Mbpp/84`,
+checkpoint 237, 9B fresh, draw 0) remains unobserved with its full $0.002688
+reservation. The cumulative primary charges are $0.67915665, unknown reservations
+$0.0145152, and campaign upper bound $1.20863525. The remaining 433 cells are a
+strict subset of the original 1,466 explicitly authorized cells. Their
+[child freeze](configs/recovery-continuation-segment2-freeze.json) preserves that
+root authorization and all stopped-file hashes before further requests. No new
+permission, budget, hypothesis or response replacement is introduced. Each later
+segment archives previous lineage metadata, preflight and stop summaries byte
+for byte, with a checked parent index. Two selected checkpoints now contain
+censored solver cells, so at most 94/96 checkpoints can have all 30 observations.
+Complete-case intervals remain descriptive; all 96 selected states stay in bounds.

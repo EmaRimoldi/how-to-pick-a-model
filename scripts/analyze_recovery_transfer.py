@@ -42,19 +42,64 @@ def interval(values, alpha=.05):
             "high": float(np.quantile(draws, 1-alpha/2)), "tasks": len(v), "alpha": alpha}
 
 
+def recovery_lineages(root):
+    current=root/"recovery-continuation.json"
+    index=root/"recovery-continuation-history.json"
+    if not current.exists():
+        require(not index.exists(),"Orphan recovery lineage index")
+        return []
+    history=json.loads(index.read_text()) if index.exists() else []
+    lineages=[];paths=set()
+    for entry in history:
+        path=Path(entry["path"])
+        require(not path.is_absolute() and ".." not in path.parts and path.parts[0]=="recovery-history","Recovery history path escaped archive")
+        require(str(path) not in paths,"Repeated history entry");paths.add(str(path))
+        require(file_hash(root/path)==entry["sha256"],"Archived recovery lineage changed")
+        lineages.append(json.loads((root/path).read_text()))
+    lineages.append(json.loads(current.read_text()))
+    boundaries=[r["imported_last_admitted_call"] for r in lineages]
+    require(all(a<b for a,b in zip(boundaries,boundaries[1:])),"Recovery segment boundaries are not increasing")
+    for i,r in enumerate(lineages):
+        require(r.get("previous_lineages",[])==history[:i],"Recovery parent history changed")
+    return lineages
+
+
 def audit(root: Path) -> dict:
     manifest = json.loads((root / "manifest.json").read_text())
     cfg = manifest["config"]
     continuation=json.loads((root/"prefix-continuation.json").read_text()) if (root/"prefix-continuation.json").exists() else None
-    recovery_continuation=json.loads((root/"recovery-continuation.json").read_text()) if (root/"recovery-continuation.json").exists() else None
-    if recovery_continuation:
+    lineages=recovery_lineages(root)
+    recovery_continuation=lineages[-1] if lineages else None
+    authorization_path=Path("experiments/mbpp-plus/context-value-transfer/configs/recovery-continuation-freeze.json")
+    original_authorization=json.loads(authorization_path.read_text()) if lineages else None
+    for i,recovery_segment in enumerate(lineages):
         import hashlib
-        require(recovery_continuation["source_manifest_sha256"]==file_hash(root/"manifest.json"),"Recovery continuation identity changed")
-        for name,count in recovery_continuation["imported_line_counts"].items():
+        require(recovery_segment["source_manifest_sha256"]==file_hash(root/"manifest.json"),"Recovery continuation identity changed")
+        freeze_path=Path(recovery_segment.get("authorization_freeze_path") or authorization_path)
+        require(freeze_path.resolve().is_relative_to(authorization_path.parent.resolve()),"Segment freeze escaped config directory")
+        frozen=json.loads(freeze_path.read_text())
+        if recovery_segment.get("authorization_freeze_sha256"):
+            require(file_hash(freeze_path)==recovery_segment["authorization_freeze_sha256"],"Segment freeze changed")
+        require(recovery_segment["source_hashes"]==frozen["approved_source_sha256"],"Approved source hashes changed")
+        require(recovery_segment["source_summary"]==frozen["source_summary"],"Recorded stop summary differs from segment freeze")
+        require(recovery_segment["authorization"]==frozen["authorization"]==original_authorization["authorization"],"Root authorization changed")
+        require(recovery_segment["authorized_unadmitted_cells"]==frozen["authorized_unadmitted_cells"],"Authorized segment cell list changed")
+        require({tuple(k) for k in frozen["authorized_unadmitted_cells"]}<={tuple(k) for k in original_authorization["authorized_unadmitted_cells"]},"Segment exceeds root authorized cell set")
+        require(recovery_segment["source_collector_sha256"]==frozen["continuation_source_sha256"],"Segment collector differs from freeze")
+        if i:
+            require(frozen["root_authorization_freeze_sha256"]==file_hash(authorization_path),"Root authorization freeze changed")
+        for name,count in recovery_segment["imported_line_counts"].items():
             prefix=b"".join((root/name).read_bytes().splitlines(keepends=True)[:count])
-            require(hashlib.sha256(prefix).hexdigest()==recovery_continuation["source_hashes"][name],"Imported recovery evidence changed: "+name)
-        for name,expected in recovery_continuation["source_hashes"].items():
-            if name.endswith(".json") and name not in {"summary.json","checksums.json","recovery-continuation.json"}:
+            require(hashlib.sha256(prefix).hexdigest()==recovery_segment["source_hashes"][name],"Imported recovery evidence changed: "+name)
+        for name,expected in recovery_segment["source_hashes"].items():
+            archived=recovery_segment.get("imported_static_archives",{}).get(name)
+            if archived:
+                path=Path(archived)
+                require(not path.is_absolute() and ".." not in path.parts and path.parts[0]=="recovery-history","Static history path escaped archive")
+                require(file_hash(root/path)==expected,"Archived static recovery evidence changed: "+name)
+            elif name=="recovery-continuation.json":
+                require(i>0 and expected==recovery_segment["previous_lineages"][-1]["sha256"],"Previous lineage bytes changed")
+            elif name.endswith(".json") and name not in {"summary.json","checksums.json","recovery-continuation-history.json"}:
                 require(file_hash(root/name)==expected,"Imported static recovery evidence changed: "+name)
     censored=[continuation["censored_prefix"]] if continuation else []
     censored_tasks={r["task_id"] for r in censored}
@@ -180,6 +225,7 @@ def audit(root: Path) -> dict:
         expected = {v: predict(saved, prompts[cp["task_id"]], cp, v) for v in ("global", *VIEWS)}
         require(same(r["probabilities"], expected), "Prediction cannot be reproduced")
     branch_censors=[r for r in records(root,"transport") if r["action"]=="branch"]
+    require(len({(r["checkpoint_id"],r["model_name"],r["arm"],r["draw"]) for r in branch_censors})==len(branch_censors),"Uncertain recovery cell was admitted twice")
     transport=records(root,"transport")
     require(len({r["call"] for r in transport})==len(transport),"Repeated uncertain admission identity")
     require(set(reserves)-set(settlements)=={r["call"] for r in transport},"Unexplained unresolved reservations")
@@ -188,11 +234,11 @@ def audit(root: Path) -> dict:
         require(r["checkpoint_id"] in selected and r["model_name"] in cfg["target_models"] and r["arm"] in CONDITIONS and 0<=r["draw"]<cfg["branch_repeats"],"Unplanned censored recovery")
         require(not cells.get((r["checkpoint_id"],r["model_name"],r["arm"],r["draw"]),0),"Uncertain recovery cell was reissued")
         require(reserves[r["call"]]==reservation(cfg,r["model_name"]),"Censored recovery reservation changed")
-    if recovery_continuation:
-        require(recovery_continuation["selected_checkpoint_ids_unchanged"]==selected,"Recovery continuation changed selected states")
-        authorized={tuple(k) for k in recovery_continuation["authorized_unadmitted_cells"]}
-        for r in branches:
-            if r["call"]>recovery_continuation["imported_last_admitted_call"]:
+    for recovery_segment in lineages:
+        require(recovery_segment["selected_checkpoint_ids_unchanged"]==selected,"Recovery continuation changed selected states")
+        authorized={tuple(k) for k in recovery_segment["authorized_unadmitted_cells"]}
+        for r in branches+branch_censors:
+            if r["call"]>recovery_segment["imported_last_admitted_call"]:
                 require((r["checkpoint_id"],r["model_name"],r["arm"],r["draw"]) in authorized,"Unapproved continuation request")
     blocks = records(root, "blocks")
     complete = [b["checkpoint_id"] for b in blocks]
@@ -202,12 +248,13 @@ def audit(root: Path) -> dict:
         require(sum(k[0] == id_ for k in cells) == len(CONDITIONS) * len(cfg["target_models"]) * cfg["branch_repeats"], "Incomplete declared block")
     # Reconstruct each complete-block admission from the budget journal, before
     # seeing any of that block's eventual receipts or outcomes.
-    first_calls = {min(r["call"] for r in branches if r["checkpoint_id"] == id_): id_
-                   for id_ in selected if any(r["checkpoint_id"] == id_ for r in branches)}
-    if recovery_continuation:
+    admitted=branches+branch_censors
+    first_calls = {min(r["call"] for r in admitted if r["checkpoint_id"] == id_): id_
+                   for id_ in selected if any(r["checkpoint_id"] == id_ for r in admitted)}
+    for recovery_segment in lineages:
         # A resumed partial block passes the same whole-block gate again.
         for id_ in selected:
-            new=[r["call"] for r in branches if r["checkpoint_id"]==id_ and r["call"]>recovery_continuation["imported_last_admitted_call"]]
+            new=[r["call"] for r in admitted if r["checkpoint_id"]==id_ and r["call"]>recovery_segment["imported_last_admitted_call"]]
             if new:first_calls[min(new)]=id_
     block_ceiling = sum(reservation(cfg,m)*len(CONDITIONS)*cfg["branch_repeats"] for m in cfg["target_models"])
     prior_spent, pending_costs = Decimal(0), {}
@@ -228,6 +275,7 @@ def audit(root: Path) -> dict:
         "initial": initial, "checkpoints": cps, "predictions": pred, "prompts": prompts,
         "branches": branches, "selected": selected, "complete": complete, "evaluations": evals,
         "censored_branch_requests":branch_censors,"recovery_continuation":recovery_continuation,
+        "recovery_lineages":lineages,
         "collection": {"admissions": len(reserves), "responses": len(calls), "known_cost_usd": float(known),
             "unresolved_reservations_usd": float(held), "prior_upper_usd": cfg["prior_committed_usd"],
             "campaign_upper_usd": float(total)}}

@@ -43,6 +43,12 @@ This is planning only. Live collection additionally requires `--live`,
 `--key-stdin` and the existing cumulative `--budget-usd 1.48`, with all imported
 charges and unresolved reservations included.
 
+The [second recovery continuation freeze](configs/recovery-continuation-segment2-freeze.json)
+contains 433 remaining cells after another transport stop. They are a subset of
+the same original 1,466-cell human authorization. Prior lineage files, preflights
+and stop summaries are archived before any new segment; two solver cells remain
+censored and the complete-case interpretation stays descriptive.
+
 ```bash
 python scripts/run_recovery_transfer.py \
   --config experiments/mbpp-plus/context-value-transfer/configs/replication.json \

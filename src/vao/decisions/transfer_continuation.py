@@ -40,7 +40,7 @@ def remaining_jobs(config, selected, checkpoints, observed, uncertain):
     return [r for r in expected if cell(r) not in known | missing]
 
 
-def import_bank(source, output, ledger, freeze):
+def import_bank(source, output, ledger, freeze, *, freeze_path=None, authorization_root=None):
     """Import the immutable stopped segment, retaining every reservation once."""
     for name, expected in freeze["approved_source_sha256"].items():
         if file_hash(source/name) != expected:
@@ -62,6 +62,13 @@ def import_bank(source, output, ledger, freeze):
     jobs=remaining_jobs(cfg,selected,cps,branches,transport)
     if [cell(r) for r in jobs] != [tuple(k) for k in freeze["authorized_unadmitted_cells"]]:
         raise ValueError("Remaining requests differ from the authorized plan")
+    if (source/"recovery-continuation.json").exists():
+        root_path=authorization_root or Path("experiments/mbpp-plus/context-value-transfer/configs/recovery-continuation-freeze.json")
+        root=json.loads(root_path.read_text())
+        if (freeze.get("root_authorization_freeze_sha256")!=file_hash(root_path)
+                or freeze["authorization"]!=root["authorization"]
+                or not {cell(r) for r in jobs}<={tuple(k) for k in root["authorized_unadmitted_cells"]}):
+            raise ValueError("Later segment exceeds the original human authorization")
     calls=records(source,"calls");events=records(source,"budget")
     reserve={r["call"]:r for r in events if r["event"]=="reserve"}
     settled={r["call"]:r for r in events if r["event"]=="settle"}
@@ -82,6 +89,21 @@ def import_bank(source, output, ledger, freeze):
     for p in source.iterdir():
         if p.is_file() and p.name not in {"budget.jsonl","summary.json","checksums.json"}:
             shutil.copyfile(p,output/p.name)
+    history=json.loads((source/"recovery-continuation-history.json").read_text()) if (source/"recovery-continuation-history.json").exists() else []
+    if (source/"recovery-history").exists():
+        shutil.copytree(source/"recovery-history",output/"recovery-history")
+    archives={}
+    if (source/"recovery-continuation.json").exists():
+        number=len(history)+1
+        folder=output/"recovery-history";folder.mkdir(exist_ok=True)
+        path=f"recovery-history/segment-{number}.json"
+        shutil.copyfile(source/"recovery-continuation.json",output/path)
+        history.append({"path":path,"sha256":file_hash(output/path)})
+        for name in ("recovery-continuation-history.json","recovery-continuation-preflight.json","summary.json"):
+            if (source/name).exists():
+                relative=f"recovery-history/before-segment-{number+1}-"+name
+                shutil.copyfile(source/name,output/relative);archives[name]=relative
+        (output/"recovery-continuation-history.json").write_text(json.dumps(history,sort_keys=True,indent=2)+"\n")
     lineage={"event":"human_authorized_unadmitted_recovery_continuation",
         "created_utc":datetime.now(timezone.utc).isoformat(),"source_summary":summary,
         "source_manifest_sha256":file_hash(source/"manifest.json"),
@@ -91,6 +113,9 @@ def import_bank(source, output, ledger, freeze):
         "censored_branch_requests":[r for r in transport if r["action"]=="branch"],
         "selected_checkpoint_ids_unchanged":selected,"authorized_unadmitted_cells":[list(cell(r)) for r in jobs],
         "authorization":freeze["authorization"],"source_collector_sha256":file_hash(Path(__file__)),
+        "authorization_freeze_path":str(freeze_path) if freeze_path else None,
+        "authorization_freeze_sha256":file_hash(freeze_path) if freeze_path else None,
+        "previous_lineages":history,"imported_static_archives":archives,
         "source_collector_git_sha":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
         "interpretation":"Bank remains incomplete: do not relabel complete-case intervals confirmatory."}
     (output/"recovery-continuation.json").write_text(json.dumps(lineage,sort_keys=True,indent=2)+"\n")
@@ -167,7 +192,7 @@ def main():
         p.error("Continuation collector changed after the explicit freeze")
     args.output.mkdir(parents=True,exist_ok=False)
     ledger=BudgetLedger(args.output/"budget.jsonl",args.budget_usd if args.live else cfg["run_ceiling_usd"])
-    cfg,selected,cps,jobs=import_bank(args.source,args.output,ledger,frozen)
+    cfg,selected,cps,jobs=import_bank(args.source,args.output,ledger,frozen,freeze_path=args.freeze)
     if not args.live:
         print(json.dumps({"status":"plan_only","unadmitted_jobs":len(jobs),"imported_known_cost_usd":float(ledger.spent),"held_usd":float(sum(ledger.pending.values()))}));return 0
     key=sys.stdin.readline().strip()

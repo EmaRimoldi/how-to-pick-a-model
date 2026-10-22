@@ -80,7 +80,27 @@ def test_new_uncertainty_stops_and_import_preserves_every_admission(tmp_path):
     assert ledger.spent==client.ledger.spent and ledger.pending==client.ledger.pending
     assert ledger.calls==client.ledger.calls and file_hash(out/"budget.jsonl")==file_hash(root/"budget.jsonl")
     assert not (out/"summary.json").exists()  #A new active segment must not look finished to forecasters.
-    assert ledger.reserve(reservation(cfg,"small"),cfg["models"]["small"]["id"])==client.ledger.calls+1
+    # A later transport stop may continue only a subset of the original plan.
+    next_job=remaining[0]
+    n=ledger.reserve(reservation(cfg,next_job["model_name"]),cfg["models"][next_job["model_name"]]["id"])
+    assert n==client.ledger.calls+1
+    append_json(out/"transport.jsonl",dict(next_job,call=n))
+    (out/"summary.json").write_text(json.dumps(dict(result,known_cost_usd=float(ledger.spent),unresolved_reservations_usd=float(sum(ledger.pending.values())))))
+    root_freeze=tmp_path/"root-freeze.json";root_freeze.write_text(json.dumps(frozen))
+    subset=remaining_jobs(cfg,selected,cps,records(out,"branches"),records(out,"transport"))
+    child=dict(frozen,approved_source_sha256={p.name:file_hash(p) for p in out.iterdir() if p.is_file()},
+        root_authorization_freeze_sha256=file_hash(root_freeze),authorized_unadmitted_cells=[list(cell(r)) for r in subset])
+    second=tmp_path/"second";second.mkdir();second_ledger=BudgetLedger(second/"budget.jsonl",.5)
+    _,_,_,new_jobs=import_bank(out,second,second_ledger,child,authorization_root=root_freeze)
+    assert new_jobs==subset and second_ledger.pending==ledger.pending and second_ledger.spent==ledger.spent
+    history=json.loads((second/"recovery-continuation-history.json").read_text())
+    assert len(history)==1 and (second/history[0]["path"]).read_bytes()==(out/"recovery-continuation.json").read_bytes()
+    import importlib.util
+    spec=importlib.util.spec_from_file_location("a","scripts/analyze_recovery_transfer.py")
+    a=importlib.util.module_from_spec(spec);spec.loader.exec_module(a)
+    assert len(a.recovery_lineages(second))==2
+    (second/history[0]["path"]).write_text("tampered")
+    with pytest.raises(ValueError,match="Archived recovery lineage changed"):a.recovery_lineages(second)
     (root/"branches.jsonl").write_text("tampered\n")
     other=tmp_path/"rejected";other.mkdir()
     with pytest.raises(ValueError,match="Authorized source changed"):
