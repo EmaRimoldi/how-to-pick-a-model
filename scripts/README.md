@@ -35,3 +35,9 @@ AutoResearch reproduction and campaign commands live under `autoresearch/scripts
 `run_continuation_pilot.py` writes a plan by default. Paid requests require
 `--live --budget-usd` and credentials; see the
 [pilot protocol](../experiments/humaneval-plus/openrouter-continuation-pilot/README.md).
+
+`run_context_value.py` plans by default and requires the same explicit live/budget
+flags for the [context-value diagnostic](../experiments/humaneval-plus/context-value/README.md).
+`analyze_context_value.py --input RUN --output NEW_DIRECTORY` audits saved
+receipts, parent identities, observable prompts and forecast order, then writes
+paired task-cluster analysis and a figure. It makes no provider calls.

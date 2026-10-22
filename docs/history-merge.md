@@ -68,3 +68,14 @@ archives remain. Optional SWE-bench/Docker dependencies were removed.
 
 `docs/decision-protocol.md` describes planned state-conditioned decisions and
 the evidence still needed. This cleanup does not implement or validate that policy.
+
+## Value of partial work
+
+The context-value iteration retires seven historical specification/protocol
+documents under `docs/specs/`, `docs/research/`, and `docs/strategy_experiment.md`.
+They describe already implemented baselines, retired mode comparisons, obsolete
+cluster paths, or merge heuristics; they do not govern the new failure-recovery
+experiment. Their last main-branch copy is recoverable at
+[`5bc534c`](https://github.com/EmaRimoldi/how-to-pick-a-model/tree/5bc534cc4fc82cac49aa6ffb4b7d913e74b34e22).
+Current contracts live in bundle READMEs, the decision protocol and tested code.
+Baseline evidence, raw archives, active manuscripts and their assets are retained.

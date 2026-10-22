@@ -1,20 +1,24 @@
 # How to Pick a Model
 
-**Cost-aware decisions for verifiable agent tasks.**
+**After a failed attempt, should an agent reuse its work or start again?**
 
-The research question is: given the work completed so far, when should an agent
-continue, restart, switch models, or stop spending compute?
+We study whether code and verifier feedback from a failed attempt help the next
+attempt, and whether that benefit can be predicted before paying for it. The
+longer-term goal is cost-aware continue/restart/switch/stop decisions for agents.
 
 This repository retains the AutoResearch/CIFAR-10 and HumanEval+ evidence needed
 to study that question: verified trajectories, retry-allocation baselines,
 context/routing experiments, cost accounting, and reproducible figures.
 
-**Current status:** the retained experiments measure model choice, retries, and
-information use. A budgeted [OpenRouter pilot](experiments/humaneval-plus/openrouter-continuation-pilot/README.md)
-now includes a runner and a 24-task development dataset with matched actions
-on two visibly failed checkpoints. A learned policy still
-needs training and held-out evaluation. The baseline traces
-are not evidence that an unobserved model handoff would have succeeded.
+**Current status:** an [initial OpenRouter pilot](experiments/humaneval-plus/openrouter-continuation-pilot/README.md)
+collected 24 tasks and two visibly failed checkpoints. The next
+[context-value diagnostic](experiments/humaneval-plus/context-value/README.md)
+adds 30 new tasks, four failed checkpoints across three tasks, and forecasts
+saved before matched outcomes. Code alone hurt the 27B task-macro mean in this
+small sample; code plus feedback helped it, while the 9B showed no such gain.
+The diagnostic does not establish reliable prediction of the benefit of reuse.
+A learned policy still needs training and held-out evaluation.
+Historical baseline traces cannot score an unobserved handoff.
 
 Start with the [decision protocol](docs/decision-protocol.md), the
 [experiment index](experiments/README.md), and the
@@ -55,7 +59,7 @@ commands are documented in [reproducibility](docs/reproducibility.md).
 
 | Path | Role |
 | --- | --- |
-| `experiments/` | Eight baseline bundles and a continuation pilot across two benchmark families |
+| `experiments/` | Eight baseline bundles, a continuation pilot and a context-value diagnostic |
 | `autoresearch/` | CIFAR-10 benchmark, verification, accounting, and analysis |
 | `src/vao/` | Verified execution and model adapters |
 | `src/agent_workflow/` | Baseline CLI, instrumentation, and reporting |

@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `2313`
-- Bytes indexed: `62.3M`
+- Files indexed: `2325`
+- Bytes indexed: `62.9M`
 
 ## Canonical Entrypoints
 
@@ -49,18 +49,18 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 1959 | 37.1M |
+| `experiments` | 1973 | 37.7M |
 | `artifacts` | 21 | 20.0M |
 | `paper` | 29 | 2.4M |
-| `src` | 131 | 981.2K |
+| `src` | 132 | 994.1K |
 | `uv.lock` | 1 | 972.4K |
 | `autoresearch` | 59 | 460.7K |
-| `scripts` | 18 | 165.6K |
-| `tests` | 33 | 111.8K |
-| `docs` | 28 | 103.3K |
+| `scripts` | 20 | 186.5K |
+| `tests` | 35 | 121.4K |
+| `docs` | 21 | 61.2K |
 | `prompts` | 6 | 21.6K |
 | `configs` | 7 | 12.7K |
-| `README.md` | 1 | 3.7K |
+| `README.md` | 1 | 4.0K |
 | `.claude` | 4 | 3.3K |
 | `NOTES.md` | 1 | 3.2K |
 | `AGENTS.md` | 1 | 2.8K |
@@ -79,13 +79,13 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.json` | 1045 | 3.1M |
+| `.json` | 1050 | 3.1M |
 | `.yaml` | 270 | 316.1K |
+| `.jsonl` | 264 | 23.7M |
 | `.txt` | 260 | 3.9M |
-| `.jsonl` | 258 | 23.3M |
-| `.py` | 216 | 1.7M |
-| `.md` | 91 | 276.0K |
-| `.png` | 58 | 7.3M |
+| `.py` | 221 | 1.7M |
+| `.md` | 86 | 246.6K |
+| `.png` | 59 | 7.4M |
 | `.pdf` | 34 | 687.0K |
 | `.csv` | 26 | 581.1K |
 | `.part-000` | 18 | 20.0M |
@@ -121,6 +121,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/archive/distribution-aware-orchestration/README.md`
 - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/README.md`
 - `experiments/humaneval-plus/README.md`
+- `experiments/humaneval-plus/context-value/README.md`
 - `experiments/humaneval-plus/llm-router-context-search/README.md`
 - `experiments/humaneval-plus/openrouter-continuation-pilot/README.md`
 - `experiments/humaneval-plus/qwen-model-size-frontier/README.md`
@@ -145,6 +146,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `autoresearch/scripts/run_threshold_calibration_array_task.sh`
 - `autoresearch/scripts/run_z_probe_array_task.sh`
 - `autoresearch/scripts/slurm_autoresearch_worker_array.sh`
+- `scripts/analyze_context_value.py`
 - `scripts/analyze_continuation_pilot.py`
 - `scripts/analyze_runs.py`
 - `scripts/benchmark_parallel_capacity.py`
@@ -156,6 +158,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/check_paper_build.py`
 - `scripts/compare_experiments.py`
 - `scripts/run_best_params_merge.py`
+- `scripts/run_context_value.py`
 - `scripts/run_continuation_pilot.py`
 - `scripts/run_merge_phase.py`
 - `scripts/run_parallel_experiment.py`
