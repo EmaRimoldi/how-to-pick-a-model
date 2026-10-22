@@ -276,7 +276,8 @@ def analyze(data: dict) -> tuple[dict, list[dict]]:
             rows = [r for r in rollouts if r["budget_usd"] == b and r["policy"] == p]
             summary[str(b)][p] = {"tasks": len(rows), "success_rate": mean(r["passed"] for r in rows),
                 "mean_api_cost_usd": mean(r["cost_usd"] for r in rows), "mean_net_utility_usd": mean(r["net_utility_usd"] for r in rows),
-                "terminations": dict(Counter(r["termination"] for r in rows))}
+                "terminations": dict(Counter(r["termination"] for r in rows)),
+                "selected_actions": dict(Counter(r["selected_action"] for r in rows if r["selected_action"] is not None))}
     baseline = {r["task_id"]: r for r in rollouts if r["budget_usd"] == 0.01 and r["policy"] == "best_fixed"}
     proposed = {r["task_id"]: r for r in rollouts if r["budget_usd"] == 0.01 and r["policy"] == "state"}
     stronger = {r["task_id"]: r for r in rollouts if r["budget_usd"] == 0.01 and r["policy"] == "development_replay_best"}
@@ -335,6 +336,9 @@ def analyze(data: dict) -> tuple[dict, list[dict]]:
         "observed_benefit_mse": {v: paired_interval(a) for v, a in delta_error.items()},
         "invalid_api_forecasts": dict(failures), "prompt_token_controls": token_stats,
         "policy_backed_zero_charge_provider_errors": sum(c.get("billing_source") == "published_zero_completion_insurance" for c in data["calls"]),
+        "provider_error_counts": dict(Counter(c["split"] + "." + c["model_name"] for c in data["calls"] if c["finish_reason"] == "error")),
+        "public_pass_but_full_fail_draws": dict(Counter(r["model_name"] + "." + r["arm"] for r in data["branches"]
+            if r["split"] == "evaluation" and r["visible_passed"] and not r["passed"])),
         "collection_verifier_seconds": sum(e["verifier_seconds"] for e in data["evaluations"]),
         "collection_request_seconds": sum(c["elapsed_seconds"] for c in data["calls"])}
     return report, rollouts
