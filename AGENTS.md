@@ -51,7 +51,7 @@ verifiable tasks. Read:
 - The next BigCodeBench stage tests fixed feedback-only policies first. Do not
   train a new selector, recycle observed tasks as fresh, or change its frozen
   intervention/primary comparison after calls. Its new $5 authorization is
-  separate from the completed $2 campaign; collection itself is capped at $4.80.
+  separate from the completed $2 campaign; collection itself is capped at $4.00.
 
 ## Editing and verification
 

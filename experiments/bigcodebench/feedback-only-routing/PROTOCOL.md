@@ -82,9 +82,9 @@ score an unobserved continuation by substituting a different recorded attempt.
 ## Accounting and analysis
 
 The user authorized **at most 5 additional USD**, independently of the completed
-$2 campaign. This collection has a stricter **$4.80 cap**, including known charges
+$2 campaign. This collection has a stricter **$4.00 cap**, including known charges
 and full unresolved reservations. No other paid collection is authorized by this
-protocol. The remaining $0.20 is not silently allocated to another phase.
+protocol. The remaining $1.00 is not silently allocated to another phase.
 Budget exhaustion or any unknown billing stops admissions; never automatically
 resume or repeat an admitted request, including a failed/uncertain request.
 

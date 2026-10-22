@@ -40,7 +40,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | `experiments/humaneval-plus/openrouter-continuation-pilot/` | development pilot | not tiered | `inspect-readme` | 13 | 1 | 0 | 10 | 1 | 0 | 0 | 0 | 1 |
 | `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 46 | 5 | 0 | 39 | 3 | 0 | 0 | 0 | 4 |
 | `experiments/mbpp-plus/context-value-transfer/` | collection finished; censored descriptive bank | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 72 | 6 | 2 | 59 | 4 | 3 | 0 | 0 | 6 |
-| `experiments/bigcodebench/feedback-only-routing/` | prospective preparation | not tiered | `inspect-readme` | 7 | 1 | 4 | 0 | 0 | 0 | 0 | 0 | 0 |
+| `experiments/bigcodebench/feedback-only-routing/` | prospective preparation | not tiered | `inspect-readme` | 8 | 1 | 4 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 ## Key Files
 

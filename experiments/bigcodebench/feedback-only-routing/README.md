@@ -20,7 +20,7 @@ automatically resumes. A key is accepted only via an un-echoed stdin pipe.
   --config experiments/bigcodebench/feedback-only-routing/configs/evaluation.json
 ```
 
-New authorization: maximum $5 additional; this collection is capped at $4.80,
+New authorization: maximum $5 additional; this collection is capped at $4.00,
 including unknown reservations. No paid forecaster or learned selector is run.
 The reference audit is preparation, **not a model evaluation result**.
 

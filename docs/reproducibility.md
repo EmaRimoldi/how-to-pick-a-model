@@ -115,7 +115,7 @@ Planning reads the pinned task/source hashes and makes no provider call:
 Collection additionally requires macOS sandbox-exec, the optional EvalPlus
 profile for the isolation probe, a clean committed freeze, a fresh ignored
 output directory, explicit `--execute`, and a key on un-echoed stdin. Its new
-$4.80 collection ceiling fits the separately authorized $5 additional budget;
+$4.00 collection ceiling fits the separately authorized $5 additional budget;
 it must never resume the completed $2 campaign. No uncertain call is retried.
 `scripts/analyze_feedback_routing.py` audits saved receipts/messages without
 provider calls; it refuses treatment analysis before `summary.json` exists.
