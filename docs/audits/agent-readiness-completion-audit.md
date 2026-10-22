@@ -1,5 +1,11 @@
 # Agent Readiness Completion Audit
 
+Historical handoff snapshot from before the October 2026 working-tree cleanup.
+Counts and archived-file examples below describe that earlier tree. Use the
+generated manifests and `docs/history-merge.md` for the current retained files;
+the readiness gate now checks core evidence and active figure references
+instead of requiring a minimum number of experiment bundles or paper figures.
+
 This audit maps the repository-organization objective to the current evidence
 that an LLM agent can continue the paper without first restructuring the repo.
 

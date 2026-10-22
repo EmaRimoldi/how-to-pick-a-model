@@ -36,7 +36,7 @@ tree.
 | Area | Use |
 | --- | --- |
 | `paper/neurips-submission/` | Active manuscript source and paper-ready figures. Keep this inside the repo. |
-| `paper/neurips-submission/archive/` | Historical drafts, reference PDFs, and provenance snapshots. Do not edit as active paper source unless explicitly asked. |
+| `paper/neurips-submission/archive/` | Consolidated theory, planning notes, and retained references. Do not edit as active paper source unless explicitly asked. |
 | `autoresearch/` | CIFAR-10 AutoResearch benchmark, analysis code, configs, prompts, and figure-generation scripts. |
 | `experiments/` | Evidence bundles. Each active bundle should own a `README.md`, configs, data, results, scripts, and figures when available. |
 | `src/agent_workflow/` | Agent workflow runtime and CLI compatibility surface. |
@@ -44,7 +44,7 @@ tree.
 | `src/README.md`, `scripts/README.md`, `autoresearch/scripts/README.md` | Local code and command maps for implementation work. |
 | `docs/` | Human-readable knowledge base, audits, reproducibility instructions, and launch/review material. |
 | `docs/specs/` | Historical implementation specs; use bundle READMEs for current status. |
-| `artifacts/` | Raw archives and source snapshots retained for provenance, not active source. |
+| `artifacts/raw/` | Raw campaign archives retained for provenance, not active source. |
 
 ## Safe Defaults
 

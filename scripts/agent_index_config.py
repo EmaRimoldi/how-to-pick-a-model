@@ -56,6 +56,17 @@ REQUIRED_MAKE_TARGETS = [
     "paper-figures-autoresearch",
 ]
 
+CORE_EXPERIMENT_BUNDLES = {
+    "experiments/autoresearch-cifar10/starting-model-calibration/",
+    "experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/",
+    "experiments/autoresearch-cifar10/shared-memory-ablation/",
+    "experiments/autoresearch-cifar10/three-worker-model-routing/",
+    "experiments/humaneval-plus/qwen-model-size-frontier/",
+    "experiments/humaneval-plus/retry-allocation-router/",
+    "experiments/humaneval-plus/strategy-by-difficulty-grid/",
+    "experiments/humaneval-plus/llm-router-context-search/",
+}
+
 PAPER_ROOT = Path("paper/neurips-submission")
 CANONICAL_TEX = [
     PAPER_ROOT / "main.tex",

@@ -1,5 +1,13 @@
 # Theoretical-manuscript consolidation audit
 
+This is a historical consolidation audit. Superseded drafts and compiled
+manuscript snapshots described below were removed from the working tree in
+October 2026 and remain recoverable in the
+[pre-cleanup Git tree](https://github.com/EmaRimoldi/how-to-pick-a-model/tree/d98e3f2209c6e470885e748aafb0a41ea6395291/paper/neurips-submission).
+The current anchors are `main.tex`, `arxiv.tex`, and
+`archive/theory_anchor.tex`; the generated paper archive manifest lists retained
+references and planning material.
+
 ## Scope
 
 This audit covers the theoretical content of:
@@ -42,8 +50,8 @@ content consolidation.
 - \`arxiv_backup.tex\` has the same formal-result inventory and is an earlier,
   shorter version.  Their normalized five-word-shingle overlap is 0.641;
   the later file adds 381 lines and removes 144 relative to the backup.
-- \`submitted-manuscript.pdf\` remains the immutable record of the submitted
-  layout and is not replaced by this editable source.
+- The historical \`submitted-manuscript.pdf\` remains in Git history as the
+  record of the submitted layout; current PDFs must be rebuilt from source.
 
 ### Maximal theory anchor
 
@@ -186,7 +194,11 @@ primal objective, not automatically shadow prices.  The archived proposition
 does not define a sufficiently general constraint family to support its
 strongest impossibility wording, so it is retained only as interpretation.
 
-## Source disposition
+## Historical source disposition
+
+The decisions below record the consolidation stage before cleanup. Files
+marked "retain as archive" were subsequently retired to Git history; their
+distinct validated results remain in the selected anchors.
 
 | File | Decision | Reason |
 | --- | --- | --- |
@@ -204,15 +216,17 @@ strongest impossibility wording, so it is retained only as interpretation.
 | \`archive/Beneventano_Poggio.tex\` | retain as archive | mechanical text extraction of \`BP.pdf\`, not an authoritative LaTeX source |
 | \`archive/next_steps.tex\` | untouched | explicitly excluded by request |
 
-The audit identifies redundancy but does not delete historical source files.
+The consolidation audit identifies redundancy and preserves the rationale for
+which results were promoted. The later cleanup is recorded in
+`docs/history-merge.md`.
 
 ## Retained PDFs
 
-- \`archive/main.pdf\`: compiled current-paper snapshot.
-- \`archive/submitted-manuscript.pdf\`: immutable submitted manuscript.
 - \`archive/BP.pdf\`: immutable historical theory manuscript.
 - \`archive/Achille & Soatto.pdf\`: external reference, not merged into an
   authored manuscript.
 
-PDFs are retained for provenance even when an editable anchor covers their
-theoretical content.
+These reference PDFs remain for provenance. The compiled `main.pdf` and
+`submitted-manuscript.pdf` snapshots were removed from the working tree and
+remain in Git history. The latter also has the text-layer anomaly documented
+in `docs/audits/manuscript-reproducibility.md`.

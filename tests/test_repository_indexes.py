@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import subprocess
 import sys
@@ -7,6 +8,7 @@ from pathlib import Path
 
 from scripts.agent_index_config import (
     AGENT_DOC_ROOT_FILES,
+    CORE_EXPERIMENT_BUNDLES,
     GENERATED_AUDITS,
     LOCAL_PATH_PATTERNS,
     REQUIRED_MAKE_TARGETS,
@@ -44,10 +46,9 @@ def test_knowledge_index_is_complete_and_descriptive() -> None:
     assert index["root"] == "."
     assert all(index["canonical_docs"].values())
     assert len(index["formal_objects"]) >= 90
-    assert len(index["experiment_bundles"]) >= 20
+    assert CORE_EXPERIMENT_BUNDLES <= {bundle["path"] for bundle in index["experiment_bundles"]}
     assert len(index["scripts"]) >= 30
     assert len(index["code_modules"]) >= 70
-    assert len(index["paper_figures"]) >= 100
     assert len(index["active_paper_references"]) >= 15
     assert all("agent_index_config.py" not in entry["path"] for entry in index["scripts"])
     assert any(entry["path"] == "scripts/build_command_manifest.py" for entry in index["scripts"])
@@ -74,13 +75,13 @@ def test_knowledge_index_is_complete_and_descriptive() -> None:
         "paper/neurips-submission/figures/autoresearch/first_hit_ecdf_by_mode.png"
     ]["provenance"] == "exact experiment copy"
     assert figures[
-        "paper/neurips-submission/figures/candidates/candidate_pareto_frontier.png"
-    ]["source"] == "src/plot_humaneval_candidates.py"
-    assert figures[
         "paper/neurips-submission/figures/autoresearch_n20_confirmation/quality_vs_certified_resource.png"
     ]["source"].startswith("experiments/")
 
     assert all(ref["present"] for ref in index["active_paper_references"])
+    assert {
+        ref["resolved_path"] for ref in index["active_paper_references"] if ref["kind"] == "figure"
+    } <= set(figures)
     main_refs = [
         ref for ref in index["active_paper_references"]
         if ref["source_tex"] == "paper/neurips-submission/main.tex" and ref["kind"] == "figure"
@@ -197,7 +198,8 @@ def test_experiment_manifest_classifies_bundle_assets() -> None:
     bundles = {bundle["path"]: bundle for bundle in manifest["bundles"]}
 
     assert manifest["root"] == "."
-    assert manifest["bundle_count"] >= 20
+    assert manifest["bundle_count"] == len(bundles)
+    assert CORE_EXPERIMENT_BUNDLES <= set(bundles)
     assert manifest["missing_paths"] == []
     assert manifest["missing_readmes"] == []
     assert manifest["reproducibility_classes"]["paper-supporting-evidence"] >= 6
@@ -235,7 +237,10 @@ def test_paper_archive_manifest_classifies_all_archive_files() -> None:
     assert manifest["archive_root"] == "paper/neurips-submission/archive"
     assert coverage["classified"] == coverage["files"]
     assert coverage["unclassified"] == []
-    assert len(records) >= 15
+    assert set(records) == {
+        str(path.relative_to(ROOT))
+        for path in (ROOT / manifest["archive_root"]).iterdir() if path.is_file()
+    }
 
     assert records[
         "paper/neurips-submission/archive/theory_anchor.tex"
@@ -243,19 +248,32 @@ def test_paper_archive_manifest_classifies_all_archive_files() -> None:
     assert records[
         "paper/neurips-submission/archive/next_steps.tex"
     ]["disposition"] == "keep-independent"
-    assert records[
-        "paper/neurips-submission/archive/final_paper_local.tex"
-    ]["disposition"] == "review-before-delete"
-    assert records[
-        "paper/neurips-submission/archive/main_3_local.tex"
-    ]["nearest_text_neighbor"] == "paper/neurips-submission/archive/main_3.tex"
+    for record in records.values():
+        if record["suffix"] in {".tex", ".bib"}:
+            assert record["nearest_text_neighbor"] in records
+            assert record["text_similarity"] is not None
 
-    assert any(
-        pair["a"] == "main_3.tex"
-        and pair["b"] == "main_3_local.tex"
-        and pair["similarity"] > 0.6
-        for pair in manifest["similar_text_pairs"]
+
+def test_inventory_is_identical_for_lfs_pointer_and_hydrated_object(tmp_path: Path) -> None:
+    payload = b"archived campaign evidence\n" * 80
+    path = tmp_path / "campaign.tar.zst.part-000"
+    path.write_text(
+        "version https://git-lfs.github.com/spec/v1\n"
+        f"oid sha256:{hashlib.sha256(payload).hexdigest()}\n"
+        f"size {len(payload)}\n"
     )
+
+    def inventory() -> dict:
+        result = subprocess.run(
+            [sys.executable, "scripts/build_repo_inventory.py", "--root", str(tmp_path), "--format", "json"],
+            cwd=ROOT, check=True, capture_output=True, text=True,
+        )
+        return json.loads(result.stdout)
+
+    pointer_inventory = inventory()
+    assert pointer_inventory["total_bytes"] == len(payload)
+    path.write_bytes(payload)
+    assert inventory() == pointer_inventory
 
 
 def test_inventory_has_no_unexpected_source_duplicates() -> None:

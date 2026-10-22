@@ -25,7 +25,6 @@ results, figures, and run metadata whenever those artifacts are available.
 | SWE-bench Verified | [`open-source-orchestration-scaffold/`](swebench-verified/open-source-orchestration-scaffold/) | scaffold | worker/meta-design configs and prompt-safe data manifests |
 | SWE-bench Verified | [`open-source-meta-loop-2026-06-07/`](swebench-verified/open-source-meta-loop-2026-06-07/) | historical result archive | official evaluation manifests, failure analyses, plots, selected designs |
 | SWE-bench Verified | [`shared-runtime/`](swebench-verified/shared-runtime/) | implementation | orchestration code, Slurm launcher, and tests shared by the SWE studies |
-| Historical | [`stateful-query-engine/`](archive/stateful-query-engine/) | archived benchmark | 61 implementation/config/test files; no runs, results, figures, or reports |
 
 ## Families
 
@@ -34,10 +33,9 @@ results, figures, and run metadata whenever those artifacts are available.
 - [`mbpp-plus/`](mbpp-plus/)
 - [`bbh/`](bbh/)
 - [`swebench-verified/`](swebench-verified/)
-- [`archive/`](archive/) (historical implementations, excluded from active evidence)
 
-The former `stateful-query-engine` benchmark has been removed from the active
-families and retained under `archive/`, clearly marked as an implementation
-without run, result, figure, or report evidence.
+The former `stateful-query-engine` implementation had no run, result, figure,
+or report evidence. It was retired from the working tree and remains available
+in [Git history](https://github.com/EmaRimoldi/how-to-pick-a-model/tree/d98e3f2209c6e470885e748aafb0a41ea6395291/experiments/archive/stateful-query-engine).
 
 Reproduction guidance lives in [`../docs/reproducibility.md`](../docs/reproducibility.md).

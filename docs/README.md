@@ -1,4 +1,4 @@
-# AutoResearch Orchestration Docs
+# How to Pick a Model Docs
 
 The documentation is organized by the questions a technical reviewer will ask.
 

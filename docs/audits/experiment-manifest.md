@@ -5,7 +5,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 
 ## Summary
 
-- Bundles indexed: `20`
+- Bundles indexed: `19`
 - Missing bundle paths: `0`
 - Missing README files: `0`
 
@@ -13,7 +13,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 
 | Class | Bundles |
 | --- | --- |
-| `historical-or-archive` | 3 |
+| `historical-or-archive` | 2 |
 | `inspect-readme` | 1 |
 | `paper-supporting-evidence` | 8 |
 | `partial-evidence` | 5 |
@@ -26,7 +26,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | `Tier 1: Main Evidence` | 6 |
 | `Tier 2: Supporting Or Diagnostic Evidence` | 5 |
 | `Tier 3: Future Work Or Scaffold` | 6 |
-| `not tiered` | 3 |
+| `not tiered` | 2 |
 
 ## Bundle Assets
 
@@ -51,7 +51,6 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | `experiments/swebench-verified/open-source-orchestration-scaffold/` | scaffold | Tier 3: Future Work Or Scaffold | `scaffold` | 8 | 5 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |
 | `experiments/swebench-verified/open-source-meta-loop-2026-06-07/` | historical result archive | not tiered | `historical-or-archive` | 55 | 2 | 25 | 1 | 16 | 1 | 0 | 0 | 4 |
 | `experiments/swebench-verified/shared-runtime/` | implementation | not tiered | `inspect-readme` | 15 | 0 | 3 | 0 | 0 | 11 | 0 | 0 | 0 |
-| `experiments/archive/stateful-query-engine/` | archived benchmark | not tiered | `historical-or-archive` | 62 | 13 | 1 | 0 | 0 | 48 | 0 | 0 | 0 |
 
 ## Key Files
 
@@ -323,21 +322,3 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 - `experiments/swebench-verified/shared-runtime/src/vao/swebench_orchestration/repo_context.py`
 - `experiments/swebench-verified/shared-runtime/src/vao/swebench_orchestration/schemas.py`
 - `experiments/swebench-verified/shared-runtime/tests/test_swebench_orchestration.py`
-
-### `experiments/archive/stateful-query-engine/`
-
-- Title: Stateful Query Engine — Historical Benchmark
-- Evidence: 61 implementation/config/test files; no runs, results, figures, or reports
-- Asset directories: `configs, scripts, src/vao/analysis`
-- `experiments/archive/stateful-query-engine/README.md`
-- `experiments/archive/stateful-query-engine/benchmarks/stateful_query_engine/metadata/instance_config.json`
-- `experiments/archive/stateful-query-engine/configs/feedback_use_cb.yaml`
-- `experiments/archive/stateful-query-engine/configs/hard_haiku_prompt_controlled_10step.yaml`
-- `experiments/archive/stateful-query-engine/configs/hard_qwen_prompt_controlled_10step.yaml`
-- `experiments/archive/stateful-query-engine/configs/hard_single_prompt_model_matrix.yaml`
-- `experiments/archive/stateful-query-engine/configs/oracle_family_5model_campaign.yaml`
-- `experiments/archive/stateful-query-engine/configs/oracle_family_5model_reliable_campaign.yaml`
-- `experiments/archive/stateful-query-engine/configs/oracle_family_iterative_fixed_mode.yaml`
-- `experiments/archive/stateful-query-engine/configs/oracle_family_iterative_multistep.yaml`
-- `experiments/archive/stateful-query-engine/configs/oracle_family_pilot.yaml`
-- `experiments/archive/stateful-query-engine/configs/paper_dev_model_comparison.yaml`

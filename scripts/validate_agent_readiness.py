@@ -13,6 +13,7 @@ from typing import Iterable
 
 from agent_index_config import (
     AGENT_DOC_ROOT_FILES,
+    CORE_EXPERIMENT_BUNDLES,
     GENERATED_AUDITS,
     LOCAL_PATH_PATTERNS,
     MARKDOWN_LINK_DOCS,
@@ -130,11 +131,10 @@ def check_code_modules(knowledge: dict) -> list[str]:
 def check_paper_figures(knowledge: dict) -> list[str]:
     problems: list[str] = []
     figures = knowledge.get("paper_figures", [])
-    if len(figures) < 100:
-        problems.append("knowledge index found fewer than 100 paper figures")
-    exact_count = sum(1 for figure in figures if figure["provenance"] == "exact experiment copy")
-    if exact_count < 25:
-        problems.append("paper figure provenance found fewer than 25 exact experiment copies")
+    indexed_paths = {figure["path"] for figure in figures}
+    for ref in knowledge.get("active_paper_references", []):
+        if ref["kind"] == "figure" and ref["resolved_path"] not in indexed_paths:
+            problems.append(f"active paper figure is not indexed `{ref['resolved_path']}`")
     for figure in figures:
         if figure["provenance"] in {"exact experiment copy", "same-name experiment artifact", "generated paper figure"}:
             if not figure["source"]:
@@ -165,6 +165,9 @@ def check_active_paper_references(knowledge: dict) -> list[str]:
 
 def check_experiment_bundles(knowledge: dict) -> list[str]:
     problems: list[str] = []
+    paths = {bundle["path"] for bundle in knowledge["experiment_bundles"]}
+    for path in sorted(CORE_EXPERIMENT_BUNDLES - paths):
+        problems.append(f"knowledge index is missing core experiment `{path}`")
     for bundle in knowledge["experiment_bundles"]:
         if not bundle["readme_title"]:
             problems.append(f"experiment bundle lacks README title `{bundle['path']}`")
@@ -231,8 +234,9 @@ def check_experiment_manifest(manifest: dict) -> list[str]:
     bundles = manifest.get("bundles", [])
     if manifest.get("root") != ".":
         problems.append("experiment manifest root must be '.'")
-    if len(bundles) < 20:
-        problems.append("experiment manifest found fewer than 20 bundles")
+    paths = {bundle["path"] for bundle in bundles}
+    for path in sorted(CORE_EXPERIMENT_BUNDLES - paths):
+        problems.append(f"experiment manifest is missing core experiment `{path}`")
     if manifest.get("missing_paths"):
         problems.append("experiment manifest has missing paths: " + ", ".join(manifest["missing_paths"]))
     if manifest.get("missing_readmes"):
@@ -383,8 +387,6 @@ def validate(root: Path, write: bool = False) -> tuple[bool, list[str], dict[str
 
     if len(knowledge["formal_objects"]) < 90:
         messages.append("knowledge index found fewer than 90 formal objects")
-    if len(knowledge["experiment_bundles"]) < 20:
-        messages.append("knowledge index found fewer than 20 experiment bundles")
     if len(knowledge["scripts"]) < 30:
         messages.append("knowledge index found fewer than 30 scripts")
 
