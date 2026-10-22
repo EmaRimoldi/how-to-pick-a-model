@@ -56,7 +56,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `uv.lock` | 1 | 972.4K |
 | `autoresearch` | 59 | 460.7K |
 | `scripts` | 25 | 278.3K |
-| `tests` | 42 | 169.4K |
+| `tests` | 42 | 170.5K |
 | `docs` | 23 | 95.4K |
 | `prompts` | 6 | 21.6K |
 | `configs` | 7 | 12.7K |
@@ -83,8 +83,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.jsonl` | 291 | 49.8M |
 | `.txt` | 275 | 4.2M |
 | `.yaml` | 270 | 316.1K |
-| `.py` | 244 | 1.9M |
-| `.md` | 95 | 345.9K |
+| `.py` | 244 | 2.0M |
+| `.md` | 95 | 346.4K |
 | `.png` | 62 | 7.7M |
 | `.pdf` | 37 | 745.3K |
 | `.csv` | 26 | 581.1K |

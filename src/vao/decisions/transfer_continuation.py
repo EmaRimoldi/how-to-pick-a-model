@@ -161,7 +161,11 @@ def collect_unadmitted(config, selected, checkpoints, jobs, problems, donors, cl
                     {k:v for k,v in j.items() if k!="messages"}):j for i,j in queue}
                 for future in as_completed(pending):
                     try:scoring.append(scoring_pool.submit(score,pending[future],future.result()))
-                    except (BackendStopped,BudgetStopped) as exc:error=error or exc
+                    except (BackendStopped,BudgetStopped) as exc:
+                        # Shutdown can finish sibling budget errors first. Keep
+                        # the transport cause if one of the admitted calls failed.
+                        if error is None or (isinstance(error,BudgetStopped) and isinstance(exc,BackendStopped)):
+                            error=exc
                 for future in as_completed(scoring):future.result()
             if error:raise error
             count=sum(r["checkpoint_id"]==id_ for r in branches)

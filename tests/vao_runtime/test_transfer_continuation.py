@@ -1,10 +1,11 @@
 import itertools
 import json
+from concurrent.futures import wait
 from pathlib import Path
 
 import pytest
 
-from vao.decisions.openrouter import BackendStopped, BudgetLedger, OpenRouterClient, append_json
+from vao.decisions.openrouter import BackendStopped, BudgetStopped, BudgetLedger, OpenRouterClient, append_json
 from vao.decisions.pilot import digest
 from vao.decisions.transfer import file_hash, records, reservation
 from vao.decisions.transfer_continuation import cell, collect_unadmitted, import_bank, remaining_jobs
@@ -55,15 +56,31 @@ def test_only_unadmitted_cells_run_and_censor_survives(tmp_path):
     assert len(records(root,"calls"))==len(records(root,"evaluations"))==29
 
 
-def test_new_uncertainty_stops_and_import_preserves_every_admission(tmp_path):
+@pytest.mark.parametrize("budget_first",[False,True])
+def test_new_uncertainty_stops_and_import_preserves_every_admission(tmp_path,monkeypatch,budget_first):
+    if budget_first:
+        # Reproduce the Linux failure deterministically, rather than relying
+        # on a particular thread schedule to exercise the shutdown contract.
+        def completed_budget_first(futures):
+            futures=list(futures);wait(futures)
+            return sorted(futures,key=lambda f:0 if isinstance(f.exception(),BudgetStopped) else 1)
+        monkeypatch.setattr("vao.decisions.transfer_continuation.as_completed",completed_budget_first)
     root=tmp_path/"fixture"
     cfg,selected,cps,jobs,client,requested=fixture(root)
+    failed_requests=[]
     def fail(endpoint,body):
+        failed_requests.append(body)
         raise BackendStopped("OpenRouter URLError; no automatic retry")
     client.request=fail
     result=collect_unadmitted(cfg,selected,cps,jobs,{"Mbpp/1":{"prompt":"synthetic"}},[dict(cps["1"],task_id="HumanEval/0",checkpoint_id="donor")],client,Verifier(),root)
+    # Siblings may finish budget errors first, but summary must retain the
+    # backend cause required by the explicit transport-continuation contract.
     assert result["status"].startswith("BackendStopped")
+    assert failed_requests  #A real mocked backend error, not an exhausted fixture cap.
     assert client.ledger.stopped and 4 in client.ledger.pending and len(client.ledger.pending)>=2
+    new_unknowns={r["call"] for r in records(root,"transport") if r["call"]!=4}
+    assert len(new_unknowns)==len(failed_requests)
+    assert set(client.ledger.pending)=={4}|new_unknowns
     assert len(requested)==3
     (root/"manifest.json").write_text(json.dumps({"config":cfg,"policy_sha256":digest({}),"source_sha256":{}}))
     (root/"frozen-policy.json").write_text("{}")
