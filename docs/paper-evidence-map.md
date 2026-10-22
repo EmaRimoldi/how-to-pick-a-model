@@ -32,9 +32,10 @@ not establish that a state-conditioned continue/restart/handoff controller works
 
 ## Missing evidence for the next question
 
-Matched action continuations, calibrated state-dependent forecasts, and held-out
-policy comparisons including switching/context costs remain to be produced.
-Keep them labeled as planned. Re-FORC and AI Functions are related-work/baseline
+The [OpenRouter development pilot](../experiments/humaneval-plus/openrouter-continuation-pilot/README.md)
+provides a collector for matched action continuations. Calibrated forecasts and
+held-out policy comparisons including switching/context costs remain planned.
+Development results do not establish a learned controller gain. Re-FORC and AI Functions are related-work/baseline
 references, not implemented integrations or new results in this repository.
 
 Run `make check` for structure and unit tests, and

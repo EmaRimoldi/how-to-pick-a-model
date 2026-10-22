@@ -1,6 +1,6 @@
 # Experiments
 
-These eight baseline bundles support the sequential-decision question in
+Eight baseline bundles and a new development pilot support the sequential-decision question in
 `docs/decision-protocol.md`. Each is grouped by benchmark and research question. A bundle owns its configs, launchers, inputs, processed
 results, figures, and run metadata whenever those artifacts are available.
 
@@ -14,6 +14,7 @@ results, figures, and run metadata whenever those artifacts are available.
 | HumanEval+ | [`retry-allocation-router/`](humaneval-plus/retry-allocation-router/) | completed | folds, router decisions, summary, configs, launchers |
 | HumanEval+ | [`strategy-by-difficulty-grid/`](humaneval-plus/strategy-by-difficulty-grid/) | completed | full run, source/config snapshot, raw shards, summaries, figures |
 | HumanEval+ | [`llm-router-context-search/`](humaneval-plus/llm-router-context-search/) | completed | validation selection, held-out test evaluation, logs, figure |
+| HumanEval+ | [`openrouter-continuation-pilot/`](humaneval-plus/openrouter-continuation-pilot/) | development pilot | frozen two-model protocol, budgeted runner, public feedback and separate full-suite scoring |
 
 ## Families
 
@@ -28,4 +29,5 @@ Reproduction guidance lives in [`../docs/reproducibility.md`](../docs/reproducib
 
 The focused tree retires peripheral benchmark families and incomplete scaffolds.
 Their history is recoverable via `docs/history-merge.md`. The retained data does
-not contain matched outcomes for new continuation or handoff actions.
+not contain matched outcomes for new continuation or handoff actions. The new
+OpenRouter pilot collects them under a separate development protocol.

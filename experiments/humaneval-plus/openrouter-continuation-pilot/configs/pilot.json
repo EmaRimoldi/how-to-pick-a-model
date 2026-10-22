@@ -1,0 +1,16 @@
+{
+  "protocol_version": "one-checkpoint-v1",
+  "dataset_hash": "fe585eb4df8c88d844eeb463ea4d0302",
+  "seed": 20261022,
+  "task_count": 24,
+  "branch_repeats": 2,
+  "direct_repeats": 2,
+  "input_token_ceiling": 16384,
+  "max_tokens": 1536,
+  "temperature": 0.6,
+  "provider": "siliconflow/fp8",
+  "models": {
+    "small": {"id": "qwen/qwen3.5-9b", "input_per_million": 0.1, "output_per_million": 0.15},
+    "large": {"id": "qwen/qwen3.5-27b", "input_per_million": 0.25, "output_per_million": 2.0}
+  }
+}

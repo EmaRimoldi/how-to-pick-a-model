@@ -29,3 +29,9 @@ command safety manifest and explicit run authorization.
 Current portable setup is documented in `docs/reproducibility.md`.
 
 AutoResearch reproduction and campaign commands live under `autoresearch/scripts/`.
+
+## Continuation pilot
+
+`run_continuation_pilot.py` writes a plan by default. Paid requests require
+`--live --budget-usd` and credentials; see the
+[pilot protocol](../experiments/humaneval-plus/openrouter-continuation-pilot/README.md).

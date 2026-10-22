@@ -1417,6 +1417,9 @@ autoresearch = [
     { name = "torch" },
     { name = "torchvision" },
 ]
+continuation-pilot = [
+    { name = "evalplus" },
+]
 other-experiments = [
     { name = "evalplus" },
     { name = "lifelines" },
@@ -1438,6 +1441,7 @@ dev = [
 requires-dist = [
     { name = "anthropic", specifier = ">=0.40.0" },
     { name = "evalplus", marker = "extra == 'all-experiments'", specifier = ">=0.3.1" },
+    { name = "evalplus", marker = "extra == 'continuation-pilot'", specifier = "==0.3.1" },
     { name = "evalplus", marker = "extra == 'other-experiments'", specifier = ">=0.3.1" },
     { name = "lifelines", marker = "extra == 'all-experiments'", specifier = ">=0.30" },
     { name = "lifelines", marker = "extra == 'other-experiments'", specifier = ">=0.30" },
@@ -1468,7 +1472,7 @@ requires-dist = [
     { name = "transformers", marker = "extra == 'all-experiments'", specifier = ">=5.0" },
     { name = "transformers", marker = "extra == 'other-experiments'", specifier = ">=5.0" },
 ]
-provides-extras = ["autoresearch", "analysis-ml", "other-experiments", "all-experiments"]
+provides-extras = ["continuation-pilot", "autoresearch", "analysis-ml", "other-experiments", "all-experiments"]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pytest", specifier = ">=9.0.2" }]

@@ -8,9 +8,9 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Canonical docs present: `22/22`
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
-- Experiment bundles indexed: `8`
-- Script entrypoints indexed: `30`
-- Code modules indexed: `126`
+- Experiment bundles indexed: `9`
+- Script entrypoints indexed: `31`
+- Code modules indexed: `130`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `7`
@@ -165,6 +165,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | HumanEval+ | `experiments/humaneval-plus/retry-allocation-router/` | completed | Tier 1: Main Evidence | folds, router decisions, summary, configs, launchers |
 | HumanEval+ | `experiments/humaneval-plus/strategy-by-difficulty-grid/` | completed | Tier 1: Main Evidence | full run, source/config snapshot, raw shards, summaries, figures |
 | HumanEval+ | `experiments/humaneval-plus/llm-router-context-search/` | completed | Tier 1: Main Evidence | validation selection, held-out test evaluation, logs, figure |
+| HumanEval+ | `experiments/humaneval-plus/openrouter-continuation-pilot/` | development pilot | not tiered | frozen two-model protocol, budgeted runner, public feedback and separate full-suite scoring |
 
 ## Script Entrypoints
 
@@ -180,6 +181,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/check_paper_build.py` | python | Compile active paper TeX sources into an out-of-tree build directory. |
 | `scripts/compare_experiments.py` | python | CLI: compare two experiment directories (parallel vs single). |
 | `scripts/run_best_params_merge.py` | python | Best-params merge: read agent results.tsv + git history, build merged train.py. Strategy: 1. For each agent, parse results/results.tsv (commit_hash, val_bpb, status) 2. For each accepted ("keep") run, extract hyperparameters from that git commit 3. Find best val_bpb value per hyperparameter across all agents 4. Build merged train.py and submit to SLURM Usage: python scripts/run_best_params_merge.py --run-id exp_20260401_120000 python scripts/run_best_params_merge.py --run-id exp_20260401_120000 --submit |
+| `scripts/run_continuation_pilot.py` | python | Run the explicit-budget OpenRouter/HumanEval+ pilot; defaults to plan only. |
 | `scripts/run_merge_phase.py` | python | CLI: run the merge phase on a completed parallel experiment. Given an experiment directory produced by run_parallel_experiment.py, this script: 1. Gathers all agent snapshots, reasoning traces, and metrics 2. Selects the best and most informative train.py variants 3. Analyses per-parameter improvement correlations 4. Produces a merged train.py candidate 5. Runs evaluation via SLURM (always; workspace auto-detected if not provided) 6. Writes a merge report and comparison table Usage: python scripts/run_merge_phase.py --experiment-dir runs/experiment_parallel_20260331_120000 python scripts/run_merge_phase.py --experiment-dir runs/exp_... --source-mode parallel |
 | `scripts/run_parallel_experiment.py` | python | CLI: launch Mode 1 (2 agents × T budget). |
 | `scripts/run_single_long_experiment.py` | python | CLI: launch Mode 2 (1 agent × 2T budget). |
@@ -298,6 +300,10 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/analysis/phase3_summary.py` | Build Phase 3 real-backend summary and failure-mode artifacts. | summarize, summarize_roots, main |
 | verified orchestration runtime | `src/vao/analysis/run_diagnostics_visuals.py` | Per-run diagnostics for mode probabilities, losses, gains, and costs. | summarize_run, make_plots, write_markdown, main |
 | verified orchestration runtime | `src/vao/benchmark_registry.py` | Benchmark-specific dispatch for prompts, summaries, classifiers, and evaluators. | BenchmarkSpec, get_benchmark_spec, infer_benchmark_id |
+| verified orchestration runtime | `src/vao/decisions/openrouter.py` | Pinned OpenRouter completions with an append-only dollar reservation ledger. | BudgetStopped, BackendStopped, append_json, BudgetLedger, NoRedirects, OpenRouterClient |
+| verified orchestration runtime | `src/vao/decisions/pilot.py` | Collect matched one-checkpoint HumanEval+ continuations through OpenRouter. | digest, load_tasks, messages_for, evaluate_response, summarize, write_report, collect, main |
+| verified orchestration runtime | `src/vao/decisions/verification.py` | Run public doctest feedback and private EvalPlus scoring in an OS sandbox. | visible_examples, sandbox_profile, SandboxVerifier |
+| verified orchestration runtime | `src/vao/decisions/verifier_worker.py` | Standalone sandbox child: public doctests or official EvalPlus base/plus checks. | public_examples_doc, ExampleChecker, LimitedOutput, probe, check, main |
 | verified orchestration runtime | `src/vao/estimators.py` | Estimator functions for branch tensors and run records. | gain, productive_mode_proxy, routing_regret, jsd, routing_mismatch_jsd, routing_mismatch_jSd, gains_by_mode, runtime_phi |
 | verified orchestration runtime | `src/vao/logging_utils.py` | Small logging helpers for protocol JSON artifacts. | now_iso, sha256_text, sha256_file, to_jsonable, write_json, append_jsonl, read_jsonl |
 | verified orchestration runtime | `src/vao/orchestrator.py` | Canonical six-branch experimental protocol. | run_from_config, run_single, main |

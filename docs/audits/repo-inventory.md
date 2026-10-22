@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `2291`
-- Bytes indexed: `61.8M`
+- Files indexed: `2300`
+- Bytes indexed: `61.9M`
 
 ## Canonical Entrypoints
 
@@ -49,18 +49,18 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 1946 | 36.7M |
+| `experiments` | 1948 | 36.7M |
 | `artifacts` | 21 | 20.0M |
 | `paper` | 29 | 2.4M |
-| `uv.lock` | 1 | 972.2K |
-| `src` | 126 | 945.8K |
+| `src` | 131 | 979.3K |
+| `uv.lock` | 1 | 972.4K |
 | `autoresearch` | 59 | 460.7K |
-| `scripts` | 16 | 159.0K |
-| `docs` | 28 | 102.4K |
-| `tests` | 31 | 99.7K |
+| `scripts` | 17 | 159.4K |
+| `tests` | 32 | 107.9K |
+| `docs` | 28 | 103.2K |
 | `prompts` | 6 | 21.6K |
 | `configs` | 7 | 12.7K |
-| `README.md` | 1 | 3.5K |
+| `README.md` | 1 | 3.6K |
 | `.claude` | 4 | 3.3K |
 | `NOTES.md` | 1 | 3.2K |
 | `AGENTS.md` | 1 | 2.8K |
@@ -79,12 +79,12 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.json` | 1040 | 3.0M |
+| `.json` | 1041 | 3.0M |
 | `.yaml` | 270 | 316.1K |
 | `.txt` | 260 | 3.9M |
 | `.jsonl` | 254 | 22.9M |
-| `.py` | 207 | 1.6M |
-| `.md` | 88 | 252.3K |
+| `.py` | 214 | 1.6M |
+| `.md` | 89 | 258.3K |
 | `.png` | 57 | 7.2M |
 | `.pdf` | 34 | 687.0K |
 | `.csv` | 26 | 581.1K |
@@ -96,7 +96,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.svg` | 3 | 9.0K |
 | `.bib` | 1 | 13.6K |
 | `.example` | 1 | 916B |
-| `.lock` | 1 | 972.2K |
+| `.lock` | 1 | 972.4K |
 | `.sty` | 1 | 13.2K |
 | `.toml` | 1 | 1.6K |
 | `.tsv` | 1 | 790B |
@@ -122,6 +122,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/README.md`
 - `experiments/humaneval-plus/README.md`
 - `experiments/humaneval-plus/llm-router-context-search/README.md`
+- `experiments/humaneval-plus/openrouter-continuation-pilot/README.md`
 - `experiments/humaneval-plus/qwen-model-size-frontier/README.md`
 - `experiments/humaneval-plus/retry-allocation-router/README.md`
 - `experiments/humaneval-plus/strategy-by-difficulty-grid/README.md`
@@ -154,6 +155,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/check_paper_build.py`
 - `scripts/compare_experiments.py`
 - `scripts/run_best_params_merge.py`
+- `scripts/run_continuation_pilot.py`
 - `scripts/run_merge_phase.py`
 - `scripts/run_parallel_experiment.py`
 - `scripts/run_single_long_experiment.py`
