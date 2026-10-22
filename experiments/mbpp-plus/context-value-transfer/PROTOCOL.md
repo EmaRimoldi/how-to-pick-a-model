@@ -280,3 +280,37 @@ It adds no inference calls and performs no selection on MBPP scores. Report it
 as an additional diagnostic, distinct from the frozen primary and the original
 prespecified comparisons. Do not promote a favorable comparison with it to a
 new confirmatory result.
+
+## Human-authorized continuation after recovery transport censoring
+
+The recovery segment stopped after 47 complete checkpoints and three additional
+observed solver responses. Admission 1791 (`Mbpp/426`, checkpoint 130, 27B code-only,
+draw 2) has no preserved response identity. Its full $0.009216 reservation remains
+held, in addition to the earlier $0.0026112 prefix reservation. The stopped
+segment contains 1,789 observed responses, $0.40929355 of known charges and
+$0.0118272 of unresolved reservations. Including the unchanged prior $0.5149634,
+the campaign upper bound at this boundary is $0.93608415.
+
+After a user-requested 22-state descriptive snapshot and a descriptive audit of
+the stopped 47-state bank, the human explicitly authorized: **"Sì, continua solo
+con i tentativi mai inviati"**. The
+[authorization freeze](configs/recovery-continuation-freeze.json) records the
+stopped-file hashes, collector hash and exact 1,466 never-admitted cells. This is
+an explicit exception to the automatic-resume prohibition, not a retry policy.
+No source or target fitting, task selection, prompt, model, provider, precision,
+sampler, verifier, primary estimand or declared dollar limit changes.
+
+The new collector imports every known observation and budget event once into a
+fresh journal. It preserves the original manifest and prediction bytes, excludes
+every observed or uncertain cell from requests, and passes the same conservative
+whole-block budget gate before new admissions. The unchanged $1.48 primary cap
+includes all imports and pending reservations. A new transport failure stops new
+admissions again. The stopped source remains immutable; separate recovery
+lineage records hashes and counts of all imported journal prefixes.
+
+The one censored cell is a third draw. It remains missing permanently, even if
+the rest of the planned bank is collected. Do not relabel the 30-cell bank as
+complete. Under the original completeness rule, complete-case intervals remain
+**descriptive**, and all 96 selected states remain represented in missing-state
+bounds. Report the observed partial audit and this continuation timing; do not
+silently replace the primary or promote a favorable secondary contrast.

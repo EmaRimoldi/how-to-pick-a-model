@@ -1,0 +1,87 @@
+import itertools
+import json
+from pathlib import Path
+
+import pytest
+
+from vao.decisions.openrouter import BackendStopped, BudgetLedger, OpenRouterClient, append_json
+from vao.decisions.pilot import digest
+from vao.decisions.transfer import file_hash, records, reservation
+from vao.decisions.transfer_continuation import cell, collect_unadmitted, import_bank, remaining_jobs
+
+
+class Verifier:
+    def check(self, problem, source, mode):
+        return {"passed": True, "status": "pass"}
+
+
+def fixture(root):
+    root.mkdir()
+    cfg=json.loads(Path("experiments/mbpp-plus/context-value-transfer/configs/replication.json").read_text())
+    cp={"checkpoint_id":"1","parent_call":1,"task_id":"Mbpp/1","solution":"def f(): return 0",
+        "feedback":{"passed":False,"status":"fail","failed":1,"attempted":3,"feedback":"public"}}
+    cps={"1":cp};selected=["1"]
+    counter=itertools.count();requested=[]
+    client=OpenRouterClient("dummy",cfg,root,BudgetLedger(root/"budget.jsonl",.5))
+    def request(endpoint,body):
+        requested.append(body)
+        return {"id":"mock-"+str(next(counter)),"model":body["model"],"provider":"SiliconFlow",
+                "usage":{"cost":.000001,"prompt_tokens":10,"completion_tokens":10},
+                "choices":[{"finish_reason":"stop","message":{"content":json.dumps({"solution":"def f(): return 1"})}}]}
+    client.request=request
+    expected=remaining_jobs(cfg,selected,cps,[],[])
+    for job in expected[:3]:
+        call=client.complete(job["model_name"],[{"role":"user","content":"synthetic"}],1,job)
+        append_json(root/"branches.jsonl",dict(job,call=call["call"],passed=True,visible_passed=True,incremental_cost_usd=.000001))
+        append_json(root/"evaluations.jsonl",{"call":call["call"],"task_id":job["task_id"]})
+    unknown=next(r for r in expected if r["model_name"]=="large" and r["arm"]=="artifact" and r["draw"]==2)
+    n=client.ledger.reserve(reservation(cfg,"large"),cfg["models"]["large"]["id"])
+    append_json(root/"transport.jsonl",dict(unknown,call=n))
+    jobs=remaining_jobs(cfg,selected,cps,records(root,"branches"),records(root,"transport"))
+    return cfg,selected,cps,jobs,client,requested
+
+
+def test_only_unadmitted_cells_run_and_censor_survives(tmp_path):
+    root=tmp_path/"fixture"
+    cfg,selected,cps,jobs,client,requested=fixture(root)
+    known={cell(r) for r in records(root,"branches")};uncertain={cell(r) for r in records(root,"transport")}
+    assert len(jobs)==26 and not ({cell(r) for r in jobs}&(known|uncertain))
+    result=collect_unadmitted(cfg,selected,cps,jobs,{"Mbpp/1":{"prompt":"synthetic"}},[dict(cps["1"],task_id="HumanEval/0",checkpoint_id="donor")],client,Verifier(),root)
+    assert result["status"]=="all_unadmitted_jobs_collected_with_censored_cells"
+    assert len(requested)==29 and result["branch_responses"]==29
+    assert result["complete_states"]==0  #29 observed cells do not become a complete30-cell bank.
+    assert list(client.ledger.pending)==[4]
+    assert len({cell(r) for r in records(root,"branches")})==29
+    assert len(records(root,"calls"))==len(records(root,"evaluations"))==29
+
+
+def test_new_uncertainty_stops_and_import_preserves_every_admission(tmp_path):
+    root=tmp_path/"fixture"
+    cfg,selected,cps,jobs,client,requested=fixture(root)
+    def fail(endpoint,body):
+        raise BackendStopped("OpenRouter URLError; no automatic retry")
+    client.request=fail
+    result=collect_unadmitted(cfg,selected,cps,jobs,{"Mbpp/1":{"prompt":"synthetic"}},[dict(cps["1"],task_id="HumanEval/0",checkpoint_id="donor")],client,Verifier(),root)
+    assert result["status"].startswith("BackendStopped")
+    assert client.ledger.stopped and 4 in client.ledger.pending and len(client.ledger.pending)>=2
+    assert len(requested)==3
+    (root/"manifest.json").write_text(json.dumps({"config":cfg,"policy_sha256":digest({}),"source_sha256":{}}))
+    (root/"frozen-policy.json").write_text("{}")
+    (root/"selection.json").write_text(json.dumps({"selected_checkpoint_ids":selected}))
+    append_json(root/"checkpoints.jsonl",cps["1"])
+    pending=remaining_jobs(cfg,selected,cps,records(root,"branches"),records(root,"transport"))
+    frozen={"approved_source_sha256":{p.name:file_hash(p) for p in root.iterdir()},
+            "original_manifest_sha256":file_hash(root/"manifest.json"),"authorization":"mock fixture only",
+            "authorized_unadmitted_cells":[list(cell(r)) for r in pending]}
+    out=tmp_path/"continued";out.mkdir()
+    ledger=BudgetLedger(out/"budget.jsonl",.5)
+    _,_,_,remaining=import_bank(root,out,ledger,frozen)
+    assert remaining==pending
+    assert ledger.spent==client.ledger.spent and ledger.pending==client.ledger.pending
+    assert ledger.calls==client.ledger.calls and file_hash(out/"budget.jsonl")==file_hash(root/"budget.jsonl")
+    assert not (out/"summary.json").exists()  #A new active segment must not look finished to forecasters.
+    assert ledger.reserve(reservation(cfg,"small"),cfg["models"]["small"]["id"])==client.ledger.calls+1
+    (root/"branches.jsonl").write_text("tampered\n")
+    other=tmp_path/"rejected";other.mkdir()
+    with pytest.raises(ValueError,match="Authorized source changed"):
+        import_bank(root,other,BudgetLedger(other/"budget.jsonl",.5),frozen)

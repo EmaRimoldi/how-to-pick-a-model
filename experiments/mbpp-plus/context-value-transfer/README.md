@@ -23,6 +23,26 @@ because its canonical implementation exceeds the full-suite verifier limit.
 All 378 base reference checks passed. The config and policy are committed before
 model calls.
 
+After recovery collection encountered a transport failure, an explicit human
+exception authorized only the 1,466 requests never admitted before that stop.
+Read the final protocol addendum and
+[authorization freeze](configs/recovery-continuation-freeze.json). Known and
+uncertain requests are never repeated; original prediction and journal bytes are
+preserved. This does not turn the censored bank into a completed confirmatory test.
+
+An explicit continuation can be inspected without model calls:
+
+```bash
+python -m vao.decisions.transfer_continuation \
+  --source runs/mbpp-recovery-transfer-continuation-20261022 \
+  --freeze experiments/mbpp-plus/context-value-transfer/configs/recovery-continuation-freeze.json \
+  --output runs/mbpp-unadmitted-plan
+```
+
+This is planning only. Live collection additionally requires `--live`,
+`--key-stdin` and the existing cumulative `--budget-usd 1.48`, with all imported
+charges and unresolved reservations included.
+
 ```bash
 python scripts/run_recovery_transfer.py \
   --config experiments/mbpp-plus/context-value-transfer/configs/replication.json \

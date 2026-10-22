@@ -10,7 +10,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `11`
 - Script entrypoints indexed: `39`
-- Code modules indexed: `136`
+- Code modules indexed: `137`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `7`
@@ -317,6 +317,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/decisions/recovery_import.py` | Explicitly import a stopped run into a fresh journal without repeating paid jobs. | records, job_key, continue_frozen_development, import_completed, ImportedClient |
 | verified orchestration runtime | `src/vao/decisions/recovery_policy.py` | Small frozen ridge probability baselines for selecting a recovery action. | features, fit_policy, predict |
 | verified orchestration runtime | `src/vao/decisions/transfer.py` | Prospective cross-benchmark recovery replication, with a fixed source-trained policy. | records, file_hash, reservation, source_data, choose, replay, replay_escalation, freeze |
+| verified orchestration runtime | `src/vao/decisions/transfer_continuation.py` | Explicitly authorized transport continuation: never repeat an admitted cell. | cell, remaining_jobs, import_bank, collect_unadmitted, main |
 | verified orchestration runtime | `src/vao/decisions/transfer_forecast.py` | Frozen outcome-blind semantic forecast control; separate from the primary transfer run. | messages, public_inputs, main |
 | verified orchestration runtime | `src/vao/decisions/verification.py` | Run public doctest feedback and private EvalPlus scoring in an OS sandbox. | visible_examples, sandbox_profile, SandboxVerifier |
 | verified orchestration runtime | `src/vao/decisions/verifier_worker.py` | Standalone sandbox child: public doctests or official EvalPlus base/plus checks. | public_examples_doc, ExampleChecker, LimitedOutput, probe, check, main |

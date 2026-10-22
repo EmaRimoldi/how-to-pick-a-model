@@ -46,6 +46,16 @@ def audit(root: Path) -> dict:
     manifest = json.loads((root / "manifest.json").read_text())
     cfg = manifest["config"]
     continuation=json.loads((root/"prefix-continuation.json").read_text()) if (root/"prefix-continuation.json").exists() else None
+    recovery_continuation=json.loads((root/"recovery-continuation.json").read_text()) if (root/"recovery-continuation.json").exists() else None
+    if recovery_continuation:
+        import hashlib
+        require(recovery_continuation["source_manifest_sha256"]==file_hash(root/"manifest.json"),"Recovery continuation identity changed")
+        for name,count in recovery_continuation["imported_line_counts"].items():
+            prefix=b"".join((root/name).read_bytes().splitlines(keepends=True)[:count])
+            require(hashlib.sha256(prefix).hexdigest()==recovery_continuation["source_hashes"][name],"Imported recovery evidence changed: "+name)
+        for name,expected in recovery_continuation["source_hashes"].items():
+            if name.endswith(".json") and name not in {"summary.json","checksums.json","recovery-continuation.json"}:
+                require(file_hash(root/name)==expected,"Imported static recovery evidence changed: "+name)
     censored=[continuation["censored_prefix"]] if continuation else []
     censored_tasks={r["task_id"] for r in censored}
     if continuation:
@@ -169,15 +179,36 @@ def audit(root: Path) -> dict:
         cp = cps[id_]
         expected = {v: predict(saved, prompts[cp["task_id"]], cp, v) for v in ("global", *VIEWS)}
         require(same(r["probabilities"], expected), "Prediction cannot be reproduced")
+    branch_censors=[r for r in records(root,"transport") if r["action"]=="branch"]
+    transport=records(root,"transport")
+    require(len({r["call"] for r in transport})==len(transport),"Repeated uncertain admission identity")
+    require(set(reserves)-set(settlements)=={r["call"] for r in transport},"Unexplained unresolved reservations")
+    for r in branch_censors:
+        require(r["call"] in reserves and r["call"] not in settlements,"Censored recovery lost full reservation")
+        require(r["checkpoint_id"] in selected and r["model_name"] in cfg["target_models"] and r["arm"] in CONDITIONS and 0<=r["draw"]<cfg["branch_repeats"],"Unplanned censored recovery")
+        require(not cells.get((r["checkpoint_id"],r["model_name"],r["arm"],r["draw"]),0),"Uncertain recovery cell was reissued")
+        require(reserves[r["call"]]==reservation(cfg,r["model_name"]),"Censored recovery reservation changed")
+    if recovery_continuation:
+        require(recovery_continuation["selected_checkpoint_ids_unchanged"]==selected,"Recovery continuation changed selected states")
+        authorized={tuple(k) for k in recovery_continuation["authorized_unadmitted_cells"]}
+        for r in branches:
+            if r["call"]>recovery_continuation["imported_last_admitted_call"]:
+                require((r["checkpoint_id"],r["model_name"],r["arm"],r["draw"]) in authorized,"Unapproved continuation request")
     blocks = records(root, "blocks")
     complete = [b["checkpoint_id"] for b in blocks]
-    require(complete == selected[:len(complete)], "Complete blocks are not an ordered prefix")
+    allowed=[id_ for id_ in selected if not recovery_continuation or id_ not in {r["checkpoint_id"] for r in branch_censors}]
+    require(complete == allowed[:len(complete)], "Complete blocks are not an ordered prefix of noncensored states")
     for id_ in complete:
         require(sum(k[0] == id_ for k in cells) == len(CONDITIONS) * len(cfg["target_models"]) * cfg["branch_repeats"], "Incomplete declared block")
     # Reconstruct each complete-block admission from the budget journal, before
     # seeing any of that block's eventual receipts or outcomes.
     first_calls = {min(r["call"] for r in branches if r["checkpoint_id"] == id_): id_
                    for id_ in selected if any(r["checkpoint_id"] == id_ for r in branches)}
+    if recovery_continuation:
+        # A resumed partial block passes the same whole-block gate again.
+        for id_ in selected:
+            new=[r["call"] for r in branches if r["checkpoint_id"]==id_ and r["call"]>recovery_continuation["imported_last_admitted_call"]]
+            if new:first_calls[min(new)]=id_
     block_ceiling = sum(reservation(cfg,m)*len(CONDITIONS)*cfg["branch_repeats"] for m in cfg["target_models"])
     prior_spent, pending_costs = Decimal(0), {}
     for r in ledger:
@@ -196,6 +227,7 @@ def audit(root: Path) -> dict:
     return {"config": cfg, "manifest": manifest,"manifest_sha256":file_hash(root/"manifest.json"), "policy": saved, "source": source, "calls": call_by_id,
         "initial": initial, "checkpoints": cps, "predictions": pred, "prompts": prompts,
         "branches": branches, "selected": selected, "complete": complete, "evaluations": evals,
+        "censored_branch_requests":branch_censors,"recovery_continuation":recovery_continuation,
         "collection": {"admissions": len(reserves), "responses": len(calls), "known_cost_usd": float(known),
             "unresolved_reservations_usd": float(held), "prior_upper_usd": cfg["prior_committed_usd"],
             "campaign_upper_usd": float(total)}}
@@ -323,6 +355,8 @@ def analyze(data):
         "initial_full_successes": sum(r["passed"] for r in data["initial"]),
         "initial_public_false_positives": sum(r["visible_passed"] and not r["passed"] for r in data["initial"]),
         "collection": data["collection"], "rates": rates, "effects": effects, "model_context_interactions":interactions,"policy_summary": summaries,
+        "censored_branch_requests":data["censored_branch_requests"],
+        "recovery_continuation_note":"Human-authorized continuation after a transport stop and partial descriptive audit; only never-admitted cells. Original estimands/weights fixed, but bank remains incomplete and intervals descriptive." if data["recovery_continuation"] else None,
         "escalation_note":"Fixed 9B-fresh then 27B-fresh, added after recovery collection began. Diagnostic only, no target-outcome fitting or change to primary. Both requests use original checkpoint, no new child handoff.",
         "policy_comparisons": comparisons, "brier": {v:float(np.mean(x)) for v,x in loss.items()},
         "benefit_mse": {v:float(np.mean(x)) for v,x in benefit_loss.items()},
@@ -376,6 +410,9 @@ def markdown(r):
         "The former HumanEval+ evaluation is now training data for this replica. Keep its earlier frozen evaluation result separate. Sensitivity rotations, all budgets/actions, noisy-benefit diagnostics and feature shifts are in analysis.json. No secondary test is substituted for the primary.", ""]
     if r["missing_state_utility_bounds"]:
         lines += [f"Missing selected-state worst-case utility bounds: `{r['missing_state_utility_bounds']}`.", ""]
+    if r.get("censored_branch_requests"):
+        lines += ["## Transport censoring", "",f"Censored solver admissions (never reissued): `{r['censored_branch_requests']}`.","",
+                  r.get("recovery_continuation_note") or "Collection stopped under the frozen no-resume rule.",""]
     if "semantic_control" in r:
         s=r["semantic_control"]
         lines += ["## Prespecified outcome-blind semantic control", "",
