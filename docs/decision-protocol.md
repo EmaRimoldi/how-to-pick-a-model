@@ -87,5 +87,5 @@ explicit dependency model before invoking index-policy optimality guarantees.
 This repository does not claim these ideas as new. Its proposed experiment tests
 observable verifier feedback and artifact/context transfer in edit/verify loops.
 The state-conditioned forecaster and learned controller remain to be implemented
-and validated. The one-checkpoint runner can collect matched handoff outcomes;
+and validated. The one-checkpoint pilot collected matched handoff outcomes on two failed states;
 its development pilot is not a held-out evaluation of an adaptive controller.

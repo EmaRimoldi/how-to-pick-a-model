@@ -3,7 +3,8 @@
 The current research direction is defined in [decision protocol](decision-protocol.md).
 The retained studies provide baselines. The
 [OpenRouter development pilot](../experiments/humaneval-plus/openrouter-continuation-pilot/README.md)
-adds a one-checkpoint collector; learned policies and held-out validation remain future work.
+adds a one-checkpoint collector and small development dataset; learned policies
+and held-out validation remain future work.
 
 ## Evidence
 

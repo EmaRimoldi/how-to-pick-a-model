@@ -165,7 +165,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | HumanEval+ | `experiments/humaneval-plus/retry-allocation-router/` | completed | Tier 1: Main Evidence | folds, router decisions, summary, configs, launchers |
 | HumanEval+ | `experiments/humaneval-plus/strategy-by-difficulty-grid/` | completed | Tier 1: Main Evidence | full run, source/config snapshot, raw shards, summaries, figures |
 | HumanEval+ | `experiments/humaneval-plus/llm-router-context-search/` | completed | Tier 1: Main Evidence | validation selection, held-out test evaluation, logs, figure |
-| HumanEval+ | `experiments/humaneval-plus/openrouter-continuation-pilot/` | development pilot | not tiered | frozen two-model protocol, budgeted runner, public feedback and separate full-suite scoring |
+| HumanEval+ | `experiments/humaneval-plus/openrouter-continuation-pilot/` | development pilot | not tiered | 24 tasks, 88 calls, two failed checkpoints, receipts and separate public/full-suite scoring |
 
 ## Script Entrypoints
 

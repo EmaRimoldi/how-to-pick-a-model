@@ -11,7 +11,8 @@ context/routing experiments, cost accounting, and reproducible figures.
 
 **Current status:** the retained experiments measure model choice, retries, and
 information use. A budgeted [OpenRouter pilot](experiments/humaneval-plus/openrouter-continuation-pilot/README.md)
-now supplies a runner for matched one-checkpoint actions. A learned policy still
+now includes a runner and a 24-task development dataset with matched actions
+on two visibly failed checkpoints. A learned policy still
 needs training and held-out evaluation. The baseline traces
 are not evidence that an unobserved model handoff would have succeeded.
 

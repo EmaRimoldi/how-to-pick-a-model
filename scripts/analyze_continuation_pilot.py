@@ -67,27 +67,31 @@ def plot(report: dict, output: Path) -> None:
     import matplotlib.pyplot as plt
 
     strategies = report["summary"]["strategies"]
-    labels = list(strategies)
+    # A stopped policy can have outcomes without executing any repair. Do not
+    # turn reused prefixes into a visual claim about unobserved action efficacy.
+    labels = list(strategies) if report["actual_continuation_calls"] else ["cheap_stop", "strong_direct"]
     if not all(strategies[s]["tasks"] for s in labels):
         return
     display = {"cheap_stop": "9B once", "strong_direct": "27B direct",
                "continue": "9B repair", "restart": "9B restart",
                "switch_fresh": "27B fresh", "switch_context": "27B + context"}
-    colors = ["#2878b5", "#df7345"] + ["#708a81"] * 4
+    colors = (["#2878b5", "#df7345"] + ["#708a81"] * 4)[:len(labels)]
     fig, axes = plt.subplots(1, 2, figsize=(11.5, 4.5), layout="constrained")
     values = [[100 * strategies[s]["success_rate"] for s in labels],
               [1000 * strategies[s]["mean_policy_cost_usd"] for s in labels]]
     titles = ["Full HumanEval+ success (%)", "Mean policy cost (milli-USD)"]
-    for ax, data, title in zip(axes, values, titles):
+    for index, (ax, data, title) in enumerate(zip(axes, values, titles)):
         bars = ax.bar(range(len(labels)), data, color=colors)
         ax.set_xticks(range(len(labels)), [display[s] for s in labels], rotation=30, ha="right")
         ax.set_title(title)
-        ax.bar_label(bars, fmt="%.1f", padding=3, fontsize=8)
+        ax.bar_label(bars, fmt="%.1f" if index == 0 else "%.3f", padding=3, fontsize=8)
         ax.set_ylim(0, max(data) * 1.18 if max(data) else 1)
         ax.spines[["top", "right"]].set_visible(False)
     n = len(report["summary"]["complete_task_ids"])
+    subtitle = ("No continuation actions evaluated; no learned controller" if not report["actual_continuation_calls"]
+                else "Continuation policies stop when public examples pass; no learned controller")
     fig.suptitle(f"Development pilot — {n} tasks, {report['visible_failed_checkpoints']} visibly failed checkpoints\n"
-                 "Continuation policies stop when public examples pass; no learned controller", fontsize=11)
+                 + subtitle, fontsize=11)
     fig.savefig(output, dpi=180)
     plt.close(fig)
 
