@@ -2,7 +2,9 @@
 
 Stage 1: test a useful intervention before building another selector.
 Collection is active under the amended $4.00 cap; treatment analysis waits until
-the collector ends. The initial funding preflight admitted no model requests.
+the collector ends, apart from [one later human-requested descriptive look](INTERIM-DISCLOSURE.md)
+on the same 83 completed tasks. No repeated readout or experimental change follows
+from that snapshot. The initial funding preflight admitted no model requests.
 The [prospective protocol](PROTOCOL.md) fixes 157 previously unqueried,
 reference-audited BigCodeBench tasks and one replicate per task. All four
 policies receive only public feedback; compare repeated 9B, immediate 27B

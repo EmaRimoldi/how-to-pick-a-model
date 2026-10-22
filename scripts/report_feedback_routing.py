@@ -145,7 +145,23 @@ def publish(source: Path, output: Path) -> dict:
         source_map["files"][name] = {"snapshot": target, "sha256": hashlib.sha256(content).hexdigest()}
     (output / "source-map.json").write_text(json.dumps(source_map, indent=2) + "\n")
     (output / "analysis.json").write_text(json.dumps(report, indent=2, allow_nan=False) + "\n")
-    (output / "report.md").write_text(report_text(report))
+    text = report_text(report)
+    bundle = Path(config["bundle"])
+    disclosure = bundle / "INTERIM-DISCLOSURE.md"
+    interim = bundle / "data/user-requested-interim-20261022.json"
+    if disclosure.exists() or interim.exists():
+        if not (disclosure.exists() and interim.exists()):
+            raise RuntimeError("Interim disclosure and immutable record must be published together")
+        shutil.copyfile(disclosure, output / "interim-disclosure.md")
+        shutil.copyfile(interim, output / "interim-record.json")
+        text += ("\n## Human-requested interim disclosure\n\n"
+                 "After the freeze, the user requested one descriptive look at the 83 tasks then complete "
+                 "under all four policies. Its completion bias was disclosed. No interim confidence interval, "
+                 "p-value, primary gate, fitting, efficacy stopping or change to collection followed. "
+                 "The final protocol retains all selected tasks, failures and missing-outcome bounds; incomplete-bank intervals are descriptive. "
+                 "See [the disclosure](interim-disclosure.md) and [the immutable interim record](interim-record.json). "
+                 "The historical interim subset must not replace the final primary comparison.\n")
+    (output / "report.md").write_text(text)
     (output / "README.md").write_text("# Audited fixed-policy results\n\nRead [report.md](report.md), the [frozen protocol](../../PROTOCOL.md), and [analysis.json](analysis.json).\n")
     plot(report, output)
     hashes = {str(p.relative_to(output)): hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(output.rglob("*")) if p.is_file()}
