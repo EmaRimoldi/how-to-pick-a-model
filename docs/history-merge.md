@@ -8,7 +8,9 @@ The unified repository has four history roots:
 - `distribution-aware-orchestration`, recovered from the cluster checkout
   `NeurIPS_2026` at commit `9689508`.
 
-The merge commits keep all four as ancestors. Working-tree paths were then
+The merge commits keep all four as ancestors. The following table records the
+pre-focus merge layout; later retired paths are recoverable from the snapshots
+below. Working-tree paths were then
 normalized as follows:
 
 | Former path | Unified path |
@@ -27,7 +29,7 @@ The historical `agent-workflow` CLI and Python module names remain unchanged to
 avoid breaking scripts. The distributable project and repository identity are
 `how-to-pick-a-model`.
 
-Original top-level READMEs and diagnostics are retained in `docs/archive/`.
+Original top-level READMEs and diagnostics are preserved in Git history.
 
 ## Working-tree cleanup
 
@@ -50,3 +52,19 @@ No Git history was rewritten.
 
 Raw campaign archives, experiment inputs/results, active manuscripts and their
 figure dependencies, and the two runtime packages were preserved.
+
+## Sequential-decision focus
+
+The second cleanup narrows the working tree to AutoResearch/CIFAR-10 and four
+completed HumanEval+ studies. The last tree before this scope reduction is
+[`2f2ccef`](https://github.com/EmaRimoldi/how-to-pick-a-model/tree/2f2ccefb8b7c9bf34ba398ad499542cf50c03982).
+
+Retired: MBPP, BBH, SWE-bench studies/scaffolds, the incomplete DAG prototype,
+historical swarm comparisons, their dedicated code/specs, obsolete launch assets,
+unused paper figure copies, reference/extracted PDFs and planning notes, and
+archive-only manifest machinery. The active manuscripts, consolidated theory,
+eight baseline evidence bundles, runtime instrumentation, and raw campaign
+archives remain. Optional SWE-bench/Docker dependencies were removed.
+
+`docs/decision-protocol.md` describes planned state-conditioned decisions and
+the evidence still needed. This cleanup does not implement or validate that policy.

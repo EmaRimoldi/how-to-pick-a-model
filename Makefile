@@ -8,7 +8,6 @@ AUTORESEARCH_FIGURE_OUT ?= /tmp/how_to_pick_a_model_autoresearch
 indexes:
 	$(PYTHON) scripts/build_repo_inventory.py --output docs/audits/repo-inventory.md
 	$(PYTHON) scripts/build_knowledge_index.py --output docs/audits/knowledge-index.md
-	$(PYTHON) scripts/build_paper_archive_manifest.py --output docs/audits/paper-archive-manifest.md
 	$(PYTHON) scripts/build_experiment_manifest.py --output docs/audits/experiment-manifest.md
 	$(PYTHON) scripts/build_command_manifest.py --output docs/audits/command-manifest.md
 

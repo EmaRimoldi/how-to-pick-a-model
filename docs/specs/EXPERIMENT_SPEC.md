@@ -30,7 +30,7 @@ These are non-negotiable. Apply them throughout.
 - **Python environment.** Use a `.venv` in the project root. If none exists,
   create it with `uv` (`uv venv .venv`). **Never use the system/base Python.**
   Install dependencies with `uv pip install`. Pin versions in
-  `requirements.txt`.
+  `pyproject.toml` and `uv.lock`.
 - **Separate data generation from plotting.** Running models and computing
   estimators **writes data to disk**; plotting **reads from disk only**. A plot
   must be regenerable without re-running any model. No script both runs a model
@@ -91,7 +91,7 @@ how-to-pick-a-model/
 
 ## 3. Dependencies
 
-Pin these in `requirements.txt` (versions are a floor; resolve latest compatible):
+Pin these in `pyproject.toml` and `uv.lock` (versions are a floor; resolve latest compatible):
 
 ```
 numpy
@@ -353,7 +353,7 @@ of minutes:
 
 ## 12. Acceptance checklist (the agent verifies all of these)
 
-- [ ] `.venv` created with `uv`; base Python never used; `requirements.txt` pinned.
+- [ ] `.venv` created with `uv`; base Python never used; `pyproject.toml` and `uv.lock` pinned.
 - [ ] `modes.json` frozen before any run; ~55 problems/mode.
 - [ ] `run_eval.py` records **cumulative tokens across retries**, not just the
       winning attempt.

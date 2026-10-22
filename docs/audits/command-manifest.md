@@ -5,8 +5,8 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `43`
-- Default-safe commands: `30`
+- Commands indexed: `38`
+- Default-safe commands: `25`
 - Missing required Make targets: `0`
 
 ## Safety Classes
@@ -19,8 +19,8 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `live-local` | 6 |
 | `mixed-cli` | 1 |
 | `read-only-analysis` | 7 |
-| `safe-figure-regeneration` | 10 |
-| `safe-local` | 11 |
+| `safe-figure-regeneration` | 6 |
+| `safe-local` | 10 |
 | `safe-local-optional-tool` | 2 |
 
 ## Surfaces
@@ -30,7 +30,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `Makefile` | 7 |
 | `autoresearch/scripts` | 16 |
 | `pyproject` | 1 |
-| `scripts` | 19 |
+| `scripts` | 14 |
 
 ## Commands
 
@@ -44,7 +44,6 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/build_command_manifest.py` | scripts | `safe-local` | yes | python | Build a safety-classified command manifest for agent-facing workflows. |
 | `python scripts/build_experiment_manifest.py` | scripts | `safe-local` | yes | python | Build a manifest of experiment bundles and their reproducibility assets. |
 | `python scripts/build_knowledge_index.py` | scripts | `safe-local` | yes | python | Build a compact knowledge index for LLM agents working in this repository. |
-| `python scripts/build_paper_archive_manifest.py` | scripts | `safe-local` | yes | python | Build a manifest for paper archive sources and retained provenance files. |
 | `python scripts/build_repo_inventory.py` | scripts | `safe-local` | yes | python | Build a deterministic repository inventory for agents and reviewers. |
 | `python scripts/validate_agent_readiness.py` | scripts | `safe-local` | yes | python | Validate that the repository is ready for LLM-agent navigation. |
 | `make paper-build` | Makefile | `safe-local-optional-tool` | yes | pdflatex, bibtex | Compile active paper TeX sources out of tree with pdflatex and bibtex. |
@@ -55,10 +54,6 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python autoresearch/scripts/plot_autoresearch_router_weight_shift.py` | autoresearch/scripts | `safe-figure-regeneration` | yes | checked-in evidence | Plot mode-posterior and allocation shifts for allocation-router outputs. |
 | `python autoresearch/scripts/reproduce_appendix_figures_n20_confirmation.py` | autoresearch/scripts | `safe-figure-regeneration` | yes | checked-in evidence | Reproduce appendix AutoResearch figures from official n=20 confirmation runs. This script uses only the raw runs listed as present in experiments/autoresearch-cifar10/three-worker-model-routing/raw/manifests/ balanced_n30_raw_coverage.csv. Those are the 20 official confirmation trials per mode-worker cell; missing pilot trials are intentionally excluded. |
 | `python autoresearch/scripts/reproduce_main_figures_from_processed.py` | autoresearch/scripts | `safe-figure-regeneration` | yes | checked-in evidence | Reproduce main paper figures from processed three-worker analysis JSON. This script is designed for the anonymous review artifact: it does not require raw trajectory logs, provider-auth material, execution-environment paths, or the development repository history. It consumes ``results/threeworker_final_analysis.json`` and regenerates compact figures used by the paper-facing analysis. |
-| `python scripts/plot_autoresearch_neural_substrates.py` | scripts | `safe-figure-regeneration` | yes | checked-in evidence | Render clean AutoResearch substrate architecture diagrams. The diagrams are presentation assets for the README. They intentionally avoid a framework-specific visualizer so they can be regenerated with the base plotting dependencies. |
-| `python scripts/plot_autoresearch_readme_figures.py` | scripts | `safe-figure-regeneration` | yes | checked-in evidence | Generate README-facing AutoResearch figures from balanced raw traces. |
-| `python scripts/plot_experiment_overview.py` | scripts | `safe-figure-regeneration` | yes | checked-in evidence | Generate a simple visual map of the repository experiments. |
-| `python scripts/plot_product_evidence_assets.py` | scripts | `safe-figure-regeneration` | yes | checked-in evidence | Generate README product assets from checked-in experiment evidence. |
 | `python autoresearch/scripts/analyze_autoresearch_allocation_router.py` | autoresearch/scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Analyze allocation-router outputs against mode labels and calibration tables. |
 | `python autoresearch/scripts/analyze_autoresearch_threeworker_final.py` | autoresearch/scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Frozen three-worker analysis for the AutoResearch CIFAR-10 paper experiments. |
 | `python autoresearch/scripts/compute_autoresearch_factored_calibration.py` | autoresearch/scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Compute factored certified-resource calibration tables for AutoResearch. |
@@ -69,7 +64,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python autoresearch/scripts/make_neurips2026_artifact.py` | autoresearch/scripts | `artifact-builder` | no | checked-in files, dist output review | Build an anonymous NeurIPS 2026 supplementary ZIP. The builder is intentionally whitelist-based and non-invasive: it reads from the development workspace and writes a clean export under ``dist/`` without touching live campaigns, raw run directories, or git metadata. |
 | `uv run agent-workflow` | pyproject | `mixed-cli` | no | subcommand-specific; run --help or doctor before live workflows | Console entrypoint `agent_workflow.cli:main`. |
 | `python autoresearch/scripts/generate_autoresearch_campaign_tasks.py` | autoresearch/scripts | `cluster-setup` | no | campaign config, output review | Generate TSV task manifests for AutoResearch CIFAR-10 Slurm arrays. |
-| `scripts/bootstrap_engaging.sh` | scripts | `cluster-setup` | no | cluster shell environment | Bootstrap the cluster Python environment for HumanEval+/MBPP+/BBH routing runs. |
+| `scripts/bootstrap_engaging.sh` | scripts | `cluster-setup` | no | cluster shell environment | Bootstrap the cluster Python environment for HumanEval+ routing runs. |
 | `autoresearch/scripts/run_autoresearch_allocation_router_batch.sh` | autoresearch/scripts | `live-local` | no | model access, isolated worktree, output root | Run allocation-router decision batches for the AutoResearch CIFAR-10 campaign. |
 | `autoresearch/scripts/run_autoresearch_cifar10_cnn4096_router_test.sh` | autoresearch/scripts | `live-local` | no | model access, isolated worktree, output root | Run the CNN-4096 AutoResearch router solver/probe comparison panel. |
 | `python scripts/run_best_params_merge.py` | scripts | `live-local` | no | model access, isolated worktree, output root | Best-params merge: read agent results.tsv + git history, build merged train.py. Strategy: 1. For each agent, parse results/results.tsv (commit_hash, val_bpb, status) 2. For each accepted ("keep") run, extract hyperparameters from that git commit 3. Find best val_bpb value per hyperparameter across all agents 4. Build merged train.py and submit to SLURM Usage: python scripts/run_best_params_merge.py --run-id exp_20260401_120000 python scripts/run_best_params_merge.py --run-id exp_20260401_120000 --submit |

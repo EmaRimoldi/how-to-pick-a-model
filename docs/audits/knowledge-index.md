@@ -5,13 +5,13 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 
 ## Summary
 
-- Canonical docs present: `23/23`
-- Paper TeX sources indexed: `6`
+- Canonical docs present: `22/22`
+- Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
-- Experiment bundles indexed: `19`
-- Script entrypoints indexed: `35`
-- Code modules indexed: `133`
-- Paper figures indexed: `111`
+- Experiment bundles indexed: `8`
+- Script entrypoints indexed: `30`
+- Code modules indexed: `126`
+- Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `7`
 
@@ -24,6 +24,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `CLAUDE.md` | yes |
 | `docs/README.md` | yes |
 | `docs/knowledge-map.md` | yes |
+| `docs/decision-protocol.md` | yes |
 | `docs/paper-evidence-map.md` | yes |
 | `docs/paper-revision-playbook.md` | yes |
 | `docs/reproducibility.md` | yes |
@@ -31,10 +32,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `docs/audits/theory-consolidation.md` | yes |
 | `docs/audits/knowledge-index.md` | yes |
 | `docs/audits/repo-inventory.md` | yes |
-| `docs/audits/paper-archive-manifest.md` | yes |
 | `docs/audits/experiment-manifest.md` | yes |
 | `docs/audits/command-manifest.md` | yes |
-| `docs/audits/agent-readiness-completion-audit.md` | yes |
 | `experiments/README.md` | yes |
 | `src/README.md` | yes |
 | `scripts/README.md` | yes |
@@ -47,8 +46,6 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 
 | Path | Role | Lines | Formal Objects | Canonical |
 | --- | --- | --- | --- | --- |
-| `paper/neurips-submission/archive/Beneventano_Poggio.tex` | mechanical historical theory extraction | 1954 | 0 | yes |
-| `paper/neurips-submission/archive/next_steps.tex` | independent planning document | 2308 | 0 | yes |
 | `paper/neurips-submission/archive/theory_anchor.tex` | maximal validated theory anchor | 2073 | 62 | yes |
 | `paper/neurips-submission/arxiv.tex` | long AutoResearch manuscript anchor | 2171 | 17 | yes |
 | `paper/neurips-submission/main.tex` | current compact submission anchor | 1206 | 18 | yes |
@@ -163,22 +160,11 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | AutoResearch / CIFAR-10 | `experiments/autoresearch-cifar10/starting-model-calibration/` | completed | Tier 2: Supporting Or Diagnostic Evidence | 161 controlled evaluations, tables, figures, plotting script |
 | AutoResearch / CIFAR-10 | `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/` | completed | Tier 1: Main Evidence | deterministic-evaluator checks, CPU scaling, fixed-step/fixed-time summaries |
 | AutoResearch / CIFAR-10 | `experiments/autoresearch-cifar10/shared-memory-ablation/` | completed | Tier 1: Main Evidence | 11 trials, statistical summary, figures |
-| AutoResearch / CIFAR-10 | `experiments/autoresearch-cifar10/swarm-vs-independent-agents/` | historical/partial | Tier 2: Supporting Or Diagnostic Evidence | summaries, analyses, figures; some raw run trees absent |
 | AutoResearch / CIFAR-10 | `experiments/autoresearch-cifar10/three-worker-model-routing/` | completed with raw-coverage gap | Tier 1: Main Evidence | processed 270-record accounting panel and 180 balanced raw traces |
 | HumanEval+ | `experiments/humaneval-plus/qwen-model-size-frontier/` | completed | Tier 2: Supporting Or Diagnostic Evidence | three 164-task worker logs and processed frontier estimates |
 | HumanEval+ | `experiments/humaneval-plus/retry-allocation-router/` | completed | Tier 1: Main Evidence | folds, router decisions, summary, configs, launchers |
 | HumanEval+ | `experiments/humaneval-plus/strategy-by-difficulty-grid/` | completed | Tier 1: Main Evidence | full run, source/config snapshot, raw shards, summaries, figures |
 | HumanEval+ | `experiments/humaneval-plus/llm-router-context-search/` | completed | Tier 1: Main Evidence | validation selection, held-out test evaluation, logs, figure |
-| HumanEval+ | `experiments/humaneval-plus/verifier-guided-dag-induction-smoke/` | incomplete smoke | Tier 3: Future Work Or Scaffold | implementation and smoke artifacts; rep42 cheap-node coverage is 9/42 |
-| MBPP+ | `experiments/mbpp-plus/qwen-model-size-frontier/` | completed worker logs | Tier 2: Supporting Or Diagnostic Evidence | three 378-task logs and mode estimates |
-| MBPP+ | `experiments/mbpp-plus/two-model-retry-router/` | partial | Tier 3: Future Work Or Scaffold | config and folds; router result/summary files are absent |
-| MBPP+ | `experiments/mbpp-plus/category-router-smoke/` | smoke/partial | Tier 3: Future Work Or Scaffold | smoke figures and configs; full category labels/results are absent |
-| BBH | `experiments/bbh/qwen-model-size-frontier/` | partial frontier | Tier 2: Supporting Or Diagnostic Evidence | two 1,200-task logs and mode files; no tracked 32B log |
-| BBH | `experiments/bbh/family-and-subtask-router/` | runnable scaffold | Tier 3: Future Work Or Scaffold | configs and launchers; no completed router result bundle |
-| SWE-bench Verified | `experiments/swebench-verified/neutral-100-meta-design-scaffold/` | scaffold | Tier 3: Future Work Or Scaffold | prompt-safe 100-instance slice, configs, prompts, frozen designs |
-| SWE-bench Verified | `experiments/swebench-verified/open-source-orchestration-scaffold/` | scaffold | Tier 3: Future Work Or Scaffold | worker/meta-design configs and prompt-safe data manifests |
-| SWE-bench Verified | `experiments/swebench-verified/open-source-meta-loop-2026-06-07/` | historical result archive | not tiered | official evaluation manifests, failure analyses, plots, selected designs |
-| SWE-bench Verified | `experiments/swebench-verified/shared-runtime/` | implementation | not tiered | orchestration code, Slurm launcher, and tests shared by the SWE studies |
 
 ## Script Entrypoints
 
@@ -186,18 +172,13 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | --- | --- | --- |
 | `scripts/analyze_runs.py` | python | analyze_runs.py — Analysis pipeline for agent parallelisation experiment results. Repository structure assumed (verified from runs/): runs/<experiment_id>/ config.json mode_parallel/ agent_<N>/ results/ trajectory.jsonl ← {step, val_bpb} per training run metadata.json ← summary (best_val_bpb, total_training_runs, …) snapshots/ step_NNN/ train.py ← frozen snapshot of train.py at this step metadata.json ← git_message, val_bpb_after, accepted, … workspace/ train.py.baseline ← original unmodified train.py Usage: python scripts/analyze_runs.py # latest experiment python scripts/analyze_runs.py --runs-dir runs/ # all experiments python scripts/analyze_runs.py --experiment exp_20260401_013535 python scripts/analyze_runs.py --output-dir my_analysis/ |
 | `scripts/benchmark_parallel_capacity.py` | python | CLI: run the parallel-capacity benchmark. Measures the empirical upper bound on the number of sub-agents that can run concurrently in this environment. Usage: python scripts/benchmark_parallel_capacity.py python scripts/benchmark_parallel_capacity.py --max-n 6 --duration 3.0 python scripts/benchmark_parallel_capacity.py --output-dir runs/bench_capacity |
-| `scripts/bootstrap_engaging.sh` | shell | Bootstrap the cluster Python environment for HumanEval+/MBPP+/BBH routing runs. |
+| `scripts/bootstrap_engaging.sh` | shell | Bootstrap the cluster Python environment for HumanEval+ routing runs. |
 | `scripts/build_command_manifest.py` | python | Build a safety-classified command manifest for agent-facing workflows. |
 | `scripts/build_experiment_manifest.py` | python | Build a manifest of experiment bundles and their reproducibility assets. |
 | `scripts/build_knowledge_index.py` | python | Build a compact knowledge index for LLM agents working in this repository. |
-| `scripts/build_paper_archive_manifest.py` | python | Build a manifest for paper archive sources and retained provenance files. |
 | `scripts/build_repo_inventory.py` | python | Build a deterministic repository inventory for agents and reviewers. |
 | `scripts/check_paper_build.py` | python | Compile active paper TeX sources into an out-of-tree build directory. |
 | `scripts/compare_experiments.py` | python | CLI: compare two experiment directories (parallel vs single). |
-| `scripts/plot_autoresearch_neural_substrates.py` | python | Render clean AutoResearch substrate architecture diagrams. The diagrams are presentation assets for the README. They intentionally avoid a framework-specific visualizer so they can be regenerated with the base plotting dependencies. |
-| `scripts/plot_autoresearch_readme_figures.py` | python | Generate README-facing AutoResearch figures from balanced raw traces. |
-| `scripts/plot_experiment_overview.py` | python | Generate a simple visual map of the repository experiments. |
-| `scripts/plot_product_evidence_assets.py` | python | Generate README product assets from checked-in experiment evidence. |
 | `scripts/run_best_params_merge.py` | python | Best-params merge: read agent results.tsv + git history, build merged train.py. Strategy: 1. For each agent, parse results/results.tsv (commit_hash, val_bpb, status) 2. For each accepted ("keep") run, extract hyperparameters from that git commit 3. Find best val_bpb value per hyperparameter across all agents 4. Build merged train.py and submit to SLURM Usage: python scripts/run_best_params_merge.py --run-id exp_20260401_120000 python scripts/run_best_params_merge.py --run-id exp_20260401_120000 --submit |
 | `scripts/run_merge_phase.py` | python | CLI: run the merge phase on a completed parallel experiment. Given an experiment directory produced by run_parallel_experiment.py, this script: 1. Gathers all agent snapshots, reasoning traces, and metrics 2. Selects the best and most informative train.py variants 3. Analyses per-parameter improvement correlations 4. Produces a merged train.py candidate 5. Runs evaluation via SLURM (always; workspace auto-detected if not provided) 6. Writes a merge report and comparison table Usage: python scripts/run_merge_phase.py --experiment-dir runs/experiment_parallel_20260331_120000 python scripts/run_merge_phase.py --experiment-dir runs/exp_... --source-mode parallel |
 | `scripts/run_parallel_experiment.py` | python | CLI: launch Mode 1 (2 agents × T budget). |
@@ -228,22 +209,16 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | model-routing root modules | `src/analyze_strategy_experiment.py` | Exports: read_rows, first_pass_resource, integer_allocations, weighted_schedule, inverse_share_slope, summarize, main | read_rows, first_pass_resource, integer_allocations, weighted_schedule, inverse_share_slope, summarize, main |
 | model-routing root modules | `src/analyze_strategy_router.py` | Exports: softmax, temperature_scale, fit_temperature, entropy, load_rows, summarize, main | softmax, temperature_scale, fit_temperature, entropy, load_rows, summarize, main |
 | model-routing root modules | `src/baselines.py` | Exports: always_allocation, iter_allocations, best_single_model, oracle_allocation, allocation_training_metrics, mode_best_single_rate, statistical_oracle_allocation, allocation_kind | always_allocation, iter_allocations, best_single_model, oracle_allocation, allocation_training_metrics, mode_best_single_rate, statistical_oracle_allocation, allocation_kind |
-| model-routing root modules | `src/bbh_data.py` | Exports: BBHEvalResult, load_bbh, ensure_bbh_modes, extract_final_answer, normalize_bbh_answer, evaluate_bbh_completion | BBHEvalResult, load_bbh, ensure_bbh_modes, extract_final_answer, normalize_bbh_answer, evaluate_bbh_completion |
-| model-routing root modules | `src/bbh_retry_sanity.py` | Exports: read_jsonl, first_pass_attempt, success_curve, verify_cumulative_rows, build_report, parse_args, main | read_jsonl, first_pass_attempt, success_curve, verify_cumulative_rows, build_report, parse_args, main |
-| model-routing root modules | `src/compare_datasets.py` | Exports: read_json, ci_excludes_zero, ci_contains_zero, stat, compact_methods, dataset_summary, fmt_pct, fmt_seconds | read_json, ci_excludes_zero, ci_contains_zero, stat, compact_methods, dataset_summary, fmt_pct, fmt_seconds |
-| model-routing root modules | `src/dataset.py` | Exports: DatasetBundle, load_config, project_path, load_humanevalplus, load_mbppplus, load_dataset, metric_for_problem, assign_modes | DatasetBundle, load_config, project_path, load_humanevalplus, load_mbppplus, load_dataset, metric_for_problem, assign_modes |
+| model-routing root modules | `src/dataset.py` | Exports: DatasetBundle, load_config, project_path, load_humanevalplus, load_dataset, metric_for_problem, assign_modes, ensure_modes | DatasetBundle, load_config, project_path, load_humanevalplus, load_dataset, metric_for_problem, assign_modes, ensure_modes |
 | model-routing root modules | `src/estimate.py` | Exports: parse_float, iter_raw_rows, finite_duration, km_curve, success_at_events, cell_tau_star, bootstrap_cell_tau, percentile_or_nan | parse_float, iter_raw_rows, finite_duration, km_curve, success_at_events, cell_tau_star, bootstrap_cell_tau, percentile_or_nan |
 | model-routing root modules | `src/estimate_router.py` | Exports: read_jsonl, mean_or_none, percentile_ci, method_metrics, bootstrap_stat, mean_time_delta, time_saved_vs_best, router_gap_to_stat | read_jsonl, mean_or_none, percentile_ci, method_metrics, bootstrap_stat, mean_time_delta, time_saved_vs_best, router_gap_to_stat |
 | model-routing root modules | `src/estimate_strategy_closure.py` | Exports: read_jsonl, integer_allocation, replay, bootstrap_mean, main | read_jsonl, integer_allocation, replay, bootstrap_mean, main |
 | model-routing root modules | `src/evaluate_router_search.py` | Exports: allocations, positive_floor, posterior_floor, load_workers, load_search, metrics, main | allocations, positive_floor, posterior_floor, load_workers, load_search, metrics, main |
 | model-routing root modules | `src/execute.py` | Exports: ExecutionResult, execute_candidate | ExecutionResult, execute_candidate |
-| model-routing root modules | `src/frontier_by_category.py` | Exports: trace_duration, km_curve, tau_star_from_rows, bootstrap_tau, percentile, ordered_modes, pairwise_ratio_summary, build_frontier | trace_duration, km_curve, tau_star_from_rows, bootstrap_tau, percentile, ordered_modes, pairwise_ratio_summary, build_frontier |
 | model-routing root modules | `src/hf_models.py` | Exports: HFGeneration, TransformersGenerator | HFGeneration, TransformersGenerator |
 | model-routing root modules | `src/load_traces.py` | Exports: load_config, short_model_name, strict_solved, configured_model_order, read_jsonl, resolve_log_paths, load_traces, main | load_config, short_model_name, strict_solved, configured_model_order, read_jsonl, resolve_log_paths, load_traces, main |
-| model-routing root modules | `src/mbpp_data.py` | Exports: load_mbpp_plus, description_from_prompt, signature_for_problem, problem_for_tagging | load_mbpp_plus, description_from_prompt, signature_for_problem, problem_for_tagging |
 | model-routing root modules | `src/models.py` | Exports: ModelUnavailableError, ModelInfo, Generation, resolve_model_info, generate_ollama, make_completion_prompt, strip_markdown_fences, build_solution | ModelUnavailableError, ModelInfo, Generation, resolve_model_info, generate_ollama, make_completion_prompt, strip_markdown_fences, build_solution |
 | model-routing root modules | `src/plot.py` | Exports: load_config, load_json, split_key, save_figure, finite_positive, plot_frontier, plot_disagreement, plot_success_curves | load_config, load_json, split_key, save_figure, finite_positive, plot_frontier, plot_disagreement, plot_success_curves |
-| model-routing root modules | `src/plot_humaneval_paper.py` | Exports: configure_style, read_json, read_jsonl, save, clean_axis, plot_speed_accounting, first_pass_index, plot_retry_and_frontier | configure_style, read_json, read_jsonl, save, clean_axis, plot_speed_accounting, first_pass_index, plot_retry_and_frontier |
 | model-routing root modules | `src/plot_router.py` | Exports: load_json, save_figure, ci_yerr, ordered_modes, plot_time_vs_accuracy, plot_time_saved_by_mode, plot_alloc_distribution, plot_gap_to_oracle | load_json, save_figure, ci_yerr, ordered_modes, plot_time_vs_accuracy, plot_time_saved_by_mode, plot_alloc_distribution, plot_gap_to_oracle |
 | model-routing root modules | `src/plot_router_search.py` | Exports: main | main |
 | model-routing root modules | `src/plot_strategy_results.py` | Exports: configure_style, load_json, plot_specialization, plot_accounting, plot_information_speed, plot_allocations, main | configure_style, load_json, plot_specialization, plot_accounting, plot_information_speed, plot_allocations, main |
@@ -256,7 +231,6 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | model-routing root modules | `src/run_strategy_router_codex.py` | Exports: stable_seed, schema, make_prompt, run_codex, append_jsonl, main | stable_seed, schema, make_prompt, run_codex, append_jsonl, main |
 | model-routing root modules | `src/simulate.py` | Exports: normalize_allocation, allocation_to_json_keys, execute_allocation | normalize_allocation, allocation_to_json_keys, execute_allocation |
 | model-routing root modules | `src/strategies.py` | Exports: make_strategy_prompt | make_strategy_prompt |
-| model-routing root modules | `src/tag_categories.py` | Exports: prompt_hash, build_prompt, validate_category_json, parse_category_response, MockCategoryTagger, CodexCLICategoryTagger, load_records, append_record | prompt_hash, build_prompt, validate_category_json, parse_category_response, MockCategoryTagger, CodexCLICategoryTagger, load_records, append_record |
 | model-routing root modules | `src/validate_strategy_run.py` | Exports: load_rows, main | load_rows, main |
 | agent-workflow runtime | `src/agent_workflow/agent_merger.py` | Agent-based merge phase: use a Claude reasoning agent to determine the optimal hyperparameter combination from parallel agent results. | build_merge_prompt, call_claude_merge_agent, parse_merge_response, produce_merged_candidate_via_agent |
 | agent-workflow runtime | `src/agent_workflow/agents/base.py` | Abstract AgentRunner interface. | AgentRunner |
@@ -362,112 +336,20 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 
 | Collection | Path | Format | Provenance | Source |
 | --- | --- | --- | --- | --- |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/certified_resource_heatmap.pdf` | pdf | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/certified_resource_heatmap.png` | png | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/certified_resource_summary_unified.pdf` | pdf | generated paper figure | `autoresearch/scripts` |
 | autoresearch | `paper/neurips-submission/figures/autoresearch/certified_resource_summary_unified.png` | png | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/certified_speedup_curve.pdf` | pdf | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/certified_speedup_curve.png` | png | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/current_protocol_overview.pdf` | pdf | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/deployment_mix_sensitivity.pdf` | pdf | same-name experiment artifact | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/deployment_mix_sensitivity.pdf` |
 | autoresearch | `paper/neurips-submission/figures/autoresearch/deployment_mix_sensitivity.png` | png | same-name experiment artifact | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/deployment_mix_sensitivity.png` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/diag_cost_to_tau_by_mode_worker.png` | png | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/diag_cost_to_tau_by_mode_worker_full.png` | png | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/diag_first_hit_cdf_by_mode.png` | png | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/diag_improvement_distribution_by_worker.png` | png | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/diag_relative_improvement_spaghetti.png` | png | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/diag_tau_distribution_pilot.png` | png | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/diag_threshold_sensitivity_by_worker.png` | png | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/diag_threshold_sensitivity_current_pilot.png` | png | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/diag_threshold_sensitivity_extended_current_pilot.png` | png | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/diag_worker_cost_quality_diagnostics.png` | png | generated paper figure | `autoresearch/scripts` |
 | autoresearch | `paper/neurips-submission/figures/autoresearch/diag_z_signal_ablation.png` | png | same-name experiment artifact | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/diag_z_signal_ablation.png` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/first_hit_ecdf_by_mode.pdf` | pdf | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/first_hit_ecdf_by_mode.pdf` |
 | autoresearch | `paper/neurips-submission/figures/autoresearch/first_hit_ecdf_by_mode.png` | png | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/first_hit_ecdf_by_mode.png` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/gpt55_router_mode_weight_shift.pdf` | pdf | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/gpt55_router_mode_weight_shift.png` | png | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/gpt55_router_true_mode_mass_distribution.pdf` | pdf | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/gpt55_router_true_mode_mass_distribution.png` | png | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/init_diagnostics.pdf` | pdf | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/nostop_partial_snapshot.pdf` | pdf | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/pilot_costs.pdf` | pdf | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/quality_vs_certified_resource.pdf` | pdf | same-name experiment artifact | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/quality_vs_certified_resource.pdf` |
 | autoresearch | `paper/neurips-submission/figures/autoresearch/quality_vs_certified_resource.png` | png | same-name experiment artifact | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/quality_vs_certified_resource.png` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/router_shift_lookup_summary.pdf` | pdf | generated paper figure | `autoresearch/scripts` |
 | autoresearch | `paper/neurips-submission/figures/autoresearch/router_shift_lookup_summary.png` | png | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/threeworker_cost_to_tau_by_mode_worker.pdf` | pdf | same-name experiment artifact | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_cost_to_tau_by_mode_worker.pdf` |
 | autoresearch | `paper/neurips-submission/figures/autoresearch/threeworker_cost_to_tau_by_mode_worker.png` | png | same-name experiment artifact | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_cost_to_tau_by_mode_worker.png` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/threeworker_crossover_applicability.pdf` | pdf | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/threeworker_crossover_applicability.png` | png | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/threeworker_deployment_frontier.pdf` | pdf | same-name experiment artifact | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_deployment_frontier.pdf` |
 | autoresearch | `paper/neurips-submission/figures/autoresearch/threeworker_deployment_frontier.png` | png | same-name experiment artifact | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_deployment_frontier.png` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/threeworker_frozen_confirmation_frontier.pdf` | pdf | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/threeworker_frozen_confirmation_frontier.png` | png | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/threeworker_improvement_distribution.pdf` | pdf | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_improvement_distribution.pdf` |
 | autoresearch | `paper/neurips-submission/figures/autoresearch/threeworker_improvement_distribution.png` | png | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_improvement_distribution.png` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/threeworker_negative_controls.pdf` | pdf | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_negative_controls.pdf` |
 | autoresearch | `paper/neurips-submission/figures/autoresearch/threeworker_negative_controls.png` | png | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_negative_controls.png` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/threeworker_relative_improvement_trajectories.pdf` | pdf | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_relative_improvement_trajectories.pdf` |
 | autoresearch | `paper/neurips-submission/figures/autoresearch/threeworker_relative_improvement_trajectories.png` | png | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_relative_improvement_trajectories.png` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/threeworker_router_paired_gain.pdf` | pdf | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_router_paired_gain.pdf` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/threeworker_router_paired_gain.png` | png | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_router_paired_gain.png` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/threeworker_router_selection_regret.pdf` | pdf | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_router_selection_regret.pdf` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/threeworker_router_selection_regret.png` | png | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_router_selection_regret.png` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/threeworker_tau_distribution.pdf` | pdf | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_tau_distribution.pdf` |
 | autoresearch | `paper/neurips-submission/figures/autoresearch/threeworker_tau_distribution.png` | png | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_tau_distribution.png` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/threeworker_threshold_sensitivity.pdf` | pdf | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_threshold_sensitivity.pdf` |
 | autoresearch | `paper/neurips-submission/figures/autoresearch/threeworker_threshold_sensitivity.png` | png | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_threshold_sensitivity.png` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/threeworker_worker_cost_quality_diagnostics.pdf` | pdf | same-name experiment artifact | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_worker_cost_quality_diagnostics.pdf` |
 | autoresearch | `paper/neurips-submission/figures/autoresearch/threeworker_worker_cost_quality_diagnostics.png` | png | same-name experiment artifact | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_worker_cost_quality_diagnostics.png` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/threshold_by_mode.pdf` | pdf | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/throughput_calibration.pdf` | pdf | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/twomodel_crossover_applicability.pdf` | pdf | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/twomodel_crossover_applicability.png` | png | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/twomodel_deployment_frontier.png` | png | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/twomodel_frozen_confirmation_frontier.pdf` | pdf | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/twomodel_frozen_confirmation_frontier.png` | png | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/twomodel_negative_controls.pdf` | pdf | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/twomodel_negative_controls.png` | png | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/twomodel_router_paired_gain.pdf` | pdf | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/twomodel_router_paired_gain.png` | png | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/twomodel_router_selection_regret.pdf` | pdf | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/twomodel_router_selection_regret.png` | png | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/twomodel_threshold_sensitivity.png` | png | generated paper figure | `autoresearch/scripts` |
-| autoresearch | `paper/neurips-submission/figures/autoresearch/z_ablation.pdf` | pdf | generated paper figure | `autoresearch/scripts` |
-| autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/deployment_mix_sensitivity.pdf` | pdf | same-name experiment artifact | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/deployment_mix_sensitivity.pdf` |
-| autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/deployment_mix_sensitivity.png` | png | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/deployment_mix_sensitivity.png` |
-| autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/diag_z_signal_ablation.pdf` | pdf | same-name experiment artifact | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/diag_z_signal_ablation.pdf` |
-| autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/diag_z_signal_ablation.png` | png | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/diag_z_signal_ablation.png` |
-| autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/first_hit_ecdf_by_mode.pdf` | pdf | same-name experiment artifact | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/first_hit_ecdf_by_mode.pdf` |
-| autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/first_hit_ecdf_by_mode.png` | png | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/first_hit_ecdf_by_mode.png` |
-| autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/quality_vs_certified_resource.pdf` | pdf | same-name experiment artifact | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/quality_vs_certified_resource.pdf` |
-| autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/quality_vs_certified_resource.png` | png | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/quality_vs_certified_resource.png` |
-| autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/threeworker_cost_to_tau_by_mode_worker.pdf` | pdf | same-name experiment artifact | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_cost_to_tau_by_mode_worker.pdf` |
-| autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/threeworker_cost_to_tau_by_mode_worker.png` | png | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_cost_to_tau_by_mode_worker.png` |
-| autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/threeworker_deployment_frontier.pdf` | pdf | same-name experiment artifact | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_deployment_frontier.pdf` |
-| autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/threeworker_deployment_frontier.png` | png | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_deployment_frontier.png` |
-| autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/threeworker_improvement_distribution.pdf` | pdf | same-name experiment artifact | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_improvement_distribution.pdf` |
-| autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/threeworker_improvement_distribution.png` | png | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_improvement_distribution.png` |
-| autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/threeworker_negative_controls.pdf` | pdf | same-name experiment artifact | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_negative_controls.pdf` |
-| autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/threeworker_negative_controls.png` | png | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_negative_controls.png` |
-| autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/threeworker_relative_improvement_trajectories.pdf` | pdf | same-name experiment artifact | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_relative_improvement_trajectories.pdf` |
-| autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/threeworker_relative_improvement_trajectories.png` | png | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_relative_improvement_trajectories.png` |
-| autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/threeworker_tau_distribution.pdf` | pdf | same-name experiment artifact | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_tau_distribution.pdf` |
-| autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/threeworker_tau_distribution.png` | png | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_tau_distribution.png` |
-| autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/threeworker_threshold_sensitivity.pdf` | pdf | same-name experiment artifact | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_threshold_sensitivity.pdf` |
-| autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/threeworker_threshold_sensitivity.png` | png | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_threshold_sensitivity.png` |
-| autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/threeworker_worker_cost_quality_diagnostics.pdf` | pdf | same-name experiment artifact | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_worker_cost_quality_diagnostics.pdf` |
-| autoresearch_n20_confirmation | `paper/neurips-submission/figures/autoresearch_n20_confirmation/threeworker_worker_cost_quality_diagnostics.png` | png | exact experiment copy | `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_worker_cost_quality_diagnostics.png` |
-| humaneval | `paper/neurips-submission/figures/humaneval/humaneval_data_profiles.pdf` | pdf | generated paper figure | `src/plot_humaneval_paper.py` |
-| humaneval | `paper/neurips-submission/figures/humaneval/humaneval_data_profiles.png` | png | generated paper figure | `src/plot_humaneval_paper.py` |
-| humaneval | `paper/neurips-submission/figures/humaneval/humaneval_information_speed_effect.pdf` | pdf | generated paper figure | `src/plot_humaneval_paper.py` |
-| humaneval | `paper/neurips-submission/figures/humaneval/humaneval_information_speed_effect.png` | png | generated paper figure | `src/plot_humaneval_paper.py` |
-| humaneval | `paper/neurips-submission/figures/humaneval/humaneval_quality_speed_map.pdf` | pdf | generated paper figure | `src/plot_humaneval_paper.py` |
-| humaneval | `paper/neurips-submission/figures/humaneval/humaneval_quality_speed_map.png` | png | generated paper figure | `src/plot_humaneval_paper.py` |
-| humaneval | `paper/neurips-submission/figures/humaneval/humaneval_retry_frontier.pdf` | pdf | generated paper figure | `src/plot_humaneval_paper.py` |
-| humaneval | `paper/neurips-submission/figures/humaneval/humaneval_retry_frontier.png` | png | generated paper figure | `src/plot_humaneval_paper.py` |
-| humaneval | `paper/neurips-submission/figures/humaneval/humaneval_speed_accounting.pdf` | pdf | generated paper figure | `src/plot_humaneval_paper.py` |
-| humaneval | `paper/neurips-submission/figures/humaneval/humaneval_speed_accounting.png` | png | generated paper figure | `src/plot_humaneval_paper.py` |
 | strategy_routing | `paper/neurips-submission/figures/strategy_routing/confirmatory_speedup.pdf` | pdf | exact experiment copy | `experiments/humaneval-plus/llm-router-context-search/runs/router-search-20260712/confirmatory_speedup.pdf` |
 | strategy_routing | `paper/neurips-submission/figures/strategy_routing/four_term_accounting.pdf` | pdf | exact experiment copy | `experiments/humaneval-plus/strategy-by-difficulty-grid/runs/full-20260711T201122Z/figures/four_term_accounting.pdf` |
 | strategy_routing | `paper/neurips-submission/figures/strategy_routing/information_speed_curve.pdf` | pdf | exact experiment copy | `experiments/humaneval-plus/strategy-by-difficulty-grid/runs/full-20260711T201122Z/figures/information_speed_curve.pdf` |
@@ -503,7 +385,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 
 | Target | Dependencies | Description | Commands | Required |
 | --- | --- | --- | --- | --- |
-| `make indexes` |  | Regenerate the agent-facing repository inventory, knowledge index, and manifests. | 5 | yes |
+| `make indexes` |  | Regenerate the agent-facing repository inventory, knowledge index, and manifests. | 4 | yes |
 | `make readiness` |  | Validate canonical docs, evidence links, duplicate policy, and generated audit freshness. | 1 | yes |
 | `make compile` |  | Byte-compile scripts, src, and autoresearch for syntax/import-surface sanity. | 1 | yes |
 | `make test` |  | Run the repository test suite through uv. | 1 | yes |

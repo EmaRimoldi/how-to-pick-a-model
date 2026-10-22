@@ -1,48 +1,20 @@
-# How to Pick a Model: Claude Code Guide
+# How to Pick a Model
 
-How to Pick a Model combines the deployment-selection theory, AutoResearch
-orchestration harness, and non-AutoResearch model-routing evidence. The
-historical `agent-workflow` CLI remains the executable surface for the
-AutoResearch orchestration track.
+Read `AGENTS.md`, `docs/decision-protocol.md`, and `docs/knowledge-map.md` first.
+The current scope is cost-aware sequential decisions on verifiable tasks.
 
-## Default Behavior
+Existing AutoResearch and HumanEval+ experiments are baseline evidence. The
+state-conditioned continuation/handoff policy is planned work. Do not imply
+that old traces evaluate unobserved actions or establish a new method's gains.
 
-- Read `AGENTS.md` and `docs/knowledge-map.md` before broad repo changes.
-- Use `docs/audits/knowledge-index.md` for a compact map of paper sources,
-  formal objects, experiment bundles, and scripts.
-- Use `docs/audits/experiment-manifest.md` before citing or rerunning an
-  experiment; it records bundle class, asset counts, and key files.
-- Use `docs/audits/command-manifest.md` before running unfamiliar commands; it
-  separates safe local checks from live, cluster, and mixed CLI surfaces.
-- Run `make check` after structural, documentation, or code changes.
-- Prefer read-only inspection unless the user explicitly asks for edits.
-- Do not start live Claude Code agent experiments unless the user explicitly
-  asks for a live run.
-- Before any live run, execute `uv run agent-workflow doctor`.
-- Use fixed-step evaluation for comparable claims:
-  `--train-max-steps 1170 --serialized-evaluator`.
-- Keep generated run artifacts under `runs/` and preserve `config.json`,
-  logs, trajectory files, snapshots, and reports.
-- Keep each experiment under its benchmark family in `experiments/`; use
-  `autoresearch-cifar10`, `humaneval-plus`, `mbpp-plus`, `bbh`, or
-  `swebench-verified` and give each bundle a question-specific name.
+Use `docs/reproducibility.md` and the command safety manifest. Do not start live
+model or cluster runs unless explicitly requested. Before an existing live CLI
+baseline, run `uv run agent-workflow doctor`; use isolated workspaces and
+fixed-step evaluation with a serialized evaluator for comparable claims.
 
-## Product Surface
+Keep new work in the retained benchmark families, with an explicit README,
+inputs, configs, status, and evidence boundary. Do not revive retired benchmark
+scaffolds incidentally during cleanup. Historical material is recoverable via
+`docs/history-merge.md`.
 
-- CLI: `uv run agent-workflow --help`
-- Setup check: `uv run agent-workflow doctor`
-- Single-agent baseline: `uv run agent-workflow single-long`
-- Independent parallel agents: `uv run agent-workflow parallel`
-- Shared-memory parallel agents: `uv run agent-workflow parallel-shared`
-- Blackboard swarm: `uv run agent-workflow swarm`
-- Post-run synthesis: `uv run agent-workflow merge`
-
-## Safety Boundary
-
-Live runs invoke the local `claude` binary and can edit files inside isolated
-workspaces. Run them from a clean clone or disposable worktree, not from a
-directory containing secrets or unrelated personal files.
-
-Use the project subagents in `.claude/agents/` for planning, execution, and
-analysis. They should report concise evidence and file paths rather than broad
-claims.
+Run `make check` after changes and `make paper-build` after changing paper assets.

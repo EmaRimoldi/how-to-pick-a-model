@@ -9,6 +9,8 @@ from pathlib import Path
 from scripts.agent_index_config import (
     AGENT_DOC_ROOT_FILES,
     CORE_EXPERIMENT_BUNDLES,
+    CORE_CODE_MODULES,
+    CANONICAL_TEX,
     GENERATED_AUDITS,
     LOCAL_PATH_PATTERNS,
     REQUIRED_MAKE_TARGETS,
@@ -45,26 +47,14 @@ def test_knowledge_index_is_complete_and_descriptive() -> None:
 
     assert index["root"] == "."
     assert all(index["canonical_docs"].values())
-    assert len(index["formal_objects"]) >= 90
+    assert {path.as_posix() for path in CANONICAL_TEX} <= {obj["path"] for obj in index["formal_objects"]}
     assert CORE_EXPERIMENT_BUNDLES <= {bundle["path"] for bundle in index["experiment_bundles"]}
-    assert len(index["scripts"]) >= 30
-    assert len(index["code_modules"]) >= 70
-    assert len(index["active_paper_references"]) >= 15
     assert all("agent_index_config.py" not in entry["path"] for entry in index["scripts"])
     assert any(entry["path"] == "scripts/build_command_manifest.py" for entry in index["scripts"])
     assert any(entry["path"] == "scripts/build_experiment_manifest.py" for entry in index["scripts"])
-    assert any(entry["path"] == "scripts/build_paper_archive_manifest.py" for entry in index["scripts"])
 
     module_paths = {module["path"] for module in index["code_modules"]}
-    for expected in (
-        "src/agent_workflow/cli.py",
-        "src/agent_workflow/communication/blackboard.py",
-        "src/vao/schemas.py",
-        "src/load_traces.py",
-        "autoresearch/analysis/autoresearch_cifar10_model_routing.py",
-        "autoresearch/benchmark/cifar10/task_spec.py",
-    ):
-        assert expected in module_paths
+    assert CORE_CODE_MODULES <= module_paths
 
     for module in index["code_modules"]:
         assert module["summary"]
@@ -74,10 +64,6 @@ def test_knowledge_index_is_complete_and_descriptive() -> None:
     assert figures[
         "paper/neurips-submission/figures/autoresearch/first_hit_ecdf_by_mode.png"
     ]["provenance"] == "exact experiment copy"
-    assert figures[
-        "paper/neurips-submission/figures/autoresearch_n20_confirmation/quality_vs_certified_resource.png"
-    ]["source"].startswith("experiments/")
-
     assert all(ref["present"] for ref in index["active_paper_references"])
     assert {
         ref["resolved_path"] for ref in index["active_paper_references"] if ref["kind"] == "figure"
@@ -120,52 +106,17 @@ def test_knowledge_index_is_complete_and_descriptive() -> None:
 
 
 def test_generated_markdown_indexes_are_up_to_date(tmp_path: Path) -> None:
-    generated_knowledge = _render_markdown(
-        "scripts/build_knowledge_index.py",
-        tmp_path / "knowledge-index.md",
-    )
-    generated_inventory = _render_markdown(
-        "scripts/build_repo_inventory.py",
-        tmp_path / "repo-inventory.md",
-    )
-    generated_archive_manifest = _render_markdown(
-        "scripts/build_paper_archive_manifest.py",
-        tmp_path / "paper-archive-manifest.md",
-    )
-    generated_experiment_manifest = _render_markdown(
-        "scripts/build_experiment_manifest.py",
-        tmp_path / "experiment-manifest.md",
-    )
-    generated_command_manifest = _render_markdown(
-        "scripts/build_command_manifest.py",
-        tmp_path / "command-manifest.md",
-    )
-
-    assert str(ROOT) not in generated_knowledge
-    assert str(ROOT) not in generated_inventory
-    assert str(ROOT) not in generated_archive_manifest
-    assert str(ROOT) not in generated_experiment_manifest
-    assert str(ROOT) not in generated_command_manifest
-    assert "/Users/" not in generated_knowledge
-    assert "/Users/" not in generated_inventory
-    assert "/Users/" not in generated_archive_manifest
-    assert "/Users/" not in generated_experiment_manifest
-    assert "/Users/" not in generated_command_manifest
-    assert generated_knowledge == (
-        ROOT / GENERATED_AUDITS["knowledge"]
-    ).read_text(encoding="utf-8")
-    assert generated_inventory == (
-        ROOT / GENERATED_AUDITS["inventory"]
-    ).read_text(encoding="utf-8")
-    assert generated_archive_manifest == (
-        ROOT / GENERATED_AUDITS["paper_archive"]
-    ).read_text(encoding="utf-8")
-    assert generated_experiment_manifest == (
-        ROOT / GENERATED_AUDITS["experiment_manifest"]
-    ).read_text(encoding="utf-8")
-    assert generated_command_manifest == (
-        ROOT / GENERATED_AUDITS["command_manifest"]
-    ).read_text(encoding="utf-8")
+    generators = {
+        "knowledge": "scripts/build_knowledge_index.py",
+        "inventory": "scripts/build_repo_inventory.py",
+        "experiment_manifest": "scripts/build_experiment_manifest.py",
+        "command_manifest": "scripts/build_command_manifest.py",
+    }
+    for key, script in generators.items():
+        generated = _render_markdown(script, tmp_path / GENERATED_AUDITS[key].name)
+        assert str(ROOT) not in generated
+        assert "/Users/" not in generated
+        assert generated == (ROOT / GENERATED_AUDITS[key]).read_text(encoding="utf-8")
 
 
 def test_command_manifest_classifies_safety_boundaries() -> None:
@@ -173,7 +124,7 @@ def test_command_manifest_classifies_safety_boundaries() -> None:
     commands = {command["command"]: command for command in manifest["commands"]}
 
     assert manifest["root"] == "."
-    assert manifest["command_count"] >= 30
+    assert manifest["command_count"] == len(commands)
     assert manifest["missing_required_make_targets"] == []
     assert manifest["safety_classes"]["safe-local"] >= 5
     assert manifest["safety_classes"]["live-cluster"] >= 1
@@ -222,37 +173,6 @@ def test_experiment_manifest_classifies_bundle_assets() -> None:
     assert strategy["configs"] > 0
     assert strategy["scripts"] > 0
     assert strategy["run_files"] > 0
-
-    scaffold = bundles[
-        "experiments/swebench-verified/neutral-100-meta-design-scaffold/"
-    ]
-    assert scaffold["reproducibility_class"] == "scaffold"
-
-
-def test_paper_archive_manifest_classifies_all_archive_files() -> None:
-    manifest = _run_json("scripts/build_paper_archive_manifest.py")
-    coverage = manifest["policy_coverage"]
-    records = {record["path"]: record for record in manifest["files"]}
-
-    assert manifest["archive_root"] == "paper/neurips-submission/archive"
-    assert coverage["classified"] == coverage["files"]
-    assert coverage["unclassified"] == []
-    assert set(records) == {
-        str(path.relative_to(ROOT))
-        for path in (ROOT / manifest["archive_root"]).iterdir() if path.is_file()
-    }
-
-    assert records[
-        "paper/neurips-submission/archive/theory_anchor.tex"
-    ]["disposition"] == "canonical-anchor"
-    assert records[
-        "paper/neurips-submission/archive/next_steps.tex"
-    ]["disposition"] == "keep-independent"
-    for record in records.values():
-        if record["suffix"] in {".tex", ".bib"}:
-            assert record["nearest_text_neighbor"] in records
-            assert record["text_similarity"] is not None
-
 
 def test_inventory_is_identical_for_lfs_pointer_and_hydrated_object(tmp_path: Path) -> None:
     payload = b"archived campaign evidence\n" * 80

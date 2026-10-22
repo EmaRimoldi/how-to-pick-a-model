@@ -1,7 +1,7 @@
 [project]
 name = "how-to-pick-a-model"
 version = "0.1.0"
-description = "Theory and experiments for deployment-aware model and agent selection"
+description = "Verifiable-task benchmarks for cost-aware model and continuation decisions"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
@@ -22,20 +22,12 @@ autoresearch = [
     "torch>=2.7",
     "torchvision>=0.22",
 ]
-swebench = [
-    "datasets>=3.0",
-    "docker>=7.1",
-    "pydantic>=2.0",
-    "swebench>=4.0",
-    "tqdm>=4.67",
-]
 analysis-ml = [
     "scipy>=1.15",
     "sentence-transformers>=3.0",
     "torch>=2.7",
 ]
 other-experiments = [
-    "datasets>=5.0",
     "evalplus>=0.3.1",
     "lifelines>=0.30",
     "openai>=2.0",
@@ -45,8 +37,6 @@ other-experiments = [
     "transformers>=5.0",
 ]
 all-experiments = [
-    "datasets>=3.0",
-    "docker>=7.1",
     "evalplus>=0.3.1",
     "lifelines>=0.30",
     "openai>=2.0",
@@ -54,7 +44,6 @@ all-experiments = [
     "rich>=13.0",
     "scipy>=1.15",
     "sentence-transformers>=3.0",
-    "swebench>=4.0",
     "torch>=2.7",
     "torchvision>=0.22",
     "tqdm>=4.67",

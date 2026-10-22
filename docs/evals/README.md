@@ -1,7 +1,8 @@
 # Evaluations
 
-This section is the core public proof surface for AutoResearch Orchestration. It focuses on
-whether agent workflows are measurable, reproducible, and worth their cost.
+These controls support comparable baseline evaluation: fixed steps, verifier
+calibration, and compute contention. They do not validate the proposed
+state-conditioned continuation policy.
 
 | File | Role |
 |---|---|

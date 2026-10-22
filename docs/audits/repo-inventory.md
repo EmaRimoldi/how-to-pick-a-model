@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `2693`
-- Bytes indexed: `89.5M`
+- Files indexed: `2291`
+- Bytes indexed: `61.8M`
 
 ## Canonical Entrypoints
 
@@ -18,6 +18,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `CLAUDE.md` | yes |
 | `docs/README.md` | yes |
 | `docs/knowledge-map.md` | yes |
+| `docs/decision-protocol.md` | yes |
 | `docs/paper-evidence-map.md` | yes |
 | `docs/paper-revision-playbook.md` | yes |
 | `docs/reproducibility.md` | yes |
@@ -25,10 +26,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `docs/audits/theory-consolidation.md` | yes |
 | `docs/audits/knowledge-index.md` | yes |
 | `docs/audits/repo-inventory.md` | yes |
-| `docs/audits/paper-archive-manifest.md` | yes |
 | `docs/audits/experiment-manifest.md` | yes |
 | `docs/audits/command-manifest.md` | yes |
-| `docs/audits/agent-readiness-completion-audit.md` | yes |
 | `experiments/README.md` | yes |
 | `src/README.md` | yes |
 | `scripts/README.md` | yes |
@@ -45,35 +44,32 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `paper/neurips-submission/main.tex` | yes |
 | `paper/neurips-submission/arxiv.tex` | yes |
 | `paper/neurips-submission/archive/theory_anchor.tex` | yes |
-| `paper/neurips-submission/archive/Beneventano_Poggio.tex` | yes |
-| `paper/neurips-submission/archive/next_steps.tex` | yes |
 
 ## Top-Level Areas
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 2211 | 51.9M |
+| `experiments` | 1946 | 36.7M |
 | `artifacts` | 21 | 20.0M |
-| `paper` | 125 | 11.3M |
-| `docs` | 57 | 3.5M |
-| `uv.lock` | 1 | 1.0M |
-| `src` | 133 | 1.0M |
+| `paper` | 29 | 2.4M |
+| `uv.lock` | 1 | 972.2K |
+| `src` | 126 | 945.8K |
 | `autoresearch` | 59 | 460.7K |
-| `scripts` | 21 | 206.2K |
-| `tests` | 30 | 101.2K |
+| `scripts` | 16 | 159.0K |
+| `docs` | 28 | 102.4K |
+| `tests` | 31 | 99.7K |
 | `prompts` | 6 | 21.6K |
 | `configs` | 7 | 12.7K |
-| `NOTES.md` | 1 | 9.2K |
-| `README.md` | 1 | 5.5K |
-| `AGENTS.md` | 1 | 4.8K |
+| `README.md` | 1 | 3.5K |
 | `.claude` | 4 | 3.3K |
-| `CLAUDE.md` | 1 | 2.3K |
+| `NOTES.md` | 1 | 3.2K |
+| `AGENTS.md` | 1 | 2.8K |
 | `.github` | 5 | 2.1K |
-| `requirements.txt` | 1 | 1.8K |
-| `pyproject.toml` | 1 | 1.7K |
+| `pyproject.toml` | 1 | 1.6K |
 | `.gitignore` | 1 | 1.5K |
-| `Makefile` | 1 | 1.2K |
+| `Makefile` | 1 | 1.1K |
 | `LICENSE` | 1 | 1.0K |
+| `CLAUDE.md` | 1 | 1.0K |
 | `.env.example` | 1 | 916B |
 | `.vscode` | 1 | 445B |
 | `requirements-cluster.txt` | 1 | 123B |
@@ -83,27 +79,26 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.json` | 1081 | 3.8M |
-| `.yaml` | 295 | 366.9K |
-| `.jsonl` | 281 | 31.6M |
-| `.txt` | 281 | 4.0M |
-| `.py` | 255 | 2.1M |
-| `.png` | 149 | 19.8M |
-| `.md` | 141 | 678.0K |
-| `.pdf` | 101 | 3.4M |
-| `.csv` | 35 | 722.9K |
-| `.sh` | 23 | 69.7K |
+| `.json` | 1040 | 3.0M |
+| `.yaml` | 270 | 316.1K |
+| `.txt` | 260 | 3.9M |
+| `.jsonl` | 254 | 22.9M |
+| `.py` | 207 | 1.6M |
+| `.md` | 88 | 252.3K |
+| `.png` | 57 | 7.2M |
+| `.pdf` | 34 | 687.0K |
+| `.csv` | 26 | 581.1K |
 | `.part-000` | 18 | 20.0M |
-| `<none>` | 11 | 5.8K |
-| `.tex` | 6 | 417.3K |
+| `.sh` | 13 | 24.8K |
 | `.sbatch` | 5 | 6.5K |
+| `<none>` | 5 | 5.7K |
+| `.tex` | 4 | 258.2K |
 | `.svg` | 3 | 9.0K |
 | `.bib` | 1 | 13.6K |
 | `.example` | 1 | 916B |
-| `.gif` | 1 | 1.4M |
-| `.lock` | 1 | 1.0M |
+| `.lock` | 1 | 972.2K |
 | `.sty` | 1 | 13.2K |
-| `.toml` | 1 | 1.7K |
+| `.toml` | 1 | 1.6K |
 | `.tsv` | 1 | 790B |
 | `.yml` | 1 | 407B |
 
@@ -120,37 +115,16 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/autoresearch-cifar10/shared-memory-ablation/README.md`
 - `experiments/autoresearch-cifar10/shared-memory-ablation/results/figures/README.md`
 - `experiments/autoresearch-cifar10/starting-model-calibration/README.md`
-- `experiments/autoresearch-cifar10/swarm-vs-independent-agents/README.md`
-- `experiments/autoresearch-cifar10/swarm-vs-independent-agents/results/README.md`
-- `experiments/autoresearch-cifar10/swarm-vs-independent-agents/results/analysis/model_comparison/README.md`
-- `experiments/autoresearch-cifar10/swarm-vs-independent-agents/results/figures/README.md`
 - `experiments/autoresearch-cifar10/three-worker-model-routing/README.md`
 - `experiments/autoresearch-cifar10/three-worker-model-routing/raw/README.md`
 - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/README.md`
 - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/archive/distribution-aware-orchestration/README.md`
 - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/README.md`
-- `experiments/bbh/README.md`
-- `experiments/bbh/family-and-subtask-router/README.md`
-- `experiments/bbh/qwen-model-size-frontier/README.md`
 - `experiments/humaneval-plus/README.md`
 - `experiments/humaneval-plus/llm-router-context-search/README.md`
 - `experiments/humaneval-plus/qwen-model-size-frontier/README.md`
 - `experiments/humaneval-plus/retry-allocation-router/README.md`
 - `experiments/humaneval-plus/strategy-by-difficulty-grid/README.md`
-- `experiments/humaneval-plus/verifier-guided-dag-induction-smoke/README.md`
-- `experiments/humaneval-plus/verifier-guided-dag-induction-smoke/design-spec/README.md`
-- `experiments/mbpp-plus/README.md`
-- `experiments/mbpp-plus/category-router-smoke/README.md`
-- `experiments/mbpp-plus/qwen-model-size-frontier/README.md`
-- `experiments/mbpp-plus/two-model-retry-router/README.md`
-- `experiments/swebench-verified/README.md`
-- `experiments/swebench-verified/neutral-100-meta-design-scaffold/README.md`
-- `experiments/swebench-verified/neutral-100-meta-design-scaffold/configs/README.md`
-- `experiments/swebench-verified/neutral-100-meta-design-scaffold/data/verified_100/README.md`
-- `experiments/swebench-verified/neutral-100-meta-design-scaffold/prompts/README.md`
-- `experiments/swebench-verified/open-source-meta-loop-2026-06-07/README.md`
-- `experiments/swebench-verified/open-source-orchestration-scaffold/README.md`
-- `experiments/swebench-verified/shared-runtime/README.md`
 
 ## Script Entrypoints
 
@@ -176,14 +150,9 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/build_command_manifest.py`
 - `scripts/build_experiment_manifest.py`
 - `scripts/build_knowledge_index.py`
-- `scripts/build_paper_archive_manifest.py`
 - `scripts/build_repo_inventory.py`
 - `scripts/check_paper_build.py`
 - `scripts/compare_experiments.py`
-- `scripts/plot_autoresearch_neural_substrates.py`
-- `scripts/plot_autoresearch_readme_figures.py`
-- `scripts/plot_experiment_overview.py`
-- `scripts/plot_product_evidence_assets.py`
 - `scripts/run_best_params_merge.py`
 - `scripts/run_merge_phase.py`
 - `scripts/run_parallel_experiment.py`
@@ -192,8 +161,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 ## Exact Duplicates In Selected Types
 
-- Groups: `29`
-- Extra files: `37`
+- Groups: `7`
+- Extra files: `15`
 
 The readiness gate treats document/source duplicates as failures. The
 remaining allowed duplicates are paper-ready figure copies under
@@ -203,32 +172,8 @@ canonical.
 | Category | Groups | Extra Files |
 | --- | --- | --- |
 | package initializers | 1 | 9 |
-| paper-ready figure copy | 28 | 28 |
+| paper-ready figure copy | 6 | 6 |
 
-- Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/first_hit_ecdf_by_mode.pdf`
-  - `paper/neurips-submission/figures/autoresearch/first_hit_ecdf_by_mode.pdf`
-- Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_improvement_distribution.pdf`
-  - `paper/neurips-submission/figures/autoresearch/threeworker_improvement_distribution.pdf`
-- Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_negative_controls.pdf`
-  - `paper/neurips-submission/figures/autoresearch/threeworker_negative_controls.pdf`
-- Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_relative_improvement_trajectories.pdf`
-  - `paper/neurips-submission/figures/autoresearch/threeworker_relative_improvement_trajectories.pdf`
-- Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_router_paired_gain.pdf`
-  - `paper/neurips-submission/figures/autoresearch/threeworker_router_paired_gain.pdf`
-- Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_router_selection_regret.pdf`
-  - `paper/neurips-submission/figures/autoresearch/threeworker_router_selection_regret.pdf`
-- Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_tau_distribution.pdf`
-  - `paper/neurips-submission/figures/autoresearch/threeworker_tau_distribution.pdf`
-- Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_threshold_sensitivity.pdf`
-  - `paper/neurips-submission/figures/autoresearch/threeworker_threshold_sensitivity.pdf`
 - Group:
   - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/first_hit_ecdf_by_mode.png`
   - `paper/neurips-submission/figures/autoresearch/first_hit_ecdf_by_mode.png`
@@ -242,41 +187,19 @@ canonical.
   - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_relative_improvement_trajectories.png`
   - `paper/neurips-submission/figures/autoresearch/threeworker_relative_improvement_trajectories.png`
 - Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_router_paired_gain.png`
-  - `paper/neurips-submission/figures/autoresearch/threeworker_router_paired_gain.png`
-- Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_router_selection_regret.png`
-  - `paper/neurips-submission/figures/autoresearch/threeworker_router_selection_regret.png`
-- Group:
   - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_tau_distribution.png`
   - `paper/neurips-submission/figures/autoresearch/threeworker_tau_distribution.png`
 - Group:
   - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_threshold_sensitivity.png`
   - `paper/neurips-submission/figures/autoresearch/threeworker_threshold_sensitivity.png`
 - Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/deployment_mix_sensitivity.png`
-  - `paper/neurips-submission/figures/autoresearch_n20_confirmation/deployment_mix_sensitivity.png`
-- Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/diag_z_signal_ablation.png`
-  - `paper/neurips-submission/figures/autoresearch_n20_confirmation/diag_z_signal_ablation.png`
-- Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/first_hit_ecdf_by_mode.png`
-  - `paper/neurips-submission/figures/autoresearch_n20_confirmation/first_hit_ecdf_by_mode.png`
-- Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/quality_vs_certified_resource.png`
-  - `paper/neurips-submission/figures/autoresearch_n20_confirmation/quality_vs_certified_resource.png`
-- Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_cost_to_tau_by_mode_worker.png`
-  - `paper/neurips-submission/figures/autoresearch_n20_confirmation/threeworker_cost_to_tau_by_mode_worker.png`
-- Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_deployment_frontier.png`
-  - `paper/neurips-submission/figures/autoresearch_n20_confirmation/threeworker_deployment_frontier.png`
-- Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_improvement_distribution.png`
-  - `paper/neurips-submission/figures/autoresearch_n20_confirmation/threeworker_improvement_distribution.png`
-- Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_negative_controls.png`
-  - `paper/neurips-submission/figures/autoresearch_n20_confirmation/threeworker_negative_controls.png`
-- Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/threeworker_relative_improvement_trajectories.png`
-  - `paper/neurips-submission/figures/autoresearch_n20_confirmation/threeworker_relative_improvement_trajectories.png`
+  - `autoresearch/__init__.py`
+  - `autoresearch/analysis/__init__.py`
+  - `autoresearch/benchmark/__init__.py`
+  - `src/agent_workflow/agents/__init__.py`
+  - `src/agent_workflow/experiment_modes/__init__.py`
+  - `src/agent_workflow/outputs/__init__.py`
+  - `src/agent_workflow/runtime/__init__.py`
+  - `src/agent_workflow/utils/__init__.py`
+  - `src/vao/agents/__init__.py`
+  - `src/vao/analysis/__init__.py`

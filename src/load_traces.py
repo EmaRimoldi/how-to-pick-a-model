@@ -59,16 +59,14 @@ def resolve_log_paths(path_raw: str) -> list[Path]:
         if not matches:
             raise FileNotFoundError(
                 f"No worker logs matched {path_raw!r}. "
-                "For MBPP+ category analysis, run or provide the saved MBPP+ "
-                "worker logs before running router/frontier analysis."
+                "Provide the saved worker logs before running router/frontier analysis."
             )
         return matches
     path = Path(path_raw)
     if not path.exists():
         raise FileNotFoundError(
             f"Worker log not found: {path}. "
-            "For MBPP+ category analysis, run or provide the saved MBPP+ "
-            "worker logs before running router/frontier analysis."
+            "Provide the saved worker logs before running router/frontier analysis."
         )
     return [path]
 

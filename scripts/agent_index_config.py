@@ -22,6 +22,7 @@ CANONICAL_DOCS = [
     "CLAUDE.md",
     "docs/README.md",
     "docs/knowledge-map.md",
+    "docs/decision-protocol.md",
     "docs/paper-evidence-map.md",
     "docs/paper-revision-playbook.md",
     "docs/reproducibility.md",
@@ -29,10 +30,8 @@ CANONICAL_DOCS = [
     "docs/audits/theory-consolidation.md",
     "docs/audits/knowledge-index.md",
     "docs/audits/repo-inventory.md",
-    "docs/audits/paper-archive-manifest.md",
     "docs/audits/experiment-manifest.md",
     "docs/audits/command-manifest.md",
-    "docs/audits/agent-readiness-completion-audit.md",
     "experiments/README.md",
     "src/README.md",
     "scripts/README.md",
@@ -67,20 +66,26 @@ CORE_EXPERIMENT_BUNDLES = {
     "experiments/humaneval-plus/llm-router-context-search/",
 }
 
+CORE_CODE_MODULES = {
+    "src/agent_workflow/cli.py",
+    "src/agent_workflow/communication/blackboard.py",
+    "src/vao/schemas.py",
+    "src/load_traces.py",
+    "autoresearch/analysis/autoresearch_cifar10_model_routing.py",
+    "autoresearch/benchmark/cifar10/task_spec.py",
+}
+
 PAPER_ROOT = Path("paper/neurips-submission")
 CANONICAL_TEX = [
     PAPER_ROOT / "main.tex",
     PAPER_ROOT / "arxiv.tex",
     PAPER_ROOT / "archive" / "theory_anchor.tex",
-    PAPER_ROOT / "archive" / "Beneventano_Poggio.tex",
-    PAPER_ROOT / "archive" / "next_steps.tex",
 ]
 PAPER_SOURCES = [path.as_posix() for path in CANONICAL_TEX]
 
 GENERATED_AUDITS = {
     "knowledge": Path("docs/audits/knowledge-index.md"),
     "inventory": Path("docs/audits/repo-inventory.md"),
-    "paper_archive": Path("docs/audits/paper-archive-manifest.md"),
     "experiment_manifest": Path("docs/audits/experiment-manifest.md"),
     "command_manifest": Path("docs/audits/command-manifest.md"),
 }
@@ -113,15 +118,14 @@ MARKDOWN_LINK_DOCS = [
         "CLAUDE.md",
         "docs/README.md",
         "docs/knowledge-map.md",
+    "docs/decision-protocol.md",
         "docs/paper-evidence-map.md",
         "docs/paper-revision-playbook.md",
         "docs/reproducibility.md",
         "docs/demo.md",
-        "docs/audits/paper-archive-manifest.md",
-        "docs/audits/experiment-manifest.md",
+            "docs/audits/experiment-manifest.md",
         "docs/audits/command-manifest.md",
-        "docs/audits/agent-readiness-completion-audit.md",
-        "docs/specs/README.md",
+            "docs/specs/README.md",
         "paper/README.md",
         "paper/neurips-submission/README.md",
         "src/README.md",

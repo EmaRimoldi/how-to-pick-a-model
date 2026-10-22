@@ -48,83 +48,12 @@ def load_humanevalplus() -> tuple[dict[str, dict[str, Any]], dict[str, Any], str
     return problems, expected_outputs, dataset_hash
 
 
-def load_mbppplus() -> tuple[dict[str, dict[str, Any]], dict[str, Any], str]:
-    from evalplus.data import get_mbpp_plus, get_mbpp_plus_hash
-    from evalplus.eval._special_oracle import MBPP_OUTPUT_NOT_NONE_TASKS
-    from evalplus.evaluate import get_groundtruth
-
-    problems = get_mbpp_plus()
-    dataset_hash = get_mbpp_plus_hash()
-    expected_outputs = get_groundtruth(problems, dataset_hash, MBPP_OUTPUT_NOT_NONE_TASKS)
-    return problems, expected_outputs, dataset_hash
-
-
 def load_dataset(config: dict[str, Any]) -> DatasetBundle:
     dataset_name = config.get("dataset", "humanevalplus")
-    if dataset_name == "humanevalplus":
-        problems, expected_outputs, dataset_hash = load_humanevalplus()
-        checker_dataset = "humaneval"
-    elif dataset_name == "mbppplus":
-        problems, expected_outputs, dataset_hash = load_mbppplus()
-        checker_dataset = "mbpp"
-    elif dataset_name == "bbh":
-        from src.bbh_data import ensure_bbh_modes, load_bbh
-
-        max_examples = config.get("max_examples_per_subtask", 100)
-        if max_examples is not None:
-            max_examples = int(max_examples)
-        problems, expected_outputs, dataset_hash, metadata = load_bbh(
-            max_examples_per_subtask=max_examples
-        )
-        selected_subtasks = config.get("selected_subtasks")
-        if selected_subtasks:
-            selected = [str(subtask) for subtask in selected_subtasks]
-            unknown = sorted(set(selected) - set(metadata["subtasks"]))
-            if unknown:
-                raise ValueError(f"Unknown BBH selected_subtasks: {unknown}")
-            selected_set = set(selected)
-            problems = {
-                task_id: problem
-                for task_id, problem in problems.items()
-                if problem["subtask"] in selected_set
-            }
-            expected_outputs = {
-                task_id: output
-                for task_id, output in expected_outputs.items()
-                if task_id in problems
-            }
-            metadata = dict(metadata)
-            metadata["selected_subtasks"] = selected
-            metadata["selected_subtask_count"] = len(selected)
-            metadata["selected_example_count"] = len(problems)
-            metadata["used_counts"] = {
-                subtask: count
-                for subtask, count in metadata["used_counts"].items()
-                if subtask in selected_set
-            }
-        derived_dir = project_path(config["paths"]["derived"])
-        paths = config.get("paths", {})
-        modes = ensure_bbh_modes(
-            problems=problems,
-            derived_dir=derived_dir,
-            modes_filename=paths.get("modes", "bbh_modes.json"),
-            raw_modes_filename=paths.get("modes_raw", "bbh_modes_raw.json"),
-            groups_filename=paths.get("mode_groups", "bbh_mode_groups.json"),
-            meta_filename=paths.get("modes_meta", "bbh_modes_meta.json"),
-            metadata=metadata,
-        )
-        return DatasetBundle(
-            problems=problems,
-            expected_outputs=expected_outputs,
-            dataset_hash=dataset_hash,
-            modes=modes,
-            dataset_name=dataset_name,
-            checker_dataset="bbh",
-        )
-    else:
-        raise ValueError(
-            f"Unsupported dataset {dataset_name!r}; expected 'humanevalplus', 'mbppplus', or 'bbh'"
-        )
+    if dataset_name != "humanevalplus":
+        raise ValueError(f"Unsupported dataset {dataset_name!r}; expected 'humanevalplus'")
+    problems, expected_outputs, dataset_hash = load_humanevalplus()
+    checker_dataset = "humaneval"
 
     derived_dir = project_path(config["paths"]["derived"])
     modes = ensure_modes(

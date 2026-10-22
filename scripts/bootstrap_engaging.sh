@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bootstrap the cluster Python environment for HumanEval+/MBPP+/BBH routing runs.
+# Bootstrap the cluster Python environment for HumanEval+ routing runs.
 set -euo pipefail
 
 ROOT="${1:-/orcd/data/tpoggio/001/erimoldi/theory-of-agents-strategy}"

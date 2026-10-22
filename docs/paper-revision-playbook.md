@@ -1,100 +1,28 @@
-# Paper Revision Playbook
+# Paper Revision
 
-This is the operating procedure for an LLM agent preparing the next manuscript
-revision. It turns the repository maps into an editing workflow.
+Read `docs/decision-protocol.md`, the experiment README, and the paper evidence
+map before editing claims. Existing manuscripts describe prior experiments;
+new continuation-policy claims need their own verified evidence.
 
-## Default Objective
-
-Advance the compact submission around one defensible claim:
-
-> Model and workflow choice should be evaluated as deployment-time
-> first-passage performance under task-family, signal, cost, and routing
-> constraints, not as a single benchmark score.
-
-Use [`paper-evidence-map.md`](paper-evidence-map.md) for the claim-to-evidence
-table and [`audits/theory-consolidation.md`](audits/theory-consolidation.md)
-for theorem genealogy.
-
-## Source Routing
-
-| Need | Source |
+| Source | Role |
 | --- | --- |
-| Compact submission edits | [`../paper/neurips-submission/main.tex`](../paper/neurips-submission/main.tex) |
-| Longer AutoResearch text or appendix material | [`../paper/neurips-submission/arxiv.tex`](../paper/neurips-submission/arxiv.tex) |
-| Validated theorem source | [`../paper/neurips-submission/archive/theory_anchor.tex`](../paper/neurips-submission/archive/theory_anchor.tex) |
-| Historical/theory context | [`../paper/neurips-submission/archive/Beneventano_Poggio.tex`](../paper/neurips-submission/archive/Beneventano_Poggio.tex) |
-| Independent planning notes | [`../paper/neurips-submission/archive/next_steps.tex`](../paper/neurips-submission/archive/next_steps.tex) |
-| Archived draft policy | [`audits/paper-archive-manifest.md`](audits/paper-archive-manifest.md) |
+| [main.tex](../paper/neurips-submission/main.tex) | Compact existing manuscript |
+| [arxiv.tex](../paper/neurips-submission/arxiv.tex) | Longer AutoResearch manuscript |
+| [theory anchor](../paper/neurips-submission/archive/theory_anchor.tex) | Consolidated theory under its assumptions |
 
-Do not edit archive files as active manuscript source unless the user explicitly
-asks for archival consolidation.
+Use the [theory audit](audits/theory-consolidation.md) to understand historical
+claims that were not promoted. Removed drafts, planning documents, and reference
+PDFs are recoverable through Git history, not current source dependencies.
 
-## Manuscript Assembly Order
+For every change:
 
-1. Start from [`../paper/neurips-submission/main.tex`](../paper/neurips-submission/main.tex).
-2. Keep the introduction aligned with the narrow first-passage/deployment-time
-   claim above.
-3. Promote only the theory needed by the claim spine:
-   `def:proper-time`, `thm:ri-identity`, `thm:four-term`,
-   `thm:retry-crossover`, `prop:borrowed-allocation`,
-   `prop:approximation-guarantee`, and `def:first-hit-diagnostics`.
-4. Use Tier 1 evidence as main paper support.
-5. Use Tier 2 evidence only for diagnostics, context, or appendix.
-6. Treat Tier 3 evidence as future work or scaffold unless a complete result
-   bundle is added.
-7. After every paper-facing edit, run `make check`; when TeX Live is available,
-   also run `make paper-build`.
+1. Identify the source and specific claim.
+2. Link it to a retained experiment and its declared data/protocol limitations.
+3. Distinguish observable first-hit outcomes from theoretical quantities.
+4. Keep held-out evaluation separate from controller tuning and visible feedback.
+5. Update the evidence map, regenerate indexes, and run `make check`.
+6. Use `make paper-build` for out-of-tree compilation after paper asset changes.
 
-## Evidence Discipline
-
-Main evidence should come from:
-
-- [`../experiments/humaneval-plus/strategy-by-difficulty-grid/`](../experiments/humaneval-plus/strategy-by-difficulty-grid/)
-- [`../experiments/humaneval-plus/llm-router-context-search/`](../experiments/humaneval-plus/llm-router-context-search/)
-- [`../experiments/humaneval-plus/retry-allocation-router/`](../experiments/humaneval-plus/retry-allocation-router/)
-- [`../experiments/autoresearch-cifar10/three-worker-model-routing/`](../experiments/autoresearch-cifar10/three-worker-model-routing/)
-- [`../experiments/autoresearch-cifar10/shared-memory-ablation/`](../experiments/autoresearch-cifar10/shared-memory-ablation/)
-- [`../experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/`](../experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/)
-
-Before citing an experiment, read its `README.md` and prefer accounting tables
-or raw/processed result files over paper-ready copied figures.
-
-## Figure Policy
-
-Paper figures live under
-[`../paper/neurips-submission/figures/`](../paper/neurips-submission/figures/)
-only as vendored compile assets. The experiment bundle and generation command
-remain the canonical provenance.
-
-Regenerate the main AutoResearch figure subset with:
-
-```bash
-make paper-figures-autoresearch
-```
-
-## Validation
-
-Use the one-command local gate:
-
-```bash
-make check
-```
-
-This regenerates the inventory, knowledge index, paper archive manifest,
-experiment manifest, and command manifest; validates agent-facing structure;
-byte-compiles `scripts`, `src`, and `autoresearch`; and runs tests.
-
-For manuscript-source edits, add a TeX smoke build when available:
-
-```bash
-make paper-build
-```
-
-## Failure Modes To Avoid
-
-- Do not claim all experiments are complete.
-- Do not cite Tier 3 scaffold evidence as empirical support.
-- Do not claim exact packedness without residual diagnostics.
-- Do not describe memory or multi-agent coordination as universally beneficial.
-- Do not treat archive PDFs or old LaTeX drafts as active paper source.
-- Do not cite copied figures as independent evidence.
+Referenced figures are vendored under the paper directory. Keep generation code
+and evidence canonical in the experiment bundle. Do not claim new counterfactual
+continuation outcomes from historical static-model traces.

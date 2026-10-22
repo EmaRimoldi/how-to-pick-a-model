@@ -5,7 +5,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 
 ## Summary
 
-- Bundles indexed: `19`
+- Bundles indexed: `8`
 - Missing bundle paths: `0`
 - Missing README files: `0`
 
@@ -13,20 +13,15 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 
 | Class | Bundles |
 | --- | --- |
-| `historical-or-archive` | 2 |
-| `inspect-readme` | 1 |
-| `paper-supporting-evidence` | 8 |
-| `partial-evidence` | 5 |
-| `scaffold` | 3 |
+| `paper-supporting-evidence` | 7 |
+| `partial-evidence` | 1 |
 
 ## Evidence Tiers
 
 | Tier | Bundles |
 | --- | --- |
 | `Tier 1: Main Evidence` | 6 |
-| `Tier 2: Supporting Or Diagnostic Evidence` | 5 |
-| `Tier 3: Future Work Or Scaffold` | 6 |
-| `not tiered` | 2 |
+| `Tier 2: Supporting Or Diagnostic Evidence` | 2 |
 
 ## Bundle Assets
 
@@ -35,22 +30,11 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | `experiments/autoresearch-cifar10/starting-model-calibration/` | completed | Tier 2: Supporting Or Diagnostic Evidence | `paper-supporting-evidence` | 12 | 0 | 0 | 9 | 5 | 1 | 0 | 0 | 3 |
 | `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 42 | 0 | 0 | 40 | 18 | 1 | 0 | 0 | 5 |
 | `experiments/autoresearch-cifar10/shared-memory-ablation/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 12 | 0 | 0 | 10 | 6 | 1 | 0 | 0 | 1 |
-| `experiments/autoresearch-cifar10/swarm-vs-independent-agents/` | historical/partial | Tier 2: Supporting Or Diagnostic Evidence | `historical-or-archive` | 48 | 0 | 0 | 46 | 23 | 5 | 0 | 0 | 4 |
 | `experiments/autoresearch-cifar10/three-worker-model-routing/` | completed with raw-coverage gap | Tier 1: Main Evidence | `partial-evidence` | 1845 | 250 | 1761 | 78 | 46 | 0 | 1756 | 0 | 267 |
 | `experiments/humaneval-plus/qwen-model-size-frontier/` | completed | Tier 2: Supporting Or Diagnostic Evidence | `paper-supporting-evidence` | 12 | 1 | 3 | 5 | 0 | 2 | 3 | 0 | 0 |
 | `experiments/humaneval-plus/retry-allocation-router/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 7 | 1 | 0 | 3 | 0 | 2 | 0 | 0 | 1 |
 | `experiments/humaneval-plus/strategy-by-difficulty-grid/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 115 | 1 | 27 | 0 | 4 | 7 | 27 | 106 | 2 |
 | `experiments/humaneval-plus/llm-router-context-search/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 24 | 0 | 0 | 0 | 1 | 1 | 0 | 22 | 0 |
-| `experiments/humaneval-plus/verifier-guided-dag-induction-smoke/` | incomplete smoke | Tier 3: Future Work Or Scaffold | `partial-evidence` | 77 | 0 | 29 | 0 | 0 | 22 | 0 | 14 | 0 |
-| `experiments/mbpp-plus/qwen-model-size-frontier/` | completed worker logs | Tier 2: Supporting Or Diagnostic Evidence | `paper-supporting-evidence` | 11 | 2 | 3 | 2 | 0 | 3 | 3 | 0 | 0 |
-| `experiments/mbpp-plus/two-model-retry-router/` | partial | Tier 3: Future Work Or Scaffold | `partial-evidence` | 3 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
-| `experiments/mbpp-plus/category-router-smoke/` | smoke/partial | Tier 3: Future Work Or Scaffold | `partial-evidence` | 16 | 3 | 0 | 10 | 10 | 2 | 0 | 0 | 0 |
-| `experiments/bbh/qwen-model-size-frontier/` | partial frontier | Tier 2: Supporting Or Diagnostic Evidence | `partial-evidence` | 9 | 1 | 2 | 4 | 0 | 1 | 2 | 0 | 0 |
-| `experiments/bbh/family-and-subtask-router/` | runnable scaffold | Tier 3: Future Work Or Scaffold | `scaffold` | 6 | 3 | 0 | 0 | 0 | 2 | 0 | 0 | 0 |
-| `experiments/swebench-verified/neutral-100-meta-design-scaffold/` | scaffold | Tier 3: Future Work Or Scaffold | `scaffold` | 14 | 4 | 5 | 0 | 0 | 0 | 0 | 0 | 0 |
-| `experiments/swebench-verified/open-source-orchestration-scaffold/` | scaffold | Tier 3: Future Work Or Scaffold | `scaffold` | 8 | 5 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |
-| `experiments/swebench-verified/open-source-meta-loop-2026-06-07/` | historical result archive | not tiered | `historical-or-archive` | 55 | 2 | 25 | 1 | 16 | 1 | 0 | 0 | 4 |
-| `experiments/swebench-verified/shared-runtime/` | implementation | not tiered | `inspect-readme` | 15 | 0 | 3 | 0 | 0 | 11 | 0 | 0 | 0 |
 
 ## Key Files
 
@@ -102,24 +86,6 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 - `experiments/autoresearch-cifar10/shared-memory-ablation/results/figures/figure-03-training-attempts.pdf`
 - `experiments/autoresearch-cifar10/shared-memory-ablation/results/figures/figure-03-training-attempts.png`
 - `experiments/autoresearch-cifar10/shared-memory-ablation/scripts/plot_agent_memory_ablation.py`
-
-### `experiments/autoresearch-cifar10/swarm-vs-independent-agents/`
-
-- Title: Swarm Baselines
-- Evidence: summaries, analyses, figures; some raw run trees absent
-- Asset directories: `results, results/analysis, results/figures, scripts`
-- `experiments/autoresearch-cifar10/swarm-vs-independent-agents/README.md`
-- `experiments/autoresearch-cifar10/swarm-vs-independent-agents/results/analysis/model_comparison/COMPLETE_ANALYSIS_SUMMARY.md`
-- `experiments/autoresearch-cifar10/swarm-vs-independent-agents/results/analysis/model_comparison/LOSS_VISUAL_SUMMARY.txt`
-- `experiments/autoresearch-cifar10/swarm-vs-independent-agents/results/analysis/model_comparison/summary_table.csv`
-- `experiments/autoresearch-cifar10/swarm-vs-independent-agents/results/analysis/swarm_vs_independent_parallel/summary.md`
-- `experiments/autoresearch-cifar10/swarm-vs-independent-agents/results/analysis/haiku_swarm_run_1_deep_dive/fig1_joint_trajectory.png`
-- `experiments/autoresearch-cifar10/swarm-vs-independent-agents/results/analysis/haiku_swarm_run_1_deep_dive/fig2_memory_timeline.png`
-- `experiments/autoresearch-cifar10/swarm-vs-independent-agents/results/analysis/haiku_swarm_run_1_deep_dive/fig3_cross_agent_influence.png`
-- `experiments/autoresearch-cifar10/swarm-vs-independent-agents/results/analysis/haiku_swarm_run_1_deep_dive/fig4_param_heatmap.png`
-- `experiments/autoresearch-cifar10/swarm-vs-independent-agents/results/analysis/haiku_swarm_run_1_deep_dive/fig5_attribution.png`
-- `experiments/autoresearch-cifar10/swarm-vs-independent-agents/results/analysis/model_comparison/baseline_improvement.png`
-- `experiments/autoresearch-cifar10/swarm-vs-independent-agents/results/analysis/model_comparison/comparison_metrics.png`
 
 ### `experiments/autoresearch-cifar10/three-worker-model-routing/`
 
@@ -186,139 +152,3 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 - `experiments/humaneval-plus/llm-router-context-search/README.md`
 - `experiments/humaneval-plus/llm-router-context-search/runs/router-search-20260712/confirmatory_speedup.pdf`
 - `experiments/humaneval-plus/llm-router-context-search/scripts/slurm_router_search_select.sbatch`
-
-### `experiments/humaneval-plus/verifier-guided-dag-induction-smoke/`
-
-- Title: Verifier-Guided DAG Induction Smoke
-- Evidence: implementation and smoke artifacts; rep42 cheap-node coverage is 9/42
-- Asset directories: `data, logs`
-- `experiments/humaneval-plus/verifier-guided-dag-induction-smoke/README.md`
-- `experiments/humaneval-plus/verifier-guided-dag-induction-smoke/metrics/__init__.py`
-- `experiments/humaneval-plus/verifier-guided-dag-induction-smoke/metrics/compute_step1.py`
-- `experiments/humaneval-plus/verifier-guided-dag-induction-smoke/oracles/check_generate_tests.py`
-- `experiments/humaneval-plus/verifier-guided-dag-induction-smoke/oracles/check_generate_tests_gold.py`
-- `experiments/humaneval-plus/verifier-guided-dag-induction-smoke/oracles/check_implement.py`
-- `experiments/humaneval-plus/verifier-guided-dag-induction-smoke/oracles/check_repair.py`
-- `experiments/humaneval-plus/verifier-guided-dag-induction-smoke/oracles/check_route.py`
-- `experiments/humaneval-plus/verifier-guided-dag-induction-smoke/oracles/check_understand_spec.py`
-- `experiments/humaneval-plus/verifier-guided-dag-induction-smoke/oracles/check_understand_spec_gold.py`
-- `experiments/humaneval-plus/verifier-guided-dag-induction-smoke/oracles/common.py`
-- `experiments/humaneval-plus/verifier-guided-dag-induction-smoke/runners/__init__.py`
-
-### `experiments/mbpp-plus/qwen-model-size-frontier/`
-
-- Title: Qwen Model-Size Frontier on MBPP+
-- Evidence: three 378-task logs and mode estimates
-- Asset directories: `configs, data, data/raw, results, scripts`
-- `experiments/mbpp-plus/qwen-model-size-frontier/README.md`
-- `experiments/mbpp-plus/qwen-model-size-frontier/configs/three-model.yaml`
-- `experiments/mbpp-plus/qwen-model-size-frontier/configs/two-model.yaml`
-- `experiments/mbpp-plus/qwen-model-size-frontier/scripts/full_run_mbpp_2models.sh`
-- `experiments/mbpp-plus/qwen-model-size-frontier/scripts/full_run_mbpp_32b.sh`
-- `experiments/mbpp-plus/qwen-model-size-frontier/scripts/smoke_mbpp_worker.sh`
-
-### `experiments/mbpp-plus/two-model-retry-router/`
-
-- Title: Two-Model Retry Router on MBPP+
-- Evidence: config and folds; router result/summary files are absent
-- Asset directories: `configs, results`
-- `experiments/mbpp-plus/two-model-retry-router/README.md`
-- `experiments/mbpp-plus/two-model-retry-router/configs/router.yaml`
-
-### `experiments/mbpp-plus/category-router-smoke/`
-
-- Title: Category Router Smoke on MBPP+
-- Evidence: smoke figures and configs; full category labels/results are absent
-- Asset directories: `configs, results, scripts`
-- `experiments/mbpp-plus/category-router-smoke/README.md`
-- `experiments/mbpp-plus/category-router-smoke/configs/router_experiment_mbpp_category.yaml`
-- `experiments/mbpp-plus/category-router-smoke/configs/router_experiment_mbpp_category_smoke.yaml`
-- `experiments/mbpp-plus/category-router-smoke/configs/router_experiment_mbpp_mathnot.yaml`
-- `experiments/mbpp-plus/category-router-smoke/results/fig_alloc_distribution.pdf`
-- `experiments/mbpp-plus/category-router-smoke/results/fig_alloc_distribution.png`
-- `experiments/mbpp-plus/category-router-smoke/results/fig_category_frontier.pdf`
-- `experiments/mbpp-plus/category-router-smoke/results/fig_category_frontier.png`
-- `experiments/mbpp-plus/category-router-smoke/results/fig_gap_to_oracle.pdf`
-- `experiments/mbpp-plus/category-router-smoke/results/fig_gap_to_oracle.png`
-- `experiments/mbpp-plus/category-router-smoke/results/fig_time_saved_by_mode.pdf`
-- `experiments/mbpp-plus/category-router-smoke/results/fig_time_saved_by_mode.png`
-
-### `experiments/bbh/qwen-model-size-frontier/`
-
-- Title: Qwen Model-Size Frontier on BBH
-- Evidence: two 1,200-task logs and mode files; no tracked 32B log
-- Asset directories: `configs, data, data/raw, results, scripts`
-- `experiments/bbh/qwen-model-size-frontier/README.md`
-- `experiments/bbh/qwen-model-size-frontier/configs/experiment.yaml`
-- `experiments/bbh/qwen-model-size-frontier/scripts/full_run_bbh.sh`
-
-### `experiments/bbh/family-and-subtask-router/`
-
-- Title: Family and Subtask Router on BBH
-- Evidence: configs and launchers; no completed router result bundle
-- Asset directories: `configs, scripts`
-- `experiments/bbh/family-and-subtask-router/README.md`
-- `experiments/bbh/family-and-subtask-router/configs/router_experiment_bbh.yaml`
-- `experiments/bbh/family-and-subtask-router/configs/router_experiment_bbh_raw.yaml`
-- `experiments/bbh/family-and-subtask-router/configs/router_experiment_bbh_smoke.yaml`
-- `experiments/bbh/family-and-subtask-router/scripts/full_router_run_bbh.sh`
-- `experiments/bbh/family-and-subtask-router/scripts/smoke_bbh.sh`
-
-### `experiments/swebench-verified/neutral-100-meta-design-scaffold/`
-
-- Title: Neutral SWE-Bench 100 Trial
-- Evidence: prompt-safe 100-instance slice, configs, prompts, frozen designs
-- Asset directories: `configs, data`
-- `experiments/swebench-verified/neutral-100-meta-design-scaffold/README.md`
-- `experiments/swebench-verified/neutral-100-meta-design-scaffold/configs/README.md`
-- `experiments/swebench-verified/neutral-100-meta-design-scaffold/configs/swebench_meta_design_neutral.yaml`
-- `experiments/swebench-verified/neutral-100-meta-design-scaffold/configs/swebench_neutral_workers.yaml`
-- `experiments/swebench-verified/neutral-100-meta-design-scaffold/loss_config.yaml`
-
-### `experiments/swebench-verified/open-source-orchestration-scaffold/`
-
-- Title: Open-Source SWE-bench Orchestration
-- Evidence: worker/meta-design configs and prompt-safe data manifests
-- Asset directories: `configs, data`
-- `experiments/swebench-verified/open-source-orchestration-scaffold/README.md`
-- `experiments/swebench-verified/open-source-orchestration-scaffold/configs/swebench_open_source_workers.yaml`
-- `experiments/swebench-verified/open-source-orchestration-scaffold/configs/swebench_open_source_workers_slurm_pilot.yaml`
-- `experiments/swebench-verified/open-source-orchestration-scaffold/configs/swebench_orchestration_meta_design.yaml`
-- `experiments/swebench-verified/open-source-orchestration-scaffold/configs/swebench_orchestration_pilot.yaml`
-- `experiments/swebench-verified/open-source-orchestration-scaffold/configs/swebench_orchestration_slurm_pilot.yaml`
-
-### `experiments/swebench-verified/open-source-meta-loop-2026-06-07/`
-
-- Title: Open-Source Meta-Loop 2026-06-07
-- Evidence: official evaluation manifests, failure analyses, plots, selected designs
-- Asset directories: `analysis, configs`
-- `experiments/swebench-verified/open-source-meta-loop-2026-06-07/README.md`
-- `experiments/swebench-verified/open-source-meta-loop-2026-06-07/analysis/real_failure_modes_20260606/failure_summary.json`
-- `experiments/swebench-verified/open-source-meta-loop-2026-06-07/analysis/real_failure_modes_20260606/hierarchical_meta_loop_20260607/failure_summary.json`
-- `experiments/swebench-verified/open-source-meta-loop-2026-06-07/analysis/verified_instances_20260606/semantic_cluster_summary.csv`
-- `experiments/swebench-verified/open-source-meta-loop-2026-06-07/analysis/verified_instances_20260606/summary.json`
-- `experiments/swebench-verified/open-source-meta-loop-2026-06-07/configs/run_swebench_hierarchical_meta_loop.sh`
-- `experiments/swebench-verified/open-source-meta-loop-2026-06-07/configs/swebench_single_orchestration_50_fresh.yaml`
-- `experiments/swebench-verified/open-source-meta-loop-2026-06-07/analysis/real_failure_modes_20260606/error_class_counts.png`
-- `experiments/swebench-verified/open-source-meta-loop-2026-06-07/analysis/real_failure_modes_20260606/hierarchical_meta_loop_20260607/error_class_counts.png`
-- `experiments/swebench-verified/open-source-meta-loop-2026-06-07/analysis/real_failure_modes_20260606/hierarchical_meta_loop_20260607/patch_empty_reason_counts.png`
-- `experiments/swebench-verified/open-source-meta-loop-2026-06-07/analysis/real_failure_modes_20260606/hierarchical_meta_loop_20260607/phase_outcomes.png`
-- `experiments/swebench-verified/open-source-meta-loop-2026-06-07/analysis/real_failure_modes_20260606/hierarchical_meta_loop_20260607/prompt_context_budget.png`
-
-### `experiments/swebench-verified/shared-runtime/`
-
-- Title: Shared SWE-bench Runtime
-- Evidence: orchestration code, Slurm launcher, and tests shared by the SWE studies
-- Asset directories: `scripts`
-- `experiments/swebench-verified/shared-runtime/README.md`
-- `experiments/swebench-verified/shared-runtime/scripts/run_swebench_orchestration_slurm_pilot.sh`
-- `experiments/swebench-verified/shared-runtime/src/vao/swebench_orchestration/__init__.py`
-- `experiments/swebench-verified/shared-runtime/src/vao/swebench_orchestration/analyze.py`
-- `experiments/swebench-verified/shared-runtime/src/vao/swebench_orchestration/download.py`
-- `experiments/swebench-verified/shared-runtime/src/vao/swebench_orchestration/evaluate.py`
-- `experiments/swebench-verified/shared-runtime/src/vao/swebench_orchestration/executor.py`
-- `experiments/swebench-verified/shared-runtime/src/vao/swebench_orchestration/meta_update.py`
-- `experiments/swebench-verified/shared-runtime/src/vao/swebench_orchestration/prompt.py`
-- `experiments/swebench-verified/shared-runtime/src/vao/swebench_orchestration/repo_context.py`
-- `experiments/swebench-verified/shared-runtime/src/vao/swebench_orchestration/schemas.py`
-- `experiments/swebench-verified/shared-runtime/tests/test_swebench_orchestration.py`

@@ -10,7 +10,7 @@ MODEL="qwen2.5-coder:1.5b"
 RAW_FILE="experiments/humaneval-plus/qwen-model-size-frontier/data/raw/runs_qwen2.5-coder_1.5b_${RUN_ID}.jsonl"
 
 if [[ ! -x "$PY" ]]; then
-  echo "Missing .venv. Run: uv venv .venv && uv pip install --python .venv/bin/python -r requirements.txt" >&2
+  echo "Missing .venv. Run: uv sync --dev --extra other-experiments --frozen" >&2
   exit 1
 fi
 

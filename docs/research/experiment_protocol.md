@@ -178,5 +178,4 @@ After runs finish:
 - `--serialized-evaluator` is recommended on shared machines to avoid
   contention masquerading as a workflow effect.
 - A single replicate is a probe, not a confirmatory result.
-- Swarm historical baselines in `experiments/autoresearch-cifar10/swarm-vs-independent-agents/` are context only;
-  they are not normalized rows for the current BP 2x2 decomposition.
+- Historical swarm comparisons are retired to Git history.

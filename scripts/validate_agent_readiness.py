@@ -14,6 +14,8 @@ from typing import Iterable
 from agent_index_config import (
     AGENT_DOC_ROOT_FILES,
     CORE_EXPERIMENT_BUNDLES,
+    CORE_CODE_MODULES,
+    CANONICAL_TEX,
     GENERATED_AUDITS,
     LOCAL_PATH_PATTERNS,
     MARKDOWN_LINK_DOCS,
@@ -120,8 +122,9 @@ def check_script_summaries(knowledge: dict) -> list[str]:
 def check_code_modules(knowledge: dict) -> list[str]:
     problems: list[str] = []
     modules = knowledge.get("code_modules", [])
-    if len(modules) < 70:
-        problems.append("knowledge index found fewer than 70 code modules")
+    paths = {module["path"] for module in modules}
+    for path in sorted(CORE_CODE_MODULES - paths):
+        problems.append(f"knowledge index is missing core code module `{path}`")
     for module in modules:
         if not module["summary"] or module["summary"] == "Package marker or namespace module.":
             problems.append(f"code module lacks useful summary `{module['path']}`")
@@ -145,8 +148,9 @@ def check_paper_figures(knowledge: dict) -> list[str]:
 def check_active_paper_references(knowledge: dict) -> list[str]:
     problems: list[str] = []
     refs = knowledge.get("active_paper_references", [])
-    if len(refs) < 15:
-        problems.append("knowledge index found fewer than 15 active paper references")
+    for source in ("paper/neurips-submission/main.tex", "paper/neurips-submission/arxiv.tex"):
+        if not any(ref["source_tex"] == source for ref in refs):
+            problems.append(f"knowledge index found no references for `{source}`")
     missing = [
         f"{ref['source_tex']} -> {ref['target']}"
         for ref in refs
@@ -195,40 +199,6 @@ def check_command_targets(knowledge: dict) -> list[str]:
     return problems
 
 
-def check_paper_archive_manifest(manifest: dict) -> list[str]:
-    problems: list[str] = []
-    coverage = manifest.get("policy_coverage", {})
-    files = int(coverage.get("files", 0))
-    classified = int(coverage.get("classified", 0))
-    unclassified = coverage.get("unclassified", [])
-
-    if manifest.get("archive_root") != "paper/neurips-submission/archive":
-        problems.append("paper archive manifest has the wrong archive root")
-    if files == 0:
-        problems.append("paper archive manifest found no files")
-    if classified != files:
-        problems.append("paper archive manifest has unclassified files: " + ", ".join(unclassified))
-
-    records = {record["path"]: record for record in manifest.get("files", [])}
-    expected = {
-        "paper/neurips-submission/archive/theory_anchor.tex": "canonical-anchor",
-        "paper/neurips-submission/archive/next_steps.tex": "keep-independent",
-        "paper/neurips-submission/archive/Beneventano_Poggio.tex": "keep-provenance",
-    }
-    for path, disposition in expected.items():
-        record = records.get(path)
-        if not record:
-            problems.append(f"paper archive manifest is missing `{path}`")
-            continue
-        if record["disposition"] != disposition:
-            problems.append(f"paper archive manifest has wrong disposition for `{path}`")
-
-    for record in records.values():
-        if record["suffix"] in {".tex", ".bib"} and not record["nearest_text_neighbor"]:
-            problems.append(f"paper archive text source lacks nearest-neighbor similarity `{record['path']}`")
-    return problems
-
-
 def check_experiment_manifest(manifest: dict) -> list[str]:
     problems: list[str] = []
     bundles = manifest.get("bundles", [])
@@ -267,8 +237,6 @@ def check_command_manifest(manifest: dict) -> list[str]:
 
     if manifest.get("root") != ".":
         problems.append("command manifest root must be '.'")
-    if len(commands) < 30:
-        problems.append("command manifest found fewer than 30 commands")
     if manifest.get("missing_required_make_targets"):
         problems.append(
             "command manifest is missing required Make targets: "
@@ -344,10 +312,8 @@ def validate(root: Path, write: bool = False) -> tuple[bool, list[str], dict[str
 
     knowledge = load_json(root, "scripts/build_knowledge_index.py")
     inventory = load_json(root, "scripts/build_repo_inventory.py")
-    paper_archive = load_json(root, "scripts/build_paper_archive_manifest.py")
     experiment_manifest = load_json(root, "scripts/build_experiment_manifest.py")
     command_manifest = load_json(root, "scripts/build_command_manifest.py")
-    archive_coverage = paper_archive["policy_coverage"]
 
     metrics["canonical_docs"] = f"{sum(knowledge['canonical_docs'].values())}/{len(knowledge['canonical_docs'])}"
     metrics["formal_objects"] = str(len(knowledge["formal_objects"]))
@@ -359,8 +325,6 @@ def validate(root: Path, write: bool = False) -> tuple[bool, list[str], dict[str
     metrics["command_targets"] = str(len(knowledge.get("command_targets", [])))
     metrics["inventory_files"] = str(inventory["total_files"])
     metrics["duplicate_groups"] = str(len(inventory["duplicate_groups"]))
-    metrics["paper_archive_files"] = str(archive_coverage["files"])
-    metrics["paper_archive_policy"] = f"{archive_coverage['classified']}/{archive_coverage['files']}"
     metrics["experiment_manifest_bundles"] = str(experiment_manifest["bundle_count"])
     metrics["paper_supporting_experiments"] = str(
         experiment_manifest["reproducibility_classes"].get("paper-supporting-evidence", 0)
@@ -385,10 +349,10 @@ def validate(root: Path, write: bool = False) -> tuple[bool, list[str], dict[str
     if missing_paper:
         messages.append("missing paper sources: " + ", ".join(missing_paper))
 
-    if len(knowledge["formal_objects"]) < 90:
-        messages.append("knowledge index found fewer than 90 formal objects")
-    if len(knowledge["scripts"]) < 30:
-        messages.append("knowledge index found fewer than 30 scripts")
+    formal_sources = {obj["path"] for obj in knowledge["formal_objects"]}
+    for source in CANONICAL_TEX:
+        if source.as_posix() not in formal_sources:
+            messages.append(f"knowledge index found no formal objects in `{source}`")
 
     script_summary_problems = check_script_summaries(knowledge)
     if script_summary_problems:
@@ -408,9 +372,6 @@ def validate(root: Path, write: bool = False) -> tuple[bool, list[str], dict[str
 
     command_target_problems = check_command_targets(knowledge)
     messages.extend(command_target_problems)
-
-    paper_archive_problems = check_paper_archive_manifest(paper_archive)
-    messages.extend(paper_archive_problems)
 
     experiment_manifest_problems = check_experiment_manifest(experiment_manifest)
     messages.extend(experiment_manifest_problems)
@@ -432,82 +393,23 @@ def validate(root: Path, write: bool = False) -> tuple[bool, list[str], dict[str
     if missing_links:
         messages.append("missing markdown links: " + ", ".join(missing_links))
 
+    generators = {
+        "knowledge": "scripts/build_knowledge_index.py",
+        "inventory": "scripts/build_repo_inventory.py",
+        "experiment_manifest": "scripts/build_experiment_manifest.py",
+        "command_manifest": "scripts/build_command_manifest.py",
+    }
     with tempfile.TemporaryDirectory(prefix="agent-readiness-") as tmp:
-        tmp_path = Path(tmp)
-        generated_knowledge = render_markdown(
-            root,
-            "scripts/build_knowledge_index.py",
-            tmp_path / "knowledge-index.md",
-        )
-        generated_inventory = render_markdown(
-            root,
-            "scripts/build_repo_inventory.py",
-            tmp_path / "repo-inventory.md",
-        )
-        generated_paper_archive = render_markdown(
-            root,
-            "scripts/build_paper_archive_manifest.py",
-            tmp_path / "paper-archive-manifest.md",
-        )
-        generated_experiment_manifest = render_markdown(
-            root,
-            "scripts/build_experiment_manifest.py",
-            tmp_path / "experiment-manifest.md",
-        )
-        generated_command_manifest = render_markdown(
-            root,
-            "scripts/build_command_manifest.py",
-            tmp_path / "command-manifest.md",
-        )
-
-    if any(pattern in generated_knowledge for pattern in LOCAL_PATH_PATTERNS):
-        messages.append("generated knowledge index contains a local path")
-    if any(pattern in generated_inventory for pattern in LOCAL_PATH_PATTERNS):
-        messages.append("generated repo inventory contains a local path")
-    if any(pattern in generated_paper_archive for pattern in LOCAL_PATH_PATTERNS):
-        messages.append("generated paper archive manifest contains a local path")
-    if any(pattern in generated_experiment_manifest for pattern in LOCAL_PATH_PATTERNS):
-        messages.append("generated experiment manifest contains a local path")
-    if any(pattern in generated_command_manifest for pattern in LOCAL_PATH_PATTERNS):
-        messages.append("generated command manifest contains a local path")
-
-    if write:
-        (root / GENERATED_AUDITS["knowledge"]).write_text(generated_knowledge, encoding="utf-8")
-        (root / GENERATED_AUDITS["inventory"]).write_text(generated_inventory, encoding="utf-8")
-        (root / GENERATED_AUDITS["paper_archive"]).write_text(
-            generated_paper_archive,
-            encoding="utf-8",
-        )
-        (root / GENERATED_AUDITS["experiment_manifest"]).write_text(
-            generated_experiment_manifest,
-            encoding="utf-8",
-        )
-        (root / GENERATED_AUDITS["command_manifest"]).write_text(
-            generated_command_manifest,
-            encoding="utf-8",
-        )
-    else:
-        tracked_knowledge = (root / GENERATED_AUDITS["knowledge"]).read_text(encoding="utf-8")
-        tracked_inventory = (root / GENERATED_AUDITS["inventory"]).read_text(encoding="utf-8")
-        tracked_paper_archive = (root / GENERATED_AUDITS["paper_archive"]).read_text(
-            encoding="utf-8"
-        )
-        tracked_experiment_manifest = (root / GENERATED_AUDITS["experiment_manifest"]).read_text(
-            encoding="utf-8"
-        )
-        tracked_command_manifest = (root / GENERATED_AUDITS["command_manifest"]).read_text(
-            encoding="utf-8"
-        )
-        if generated_knowledge != tracked_knowledge:
-            messages.append(f"{GENERATED_AUDITS['knowledge']} is stale")
-        if generated_inventory != tracked_inventory:
-            messages.append(f"{GENERATED_AUDITS['inventory']} is stale")
-        if generated_paper_archive != tracked_paper_archive:
-            messages.append(f"{GENERATED_AUDITS['paper_archive']} is stale")
-        if generated_experiment_manifest != tracked_experiment_manifest:
-            messages.append(f"{GENERATED_AUDITS['experiment_manifest']} is stale")
-        if generated_command_manifest != tracked_command_manifest:
-            messages.append(f"{GENERATED_AUDITS['command_manifest']} is stale")
+        for key, script in generators.items():
+            target = GENERATED_AUDITS[key]
+            generated = render_markdown(root, script, Path(tmp) / target.name)
+            if any(pattern in generated for pattern in LOCAL_PATH_PATTERNS):
+                messages.append(f"{target} contains a local path")
+            tracked = root / target
+            if write:
+                tracked.write_text(generated, encoding="utf-8")
+            elif generated != tracked.read_text(encoding="utf-8"):
+                messages.append(f"{target} is stale")
 
     return not messages, messages, metrics
 
