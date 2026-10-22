@@ -197,6 +197,8 @@ def collect(config: dict, problems: list[dict], client: OpenRouterClient,
                               "spent_usd": float(client.ledger.spent)}), flush=True)
     except (BudgetStopped, BackendStopped) as exc:
         status = type(exc).__name__ + ": " + str(exc)
+    except KeyboardInterrupt:
+        status = "interrupted; unresolved reservations retained"
     except Exception as exc:
         status = "infrastructure_error: " + type(exc).__name__
         raise

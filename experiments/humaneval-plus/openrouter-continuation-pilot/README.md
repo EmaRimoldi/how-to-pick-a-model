@@ -42,7 +42,8 @@ Requests require FP8, supported parameters, maximum prices and no fallbacks.
 Preflight checks real credit and exact endpoint availability/prices.
 
 Ceilings in USD per million tokens: 9B input/output 0.10/0.15; 27B 0.25/2.00.
-Record actual `usage.cost`, token/cache/reasoning details, provider, generation
+Stream completions with keepalive support and record the final authoritative
+`usage.cost`, token/cache/reasoning details, provider, generation
 ID, latency, messages and output. Invalid/truncated output is charged and scored
 as failure. Unknown billing keeps its reservation and stops; no automatic retry
 or resume of an existing journal is allowed. Unexpected over-ceiling receipts

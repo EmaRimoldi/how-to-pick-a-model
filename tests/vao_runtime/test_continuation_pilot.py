@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from vao.decisions.openrouter import BackendStopped, BudgetLedger, BudgetStopped, OpenRouterClient
+from vao.decisions.openrouter import BackendStopped, BudgetLedger, BudgetStopped, OpenRouterClient, read_stream
 from vao.decisions.pilot import ACTIONS, collect, evaluate_response, messages_for, summarize
 from vao.decisions.verification import SandboxVerifier
 from vao.decisions.verifier_worker import ExampleChecker, public_examples_doc
@@ -95,6 +95,28 @@ def test_network_failure_is_not_retried_or_refunded(tmp_path, config, monkeypatc
         client.complete("small", [{"role": "user", "content": "task"}], 10, {})
     assert len(calls) == 1
     assert ledger.pending and ledger.stopped
+
+
+def test_stream_keeps_provider_and_final_usage_across_keepalive_chunks():
+    events = [b": keepalive\n", b"\n"]
+    payloads = [
+        {"id": "receipt", "provider": "SiliconFlow", "model": "qwen/qwen3.5-9b",
+         "choices": [{"index": 0, "delta": {"content": '{"solution":'}}]},
+        {"choices": [{"index": 0, "delta": {"content": '"code"}'}, "finish_reason": "stop"}]},
+        {"choices": [], "usage": {"cost": 0.001, "prompt_tokens": 5, "completion_tokens": 5}},
+    ]
+    events += [("data: " + json.dumps(p) + "\n").encode() for p in payloads]
+    events += [b"data: [DONE]\n"]
+    result = read_stream(events)
+    assert result["choices"][0]["message"]["content"] == '{"solution":"code"}'
+    assert result["usage"]["cost"] == 0.001
+    assert result["provider"] == "SiliconFlow"
+    assert result["choices"][0]["finish_reason"] == "stop"
+
+
+def test_stream_error_stays_a_backend_failure():
+    with pytest.raises(BackendStopped, match="billing unresolved"):
+        read_stream([b'data: {"error":{"code":502}}\n'])
 
 
 def test_input_ceiling_blocks_before_reservation(tmp_path, config):

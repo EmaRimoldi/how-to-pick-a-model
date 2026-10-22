@@ -9,6 +9,7 @@
   "max_tokens": 1536,
   "temperature": 0.6,
   "request_seed": false,
+  "stream": true,
   "provider": "siliconflow/fp8",
   "models": {
     "small": {"id": "qwen/qwen3.5-9b", "input_per_million": 0.1, "output_per_million": 0.15},

@@ -14,6 +14,36 @@ from typing import Any
 API_ROOT = "https://openrouter.ai/api/v1"
 
 
+def read_stream(response) -> dict:
+    """Assemble OpenRouter SSE chunks, keeping the final authoritative usage."""
+    payload: dict[str, Any] = {}
+    content = []
+    finish = None
+    for raw in response:
+        line = raw.decode("utf-8").strip()
+        if not line.startswith("data:"):
+            continue  # Includes keepalive comments.
+        data = line[5:].strip()
+        if data == "[DONE]":
+            break
+        event = json.loads(data)
+        if event.get("error"):
+            raise BackendStopped("OpenRouter streaming error; billing unresolved")
+        for field in ("id", "provider", "model", "usage"):
+            if event.get(field) is not None:
+                payload[field] = event[field]
+        for choice in event.get("choices", []):
+            if choice.get("index", 0) != 0:
+                raise BackendStopped("Unexpected multiple completion choices")
+            delta = choice.get("delta") or {}
+            if delta.get("content"):
+                content.append(delta["content"])
+            if choice.get("finish_reason") is not None:
+                finish = choice["finish_reason"]
+    payload["choices"] = [{"message": {"content": "".join(content)}, "finish_reason": finish}]
+    return payload
+
+
 class BudgetStopped(RuntimeError):
     """The remaining budget or billing uncertainty forbids another request."""
 
@@ -105,8 +135,8 @@ class OpenRouterClient:
             method="GET" if body is None else "POST",
         )
         try:
-            with urllib.request.build_opener(NoRedirects).open(request, timeout=90) as response:
-                return json.loads(response.read())
+            with urllib.request.build_opener(NoRedirects).open(request, timeout=180) as response:
+                return read_stream(response) if body and body.get("stream") else json.loads(response.read())
         except urllib.error.HTTPError as exc:
             raise BackendStopped(f"OpenRouter HTTP {exc.code}; no automatic retry") from None
         except (OSError, ValueError) as exc:
@@ -158,6 +188,7 @@ class OpenRouterClient:
         call = self.ledger.reserve(reserve, model["id"])
         body = {
             "model": model["id"], "messages": messages, "max_tokens": max_tokens,
+            "stream": self.config.get("stream", False),
             "temperature": self.config["temperature"],
             "reasoning": {"enabled": False}, "response_format": {"type": "json_object"},
             "provider": {"only": [self.config["provider"]], "allow_fallbacks": False,

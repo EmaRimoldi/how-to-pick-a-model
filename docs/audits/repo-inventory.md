@@ -52,11 +52,11 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `experiments` | 1948 | 36.7M |
 | `artifacts` | 21 | 20.0M |
 | `paper` | 29 | 2.4M |
-| `src` | 131 | 979.7K |
+| `src` | 131 | 981.2K |
 | `uv.lock` | 1 | 972.4K |
 | `autoresearch` | 59 | 460.7K |
 | `scripts` | 18 | 165.0K |
-| `tests` | 33 | 110.7K |
+| `tests` | 33 | 111.8K |
 | `docs` | 28 | 103.2K |
 | `prompts` | 6 | 21.6K |
 | `configs` | 7 | 12.7K |
@@ -69,8 +69,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.gitignore` | 1 | 1.5K |
 | `Makefile` | 1 | 1.1K |
 | `LICENSE` | 1 | 1.0K |
+| `.env.example` | 1 | 1.0K |
 | `CLAUDE.md` | 1 | 1.0K |
-| `.env.example` | 1 | 916B |
 | `.vscode` | 1 | 445B |
 | `requirements-cluster.txt` | 1 | 123B |
 | `.gitattributes` | 1 | 82B |
@@ -84,7 +84,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.txt` | 260 | 3.9M |
 | `.jsonl` | 254 | 22.9M |
 | `.py` | 216 | 1.7M |
-| `.md` | 89 | 258.4K |
+| `.md` | 89 | 258.5K |
 | `.png` | 57 | 7.2M |
 | `.pdf` | 34 | 687.0K |
 | `.csv` | 26 | 581.1K |
@@ -95,7 +95,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.tex` | 4 | 258.2K |
 | `.svg` | 3 | 9.0K |
 | `.bib` | 1 | 13.6K |
-| `.example` | 1 | 916B |
+| `.example` | 1 | 1.0K |
 | `.lock` | 1 | 972.4K |
 | `.sty` | 1 | 13.2K |
 | `.toml` | 1 | 1.6K |
