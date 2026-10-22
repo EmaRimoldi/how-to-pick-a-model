@@ -16,6 +16,7 @@ import numpy as np
 from vao.decisions.context_value import ARMS, parse_forecast
 from vao.decisions.pilot import SYSTEM, digest
 from vao.decisions.recovery import CONDITIONS, forecast_messages, producer_messages, recovery_messages
+from vao.decisions.recovery_import import job_key
 from vao.decisions.recovery_policy import fit_policy, predict
 
 
@@ -91,6 +92,15 @@ def audit(root: Path) -> dict:
     require(paid == Decimal(str(summary["collection_cost_usd"])) and summary["unresolved_reserved_usd"] == 0, "Summary billing mismatch")
     require(paid <= Decimal(str(summary["budget_usd"])) <= Decimal(str(config["run_ceiling_usd"])), "Run ceiling exceeded")
     require(paid + Decimal(str(config["prior_committed_usd"])) <= Decimal(str(config["campaign_ceiling_usd"])), "Campaign ceiling exceeded")
+    if (root / "import-provenance.json").exists():
+        provenance = json.loads((root / "import-provenance.json").read_text())
+        uses = read(root, "import-uses")
+        imported_ids = set(range(1, provenance["imported_calls"] + 1))
+        require(len(uses) == len(imported_ids) and {u["call"] for u in uses} == imported_ids, "Imported observations not reused exactly once")
+        require(sum(settled[i] for i in imported_ids) == Decimal(str(provenance["imported_cost_usd"])), "Imported charge changed")
+        for use in uses:
+            call = by_call[use["call"]]
+            require(use["job_sha256"] == job_key(call["model_name"], call["messages"], call), "Imported job identity changed")
     require(set(by_eval) == {c["call"] for c in calls if c["action"] != "forecast"}, "Evaluation coverage changed")
     require({r["call"] for r in initial} == {c["call"] for c in calls if c["action"] == "initial"}, "Initial receipt coverage changed")
     require({r["call"] for r in branches} == {c["call"] for c in calls if c["action"] in {"branch", "direct"}}, "Branch coverage changed")
