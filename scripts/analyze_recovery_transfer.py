@@ -628,7 +628,9 @@ def plot(r, path):
     ax[1].set_ylabel("Recovery success (%)")
     ax[1].set_title("B. Two-draw replay at $0.01; producer charged",loc="left")
     ax[1].legend(fontsize=8,loc="best")
-    fig.suptitle(f"MBPP+ replication: {r['complete_states']} failed tasks")
+    coverage=f"{r['complete_states']}/{r['selected_states']} complete cases"
+    mode="descriptive" if r["status"]=="incomplete_descriptive_bank" else "complete bank"
+    fig.suptitle(f"MBPP+ recovery: {coverage} ({mode})")
     fig.savefig(path,dpi=180); fig.savefig(path.with_suffix(".pdf")); plt.close(fig)
 
     # Primary decision comparison is displayed directly, rather than inferred
@@ -643,7 +645,7 @@ def plot(r, path):
                     fmt="o",capsize=3,color="C0" if i==0 else "0.45")
     ax.axvline(0,color="0.65",lw=1); ax.set_yticks(range(len(controls)),labels)
     ax.invert_yaxis(); ax.set_xlabel("State minus control utility\n(USD × 1,000/task)")
-    ax.set_title("Paired utility differences\n95% task-bootstrap intervals",fontsize=9)
+    ax.set_title(f"Paired utility: {r['complete_states']}/{r['selected_states']} tasks\n{mode.capitalize()} 95% bootstrap intervals",fontsize=9)
     fig.savefig(path.with_name("policy-utility.png"),dpi=180)
     fig.savefig(path.with_name("policy-utility.pdf")); plt.close(fig)
 

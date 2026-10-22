@@ -16,12 +16,13 @@ results, figures, and run metadata whenever those artifacts are available.
 | HumanEval+ | [`llm-router-context-search/`](humaneval-plus/llm-router-context-search/) | completed | validation selection, held-out test evaluation, logs, figure |
 | HumanEval+ | [`openrouter-continuation-pilot/`](humaneval-plus/openrouter-continuation-pilot/) | development pilot | 24 tasks, 88 calls, two failed checkpoints, receipts and separate public/full-suite scoring |
 | HumanEval+ | [`context-value/`](humaneval-plus/context-value/) | discovery + producer-transfer evaluation | Discovery: 30 tasks/132 calls. Transfer: 83 development + 60 evaluation tasks, 1,353 responses, frozen policies, forecasts, controls and cost audit |
-| MBPP+ | [`context-value-transfer/`](mbpp-plus/context-value-transfer/) | prospective replication | Frozen cross-benchmark design; source-trained feedback/artifact ablation, matched recovery bank and cumulative budget |
+| MBPP+ | [`context-value-transfer/`](mbpp-plus/context-value-transfer/) | collection finished; censored descriptive bank | 94/96 complete failures, 2,878 recovery responses, two censored solver cells, 288 API forecasts, fixed comparisons and full accounting |
 
 ## Families
 
 - [`autoresearch-cifar10/`](autoresearch-cifar10/)
 - [`humaneval-plus/`](humaneval-plus/)
+- [`mbpp-plus/context-value-transfer/`](mbpp-plus/context-value-transfer/)
 
 The former `stateful-query-engine` implementation had no run, result, figure,
 or report evidence. It was retired from the working tree and remains available

@@ -24,6 +24,7 @@ verifiable tasks. Read:
 | `src/agent_workflow/` | Existing baseline CLI, instrumentation, and reporting |
 | `src/*.py` | HumanEval+ worker traces and routing analysis |
 | `paper/neurips-submission/` | Existing manuscripts and their referenced figures |
+| `paper/recovery-value/` | Separate empirical recovery draft, generated from the audited MBPP+ bank |
 | `paper/neurips-submission/archive/theory_anchor.tex` | Consolidated theory source |
 | `artifacts/raw/` | Raw campaign archives, not runnable source |
 

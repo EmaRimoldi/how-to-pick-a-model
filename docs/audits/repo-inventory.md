@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `2388`
-- Bytes indexed: `71.5M`
+- Files indexed: `2453`
+- Bytes indexed: `91.6M`
 
 ## Canonical Entrypoints
 
@@ -49,22 +49,22 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 2016 | 46.1M |
+| `experiments` | 2077 | 66.1M |
 | `artifacts` | 21 | 20.0M |
-| `paper` | 29 | 2.4M |
+| `paper` | 33 | 2.5M |
 | `src` | 138 | 1.1M |
 | `uv.lock` | 1 | 972.4K |
 | `autoresearch` | 59 | 460.7K |
-| `scripts` | 25 | 278.1K |
+| `scripts` | 25 | 278.3K |
 | `tests` | 42 | 169.4K |
-| `docs` | 23 | 89.2K |
+| `docs` | 23 | 95.4K |
 | `prompts` | 6 | 21.6K |
 | `configs` | 7 | 12.7K |
-| `README.md` | 1 | 5.4K |
-| `AGENTS.md` | 1 | 3.4K |
+| `README.md` | 1 | 6.1K |
+| `AGENTS.md` | 1 | 3.5K |
 | `.claude` | 4 | 3.3K |
 | `NOTES.md` | 1 | 3.2K |
-| `.github` | 5 | 2.3K |
+| `.github` | 5 | 2.8K |
 | `pyproject.toml` | 1 | 1.6K |
 | `.gitignore` | 1 | 1.5K |
 | `CLAUDE.md` | 1 | 1.4K |
@@ -79,28 +79,28 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.json` | 1073 | 3.5M |
-| `.jsonl` | 277 | 31.4M |
+| `.json` | 1095 | 3.8M |
+| `.jsonl` | 291 | 49.8M |
+| `.txt` | 275 | 4.2M |
 | `.yaml` | 270 | 316.1K |
-| `.txt` | 260 | 3.9M |
-| `.py` | 240 | 1.9M |
-| `.md` | 92 | 325.7K |
-| `.png` | 60 | 7.6M |
-| `.pdf` | 35 | 712.5K |
+| `.py` | 244 | 1.9M |
+| `.md` | 95 | 345.9K |
+| `.png` | 62 | 7.7M |
+| `.pdf` | 37 | 745.3K |
 | `.csv` | 26 | 581.1K |
 | `.part-000` | 18 | 20.0M |
 | `.sh` | 13 | 24.8K |
 | `.sbatch` | 5 | 6.5K |
+| `.tex` | 5 | 297.7K |
 | `<none>` | 5 | 5.7K |
-| `.tex` | 4 | 258.2K |
 | `.svg` | 3 | 9.0K |
+| `.lock` | 2 | 1.9M |
+| `.toml` | 2 | 3.2K |
 | `.bib` | 1 | 13.6K |
 | `.example` | 1 | 1.0K |
-| `.lock` | 1 | 972.4K |
 | `.sty` | 1 | 13.2K |
-| `.toml` | 1 | 1.6K |
 | `.tsv` | 1 | 790B |
-| `.yml` | 1 | 688B |
+| `.yml` | 1 | 1.2K |
 
 ## Experiment Readmes
 
@@ -128,6 +128,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/humaneval-plus/retry-allocation-router/README.md`
 - `experiments/humaneval-plus/strategy-by-difficulty-grid/README.md`
 - `experiments/mbpp-plus/context-value-transfer/README.md`
+- `experiments/mbpp-plus/context-value-transfer/results/replication-20261022/README.md`
 
 ## Script Entrypoints
 

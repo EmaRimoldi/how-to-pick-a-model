@@ -22,8 +22,8 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | Tier | Bundles |
 | --- | --- |
 | `Tier 1: Main Evidence` | 6 |
-| `Tier 2: Supporting Or Diagnostic Evidence` | 3 |
-| `not tiered` | 2 |
+| `Tier 2: Supporting Or Diagnostic Evidence` | 4 |
+| `not tiered` | 1 |
 
 ## Bundle Assets
 
@@ -39,7 +39,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | `experiments/humaneval-plus/llm-router-context-search/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 24 | 0 | 0 | 0 | 1 | 1 | 0 | 22 | 0 |
 | `experiments/humaneval-plus/openrouter-continuation-pilot/` | development pilot | not tiered | `inspect-readme` | 13 | 1 | 0 | 10 | 1 | 0 | 0 | 0 | 1 |
 | `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 46 | 5 | 0 | 39 | 3 | 0 | 0 | 0 | 4 |
-| `experiments/mbpp-plus/context-value-transfer/` | prospective replication | not tiered | `inspect-readme` | 11 | 6 | 2 | 0 | 0 | 1 | 0 | 0 | 0 |
+| `experiments/mbpp-plus/context-value-transfer/` | collection finished; censored descriptive bank | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 72 | 6 | 2 | 59 | 4 | 3 | 0 | 0 | 6 |
 
 ## Key Files
 
@@ -189,13 +189,17 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 ### `experiments/mbpp-plus/context-value-transfer/`
 
 - Title: Cross-benchmark recovery replication
-- Evidence: Frozen cross-benchmark design; source-trained feedback/artifact ablation, matched recovery bank and cumulative budget
-- Asset directories: `configs, data, source`
+- Evidence: 94/96 complete failures, 2,878 recovery responses, two censored solver cells, 288 API forecasts, fixed comparisons and full accounting
+- Asset directories: `configs, data, results, source`
 - `experiments/mbpp-plus/context-value-transfer/README.md`
 - `experiments/mbpp-plus/context-value-transfer/source/audit_public_spec.py`
+- `experiments/mbpp-plus/context-value-transfer/source/curate_transfer_evidence.py`
+- `experiments/mbpp-plus/context-value-transfer/source/export_recovery_provenance.py`
+- `experiments/mbpp-plus/context-value-transfer/results/replication-20261022/analysis.json`
+- `experiments/mbpp-plus/context-value-transfer/results/replication-20261022/provenance/stops/first-bank-summary.json`
+- `experiments/mbpp-plus/context-value-transfer/results/replication-20261022/provenance/stops/prefix-summary.json`
+- `experiments/mbpp-plus/context-value-transfer/results/replication-20261022/recovery-history/before-segment-2-summary.json`
+- `experiments/mbpp-plus/context-value-transfer/results/replication-20261022/semantic-control/summary.json`
+- `experiments/mbpp-plus/context-value-transfer/results/replication-20261022/summary.json`
 - `experiments/mbpp-plus/context-value-transfer/configs/frozen-policy.json`
 - `experiments/mbpp-plus/context-value-transfer/configs/interaction-freeze.json`
-- `experiments/mbpp-plus/context-value-transfer/configs/recovery-continuation-freeze.json`
-- `experiments/mbpp-plus/context-value-transfer/configs/recovery-continuation-segment2-freeze.json`
-- `experiments/mbpp-plus/context-value-transfer/configs/replication.json`
-- `experiments/mbpp-plus/context-value-transfer/configs/semantic-control-freeze.json`

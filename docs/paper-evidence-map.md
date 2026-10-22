@@ -6,6 +6,15 @@ For that new study, all 51 prior HumanEval+ failures are training data, includin
 the 25 formerly held-out failures. Keep the original frozen result intact and
 separate. Do not count those tasks as a second independent evaluation.
 
+The [completed MBPP+ bank](../experiments/mbpp-plus/context-value-transfer/results/replication-20261022/README.md)
+has 94/96 complete selected failures, 2,878 observed recovery draws, two censored
+solver cells and 288 API forecasts. Complete-case intervals are descriptive;
+all selected states remain in missing-state utility bounds. The primary
+state-minus-feedback selector advantage is not established. Context effects
+differ across the two model settings, which does not imply that a selector can
+predict their task-level value. A [separate empirical draft](../paper/recovery-value/README.md)
+contains the audited comparisons; existing manuscripts remain separate.
+
 The existing manuscripts and theory are baseline research for the sequential
 model-decision question in [decision protocol](decision-protocol.md). They do
 not establish that a state-conditioned continue/restart/handoff controller works.
@@ -20,6 +29,7 @@ not establish that a state-conditioned continue/restart/handoff controller works
 | Retry crossover | `thm:retry-crossover` | `experiments/humaneval-plus/retry-allocation-router/` | Replay follows the recorded retry protocol, not arbitrary handoffs |
 | Memory/context effects | `theory_anchor.tex` | `experiments/autoresearch-cifar10/shared-memory-ablation/` | Substrate-specific baseline, not proof of a cross-model transfer benefit |
 | Failed-code value and one-checkpoint selection | Frozen empirical protocol | `experiments/humaneval-plus/context-value/` | 25 evaluation failures; producer transfer; no reliable gain over stronger static control |
+| Cross-benchmark artifact versus feedback information | Frozen transfer protocol | `experiments/mbpp-plus/context-value-transfer/` | 94/96 complete failures; descriptive censored bank; no established primary selector gain |
 
 ## Evidence tiers
 
@@ -37,6 +47,7 @@ not establish that a state-conditioned continue/restart/handoff controller works
 - `experiments/autoresearch-cifar10/starting-model-calibration/`
 - `experiments/humaneval-plus/qwen-model-size-frontier/`
 - `experiments/humaneval-plus/context-value/` (discovery and amended transfer; not a current manuscript claim)
+- `experiments/mbpp-plus/context-value-transfer/` (censored external replica; separate empirical draft)
 
 ## Recovery evidence and remaining gaps
 

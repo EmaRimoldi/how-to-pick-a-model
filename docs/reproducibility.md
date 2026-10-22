@@ -81,6 +81,26 @@ HumanEval+ evaluation data are now explicitly training data. Live collection
 shares the existing cumulative $2 cap and never retries unknown paid requests
 automatically. Its separate offline analyzer executes no candidate code.
 
+The [audited results](../experiments/mbpp-plus/context-value-transfer/results/replication-20261022/README.md)
+retain 2,878 recovery responses, two censored solver cells and all 288 API
+forecasts. All 96 selected states remain represented; complete-case comparisons
+use 94 and are descriptive. The result README gives a command with
+`--expected-analysis` to compare recomputed statistics with the published report,
+in addition to checking raw journals and provenance. No optional EvalPlus
+installation is needed for this replay.
+
+Build the [separate empirical paper](../paper/recovery-value/README.md) with
+TeX Live and a fresh output directory:
+
+```bash
+uv run python paper/recovery-value/build.py \
+  --output /tmp/how-to-pick-a-model-recovery-paper
+```
+
+It reproduces the recorded analysis before generating tables and figures, then
+compiles three times out of tree. Known campaign charges plus every unresolved
+reservation total $1.39600335 under the original $2 cap; collection is finished.
+
 ## AutoResearch evidence
 
 The four retained bundles cover initial-model calibration, controlled evaluator

@@ -12,6 +12,9 @@ forecasts and budgeted replay on task-disjoint, different-producer failures.
 The general multi-step controller remains future work.
 The focused [MBPP+ replication](../experiments/mbpp-plus/context-value-transfer/README.md)
 tests transfer to a fresh benchmark and adds a feedback-only predictor ablation.
+Its [audited results](../experiments/mbpp-plus/context-value-transfer/results/replication-20261022/README.md)
+and [separate empirical paper](../paper/recovery-value/README.md) retain 94/96
+complete failures and no established primary gain, with missing-state bounds.
 The [audited transfer report](../experiments/humaneval-plus/context-value/results/validation-20261022/report.md)
 and [blog draft](blog/when-to-keep-failed-code.md) give the current results and limits.
 

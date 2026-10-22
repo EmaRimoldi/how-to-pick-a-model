@@ -328,3 +328,18 @@ segment archives previous lineage metadata, preflight and stop summaries byte
 for byte, with a checked parent index. Two selected checkpoints now contain
 censored solver cells, so at most 94/96 checkpoints can have all 30 observations.
 Complete-case intervals remain descriptive; all 96 selected states stay in bounds.
+
+## Final collection census, 2026-10-22
+
+All authorized primary cells are now accounted for: 2,878 observed recovery
+responses and the two permanently censored cells, with 94/96 complete selected
+states. There are 376 observed prefixes and one censored prefix. The secondary
+control then collected all 288 forecasts, all valid, without new uncertainty.
+No further model requests are required for this study.
+
+Primary known charges are $0.83799455 and unresolved reservations $0.0145152.
+The semantic control adds $0.0285302. Including the earlier $0.5149634 campaign
+upper amount, known charges plus every reservation total $1.39600335 under the
+unchanged $2 ceiling. This census records the completed authorized collection;
+it does not amend hypotheses or restore confirmatory completeness. Read the
+[curated evidence](results/replication-20261022/README.md) for reproduction.

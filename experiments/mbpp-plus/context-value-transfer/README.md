@@ -13,10 +13,25 @@ Read [PROTOCOL.md](PROTOCOL.md) before collection or interpretation. Collection
 is opt-in, needs macOS isolation and optional EvalPlus, and shares the previously
 approved cumulative $2 ceiling. Planning and offline analysis never call models.
 
-The protocol, reference census, frozen configuration and weights must be saved
-and committed before live calls. Results and a reproduction command will be
-linked here after auditing the collected journal. A prospective design is not a
-completed result or a guarantee of a publishable method improvement.
+Collection is finished and the [audited evidence](results/replication-20261022/README.md)
+is available. It contains 2,878 recovery responses, two censored solver cells,
+94/96 complete selected failure states, and all 288 prespecified API forecasts.
+The protocol, reference census, frozen configuration and weights preceded live
+calls. Transport censoring and the disclosed continuation after a partial audit
+mean complete-case intervals remain **descriptive**.
+
+For 9B, feedback alone succeeds 52.8% versus 30.9% with feedback plus failed
+code. For 27B the rates are 62.4% and 58.5%. The direct model interaction is
+-18.1 percentage points, nominal family-adjusted interval [-31.6,-5.3]. The
+primary artifact-feature selector advantage is not established: +$0.00011119
+per failure, descriptive 95% interval [-$0.00042595,+$0.00064848]. Missing-state
+bounds for all 96 selected failures also span zero. The API semantic control
+does not establish an artifact-information gain either.
+
+Read the [full report](results/replication-20261022/report.md) and the
+[separate empirical paper](../../../paper/recovery-value/README.md).
+Cumulative known charges and every reservation total $1.39600335, below the
+unchanged $2 ceiling. Offline replay requires no credentials, GPUs or model calls.
 
 Pre-call reference census: 377/378 tasks compatible; `Mbpp/599` is excluded
 because its canonical implementation exceeds the full-suite verifier limit.
