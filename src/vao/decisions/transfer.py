@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import importlib.metadata
 import json
+import math
 import random
 import shutil
 import subprocess
@@ -113,6 +114,26 @@ def replay(rows: list[dict], action: str | None, prefix: float, config: dict, bu
     return {"passed": passed, "cost_usd": float(spent), "attempts": attempts, "termination": reason}
 
 
+def replay_escalation(rows: list[dict], prefix: float, config: dict, budget: float) -> dict:
+    """Additional fixed 9B-fresh -> 27B-fresh diagnostic, no new child handoff.
+
+    Each call uses a recorded draw from the original checkpoint. Stop on the
+    public verifier, pay all admitted bills, and never use future costs to admit.
+    """
+    spent=Decimal(str(prefix));passed=False;attempts=0;reason="budget"
+    for model in ("small","large"):
+        if spent+reservation(config,model)>Decimal(str(budget)):
+            break
+        candidates=[r for r in rows if r["model_name"]==model and r["arm"]=="fresh" and r["draw"]==0]
+        if len(candidates)!=1:raise ValueError("Unobserved escalation step")
+        row=candidates[0]
+        spent+=Decimal(str(row["incremental_cost_usd"]));attempts+=1;reason="attempt_cap"
+        if row["visible_passed"]:
+            passed=row["passed"];reason="public_pass";break
+    if spent>Decimal(str(budget)):raise ValueError("Escalation replay overspend")
+    return {"passed":passed,"cost_usd":float(spent),"attempts":attempts,"termination":reason}
+
+
 def freeze(config: dict) -> tuple[dict, dict]:
     data = source_data(config)
     policy = data["policy"]
@@ -129,6 +150,27 @@ def freeze(config: dict) -> tuple[dict, dict]:
         fixed[str(budget)] = max(scores, key=scores.get)
     policy["development_replay_fixed"] = fixed
     return policy, data
+
+
+def committed_policy(config: dict, path: Path) -> tuple[dict, dict]:
+    """Check the source refit up to platform roundoff, then use exact frozen bytes.
+
+    Refitting on another BLAS implementation must not silently replace a
+    prospectively frozen policy, nor make an otherwise identical plan unusable.
+    """
+    refit,source=freeze(config)
+    saved=json.loads(path.read_text())
+    def equivalent(a,b):
+        if isinstance(a,dict):
+            return isinstance(b,dict) and a.keys()==b.keys() and all(equivalent(v,b[k]) for k,v in a.items())
+        if isinstance(a,list):
+            return isinstance(b,list) and len(a)==len(b) and all(equivalent(x,y) for x,y in zip(a,b))
+        if isinstance(a,(int,float)) and not isinstance(a,bool):
+            return isinstance(b,(int,float)) and math.isclose(a,b,abs_tol=1e-12,rel_tol=1e-10)
+        return a==b
+    if digest(saved)!=config["source_policy_digest"] or not equivalent(saved,refit):
+        raise ValueError("Committed weights changed or cannot be reproduced from source data")
+    return saved,source
 
 
 def load_tasks(config: dict) -> tuple[dict, list[str]]:
@@ -335,9 +377,7 @@ def main() -> int:
             or Decimal(str(args.budget_usd)) + Decimal(str(config["prior_committed_usd"])) > Decimal(str(config["campaign_ceiling_usd"]))):
         parser.error("Live collection needs stdin key and a declared cumulative-safe budget")
     problems, tasks = load_tasks(config)
-    policy, source = freeze(config)
-    if digest(policy) != config["source_policy_digest"]:
-        raise ValueError("Source policy differs from the prospectively committed weights")
+    policy, source = committed_policy(config,args.config.with_name("frozen-policy.json"))
     args.output.mkdir(parents=True, exist_ok=False)
     (args.output / "frozen-policy.json").write_text(json.dumps(policy, sort_keys=True, indent=2) + "\n")
     manifest = {"config": config, "task_order": tasks, "git_sha": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),

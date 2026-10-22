@@ -267,3 +267,16 @@ tasks**, rather than a complete benchmark census or a zero-cost/model-failure
 imputation. Whole-benchmark initial success has a one-task uncertainty bound.
 The selected 96-state primary bank remains fully defined and unaffected by this
 late censoring; missing recovery cells would still make its inference incomplete.
+
+## Additional constant-escalation diagnostic
+
+Implemented after recovery collection began, before treatment statistics were
+computed: a fixed 9B-fresh attempt followed, only after public failure, by a
+27B-fresh attempt. This uses recorded independent draws from the original
+checkpoint; it does not feed a new child's code or feedback to the second model.
+Charge the prefix and each admitted receipt, stop on public passes including
+false positives, and use the same advance reservations and two-attempt cap.
+It adds no inference calls and performs no selection on MBPP scores. Report it
+as an additional diagnostic, distinct from the frozen primary and the original
+prespecified comparisons. Do not promote a favorable comparison with it to a
+new confirmatory result.

@@ -109,6 +109,38 @@ def test_offline_audit_roundtrip_from_mocked_collection_and_rejects_model_drift(
     assert report["status"]=="complete_confirmatory_bank"
     assert report["effects"]["small"]["artifact_feedback-feedback"]["ordinary_95"]["estimate"]==-1
     assert report["model_context_interactions"]["artifact_feedback-feedback"]["ordinary_95"]["estimate"]==-1
+    # A semantic predictor can improve Brier while selecting the same action
+    # and delivering exactly zero policy benefit after its forecast fee.
+    from vao.decisions.context_value import parse_forecast
+    from vao.decisions.transfer_forecast import messages
+    forecasts=tmp_path/"forecasts";forecasts.mkdir()
+    frozen_path=tmp_path/"semantic-freeze.json"
+    source_hash=file_hash(Path("src/vao/decisions/transfer_forecast.py"))
+    frozen_path.write_text(json.dumps({"target_responses_at_freeze_check":0,"source_primary_manifest_sha256":file_hash(final/"manifest.json"),"source_file_sha256":source_hash}))
+    forecast_manifest={"config":cfg,"source_manifest_sha256":file_hash(final/"manifest.json"),"semantic_freeze_sha256":file_hash(frozen_path),
+        "source_file_sha256":source_hash,"source_policy_sha256":digest(policy),"prior_upper_usd":data["collection"]["campaign_upper_usd"],"maximum_new_budget_usd":.08}
+    (forecasts/"manifest.json").write_text(json.dumps(forecast_manifest))
+    forecaster=OpenRouterClient("dummy",cfg,forecasts,BudgetLedger(forecasts/"budget.jsonl",.08))
+    def forecast_request(endpoint,body):
+        payload=json.loads(body["messages"][1]["content"])
+        state="previous_solution" in payload
+        probabilities={k:(.1 if k in {"small.artifact","small.artifact_feedback"} else .9) if state else .5 for k in policy["priors"]}
+        return {"id":"forecast-"+str(next(counter)),"model":body["model"],"provider":"SiliconFlow", "usage":{"cost":.000001,"prompt_tokens":10,"completion_tokens":10},
+            "choices":[{"finish_reason":"stop","message":{"content":json.dumps({"probabilities":probabilities})}}]}
+    forecaster.request=forecast_request
+    from vao.decisions.openrouter import append_json
+    for id_ in data["complete"]:
+        cp=data["checkpoints"][id_]
+        for view in ("task_only","feedback_only","state"):
+            call=forecaster.complete("small",messages(data["prompts"][cp["task_id"]],cp,policy,cfg,view),1,
+                {"action":"forecast","model_name":"small","task_id":cp["task_id"],"checkpoint_id":id_,"view":view})
+            p,valid=parse_forecast(call,cfg)
+            append_json(forecasts/"predictions.jsonl",{"call":call["call"],"task_id":cp["task_id"],"checkpoint_id":id_,"view":view,"probabilities":p,"valid":valid,"cost_usd":call["cost_usd"]})
+    semantic,_=a.analyze_semantic(data,forecasts,freeze_path=frozen_path)
+    assert semantic["complete_states"]==2
+    assert semantic["prediction_metrics"]["state"]["brier"]<semantic["prediction_metrics"]["feedback_only"]["brier"]
+    assert semantic["state_feedback_utility"]["estimate"]==pytest.approx(0)
+    assert semantic["collection"]["known_cost_usd"]==pytest.approx(.000006)
     rows=[json.loads(s) for s in (final/"calls.jsonl").read_text().splitlines()]
     rows[0]["returned_model"]="unplanned/model"
     (final/"calls.jsonl").write_text("".join(json.dumps(r)+"\n" for r in rows))

@@ -15,7 +15,7 @@ from vao.decisions.context_value import ARMS
 from vao.decisions.pilot import SYSTEM, digest
 from vao.decisions.recovery import CONDITIONS, producer_messages, recovery_messages
 from vao.decisions.recovery_policy import features, predict
-from vao.decisions.transfer import VIEWS, choose, file_hash, freeze, records, replay, reservation
+from vao.decisions.transfer import VIEWS, choose, file_hash, freeze, records, replay, replay_escalation,reservation
 
 
 def require(condition, message):
@@ -193,7 +193,7 @@ def audit(root: Path) -> dict:
     held = sum(v for k,v in reserves.items() if k not in settlements)
     total = known + held + Decimal(str(cfg["prior_committed_usd"]))
     require(total <= Decimal(str(cfg["campaign_ceiling_usd"])), "Campaign ceiling exceeded")
-    return {"config": cfg, "manifest": manifest, "policy": saved, "source": source, "calls": call_by_id,
+    return {"config": cfg, "manifest": manifest,"manifest_sha256":file_hash(root/"manifest.json"), "policy": saved, "source": source, "calls": call_by_id,
         "initial": initial, "checkpoints": cps, "predictions": pred, "prompts": prompts,
         "branches": branches, "selected": selected, "complete": complete, "evaluations": evals,
         "collection": {"admissions": len(reserves), "responses": len(calls), "known_cost_usd": float(known),
@@ -231,7 +231,9 @@ def analyze(data):
             outtokens = [c["usage"]["completion_tokens"] for c in calls if c["usage"].get("completion_tokens") is not None]
             rates[model][arm] = {"success": interval(values), "draws": len(rows), "cost_usd": float(np.mean([r["incremental_cost_usd"] for r in rows])),
                 "mean_input_tokens": float(np.mean(tokens)) if tokens else None, "mean_output_tokens": float(np.mean(outtokens)) if outtokens else None,
-                "token_receipts": len(tokens)}
+                "token_receipts": len(tokens),"finish_reasons":dict(Counter(c["finish_reason"] or "missing" for c in calls)),
+                "format_failures":sum(data["evaluations"][c["call"]]["visible"]["status"]=="format_error" for c in calls),
+                "public_false_positives":sum(r["visible_passed"] and not r["passed"] for r in rows)}
         effects[model] = {}
         model_deltas[model] = {}
         for a,b in (("artifact","fresh"),("artifact_feedback","fresh"),("artifact_feedback","feedback"),("artifact_feedback","distractor")):
@@ -251,7 +253,7 @@ def analyze(data):
                     observed = np.mean([r["passed"] for r in rows if r["model_name"] == m and r["arm"] == "artifact_feedback"]) - np.mean([r["passed"] for r in rows if r["model_name"] == m and r["arm"] == b])
                     errors.append((p[m+".artifact_feedback"] - p[m+"."+b] - observed)**2)
             benefit_loss[view].append(np.mean(errors))
-    policies = ["global", "task", "feedback", "state", "state_model_only", "best_static", "direct_small", "direct_large"] + ["fixed:"+k for k in policy["priors"]]
+    policies = ["global", "task", "feedback", "state", "state_model_only", "best_static", "direct_small", "direct_large","escalation_diagnostic"] + ["fixed:"+k for k in policy["priors"]]
     rollouts = []
     for budget in cfg["task_budgets_usd"]:
         for rotation in range(cfg["branch_repeats"]):
@@ -260,7 +262,9 @@ def analyze(data):
                     cp = data["checkpoints"][id_]
                     p = data["predictions"][id_]["probabilities"]
                     include_prefix = not name.startswith("direct_")
-                    if name.startswith("fixed:"):
+                    if name=="escalation_diagnostic":
+                        action="small.fresh->large.fresh"
+                    elif name.startswith("fixed:"):
                         action = name.split(":",1)[1]
                     elif name == "best_static":
                         action = policy["development_replay_fixed"][str(budget)]
@@ -271,7 +275,8 @@ def analyze(data):
                                         cp["prefix_cost_usd"], "model_only" if name == "state_model_only" else None)
                     # Primary rotation 0 uses draws (0,1); others are prespecified sensitivity checks.
                     rows = [dict(r, draw=(r["draw"]-rotation) % cfg["branch_repeats"]) for r in grouped[id_]]
-                    out = replay(rows, action, cp["prefix_cost_usd"], cfg, budget, include_prefix=include_prefix)
+                    out = (replay_escalation(rows,cp["prefix_cost_usd"],cfg,budget) if name=="escalation_diagnostic"
+                           else replay(rows, action, cp["prefix_cost_usd"], cfg, budget, include_prefix=include_prefix))
                     rollouts.append({"checkpoint_id": id_, "task_id": cp["task_id"], "policy": name, "budget_usd": budget,
                         "rotation": rotation, "selected_action": action, **out, "net_utility_usd": .01*out["passed"] - out["cost_usd"]})
     summaries = {}
@@ -285,7 +290,7 @@ def analyze(data):
     comparisons = {}
     for rotation in range(cfg["branch_repeats"]):
         comparisons[str(rotation)] = {}
-        for control in ("feedback", "best_static", "state_model_only", "task", "global"):
+        for control in ("feedback", "best_static", "state_model_only", "task", "global","escalation_diagnostic"):
             a = [r for r in rollouts if r["policy"] == "state" and r["budget_usd"] == .01 and r["rotation"] == rotation]
             b = [r for r in rollouts if r["policy"] == control and r["budget_usd"] == .01 and r["rotation"] == rotation]
             comparisons[str(rotation)][control] = {k: interval([float(x[k])-float(y[k]) for x,y in zip(a,b)])
@@ -318,6 +323,7 @@ def analyze(data):
         "initial_full_successes": sum(r["passed"] for r in data["initial"]),
         "initial_public_false_positives": sum(r["visible_passed"] and not r["passed"] for r in data["initial"]),
         "collection": data["collection"], "rates": rates, "effects": effects, "model_context_interactions":interactions,"policy_summary": summaries,
+        "escalation_note":"Fixed 9B-fresh then 27B-fresh, added after recovery collection began. Diagnostic only, no target-outcome fitting or change to primary. Both requests use original checkpoint, no new child handoff.",
         "policy_comparisons": comparisons, "brier": {v:float(np.mean(x)) for v,x in loss.items()},
         "benefit_mse": {v:float(np.mean(x)) for v,x in benefit_loss.items()},
         "state_feedback_brier_difference": interval(np.array(loss["state"])-loss["feedback"]),
@@ -339,6 +345,7 @@ def markdown(r):
     p = r["primary"]
     lines = ["# MBPP+ recovery replication", "", f"Status: **{r['status']}**. {r['initial_tasks']} initial tasks; "
         f"{r['initial_public_failures']} public failures; {r['complete_states']}/{r['selected_states']} selected states complete.", "",
+        f"Initial census: {r['initial_tasks']} observed responses and {r['initial_censored_tasks']} censored admission among {r['initial_eligible_tasks']} eligible tasks. The late censored prefix cannot change the already-observed selected cohort.","",
         "The primary is state minus feedback-only policy net utility at the $0.01 task ceiling, original draws 0 and 1.", "",
         f"Estimate **${p['estimate']:+.8f}/failure**, task-bootstrap 95% interval **[${p['low']:+.8f}, ${p['high']:+.8f}]**.", "",
         "An interval spanning zero does not establish equivalence or an improvement. Complete-case intervals are descriptive if the bank is incomplete.", "",
@@ -358,7 +365,8 @@ def markdown(r):
               "| Policy | Success | Mean API dollars | Net utility |", "|---|---:|---:|---:|"]
     for name, row in r["policy_summary"]["0.01"].items():
         lines.append(f"| {name} | {100*row['success']:.1f}% | ${row['cost_usd']:.8f} | ${row['net_utility_usd']:.8f} |")
-    lines += ["", "## Prediction and limitations", "", "| View | Brier | Observed benefit MSE |", "|---|---:|---:|"]
+    lines += ["", "The escalation_diagnostic is an additional fixed 9B-fresh then 27B-fresh replay, added after recovery collection began. It does not replace the frozen primary or transfer a newly generated child's code.",
+        "", "## Prediction and limitations", "", "| View | Brier | Observed benefit MSE |", "|---|---:|---:|"]
     for v in r["brier"]:
         lines.append(f"| {v} | {r['brier'][v]:.6f} | {r['benefit_mse'][v]:.6f} |")
     lines += ["", f"State-feedback benefit-MSE difference: `{r['state_feedback_benefit_mse_difference']}`.", "",
@@ -384,7 +392,7 @@ def markdown(r):
     return "\n".join(lines)
 
 
-def analyze_semantic(data,root):
+def analyze_semantic(data,root,*,freeze_path=Path("experiments/mbpp-plus/context-value-transfer/configs/semantic-control-freeze.json")):
     """Secondary forecast audit; the original primary statistic is unchanged."""
     from vao.decisions.context_value import parse_forecast
     from vao.decisions.transfer_forecast import VIEWS as API_VIEWS, messages
@@ -393,10 +401,11 @@ def analyze_semantic(data,root):
     if (root/"checksums.json").exists():
         for name,expected in json.loads((root/"checksums.json").read_text()).items():
             require(file_hash(root/name)==expected,"Semantic curated checksum: "+name)
-    frozen_path=Path("experiments/mbpp-plus/context-value-transfer/configs/semantic-control-freeze.json")
+    frozen_path=freeze_path
     frozen=json.loads(frozen_path.read_text())
     require(frozen["target_responses_at_freeze_check"]==0,"Control not fixed before recovery")
     require(manifest["source_manifest_sha256"]==frozen["source_primary_manifest_sha256"],"Primary source changed")
+    require(manifest["source_manifest_sha256"]==data["manifest_sha256"],"Forecasts belong to a different primary bank")
     require(manifest["semantic_freeze_sha256"]==file_hash(frozen_path),"Semantic freeze changed")
     require(manifest["source_file_sha256"]==frozen["source_file_sha256"],"Semantic prompt/source changed")
     require(manifest["config"]==cfg and manifest["source_policy_sha256"]==digest(policy),"Semantic prior/config changed")
@@ -431,6 +440,7 @@ def analyze_semantic(data,root):
         require(Decimal(str(r["usage"]["cost"]))==settled[c],"Semantic receipt mismatch")
         p,valid=parse_forecast(r,cfg)
         saved=by_call[c]
+        require(all(saved[k]==r[k] for k in ("task_id","checkpoint_id","view")),"Semantic prediction identity changed")
         require(saved["probabilities"]==p and saved["valid"]==valid and Decimal(str(saved["cost_usd"]))==settled[c],"Semantic parse/cost mismatch")
         key=(r["checkpoint_id"],r["view"])
         require(key not in predictions,"Duplicate semantic state/view")

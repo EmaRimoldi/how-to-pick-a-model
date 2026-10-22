@@ -42,3 +42,15 @@ python experiments/mbpp-plus/context-value-transfer/source/audit_public_spec.py 
 ```
 
 This runs trusted benchmark references in the OS sandbox, with no model calls.
+
+## Data attribution
+
+MBPP originates from Google Research and Austin et al.,
+[Program Synthesis with Large Language Models](https://arxiv.org/abs/2108.07732).
+Its [dataset card](https://huggingface.co/datasets/google-research-datasets/mbpp)
+identifies [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+This study uses EvalPlus's reformatted MBPP+ prompts and adds sampled model
+outputs, public-verifier feedback and cost/outcome annotations. Original benchmark
+material retains its upstream attribution and licensing.
+The [EvalPlus implementation](https://github.com/evalplus/evalplus/tree/v0.3.1)
+uses Apache 2.0, with an additional HumanEval MIT notice for its checker files.

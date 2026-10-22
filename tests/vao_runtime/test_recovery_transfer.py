@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 from vao.decisions.recovery_policy import features, predict
-from vao.decisions.transfer import FEEDBACK_FEATURES, choose, collect, freeze, replay
+from vao.decisions.transfer import FEEDBACK_FEATURES, choose, collect, committed_policy, freeze, replay,replay_escalation
 from vao.decisions.openrouter import BudgetLedger
 
 
@@ -53,6 +53,18 @@ def test_admission_uses_reservation_and_public_success_not_future_bill_or_hidden
     assert outcome["cost_usd"] == pytest.approx(.0002)
 
 
+def test_fixed_escalation_preserves_budget_and_stops_on_visible_false_positive():
+    cfg=config()
+    rows=[{"model_name":m,"arm":"fresh","draw":0,"passed":m=="large","visible_passed":m=="large","incremental_cost_usd":.0001} for m in ("small","large")]
+    out=replay_escalation(rows,.0001,cfg,.01)
+    assert out["passed"] and out["attempts"]==2 and out["cost_usd"]==pytest.approx(.0003)
+    rows[0]["visible_passed"]=True
+    out=replay_escalation(rows,.0001,cfg,.01)
+    assert not out["passed"] and out["attempts"]==1
+    rows[0]["visible_passed"]=False
+    assert replay_escalation(rows,.0001,cfg,.003)["attempts"]==1
+
+
 def test_model_only_cannot_select_a_different_context():
     cfg = config()
     p = {m + "." + a: .9 if a == "fresh" else .5 for m in cfg["target_models"]
@@ -60,6 +72,18 @@ def test_model_only_cannot_select_a_different_context():
     policy = {"mean_action_cost_usd": {k: .0001 for k in p}}
     assert choose(policy, p, cfg, .02, .0001).endswith(".fresh")
     assert choose(policy, p, cfg, .02, .0001, "model_only").endswith(".artifact_feedback")
+
+
+def test_plan_uses_committed_weights_after_roundoff_only_refit(tmp_path,monkeypatch):
+    from vao.decisions.pilot import digest
+    saved={"coefficient":[.1],"source":"fixed"}
+    path=tmp_path/"frozen.json";path.write_text(json.dumps(saved))
+    cfg={"source_policy_digest":digest(saved)}
+    monkeypatch.setattr("vao.decisions.transfer.freeze",lambda _:({"coefficient":[.1+1e-14],"source":"fixed"},{"source":"data"}))
+    actual,_=committed_policy(cfg,path)
+    assert actual==saved  # Never replay the slightly changed refit.
+    monkeypatch.setattr("vao.decisions.transfer.freeze",lambda _:({"coefficient":[.11],"source":"fixed"},{}))
+    with pytest.raises(ValueError,match="cannot be reproduced"):committed_policy(cfg,path)
 
 
 @pytest.mark.parametrize("budget", [.1, 1.0])
