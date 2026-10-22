@@ -9,7 +9,9 @@ attempt, and can this benefit be forecast before paying for that attempt?
 
 - HumanEval+ v0.1.10 / EvalPlus 0.3.1; same dataset hash as the first pilot.
 - Shuffle all 74 tasks with executable public doctests with seed 20261023,
-  exclude the first pilot's 24 tasks, take 30, and reserve the remaining 20.
+  exclude the first pilot's 24 tasks and `HumanEval/47`, take 30, and reserve
+  the remaining 19. The reference preflight found an inconsistent public median
+  example in task 47 (expected 15.0 instead of 8.0) before any model call.
   This is a selected public-doctest subset, not the complete benchmark.
 - Two fresh Qwen3.5-9B prefixes per task. Keep every initial outcome. Only
   visible failure triggers branches; broader-suite results never enter a prompt,
@@ -53,7 +55,7 @@ it does not isolate semantic information from input length/framing. Public
 feedback can quote code snippets, so the feedback condition is not guaranteed
 to contain zero artifact information. A broader prior-art review and stronger,
 untouched evaluation would still be needed for a novelty or general-gain claim.
-The 20 reserve tasks remain untouched for a later frozen policy evaluation.
+The 19 reserve tasks remain untouched for a later frozen policy evaluation.
 
 ## Reproduction
 

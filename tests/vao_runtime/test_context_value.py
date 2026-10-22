@@ -97,7 +97,8 @@ def test_frozen_task_pool_disjoint_from_prior_and_reserve(study_config):
     pytest.importorskip("evalplus")
     problems, reserved, _ = select_tasks(study_config)
     ids = {p["task_id"] for p in problems}
-    assert len(ids) == 30 and len(reserved) == 20
+    assert len(ids) == 30 and len(reserved) == 19
     assert not ids & set(reserved)
     assert not (ids | set(reserved)) & set(study_config["excluded_task_ids"])
+    assert not (ids | set(reserved)) & set(study_config["quality_exclusions"])
     assert observable_features("def f(:", {"status": "error", "feedback": "SyntaxError"})["syntax_error"]

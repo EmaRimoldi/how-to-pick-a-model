@@ -25,7 +25,7 @@ VIEWS = ("task_only", "state")
 def select_tasks(config: dict) -> tuple[list[dict], list[str], str]:
     """Freeze a new public-prompt task pool, leaving an untouched reserve."""
     all_tasks, dataset_hash = load_tasks({**config, "task_count": config["eligible_task_count"]})
-    excluded = set(config["excluded_task_ids"])
+    excluded = set(config["excluded_task_ids"]) | set(config["quality_exclusions"])
     eligible = [p for p in all_tasks if p["task_id"] not in excluded]
     if not 1 <= config["task_count"] < len(eligible):
         raise ValueError("Keep at least one task untouched for subsequent validation")

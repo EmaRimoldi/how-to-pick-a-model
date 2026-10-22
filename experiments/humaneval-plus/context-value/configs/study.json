@@ -45,6 +45,9 @@
   "prefix_repeats": 2,
   "protocol_version": "artifact-feedback-factorial-v1",
   "provider": "siliconflow/fp8",
+  "quality_exclusions": {
+    "HumanEval/47": "Public median doctest expects 15.0 but the correct median and canonical reference return 8.0; discovered before any model call."
+  },
   "request_seed": false,
   "seed": 20261023,
   "stream": true,

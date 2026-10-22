@@ -128,7 +128,6 @@ MARKDOWN_LINK_DOCS = [
         "docs/demo.md",
             "docs/audits/experiment-manifest.md",
         "docs/audits/command-manifest.md",
-            "docs/specs/README.md",
         "paper/README.md",
         "paper/neurips-submission/README.md",
         "src/README.md",
