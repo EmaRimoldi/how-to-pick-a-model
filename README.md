@@ -1,127 +1,77 @@
 # How to Pick a Model
 
-Theory, executable benchmarks, and empirical evidence for deployment-aware
-model and agent selection.
+**Cost-aware decisions for verifiable agent tasks.**
 
-This repository unifies the former `theory-of-agents`, `agentops-lab-public`,
-and Overleaf manuscript histories. It keeps the paper, AutoResearch evidence,
-and the HumanEval+/MBPP+/BBH strategy-routing work in one place while preserving
-clear experimental boundaries.
+The research question is: given the work completed so far, when should an agent
+continue, restart, switch models, or stop spending compute?
 
-## Repository map
+This repository retains the AutoResearch/CIFAR-10 and HumanEval+ evidence needed
+to study that question: verified trajectories, retry-allocation baselines,
+context/routing experiments, cost accounting, and reproducible figures.
 
-- `AGENTS.md` and `docs/knowledge-map.md`: agent-facing entry points that
-  explain what is canonical, what is archive, and where evidence lives.
-- `paper/`: active LaTeX manuscripts, consolidated theory, references,
-  and paper figures.
-- `autoresearch/`: runnable CIFAR-10 edit--verify benchmark and analysis code.
-- `experiments/autoresearch-cifar10/`: AutoResearch-only experiments and evidence.
-- `experiments/humaneval-plus/`, `experiments/mbpp-plus/`, and
-  `experiments/bbh/`: worker-frontier and routing studies grouped by benchmark.
-- `experiments/swebench-verified/`: SWE-bench scaffolds, shared runtime, and the
-  dated open-source meta-loop evidence archive.
-- `artifacts/raw/`: Git LFS archives of raw AutoResearch campaigns retained
-  for reproducibility.
-- `src/agent_workflow/` and `src/vao/`: orchestration runtime imported from
-  `agentops-lab-public`.
-- `src/*.py`: shared HumanEval+, MBPP+, BBH, and retry-routing pipeline inherited
-  from `theory-of-agents`; experiment-specific configs and data are co-located
-  in their bundles.
-- `configs/`: orchestration and AutoResearch runtime configuration.
-- `tests/`: runtime and AutoResearch reproduction tests.
+**Current status:** the retained experiments measure model choice, retries, and
+information use. A state-conditioned continuation policy is the next experiment;
+it needs matched continuation runs and held-out evaluation. The existing traces
+are not evidence that an unobserved model handoff would have succeeded.
 
-The experiment index is in [`experiments/README.md`](experiments/README.md).
-The generated experiment asset manifest is in
-[`docs/audits/experiment-manifest.md`](docs/audits/experiment-manifest.md).
-The generated command safety manifest is in
-[`docs/audits/command-manifest.md`](docs/audits/command-manifest.md).
-The agent-facing knowledge map is in
-[`docs/knowledge-map.md`](docs/knowledge-map.md).
-The manuscript-editing workflow is in
-[`docs/paper-revision-playbook.md`](docs/paper-revision-playbook.md).
+Start with the [decision protocol](docs/decision-protocol.md), the
+[experiment index](experiments/README.md), and the
+[reproduction guide](docs/reproducibility.md).
 
-## Quick setup
+## What is retained
 
-The unified Python package is named `how-to-pick-a-model`. The historical
-`agent-workflow` CLI name remains available for compatibility.
+- **AutoResearch/CIFAR-10:** starting-model calibration, controlled evaluation,
+  shared-memory ablation, and three-worker routing/first-hit accounting.
+- **HumanEval+:** model-size frontier, retry allocation, strategy routing,
+  and held-out router-context search.
+- **Runtime:** existing edit/verify execution, session handling, snapshots,
+  token/cost records, and the historical `agent-workflow` baseline CLI.
+- **Manuscripts:** the two existing paper sources and consolidated theory,
+  with only their referenced figures vendored under `paper/`.
+
+## Quick start
 
 ```bash
 uv sync --dev --frozen
 make check
+uv run agent-workflow demo --experiment-id readme_demo
 ```
 
-`make check` expands to:
+The demo generates fixture reports locally. It uses no live models or GPUs and
+is not an empirical result. See [demo instructions](docs/demo.md).
+
+Regenerate three AutoResearch figures from tracked processed evidence:
 
 ```bash
-python scripts/build_repo_inventory.py --output docs/audits/repo-inventory.md
-python scripts/build_knowledge_index.py --output docs/audits/knowledge-index.md
-python scripts/build_paper_archive_manifest.py --output docs/audits/paper-archive-manifest.md
-python scripts/build_experiment_manifest.py --output docs/audits/experiment-manifest.md
-python scripts/build_command_manifest.py --output docs/audits/command-manifest.md
-python scripts/validate_agent_readiness.py
-python -m compileall -q scripts src autoresearch
-uv run pytest -q
+uv run python -m autoresearch.scripts.reproduce_main_figures_from_processed   --input experiments/autoresearch-cifar10/three-worker-model-routing/results/accounting/threeworker_final_analysis.json   --out-dir /tmp/how_to_pick_a_model_autoresearch
 ```
 
-The historical CLI remains available:
+Live runs require explicit model/compute setup. Optional environments and safe
+commands are documented in [reproducibility](docs/reproducibility.md).
 
-```bash
-uv run agent-workflow --help
-```
+## Repository map
 
-Install optional experiment dependencies only when needed:
+| Path | Role |
+| --- | --- |
+| `experiments/` | Eight retained evidence bundles across two benchmark families |
+| `autoresearch/` | CIFAR-10 benchmark, verification, accounting, and analysis |
+| `src/vao/` | Verified execution and model adapters |
+| `src/agent_workflow/` | Baseline CLI, instrumentation, and reporting |
+| `src/*.py` | HumanEval+ traces, retries, routing, and analyses |
+| `paper/` | Existing manuscripts, theory anchor, and referenced figures |
+| `artifacts/raw/` | Raw campaign archives in Git LFS |
+| `docs/` | Decision protocol, evidence boundaries, reproduction, and source maps |
 
-```bash
-uv sync --dev --extra autoresearch --frozen
-uv sync --dev --extra other-experiments --frozen
-uv sync --dev --extra all-experiments --frozen
-```
+## Evidence limits
 
-## Safe reproduction checks
+The three-worker AutoResearch panel has 270 processed trajectories and 180
+available balanced raw traces. HumanEval+ retains worker logs for 164 tasks per
+model. These results describe their recorded protocols; changing actions or
+passing context between models requires new measurements.
 
-Regenerate the reader-facing AutoResearch figures from processed evidence:
+The existing manuscripts are research background. Their four-term accounting
+is conditional on its stated assumptions. The historical submitted-PDF issues
+remain documented in the [reproducibility audit](docs/audits/manuscript-reproducibility.md).
 
-```bash
-uv run python -m autoresearch.scripts.reproduce_main_figures_from_processed \
-  --input experiments/autoresearch-cifar10/three-worker-model-routing/results/accounting/threeworker_final_analysis.json \
-  --out-dir /tmp/how_to_pick_a_model_autoresearch
-```
-
-Inspect the non-AutoResearch worker traces without live model calls:
-
-```bash
-uv run python -m src.load_traces --config experiments/humaneval-plus/retry-allocation-router/configs/router.yaml
-uv run python -m src.load_traces --config experiments/mbpp-plus/two-model-retry-router/configs/router.yaml
-uv run python -m src.load_traces --config experiments/bbh/family-and-subtask-router/configs/router_experiment_bbh.yaml
-```
-
-See [`docs/reproducibility.md`](docs/reproducibility.md) for the complete
-environment and evidence matrix.
-
-The original repository roots and path mapping are documented in
-[`docs/history-merge.md`](docs/history-merge.md).
-
-## Manuscript status
-
-The historical submitted manuscript is available in
-[Git history](https://github.com/EmaRimoldi/how-to-pick-a-model/blob/d98e3f2209c6e470885e748aafb0a41ea6395291/paper/neurips-submission/archive/submitted-manuscript.pdf).
-It was removed from the current tree after a text-layer anomaly was confirmed;
-build current PDFs from the active sources with `make paper-build`.
-The reproducibility audit also found that its promoted deployment-loss table used a
-legacy full-horizon composite loss rather than the first-passage loss stated in
-the text. The corrected accounting and later three-worker analysis are the
-canonical computational results in this repository. Details are recorded in
-[`docs/audits/manuscript-reproducibility.md`](docs/audits/manuscript-reproducibility.md).
-The theorem-level consolidation of the manuscript family is documented in
-[`docs/audits/theory-consolidation.md`](docs/audits/theory-consolidation.md).
-The retained paper archive is classified in
-[`docs/audits/paper-archive-manifest.md`](docs/audits/paper-archive-manifest.md).
-Removed backups, local snapshots, launch material, and retired benchmark code
-remain recoverable through Git history; see the
-[cleanup record](docs/history-merge.md#working-tree-cleanup).
-
-## Historical names
-
-The package/CLI compatibility surface still uses `agent_workflow` and
-`agent-workflow`; experiment paths and documentation use the unified
-`how-to-pick-a-model` project name.
+The scope reduction and recoverable Git snapshots are recorded in
+[repository history](docs/history-merge.md). `AGENTS.md` describes safe development.

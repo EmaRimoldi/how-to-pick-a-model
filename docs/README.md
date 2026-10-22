@@ -1,23 +1,22 @@
-# How to Pick a Model Docs
+# Documentation
 
-The documentation is organized by the questions a technical reviewer will ask.
+| Guide | Purpose |
+| --- | --- |
+| [Decision protocol](decision-protocol.md) | Research question, actions, costs, first experiment, and implementation limits |
+| [Knowledge map](knowledge-map.md) | Retained evidence and code surfaces |
+| [Reproducibility](reproducibility.md) | Safe setup, reproduction, and live-run requirements |
+| [Demo](demo.md) | Offline report fixture |
+| [Review checklist](reviewer_checklist.md) | Evidence and evaluation checks |
+| [Paper evidence](paper-evidence-map.md) | Existing claims and retained baseline evidence |
+| [Paper revision](paper-revision-playbook.md) | Source selection and claim discipline |
+| [Theory audit](audits/theory-consolidation.md) | Historical theory consolidation and caveats |
+| [Manuscript audit](audits/manuscript-reproducibility.md) | Historical accounting and PDF issues |
+| [Engineering](engineering/README.md) | Existing baseline runner architecture |
+| [Evaluations](evals/README.md) | Evaluator calibration and controls |
+| [Research](research/README.md) | Existing baseline run and merge protocols |
+| [Specs](specs/README.md) | Retained HumanEval+ implementation contracts |
+| [History](history-merge.md) | Source provenance and recoverable cleanup snapshots |
 
-| Section | Purpose |
-|---|---|
-| [`knowledge-map.md`](knowledge-map.md) | Agent-facing semantic map of paper sources, evidence, code surfaces, and archive policy |
-| [`paper-evidence-map.md`](paper-evidence-map.md) | Claim-to-theory-to-experiment map for the next paper revision |
-| [`paper-revision-playbook.md`](paper-revision-playbook.md) | Operational workflow for turning theory and evidence maps into manuscript edits |
-| [`demo.md`](demo.md) | Offline demo command, 60-second script, and fast evidence walkthrough |
-| [`reviewer_checklist.md`](reviewer_checklist.md) | Quick verification checklist for what is built, evidenced, and still open |
-| [`reproducibility.md`](reproducibility.md) | Local setup, safe checks, live-run requirements, and evidence matrix |
-| [`audits/knowledge-index.md`](audits/knowledge-index.md) | Generated retrieval index for paper sources, formal objects, experiments, and scripts |
-| [`audits/repo-inventory.md`](audits/repo-inventory.md) | Generated deterministic repository inventory |
-| [`audits/paper-archive-manifest.md`](audits/paper-archive-manifest.md) | Generated manifest classifying archived paper drafts, snapshots, PDFs, and deletion-review candidates |
-| [`audits/experiment-manifest.md`](audits/experiment-manifest.md) | Generated manifest of experiment bundles, reproducibility classes, asset counts, and key files |
-| [`audits/command-manifest.md`](audits/command-manifest.md) | Generated safety-classified command map for Makefile targets, CLI entrypoints, and scripts |
-| [`audits/agent-readiness-completion-audit.md`](audits/agent-readiness-completion-audit.md) | Requirement-to-evidence handoff audit for the current agent-friendly structure |
-| [`product/claude_code_orchestration.md`](product/claude_code_orchestration.md) | Product wedge, Claude Code sub-agent setup, and competitive landscape |
-| [`research/`](research/) | Theory, decomposition, and experiment protocol |
-| [`engineering/`](engineering/) | Runtime architecture and operational design |
-| [`evals/`](evals/) | Reviewer-grade evaluation, calibration, and capacity analysis |
-| [`specs/`](specs/) | Historical implementation specs and experiment contracts |
+Generated navigation maps: [inventory](audits/repo-inventory.md),
+[knowledge](audits/knowledge-index.md), [experiments](audits/experiment-manifest.md),
+and [command safety](audits/command-manifest.md). Regenerate with `make indexes`.

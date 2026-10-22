@@ -31,7 +31,7 @@ computed directly from the numbers, no LLM).
 ## 1. Hard requirements and conventions
 
 - **Python env:** use the existing `.venv` (uv). Never the base Python. Add any
-  new deps to `requirements.txt`.
+  new deps to `pyproject.toml` and `uv.lock`.
 - **Separate data generation from analysis from plotting.** Running the router
   and simulating allocations **writes results to disk**; plotting reads from disk
   only. No script both calls the router and draws a figure.

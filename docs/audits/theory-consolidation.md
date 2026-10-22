@@ -5,8 +5,9 @@ manuscript snapshots described below were removed from the working tree in
 October 2026 and remain recoverable in the
 [pre-cleanup Git tree](https://github.com/EmaRimoldi/how-to-pick-a-model/tree/d98e3f2209c6e470885e748aafb0a41ea6395291/paper/neurips-submission).
 The current anchors are `main.tex`, `arxiv.tex`, and
-`archive/theory_anchor.tex`; the generated paper archive manifest lists retained
-references and planning material.
+`archive/theory_anchor.tex`. The focused tree retains only that consolidated
+archive anchor; reference/extracted PDFs and planning notes are in Git history.
+The source-disposition and PDF sections below record the earlier audit state.
 
 ## Scope
 

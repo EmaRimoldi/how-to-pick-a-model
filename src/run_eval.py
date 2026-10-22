@@ -121,7 +121,6 @@ def run_model(
         task_ids = select_task_ids(
             sorted(bundle.problems),
             limit_problems,
-            modes=(bundle.modes if bundle.dataset_name == "bbh" else None),
         )
     task_ids = [task_id for task_id in task_ids if task_id not in existing_tasks]
 
@@ -143,8 +142,6 @@ def run_model(
         attempt_token_counts: list[int] = []
         attempt_seconds: list[float] = []
         attempt_statuses: list[str] = []
-        attempt_extracted_answers: list[str] = []
-        attempt_normalized_answers: list[str] = []
 
         for attempt_idx in range(max_attempts):
             attempt_seed = seed + attempt_idx
@@ -162,25 +159,14 @@ def run_model(
             attempt_token_counts.append(generation.tokens_generated)
             attempt_seconds.append(generation.wall_seconds)
 
-            if bundle.checker_dataset == "bbh":
-                from src.bbh_data import BBH_EXTRACTION_RULE, evaluate_bbh_completion
-
-                bbh_result = evaluate_bbh_completion(
-                    generation.text,
-                    str(bundle.expected_outputs[task_id]),
-                )
-                result = bbh_result.execution
-                attempt_extracted_answers.append(bbh_result.extracted_answer)
-                attempt_normalized_answers.append(bbh_result.normalized_prediction)
-            else:
-                solution = build_solution(problem, generation.text)
-                result = execute_candidate(
-                    solution=solution,
-                    problem=problem,
-                    expected_output=bundle.expected_outputs[task_id],
-                    timeout_seconds=timeout_seconds,
-                    checker_dataset=bundle.checker_dataset,
-                )
+            solution = build_solution(problem, generation.text)
+            result = execute_candidate(
+                solution=solution,
+                problem=problem,
+                expected_output=bundle.expected_outputs[task_id],
+                timeout_seconds=timeout_seconds,
+                checker_dataset=bundle.checker_dataset,
+            )
             status = "pass" if result.passed else f"{result.base_status}/{result.plus_status}"
             attempt_statuses.append(status)
             if result.passed:
@@ -222,22 +208,6 @@ def run_model(
             "attempt_seconds": attempt_seconds,
             "attempt_statuses": attempt_statuses,
         }
-        if bundle.checker_dataset == "bbh":
-            from src.bbh_data import BBH_EXTRACTION_RULE, normalize_bbh_answer
-
-            row.update(
-                {
-                    "answer_extraction_rule": BBH_EXTRACTION_RULE,
-                    "target_answer": str(bundle.expected_outputs[task_id]),
-                    "normalized_target_answer": normalize_bbh_answer(
-                        str(bundle.expected_outputs[task_id]),
-                        target=str(bundle.expected_outputs[task_id]),
-                    ),
-                    "subtask": problem["subtask"],
-                    "attempt_extracted_answers": attempt_extracted_answers,
-                    "attempt_normalized_answers": attempt_normalized_answers,
-                }
-            )
         write_jsonl(out_path, row)
 
         if completed_count % 5 == 0 or completed_count == len(task_ids):

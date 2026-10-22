@@ -118,23 +118,12 @@ def generate_ollama(
 
 
 def make_completion_prompt(problem: dict[str, Any], dataset_name: str = "humanevalplus") -> str:
-    if dataset_name == "mbppplus":
-        instruction = (
-            "Write Python code that solves the following MBPP+ task. "
-            "Return only Python code, with no Markdown fences or explanation."
-        )
-    elif dataset_name == "bbh":
-        return (
-            "Solve the following BIG-Bench Hard problem. Reason step by step, "
-            "then end with exactly one final line in this format:\n"
-            "Answer: <final answer>\n\n"
-            f"{problem['prompt']}"
-        )
-    else:
-        instruction = (
-            "Complete the following Python function for HumanEval. "
-            "Return only Python code, with no Markdown fences or explanation."
-        )
+    if dataset_name != "humanevalplus":
+        raise ValueError(f"Unsupported dataset {dataset_name!r}; expected 'humanevalplus'")
+    instruction = (
+        "Complete the following Python function for HumanEval. "
+        "Return only Python code, with no Markdown fences or explanation."
+    )
     return f"{instruction}\n\n{problem['prompt']}"
 
 

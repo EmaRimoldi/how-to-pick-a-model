@@ -129,7 +129,6 @@ CODE_MODULE_EXCLUDED_PARTS = {
 PAPER_FIGURE_ROOT = Path("paper/neurips-submission/figures")
 PAPER_FIGURE_SUFFIXES = {".pdf", ".png"}
 FIGURE_GENERATOR_HINTS = {
-    "humaneval": "src/plot_humaneval_paper.py",
     "strategy_routing": "src/plot_strategy_results.py",
     "autoresearch": "autoresearch/scripts",
     "autoresearch_n20_confirmation": "autoresearch/scripts/reproduce_appendix_figures_n20_confirmation.py",
@@ -177,10 +176,6 @@ def tex_role(path: Path) -> str:
         return "long AutoResearch manuscript anchor"
     if rel.endswith("theory_anchor.tex"):
         return "maximal validated theory anchor"
-    if rel.endswith("Beneventano_Poggio.tex"):
-        return "mechanical historical theory extraction"
-    if rel.endswith("next_steps.tex"):
-        return "independent planning document"
     if "/archive/" in rel:
         return "archived draft or provenance source"
     if rel.endswith("piers_macro.tex"):

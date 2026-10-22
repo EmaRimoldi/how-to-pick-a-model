@@ -1,7 +1,7 @@
 # Research
 
-This section captures the research frame behind AutoResearch Orchestration: how to compare
-agentic execution modes under quality, cost, and wall-clock constraints.
+These are existing baseline runner protocols. The current research direction
+and next experiment are specified in [decision protocol](../decision-protocol.md).
 
 | File | Role |
 |---|---|

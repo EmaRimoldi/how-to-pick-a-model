@@ -1,17 +1,14 @@
 # AutoResearch / CIFAR-10
 
-These bundles contain only AutoResearch CIFAR-10 edit--verify evidence:
+Retained baseline evidence for verifiable edit/verify decisions:
 
-- [`starting-model-calibration/`](starting-model-calibration/): selects the
-  starting `train.py` and measures available headroom.
-- [`evaluation-protocol-and-compute-calibration/`](evaluation-protocol-and-compute-calibration/):
-  separates evaluator determinism, fixed-step comparisons, and compute contention.
-- [`shared-memory-ablation/`](shared-memory-ablation/): compares independent
-  exploration with a shared-memory workflow.
-- [`swarm-vs-independent-agents/`](swarm-vs-independent-agents/): preserves
-  historical swarm and parallel-agent baselines.
-- [`three-worker-model-routing/`](three-worker-model-routing/): contains the
-  worker frontier, routing/accounting results, raw traces, and paper figures.
+- [Starting-model calibration](starting-model-calibration/): initial state and headroom.
+- [Evaluation controls](evaluation-protocol-and-compute-calibration/): determinism, fixed steps, and contention.
+- [Shared memory](shared-memory-ablation/): a substrate-specific context/memory baseline.
+- [Three-worker routing](three-worker-model-routing/): model frontier, first-hit accounting, and available raw traces.
 
-Use [`reproducibility.md`](reproducibility.md) for commands and
-[`catalog.md`](catalog.md) for evidence status.
+These studies motivate the next checkpoint-continuation experiment in
+[decision protocol](../../docs/decision-protocol.md). Existing runs do not
+establish outcomes for unobserved restarts or model handoffs.
+
+See [reproducibility](../../docs/reproducibility.md) for safe commands.
