@@ -37,15 +37,14 @@ def continue_frozen_development(source: Path, output: Path, ledger, config: dict
     policy = json.loads((source / "frozen-policy.json").read_text())
     policy["priors"] = {m + "." + a: policy["priors"][m + "." + a]
                         for m in config["target_models"] for a in ARMS}
-    frozen_config = json.loads(json.dumps(config))
-    if "evaluation_producer" in frozen_config:
-        alias = frozen_config.pop("evaluation_producer")
-        endpoint = frozen_config["models"].pop(alias)
-        original = frozen_config["models"][frozen_config["producer"]]
-        if {k: v for k, v in endpoint.items() if k not in {"provider", "provider_name"}} != {
-                k: v for k, v in original.items() if k not in {"provider", "provider_name"}}:
-            raise ValueError("Provider transfer must keep model, precision and all price ceilings identical")
-    if manifest["config_sha256"] != digest(frozen_config) or not summary["status"].startswith("BackendStopped: OpenRouter HTTP 429"):
+    def training_config(value):
+        value = json.loads(json.dumps(value))
+        if "evaluation_producer" in value:
+            value["models"].pop(value.pop("evaluation_producer"))
+        return value
+    if (manifest["config_sha256"] != digest(manifest["config"])
+            or training_config(config) != training_config(manifest["config"])
+            or not summary["status"].startswith("BackendStopped: OpenRouter HTTP 429")):
         raise ValueError("Only the explicit pre-evaluation rate-limit stop may continue here")
     for name in ("verification.py", "verifier_worker.py", "recovery_policy.py"):
         relative = "src/vao/decisions/" + name
@@ -68,7 +67,7 @@ def continue_frozen_development(source: Path, output: Path, ledger, config: dict
     if any(Decimal(str(c["usage"]["cost"])) != settled[c["call"]] for c in calls):
         raise ValueError("Development receipts changed")
     pending = {i: reserve[i] for i in missing}
-    if len(missing) > config["workers"] + 1 or any(e["model"] != config["models"][config["producer"]]["id"]
+    if len(missing) > config["workers"] + 2 or any(e["model"] != config["models"][config["producer"]]["id"]
             for e in events if e["event"] == "reserve" and e["call"] in missing):
         raise ValueError("Censored requests are not the bounded producer phase")
     if sum(settled.values()) + sum(pending.values()) > ledger.limit:

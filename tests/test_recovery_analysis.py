@@ -120,7 +120,8 @@ def test_end_to_end_audit_refits_frozen_policy_and_reproduces_forecast_prompts(t
         audit(tmp_path)
 
 
-def test_explicit_phase_continuation_keeps_unknown_reserves_and_exact_frozen_weights(tmp_path, monkeypatch):
+@pytest.mark.parametrize("producer_transfer", [False, True])
+def test_explicit_phase_continuation_keeps_unknown_reserves_and_exact_frozen_weights(tmp_path, monkeypatch, producer_transfer):
     config = json.loads(Path("experiments/humaneval-plus/context-value/configs/validation.json").read_text())
     config["minimum_development_failed_tasks"] = 2
     split = {"development_task_ids": ["HumanEval/0", "HumanEval/1"], "evaluation_task_ids": ["HumanEval/2"],
@@ -155,6 +156,8 @@ def test_explicit_phase_continuation_keeps_unknown_reserves_and_exact_frozen_wei
     original_policy = (source / "frozen-policy.json").read_bytes()
     config["evaluation_producer"] = "producer_evaluation"
     config["models"]["producer_evaluation"] = {**config["models"]["producer"], "provider": "parasail/bf16", "provider_name": "Parasail"}
+    if producer_transfer:
+        config["models"]["producer_evaluation"] = json.loads(Path("experiments/humaneval-plus/context-value/configs/validation-producer-transfer.json").read_text())["models"]["producer_evaluation"]
     manifest.update(config=config, config_sha256=digest(config))
     (destination / "manifest.json").write_text(json.dumps(manifest))
     ledger = BudgetLedger(destination / "budget.jsonl", 1.97)
@@ -166,6 +169,8 @@ def test_explicit_phase_continuation_keeps_unknown_reserves_and_exact_frozen_wei
         response = request(endpoint, body)
         if body["provider"]["only"] == ["parasail/bf16"]:
             response["provider"] = "Parasail"
+        elif body["provider"]["only"] == ["mistral"]:
+            response["provider"] = "Mistral"
         return response
     monkeypatch.setattr(continued, "request", transferred_request)
     result = run(config, problems, split, continued, Verifier(), destination, development)

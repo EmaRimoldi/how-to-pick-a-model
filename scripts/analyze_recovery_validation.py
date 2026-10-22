@@ -82,7 +82,7 @@ def audit(root: Path) -> dict:
     held = sum((reserves[i] for i in missing), Decimal(0))
     require(summary["requests"] == len(calls) + len(missing), "Request count changed")
     if censor:
-        require(held == Decimal(str(censor["censored_reserved_usd"])) and len(missing) <= config["workers"] + 1, "Censored reservation changed")
+        require(held == Decimal(str(censor["censored_reserved_usd"])) and len(missing) <= config["workers"] + 2, "Censored reservation changed")
         require(digest(calls[:censor["source_responses"]]) == censor["source_calls_sha256"]
                 and digest(ledger[:censor["source_budget_events"]]) == censor["source_budget_sha256"], "Stopped source journal changed")
         require(censor["frozen_policy_sha256"] == digest(policy), "Policy changed after transport stop")
@@ -217,7 +217,7 @@ def rollout(task: str, policy_name: str, budget: float, data: dict, partition: s
     if policy_name.startswith("direct_"):
         choice = policy_name.removeprefix("direct_") + ".fresh"
     else:
-        if reservation(cfg, cfg["producer"]) > ceiling:
+        if reservation(cfg, cfg.get("evaluation_producer", cfg["producer"])) > ceiling:
             return finish()
         spent += Decimal(str(initial["cost_usd"]))
         if initial["visible_passed"]:
@@ -352,6 +352,9 @@ def analyze(data: dict) -> tuple[dict, list[dict]]:
     report = {"audit_passed": True, "collector_git_sha": data["collector_git_sha"],
         "analysis_source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "collection": data["summary"], "development_tasks": len(data["split"]["development_task_ids"]),
+        "producer_provider_transfer": cfg.get("evaluation_producer") is not None,
+        "development_producer_endpoint": cfg["models"][cfg["producer"]].get("provider"),
+        "evaluation_producer_endpoint": cfg["models"][cfg.get("evaluation_producer", cfg["producer"])].get("provider"),
         "evaluation_tasks": len(ids), "development_failed_tasks": len(data["policy"]["training_task_ids"]),
         "evaluation_failed_tasks": len(states), "evaluation_initial_full_passes": sum(r["passed"] for r in initial_eval),
         "evaluation_initial_false_positives": sum(r["visible_passed"] and not r["passed"] for r in initial_eval),
@@ -399,12 +402,15 @@ def markdown(report: dict) -> str:
     for key, row in report["forecast_brier"].items():
         lines.append(f"| {key} | {row['mean']:.6f} | {report['observed_benefit_mse'][key]['mean']:.6f} |")
     total = report["collection"]["collection_cost_usd"]
+    held = report["collection"]["unresolved_reserved_usd"]
     lines += ["", f"Collection: {report['collection']['requests']} model requests, ${total:.8f}; "
               f"previous committed spend ${report['collection']['prior_committed_usd']:.8f}; "
-              f"combined ${total + report['collection']['prior_committed_usd']:.8f} within the $2 ceiling.", "",
+              f"known combined ${total + report['collection']['prior_committed_usd']:.8f}. "
+              f"Unobserved transport admissions retain ${held:.8f}; conservative combined upper bound "
+              f"${total + held + report['collection']['prior_committed_usd']:.8f} within the $2 ceiling.", "",
         f"Explicit empty provider errors normalized to policy-backed zero charge: {report['policy_backed_zero_charge_provider_errors']}. "
         "They remain failed draws. Raw usage and billing provenance are preserved; unknown non-error billing still stops collection.", "",
-        "All costs include failed attempts. Recovery rollouts pay the producer prefix and API predictors pay "
+        "Measured costs include recorded failed responses. Recovery rollouts pay the producer prefix and API predictors pay "
         "their forecasting fee. Admission uses the advance reservation, not future receipts. Policies stop on "
         "public-base success; Plus outcomes never select an action. Direct models do not pay a producer-prefix fee.", "",
         "Two-draw banks constrain every policy: these are not unlimited retry or multi-step controller claims. "
@@ -417,6 +423,12 @@ def markdown(report: dict) -> str:
     lines += [f"Secondary replay-selected fixed actions by budget: {report['development_replay_best_actions']}.",
               f"State-ridge minus this stronger fixed comparator at $0.01/task: "
               f"{report['secondary_state_minus_development_replay_best_utility_usd']}.", ""]
+    if report["producer_provider_transfer"]:
+        lines += [f"Producer provider changed from `{report['development_producer_endpoint']}` to "
+                  f"`{report['evaluation_producer_endpoint']}` before any evaluation response, after rate-limit stops. "
+                  "This is a provider-transfer evaluation, not identical-provider IID validation. All five unknown "
+                  "admissions remain reserved as collection overhead; no zero-cost receipts or task outcomes are invented. "
+                  "Policy replay bills concern the complete observed bank and do not fully identify deployment outage/retry cost.", ""]
     return "\n".join(lines)
 
 
@@ -477,7 +489,7 @@ def plot(report: dict, output: Path) -> None:
     for ax in axes:
         ax.spines[["top", "right"]].set_visible(False)
     fig.suptitle(f"Frozen task holdout: {report['evaluation_tasks']} tasks, {report['evaluation_failed_tasks']} natural failures\n"
-                 "Two-draw bank; primary utility result and uncertainty in report", fontsize=11)
+                 "Two-draw bank; producer-provider transfer; primary result and uncertainty in report", fontsize=11)
     fig.savefig(output, dpi=180)
     fig.savefig(output.with_suffix(".pdf"))
     plt.close(fig)

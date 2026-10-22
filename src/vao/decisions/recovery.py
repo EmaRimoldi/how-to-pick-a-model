@@ -81,7 +81,7 @@ def forecast_messages(problem: dict, view: str, checkpoint: dict, policy: dict, 
     """Use equal development priors in both prospective API forecast views."""
     if view not in {"task_only", "state"}:
         raise ValueError("Unknown forecast view")
-    payload = {"task": problem["prompt"], "previous_solver": config["models"][config["producer"]]["id"],
+    payload = {"task": problem["prompt"], "previous_solver": config["models"][config.get("evaluation_producer", config["producer"])]["id"],
                "target_models": {m: config["models"][m]["id"] for m in config["target_models"]},
                "development_probabilities": policy["priors"], "development_mean_api_cost_usd": policy["mean_action_cost_usd"]}
     if view == "state":

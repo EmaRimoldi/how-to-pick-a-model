@@ -201,6 +201,23 @@ unchanged. Unknown charges remain bounded collection overhead, outside measured
 policy-replay bills; deployment-level outage/retry cost is not fully identified.
 A same-provider replication is still needed for that stronger claim.
 
+Parasail returned the same shared-pool 429 before any model response. Six unknown
+admissions therefore retain **$0.0082944**. The original Gemma evaluation remains
+unavailable; it must not be presented as completed. A separately declared
+`configs/validation-producer-transfer.json` instead uses **Ministral 3B 2512** via
+the pinned `mistral` endpoint for evaluation prefixes. Its published precision is
+`unknown`, not BF16. Price ceilings are $0.10/$0.10 per million; all other
+parameters, task IDs, target solvers, frozen weights, priors and action rule stay
+unchanged. API forecasters are told the actual evaluation producer identity.
+
+This evaluation now measures **transfer from Gemma development failures to
+Ministral failures**, not same-producer IID generalization. The prespecified
+comparison is retained as a transfer comparison; it cannot retroactively validate
+the original population. This amendment is made before any evaluation response,
+based on availability alone. Keep both stopped provider attempts and all six
+worst-case reservations. A further unavailable producer ends this collection
+rather than triggering an open-ended search for a favorable model or outcome.
+
 Produce an auditable report, figures, and a blog draft that includes negative
 findings. A paper claim additionally needs a broader novelty review and stronger
 replication; collecting data until a favorable result appears is not the plan.
