@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `2472`
-- Bytes indexed: `93.2M`
+- Files indexed: `2507`
+- Bytes indexed: `103.3M`
 
 ## Canonical Entrypoints
 
@@ -49,22 +49,22 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 2087 | 67.6M |
+| `experiments` | 2119 | 77.7M |
 | `artifacts` | 21 | 20.0M |
 | `paper` | 33 | 2.5M |
 | `src` | 141 | 1.1M |
 | `uv.lock` | 1 | 972.4K |
 | `autoresearch` | 59 | 460.7K |
-| `scripts` | 29 | 302.5K |
-| `tests` | 44 | 179.6K |
-| `docs` | 23 | 97.8K |
+| `scripts` | 30 | 319.2K |
+| `tests` | 45 | 181.1K |
+| `docs` | 24 | 109.9K |
 | `prompts` | 6 | 21.6K |
 | `configs` | 7 | 12.7K |
-| `README.md` | 1 | 6.5K |
+| `README.md` | 1 | 7.7K |
 | `AGENTS.md` | 1 | 4.0K |
 | `.claude` | 4 | 3.3K |
 | `NOTES.md` | 1 | 3.2K |
-| `.github` | 5 | 2.8K |
+| `.github` | 5 | 3.1K |
 | `pyproject.toml` | 1 | 1.6K |
 | `.gitignore` | 1 | 1.5K |
 | `CLAUDE.md` | 1 | 1.4K |
@@ -79,21 +79,21 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.json` | 1100 | 5.3M |
-| `.jsonl` | 291 | 49.8M |
-| `.txt` | 275 | 4.2M |
+| `.json` | 1110 | 5.7M |
+| `.jsonl` | 295 | 59.0M |
+| `.txt` | 287 | 4.2M |
 | `.yaml` | 270 | 316.1K |
-| `.py` | 253 | 2.0M |
-| `.md` | 99 | 365.0K |
-| `.png` | 62 | 7.7M |
+| `.py` | 255 | 2.0M |
+| `.md` | 102 | 386.8K |
+| `.png` | 64 | 7.9M |
 | `.pdf` | 37 | 745.3K |
 | `.csv` | 26 | 581.1K |
 | `.part-000` | 18 | 20.0M |
 | `.sh` | 13 | 24.8K |
 | `.sbatch` | 5 | 6.5K |
+| `.svg` | 5 | 165.4K |
 | `.tex` | 5 | 297.7K |
 | `<none>` | 5 | 5.7K |
-| `.svg` | 3 | 9.0K |
 | `.lock` | 2 | 1.9M |
 | `.toml` | 2 | 3.2K |
 | `.bib` | 1 | 13.6K |
@@ -101,7 +101,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.example` | 1 | 1.0K |
 | `.sty` | 1 | 13.2K |
 | `.tsv` | 1 | 790B |
-| `.yml` | 1 | 1.2K |
+| `.yml` | 1 | 1.4K |
 
 ## Experiment Readmes
 
@@ -122,6 +122,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/archive/distribution-aware-orchestration/README.md`
 - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/README.md`
 - `experiments/bigcodebench/feedback-only-routing/README.md`
+- `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/README.md`
 - `experiments/humaneval-plus/README.md`
 - `experiments/humaneval-plus/context-value/README.md`
 - `experiments/humaneval-plus/llm-router-context-search/README.md`
@@ -177,6 +178,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/run_single_long_experiment.py`
 - `scripts/run_transfer_forecasts.py`
 - `scripts/validate_agent_readiness.py`
+- `scripts/verify_feedback_evidence.py`
 
 ## Exact Duplicates In Selected Types
 

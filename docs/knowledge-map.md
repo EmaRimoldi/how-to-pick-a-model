@@ -1,9 +1,14 @@
 # Knowledge Map
 
-Prospective feedback-only stage: [protocol and exact new-task manifest](../experiments/bigcodebench/feedback-only-routing/README.md),
+Completed feedback-only stage: [protocol, exact task manifest and results](../experiments/bigcodebench/feedback-only-routing/README.md),
 `src/vao/decisions/feedback_routing.py` (fixed trajectories), `bigcode.py` and
 `bigcode_worker.py` (reference qualification and isolated verification),
-`scripts/analyze_feedback_routing.py` (receipt/prompt audit and paired analysis).
+`scripts/analyze_feedback_routing.py` (frozen receipt/prompt audit and paired analysis),
+`scripts/verify_feedback_evidence.py` (published hashes, statistics, frozen sources,
+verifier-repeat record and original interim-prefix preservation). All 157 task
+clusters/628 policy outcomes observed; primary escalation gain not established.
+See the [research note](blog/feedback-only-escalation.md) for measured admission
+and verifier limitations; no new selector is trained.
 
 The current research direction is defined in [decision protocol](decision-protocol.md).
 The retained studies provide baselines. The

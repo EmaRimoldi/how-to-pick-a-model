@@ -105,6 +105,26 @@ reservation total $1.39600335 under the original $2 cap; collection is finished.
 
 The [BigCodeBench protocol](../experiments/bigcodebench/feedback-only-routing/PROTOCOL.md)
 uses 157 reference-qualified, previously unqueried tasks and no new selector.
+Collection is complete: 628 policy outcomes, 1,492 responses, $0.38896675 known
+charges and zero unresolved reservations. The primary gate does not pass.
+Reproduce all published figures' numerical inputs, final comparisons, receipt
+and prompt audits, source hashes and the exact preserved interim snapshot:
+
+```bash
+uv run python scripts/verify_feedback_evidence.py \
+  --input experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022
+```
+
+This reads data only: no credentials, candidate execution, optional EvalPlus,
+model calls or Git history are required. Ten inert source snapshots are bound
+to the actual collection commit `d65fbde`; the verifier-repeat source is a
+separate postcollection diagnostic. The final report discloses one directly
+requested interim look at 83 already completed tasks and its selection bias.
+Original labels remain primary after the zero-discrepancy offline repeat.
+Read the [complete report](../experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/report.md)
+and [research note](blog/feedback-only-escalation.md).
+
+The completed collector must not be restarted. For inspection only:
 Planning reads the pinned task/source hashes and makes no provider call:
 
 ```bash

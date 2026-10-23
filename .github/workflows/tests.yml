@@ -29,3 +29,7 @@ jobs:
           --forecasts experiments/mbpp-plus/context-value-transfer/results/replication-20261022/semantic-control
           --expected-analysis experiments/mbpp-plus/context-value-transfer/results/replication-20261022/analysis.json
           --output /tmp/mbpp-evidence-audit
+      - name: Verify the complete BigCodeBench bank and frozen comparisons
+        run: >-
+          uv run python scripts/verify_feedback_evidence.py
+          --input experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022

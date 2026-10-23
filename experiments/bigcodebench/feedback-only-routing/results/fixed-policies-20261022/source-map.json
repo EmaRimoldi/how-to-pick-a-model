@@ -1,0 +1,50 @@
+{
+  "git_commit": "d65fbdeab31a72e17e501cde3ce672355e6682d6",
+  "files": {
+    "experiments/bigcodebench/feedback-only-routing/PROTOCOL.md": {
+      "snapshot": "source/experiments__bigcodebench__feedback-only-routing__PROTOCOL.md.txt",
+      "sha256": "9c924399153f4da56f23fcb333130b867f4d7ef51d794e72242d05fd6e125764"
+    },
+    "scripts/analyze_feedback_routing.py": {
+      "snapshot": "source/scripts__analyze_feedback_routing.py.txt",
+      "sha256": "f6d574bfff17bd455f8666d3efff930f712c56192d290c318971eff32f1e6f5e"
+    },
+    "scripts/run_feedback_routing.py": {
+      "snapshot": "source/scripts__run_feedback_routing.py.txt",
+      "sha256": "9cec5936cccfac091483fb137ed58042e3923fca9fbe69ac76838024cd455744"
+    },
+    "src/vao/decisions/bigcode.py": {
+      "snapshot": "source/src__vao__decisions__bigcode.py.txt",
+      "sha256": "47f5e945623cc3b53aaea3434659e538deec85b9142312aaeadb17789ef7dc34"
+    },
+    "src/vao/decisions/bigcode_worker.py": {
+      "snapshot": "source/src__vao__decisions__bigcode_worker.py.txt",
+      "sha256": "13b22f1af192f6ba9bbde89b523c6414c1b6f1477b564d96c75d3e23f734f138"
+    },
+    "src/vao/decisions/feedback_routing.py": {
+      "snapshot": "source/src__vao__decisions__feedback_routing.py.txt",
+      "sha256": "18d3bc206c5daf61a840cd2f02b7974ca5255a8bf824c287ac18c2475cba79b8"
+    },
+    "src/vao/decisions/openrouter.py": {
+      "snapshot": "source/src__vao__decisions__openrouter.py.txt",
+      "sha256": "eeaa680cc4701ba45af6d6330e68db67f54467c522ffc28e71e29c0bdad64c13"
+    },
+    "src/vao/decisions/pilot.py": {
+      "snapshot": "source/src__vao__decisions__pilot.py.txt",
+      "sha256": "c8361a945d22d3a87f41af1532e47606f0755d703f257292f724a7c0da94fb98"
+    },
+    "src/vao/decisions/verification.py": {
+      "snapshot": "source/src__vao__decisions__verification.py.txt",
+      "sha256": "301f2af2cfbffa509a9dacfd2f920b7e7ef8bcaab68c8d56a050a3c054dcf0b4"
+    },
+    "src/vao/decisions/verifier_worker.py": {
+      "snapshot": "source/src__vao__decisions__verifier_worker.py.txt",
+      "sha256": "fcb47dab53378883c2a12303d47a28de5f57eb589ecc5bf95a6ed3e6c6ea4528"
+    }
+  },
+  "postcollection_verification": {
+    "snapshot": "source/offline_verifier_repeat.py.txt",
+    "sha256": "93ab85687e0efc053e14855df7896c5f10826a08b4b6c9a28790723653e4b800",
+    "scope": "Offline robustness diagnostic; original labels retained"
+  }
+}

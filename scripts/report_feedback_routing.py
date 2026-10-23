@@ -7,6 +7,7 @@ import hashlib
 import json
 from pathlib import Path
 import shutil
+from statistics import mean, median
 import subprocess
 
 if __package__:
@@ -78,6 +79,61 @@ def report_text(report: dict) -> str:
     return "\n".join(rows)
 
 
+def accounting_diagnostics(data: dict) -> dict:
+    """Descriptive accounting after collection, separate from the fixed efficacy test."""
+    config = data["config"]
+    calls = {r["call"]: r for r in data["calls"]}
+    scores = {r["call"]: r for r in data["evaluations"]}
+    per_policy = {}
+    for policy in data["config"].get("policies", ("small_feedback", "immediate_large_feedback", "delayed_large_feedback", "large_direct")):
+        rows = [r for r in data["outcomes"] if r["policy"] == policy]
+        stopped = [r for r in rows if r["stop_reason"] == "task_budget"]
+        per_policy[policy] = {
+            "mean_attempts": mean(len(r["calls"]) for r in rows) if rows else None,
+            "maximum_attempts_observed": max((len(r["calls"]) for r in rows), default=0),
+            "budget_stopped_tasks": len(stopped),
+            "mean_spend_when_budget_stopped_usd": mean(r["cost_usd"] for r in stopped) if stopped else None,
+            "mean_unused_budget_when_budget_stopped_usd": mean(config["task_budget_usd"] - r["cost_usd"] for r in stopped) if stopped else None,
+            "mean_budget_fraction_used_when_budget_stopped": mean(r["cost_usd"] / config["task_budget_usd"] for r in stopped) if stopped else None,
+            "median_api_seconds": median(sum(calls[c]["elapsed_seconds"] for c in r["calls"]) for r in rows) if rows else None}
+    initial = [r for r in calls.values() if r["policy"] == "small_feedback" and r["attempt"] == 0 and r["call"] in scores]
+    public_passes = sum(scores[r["call"]]["visible"]["passed"] for r in initial)
+    correct = sum(bool(scores[r["call"]]["heldout"] and scores[r["call"]]["heldout"]["passed"]) for r in initial)
+    return {"scope": "Postcollection descriptive accounting/verifier diagnostics; not additional efficacy hypotheses or changed primary labels.",
+            "per_policy": per_policy, "cap_usd": config["task_budget_usd"],
+            "shared_initial_9b": {"tasks": len(initial), "public_passes": public_passes,
+                                  "full_suite_successes": correct,
+                                  "public_false_positives_locked_in_all_three_small_start_policies": public_passes - correct}}
+
+
+def diagnostic_text(report: dict, diagnostics: dict) -> str:
+    rows = ["\n## Latency and admission diagnostics", "",
+            "These are postcollection descriptive accounting checks, not extra efficacy hypotheses. "
+            "The admission rule reserves a worst-case response at model-specific prices. "
+            "An equal API cap therefore does not imply equal realized spend or equal opportunity to exhaust it. "
+            "A lower bill alone does not establish equal-quality savings or an intrinsic escalation advantage.", "",
+            "| Policy | Mean attempts | Mean / median API seconds | Budget-stopped tasks | Mean cap used when budget-stopped |",
+            "| --- | ---: | ---: | ---: | ---: |"]
+    for policy, d in diagnostics["per_policy"].items():
+        if d["mean_attempts"] is None:
+            continue
+        api = report["policies"][policy]["mean_observed_api_seconds"]
+        fraction = d["mean_budget_fraction_used_when_budget_stopped"]
+        rows.append(f"| `{policy}` | {d['mean_attempts']:.2f} | {api:.2f} / {d['median_api_seconds']:.2f} | "
+                    f"{d['budget_stopped_tasks']} | " + (f"{100*fraction:.1f}%" if fraction is not None else "not applicable") + " |")
+    initial = diagnostics["shared_initial_9b"]
+    rows.extend(["", "Mean API seconds sum each policy's own model requests; they exclude local verification and collection queue time. "
+                 "The median helps distinguish tail retries from a speedup on a typical task. "
+                 "Budget-stop fractions are conditional on budget-stopped tasks, not averages over all tasks.", "",
+                 f"Of the {initial['tasks']} shared initial 9B responses, {initial['public_passes']} passed the public examples "
+                 f"but only {initial['full_suite_successes']} passed the full suite. The "
+                 f"{initial['public_false_positives_locked_in_all_three_small_start_policies']} initial public false positives "
+                 "terminate all three small-start policies before escalation is possible. "
+                 "This is an observed verifier limitation, not a measured benefit of adding stronger tests.", "",
+                 "![Admission utilization and terminal outcomes](admission-and-verification.png)", ""])
+    return "\n".join(rows)
+
+
 def plot(report: dict, output: Path) -> None:
     import matplotlib
     matplotlib.use("Agg")
@@ -118,11 +174,51 @@ def plot(report: dict, output: Path) -> None:
     plt.close(fig)
 
 
-def publish(source: Path, output: Path) -> dict:
+def diagnostic_plot(report: dict, diagnostics: dict, output: Path) -> None:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    import numpy as np
+    policies = list(diagnostics["per_policy"])
+    labels = ["Repeat 9B", "9B → 27B", "9B ×2 → 27B", "Direct 27B"]
+    positions = np.arange(len(policies))
+    used = [100 * (diagnostics["per_policy"][p]["mean_budget_fraction_used_when_budget_stopped"] or 0) for p in policies]
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4.4), layout="constrained")
+    axes[0].bar(positions, used, color="#4477AA", label="Spent")
+    axes[0].bar(positions, [100-u for u in used], bottom=used, color="#DDDDDD", label="Unused cap")
+    for i, p in enumerate(policies):
+        n = diagnostics["per_policy"][p]["budget_stopped_tasks"]
+        axes[0].text(i, 101, f"n={n}", ha="center", fontsize=9)
+    axes[0].set_xticks(positions, labels, rotation=15, ha="right", fontsize=8)
+    axes[0].set(ylim=(0, 110), ylabel="Mean share of $0.006 API cap (%)", title="Budget-stopped tasks only")
+    axes[0].legend(fontsize=8, loc="lower right")
+    solved = [report["policies"][p]["successes"] for p in policies]
+    false = [report["policies"][p]["public_false_positives"] for p in policies]
+    no_public = [report["policies"][p]["observed"] - a - b for p, a, b in zip(policies, solved, false)]
+    axes[1].barh(positions, solved, color="#4477AA", label="Full-suite success")
+    axes[1].barh(positions, false, left=solved, color="#EE6677", label="Public false positive")
+    axes[1].barh(positions, no_public, left=np.array(solved)+false, color="#BBBBBB", label="No public pass")
+    for i in positions:
+        for value, start in [(solved[i], 0), (false[i], solved[i]), (no_public[i], solved[i]+false[i])]:
+            if value:
+                axes[1].text(start+value/2, i, str(value), ha="center", va="center", fontsize=9)
+    axes[1].set_yticks(positions, labels, fontsize=8)
+    axes[1].invert_yaxis()
+    axes[1].set(xlabel="Number of tasks", title="Recorded terminal outcomes")
+    axes[1].legend(fontsize=8, loc="lower center", bbox_to_anchor=(.5, -.36))
+    fig.suptitle("Conservative admission and public verification constrain these policies", fontsize=12)
+    for extension in ("png", "svg"):
+        fig.savefig(output / ("admission-and-verification." + extension), dpi=180, bbox_inches="tight")
+    plt.close(fig)
+
+
+def publish(source: Path, output: Path, reverification: Path | None = None,
+            reverification_source: Path | None = None) -> dict:
     if not (source / "summary.json").exists():
         raise RuntimeError("Collection has not ended; no interim treatment analysis or publication")
     data = audit(source)
     report = analyze(data)
+    diagnostics = accounting_diagnostics(data)
     manifest = json.loads((source / "manifest.json").read_text())
     config = data["config"]
     snapshots = {}
@@ -145,25 +241,50 @@ def publish(source: Path, output: Path) -> dict:
         source_map["files"][name] = {"snapshot": target, "sha256": hashlib.sha256(content).hexdigest()}
     (output / "source-map.json").write_text(json.dumps(source_map, indent=2) + "\n")
     (output / "analysis.json").write_text(json.dumps(report, indent=2, allow_nan=False) + "\n")
-    text = report_text(report)
+    (output / "accounting-diagnostics.json").write_text(json.dumps(diagnostics, indent=2, allow_nan=False) + "\n")
+    text = report_text(report) + diagnostic_text(report, diagnostics)
+    if reverification is not None:
+        repeated = json.loads(reverification.read_text())
+        assert repeated["model_calls"] == 0 and repeated["checked_responses"] == len(data["evaluations"])
+        assert {r["call"] for r in repeated["rows"]} == {r["call"] for r in data["evaluations"]}
+        assert len(repeated["rows"]) == repeated["checked_responses"]
+        assert sum(bool(r["mismatches"]) for r in repeated["rows"]) == repeated["mismatching_responses"]
+        shutil.copyfile(reverification, output / "verification-repeat.json")
+        if reverification_source is not None:
+            content = reverification_source.read_bytes()
+            target = "source/offline_verifier_repeat.py.txt"
+            (output / target).write_bytes(content)
+            source_map["postcollection_verification"] = {"snapshot": target, "sha256": hashlib.sha256(content).hexdigest(),
+                                                       "scope": "Offline robustness diagnostic; original labels retained"}
+            (output / "source-map.json").write_text(json.dumps(source_map, indent=2) + "\n")
+        text += ("\n## Offline verifier repeat\n\n"
+                 f"Rechecked all {repeated['checked_responses']} preserved responses: reproduced "
+                 f"{sum(bool(r.get('format_error_reproduced')) for r in repeated['rows'])} format errors and re-executed "
+                 "the public checks for every parseable solution and every originally executed full-suite check, "
+                 "under the same frozen sandbox verifier and RNG seed. "
+                 f"Observed **{repeated['mismatching_responses']} responses with pass/fail discrepancies**. "
+                 "Original primary labels were retained throughout; no model request or paid inference was repeated. "
+                 "The diagnostic is preserved in [verification-repeat.json](verification-repeat.json). "
+                 "This repeat check does not establish correctness beyond the benchmark tests.\n")
     bundle = Path(config["bundle"])
     disclosure = bundle / "INTERIM-DISCLOSURE.md"
     interim = bundle / "data/user-requested-interim-20261022.json"
     if disclosure.exists() or interim.exists():
         if not (disclosure.exists() and interim.exists()):
             raise RuntimeError("Interim disclosure and immutable record must be published together")
-        shutil.copyfile(disclosure, output / "interim-disclosure.md")
+        shutil.copyfile(disclosure, output / "interim-disclosure.md.txt")
         shutil.copyfile(interim, output / "interim-record.json")
         text += ("\n## Human-requested interim disclosure\n\n"
                  "After the freeze, the user requested one descriptive look at the 83 tasks then complete "
                  "under all four policies. Its completion bias was disclosed. No interim confidence interval, "
                  "p-value, primary gate, fitting, efficacy stopping or change to collection followed. "
                  "The final protocol retains all selected tasks, failures and missing-outcome bounds; incomplete-bank intervals are descriptive. "
-                 "See [the disclosure](interim-disclosure.md) and [the immutable interim record](interim-record.json). "
+                 "See [the preserved disclosure](interim-disclosure.md.txt) and [the immutable interim record](interim-record.json). "
                  "The historical interim subset must not replace the final primary comparison.\n")
     (output / "report.md").write_text(text)
     (output / "README.md").write_text("# Audited fixed-policy results\n\nRead [report.md](report.md), the [frozen protocol](../../PROTOCOL.md), and [analysis.json](analysis.json).\n")
     plot(report, output)
+    diagnostic_plot(report, diagnostics, output)
     hashes = {str(p.relative_to(output)): hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(output.rglob("*")) if p.is_file()}
     (output / "checksums.json").write_text(json.dumps(hashes, indent=2, sort_keys=True) + "\n")
     return report
@@ -173,8 +294,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--reverification", type=Path)
+    parser.add_argument("--reverification-source", type=Path)
     args = parser.parse_args()
-    report = publish(args.input, args.output)
+    report = publish(args.input, args.output, args.reverification, args.reverification_source)
     print(json.dumps({"status": report["status"], "tasks": report["task_clusters"], "primary": report["contrasts"][0]}, indent=2))
 
 

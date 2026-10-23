@@ -1,10 +1,25 @@
 # Feedback-only fixed-policy evaluation
 
-Stage 1: test a useful intervention before building another selector.
-Collection is active under the amended $4.00 cap; treatment analysis waits until
-the collector ends, apart from [one later human-requested descriptive look](INTERIM-DISCLOSURE.md)
-on the same 83 completed tasks. No repeated readout or experimental change follows
-from that snapshot. The initial funding preflight admitted no model requests.
+Stage 1 is complete: **157 task clusters, 628/628 policy outcomes, 1,492 model
+responses**, no missing outcomes or uncertain charges. Known collection cost is
+**$0.38896675**, within the amended $4.00 cap and separate $5 authorization.
+Read the [audited report and figures](results/fixed-policies-20261022/report.md).
+
+The prespecified primary comparison, immediate 27B escalation minus repeated
+9B, is **−2.55 pp**, 95% paired task-bootstrap interval **[−7.01, +1.27]**:
+98 versus 102 tasks solved. The gate does not pass. Delayed escalation solves
+105, direct 27B 100; all three adjusted secondary intervals include zero.
+No selector was trained and no favorable secondary is promoted to primary.
+
+Lower mean API spend under escalation does not establish equal-quality savings:
+the conservative reservation rule often disallows another 27B call with most
+of the $0.006 task cap unused. Public false positives also stop recovery early.
+The [research note](../../../docs/blog/feedback-only-escalation.md) explains both.
+
+After the freeze, [one human-requested descriptive look](INTERIM-DISCLOSURE.md)
+used the 83 tasks then complete under all policies. Its completion bias and
+immutable prefix are preserved; no fitting, stopping or experimental change
+followed. The initial funding preflight admitted no model requests.
 The [prospective protocol](PROTOCOL.md) fixes 157 previously unqueried,
 reference-audited BigCodeBench tasks and one replicate per task. All four
 policies receive only public feedback; compare repeated 9B, immediate 27B
@@ -24,9 +39,23 @@ automatically resumes. A key is accepted only via an un-echoed stdin pipe.
   --config experiments/bigcodebench/feedback-only-routing/configs/evaluation.json
 ```
 
-New authorization: maximum $5 additional; this collection is capped at $4.00,
-including unknown reservations. No paid forecaster or learned selector is run.
-The reference audit is preparation, **not a model evaluation result**.
+The collector is finished and must not be restarted. These 157 observed tasks
+are now development evidence for any later design. No further paid collection
+or selector is authorized by this completed protocol.
+
+Reproduce the complete published artifact without credentials, model calls,
+candidate execution, optional EvalPlus or the original machine:
+
+```bash
+uv run python scripts/verify_feedback_evidence.py \
+  --input experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022
+```
+
+The final offline repeat checked every response: 29 format errors reproduced,
+1,463 public checks and all 326 originally executed full-suite checks repeated
+under the frozen sandbox and seed, with zero pass/fail discrepancies. This is
+a diagnostic; original labels remain primary, and benchmark tests are not a
+complete semantic specification. The saved-data audit above executes no code.
 
 To reproduce qualification, `scripts/prepare_feedback_routing.py` defaults to
 printing the pinned download URL and SHA-256. Supply that verified Parquet with

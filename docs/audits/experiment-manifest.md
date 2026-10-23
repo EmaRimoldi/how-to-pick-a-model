@@ -22,8 +22,8 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | Tier | Bundles |
 | --- | --- |
 | `Tier 1: Main Evidence` | 6 |
-| `Tier 2: Supporting Or Diagnostic Evidence` | 4 |
-| `not tiered` | 2 |
+| `Tier 2: Supporting Or Diagnostic Evidence` | 5 |
+| `not tiered` | 1 |
 
 ## Bundle Assets
 
@@ -40,7 +40,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | `experiments/humaneval-plus/openrouter-continuation-pilot/` | development pilot | not tiered | `inspect-readme` | 13 | 1 | 0 | 10 | 1 | 0 | 0 | 0 | 1 |
 | `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 46 | 5 | 0 | 39 | 3 | 0 | 0 | 0 | 4 |
 | `experiments/mbpp-plus/context-value-transfer/` | collection finished; censored descriptive bank | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 72 | 6 | 2 | 59 | 4 | 3 | 0 | 0 | 6 |
-| `experiments/bigcodebench/feedback-only-routing/` | collection active; analysis pending | not tiered | `inspect-readme` | 10 | 1 | 5 | 0 | 0 | 0 | 0 | 0 | 0 |
+| `experiments/bigcodebench/feedback-only-routing/` | complete; primary gate not passed | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 42 | 2 | 5 | 32 | 4 | 0 | 0 | 0 | 2 |
 
 ## Key Files
 
@@ -208,7 +208,17 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 ### `experiments/bigcodebench/feedback-only-routing/`
 
 - Title: Feedback-only fixed-policy evaluation
-- Evidence: 157 new reference-qualified tasks, four fixed policies; source/protocol frozen before calls, no treatment-rate analysis during collection
-- Asset directories: `configs, data`
+- Evidence: 157 task clusters, 628/628 policy outcomes, 1,492 responses, no missing outcomes; fixed comparisons, receipts, source freeze, verifier repeat and disclosed single requested interim look
+- Asset directories: `configs, data, results, results/fixed-policies-20261022/source`
 - `experiments/bigcodebench/feedback-only-routing/README.md`
-- `experiments/bigcodebench/feedback-only-routing/configs/evaluation.json`
+- `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/source/experiments__bigcodebench__feedback-only-routing__PROTOCOL.md.txt`
+- `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/source/offline_verifier_repeat.py.txt`
+- `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/source/scripts__analyze_feedback_routing.py.txt`
+- `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/source/scripts__run_feedback_routing.py.txt`
+- `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/source/src__vao__decisions__bigcode.py.txt`
+- `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/source/src__vao__decisions__bigcode_worker.py.txt`
+- `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/source/src__vao__decisions__feedback_routing.py.txt`
+- `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/source/src__vao__decisions__openrouter.py.txt`
+- `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/source/src__vao__decisions__pilot.py.txt`
+- `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/source/src__vao__decisions__verification.py.txt`
+- `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/source/src__vao__decisions__verifier_worker.py.txt`

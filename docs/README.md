@@ -17,6 +17,7 @@
 | [Frozen recovery protocol](../experiments/humaneval-plus/context-value/VALIDATION.md) | Development-trained selectors, task holdout, transfer amendment and accounting |
 | [Recovery related work](recovery-related-work.md) | Closest precedents and boundaries for a new paper claim |
 | [Recovery blog draft](blog/when-to-keep-failed-code.md) | Audited results, static controls, forecast limitations and reproduction |
+| [Feedback-only escalation note](blog/feedback-only-escalation.md) | Complete 157-task fixed-policy test, negative primary result, admission/verifier diagnostics and reproduction |
 | [History](history-merge.md) | Source provenance and recoverable cleanup snapshots |
 
 Generated navigation maps: [inventory](audits/repo-inventory.md),
