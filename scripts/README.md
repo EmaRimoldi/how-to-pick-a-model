@@ -1,5 +1,14 @@
 # Repository Scripts
 
+`verify_feedback_evidence.py` reproduces the complete published BigCodeBench
+bank without credentials, provider calls or candidate execution: file checksums,
+frozen sources, receipt/prompt projection, fixed statistics, verifier-repeat
+record and preservation of the single requested interim prefix.
+`analyze_feedback_routing.py` is the frozen scientific analyzer;
+`report_feedback_routing.py` publishes an ended bank with inert source snapshots,
+diagnostic accounting and PNG/SVG figures. The completed collector must not be
+restarted; see the [study guide](../experiments/bigcodebench/feedback-only-routing/README.md).
+
 `run_recovery_transfer.py` defaults to planning the prospectively frozen MBPP+
 replication. Live calls need explicit live, stdin-key and remaining-budget
 arguments; read the [protocol](../experiments/mbpp-plus/context-value-transfer/PROTOCOL.md).

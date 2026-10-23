@@ -1,0 +1,57 @@
+"""Offline repeat of the frozen verifier; no model calls or primary-label replacement."""
+
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
+from datetime import datetime, timezone
+import json
+
+from scripts.analyze_feedback_routing import audit
+from vao.decisions.bigcode import BigCodeVerifier
+
+root = Path('runs/bigcode-feedback-fixed-funded-20261022')
+assert (root / 'summary.json').exists()
+data = audit(root)
+assert data['integrity']['complete']
+verifier = BigCodeVerifier(timeout=15)
+probe = verifier.preflight()
+calls = {r['call']: r for r in data['calls']}
+output = Path('runs/bigcode-feedback-offline-reverification-20261022.json')
+assert not output.exists(), 'Do not overwrite a completed repeat verification'
+started = datetime.now(timezone.utc).isoformat()
+
+
+def recheck(score):
+    call = calls[score['call']]
+    try:
+        source = json.loads(call['content'])['solution']
+        assert call['finish_reason'] == 'stop' and isinstance(source, str) and source.strip()
+    except (ValueError, KeyError, TypeError, AssertionError):
+        assert score['solution'] == '' and score['visible']['status'] == 'format_error'
+        return {'call': score['call'], 'format_error_reproduced': True, 'mismatches': []}
+    assert source == score['solution']
+    visible = verifier.check(data['tasks'][score['task_id']], source, 'visible')
+    heldout = verifier.check(data['tasks'][score['task_id']], source, 'heldout') if score['heldout'] is not None else None
+    mismatches = []
+    if visible['passed'] != score['visible']['passed']:
+        mismatches.append('visible_passed')
+    if heldout is not None and heldout['passed'] != score['heldout']['passed']:
+        mismatches.append('heldout_passed')
+    return {'call': score['call'], 'task_id': score['task_id'],
+            'original_visible_passed': score['visible']['passed'], 'repeated_visible_passed': visible['passed'],
+            'original_heldout_passed': score['heldout']['passed'] if score['heldout'] is not None else None,
+            'repeated_heldout_passed': heldout['passed'] if heldout is not None else None,
+            'mismatches': mismatches}
+
+
+rows = []
+with ThreadPoolExecutor(max_workers=4) as pool:
+    futures = [pool.submit(recheck, r) for r in data['evaluations']]
+    for f in as_completed(futures):
+        rows.append(f.result())
+result = {'scope': 'Postcollection offline repeat under the same frozen verifier/seed. All original primary labels retained; any mismatch is a robustness diagnostic, never a replacement.',
+          'started_utc': started, 'finished_utc': datetime.now(timezone.utc).isoformat(),
+          'probe': probe, 'checked_responses': len(rows),
+          'mismatching_responses': sum(bool(r['mismatches']) for r in rows),
+          'model_calls': 0, 'rows': sorted(rows, key=lambda r: r['call'])}
+output.write_text(json.dumps(result, indent=2) + '\n')
+print(json.dumps({k:v for k,v in result.items() if k != 'rows'}, indent=2))

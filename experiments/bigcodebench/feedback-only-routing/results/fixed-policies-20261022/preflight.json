@@ -1,0 +1,167 @@
+{
+  "sandbox": {
+    "evalplus_available": true,
+    "credential_environment_empty": true,
+    "private_files_denied": true,
+    "home_directories_denied": true,
+    "network_denied": true
+  },
+  "provider": {
+    "endpoints": {
+      "large": {
+        "name": "SiliconFlow | qwen/qwen3.5-27b-20260224",
+        "model_id": "qwen/qwen3.5-27b",
+        "model_name": "Qwen: Qwen3.5-27B",
+        "context_length": 262144,
+        "pricing": {
+          "prompt": "0.00000025",
+          "completion": "0.000002",
+          "discount": 0
+        },
+        "provider_name": "SiliconFlow",
+        "tag": "siliconflow/fp8",
+        "service_tier": null,
+        "quantization": "fp8",
+        "max_completion_tokens": 235929,
+        "max_prompt_tokens": null,
+        "supported_parameters": [
+          "reasoning",
+          "include_reasoning",
+          "temperature",
+          "top_p",
+          "top_k",
+          "frequency_penalty",
+          "repetition_penalty",
+          "presence_penalty",
+          "max_tokens",
+          "response_format",
+          "structured_outputs",
+          "tools",
+          "tool_choice"
+        ],
+        "supports_tool_choice": {
+          "none": false,
+          "auto": true,
+          "required": false,
+          "function": true
+        },
+        "status": 0,
+        "uptime_last_30m": null,
+        "uptime_last_5m": null,
+        "uptime_last_1d": 98.3957219251337,
+        "supports_implicit_caching": false,
+        "native_tools": {},
+        "supports_voice_cloning": false,
+        "supports_multiple_audio_references": false,
+        "supports_image_reference": false,
+        "supports_diarization": false,
+        "latency_last_30m": {
+          "p50": 2495,
+          "p75": 3123.5,
+          "p90": 4136.199999999999,
+          "p99": 5313.719999999999
+        },
+        "throughput_last_30m": {
+          "p50": 36,
+          "p75": 33.5,
+          "p90": 31.4,
+          "p99": 21.62
+        },
+        "perf_last_30m_by_workload": {
+          "text_generation": {
+            "latency": {
+              "p50": 2495,
+              "p75": 3123.5,
+              "p90": 4136.199999999999,
+              "p99": 5313.719999999999
+            },
+            "throughput": {
+              "p50": 36,
+              "p75": 33.5,
+              "p90": 31.4,
+              "p99": 21.62
+            },
+            "request_count": 19
+          }
+        }
+      },
+      "small": {
+        "name": "SiliconFlow | qwen/qwen3.5-9b-20260310",
+        "model_id": "qwen/qwen3.5-9b",
+        "model_name": "Qwen: Qwen3.5-9B",
+        "context_length": 262144,
+        "pricing": {
+          "prompt": "0.0000001",
+          "completion": "0.00000015",
+          "discount": 0
+        },
+        "provider_name": "SiliconFlow",
+        "tag": "siliconflow/fp8",
+        "service_tier": null,
+        "quantization": "fp8",
+        "max_completion_tokens": 235929,
+        "max_prompt_tokens": null,
+        "supported_parameters": [
+          "reasoning",
+          "include_reasoning",
+          "temperature",
+          "top_p",
+          "top_k",
+          "frequency_penalty",
+          "repetition_penalty",
+          "presence_penalty",
+          "max_tokens",
+          "response_format",
+          "structured_outputs",
+          "tools",
+          "tool_choice"
+        ],
+        "supports_tool_choice": {
+          "none": false,
+          "auto": true,
+          "required": false,
+          "function": true
+        },
+        "status": 0,
+        "uptime_last_30m": 100,
+        "uptime_last_5m": 100,
+        "uptime_last_1d": 99.70674486803519,
+        "supports_implicit_caching": false,
+        "native_tools": {},
+        "supports_voice_cloning": false,
+        "supports_multiple_audio_references": false,
+        "supports_image_reference": false,
+        "supports_diarization": false,
+        "latency_last_30m": {
+          "p50": 1814,
+          "p75": 2361,
+          "p90": 3154,
+          "p99": 6475.4799999999905
+        },
+        "throughput_last_30m": {
+          "p50": 25,
+          "p75": 20,
+          "p90": 16,
+          "p99": 10
+        },
+        "perf_last_30m_by_workload": {
+          "text_generation": {
+            "latency": {
+              "p50": 1814,
+              "p75": 2361,
+              "p90": 3154,
+              "p99": 6475.4799999999905
+            },
+            "throughput": {
+              "p50": 25,
+              "p75": 20,
+              "p90": 16,
+              "p99": 10
+            },
+            "request_count": 799
+          }
+        }
+      }
+    }
+  }
+}

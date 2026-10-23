@@ -6,11 +6,24 @@ We study whether code and verifier feedback from a failed attempt help the next
 attempt, and whether that benefit can be predicted before paying for it. The
 longer-term goal is cost-aware continue/restart/switch/stop decisions for agents.
 
+**Latest result:** [four feedback-only policies on 157 new BigCodeBench tasks](experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/report.md).
+Immediate 9B → 27B escalation solves **98/157** tasks versus **102/157** for
+repeated 9B: **−2.55 percentage points**, paired 95% interval **[−7.01, +1.27]**.
+The primary gate fails; no new selector is trained. Mean API spend is lower,
+but conservative admission often stops 27B with most of its budget unused;
+this does not establish equal-quality savings. All **628/628** policy outcomes
+and **1,492** responses are retained, with $0.38896675 collection charges and
+no unresolved reservations. Read the [research note](docs/blog/feedback-only-escalation.md)
+for the admission and public-test limitations. This is not a test of feedback
+against no feedback.
+
+![Fixed-policy success, realized API spend and paired comparisons](experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/fixed-policy-comparison.png)
+
 This repository retains the AutoResearch/CIFAR-10 and HumanEval+ evidence needed
 to study that question: verified trajectories, retry-allocation baselines,
 context/routing experiments, cost accounting, and reproducible figures.
 
-**Latest result:** the [external MBPP+ replication](experiments/mbpp-plus/context-value-transfer/results/replication-20261022/README.md)
+**Earlier, separate result:** the [external MBPP+ replication](experiments/mbpp-plus/context-value-transfer/results/replication-20261022/README.md)
 contains **2,878 recovery responses and 288 API forecasts**. On its 94 complete
 failed tasks, 9B recovery succeeds 52.8% with feedback alone versus 30.9% when
 failed code is added; the 27B rates are 62.4% and 58.5%. Two solver responses
@@ -42,6 +55,8 @@ Start with the [decision protocol](docs/decision-protocol.md), the
   and held-out router-context search.
 - **MBPP+:** frozen cross-benchmark recovery evaluation with feedback-only,
   artifact-aware, static and API forecasting controls.
+- **BigCodeBench:** complete fixed-policy feedback-only trajectories, receipt and
+  prompt audits, prespecified paired comparisons and offline verifier repeat.
 - **Runtime:** existing edit/verify execution, session handling, snapshots,
   token/cost records, and the historical `agent-workflow` baseline CLI.
 - **Manuscripts:** the two existing sources, consolidated theory, and a separate
@@ -54,6 +69,16 @@ calls, candidate execution or GPUs:
 
 ```bash
 uv sync --dev --frozen
+uv run python scripts/verify_feedback_evidence.py \
+  --input experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022
+```
+
+This verifies all published checksums, frozen sources, receipt/prompt chains,
+final statistics, diagnostic accounting and preservation of the single disclosed
+interim snapshot. The API collection is finished; this command makes no calls.
+The separately funded MBPP+ report can also be reproduced:
+
+```bash
 uv run python scripts/analyze_recovery_transfer.py \
   --input experiments/mbpp-plus/context-value-transfer/results/replication-20261022 \
   --forecasts experiments/mbpp-plus/context-value-transfer/results/replication-20261022/semantic-control \

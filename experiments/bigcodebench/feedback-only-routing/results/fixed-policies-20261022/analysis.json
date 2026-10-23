@@ -1,0 +1,165 @@
+{
+  "status": "complete_prespecified_bank",
+  "integrity": {
+    "complete": true,
+    "known_usd": 0.38896675,
+    "held_usd": 0.0,
+    "run_upper_usd": 0.38896675,
+    "observed_calls": 1492,
+    "unscored_responses": 0,
+    "pending_admissions": []
+  },
+  "task_clusters": 157,
+  "replicates": 1,
+  "policies": {
+    "small_feedback": {
+      "observed": 157,
+      "expected": 157,
+      "successes": 102,
+      "all_selected_success_bounds": [
+        0.6496815286624203,
+        0.6496815286624203
+      ],
+      "mean_observed_cost_usd": 0.0007655308917197451,
+      "mean_observed_verifier_seconds": 0.7972743300013659,
+      "public_false_positives": 38,
+      "stop_reasons": {
+        "public_pass": 140,
+        "task_budget": 17
+      },
+      "conditional_on_initial_small_public_failure": {
+        "observed": 52,
+        "successes": 22
+      },
+      "mean_observed_api_seconds": 88.90324219107438
+    },
+    "immediate_large_feedback": {
+      "observed": 157,
+      "expected": 157,
+      "successes": 98,
+      "all_selected_success_bounds": [
+        0.6242038216560509,
+        0.6242038216560509
+      ],
+      "mean_observed_cost_usd": 0.00044621210191082795,
+      "mean_observed_verifier_seconds": 0.32329480142397865,
+      "public_false_positives": 32,
+      "stop_reasons": {
+        "public_pass": 130,
+        "task_budget": 27
+      },
+      "conditional_on_initial_small_public_failure": {
+        "observed": 52,
+        "successes": 18
+      },
+      "mean_observed_api_seconds": 17.12842219556084
+    },
+    "delayed_large_feedback": {
+      "observed": 157,
+      "expected": 157,
+      "successes": 105,
+      "all_selected_success_bounds": [
+        0.6687898089171974,
+        0.6687898089171974
+      ],
+      "mean_observed_cost_usd": 0.0004183627388535032,
+      "mean_observed_verifier_seconds": 0.2764796217893114,
+      "public_false_positives": 33,
+      "stop_reasons": {
+        "public_pass": 138,
+        "task_budget": 19
+      },
+      "conditional_on_initial_small_public_failure": {
+        "observed": 52,
+        "successes": 25
+      },
+      "mean_observed_api_seconds": 21.606650329089298
+    },
+    "large_direct": {
+      "observed": 157,
+      "expected": 157,
+      "successes": 100,
+      "all_selected_success_bounds": [
+        0.6369426751592356,
+        0.6369426751592356
+      ],
+      "mean_observed_cost_usd": 0.0010184729299363058,
+      "mean_observed_verifier_seconds": 0.1838244230639943,
+      "public_false_positives": 28,
+      "stop_reasons": {
+        "public_pass": 128,
+        "task_budget": 29
+      },
+      "conditional_on_initial_small_public_failure": {
+        "observed": 52,
+        "successes": 23
+      },
+      "mean_observed_api_seconds": 12.995678146462073
+    }
+  },
+  "contrasts": [
+    {
+      "left": "immediate_large_feedback",
+      "right": "small_feedback",
+      "alpha": 0.05,
+      "complete_task_clusters": 157,
+      "estimate": -0.025477707006369428,
+      "interval": [
+        -0.07006369426751592,
+        0.012738853503184714
+      ],
+      "all_selected_missing_bounds": [
+        -0.025477707006369428,
+        -0.025477707006369428
+      ]
+    },
+    {
+      "left": "delayed_large_feedback",
+      "right": "small_feedback",
+      "alpha": 0.016666666666666666,
+      "complete_task_clusters": 157,
+      "estimate": 0.01910828025477707,
+      "interval": [
+        -0.03184713375796178,
+        0.07006369426751592
+      ],
+      "all_selected_missing_bounds": [
+        0.01910828025477707,
+        0.01910828025477707
+      ]
+    },
+    {
+      "left": "large_direct",
+      "right": "small_feedback",
+      "alpha": 0.016666666666666666,
+      "complete_task_clusters": 157,
+      "estimate": -0.012738853503184714,
+      "interval": [
+        -0.09554140127388536,
+        0.06369426751592357
+      ],
+      "all_selected_missing_bounds": [
+        -0.012738853503184714,
+        -0.012738853503184714
+      ]
+    },
+    {
+      "left": "immediate_large_feedback",
+      "right": "large_direct",
+      "alpha": 0.016666666666666666,
+      "complete_task_clusters": 157,
+      "estimate": -0.012738853503184714,
+      "interval": [
+        -0.08917197452229299,
+        0.06369426751592357
+      ],
+      "all_selected_missing_bounds": [
+        -0.012738853503184714,
+        -0.012738853503184714
+      ]
+    }
+  ],
+  "primary_gate_passed": false,
+  "selector": "Not trained. A positive stage-1 gate is necessary, not sufficient, for a later held-out selector claim.",
+  "cost_scope": "Equal API-dollar admission cap; actual spend, local verifier time, and latency are not equalized."
+}

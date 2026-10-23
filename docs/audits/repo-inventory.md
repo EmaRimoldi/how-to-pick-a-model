@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `2453`
-- Bytes indexed: `91.6M`
+- Files indexed: `2507`
+- Bytes indexed: `103.3M`
 
 ## Canonical Entrypoints
 
@@ -49,22 +49,22 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 2077 | 66.1M |
+| `experiments` | 2119 | 77.7M |
 | `artifacts` | 21 | 20.0M |
 | `paper` | 33 | 2.5M |
-| `src` | 138 | 1.1M |
+| `src` | 141 | 1.1M |
 | `uv.lock` | 1 | 972.4K |
 | `autoresearch` | 59 | 460.7K |
-| `scripts` | 25 | 278.3K |
-| `tests` | 42 | 170.5K |
-| `docs` | 23 | 95.4K |
+| `scripts` | 30 | 319.2K |
+| `tests` | 45 | 181.1K |
+| `docs` | 24 | 109.9K |
 | `prompts` | 6 | 21.6K |
 | `configs` | 7 | 12.7K |
-| `README.md` | 1 | 6.1K |
-| `AGENTS.md` | 1 | 3.5K |
+| `README.md` | 1 | 7.7K |
+| `AGENTS.md` | 1 | 4.0K |
 | `.claude` | 4 | 3.3K |
 | `NOTES.md` | 1 | 3.2K |
-| `.github` | 5 | 2.8K |
+| `.github` | 5 | 3.1K |
 | `pyproject.toml` | 1 | 1.6K |
 | `.gitignore` | 1 | 1.5K |
 | `CLAUDE.md` | 1 | 1.4K |
@@ -79,28 +79,29 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.json` | 1095 | 3.8M |
-| `.jsonl` | 291 | 49.8M |
-| `.txt` | 275 | 4.2M |
+| `.json` | 1110 | 5.7M |
+| `.jsonl` | 295 | 59.0M |
+| `.txt` | 287 | 4.2M |
 | `.yaml` | 270 | 316.1K |
-| `.py` | 244 | 2.0M |
-| `.md` | 95 | 346.4K |
-| `.png` | 62 | 7.7M |
+| `.py` | 255 | 2.0M |
+| `.md` | 102 | 386.8K |
+| `.png` | 64 | 7.9M |
 | `.pdf` | 37 | 745.3K |
 | `.csv` | 26 | 581.1K |
 | `.part-000` | 18 | 20.0M |
 | `.sh` | 13 | 24.8K |
 | `.sbatch` | 5 | 6.5K |
+| `.svg` | 5 | 165.4K |
 | `.tex` | 5 | 297.7K |
 | `<none>` | 5 | 5.7K |
-| `.svg` | 3 | 9.0K |
 | `.lock` | 2 | 1.9M |
 | `.toml` | 2 | 3.2K |
 | `.bib` | 1 | 13.6K |
+| `.dataset` | 1 | 11.1K |
 | `.example` | 1 | 1.0K |
 | `.sty` | 1 | 13.2K |
 | `.tsv` | 1 | 790B |
-| `.yml` | 1 | 1.2K |
+| `.yml` | 1 | 1.4K |
 
 ## Experiment Readmes
 
@@ -120,6 +121,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/README.md`
 - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/archive/distribution-aware-orchestration/README.md`
 - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/README.md`
+- `experiments/bigcodebench/feedback-only-routing/README.md`
+- `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/README.md`
 - `experiments/humaneval-plus/README.md`
 - `experiments/humaneval-plus/context-value/README.md`
 - `experiments/humaneval-plus/llm-router-context-search/README.md`
@@ -150,6 +153,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `autoresearch/scripts/slurm_autoresearch_worker_array.sh`
 - `scripts/analyze_context_value.py`
 - `scripts/analyze_continuation_pilot.py`
+- `scripts/analyze_feedback_routing.py`
 - `scripts/analyze_recovery_transfer.py`
 - `scripts/analyze_recovery_validation.py`
 - `scripts/analyze_runs.py`
@@ -161,9 +165,12 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/build_repo_inventory.py`
 - `scripts/check_paper_build.py`
 - `scripts/compare_experiments.py`
+- `scripts/prepare_feedback_routing.py`
+- `scripts/report_feedback_routing.py`
 - `scripts/run_best_params_merge.py`
 - `scripts/run_context_value.py`
 - `scripts/run_continuation_pilot.py`
+- `scripts/run_feedback_routing.py`
 - `scripts/run_merge_phase.py`
 - `scripts/run_parallel_experiment.py`
 - `scripts/run_recovery_transfer.py`
@@ -171,6 +178,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/run_single_long_experiment.py`
 - `scripts/run_transfer_forecasts.py`
 - `scripts/validate_agent_readiness.py`
+- `scripts/verify_feedback_evidence.py`
 
 ## Exact Duplicates In Selected Types
 

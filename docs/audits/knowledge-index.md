@@ -8,9 +8,9 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Canonical docs present: `22/22`
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
-- Experiment bundles indexed: `11`
-- Script entrypoints indexed: `39`
-- Code modules indexed: `137`
+- Experiment bundles indexed: `12`
+- Script entrypoints indexed: `44`
+- Code modules indexed: `140`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `7`
@@ -168,6 +168,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | HumanEval+ | `experiments/humaneval-plus/openrouter-continuation-pilot/` | development pilot | not tiered | 24 tasks, 88 calls, two failed checkpoints, receipts and separate public/full-suite scoring |
 | HumanEval+ | `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | Discovery: 30 tasks/132 calls. Transfer: 83 development + 60 evaluation tasks, 1,353 responses, frozen policies, forecasts, controls and cost audit |
 | MBPP+ | `experiments/mbpp-plus/context-value-transfer/` | collection finished; censored descriptive bank | Tier 2: Supporting Or Diagnostic Evidence | 94/96 complete failures, 2,878 recovery responses, two censored solver cells, 288 API forecasts, fixed comparisons and full accounting |
+| BigCodeBench standard-library subset | `experiments/bigcodebench/feedback-only-routing/` | complete; primary gate not passed | Tier 2: Supporting Or Diagnostic Evidence | 157 task clusters, 628/628 policy outcomes, 1,492 responses, no missing outcomes; fixed comparisons, receipts, source freeze, verifier repeat and disclosed single requested interim look |
 
 ## Script Entrypoints
 
@@ -175,6 +176,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | --- | --- | --- |
 | `scripts/analyze_context_value.py` | python | Audit prospective context-value records and compare matched outcomes by task cluster. |
 | `scripts/analyze_continuation_pilot.py` | python | Audit saved pilot receipts/outcomes and render an exploratory cost/success plot. |
+| `scripts/analyze_feedback_routing.py` | python | Audit and analyze fixed feedback-only trajectories without making model calls. |
 | `scripts/analyze_recovery_transfer.py` | python | Audit recorded MBPP+ recovery evidence and reproduce the frozen statistical comparisons. |
 | `scripts/analyze_recovery_validation.py` | python | Audit frozen held-out recovery data and replay its finite budgeted policy bank. |
 | `scripts/analyze_runs.py` | python | analyze_runs.py — Analysis pipeline for agent parallelisation experiment results. Repository structure assumed (verified from runs/): runs/<experiment_id>/ config.json mode_parallel/ agent_<N>/ results/ trajectory.jsonl ← {step, val_bpb} per training run metadata.json ← summary (best_val_bpb, total_training_runs, …) snapshots/ step_NNN/ train.py ← frozen snapshot of train.py at this step metadata.json ← git_message, val_bpb_after, accepted, … workspace/ train.py.baseline ← original unmodified train.py Usage: python scripts/analyze_runs.py # latest experiment python scripts/analyze_runs.py --runs-dir runs/ # all experiments python scripts/analyze_runs.py --experiment exp_20260401_013535 python scripts/analyze_runs.py --output-dir my_analysis/ |
@@ -186,9 +188,12 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/build_repo_inventory.py` | python | Build a deterministic repository inventory for agents and reviewers. |
 | `scripts/check_paper_build.py` | python | Compile active paper TeX sources into an out-of-tree build directory. |
 | `scripts/compare_experiments.py` | python | CLI: compare two experiment directories (parallel vs single). |
+| `scripts/prepare_feedback_routing.py` | python | Verify the pinned BigCodeBench download and reproduce reference-only eligibility. |
+| `scripts/report_feedback_routing.py` | python | Publish a completed feedback-only bank, audited statistics and static figures. |
 | `scripts/run_best_params_merge.py` | python | Best-params merge: read agent results.tsv + git history, build merged train.py. Strategy: 1. For each agent, parse results/results.tsv (commit_hash, val_bpb, status) 2. For each accepted ("keep") run, extract hyperparameters from that git commit 3. Find best val_bpb value per hyperparameter across all agents 4. Build merged train.py and submit to SLURM Usage: python scripts/run_best_params_merge.py --run-id exp_20260401_120000 python scripts/run_best_params_merge.py --run-id exp_20260401_120000 --submit |
 | `scripts/run_context_value.py` | python | Plan or explicitly run a budgeted artifact/feedback and prospective-forecast study. |
 | `scripts/run_continuation_pilot.py` | python | Run the explicit-budget OpenRouter/HumanEval+ pilot; defaults to plan only. |
+| `scripts/run_feedback_routing.py` | python | Plan or explicitly run new-task, feedback-only fixed-policy trajectories. |
 | `scripts/run_merge_phase.py` | python | CLI: run the merge phase on a completed parallel experiment. Given an experiment directory produced by run_parallel_experiment.py, this script: 1. Gathers all agent snapshots, reasoning traces, and metrics 2. Selects the best and most informative train.py variants 3. Analyses per-parameter improvement correlations 4. Produces a merged train.py candidate 5. Runs evaluation via SLURM (always; workspace auto-detected if not provided) 6. Writes a merge report and comparison table Usage: python scripts/run_merge_phase.py --experiment-dir runs/experiment_parallel_20260331_120000 python scripts/run_merge_phase.py --experiment-dir runs/exp_... --source-mode parallel |
 | `scripts/run_parallel_experiment.py` | python | CLI: launch Mode 1 (2 agents × T budget). |
 | `scripts/run_recovery_transfer.py` | python | Plan or explicitly collect the cumulative-budgeted MBPP+ recovery replication. |
@@ -196,6 +201,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/run_single_long_experiment.py` | python | CLI: launch Mode 2 (1 agent × 2T budget). |
 | `scripts/run_transfer_forecasts.py` | python | Plan or explicitly collect the prespecified outcome-blind semantic forecast control. |
 | `scripts/validate_agent_readiness.py` | python | Validate that the repository is ready for LLM-agent navigation. |
+| `scripts/verify_feedback_evidence.py` | python | Verify published BigCodeBench evidence offline without executing candidate code. |
 | `autoresearch/scripts/analyze_autoresearch_allocation_router.py` | python | Analyze allocation-router outputs against mode labels and calibration tables. |
 | `autoresearch/scripts/analyze_autoresearch_threeworker_final.py` | python | Frozen three-worker analysis for the AutoResearch CIFAR-10 paper experiments. |
 | `autoresearch/scripts/compute_autoresearch_factored_calibration.py` | python | Compute factored certified-resource calibration tables for AutoResearch. |
@@ -310,7 +316,10 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/analysis/phase3_summary.py` | Build Phase 3 real-backend summary and failure-mode artifacts. | summarize, summarize_roots, main |
 | verified orchestration runtime | `src/vao/analysis/run_diagnostics_visuals.py` | Per-run diagnostics for mode probabilities, losses, gains, and costs. | summarize_run, make_plots, write_markdown, main |
 | verified orchestration runtime | `src/vao/benchmark_registry.py` | Benchmark-specific dispatch for prompts, summaries, classifiers, and evaluators. | BenchmarkSpec, get_benchmark_spec, infer_benchmark_id |
+| verified orchestration runtime | `src/vao/decisions/bigcode.py` | Pinned, standard-library BigCodeBench subset and sandbox reference audit. | sha, stdlib_task, shingles, similarity, BigCodeVerifier, audit_tasks |
+| verified orchestration runtime | `src/vao/decisions/bigcode_worker.py` | Isolated BigCodeBench checks; full-suite diagnostics never become feedback. | check, main |
 | verified orchestration runtime | `src/vao/decisions/context_value.py` | Prospective forecasts and matched artifact/feedback ablations after visible failure. | select_tasks, observable_features, branch_messages, forecast_messages, parse_forecast, collect_context, main |
+| verified orchestration runtime | `src/vao/decisions/feedback_routing.py` | Prospective fixed-policy comparison with feedback only, before any selector. | reservation, model_for, messages, evaluate, trajectory, collect, load_frozen, main |
 | verified orchestration runtime | `src/vao/decisions/openrouter.py` | Pinned OpenRouter completions with an append-only dollar reservation ledger. | insured_empty_error, read_stream, BudgetStopped, BackendStopped, append_json, BudgetLedger, NoRedirects, OpenRouterClient |
 | verified orchestration runtime | `src/vao/decisions/pilot.py` | Collect matched one-checkpoint HumanEval+ continuations through OpenRouter. | digest, load_tasks, messages_for, evaluate_response, summarize, write_report, collect, main |
 | verified orchestration runtime | `src/vao/decisions/recovery.py` | Task-held-out recovery collection with public base feedback and frozen policies. | load_experiment, producer_messages, resized, recovery_messages, forecast_messages, evaluate, run, main |
