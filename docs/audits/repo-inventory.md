@@ -59,7 +59,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `autoresearch` | 59 | 460.7K |
 | `scripts` | 30 | 315.8K |
 | `tests` | 46 | 185.5K |
-| `docs` | 25 | 120.4K |
+| `docs` | 25 | 120.6K |
 | `prompts` | 6 | 21.6K |
 | `configs` | 7 | 12.7K |
 | `README.md` | 1 | 7.9K |
@@ -86,7 +86,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.txt` | 287 | 4.2M |
 | `.yaml` | 270 | 316.1K |
 | `.py` | 256 | 2.0M |
-| `.md` | 103 | 398.0K |
+| `.md` | 103 | 398.1K |
 | `.png` | 64 | 7.9M |
 | `.pdf` | 37 | 745.3K |
 | `.csv` | 26 | 581.1K |

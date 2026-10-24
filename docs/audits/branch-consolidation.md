@@ -72,6 +72,8 @@ branch/PR metadata were also saved locally before cleanup.
   default benchmark through the installed package instead of source-tree depth.
 - Run Makefile Python targets through `uv` by default, so the documented
   `make check` uses the locked environment without manual activation.
+- Replace deprecated Node 20 CI actions with verified Node 24 releases and pin
+  the tested Ubuntu 24.04 runner rather than relying on a moving runner label.
 - Respect optional dependencies: the macOS BigCodeBench sandbox test requires
   EvalPlus, matching the existing continuation-test convention. The base install
   skips that integration test; it is exercised separately with the pinned extra.
