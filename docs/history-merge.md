@@ -79,3 +79,12 @@ experiment. Their last main-branch copy is recoverable at
 [`5bc534c`](https://github.com/EmaRimoldi/how-to-pick-a-model/tree/5bc534cc4fc82cac49aa6ffb4b7d913e74b34e22).
 Current contracts live in bundle READMEs, the decision protocol and tested code.
 Baseline evidence, raw archives, active manuscripts and their assets are retained.
+
+## October branch consolidation
+
+The [branch review](audits/branch-consolidation.md) records every reviewed head,
+the compatible BigCodeBench integration and the branches retired after testing.
+The original squash-merged recovery commits and the separate SAI-3 theory line
+are preserved by explicit history-only merges. Those merges retain the current
+working tree; they do not replace active manuscripts or revive obsolete collectors.
+All other topic heads were already ancestors or integrated with this consolidation.

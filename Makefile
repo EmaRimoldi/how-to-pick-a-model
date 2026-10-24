@@ -1,7 +1,7 @@
 .PHONY: indexes readiness compile test check paper-build paper-figures-autoresearch
 
-PYTHON ?= python
 UV ?= uv
+PYTHON ?= $(UV) run python
 PAPER_BUILD_OUT ?= /tmp/how_to_pick_a_model_paper_build
 AUTORESEARCH_FIGURE_OUT ?= /tmp/how_to_pick_a_model_autoresearch
 

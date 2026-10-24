@@ -89,10 +89,13 @@ class BudgetLedger:
     journal cannot be reused: automatic resume could duplicate paid requests.
     """
 
-    def __init__(self, path: Path, limit_usd: float) -> None:
+    def __init__(self, path: Path, limit_usd: float, *, maximum_limit_usd: float = 2) -> None:
         self.limit = Decimal(str(limit_usd))
-        if not self.limit.is_finite() or not 0 < self.limit <= 2:
-            raise ValueError("This pilot requires a budget in (0, 2] USD")
+        maximum = Decimal(str(maximum_limit_usd))
+        if not maximum.is_finite() or not 0 < maximum <= 5:
+            raise ValueError("Explicit campaign maximum must be in (0, 5] USD")
+        if not self.limit.is_finite() or not 0 < self.limit <= maximum:
+            raise ValueError("Run budget exceeds the explicit campaign maximum")
         self.path = path
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.path.touch(exist_ok=False)

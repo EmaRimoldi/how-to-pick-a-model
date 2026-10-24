@@ -101,6 +101,50 @@ It reproduces the recorded analysis before generating tables and figures, then
 compiles three times out of tree. Known campaign charges plus every unresolved
 reservation total $1.39600335 under the original $2 cap; collection is finished.
 
+## Feedback-only fixed policies on new tasks
+
+The [BigCodeBench protocol](../experiments/bigcodebench/feedback-only-routing/PROTOCOL.md)
+uses 157 reference-qualified, previously unqueried tasks and no new selector.
+Collection is complete: 628 policy outcomes, 1,492 responses, $0.38896675 known
+charges and zero unresolved reservations. The primary gate does not pass.
+Reproduce all published figures' numerical inputs, final comparisons, receipt
+and prompt audits, source hashes and the exact preserved interim snapshot:
+
+```bash
+uv run python scripts/verify_feedback_evidence.py \
+  --input experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022
+```
+
+This reads data only: no credentials, candidate execution, optional EvalPlus,
+model calls or Git history are required. Ten inert source snapshots are bound
+to the actual collection commit `d65fbde`; they remain immutable when current
+runtime code is maintained. Verification compares the saved snapshots, then
+reconstructs recorded statistics with the current analysis implementation. The verifier-repeat source is a
+separate postcollection diagnostic. The final report discloses one directly
+requested interim look at 83 already completed tasks and its selection bias.
+Original labels remain primary after the zero-discrepancy offline repeat.
+Read the [complete report](../experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/report.md)
+and [research note](blog/feedback-only-escalation.md).
+
+The completed collector must not be restarted. For inspection only:
+Planning validates the pinned tasks and reference qualification, reports current
+source drift from the historical freeze, and makes no provider call:
+
+```bash
+.venv/bin/python scripts/run_feedback_routing.py \
+  --config experiments/bigcodebench/feedback-only-routing/configs/evaluation.json
+```
+
+Execution rejects any source drift before provider access. The historical freeze
+therefore cannot be used to launch modified code; a future study needs a new
+reviewed freeze and authorization. Original collection additionally required macOS sandbox-exec, the optional EvalPlus
+profile for the isolation probe, a clean committed freeze, a fresh ignored
+output directory, explicit `--execute`, and a key on un-echoed stdin. Its recorded
+$4.00 collection ceiling belonged to a separate $5 authorization; neither that
+completed collection nor the completed $2 campaign may be resumed. No uncertain call is retried.
+`scripts/analyze_feedback_routing.py` audits saved receipts/messages without
+provider calls; it refuses treatment analysis before `summary.json` exists.
+
 ## AutoResearch evidence
 
 The four retained bundles cover initial-model calibration, controlled evaluator

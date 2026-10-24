@@ -9,7 +9,10 @@ checkpoint continuations. The proposed state-conditioned controller is not yet
 implemented. `decisions/` adds budgeted OpenRouter calls and a matched
 one-checkpoint HumanEval+ collector with separate visible and evaluation channels.
 `decisions/context_value.py` adds code/feedback ablations and prospective zero-shot
-API forecasts; it does not fit or deploy a learned policy. Use
+API forecasts; `recovery_policy.py` implements the limited one-checkpoint
+selector described in that bundle. `transfer*.py` adds the separate MBPP+
+replication. `feedback_routing.py` implements the completed BigCodeBench fixed
+policies, sharing accounting and verification rather than a learned controller. Use
 `docs/decision-protocol.md` before extending the runtime.
 
 ## Baseline CLI: `agent_workflow/`
@@ -30,4 +33,5 @@ architecture is best or that dynamic continuation decisions already work.
 Historical MBPP/BBH loaders and analyses remain retired. The focused
 `decisions/transfer.py` collector extends the retained recovery experiment to
 MBPP+, with official input/oracle handling and a frozen cross-benchmark protocol.
-Safe checks: `make check`. Do not start live model or cluster work during an audit.
+See [the architecture](../docs/engineering/architecture.md) for package boundaries
+and frozen-source provenance. Safe checks: `make check`. Do not start live model or cluster work during an audit.
