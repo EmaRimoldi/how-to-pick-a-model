@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from scripts.verify_feedback_evidence import checksum_audit, equivalent, verify
+from scripts.verify_feedback_evidence import checksum_audit, equivalent, source_audit, verify
 
 
 def test_statistics_comparison_rejects_changed_result_and_accepts_roundoff():
@@ -31,7 +31,28 @@ def test_checksum_audit_rejects_tampering_and_undeclared_file(tmp_path):
         checksum_audit(tmp_path)
 
 
-def test_canonical_bank_reproduces_all_reports_sources_and_interim_prefix():
-    result = verify(Path("experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022"))
+def test_canonical_bank_reproduces_outside_checkout(tmp_path, monkeypatch):
+    root = Path(__file__).resolve().parents[1]
+    bank = root / "experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022"
+    monkeypatch.chdir(tmp_path)
+    result = verify(bank)
     assert result["status"] == "verified" and result["policy_outcomes"] == 628
     assert result["verifier_repeat_discrepancies"] == 0 and result["model_calls"] == 0
+
+
+def test_source_provenance_accepts_runtime_evolution_but_rejects_snapshot_drift(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    Path("collector.py").write_text("maintained runtime")
+    frozen = tmp_path / "frozen.txt"
+    frozen.write_text("original collector")
+    digest = hashlib.sha256(frozen.read_bytes()).hexdigest()
+    source_map = {"git_commit": "collection-commit",
+                  "files": {"collector.py": {"sha256": digest, "snapshot": "frozen.txt"}},
+                  "postcollection_verification": {"sha256": digest, "snapshot": "frozen.txt"}}
+    (tmp_path / "source-map.json").write_text(json.dumps(source_map))
+    config = {"source_hashes": {"collector.py": digest}}
+    manifest = {"git_commit": "collection-commit"}
+    assert source_audit(tmp_path, config, manifest) == 1
+    frozen.write_text("altered evidence")
+    with pytest.raises(AssertionError):
+        source_audit(tmp_path, config, manifest)

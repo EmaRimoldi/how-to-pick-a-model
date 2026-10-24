@@ -143,7 +143,14 @@ def collect(config: dict, tasks: list[dict], client, verifier, output: Path) -> 
             "collection_cap_usd": config["run_ceiling_usd"]}
 
 
-def load_frozen(config_path: Path) -> tuple[dict, list[dict]]:
+def source_drift(config: dict) -> list[str]:
+    """Report current source changes without confusing them with frozen evidence."""
+    root = Path(__file__).resolve().parents[3]
+    return [name for name, expected in config["source_hashes"].items()
+            if not (root / name).is_file() or sha(root / name) != expected]
+
+
+def load_frozen(config_path: Path, *, validate_sources: bool = True) -> tuple[dict, list[dict]]:
     config = json.loads(config_path.read_text())
     root = config_path.parent.parent
     tasks_path = root / config["task_file"]
@@ -151,9 +158,10 @@ def load_frozen(config_path: Path) -> tuple[dict, list[dict]]:
         raise ValueError("Frozen tasks changed")
     if sha(root / "data/reference-audit.json") != config["reference_audit_sha256"]:
         raise ValueError("Frozen reference qualification changed")
-    for name, expected in config["source_hashes"].items():
-        if sha(Path(name)) != expected:
-            raise ValueError("Frozen source changed: " + name)
+    if validate_sources:
+        drift = source_drift(config)
+        if drift:
+            raise ValueError("Frozen source changed: " + ", ".join(drift))
     tasks = json.loads(tasks_path.read_text())
     if len({t["task_id"] for t in tasks}) != len(tasks) or len(tasks) != config["tasks"]:
         raise ValueError("Frozen task identity/count mismatch")
@@ -166,10 +174,11 @@ def main() -> None:
     parser.add_argument("--output", type=Path)
     parser.add_argument("--execute", action="store_true")
     args = parser.parse_args()
-    config, tasks = load_frozen(args.config)
+    config, tasks = load_frozen(args.config, validate_sources=args.execute)
     if not args.execute:
         print(json.dumps({"mode": "plan_only", "tasks": len(tasks), "policies": POLICIES,
-            "task_budget_usd": config["task_budget_usd"], "run_cap_usd": config["run_ceiling_usd"]}, indent=2))
+            "task_budget_usd": config["task_budget_usd"], "run_cap_usd": config["run_ceiling_usd"],
+            "source_drift": source_drift(config)}, indent=2))
         return
     if not args.output:
         parser.error("--execute requires a fresh --output")

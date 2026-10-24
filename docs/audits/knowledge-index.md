@@ -5,7 +5,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 
 ## Summary
 
-- Canonical docs present: `22/22`
+- Canonical docs present: `24/24`
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `12`
@@ -29,6 +29,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `docs/paper-revision-playbook.md` | yes |
 | `docs/reproducibility.md` | yes |
 | `docs/demo.md` | yes |
+| `docs/engineering/architecture.md` | yes |
+| `docs/audits/branch-consolidation.md` | yes |
 | `docs/audits/theory-consolidation.md` | yes |
 | `docs/audits/knowledge-index.md` | yes |
 | `docs/audits/repo-inventory.md` | yes |
@@ -194,7 +196,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/run_context_value.py` | python | Plan or explicitly run a budgeted artifact/feedback and prospective-forecast study. |
 | `scripts/run_continuation_pilot.py` | python | Run the explicit-budget OpenRouter/HumanEval+ pilot; defaults to plan only. |
 | `scripts/run_feedback_routing.py` | python | Plan or explicitly run new-task, feedback-only fixed-policy trajectories. |
-| `scripts/run_merge_phase.py` | python | CLI: run the merge phase on a completed parallel experiment. Given an experiment directory produced by run_parallel_experiment.py, this script: 1. Gathers all agent snapshots, reasoning traces, and metrics 2. Selects the best and most informative train.py variants 3. Analyses per-parameter improvement correlations 4. Produces a merged train.py candidate 5. Runs evaluation via SLURM (always; workspace auto-detected if not provided) 6. Writes a merge report and comparison table Usage: python scripts/run_merge_phase.py --experiment-dir runs/experiment_parallel_20260331_120000 python scripts/run_merge_phase.py --experiment-dir runs/exp_... --source-mode parallel |
+| `scripts/run_merge_phase.py` | python | Compatibility entry point for ``agent-workflow merge`` (live evaluation). |
 | `scripts/run_parallel_experiment.py` | python | CLI: launch Mode 1 (2 agents × T budget). |
 | `scripts/run_recovery_transfer.py` | python | Plan or explicitly collect the cumulative-budgeted MBPP+ recovery replication. |
 | `scripts/run_recovery_validation.py` | python | Plan or explicitly run the task-held-out recovery validation within its cumulative budget. |
@@ -273,7 +275,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | agent-workflow runtime | `src/agent_workflow/instrumentation/snapshotting.py` | Snapshot management for train.py changes. Every time an agent modifies train.py, a snapshot is saved with metadata: - the train.py content at that point - the agent's hypothesis and expected effect - the evaluation result (val_bpb before/after, accepted/rejected) - git commit hash and message Directory layout per agent: {agent_dir}/snapshots/ step_000/ train.py metadata.json step_001/ train.py metadata.json ... The snapshot helper script (save_snapshot.py) is generated into each agent's workspace so that the sub-agent can call it directly from bash. | SnapshotMetadata, SnapshotManager, generate_save_snapshot_py, generate_update_snapshot_py |
 | agent-workflow runtime | `src/agent_workflow/launcher.py` | Entry point: parse args, pick mode, run experiment. | main_parallel, main_parallel_shared, main_single_long, main_single_memory |
 | agent-workflow runtime | `src/agent_workflow/merger.py` | Merge orchestrator: aggregate best agent results into a merged experiment. The merge phase has six steps: 1. Gather evidence — collect all snapshots, reasoning traces, and metrics 2. Build candidate set — best per agent + near-best + informative intermediates 3. Analyse trajectories — identify modifications correlated with gains 4. Produce merge candidate(s) — intelligently combine best modifications 5. Evaluate — run the merged train.py through the normal training pathway 6. Summarise — explain choices and compare against best individual agent The key insight for this codebase: train.py contains only scalar hyperparameters. The merge problem therefore reduces to: - identifying which hyperparameter values were improved by which agents - building a combined train.py that uses the best value found for each parameter This is code-aware (uses regex to parse parameters) and evaluation-aware (uses val_bpb trajectory to confirm which changes helped). Output directory layout: {experiment_dir}/mode_merge/ candidates/ candidate_agent_N_best.py candidate_merged.py ... merge_plan.json merge_results.json merge_report.txt | extract_hyperparams, apply_hyperparams, MergeCandidate, MergePlan, MergeResults, MergeOrchestrator |
-| agent-workflow runtime | `src/agent_workflow/modes/merge.py` | Canonical merge mode wrapper. | run_merge |
+| agent-workflow runtime | `src/agent_workflow/modes/merge.py` | Canonical merge runtime and CLI for completed baseline experiments. | run_merge, main |
 | agent-workflow runtime | `src/agent_workflow/modes/parallel.py` | Canonical parallel mode wrapper. |  |
 | agent-workflow runtime | `src/agent_workflow/modes/single_long.py` | Canonical single-long mode wrapper. |  |
 | agent-workflow runtime | `src/agent_workflow/modes/swarm.py` | Canonical swarm mode surface. | SwarmModeConfig, create_swarm_blackboard, run_swarm, main_swarm |
@@ -319,7 +321,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/decisions/bigcode.py` | Pinned, standard-library BigCodeBench subset and sandbox reference audit. | sha, stdlib_task, shingles, similarity, BigCodeVerifier, audit_tasks |
 | verified orchestration runtime | `src/vao/decisions/bigcode_worker.py` | Isolated BigCodeBench checks; full-suite diagnostics never become feedback. | check, main |
 | verified orchestration runtime | `src/vao/decisions/context_value.py` | Prospective forecasts and matched artifact/feedback ablations after visible failure. | select_tasks, observable_features, branch_messages, forecast_messages, parse_forecast, collect_context, main |
-| verified orchestration runtime | `src/vao/decisions/feedback_routing.py` | Prospective fixed-policy comparison with feedback only, before any selector. | reservation, model_for, messages, evaluate, trajectory, collect, load_frozen, main |
+| verified orchestration runtime | `src/vao/decisions/feedback_routing.py` | Prospective fixed-policy comparison with feedback only, before any selector. | reservation, model_for, messages, evaluate, trajectory, collect, source_drift, load_frozen |
 | verified orchestration runtime | `src/vao/decisions/openrouter.py` | Pinned OpenRouter completions with an append-only dollar reservation ledger. | insured_empty_error, read_stream, BudgetStopped, BackendStopped, append_json, BudgetLedger, NoRedirects, OpenRouterClient |
 | verified orchestration runtime | `src/vao/decisions/pilot.py` | Collect matched one-checkpoint HumanEval+ continuations through OpenRouter. | digest, load_tasks, messages_for, evaluate_response, summarize, write_report, collect, main |
 | verified orchestration runtime | `src/vao/decisions/recovery.py` | Task-held-out recovery collection with public base feedback and frozen policies. | load_experiment, producer_messages, resized, recovery_messages, forecast_messages, evaluate, run, main |

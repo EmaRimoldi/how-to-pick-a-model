@@ -11,13 +11,14 @@
 | [Paper revision](paper-revision-playbook.md) | Source selection and claim discipline |
 | [Theory audit](audits/theory-consolidation.md) | Historical theory consolidation and caveats |
 | [Manuscript audit](audits/manuscript-reproducibility.md) | Historical accounting and PDF issues |
-| [Engineering](engineering/README.md) | Existing baseline runner architecture |
+| [Engineering](engineering/README.md) | Runtime, collector and evidence architecture |
 | [Evaluations](evals/README.md) | Evaluator calibration and controls |
 | [Context value](../experiments/humaneval-plus/context-value/README.md) | Matched code/feedback conditions and prospective forecasts after failure |
 | [Frozen recovery protocol](../experiments/humaneval-plus/context-value/VALIDATION.md) | Development-trained selectors, task holdout, transfer amendment and accounting |
 | [Recovery related work](recovery-related-work.md) | Closest precedents and boundaries for a new paper claim |
 | [Recovery blog draft](blog/when-to-keep-failed-code.md) | Audited results, static controls, forecast limitations and reproduction |
 | [Feedback-only escalation note](blog/feedback-only-escalation.md) | Complete 157-task fixed-policy test, negative primary result, admission/verifier diagnostics and reproduction |
+| [Branch review](audits/branch-consolidation.md) | Per-branch decisions, preserved history and consolidation checks |
 | [History](history-merge.md) | Source provenance and recoverable cleanup snapshots |
 
 Generated navigation maps: [inventory](audits/repo-inventory.md),

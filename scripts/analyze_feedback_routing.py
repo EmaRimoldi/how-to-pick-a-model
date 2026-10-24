@@ -23,6 +23,8 @@ def audit(root: Path) -> dict:
     manifest = json.loads((root / "manifest.json").read_text())
     assert hashlib.sha256((root / "config.json").read_bytes()).hexdigest() == manifest["config_sha256"]
     base = Path(config["bundle"])
+    if not base.is_absolute():
+        base = Path(__file__).resolve().parents[1] / base
     task_path = base / config["task_file"]
     assert hashlib.sha256(task_path.read_bytes()).hexdigest() == config["task_sha256"]
     tasks = {t["task_id"]: t for t in json.loads(task_path.read_text())}

@@ -119,7 +119,7 @@ commands are documented in [reproducibility](docs/reproducibility.md).
 
 | Path | Role |
 | --- | --- |
-| `experiments/` | Eight baseline bundles, a continuation pilot, context diagnostics and frozen transfer evidence |
+| `experiments/` | Baseline bundles, checkpoint recovery, MBPP+ replication and BigCodeBench fixed-policy evidence |
 | `autoresearch/` | CIFAR-10 benchmark, verification, accounting, and analysis |
 | `src/vao/` | Verified execution and model adapters |
 | `src/agent_workflow/` | Baseline CLI, instrumentation, and reporting |
@@ -140,4 +140,7 @@ is conditional on its stated assumptions. The historical submitted-PDF issues
 remain documented in the [reproducibility audit](docs/audits/manuscript-reproducibility.md).
 
 The scope reduction and recoverable Git snapshots are recorded in
-[repository history](docs/history-merge.md). `AGENTS.md` describes safe development.
+[repository history](docs/history-merge.md) and the
+[branch review](docs/audits/branch-consolidation.md). The
+[runtime architecture](docs/engineering/architecture.md) describes the maintained
+package boundaries. `AGENTS.md` describes safe development.

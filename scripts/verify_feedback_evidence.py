@@ -66,23 +66,27 @@ def verify_interim(root: Path):
         assert hashlib.sha256(content).hexdigest() == digest, "Interim snapshot changed: " + name
 
 
+def source_audit(root: Path, config: dict, manifest: dict) -> int:
+    """Bind collection provenance to its inert snapshots, not today's runtime."""
+    source_map = json.loads((root / "source-map.json").read_text())
+    assert source_map["git_commit"] == manifest["git_commit"]
+    assert source_map["files"].keys() == config["source_hashes"].keys()
+    for name, digest in config["source_hashes"].items():
+        row = source_map["files"][name]
+        assert row["sha256"] == digest
+        assert hashlib.sha256(checked_path(root, row["snapshot"]).read_bytes()).hexdigest() == digest
+    diagnostic = source_map["postcollection_verification"]
+    assert hashlib.sha256(checked_path(root, diagnostic["snapshot"]).read_bytes()).hexdigest() == diagnostic["sha256"]
+    return len(source_map["files"])
+
+
 def verify(root: Path) -> dict:
     checksum_audit(root)
     data = audit(root)
     equivalent(json.loads((root / "analysis.json").read_text()), analyze(data), "analysis")
     equivalent(json.loads((root / "accounting-diagnostics.json").read_text()), accounting_diagnostics(data), "accounting")
-    source_map = json.loads((root / "source-map.json").read_text())
     manifest = json.loads((root / "manifest.json").read_text())
-    assert source_map["git_commit"] == manifest["git_commit"]
-    assert source_map["files"].keys() == data["config"]["source_hashes"].keys()
-    for name, digest in data["config"]["source_hashes"].items():
-        row = source_map["files"][name]
-        assert row["sha256"] == digest
-        assert hashlib.sha256(checked_path(root, row["snapshot"]).read_bytes()).hexdigest() == digest
-        # The currently imported collector/verifier/analyzer must still be the frozen implementation.
-        assert hashlib.sha256(Path(name).read_bytes()).hexdigest() == digest, "Source drift: " + name
-    diagnostic = source_map["postcollection_verification"]
-    assert hashlib.sha256(checked_path(root, diagnostic["snapshot"]).read_bytes()).hexdigest() == diagnostic["sha256"]
+    frozen_source_files = source_audit(root, data["config"], manifest)
     summary = json.loads((root / "summary.json").read_text())
     assert summary["status"] == "complete" and summary["stop_error"] is None and data["integrity"]["complete"]
     equivalent(summary["known_cost_usd"], data["integrity"]["known_usd"])
@@ -113,7 +117,7 @@ def verify(root: Path) -> dict:
     verify_interim(root)
     return {"status": "verified", "tasks": len(data["tasks"]), "policy_outcomes": len(data["outcomes"]),
             "responses": len(calls), "known_usd": data["integrity"]["known_usd"],
-            "held_usd": data["integrity"]["held_usd"], "frozen_source_files": len(source_map["files"]),
+            "held_usd": data["integrity"]["held_usd"], "frozen_source_files": frozen_source_files,
             "verifier_repeat_discrepancies": repeated["mismatching_responses"],
             "interim_snapshot_preserved": True, "model_calls": 0, "candidate_execution": False}
 

@@ -48,10 +48,11 @@ verifiable tasks. Read:
   frozen protocol before collection and preserve all selected missing states.
 - Existing CLI modes are baseline execution tools, not evidence of an optimal
   multi-agent architecture or a state-conditioned controller.
-- The next BigCodeBench stage tests fixed feedback-only policies first. Do not
-  train a new selector, recycle observed tasks as fresh, or change its frozen
-  intervention/primary comparison after calls. Its new $5 authorization is
-  separate from the completed $2 campaign; collection itself is capped at $4.00.
+- The BigCodeBench fixed-policy study is complete and its primary gate failed.
+  Do not resume collection, train a new selector, recycle observed tasks as fresh,
+  or change its frozen intervention/primary comparison. Its recorded $4.00
+  collection ceiling belongs to a separate historical $5 authorization; it does
+  not increase the completed $2 campaign budget or authorize further calls.
 
 ## Editing and verification
 

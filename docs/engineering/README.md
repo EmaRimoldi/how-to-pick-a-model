@@ -1,7 +1,7 @@
 # Engineering
 
-This section explains how the runtime is built and how the public execution
-surface coordinates agent modes.
+This section explains the verified-task collectors, shared accounting and verification,
+historical baseline CLI, and recorded-evidence workflow.
 
 | File | Role |
 |---|---|

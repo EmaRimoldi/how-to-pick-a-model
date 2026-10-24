@@ -6,7 +6,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `2507`
+- Files indexed: `2509`
 - Bytes indexed: `103.3M`
 
 ## Canonical Entrypoints
@@ -23,6 +23,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `docs/paper-revision-playbook.md` | yes |
 | `docs/reproducibility.md` | yes |
 | `docs/demo.md` | yes |
+| `docs/engineering/architecture.md` | yes |
+| `docs/audits/branch-consolidation.md` | yes |
 | `docs/audits/theory-consolidation.md` | yes |
 | `docs/audits/knowledge-index.md` | yes |
 | `docs/audits/repo-inventory.md` | yes |
@@ -55,12 +57,12 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `src` | 141 | 1.1M |
 | `uv.lock` | 1 | 972.4K |
 | `autoresearch` | 59 | 460.7K |
-| `scripts` | 30 | 319.2K |
-| `tests` | 45 | 181.1K |
-| `docs` | 24 | 109.9K |
+| `scripts` | 30 | 315.8K |
+| `tests` | 46 | 185.5K |
+| `docs` | 25 | 120.4K |
 | `prompts` | 6 | 21.6K |
 | `configs` | 7 | 12.7K |
-| `README.md` | 1 | 7.7K |
+| `README.md` | 1 | 7.9K |
 | `AGENTS.md` | 1 | 4.0K |
 | `.claude` | 4 | 3.3K |
 | `NOTES.md` | 1 | 3.2K |
@@ -83,8 +85,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.jsonl` | 295 | 59.0M |
 | `.txt` | 287 | 4.2M |
 | `.yaml` | 270 | 316.1K |
-| `.py` | 255 | 2.0M |
-| `.md` | 102 | 386.8K |
+| `.py` | 256 | 2.0M |
+| `.md` | 103 | 398.0K |
 | `.png` | 64 | 7.9M |
 | `.pdf` | 37 | 745.3K |
 | `.csv` | 26 | 581.1K |

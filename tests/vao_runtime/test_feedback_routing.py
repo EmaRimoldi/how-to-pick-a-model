@@ -82,6 +82,34 @@ def test_delayed_switch_uses_two_small_attempts():
     assert [model_for("delayed_large_feedback", i) for i in range(4)] == ["small", "small", "large", "large"]
 
 
+def test_plan_reports_source_drift_but_execution_rejects_it(tmp_path, monkeypatch, capsys):
+    import hashlib
+    import sys
+    from vao.decisions.feedback_routing import main
+    bundle = tmp_path / "bundle"
+    (bundle / "configs").mkdir(parents=True)
+    (bundle / "data").mkdir()
+    tasks = bundle / "data/tasks.json"
+    tasks.write_text(json.dumps([TASK]))
+    reference = bundle / "data/reference-audit.json"
+    reference.write_text("{}")
+    changed = "src/vao/decisions/feedback_routing.py"
+    config = dict(CONFIG, tasks=1, task_file="data/tasks.json", run_ceiling_usd=4,
+                  task_sha256=hashlib.sha256(tasks.read_bytes()).hexdigest(),
+                  reference_audit_sha256=hashlib.sha256(reference.read_bytes()).hexdigest(),
+                  source_hashes={changed: "0" * 64})
+    path = bundle / "configs/evaluation.json"
+    path.write_text(json.dumps(config))
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(sys, "argv", ["feedback-routing", "--config", str(path)])
+    main()
+    plan = json.loads(capsys.readouterr().out)
+    assert plan["mode"] == "plan_only" and plan["source_drift"] == [changed]
+    monkeypatch.setattr(sys, "argv", ["feedback-routing", "--config", str(path), "--execute"])
+    with pytest.raises(ValueError, match="Frozen source changed"):
+        main()
+
+
 def test_new_budget_requires_explicit_maximum_and_keeps_unknown_holds(tmp_path):
     with pytest.raises(ValueError):
         BudgetLedger(tmp_path / "old.jsonl", 5)
@@ -149,6 +177,7 @@ def test_full_synthetic_collection_reproduces_and_detects_corruption(tmp_path):
 
 @pytest.mark.skipif(__import__("sys").platform != "darwin", reason="macOS sandbox integration")
 def test_bigcode_sandbox_public_and_hidden_boundary():
+    pytest.importorskip("evalplus")
     from vao.decisions.bigcode import BigCodeVerifier
     task = {"complete_prompt": 'def task_func(x):\n    """\n    >>> task_func(2)\n    3\n    """\n', "entry_point": "task_func",
             "test": "import unittest\nclass TestCases(unittest.TestCase):\n def test_x(self): self.assertEqual(task_func(7), 8, 'PRIVATE_ASSERTION')"}

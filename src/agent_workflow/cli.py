@@ -43,7 +43,7 @@ def main(argv=None) -> None:
         from agent_workflow.modes.swarm import main_swarm
         main_swarm(rest)
     elif args.command == "merge":
-        from scripts.run_merge_phase import main as merge_main
+        from agent_workflow.modes.merge import main as merge_main
         merge_main(rest)
     elif args.command == "certified-time":
         from agent_workflow.instrumentation.certified_time import main as certified_time_main

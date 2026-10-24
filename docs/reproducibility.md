@@ -117,7 +117,9 @@ uv run python scripts/verify_feedback_evidence.py \
 
 This reads data only: no credentials, candidate execution, optional EvalPlus,
 model calls or Git history are required. Ten inert source snapshots are bound
-to the actual collection commit `d65fbde`; the verifier-repeat source is a
+to the actual collection commit `d65fbde`; they remain immutable when current
+runtime code is maintained. Verification compares the saved snapshots, then
+reconstructs recorded statistics with the current analysis implementation. The verifier-repeat source is a
 separate postcollection diagnostic. The final report discloses one directly
 requested interim look at 83 already completed tasks and its selection bias.
 Original labels remain primary after the zero-discrepancy offline repeat.
@@ -125,18 +127,21 @@ Read the [complete report](../experiments/bigcodebench/feedback-only-routing/res
 and [research note](blog/feedback-only-escalation.md).
 
 The completed collector must not be restarted. For inspection only:
-Planning reads the pinned task/source hashes and makes no provider call:
+Planning validates the pinned tasks and reference qualification, reports current
+source drift from the historical freeze, and makes no provider call:
 
 ```bash
 .venv/bin/python scripts/run_feedback_routing.py \
   --config experiments/bigcodebench/feedback-only-routing/configs/evaluation.json
 ```
 
-Collection additionally requires macOS sandbox-exec, the optional EvalPlus
+Execution rejects any source drift before provider access. The historical freeze
+therefore cannot be used to launch modified code; a future study needs a new
+reviewed freeze and authorization. Original collection additionally required macOS sandbox-exec, the optional EvalPlus
 profile for the isolation probe, a clean committed freeze, a fresh ignored
-output directory, explicit `--execute`, and a key on un-echoed stdin. Its new
-$4.00 collection ceiling fits the separately authorized $5 additional budget;
-it must never resume the completed $2 campaign. No uncertain call is retried.
+output directory, explicit `--execute`, and a key on un-echoed stdin. Its recorded
+$4.00 collection ceiling belonged to a separate $5 authorization; neither that
+completed collection nor the completed $2 campaign may be resumed. No uncertain call is retried.
 `scripts/analyze_feedback_routing.py` audits saved receipts/messages without
 provider calls; it refuses treatment analysis before `summary.json` exists.
 
