@@ -1,6 +1,6 @@
 # Agent Memory Ablation
 
-**Status**: active evidence experiment
+**Status**: completed exploratory study
 **Period**: April 2026
 **Question**: when agents explore aggressively, does shared memory make their
 search more reliable?

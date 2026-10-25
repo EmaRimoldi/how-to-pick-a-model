@@ -1,6 +1,6 @@
 # Starting Model Calibration
 
-**Status**: Active
+**Status**: completed calibration
 **Date**: April 14, 2026
 **Purpose**: choose one controlled `autoresearch/train.py` starting point before
 comparing agent workflows.
@@ -141,9 +141,9 @@ agent workflows.
 All decision analysis therefore uses 1170 optimizer updates. Do not mix 585 and
 1170 runs in the same claim.
 
-## Next Step
+## Protocol for subsequent agent studies
 
-Run a small agent pilot from this exact starting point:
+The selected starting point defines this calibration protocol:
 
 ```text
 starting train.py: AUTOSEARCH_MAX_STEPS = 1170

@@ -30,6 +30,7 @@ not establish that a state-conditioned continue/restart/handoff controller works
 | Memory/context effects | `theory_anchor.tex` | `experiments/autoresearch-cifar10/shared-memory-ablation/` | Substrate-specific baseline, not proof of a cross-model transfer benefit |
 | Failed-code value and one-checkpoint selection | Frozen empirical protocol | `experiments/humaneval-plus/context-value/` | 25 evaluation failures; producer transfer; no reliable gain over stronger static control |
 | Cross-benchmark artifact versus feedback information | Frozen transfer protocol | `experiments/mbpp-plus/context-value-transfer/` | 94/96 complete failures; descriptive censored bank; no established primary selector gain |
+| Fixed feedback-only escalation on new tasks | Frozen BigCodeBench protocol | `experiments/bigcodebench/feedback-only-routing/` | Complete 157-task bank; primary −2.55 pp [−7.01, +1.27]; one requested interim look disclosed; unequal admission utilization and public-test false positives |
 
 ## Evidence tiers
 
@@ -48,8 +49,20 @@ not establish that a state-conditioned continue/restart/handoff controller works
 - `experiments/humaneval-plus/qwen-model-size-frontier/`
 - `experiments/humaneval-plus/context-value/` (discovery and amended transfer; not a current manuscript claim)
 - `experiments/mbpp-plus/context-value-transfer/` (censored external replica; separate empirical draft)
+- `experiments/bigcodebench/feedback-only-routing/` (complete fixed-policy study; no established primary gain or new selector)
 
 ## Recovery evidence and remaining gaps
+
+The completed [feedback-only study](../experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/report.md)
+retains every one of 157 task clusters and 628 policy outcomes. The fixed primary
+gain is not established; no selector is built. Its [research-note draft](blog/feedback-only-escalation.md)
+reports all four policies, conservative admission, mean/median latency, public
+false positives and the one directly requested descriptive interim look, without
+replacing the primary with a favorable secondary. Cost point estimates are not
+evidence of noninferior quality; stronger public verification has not been tested
+as an intervention. Keep this complete bank distinct from within-task sampling,
+the censored MBPP+ study and existing manuscripts. These tasks are now observed;
+a future intervention/selector requires a new freeze and independent evaluation.
 
 The [OpenRouter development pilot](../experiments/humaneval-plus/openrouter-continuation-pilot/README.md)
 provides a collector and matched continuations on two failed development states.

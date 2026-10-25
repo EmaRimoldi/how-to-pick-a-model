@@ -12,7 +12,8 @@ new continuation-policy claims need their own verified evidence.
 
 Use the [theory audit](audits/theory-consolidation.md) to understand historical
 claims that were not promoted. Removed drafts, planning documents, and reference
-PDFs are recoverable through Git history, not current source dependencies.
+PDFs are recoverable through the [provenance history](history-merge.md), not
+current source dependencies.
 
 For every change:
 

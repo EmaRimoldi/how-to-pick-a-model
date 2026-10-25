@@ -1,0 +1,48 @@
+{
+  "scope": "Postcollection descriptive accounting/verifier diagnostics; not additional efficacy hypotheses or changed primary labels.",
+  "per_policy": {
+    "small_feedback": {
+      "mean_attempts": 7.420382165605096,
+      "maximum_attempts_observed": 71,
+      "budget_stopped_tasks": 17,
+      "mean_spend_when_budget_stopped_usd": 0.005011164705882353,
+      "mean_unused_budget_when_budget_stopped_usd": 0.0009888352941176473,
+      "mean_budget_fraction_used_when_budget_stopped": 0.8351941176470588,
+      "median_api_seconds": 13.095890790922567
+    },
+    "immediate_large_feedback": {
+      "mean_attempts": 1.3694267515923566,
+      "maximum_attempts_observed": 3,
+      "budget_stopped_tasks": 27,
+      "mean_spend_when_budget_stopped_usd": 0.0012450314814814814,
+      "mean_unused_budget_when_budget_stopped_usd": 0.004754968518518519,
+      "mean_budget_fraction_used_when_budget_stopped": 0.20750524691358024,
+      "median_api_seconds": 12.965614999993704
+    },
+    "delayed_large_feedback": {
+      "mean_attempts": 1.6114649681528663,
+      "maximum_attempts_observed": 4,
+      "budget_stopped_tasks": 19,
+      "mean_spend_when_budget_stopped_usd": 0.0015175526315789473,
+      "mean_unused_budget_when_budget_stopped_usd": 0.004482447368421053,
+      "mean_budget_fraction_used_when_budget_stopped": 0.2529254385964912,
+      "median_api_seconds": 13.273066250025295
+    },
+    "large_direct": {
+      "mean_attempts": 1.1019108280254777,
+      "maximum_attempts_observed": 2,
+      "budget_stopped_tasks": 29,
+      "mean_spend_when_budget_stopped_usd": 0.0013508534482758621,
+      "mean_unused_budget_when_budget_stopped_usd": 0.004649146551724138,
+      "mean_budget_fraction_used_when_budget_stopped": 0.22514224137931033,
+      "median_api_seconds": 11.495435832999647
+    }
+  },
+  "cap_usd": 0.006,
+  "shared_initial_9b": {
+    "tasks": 157,
+    "public_passes": 105,
+    "full_suite_successes": 80,
+    "public_false_positives_locked_in_all_three_small_start_policies": 25
+  }
+}

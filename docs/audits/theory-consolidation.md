@@ -1,5 +1,9 @@
 # Theoretical-manuscript consolidation audit
 
+History note: references below to retired material in Git history now refer to
+the archived provenance tag described in the [history guide](../history-merge.md).
+They are not additional maintained sources on the curated main branch.
+
 This is a historical consolidation audit. Superseded drafts and compiled
 manuscript snapshots described below were removed from the working tree in
 October 2026 and remain recoverable in the
