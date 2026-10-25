@@ -49,9 +49,9 @@ Use `experiments/README.md` and bundle-local READMEs before citing results.
 - `src/vao/decisions/recovery.py`: development/frozen-evaluation collection.
 - `src/vao/decisions/recovery_import.py`: explicit phase transitions and preserved charges/reservations.
 - `scripts/analyze_recovery_validation.py`: offline receipt/provenance audit and finite policy replay.
-- `src/load_traces.py`, `src/execute.py`, `src/simulate.py`: HumanEval+ traces,
+- `src/vao/humaneval/load_traces.py`, `src/vao/humaneval/execute.py`, `src/vao/humaneval/simulate.py`: HumanEval+ traces,
   verification, and retry replay under its declared assumptions.
-- Other root `src/*.py` modules: retained HumanEval+ estimation and routing.
+- Other `vao/humaneval/` modules: retained HumanEval+ estimation and routing.
 
 The next controller belongs around observable edit/verify checkpoints; it must
 not assume access to private reasoning states. See the decision protocol before

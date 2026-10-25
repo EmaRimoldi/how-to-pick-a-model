@@ -8,7 +8,7 @@ frozen tasks + protocol + model/budget settings
   -> vao.decisions collector
   -> provider receipts + budget journal + public verification + evaluator labels
   -> immutable evidence + collection-source snapshots
-  -> scripts/analyze_* and verify_feedback_evidence.py
+  -> vao.analysis (via published scripts/ entrypoints)
   -> audited comparisons, reports and paper inputs
 ```
 
@@ -23,7 +23,7 @@ hidden tests subsequently fail.
 HumanEval+ checkpoint, recovery, MBPP+ transfer and BigCodeBench collectors remain
 separate where interventions, task splits or budgets differ. They share transport,
 accounting and verification primitives. The general multi-step controller remains
-future work. Root `src/*.py` modules own the older HumanEval+ worker/frontier,
+future work. `vao.humaneval` modules own the older HumanEval+ worker/frontier,
 retry-allocation, strategy and router-context analyses.
 
 ## Evidence and provenance
@@ -45,3 +45,12 @@ not changed by retiring the reproduction surface.
 Use [reproducibility](../reproducibility.md) for installation and saved-data
 replays. `make check` refreshes navigation, validates links, compiles source and
 runs the offline suite. CI also audits the three recorded recovery/policy banks.
+
+## Tooling boundaries
+
+`vao.analysis` contains saved-data audits and report generation. Public root
+scripts retain published command paths and delegate to this installed package.
+`vao.humaneval` contains worker generation, retry allocation and older routing
+analysis. Repository indexing and TeX checks live in `scripts/maintenance/`;
+cluster bootstrap and its requirements live in `scripts/cluster/`.
+Tests follow these responsibilities; see the [layout guide](layout.md).

@@ -16,6 +16,7 @@ RUN_ROOT="$EXPERIMENT_ROOT/runs/$RUN_ID"
 CONFIG_PATH="$RUN_ROOT/config/strategy_experiment.yaml"
 
 cd "$ROOT"
+export PYTHONPATH="$ROOT/src:$ROOT${PYTHONPATH:+:$PYTHONPATH}"
 mkdir -p "$RUN_ROOT"/{config,raw,derived,figures,logs,manuscript}
 source .venv/bin/activate
 python - "$EXPERIMENT_ROOT/configs/strategy_experiment.yaml" "$CONFIG_PATH" "$RUN_ROOT" <<'PY'
@@ -32,12 +33,12 @@ config["paths"].update({
 })
 target.write_text(yaml.safe_dump(config, sort_keys=False), encoding="utf-8")
 PY
-cp requirements-cluster.txt "$RUN_ROOT/config/requirements-cluster.txt"
+cp scripts/cluster/requirements.txt "$RUN_ROOT/config/requirements-cluster.txt"
 tar -czf "$RUN_ROOT/config/source_snapshot.tar.gz" \
   src \
   experiments/humaneval-plus/strategy-by-difficulty-grid/scripts \
   experiments/humaneval-plus/strategy-by-difficulty-grid/configs \
-  requirements-cluster.txt
+  scripts/cluster/requirements.txt pyproject.toml uv.lock
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   git rev-parse HEAD > "$RUN_ROOT/config/git_commit.txt"
   git diff > "$RUN_ROOT/config/uncommitted.patch"

@@ -20,7 +20,9 @@ verifiable tasks. Read:
 | `experiments/mbpp-plus/context-value-transfer/` | Focused, prospectively frozen cross-benchmark recovery replication |
 | `experiments/bigcodebench/feedback-only-routing/` | New-task feedback-only fixed-policy study; read its freeze before any calls |
 | `src/vao/` | Coding-task collectors, accounting, verification and observable records |
-| `src/*.py` | HumanEval+ worker traces and routing analysis |
+| `src/vao/humaneval/` | HumanEval+ workers, traces and routing |
+| `src/vao/analysis/` | Saved-evidence audits and report generation |
+| `scripts/maintenance/` | Repository maps, validation and manuscript builds |
 | `paper/neurips-submission/` | Existing manuscripts and their referenced figures |
 | `paper/recovery-value/` | Separate empirical recovery draft, generated from the audited MBPP+ bank |
 | `paper/neurips-submission/archive/theory_anchor.tex` | Consolidated theory source |

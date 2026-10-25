@@ -108,7 +108,10 @@ commands are documented in [reproducibility](docs/reproducibility.md).
 | --- | --- |
 | `experiments/` | Seven maintained bundles on HumanEval+, MBPP+ and BigCodeBench |
 | `src/vao/` | Task collectors, accounting, isolated verification and recorded-run primitives |
-| `src/*.py` | HumanEval+ traces, retries, routing, and analyses |
+| `src/vao/humaneval/` | HumanEval+ workers, traces, retries and routing |
+| `src/vao/analysis/` | Saved-evidence audits, reports and figure generation |
+| `scripts/` | Experiment entrypoints, grouped maintenance and cluster setup |
+| `tests/` | Analysis, collector, HumanEval+, repository and shared-unit checks |
 | `paper/` | Existing manuscripts, theory anchor, and referenced figures |
 | `docs/` | Decision protocol, evidence boundaries, reproduction, and source maps |
 
@@ -125,7 +128,8 @@ The scope reduction and recoverable Git snapshots are recorded in
 [repository history](docs/history-merge.md) and the
 [branch review](docs/audits/branch-consolidation.md). The
 [runtime architecture](docs/engineering/architecture.md) describes the maintained
-package boundaries. `AGENTS.md` describes safe development.
+package boundaries; the [layout guide](docs/engineering/layout.md) explains file
+placement and stable commands. `AGENTS.md` describes safe development.
 
 CIFAR-10 experiments, data and their dedicated launchers are retired from the
 maintained tree; see [provenance](docs/history-merge.md). Historical manuscripts

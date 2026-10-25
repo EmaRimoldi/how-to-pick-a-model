@@ -35,7 +35,7 @@ config["paths"].update(
 )
 target.write_text(yaml.safe_dump(config, sort_keys=False), encoding="utf-8")
 PY
-python -m src.plot_strategy_results \
+python -m vao.humaneval.plot_strategy_results \
   --config "$LOCAL_RUN/config/strategy_experiment.local.yaml" \
   --run-id "$RUN_ID"
 echo "Local finalization complete: $LOCAL_RUN"

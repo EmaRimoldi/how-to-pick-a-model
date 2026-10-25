@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
 cd "$ROOT_DIR"
+export PYTHONPATH="$ROOT_DIR/src:$ROOT_DIR${PYTHONPATH:+:$PYTHONPATH}"
 
 PY=".venv/bin/python"
 RUN_ID="${RUN_ID:-full_$(date -u +%Y%m%dT%H%M%SZ)}"
@@ -26,7 +27,7 @@ echo "Rough ETA: ${ETA_HOURS}h ${ETA_MINUTES}m (${EXPECTED_TOKENS} generated tok
 echo "Logging to $LOG_FILE"
 
 {
-  "$PY" -m src.run_eval --config experiments/humaneval-plus/qwen-model-size-frontier/configs/experiment.yaml --run-id "$RUN_ID"
-  "$PY" -m src.estimate --config experiments/humaneval-plus/qwen-model-size-frontier/configs/experiment.yaml --run-id "$RUN_ID"
-  "$PY" -m src.plot --config experiments/humaneval-plus/qwen-model-size-frontier/configs/experiment.yaml
+  "$PY" -m vao.humaneval.run_eval --config experiments/humaneval-plus/qwen-model-size-frontier/configs/experiment.yaml --run-id "$RUN_ID"
+  "$PY" -m vao.humaneval.estimate --config experiments/humaneval-plus/qwen-model-size-frontier/configs/experiment.yaml --run-id "$RUN_ID"
+  "$PY" -m vao.humaneval.plot --config experiments/humaneval-plus/qwen-model-size-frontier/configs/experiment.yaml
 } 2>&1 | tee "$LOG_FILE"

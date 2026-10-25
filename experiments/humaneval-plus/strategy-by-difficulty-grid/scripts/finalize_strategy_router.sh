@@ -33,6 +33,6 @@ rsync -az "$ROUTER_FILE" "engaging:$CLUSTER_RUN/raw/"
 rsync -az "$LOCAL_ROOT/raw/router_output_schema.json" "$LOCAL_ROOT/raw/strategy_folds.json" \
   "engaging:$CLUSTER_RUN/config/"
 ssh engaging "cd '$CLUSTER_ROOT' && source .venv/bin/activate && \
-  python -m src.analyze_strategy_router \
+  python -m vao.humaneval.analyze_strategy_router \
     --config '$CLUSTER_RUN/config/strategy_experiment.yaml' --run-id '$RUN_ID'"
 echo "router finalized for $RUN_ID"

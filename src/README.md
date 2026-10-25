@@ -15,7 +15,7 @@ Shared `schemas.py`, `records.py`, `workspaces.py` and related primitives retain
 observable-run formats and validation utilities. A general multi-step controller
 remains future work; see the [decision protocol](../docs/decision-protocol.md).
 
-## HumanEval+: root `src/*.py`
+## HumanEval+: `vao/humaneval/`
 
 - `dataset.py`, `models.py`, `execute.py`, `run_eval.py`: worker generation and
   verification on HumanEval+.
@@ -27,3 +27,15 @@ remains future work; see the [decision protocol](../docs/decision-protocol.md).
 CIFAR-10 and its dedicated CLI, adapters and edit/verify harness are retired.
 Their complete sources remain in [provenance](../docs/history-merge.md).
 Use [reproducibility](../docs/reproducibility.md) for safe commands and dependencies.
+
+## Saved-evidence analysis: `vao/analysis/`
+
+`analyze_*.py` audits recorded banks and reproduces comparisons;
+`report_feedback_routing.py` builds the published report and figures;
+`verify_feedback_evidence.py` checks the complete frozen BigCodeBench evidence.
+The public commands in `scripts/` delegate to these implementations.
+
+Use `python -m vao.humaneval.<module>` or `python -m vao.analysis.<module>`
+after installation. The former `python -m src.<module>` HumanEval+ commands
+remain available from a source checkout for published workflows. See the
+[layout guide](../docs/engineering/layout.md) for placement and compatibility.

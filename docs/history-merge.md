@@ -75,3 +75,13 @@ copied to a separate local backup and SHA-256 verified. The previous eight-commi
 main is preserved by its provenance tag. Current contracts live in the decision
 protocol, experiment READMEs and tested code; archived sources are not permission
 to resume a completed campaign.
+
+## Package layout maintenance (2026-10-25)
+
+A subsequent maintenance change groups HumanEval+ modules under `vao.humaneval`,
+saved-data analysis under `vao.analysis`, and repository/cluster tools under
+`scripts/maintenance` and `scripts/cluster`. Tests follow the same responsibilities.
+Published analysis script paths and checkout-only `python -m src.*` commands
+remain available. The seven study bundles, raw evidence, frozen collection
+sources and manuscripts keep their paths and contents. This is an appended
+maintenance change, not a new reconstruction of commit history.
