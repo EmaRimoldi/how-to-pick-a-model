@@ -1,0 +1,39 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: "3.11"
+      - uses: astral-sh/setup-uv@v10.3.2
+      - run: uv sync --dev --frozen
+      - run: uv run python scripts/validate_agent_readiness.py
+      - run: uv run pytest tests -q
+      - name: Reproduce consolidated calibration figures
+        run: |
+          uv run python experiments/autoresearch-cifar10/calibration/scripts/plot_baseline.py --output-dir /tmp/calibration-starting
+          uv run python experiments/autoresearch-cifar10/calibration/scripts/plot_evaluation_protocol_calibration.py --output-dir /tmp/calibration-controls
+      - name: Audit recorded recovery evidence without model calls
+        run: >-
+          uv run python scripts/analyze_recovery_validation.py
+          --input experiments/humaneval-plus/context-value/results/validation-20261022
+          --output /tmp/recovery-evidence-audit
+      - name: Reproduce the recorded MBPP+ and forecast reports
+        run: >-
+          uv run python scripts/analyze_recovery_transfer.py
+          --input experiments/mbpp-plus/context-value-transfer/results/replication-20261022
+          --forecasts experiments/mbpp-plus/context-value-transfer/results/replication-20261022/semantic-control
+          --expected-analysis experiments/mbpp-plus/context-value-transfer/results/replication-20261022/analysis.json
+          --output /tmp/mbpp-evidence-audit
+      - name: Verify the complete BigCodeBench bank and frozen comparisons
+        run: >-
+          uv run python scripts/verify_feedback_evidence.py
+          --input experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022
