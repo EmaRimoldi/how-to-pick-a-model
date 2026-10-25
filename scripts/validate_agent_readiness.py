@@ -252,16 +252,12 @@ def check_command_manifest(manifest: dict) -> list[str]:
     if make_check and (make_check["safety_class"] != "safe-local" or not make_check["default_safe"]):
         problems.append("command manifest must classify `make check` as default-safe local")
 
-    cli = by_command.get("uv run agent-workflow")
-    if not cli:
-        problems.append("command manifest missing `uv run agent-workflow`")
-    elif cli["safety_class"] != "mixed-cli" or cli["default_safe"]:
-        problems.append("command manifest must classify `uv run agent-workflow` as non-default mixed CLI")
-
     live_classes = {"live-local", "live-cluster", "cluster-setup", "mixed-cli"}
-    if not any(command["safety_class"] == "live-cluster" for command in commands):
-        problems.append("command manifest found no live-cluster commands")
     for command in commands:
+        if command.get("kind") == "console-script" and (
+            command["safety_class"] != "mixed-cli" or command["default_safe"]
+        ):
+            problems.append(f"console command must be non-default mixed CLI `{command['command']}`")
         if not command["summary"]:
             problems.append(f"command manifest command lacks summary `{command['command']}`")
         if command["safety_class"] in live_classes and command["default_safe"]:
@@ -288,7 +284,7 @@ def check_paper_evidence_map(root: Path, knowledge: dict) -> list[str]:
         candidate_paths: list[Path] = []
         if token in PAPER_SOURCE_ALIASES:
             candidate_paths = PAPER_SOURCE_ALIASES[token]
-        elif token.startswith(("paper/", "docs/", "experiments/", "scripts/", "src/", "autoresearch/")):
+        elif token.startswith(("paper/", "docs/", "experiments/", "scripts/", "src/")):
             candidate_paths = [Path(token.rstrip("/"))]
 
         for rel_path in candidate_paths:

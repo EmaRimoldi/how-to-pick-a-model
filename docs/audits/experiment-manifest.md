@@ -5,7 +5,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 
 ## Summary
 
-- Bundles indexed: `9`
+- Bundles indexed: `7`
 - Missing bundle paths: `0`
 - Missing README files: `0`
 
@@ -14,22 +14,19 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | Class | Bundles |
 | --- | --- |
 | `inspect-readme` | 3 |
-| `paper-supporting-evidence` | 5 |
-| `partial-evidence` | 1 |
+| `paper-supporting-evidence` | 4 |
 
 ## Evidence Tiers
 
 | Tier | Bundles |
 | --- | --- |
-| `Tier 1: Main Evidence` | 5 |
+| `Tier 1: Main Evidence` | 3 |
 | `Tier 2: Supporting Or Diagnostic Evidence` | 4 |
 
 ## Bundle Assets
 
 | Bundle | Status | Tier | Class | Files | Configs | Data | Results | Figures | Scripts | Raw | Runs | Summaries |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `experiments/autoresearch-cifar10/calibration/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 28 | 0 | 0 | 22 | 11 | 2 | 0 | 0 | 6 |
-| `experiments/autoresearch-cifar10/three-worker-model-routing/` | completed with raw-coverage gap | Tier 1: Main Evidence | `partial-evidence` | 1827 | 250 | 1761 | 60 | 40 | 0 | 1756 | 0 | 262 |
 | `experiments/humaneval-plus/qwen-model-size-frontier/` | completed | Tier 2: Supporting Or Diagnostic Evidence | `paper-supporting-evidence` | 12 | 1 | 3 | 5 | 0 | 2 | 3 | 0 | 0 |
 | `experiments/humaneval-plus/retry-allocation-router/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 7 | 1 | 0 | 3 | 0 | 2 | 0 | 0 | 1 |
 | `experiments/humaneval-plus/strategy-by-difficulty-grid/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 59 | 1 | 27 | 0 | 4 | 7 | 27 | 50 | 2 |
@@ -39,42 +36,6 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | `experiments/bigcodebench/feedback-only-routing/` | complete; primary gate not passed | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 42 | 2 | 5 | 32 | 4 | 0 | 0 | 0 | 2 |
 
 ## Key Files
-
-### `experiments/autoresearch-cifar10/calibration/`
-
-- Title: AutoResearch calibration
-- Evidence: 161 baseline evaluations, five determinism checks, CPU fixed-time/fixed-step controls, tables and figure generators
-- Asset directories: `results, results/evaluation-controls/figures, results/starting-model/figures, scripts`
-- `experiments/autoresearch-cifar10/calibration/README.md`
-- `experiments/autoresearch-cifar10/calibration/results/evaluation-controls/fixed_step_cpu_pair_benchmark/fixed_step_summary.csv`
-- `experiments/autoresearch-cifar10/calibration/results/evaluation-controls/fixed_step_cpu_pair_benchmark/fixed_step_summary.json`
-- `experiments/autoresearch-cifar10/calibration/results/evaluation-controls/fixed_time_cpu_scaling/fixed_time_summary.csv`
-- `experiments/autoresearch-cifar10/calibration/results/starting-model/baseline_headroom_summary.md`
-- `experiments/autoresearch-cifar10/calibration/results/starting-model/tables/baseline_headroom_summary.json`
-- `experiments/autoresearch-cifar10/calibration/results/starting-model/tables/baseline_summary.csv`
-- `experiments/autoresearch-cifar10/calibration/results/evaluation-controls/figures/figure-01-fixed-time-compute-loss.pdf`
-- `experiments/autoresearch-cifar10/calibration/results/evaluation-controls/figures/figure-01-fixed-time-compute-loss.png`
-- `experiments/autoresearch-cifar10/calibration/results/evaluation-controls/figures/figure-02-fixed-step-latency-cost.pdf`
-- `experiments/autoresearch-cifar10/calibration/results/evaluation-controls/figures/figure-02-fixed-step-latency-cost.png`
-- `experiments/autoresearch-cifar10/calibration/results/evaluation-controls/figures/figure-03-throughput-efficiency.pdf`
-
-### `experiments/autoresearch-cifar10/three-worker-model-routing/`
-
-- Title: AutoResearch Model Routing
-- Evidence: primary 300-record pooled accounting, 270-record balanced sensitivity and 180 balanced raw traces
-- Asset directories: `raw, results, results/figures, source`
-- `experiments/autoresearch-cifar10/three-worker-model-routing/README.md`
-- `experiments/autoresearch-cifar10/three-worker-model-routing/results/accounting/factored_calibration_n30/factored_calibration_table.csv`
-- `experiments/autoresearch-cifar10/three-worker-model-routing/results/accounting/factored_calibration_n30/factored_calibration_table.json`
-- `experiments/autoresearch-cifar10/three-worker-model-routing/results/accounting/threeworker_balanced_n30_frontier_summary.csv`
-- `experiments/autoresearch-cifar10/three-worker-model-routing/results/accounting/threeworker_balanced_n30_sensitivity.json`
-- `experiments/autoresearch-cifar10/three-worker-model-routing/results/accounting/threeworker_changelog.md`
-- `experiments/autoresearch-cifar10/three-worker-model-routing/results/accounting/threeworker_final_analysis.json`
-- `experiments/autoresearch-cifar10/three-worker-model-routing/results/accounting/threeworker_frontier_summary.csv`
-- `experiments/autoresearch-cifar10/three-worker-model-routing/results/accounting/threeworker_router_gain_summary.csv`
-- `experiments/autoresearch-cifar10/three-worker-model-routing/results/accounting/threeworker_router_selection_summary.csv`
-- `experiments/autoresearch-cifar10/three-worker-model-routing/results/accounting/threeworker_router_threshold_summary.csv`
-- `experiments/autoresearch-cifar10/three-worker-model-routing/results/accounting/threeworker_threshold_summary.csv`
 
 ### `experiments/humaneval-plus/qwen-model-size-frontier/`
 

@@ -42,7 +42,6 @@ MAKE_TARGET_SAFETY = {
     "test": (SAFE_LOCAL, "uv, pytest"),
     "check": (SAFE_LOCAL, "python, uv, pytest"),
     "paper-build": (SAFE_OPTIONAL_TOOL, "pdflatex, bibtex"),
-    "paper-figures-autoresearch": (FIGURE_REGEN, "uv, checked-in AutoResearch evidence"),
 }
 
 
@@ -129,8 +128,6 @@ def classify_script(rel: str, text: str) -> tuple[str, str]:
         return FIGURE_REGEN, "checked-in evidence"
     if name.startswith(("analyze_", "compare_", "compute_")):
         return READ_ONLY_ANALYSIS, "checked-in evidence or existing runs"
-    if name.startswith("generate_autoresearch_campaign_tasks"):
-        return CLUSTER_SETUP, "campaign config, output review"
     if name.startswith("bootstrap_"):
         return CLUSTER_SETUP, "cluster shell environment"
     if name.endswith((".sbatch", ".sh")) and (

@@ -23,9 +23,9 @@ not establish that a state-conditioned continue/restart/handoff controller works
 
 | Claim family | Theory | Retained evidence | Boundary |
 | --- | --- | --- | --- |
-| First-passage accounting | `main.tex`, `theory_anchor.tex` | `experiments/autoresearch-cifar10/three-worker-model-routing/` | Include failures and raw-coverage limits |
+| First-passage accounting | `main.tex`, `theory_anchor.tex` | [Archived CIFAR-10 routing](https://github.com/EmaRimoldi/how-to-pick-a-model/tree/provenance/verified-cleanup-2026-10-25/experiments/autoresearch-cifar10/three-worker-model-routing) | Include failures and raw-coverage limits |
 | Routing information | `thm:ri-identity` | `experiments/humaneval-plus/strategy-by-difficulty-grid/`, `experiments/humaneval-plus/llm-router-context-search/` | Conditional on the stated model; no universal value-of-information claim |
-| Cost/competence/information/mismatch | `thm:four-term` | AutoResearch accounting and HumanEval+ routing | Diagnostic under assumptions, not an exact law for arbitrary workflows |
+| Cost/competence/information/mismatch | `thm:four-term` | Archived CIFAR-10 accounting and retained HumanEval+ routing | Diagnostic under assumptions, not an exact law for arbitrary workflows |
 | Retry crossover | `thm:retry-crossover` | `experiments/humaneval-plus/retry-allocation-router/` | Replay follows the recorded retry protocol, not arbitrary handoffs |
 | Historical memory/context effects | `theory_anchor.tex` | [Archived exploratory memory study](https://github.com/EmaRimoldi/how-to-pick-a-model/tree/provenance/pre-curation-2026-10-24/experiments/autoresearch-cifar10/shared-memory-ablation) | Not an active comparison; limited replication and missing raw run directories |
 | Failed-code value and one-checkpoint selection | Frozen empirical protocol | `experiments/humaneval-plus/context-value/` | 25 evaluation failures; producer transfer; no reliable gain over stronger static control |
@@ -39,8 +39,6 @@ not establish that a state-conditioned continue/restart/handoff controller works
 - `experiments/humaneval-plus/strategy-by-difficulty-grid/`
 - `experiments/humaneval-plus/llm-router-context-search/`
 - `experiments/humaneval-plus/retry-allocation-router/`
-- `experiments/autoresearch-cifar10/three-worker-model-routing/`
-- `experiments/autoresearch-cifar10/calibration/`
 
 ### Tier 2: Supporting Or Diagnostic Evidence
 
@@ -87,5 +85,5 @@ prediction ablation, independent task-family/provider replication and realistic
 multi-step tests. Re-FORC, AI Functions, CodeRescue and the other cited systems are
 references, not reproduced implementations in this repository.
 
-Run `make check` for structure and unit tests, and
-`make paper-figures-autoresearch` to regenerate three baseline figures.
+Run `make check` for structure and unit tests. CIFAR-10 reproduction requires
+its archived sources; current saved-data replays cover the seven coding-task studies.

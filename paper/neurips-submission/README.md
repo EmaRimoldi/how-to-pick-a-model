@@ -25,3 +25,8 @@ The archive now retains only the theory anchor. Removed drafts, planning notes,
 reference/extracted sources, and compiled snapshots are recoverable through
 [repository history](../../docs/history-merge.md). Original theory consolidation
 and unsupported claims remain documented in the historical theory audit.
+
+CIFAR-10 experiment code, data and launchers are retired from the maintained
+package. Its historical figures remain embedded here; recover their source
+material through [provenance](../../docs/history-merge.md). The current experiment
+index contains seven coding-task studies.

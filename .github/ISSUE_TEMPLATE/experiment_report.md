@@ -1,6 +1,6 @@
 ---
 name: Experiment report
-about: Share an agent-workflow result, protocol issue, or reproduction attempt
+about: Share a coding-task research result, protocol issue, or reproduction attempt
 title: "[experiment] "
 labels: experiment
 assignees: ""
@@ -12,11 +12,11 @@ What workflow or hypothesis did you test?
 
 ## Configuration
 
-- Mode:
-- Number of agents:
-- Models:
-- Memory mode:
-- Fixed steps or time-based:
+- Benchmark and bundle:
+- Models and policy:
+- Seed and task split:
+- Budget and stopping rule:
+- Verifier and environment:
 - Hardware:
 
 ## Result

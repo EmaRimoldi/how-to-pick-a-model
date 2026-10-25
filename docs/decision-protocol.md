@@ -14,7 +14,7 @@ study evaluates zero-shot forecasts. A separate [frozen transfer protocol](../ex
 adds development-trained ridge baselines and finite budgeted policy replay.
 
 The first inexpensive API pilot uses HumanEval+ coding tasks and public-example
-feedback; AutoResearch/CIFAR-10 remains a subsequent transfer environment.
+feedback; subsequent transfer studies use MBPP+ and BigCodeBench.
 Historical studies supply baseline evidence. The
 [archived pilot provenance](../experiments/humaneval-plus/context-value/provenance/continuation-pilot/README.md)
 records the initial one-checkpoint protocol; its shared cost-limited runner remains tested.

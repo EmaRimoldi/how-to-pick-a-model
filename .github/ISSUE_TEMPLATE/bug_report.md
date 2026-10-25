@@ -13,7 +13,7 @@ Describe the failure and what you expected instead.
 ## Reproduction
 
 ```bash
-uv run agent-workflow doctor
+make readiness
 # command that failed
 ```
 

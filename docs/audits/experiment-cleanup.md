@@ -45,7 +45,7 @@ results, censoring, raw-coverage limitations and interim disclosures remain.
 Readiness now checks the named core bundles and their recorded evidence, instead
 of requiring an obsolete global count of six paper-supporting folders. Missing
 bundles, empty evidence, absent classifications and broken local links still fail.
-The experiment index is required to contain nine maintained bundles.
+At this stage, the experiment index was required to contain nine maintained bundles.
 
 Verified after the move: `make check` passed 261 tests with five optional skips;
 all 18 pilot-runtime tests passed with the optional EvalPlus environment. Both
@@ -93,3 +93,19 @@ Two commands for previously removed scripts were dropped from the routing guide.
 Documentation now distinguishes the primary 300-record pooled AutoResearch
 accounting from the 270-record balanced sensitivity. No recorded number, cohort
 or result was changed to make those distinct panels agree.
+
+## CIFAR-10 retirement — 25 October 2026
+
+The two CIFAR-10 calibration/routing bundles, raw campaign archives, benchmark
+code, campaign analysis and launchers are removed from maintained main. Their
+legacy `agent-workflow` CLI, CIFAR-10 VAO harness/adapters, configurations,
+prompts and dedicated tests are retired with them. No retained coding-task
+collector imports those implementations. The package and CI now cover seven
+HumanEval+, MBPP+ and BigCodeBench studies.
+
+The verified-cleanup provenance tag preserves all retired material. Historical
+manuscripts and their referenced figures stay vendored for compilation; their
+figure metadata now identifies archived evidence. Current source/command maps,
+installation profiles and README entrypoints reflect the reduced scope. The
+remaining collectors, frozen snapshots, receipts, task splits and results are
+preserved byte-for-byte.

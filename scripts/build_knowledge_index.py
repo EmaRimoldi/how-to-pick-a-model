@@ -106,20 +106,15 @@ class ActivePaperReference:
 MAKE_TARGET_DESCRIPTIONS = {
     "indexes": "Regenerate the agent-facing repository inventory, knowledge index, and manifests.",
     "readiness": "Validate canonical docs, evidence links, duplicate policy, and generated audit freshness.",
-    "compile": "Byte-compile scripts, src, and autoresearch for syntax/import-surface sanity.",
+    "compile": "Byte-compile scripts and src for syntax/import-surface sanity.",
     "test": "Run the repository test suite through uv.",
     "check": "Run indexes, readiness, compile, and tests as the full local gate.",
     "paper-build": "Compile active paper TeX sources out of tree with pdflatex and bibtex.",
-    "paper-figures-autoresearch": "Regenerate compact paper-facing AutoResearch figures from processed evidence.",
 }
 
 CODE_MODULE_SCOPES = (
     ("model-routing root modules", Path("src"), 1),
-    ("agent-workflow runtime", Path("src/agent_workflow"), 2),
     ("verified orchestration runtime", Path("src/vao"), 2),
-    ("autoresearch analysis", Path("autoresearch/analysis"), 1),
-    ("autoresearch benchmark", Path("autoresearch/benchmark/cifar10"), 1),
-    ("autoresearch root helpers", Path("autoresearch"), 1),
 )
 CODE_MODULE_EXCLUDED_PARTS = {
     "__pycache__",
@@ -130,8 +125,6 @@ PAPER_FIGURE_ROOT = Path("paper/neurips-submission/figures")
 PAPER_FIGURE_SUFFIXES = {".pdf", ".png"}
 FIGURE_GENERATOR_HINTS = {
     "strategy_routing": "src/plot_strategy_results.py",
-    "autoresearch": "autoresearch/scripts",
-    "autoresearch_n20_confirmation": "autoresearch/scripts/reproduce_appendix_figures_n20_confirmation.py",
 }
 ACTIVE_PAPER_TEX = (
     Path("paper/neurips-submission/main.tex"),
@@ -461,7 +454,10 @@ def paper_figures(root: Path) -> list[PaperFigure]:
         collection = path.relative_to(root / PAPER_FIGURE_ROOT).parts[0]
         exact_matches = experiment_by_hash.get(sha256(path), [])
         same_name_matches = experiment_by_name.get((path.name, path.suffix.lower()), [])
-        if exact_matches:
+        if collection in {"autoresearch", "autoresearch_n20_confirmation"}:
+            provenance = "archived experiment figure"
+            source = "provenance/verified-cleanup-2026-10-25"
+        elif exact_matches:
             provenance = "exact experiment copy"
             source = exact_matches[0].relative_to(root).as_posix()
         elif same_name_matches:
