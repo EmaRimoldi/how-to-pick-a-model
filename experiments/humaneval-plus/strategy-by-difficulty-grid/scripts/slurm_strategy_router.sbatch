@@ -16,6 +16,7 @@ CONFIG_PATH="${CONFIG_PATH:-experiments/humaneval-plus/strategy-by-difficulty-gr
 EXTRA_ARGS=${EXTRA_ARGS:-}
 
 cd "$ROOT"
+export PYTHONPATH="$ROOT/src:$ROOT${PYTHONPATH:+:$PYTHONPATH}"
 mkdir -p logs
 module load cuda/12.9.1
 export HF_HOME="${HF_HOME:-/orcd/data/tpoggio/001/erimoldi/huggingface}"
@@ -26,7 +27,7 @@ export TOKENIZERS_PARALLELISM=false
 export PYTHONUNBUFFERED=1
 
 source .venv/bin/activate
-python -m src.run_strategy_router \
+python -m vao.humaneval.run_strategy_router \
   --config "$CONFIG_PATH" \
   --run-id "$RUN_ID" \
   $EXTRA_ARGS

@@ -54,5 +54,4 @@ dev = [
     "pytest>=9.0.2",
 ]
 
-# Note: requires Python >=3.10. On this system use:
-#   ~/miniforge3/bin/python3.13 -m pytest tests/ -v
+# Run offline checks with: uv run pytest tests -q

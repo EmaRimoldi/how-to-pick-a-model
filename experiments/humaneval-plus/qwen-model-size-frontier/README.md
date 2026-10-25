@@ -7,8 +7,8 @@ frontier, and retry thresholds.
 Regenerate processed results with:
 
 ```bash
-uv run python -m src.estimate --config experiments/humaneval-plus/qwen-model-size-frontier/configs/experiment.yaml
-uv run python -m src.plot --config experiments/humaneval-plus/qwen-model-size-frontier/configs/experiment.yaml
+uv run python -m vao.humaneval.estimate --config experiments/humaneval-plus/qwen-model-size-frontier/configs/experiment.yaml
+uv run python -m vao.humaneval.plot --config experiments/humaneval-plus/qwen-model-size-frontier/configs/experiment.yaml
 ```
 
 ## Protocol and recorded outputs

@@ -5,8 +5,8 @@ across the 1.5B, 7B, and 32B worker traces. The bundle includes folds, router
 decisions, a processed summary, configs, and launchers.
 
 ```bash
-uv run python -m src.estimate_router --config experiments/humaneval-plus/retry-allocation-router/configs/router.yaml
-uv run python -m src.plot_router --config experiments/humaneval-plus/retry-allocation-router/configs/router.yaml
+uv run python -m vao.humaneval.estimate_router --config experiments/humaneval-plus/retry-allocation-router/configs/router.yaml
+uv run python -m vao.humaneval.plot_router --config experiments/humaneval-plus/retry-allocation-router/configs/router.yaml
 ```
 
 ## Trace replay and baselines

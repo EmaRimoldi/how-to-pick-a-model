@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
 cd "$ROOT_DIR"
+export PYTHONPATH="$ROOT_DIR/src:$ROOT_DIR${PYTHONPATH:+:$PYTHONPATH}"
 
 PY=".venv/bin/python"
 RESULTS="experiments/humaneval-plus/retry-allocation-router/results/processed/router_results.jsonl"
@@ -13,8 +14,8 @@ rm -f "$RESULTS" "$SUMMARY"
 rm -rf "$FIGDIR"
 
 "$PY" - <<'PY'
-from src.load_traces import load_config, load_traces
-from src.simulate import execute_allocation
+from vao.humaneval.load_traces import load_config, load_traces
+from vao.humaneval.simulate import execute_allocation
 
 config = load_config("experiments/humaneval-plus/retry-allocation-router/configs/router.yaml")
 traces = load_traces(config)
@@ -32,7 +33,7 @@ assert result["tokens"] == 147 + 9 + 80, result
 print("execute_allocation unit check passed")
 PY
 
-"$PY" -m src.run_router_experiment \
+"$PY" -m vao.humaneval.run_router_experiment \
   --config experiments/humaneval-plus/retry-allocation-router/configs/router.yaml \
   --mock-router \
   --folds 0 \
@@ -45,8 +46,8 @@ if [[ "$LINES" != "5" ]]; then
   exit 1
 fi
 
-"$PY" -m src.estimate_router --config experiments/humaneval-plus/retry-allocation-router/configs/router.yaml
-"$PY" -m src.plot_router --config experiments/humaneval-plus/retry-allocation-router/configs/router.yaml
+"$PY" -m vao.humaneval.estimate_router --config experiments/humaneval-plus/retry-allocation-router/configs/router.yaml
+"$PY" -m vao.humaneval.plot_router --config experiments/humaneval-plus/retry-allocation-router/configs/router.yaml
 
 "$PY" - <<'PY'
 import json

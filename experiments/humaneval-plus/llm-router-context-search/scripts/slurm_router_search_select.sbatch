@@ -14,8 +14,9 @@ SEARCH_DIR="${SEARCH_DIR:?Set SEARCH_DIR}"
 PHASE="${PHASE:-validation}"
 
 cd "$ROOT"
+export PYTHONPATH="$ROOT/src:$ROOT${PYTHONPATH:+:$PYTHONPATH}"
 source .venv/bin/activate
-python -m src.evaluate_router_search \
+python -m vao.humaneval.evaluate_router_search \
   --config "$WORKER_CONFIG" \
   --worker-run-id "$WORKER_RUN_ID" \
   --search-dir "$SEARCH_DIR" \

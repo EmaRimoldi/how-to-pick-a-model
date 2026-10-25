@@ -1,5 +1,10 @@
 # Repository Scripts
 
+The root contains public experiment and saved-data commands. Analysis scripts
+are small facades over `vao.analysis`; keep these published paths stable.
+Repository tooling lives in `maintenance/`, and cluster setup in `cluster/`.
+See the [layout guide](../docs/engineering/layout.md).
+
 `verify_feedback_evidence.py` reproduces the complete published BigCodeBench
 bank without credentials, provider calls or candidate execution: file checksums,
 frozen sources, receipt/prompt projection, fixed statistics, verifier-repeat
@@ -16,7 +21,7 @@ arguments; read the [protocol](../experiments/mbpp-plus/context-value-transfer/P
 weights and matched cells, then reproduces the specified comparisons without
 provider access or candidate execution.
 
-## Navigation and validation
+## Navigation and validation: `maintenance/`
 
 - `build_repo_inventory.py`: retained-tree inventory, with logical LFS sizes.
 - `build_knowledge_index.py`: code, theory, experiment, and active-reference map.
@@ -33,8 +38,9 @@ make check
 make paper-build
 ```
 
-`bootstrap_engaging.sh` is a historical HumanEval+ cluster environment helper.
-Current portable setup is documented in `docs/reproducibility.md`.
+`cluster/bootstrap_engaging.sh` is a historical HumanEval+ cluster environment helper.
+Its pinned requirements live beside it in `cluster/requirements.txt`.
+Current portable setup is documented in [reproducibility](../docs/reproducibility.md).
 
 ## Recovery collection and archived pilot
 

@@ -19,13 +19,14 @@ RETRY="${RETRY:-0}"
 MAX_RETRIES="${MAX_RETRIES:-2}"
 
 cd "$ROOT"
+export PYTHONPATH="$ROOT/src:$ROOT${PYTHONPATH:+:$PYTHONPATH}"
 source .venv/bin/activate
 
-if python -m src.validate_strategy_run --config "$CONFIG_PATH" --run-id "$RUN_ID"; then
-  python -m src.analyze_strategy_experiment --config "$CONFIG_PATH" --run-id "$RUN_ID"
-  python -m src.analyze_strategy_router --config "$CONFIG_PATH" --run-id "$RUN_ID"
-  python -m src.estimate_strategy_closure --config "$CONFIG_PATH" --run-id "$RUN_ID"
-  python -m src.analyze_strategy_crossovers --config "$CONFIG_PATH" --run-id "$RUN_ID"
+if python -m vao.humaneval.validate_strategy_run --config "$CONFIG_PATH" --run-id "$RUN_ID"; then
+  python -m vao.humaneval.analyze_strategy_experiment --config "$CONFIG_PATH" --run-id "$RUN_ID"
+  python -m vao.humaneval.analyze_strategy_router --config "$CONFIG_PATH" --run-id "$RUN_ID"
+  python -m vao.humaneval.estimate_strategy_closure --config "$CONFIG_PATH" --run-id "$RUN_ID"
+  python -m vao.humaneval.analyze_strategy_crossovers --config "$CONFIG_PATH" --run-id "$RUN_ID"
   date -u +%Y-%m-%dT%H:%M:%SZ > "$RUN_ROOT/COMPLETE"
   echo "Run $RUN_ID is complete and analyzed."
   exit 0

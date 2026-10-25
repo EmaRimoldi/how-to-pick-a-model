@@ -17,6 +17,7 @@ CONFIG_PATH="${CONFIG_PATH:-experiments/humaneval-plus/strategy-by-difficulty-gr
 EXTRA_ARGS=${EXTRA_ARGS:-}
 
 cd "$ROOT"
+export PYTHONPATH="$ROOT/src:$ROOT${PYTHONPATH:+:$PYTHONPATH}"
 mkdir -p logs
 module load cuda/12.9.1
 export HF_HOME="${HF_HOME:-/orcd/data/tpoggio/001/erimoldi/huggingface}"
@@ -41,4 +42,4 @@ if [[ -n "$EXTRA_ARGS" ]]; then
   read -r -a EXTRA_ARRAY <<< "$EXTRA_ARGS"
   ARGS+=("${EXTRA_ARRAY[@]}")
 fi
-python -m src.run_strategy_eval "${ARGS[@]}"
+python -m vao.humaneval.run_strategy_eval "${ARGS[@]}"

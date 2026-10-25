@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
 cd "$ROOT_DIR"
+export PYTHONPATH="$ROOT_DIR/src:$ROOT_DIR${PYTHONPATH:+:$PYTHONPATH}"
 
 PY=".venv/bin/python"
 RESULTS="experiments/humaneval-plus/retry-allocation-router/results/processed/router_results.jsonl"
@@ -47,8 +48,8 @@ fi
 echo "Router model: $ROUTER_MODEL"
 echo "Router backend: $BACKEND"
 
-"$PY" -m src.run_router_experiment --config experiments/humaneval-plus/retry-allocation-router/configs/router.yaml
-"$PY" -m src.estimate_router --config experiments/humaneval-plus/retry-allocation-router/configs/router.yaml
-"$PY" -m src.plot_router --config experiments/humaneval-plus/retry-allocation-router/configs/router.yaml
+"$PY" -m vao.humaneval.run_router_experiment --config experiments/humaneval-plus/retry-allocation-router/configs/router.yaml
+"$PY" -m vao.humaneval.estimate_router --config experiments/humaneval-plus/retry-allocation-router/configs/router.yaml
+"$PY" -m vao.humaneval.plot_router --config experiments/humaneval-plus/retry-allocation-router/configs/router.yaml
 
 echo "Router full run complete. Summary: experiments/humaneval-plus/retry-allocation-router/results/processed/router_summary.json"

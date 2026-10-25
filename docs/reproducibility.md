@@ -153,7 +153,7 @@ strategy routing, and held-out router-context selection. Saved worker logs cover
 164 tasks per model for the 1.5B, 7B, and 32B frontier.
 
 ```bash
-uv run python -m src.load_traces   --config experiments/humaneval-plus/retry-allocation-router/configs/router.yaml
+uv run python -m vao.humaneval.load_traces   --config experiments/humaneval-plus/retry-allocation-router/configs/router.yaml
 ```
 
 Worker reruns require EvalPlus and the configured local models. Router reruns

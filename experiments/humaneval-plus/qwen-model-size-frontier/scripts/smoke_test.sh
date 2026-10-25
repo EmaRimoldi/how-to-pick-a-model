@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
 cd "$ROOT_DIR"
+export PYTHONPATH="$ROOT_DIR/src:$ROOT_DIR${PYTHONPATH:+:$PYTHONPATH}"
 
 PY=".venv/bin/python"
 RUN_ID="smoke"
@@ -16,15 +17,15 @@ fi
 
 rm -f "$RAW_FILE"
 
-"$PY" -m src.run_eval \
+"$PY" -m vao.humaneval.run_eval \
   --config experiments/humaneval-plus/qwen-model-size-frontier/configs/experiment.yaml \
   --run-id "$RUN_ID" \
   --models "$MODEL" \
   --limit-problems 5 \
   --max-attempts 2
 
-"$PY" -m src.estimate --config experiments/humaneval-plus/qwen-model-size-frontier/configs/experiment.yaml --run-id "$RUN_ID"
-"$PY" -m src.plot --config experiments/humaneval-plus/qwen-model-size-frontier/configs/experiment.yaml
+"$PY" -m vao.humaneval.estimate --config experiments/humaneval-plus/qwen-model-size-frontier/configs/experiment.yaml --run-id "$RUN_ID"
+"$PY" -m vao.humaneval.plot --config experiments/humaneval-plus/qwen-model-size-frontier/configs/experiment.yaml
 
 lines="$(wc -l < "$RAW_FILE" | tr -d ' ')"
 if [[ "$lines" != "5" ]]; then
