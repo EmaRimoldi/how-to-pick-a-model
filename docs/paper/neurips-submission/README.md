@@ -9,7 +9,7 @@
 | `figures/` | The 19 figure files referenced by the two manuscripts |
 
 ```bash
-make paper-build
+uv run python scripts/maintenance/workflow.py paper-build
 ```
 
 Run from the repository root with TeX Live installed. PDFs and intermediate

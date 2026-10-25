@@ -18,9 +18,7 @@ src/vao/
   *.py             # shared schemas, records and workspace primitives
 tests/             # analysis, decisions, humaneval, repository and unit checks
 README.md          # project entrypoint
-AGENTS.md          # canonical development instructions
 LICENSE            # project license
-Makefile           # stable maintenance commands
 pyproject.toml     # package and tool configuration
 uv.lock            # reproducible Python dependency resolution
 .gitignore         # local outputs and credential exclusions
@@ -36,7 +34,15 @@ Published `python -m src.<module>` commands remain compatible from a checkout.
 Published saved-data commands such as `python scripts/verify_feedback_evidence.py`
 keep their paths and delegate to `vao.analysis`. New analysis logic belongs in
 the package, not in a second script implementation. Repository maintenance is
-available through `make indexes`, `make check` and `make paper-build`.
+available through one Python runner:
+
+```bash
+uv run python scripts/maintenance/workflow.py check
+```
+
+Use `indexes`, `readiness`, `compile`, `test` or `paper-build` instead of `check`
+for individual operations. The full check regenerates maps before validating
+references, compiling Python and running the offline tests.
 
 ## Provenance boundaries
 
@@ -56,5 +62,5 @@ See [reproducibility](../reproducibility.md) for offline commands and requiremen
 Keep the five project areas (`docs`, `experiments`, `scripts`, `src`, `tests`)
 and standard project/automation files at the root. Manuscripts belong in
 `docs/paper`; example environment settings belong beside the engineering guide.
-Development instructions are centralized in `AGENTS.md` rather than repeated in
-separate tool-specific root guides.
+Development instructions live in [development.md](development.md). Repository
+checks and paper builds use `scripts/maintenance/workflow.py`; Make is not required.

@@ -9,7 +9,13 @@ import re
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-from agent_index_config import REQUIRED_MAKE_TARGETS, SCRIPT_DIRS, SCRIPT_SUPPORT_FILES
+from agent_index_config import (
+    MAINTENANCE_COMMAND,
+    MAINTENANCE_RUNNER,
+    REQUIRED_ACTIONS,
+    SCRIPT_DIRS,
+    SCRIPT_SUPPORT_FILES,
+)
 from build_knowledge_index import command_targets
 
 
@@ -35,12 +41,12 @@ SAFETY_ORDER = {
     LIVE_CLUSTER: 9,
 }
 
-MAKE_TARGET_SAFETY = {
+ACTION_SAFETY = {
     "indexes": (SAFE_LOCAL, "python"),
     "readiness": (SAFE_LOCAL, "python"),
     "compile": (SAFE_LOCAL, "python"),
-    "test": (SAFE_LOCAL, "uv, pytest"),
-    "check": (SAFE_LOCAL, "python, uv, pytest"),
+    "test": (SAFE_LOCAL, "python, pytest"),
+    "check": (SAFE_LOCAL, "python, pytest"),
     "paper-build": (SAFE_OPTIONAL_TOOL, "pdflatex, bibtex"),
 }
 
@@ -168,19 +174,19 @@ def script_records(root: Path) -> list[CommandRecord]:
     return records
 
 
-def make_records(root: Path) -> list[CommandRecord]:
+def maintenance_records(root: Path) -> list[CommandRecord]:
     records: list[CommandRecord] = []
     for target in command_targets(root):
-        safety, prerequisites = MAKE_TARGET_SAFETY.get(
+        safety, prerequisites = ACTION_SAFETY.get(
             target.target,
-            (READ_ONLY_ANALYSIS, "inspect Makefile target"),
+            (READ_ONLY_ANALYSIS, "inspect maintenance action"),
         )
         records.append(
             CommandRecord(
-                surface="Makefile",
-                command=f"make {target.target}",
-                source="Makefile",
-                kind="make-target",
+                surface="maintenance",
+                command=f"{MAINTENANCE_COMMAND} {target.target}",
+                source=MAINTENANCE_RUNNER,
+                kind="maintenance-action",
                 safety_class=safety,
                 prerequisites=prerequisites,
                 summary=target.description,
@@ -207,7 +213,7 @@ def project_script_records(root: Path) -> list[CommandRecord]:
 
 
 def build_manifest(root: Path) -> dict[str, object]:
-    commands = make_records(root) + project_script_records(root) + script_records(root)
+    commands = maintenance_records(root) + project_script_records(root) + script_records(root)
     commands = sorted(
         commands,
         key=lambda record: (
@@ -222,15 +228,15 @@ def build_manifest(root: Path) -> dict[str, object]:
         by_safety[command.safety_class] = by_safety.get(command.safety_class, 0) + 1
         by_surface[command.surface] = by_surface.get(command.surface, 0) + 1
 
-    required_make = {f"make {target}" for target in REQUIRED_MAKE_TARGETS}
-    found_make = {command.command for command in commands if command.surface == "Makefile"}
+    required_actions = {f"{MAINTENANCE_COMMAND} {target}" for target in REQUIRED_ACTIONS}
+    found_actions = {command.command for command in commands if command.surface == "maintenance"}
     return {
         "root": ".",
         "command_count": len(commands),
         "default_safe_count": sum(1 for command in commands if command.default_safe),
         "safety_classes": dict(sorted(by_safety.items())),
         "surfaces": dict(sorted(by_surface.items())),
-        "missing_required_make_targets": sorted(required_make - found_make),
+        "missing_required_actions": sorted(required_actions - found_actions),
         "commands": [asdict(command) for command in commands],
     }
 
@@ -263,7 +269,7 @@ def render_markdown(manifest: dict[str, object]) -> str:
         "",
         f"- Commands indexed: `{manifest['command_count']}`",
         f"- Default-safe commands: `{manifest['default_safe_count']}`",
-        f"- Missing required Make targets: `{len(manifest['missing_required_make_targets'])}`",
+        f"- Missing required maintenance actions: `{len(manifest['missing_required_actions'])}`",
         "",
         "## Safety Classes",
         "",
@@ -307,7 +313,7 @@ def render_markdown(manifest: dict[str, object]) -> str:
         "",
         "- Default-safe commands may be run during local audits when their prerequisites are installed.",
         "- `mixed-cli`, `live-local`, `live-cluster`, and `cluster-setup` commands require explicit user intent and environment review.",
-        "- Use `make check` as the default structural gate and `make paper-build` only when TeX Live is available.",
+        f"- Use `uv run {MAINTENANCE_COMMAND} check` as the default structural gate; `paper-build` requires TeX Live.",
         "",
     ]
     return "\n".join(lines)

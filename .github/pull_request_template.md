@@ -5,7 +5,7 @@ What changed?
 ## Verification
 
 ```bash
-make check
+uv run python scripts/maintenance/workflow.py check
 python scripts/validate_agent_readiness.py
 uv run pytest tests -q
 ```

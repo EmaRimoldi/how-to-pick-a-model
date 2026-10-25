@@ -43,7 +43,7 @@ embedded figures for compilation. Their scientific claims and limitations are
 not changed by retiring the reproduction surface.
 
 Use [reproducibility](../reproducibility.md) for installation and saved-data
-replays. `make check` refreshes navigation, validates links, compiles source and
+replays. `uv run python scripts/maintenance/workflow.py check` refreshes navigation, validates links, compiles source and
 runs the offline suite. CI also audits the three recorded recovery/policy banks.
 
 ## Tooling boundaries

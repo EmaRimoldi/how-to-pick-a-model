@@ -18,7 +18,7 @@ EXCLUDED_DIRS = {
 
 CANONICAL_DOCS = [
     "README.md",
-    "AGENTS.md",
+    "docs/engineering/development.md",
     "docs/README.md",
     "docs/knowledge-map.md",
     "docs/decision-protocol.md",
@@ -41,11 +41,11 @@ CANONICAL_DOCS = [
     "docs/paper/recovery-value/README.md",
 ]
 
-COMMAND_ENTRYPOINTS = [
-    "Makefile",
-]
+MAINTENANCE_RUNNER = "scripts/maintenance/workflow.py"
+MAINTENANCE_COMMAND = f"python {MAINTENANCE_RUNNER}"
+COMMAND_ENTRYPOINTS = [MAINTENANCE_RUNNER]
 CANONICAL_ENTRYPOINTS = CANONICAL_DOCS + COMMAND_ENTRYPOINTS
-REQUIRED_MAKE_TARGETS = [
+REQUIRED_ACTIONS = [
     "indexes",
     "readiness",
     "compile",
@@ -102,18 +102,19 @@ SCRIPT_DIRS = (
 SCRIPT_SUPPORT_FILES = {
     "README.md",
     "agent_index_config.py",
+    "workflow.py",
     "requirements.txt",
 }
 
 AGENT_DOC_ROOT_FILES = [
     Path("README.md"),
-    Path("AGENTS.md"),
+    Path("docs/engineering/development.md"),
 ]
 MARKDOWN_LINK_DOCS = [
     Path(path)
     for path in [
         "README.md",
-        "AGENTS.md",
+        "docs/engineering/development.md",
         "docs/README.md",
         "docs/knowledge-map.md",
         "docs/decision-protocol.md",

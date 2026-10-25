@@ -1,4 +1,6 @@
-# Agent Guide
+# Development Guide
+
+Paths below are relative to the repository root.
 
 ## Scope and reading order
 
@@ -56,12 +58,14 @@ Update the closest README and the evidence map when retiring a bundle. Preserve
 canonical experiment outputs when vendoring an actively referenced paper figure.
 Keep `main.tex`, `arxiv.tex`, and `archive/theory_anchor.tex` separate.
 
-After cleanup, run `make indexes` and `make check`. Use `make paper-build` after
-changing paper assets when TeX Live is available. The build is out of tree.
+After edits, run the full check below. It regenerates indexes, validates
+references, compiles Python and runs the offline tests. After changing paper
+assets, use the same runner with `paper-build` when TeX Live is available;
+its build is out of tree.
 
 ```bash
 uv sync --dev --frozen
-make check
+uv run python scripts/maintenance/workflow.py check
 ```
 
 Live runs require isolated workspaces, a declared budget, and preserved configs,

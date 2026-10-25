@@ -23,6 +23,8 @@ provider access or candidate execution.
 
 ## Navigation and validation: `maintenance/`
 
+- `workflow.py`: one Python interface for checks, indexes and manuscript builds.
+
 - `build_repo_inventory.py`: retained-tree inventory, with logical LFS sizes.
 - `build_knowledge_index.py`: code, theory, experiment, and active-reference map.
 - `build_experiment_manifest.py`: assets and reproducibility status by bundle.
@@ -33,9 +35,9 @@ provider access or candidate execution.
 - `check_paper_build.py`: out-of-tree build of both retained manuscripts.
 
 ```bash
-make indexes
-make check
-make paper-build
+uv run python scripts/maintenance/workflow.py indexes
+uv run python scripts/maintenance/workflow.py check
+uv run python scripts/maintenance/workflow.py paper-build
 ```
 
 `cluster/bootstrap_engaging.sh` is a historical HumanEval+ cluster environment helper.

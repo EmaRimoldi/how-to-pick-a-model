@@ -94,3 +94,13 @@ Move manuscript sources and their referenced assets from `paper/` to
 guide; `AGENTS.md` remains the canonical development guide. Update manuscript
 build commands, links, navigation and ignore patterns. No experimental evidence
 or frozen sources move or change. This appends a maintenance commit to `main`.
+
+## Optional root files retired (2026-10-25)
+
+Move the development guide from `AGENTS.md` to
+`docs/engineering/development.md` and replace the optional root `Makefile` with
+`scripts/maintenance/workflow.py`. The Python runner keeps index generation,
+readiness, compilation, offline tests and out-of-tree manuscript builds in one
+interface, using the active interpreter. Update CI and maintained commands.
+The root retains five standard project files; study evidence and frozen sources
+are unchanged. This appends a maintenance commit to `main`.

@@ -13,7 +13,9 @@ from scripts.maintenance.agent_index_config import (
     CANONICAL_TEX,
     GENERATED_AUDITS,
     LOCAL_PATH_PATTERNS,
-    REQUIRED_MAKE_TARGETS,
+    REQUIRED_ACTIONS,
+    MAINTENANCE_COMMAND,
+    MAINTENANCE_RUNNER,
 )
 
 
@@ -93,9 +95,9 @@ def test_knowledge_index_is_complete_and_descriptive() -> None:
     )
 
     targets = {target["target"]: target for target in index["command_targets"]}
-    assert set(REQUIRED_MAKE_TARGETS) <= set(targets)
+    assert set(REQUIRED_ACTIONS) <= set(targets)
     assert set(targets["check"]["dependencies"].split()) == {"indexes", "readiness", "compile", "test"}
-    assert all(targets[target]["description"] for target in REQUIRED_MAKE_TARGETS)
+    assert all(targets[target]["description"] for target in REQUIRED_ACTIONS)
 
     for bundle in index["experiment_bundles"]:
         assert bundle["readme_title"]
@@ -128,15 +130,15 @@ def test_command_manifest_classifies_safety_boundaries() -> None:
 
     assert manifest["root"] == "."
     assert manifest["command_count"] == len(commands)
-    assert manifest["missing_required_make_targets"] == []
+    assert manifest["missing_required_actions"] == []
     assert manifest["safety_classes"]["safe-local"] >= 5
     assert manifest["safety_classes"]["live-local"] >= 1
     assert manifest["safety_classes"]["cluster-setup"] >= 1
 
-    assert commands["make check"]["safety_class"] == "safe-local"
-    assert commands["make check"]["default_safe"]
-    assert commands["make paper-build"]["safety_class"] == "safe-local-optional-tool"
-    assert commands["make paper-build"]["default_safe"]
+    assert commands[f"{MAINTENANCE_COMMAND} check"]["safety_class"] == "safe-local"
+    assert commands[f"{MAINTENANCE_COMMAND} check"]["default_safe"]
+    assert commands[f"{MAINTENANCE_COMMAND} paper-build"]["safety_class"] == "safe-local-optional-tool"
+    assert commands[f"{MAINTENANCE_COMMAND} paper-build"]["default_safe"]
     assert "uv run agent-workflow" not in commands
     assert "make paper-figures-autoresearch" not in commands
 
@@ -226,7 +228,7 @@ def test_inventory_has_no_unexpected_source_duplicates() -> None:
 
     assert inventory["root"] == "."
     assert all(inventory["entrypoints"].values())
-    assert inventory["entrypoints"]["Makefile"]
+    assert inventory["entrypoints"][MAINTENANCE_RUNNER]
     assert all(inventory["paper_sources"].values())
     assert all("agent_index_config.py" not in path for path in inventory["scripts"])
     assert all(item["category"] != "unexpected" for item in inventory["duplicate_summary"])
@@ -261,10 +263,13 @@ def test_agent_facing_docs_do_not_reference_local_user_paths() -> None:
     assert offenders == []
 
 
-def test_makefile_exposes_agent_shortcuts() -> None:
-    makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
-    for target in REQUIRED_MAKE_TARGETS:
-        assert f"{target}:" in makefile
+def test_maintenance_runner_exposes_documented_actions() -> None:
+    result = subprocess.run(
+        [sys.executable, MAINTENANCE_RUNNER, "--help"],
+        cwd=ROOT, check=True, capture_output=True, text=True,
+    )
+    for action in REQUIRED_ACTIONS:
+        assert action in result.stdout
 
 
 def test_agent_readiness_gate_passes() -> None:

@@ -6,7 +6,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `379`
+- Files indexed: `380`
 - Bytes indexed: `45.9M`
 
 ## Canonical Entrypoints
@@ -14,7 +14,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | Path | Present |
 | --- | --- |
 | `README.md` | yes |
-| `AGENTS.md` | yes |
+| `docs/engineering/development.md` | yes |
 | `docs/README.md` | yes |
 | `docs/knowledge-map.md` | yes |
 | `docs/decision-protocol.md` | yes |
@@ -35,7 +35,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `docs/paper/README.md` | yes |
 | `docs/paper/neurips-submission/README.md` | yes |
 | `docs/paper/recovery-value/README.md` | yes |
-| `Makefile` | yes |
+| `scripts/maintenance/workflow.py` | yes |
 
 ## Paper Sources
 
@@ -50,26 +50,24 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | Path | Files | Size |
 | --- | --- | --- |
 | `experiments` | 203 | 41.6M |
-| `docs` | 52 | 2.6M |
+| `docs` | 53 | 2.6M |
 | `uv.lock` | 1 | 937.0K |
 | `src` | 65 | 544.3K |
-| `tests` | 23 | 104.1K |
-| `scripts` | 24 | 97.4K |
-| `README.md` | 1 | 7.3K |
-| `AGENTS.md` | 1 | 3.9K |
-| `.github` | 5 | 3.1K |
+| `tests` | 24 | 105.9K |
+| `scripts` | 25 | 99.6K |
+| `README.md` | 1 | 7.4K |
+| `.github` | 5 | 3.3K |
 | `.gitignore` | 1 | 1.4K |
-| `pyproject.toml` | 1 | 1.1K |
+| `pyproject.toml` | 1 | 1.2K |
 | `LICENSE` | 1 | 1.0K |
-| `Makefile` | 1 | 845B |
 
 ## File Types
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 113 | 768.5K |
+| `.py` | 115 | 772.3K |
 | `.json` | 77 | 2.7M |
-| `.md` | 53 | 249.7K |
+| `.md` | 53 | 251.6K |
 | `.jsonl` | 45 | 36.7M |
 | `.txt` | 28 | 309.7K |
 | `.png` | 20 | 2.6M |
@@ -78,15 +76,15 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.sbatch` | 5 | 7.0K |
 | `.tex` | 5 | 297.7K |
 | `.yaml` | 3 | 2.6K |
-| `<none>` | 3 | 3.2K |
 | `.lock` | 2 | 1.9M |
 | `.svg` | 2 | 156.5K |
-| `.toml` | 2 | 2.7K |
+| `.toml` | 2 | 2.8K |
+| `<none>` | 2 | 2.4K |
 | `.bib` | 1 | 13.6K |
 | `.dataset` | 1 | 11.1K |
 | `.example` | 1 | 773B |
 | `.sty` | 1 | 13.2K |
-| `.yml` | 1 | 1.4K |
+| `.yml` | 1 | 1.5K |
 
 ## Experiment Readmes
 
