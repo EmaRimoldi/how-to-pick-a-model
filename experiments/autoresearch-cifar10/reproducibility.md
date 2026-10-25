@@ -1,6 +1,6 @@
 # AutoResearch Evidence Guide
 
-The retained four bundles and their scope are listed in [README](README.md).
+The two maintained bundles and their scope are listed in [README](README.md).
 For current commands and coverage, use the root
 [reproduction guide](../../docs/reproducibility.md) and bundle-local READMEs.
 The proposed next experiment is in [decision protocol](../../docs/decision-protocol.md).

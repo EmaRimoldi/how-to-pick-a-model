@@ -9,10 +9,13 @@
 - [`llm-router-context-search/`](llm-router-context-search/): validation-only
   selection over model/context settings followed by a held-out test evaluation.
 
-- [`openrouter-continuation-pilot/`](openrouter-continuation-pilot/): explicit-budget
-  Qwen3.5 9B/27B one-checkpoint development experiment through OpenRouter.
 - [`context-value/`](context-value/): matched code/feedback conditions after
   visible failure, with prospective task-only and state-conditioned forecasts.
 
 The bundles share the general-purpose pipeline under the repository's `src/`
 package but own their experiment-specific data and configuration.
+
+The initial continuation pilot is archived as a standalone study. Its
+[provenance records](context-value/provenance/continuation-pilot/README.md) retain
+billing, task exclusions and the original configuration. Dataset/task attribution
+is in [NOTICE.md](NOTICE.md).

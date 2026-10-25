@@ -58,9 +58,7 @@ REQUIRED_MAKE_TARGETS = [
 ]
 
 CORE_EXPERIMENT_BUNDLES = {
-    "experiments/autoresearch-cifar10/starting-model-calibration/",
-    "experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/",
-    "experiments/autoresearch-cifar10/shared-memory-ablation/",
+    "experiments/autoresearch-cifar10/calibration/",
     "experiments/autoresearch-cifar10/three-worker-model-routing/",
     "experiments/humaneval-plus/qwen-model-size-frontier/",
     "experiments/humaneval-plus/retry-allocation-router/",
@@ -135,6 +133,15 @@ MARKDOWN_LINK_DOCS = [
         "docs/engineering/architecture.md",
         "docs/audits/branch-consolidation.md",
         "docs/history-merge.md",
+        "docs/audits/experiment-cleanup.md",
+        "experiments/autoresearch-cifar10/README.md",
+        "experiments/autoresearch-cifar10/calibration/README.md",
+        "experiments/autoresearch-cifar10/calibration/starting-model.md",
+        "experiments/autoresearch-cifar10/calibration/evaluation-controls.md",
+        "experiments/autoresearch-cifar10/calibration/task_warrant.md",
+        "experiments/autoresearch-cifar10/calibration/results/evaluation-controls/evaluator_determinism/README.md",
+        "experiments/humaneval-plus/README.md",
+        "experiments/humaneval-plus/context-value/provenance/continuation-pilot/README.md",
             "docs/audits/experiment-manifest.md",
         "docs/audits/command-manifest.md",
         "paper/README.md",

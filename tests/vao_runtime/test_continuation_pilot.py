@@ -15,7 +15,7 @@ from vao.decisions.verifier_worker import ExampleChecker, public_examples_doc
 
 @pytest.fixture
 def config():
-    return json.loads(Path("experiments/humaneval-plus/openrouter-continuation-pilot/configs/pilot.json").read_text())
+    return json.loads(Path("experiments/humaneval-plus/context-value/provenance/continuation-pilot/config.json").read_text())
 
 
 def test_budget_reserves_before_call_and_blocks_overspend(tmp_path):

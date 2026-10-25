@@ -5,7 +5,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 
 ## Summary
 
-- Bundles indexed: `12`
+- Bundles indexed: `9`
 - Missing bundle paths: `0`
 - Missing README files: `0`
 
@@ -13,85 +13,50 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 
 | Class | Bundles |
 | --- | --- |
-| `inspect-readme` | 4 |
-| `paper-supporting-evidence` | 7 |
+| `inspect-readme` | 3 |
+| `paper-supporting-evidence` | 5 |
 | `partial-evidence` | 1 |
 
 ## Evidence Tiers
 
 | Tier | Bundles |
 | --- | --- |
-| `Tier 1: Main Evidence` | 6 |
-| `Tier 2: Supporting Or Diagnostic Evidence` | 5 |
-| `not tiered` | 1 |
+| `Tier 1: Main Evidence` | 5 |
+| `Tier 2: Supporting Or Diagnostic Evidence` | 4 |
 
 ## Bundle Assets
 
 | Bundle | Status | Tier | Class | Files | Configs | Data | Results | Figures | Scripts | Raw | Runs | Summaries |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `experiments/autoresearch-cifar10/starting-model-calibration/` | completed | Tier 2: Supporting Or Diagnostic Evidence | `paper-supporting-evidence` | 12 | 0 | 0 | 9 | 5 | 1 | 0 | 0 | 3 |
-| `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 42 | 0 | 0 | 40 | 18 | 1 | 0 | 0 | 5 |
-| `experiments/autoresearch-cifar10/shared-memory-ablation/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 12 | 0 | 0 | 10 | 6 | 1 | 0 | 0 | 1 |
-| `experiments/autoresearch-cifar10/three-worker-model-routing/` | completed with raw-coverage gap | Tier 1: Main Evidence | `partial-evidence` | 1845 | 250 | 1761 | 78 | 46 | 0 | 1756 | 0 | 267 |
+| `experiments/autoresearch-cifar10/calibration/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 28 | 0 | 0 | 22 | 11 | 2 | 0 | 0 | 6 |
+| `experiments/autoresearch-cifar10/three-worker-model-routing/` | completed with raw-coverage gap | Tier 1: Main Evidence | `partial-evidence` | 1838 | 250 | 1761 | 71 | 40 | 0 | 1756 | 0 | 267 |
 | `experiments/humaneval-plus/qwen-model-size-frontier/` | completed | Tier 2: Supporting Or Diagnostic Evidence | `paper-supporting-evidence` | 12 | 1 | 3 | 5 | 0 | 2 | 3 | 0 | 0 |
 | `experiments/humaneval-plus/retry-allocation-router/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 7 | 1 | 0 | 3 | 0 | 2 | 0 | 0 | 1 |
 | `experiments/humaneval-plus/strategy-by-difficulty-grid/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 115 | 1 | 27 | 0 | 4 | 7 | 27 | 106 | 2 |
 | `experiments/humaneval-plus/llm-router-context-search/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 24 | 0 | 0 | 0 | 1 | 1 | 0 | 22 | 0 |
-| `experiments/humaneval-plus/openrouter-continuation-pilot/` | development pilot | not tiered | `inspect-readme` | 13 | 1 | 0 | 10 | 1 | 0 | 0 | 0 | 1 |
-| `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 46 | 5 | 0 | 39 | 3 | 0 | 0 | 0 | 4 |
+| `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 56 | 6 | 9 | 40 | 3 | 0 | 0 | 0 | 5 |
 | `experiments/mbpp-plus/context-value-transfer/` | collection finished; censored descriptive bank | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 72 | 6 | 2 | 59 | 4 | 3 | 0 | 0 | 6 |
 | `experiments/bigcodebench/feedback-only-routing/` | complete; primary gate not passed | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 42 | 2 | 5 | 32 | 4 | 0 | 0 | 0 | 2 |
 
 ## Key Files
 
-### `experiments/autoresearch-cifar10/starting-model-calibration/`
+### `experiments/autoresearch-cifar10/calibration/`
 
-- Title: Starting Model Calibration
-- Evidence: 161 controlled evaluations, tables, figures, plotting script
-- Asset directories: `results, results/figures, scripts`
-- `experiments/autoresearch-cifar10/starting-model-calibration/README.md`
-- `experiments/autoresearch-cifar10/starting-model-calibration/results/baseline_headroom_summary.md`
-- `experiments/autoresearch-cifar10/starting-model-calibration/results/tables/baseline_headroom_summary.json`
-- `experiments/autoresearch-cifar10/starting-model-calibration/results/tables/baseline_summary.csv`
-- `experiments/autoresearch-cifar10/starting-model-calibration/results/figures/figure-01-baseline-screen-overview.png`
-- `experiments/autoresearch-cifar10/starting-model-calibration/results/figures/figure-02-gate-diagnostics.png`
-- `experiments/autoresearch-cifar10/starting-model-calibration/results/figures/figure-03-category-improvement-heatmap.png`
-- `experiments/autoresearch-cifar10/starting-model-calibration/results/figures/figure-04-recommended-baseline-detail.png`
-- `experiments/autoresearch-cifar10/starting-model-calibration/results/figures/figure-06-presentation-width30-detail.png`
-- `experiments/autoresearch-cifar10/starting-model-calibration/scripts/plot_baseline.py`
-
-### `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/`
-
-- Title: Evaluation Protocol Calibration
-- Evidence: deterministic-evaluator checks, CPU scaling, fixed-step/fixed-time summaries
-- Asset directories: `results, results/evaluator_determinism/calibration__2x2-diversity-memory__superseded/figures, results/figures, scripts`
-- `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/README.md`
-- `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/results/evaluation_protocol_calibration_summary.md`
-- `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/results/evaluator_determinism/evaluator_determinism_summary.md`
-- `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/results/fixed_step_cpu_pair_benchmark/fixed_step_summary.csv`
-- `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/results/fixed_step_cpu_pair_benchmark/fixed_step_summary.json`
-- `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/results/fixed_time_cpu_scaling/fixed_time_summary.csv`
-- `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/results/evaluator_determinism/calibration__2x2-diversity-memory__superseded/figures/calibration_gate_readout.svg`
-- `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/results/evaluator_determinism/calibration__2x2-diversity-memory__superseded/figures/calibration_quality.svg`
-- `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/results/evaluator_determinism/calibration__2x2-diversity-memory__superseded/figures/calibration_search_behavior.svg`
-- `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/results/evaluator_determinism/calibration__2x2-diversity-memory__superseded/figures/figure-01-main-comparison.png`
-- `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/results/evaluator_determinism/calibration__2x2-diversity-memory__superseded/figures/figure-02-trajectories-cost.png`
-- `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/results/evaluator_determinism/calibration__2x2-diversity-memory__superseded/figures/figure-03-jensen-memory.png`
-
-### `experiments/autoresearch-cifar10/shared-memory-ablation/`
-
-- Title: Agent Memory Ablation
-- Evidence: 11 trials, statistical summary, figures
-- Asset directories: `results, results/figures, scripts`
-- `experiments/autoresearch-cifar10/shared-memory-ablation/README.md`
-- `experiments/autoresearch-cifar10/shared-memory-ablation/results/statistical_summary.md`
-- `experiments/autoresearch-cifar10/shared-memory-ablation/results/figures/figure-01-trial-outcomes.pdf`
-- `experiments/autoresearch-cifar10/shared-memory-ablation/results/figures/figure-01-trial-outcomes.png`
-- `experiments/autoresearch-cifar10/shared-memory-ablation/results/figures/figure-02-memory-stabilization.pdf`
-- `experiments/autoresearch-cifar10/shared-memory-ablation/results/figures/figure-02-memory-stabilization.png`
-- `experiments/autoresearch-cifar10/shared-memory-ablation/results/figures/figure-03-training-attempts.pdf`
-- `experiments/autoresearch-cifar10/shared-memory-ablation/results/figures/figure-03-training-attempts.png`
-- `experiments/autoresearch-cifar10/shared-memory-ablation/scripts/plot_agent_memory_ablation.py`
+- Title: AutoResearch calibration
+- Evidence: 161 baseline evaluations, five determinism checks, CPU fixed-time/fixed-step controls, tables and figure generators
+- Asset directories: `results, results/evaluation-controls/figures, results/starting-model/figures, scripts`
+- `experiments/autoresearch-cifar10/calibration/README.md`
+- `experiments/autoresearch-cifar10/calibration/results/evaluation-controls/fixed_step_cpu_pair_benchmark/fixed_step_summary.csv`
+- `experiments/autoresearch-cifar10/calibration/results/evaluation-controls/fixed_step_cpu_pair_benchmark/fixed_step_summary.json`
+- `experiments/autoresearch-cifar10/calibration/results/evaluation-controls/fixed_time_cpu_scaling/fixed_time_summary.csv`
+- `experiments/autoresearch-cifar10/calibration/results/starting-model/baseline_headroom_summary.md`
+- `experiments/autoresearch-cifar10/calibration/results/starting-model/tables/baseline_headroom_summary.json`
+- `experiments/autoresearch-cifar10/calibration/results/starting-model/tables/baseline_summary.csv`
+- `experiments/autoresearch-cifar10/calibration/results/evaluation-controls/figures/figure-01-fixed-time-compute-loss.pdf`
+- `experiments/autoresearch-cifar10/calibration/results/evaluation-controls/figures/figure-01-fixed-time-compute-loss.png`
+- `experiments/autoresearch-cifar10/calibration/results/evaluation-controls/figures/figure-02-fixed-step-latency-cost.pdf`
+- `experiments/autoresearch-cifar10/calibration/results/evaluation-controls/figures/figure-02-fixed-step-latency-cost.png`
+- `experiments/autoresearch-cifar10/calibration/results/evaluation-controls/figures/figure-03-throughput-efficiency.pdf`
 
 ### `experiments/autoresearch-cifar10/three-worker-model-routing/`
 
@@ -159,22 +124,13 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 - `experiments/humaneval-plus/llm-router-context-search/runs/router-search-20260712/confirmatory_speedup.pdf`
 - `experiments/humaneval-plus/llm-router-context-search/scripts/slurm_router_search_select.sbatch`
 
-### `experiments/humaneval-plus/openrouter-continuation-pilot/`
-
-- Title: OpenRouter continuation pilot
-- Evidence: 24 tasks, 88 calls, two failed checkpoints, receipts and separate public/full-suite scoring
-- Asset directories: `configs, results`
-- `experiments/humaneval-plus/openrouter-continuation-pilot/README.md`
-- `experiments/humaneval-plus/openrouter-continuation-pilot/results/pilot-20261022/summary.json`
-- `experiments/humaneval-plus/openrouter-continuation-pilot/configs/pilot.json`
-- `experiments/humaneval-plus/openrouter-continuation-pilot/results/pilot-20261022/cost_success.png`
-
 ### `experiments/humaneval-plus/context-value/`
 
 - Title: Value of work after failure
 - Evidence: Discovery: 30 tasks/132 calls. Transfer: 83 development + 60 evaluation tasks, 1,353 responses, frozen policies, forecasts, controls and cost audit
 - Asset directories: `configs, results`
 - `experiments/humaneval-plus/context-value/README.md`
+- `experiments/humaneval-plus/context-value/provenance/continuation-pilot/summary.json`
 - `experiments/humaneval-plus/context-value/results/study-20261022/analysis.json`
 - `experiments/humaneval-plus/context-value/results/study-20261022/summary.json`
 - `experiments/humaneval-plus/context-value/results/validation-20261022/analysis.json`
@@ -184,8 +140,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 - `experiments/humaneval-plus/context-value/configs/validation-provider-transfer.json`
 - `experiments/humaneval-plus/context-value/configs/validation-split.json`
 - `experiments/humaneval-plus/context-value/configs/validation.json`
-- `experiments/humaneval-plus/context-value/results/study-20261022/context_value.png`
-- `experiments/humaneval-plus/context-value/results/validation-20261022/validation.pdf`
+- `experiments/humaneval-plus/context-value/provenance/continuation-pilot/config.json`
 
 ### `experiments/mbpp-plus/context-value-transfer/`
 

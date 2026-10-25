@@ -214,11 +214,12 @@ def check_experiment_manifest(manifest: dict) -> list[str]:
             "experiment manifest has missing README files: " + ", ".join(manifest["missing_readmes"])
         )
 
-    class_counts = manifest.get("reproducibility_classes", {})
-    if int(class_counts.get("paper-supporting-evidence", 0)) < 6:
-        problems.append("experiment manifest found fewer than 6 paper-supporting bundles")
-
     for bundle in bundles:
+        if bundle["path"] in CORE_EXPERIMENT_BUNDLES:
+            if bundle["reproducibility_class"] not in {"paper-supporting-evidence", "partial-evidence"}:
+                problems.append(f"core experiment lacks an evidence classification `{bundle['path']}`")
+            if bundle.get("result_files", 0) + bundle.get("figure_files", 0) == 0:
+                problems.append(f"core experiment lacks recorded evidence `{bundle['path']}`")
         if not bundle["readme_title"]:
             problems.append(f"experiment manifest bundle lacks README title `{bundle['path']}`")
         if not bundle["reproducibility_class"]:
