@@ -121,6 +121,8 @@ def classify_script(rel: str, text: str) -> tuple[str, str]:
 
     if name == "agent_index_config.py":
         return SUPPORT_CONFIG, "none"
+    if name == "prepare_progress_history.py":
+        return SAFE_LOCAL, "python; optional fresh output directory; no model access"
     if name.startswith(("build_", "validate_")):
         return SAFE_LOCAL, "python"
     if name == "check_paper_build.py":

@@ -6,7 +6,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `2446`
+- Files indexed: `2451`
 - Bytes indexed: `100.6M`
 
 ## Canonical Entrypoints
@@ -51,18 +51,18 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 2059 | 75.0M |
+| `experiments` | 2061 | 75.1M |
 | `artifacts` | 21 | 20.0M |
 | `paper` | 33 | 2.5M |
-| `src` | 141 | 1.1M |
+| `src` | 142 | 1.1M |
 | `uv.lock` | 1 | 972.4K |
 | `autoresearch` | 57 | 395.8K |
-| `scripts` | 29 | 306.7K |
-| `tests` | 47 | 187.4K |
-| `docs` | 26 | 126.4K |
+| `scripts` | 30 | 309.5K |
+| `tests` | 48 | 193.3K |
+| `docs` | 26 | 128.2K |
 | `prompts` | 6 | 21.6K |
 | `configs` | 7 | 12.7K |
-| `README.md` | 1 | 7.9K |
+| `README.md` | 1 | 8.3K |
 | `AGENTS.md` | 1 | 4.0K |
 | `.github` | 5 | 3.4K |
 | `.claude` | 4 | 3.3K |
@@ -79,12 +79,12 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.json` | 1093 | 5.0M |
+| `.json` | 1094 | 5.0M |
 | `.jsonl` | 295 | 59.0M |
 | `.txt` | 287 | 4.2M |
 | `.yaml` | 270 | 316.1K |
-| `.py` | 253 | 1.9M |
-| `.md` | 91 | 341.6K |
+| `.py` | 256 | 2.0M |
+| `.md` | 92 | 355.2K |
 | `.png` | 48 | 6.2M |
 | `.pdf` | 31 | 609.0K |
 | `.csv` | 20 | 558.5K |
@@ -117,6 +117,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/README.md`
 - `experiments/bigcodebench/feedback-only-routing/README.md`
 - `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/README.md`
+- `experiments/finite-domain/progress-history/README.md`
 - `experiments/humaneval-plus/README.md`
 - `experiments/humaneval-plus/context-value/README.md`
 - `experiments/humaneval-plus/context-value/provenance/continuation-pilot/README.md`
@@ -158,6 +159,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/check_paper_build.py`
 - `scripts/compare_experiments.py`
 - `scripts/prepare_feedback_routing.py`
+- `scripts/prepare_progress_history.py`
 - `scripts/report_feedback_routing.py`
 - `scripts/run_context_value.py`
 - `scripts/run_continuation_pilot.py`

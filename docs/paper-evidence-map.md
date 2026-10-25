@@ -34,6 +34,11 @@ not establish that a state-conditioned continue/restart/handoff controller works
 
 ## Evidence tiers
 
+The [finite-domain progress-history prototype](../experiments/finite-domain/progress-history/README.md)
+is offline preparation and is **not an empirical evidence tier**. Its exhaustive
+checker and handwritten fixtures establish engineering behavior only. No model
+has been queried, no history predictor is fitted, and no gain can be cited.
+
 ### Tier 1: Main Evidence
 
 - `experiments/humaneval-plus/strategy-by-difficulty-grid/`

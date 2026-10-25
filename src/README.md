@@ -1,5 +1,10 @@
 # Source Code Map
 
+`vao/decisions/progress_history.py` is the next offline development prototype:
+finite-domain tasks, exhaustive bounded-expression verification and paired
+continue/restart prompt projections. It contains no provider or training path;
+see the [draft design](../experiments/finite-domain/progress-history/README.md).
+
 ## Verified execution: `vao/`
 
 `orchestrator.py`, `schemas.py`, `workspaces.py`, `success_metrics.py`, and

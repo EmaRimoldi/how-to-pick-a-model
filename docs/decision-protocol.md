@@ -5,9 +5,16 @@
 After observing a verifiable task's execution history, which additional action
 is worth its incremental cost: continue, restart, switch models, or stop?
 
-The immediate question is narrower: **after visible failure, is the previous
-artifact useful to the next solver, and can its value be forecast before another
-attempt?** The [context-value diagnostic](../experiments/humaneval-plus/context-value/README.md)
+The next question is narrower: **does progress history predict the value of
+continuing versus restarting beyond the task, current artifact, latest feedback,
+attempt count and consumed/remaining budget?** The
+[finite-domain design](../experiments/finite-domain/progress-history/README.md)
+starts with an offline exhaustive verifier and paired artifact-preserving versus
+feedback-only restart prompts. It is a development prototype with no new model
+results. Validate an intervention before fitting a selector, then evaluate any
+history-based policy on a separate fresh task set. Old campaign budgets are closed.
+
+The earlier [context-value diagnostic](../experiments/humaneval-plus/context-value/README.md)
 separates code from verifier feedback in matched conditions for 9B and 27B,
 and records task-only/state forecasts before any branch outcome. Its discovery
 study evaluates zero-shot forecasts. A separate [frozen transfer protocol](../experiments/humaneval-plus/context-value/VALIDATION.md)
@@ -65,15 +72,15 @@ The next-action decision compares future benefit with incremental future cost.
 Past spend constrains the remaining budget and can inform task difficulty.
 Also report the cost of collecting data and selecting/training the policy.
 
-## First experiment
+## General experiment requirements
 
-1. Choose one task family, two candidate models, success criteria, budgets,
+1. Choose one task family, a fixed initial model (replicate with another later), success criteria, budgets,
    and checkpoint positions in advance.
 2. Save reproducible artifacts and visible contexts at checkpoints.
 3. Collect repeated, matched continuations for the allowed actions. An
    unobserved handoff cannot be scored by substituting a separate full run.
-4. Fit a simple predictor of success/cost from observable state and compare
-   against unconditional estimates before adding a learned forecaster.
+4. Validate that an intervention is useful before fitting a selector. Compare
+   added history with a strong current-state baseline, not just unconditional estimates.
 5. Compare a strong fixed model, restart schedules, fixed escalation, and the
    proposed policy on held-out tasks. Keep policy tuning off the test split.
 6. Report calibration, verified success, total cost, latency, uncertainty, and

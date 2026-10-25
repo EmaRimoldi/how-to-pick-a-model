@@ -6,6 +6,12 @@ We study whether code and verifier feedback from a failed attempt help the next
 attempt, and whether that benefit can be predicted before paying for it. The
 longer-term goal is cost-aware continue/restart/switch/stop decisions for agents.
 
+**Next experiment, offline preparation:** [does progress history predict when to
+keep failed work?](experiments/finite-domain/progress-history/README.md) A finite-domain
+prototype checks every input and constructs matched continue/restart requests.
+The target is the added value of history beyond the task, current code, latest
+feedback and consumed budget. No new model results or selector are claimed.
+
 **Latest result:** [four feedback-only policies on 157 new BigCodeBench tasks](experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/report.md).
 Immediate 9B → 27B escalation solves **98/157** tasks versus **102/157** for
 repeated 9B: **−2.55 percentage points**, paired 95% interval **[−7.01, +1.27]**.
@@ -119,7 +125,7 @@ commands are documented in [reproducibility](docs/reproducibility.md).
 
 | Path | Role |
 | --- | --- |
-| `experiments/` | Nine maintained bundles: calibration/routing, HumanEval+, MBPP+ and BigCodeBench |
+| `experiments/` | Nine evidence bundles plus a finite-domain development prototype |
 | `autoresearch/` | CIFAR-10 benchmark, verification, accounting, and analysis |
 | `src/vao/` | Verified execution and model adapters |
 | `src/agent_workflow/` | Baseline CLI, instrumentation, and reporting |

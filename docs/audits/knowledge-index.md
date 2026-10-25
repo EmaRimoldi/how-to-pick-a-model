@@ -8,9 +8,9 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Canonical docs present: `24/24`
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
-- Experiment bundles indexed: `9`
-- Script entrypoints indexed: `41`
-- Code modules indexed: `140`
+- Experiment bundles indexed: `10`
+- Script entrypoints indexed: `42`
+- Code modules indexed: `141`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `7`
@@ -168,6 +168,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | HumanEval+ | `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | Discovery: 30 tasks/132 calls. Transfer: 83 development + 60 evaluation tasks, 1,353 responses, frozen policies, forecasts, controls and cost audit |
 | MBPP+ | `experiments/mbpp-plus/context-value-transfer/` | collection finished; censored descriptive bank | Tier 2: Supporting Or Diagnostic Evidence | 94/96 complete failures, 2,878 recovery responses, two censored solver cells, 288 API forecasts, fixed comparisons and full accounting |
 | BigCodeBench standard-library subset | `experiments/bigcodebench/feedback-only-routing/` | complete; primary gate not passed | Tier 2: Supporting Or Diagnostic Evidence | 157 task clusters, 628/628 policy outcomes, 1,492 responses, no missing outcomes; fixed comparisons, receipts, source freeze, verifier repeat and disclosed single requested interim look |
+| Finite-domain expression programming | `experiments/finite-domain/progress-history/` | offline development prototype; no model collection | not tiered | Exhaustive 256-input verifier, matched branch projections and handwritten engineering fixtures; draft staged protocol |
 
 ## Script Entrypoints
 
@@ -188,6 +189,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/check_paper_build.py` | python | Compile active paper TeX sources into an out-of-tree build directory. |
 | `scripts/compare_experiments.py` | python | CLI: compare two experiment directories (parallel vs single). |
 | `scripts/prepare_feedback_routing.py` | python | Verify the pinned BigCodeBench download and reproduce reference-only eligibility. |
+| `scripts/prepare_progress_history.py` | python | Prepare offline-only development fixtures for the progress-history design; no API calls. |
 | `scripts/report_feedback_routing.py` | python | Publish a completed feedback-only bank, audited statistics and static figures. |
 | `scripts/run_context_value.py` | python | Plan or explicitly run a budgeted artifact/feedback and prospective-forecast study. |
 | `scripts/run_continuation_pilot.py` | python | Run the explicit-budget OpenRouter/HumanEval+ pilot; defaults to plan only. |
@@ -318,6 +320,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/decisions/feedback_routing.py` | Prospective fixed-policy comparison with feedback only, before any selector. | reservation, model_for, messages, evaluate, trajectory, collect, source_drift, load_frozen |
 | verified orchestration runtime | `src/vao/decisions/openrouter.py` | Pinned OpenRouter completions with an append-only dollar reservation ledger. | insured_empty_error, read_stream, BudgetStopped, BackendStopped, append_json, BudgetLedger, NoRedirects, OpenRouterClient |
 | verified orchestration runtime | `src/vao/decisions/pilot.py` | Collect matched one-checkpoint HumanEval+ continuations through OpenRouter. | digest, load_tasks, messages_for, evaluate_response, summarize, write_report, collect, main |
+| verified orchestration runtime | `src/vao/decisions/progress_history.py` | Offline finite-domain development tasks and matched recovery projections. This module has no provider, training, or Python-code execution path. Candidate expressions are interpreted through a bounded, typed AST whitelist. | digest, Task, development_tasks, parse_candidate, interpret, verify, Attempt, checkpoint |
 | verified orchestration runtime | `src/vao/decisions/recovery.py` | Task-held-out recovery collection with public base feedback and frozen policies. | load_experiment, producer_messages, resized, recovery_messages, forecast_messages, evaluate, run, main |
 | verified orchestration runtime | `src/vao/decisions/recovery_import.py` | Explicitly import a stopped run into a fresh journal without repeating paid jobs. | records, job_key, continue_frozen_development, import_completed, ImportedClient |
 | verified orchestration runtime | `src/vao/decisions/recovery_policy.py` | Small frozen ridge probability baselines for selecting a recovery action. | features, fit_policy, predict |
