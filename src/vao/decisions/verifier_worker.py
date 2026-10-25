@@ -114,6 +114,26 @@ def check(payload: dict) -> dict:
     from evalplus.eval import untrusted_check
     from evalplus.gen.util import trusted_exec
     reference = problem["prompt"] + problem["canonical_solution"]
+    if payload["mode"] == "base_feedback":
+        # This protocol explicitly publishes base cases; Plus cases are absent
+        # from this subprocess payload and remain evaluation-only.
+        capture = LimitedOutput()
+        try:
+            with contextlib.redirect_stdout(capture), contextlib.redirect_stderr(capture):
+                exec(compile(solution, "candidate.py", "exec", dont_inherit=True), {})
+        except BaseException as exc:
+            return {"passed": False, "status": "error", "attempted": len(problem["base_input"]),
+                    "failed": len(problem["base_input"]), "feedback": f"{type(exc).__name__}: {str(exc)[:500]}"}
+        inputs = problem["base_input"]
+        expected, timings = trusted_exec(reference, deepcopy(inputs), problem["entry_point"], record_time=True)
+        status, details = untrusted_check("humaneval", solution, deepcopy(inputs), problem["entry_point"],
+            expected, problem["atol"], timings, fast_check=False)
+        failing = [i for i in range(len(inputs)) if i >= len(details) or not details[i]]
+        examples = [{"arguments": repr(inputs[i])[:250], "acceptable_reference_output": repr(expected[i])[:250]}
+                    for i in failing[:3]]
+        return {"passed": status == "pass", "status": status, "attempted": len(inputs),
+                "failed": len(failing), "feedback": json.dumps({"public_base_status": status,
+                    "failing_examples": examples, "note": "Reference outputs are examples; task-specific tolerance or valid-output rules still apply."})}
     results = {}
     for suite in ("base", "plus"):
         inputs = problem[suite + "_input"]

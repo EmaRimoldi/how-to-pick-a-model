@@ -17,3 +17,8 @@ jobs:
       - run: uv sync --dev --frozen
       - run: uv run python scripts/validate_agent_readiness.py
       - run: uv run pytest tests -q
+      - name: Audit recorded recovery evidence without model calls
+        run: >-
+          uv run python scripts/analyze_recovery_validation.py
+          --input experiments/humaneval-plus/context-value/results/validation-20261022
+          --output /tmp/recovery-evidence-audit

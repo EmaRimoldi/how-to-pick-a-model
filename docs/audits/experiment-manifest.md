@@ -22,8 +22,8 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | Tier | Bundles |
 | --- | --- |
 | `Tier 1: Main Evidence` | 6 |
-| `Tier 2: Supporting Or Diagnostic Evidence` | 2 |
-| `not tiered` | 2 |
+| `Tier 2: Supporting Or Diagnostic Evidence` | 3 |
+| `not tiered` | 1 |
 
 ## Bundle Assets
 
@@ -38,7 +38,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | `experiments/humaneval-plus/strategy-by-difficulty-grid/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 115 | 1 | 27 | 0 | 4 | 7 | 27 | 106 | 2 |
 | `experiments/humaneval-plus/llm-router-context-search/` | completed | Tier 1: Main Evidence | `paper-supporting-evidence` | 24 | 0 | 0 | 0 | 1 | 1 | 0 | 22 | 0 |
 | `experiments/humaneval-plus/openrouter-continuation-pilot/` | development pilot | not tiered | `inspect-readme` | 13 | 1 | 0 | 10 | 1 | 0 | 0 | 0 | 1 |
-| `experiments/humaneval-plus/context-value/` | prospective diagnostic | not tiered | `inspect-readme` | 14 | 1 | 0 | 12 | 1 | 0 | 0 | 0 | 2 |
+| `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 46 | 5 | 0 | 39 | 3 | 0 | 0 | 0 | 4 |
 
 ## Key Files
 
@@ -170,10 +170,17 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 ### `experiments/humaneval-plus/context-value/`
 
 - Title: Value of work after failure
-- Evidence: 30 new tasks, 132 calls, four failed checkpoints across three tasks, code/feedback factorial, forecasts and receipt audit
+- Evidence: Discovery: 30 tasks/132 calls. Transfer: 83 development + 60 evaluation tasks, 1,353 responses, frozen policies, forecasts, controls and cost audit
 - Asset directories: `configs, results`
 - `experiments/humaneval-plus/context-value/README.md`
 - `experiments/humaneval-plus/context-value/results/study-20261022/analysis.json`
 - `experiments/humaneval-plus/context-value/results/study-20261022/summary.json`
+- `experiments/humaneval-plus/context-value/results/validation-20261022/analysis.json`
+- `experiments/humaneval-plus/context-value/results/validation-20261022/summary.json`
 - `experiments/humaneval-plus/context-value/configs/study.json`
+- `experiments/humaneval-plus/context-value/configs/validation-producer-transfer.json`
+- `experiments/humaneval-plus/context-value/configs/validation-provider-transfer.json`
+- `experiments/humaneval-plus/context-value/configs/validation-split.json`
+- `experiments/humaneval-plus/context-value/configs/validation.json`
 - `experiments/humaneval-plus/context-value/results/study-20261022/context_value.png`
+- `experiments/humaneval-plus/context-value/results/validation-20261022/validation.pdf`

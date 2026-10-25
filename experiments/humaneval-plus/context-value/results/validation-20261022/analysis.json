@@ -1,0 +1,1313 @@
+{
+  "analysis_source_sha256": "18efd1c86bcf6278eebf36c0d432169207f2e314fe02780bee09548b5a5c5ef3",
+  "audit_passed": true,
+  "best_fixed_action_from_development": "large.feedback",
+  "collection": {
+    "api_forecasts": 50,
+    "branch_and_direct_draws": 1160,
+    "budget_usd": 1.97,
+    "collection_cost_usd": 0.4836466,
+    "failed_checkpoints": 51,
+    "initial_attempts": 143,
+    "prior_committed_usd": 0.0230224,
+    "requests": 1359,
+    "status": "complete",
+    "unresolved_reserved_usd": 0.0082944
+  },
+  "collection_request_seconds": 19385.148226930003,
+  "collection_verifier_seconds": 1532.0210595693206,
+  "collector_git_sha": "a3620ae9ddd5dfe6bbef5f09b46c76c6737c0229",
+  "conditional_recovery": {
+    "large.artifact": {
+      "bootstrap_95": [
+        0.72,
+        0.98
+      ],
+      "mean": 0.86,
+      "mean_api_cost_usd": 0.00075641,
+      "task_clusters": 25
+    },
+    "large.artifact_feedback": {
+      "bootstrap_95": [
+        0.72,
+        0.98
+      ],
+      "mean": 0.86,
+      "mean_api_cost_usd": 0.000877605,
+      "task_clusters": 25
+    },
+    "large.distractor": {
+      "bootstrap_95": [
+        0.74,
+        0.96
+      ],
+      "mean": 0.86,
+      "mean_api_cost_usd": 0.00084013,
+      "task_clusters": 25
+    },
+    "large.feedback": {
+      "bootstrap_95": [
+        0.64,
+        0.94
+      ],
+      "mean": 0.8,
+      "mean_api_cost_usd": 0.000914,
+      "task_clusters": 25
+    },
+    "large.fresh": {
+      "bootstrap_95": [
+        0.7,
+        0.96
+      ],
+      "mean": 0.84,
+      "mean_api_cost_usd": 0.0008503299999999999,
+      "task_clusters": 25
+    },
+    "small.artifact": {
+      "bootstrap_95": [
+        0.32,
+        0.68
+      ],
+      "mean": 0.5,
+      "mean_api_cost_usd": 8.367e-05,
+      "task_clusters": 25
+    },
+    "small.artifact_feedback": {
+      "bootstrap_95": [
+        0.44,
+        0.78
+      ],
+      "mean": 0.62,
+      "mean_api_cost_usd": 9.627e-05,
+      "task_clusters": 25
+    },
+    "small.distractor": {
+      "bootstrap_95": [
+        0.48,
+        0.8
+      ],
+      "mean": 0.64,
+      "mean_api_cost_usd": 9.9382e-05,
+      "task_clusters": 25
+    },
+    "small.feedback": {
+      "bootstrap_95": [
+        0.48,
+        0.8
+      ],
+      "mean": 0.64,
+      "mean_api_cost_usd": 9.3793e-05,
+      "task_clusters": 25
+    },
+    "small.fresh": {
+      "bootstrap_95": [
+        0.48,
+        0.82
+      ],
+      "mean": 0.66,
+      "mean_api_cost_usd": 7.0321e-05,
+      "task_clusters": 25
+    }
+  },
+  "development_failed_tasks": 26,
+  "development_producer_endpoint": "deepinfra/bf16",
+  "development_producer_model": "google/gemma-3-4b-it",
+  "development_replay_best_actions": {
+    "0.003": "small.feedback",
+    "0.01": "large.fresh",
+    "0.02": "large.fresh"
+  },
+  "development_tasks": 83,
+  "evaluation_failed_tasks": 25,
+  "evaluation_initial_false_positives": 1,
+  "evaluation_initial_full_passes": 34,
+  "evaluation_producer_endpoint": "mistral",
+  "evaluation_producer_model": "mistralai/ministral-3b-2512",
+  "evaluation_tasks": 60,
+  "forecast_brier": {
+    "api_state": {
+      "bootstrap_95": [
+        0.16988111250000001,
+        0.2700731625
+      ],
+      "mean": 0.21634600000000004,
+      "task_clusters": 25
+    },
+    "api_task_only": {
+      "bootstrap_95": [
+        0.16572603750000003,
+        0.2555390625
+      ],
+      "mean": 0.20819949999999998,
+      "task_clusters": 25
+    },
+    "global": {
+      "bootstrap_95": [
+        0.15575042866941013,
+        0.2332550582990398
+      ],
+      "mean": 0.1910305212620027,
+      "task_clusters": 25
+    },
+    "state": {
+      "bootstrap_95": [
+        0.15939104707394117,
+        0.22490035202785125
+      ],
+      "mean": 0.19053245678153935,
+      "task_clusters": 25
+    },
+    "task": {
+      "bootstrap_95": [
+        0.1544284327803178,
+        0.23367422318853145
+      ],
+      "mean": 0.19059603205734496,
+      "task_clusters": 25
+    }
+  },
+  "invalid_api_forecasts": {
+    "state": 0,
+    "task_only": 0
+  },
+  "local_prediction_timing": {
+    "dollar_conversion": null,
+    "environment": {
+      "architecture": "arm64",
+      "python": "3.13.12",
+      "system": "Darwin"
+    },
+    "kind": "offline_replay_microbenchmark_not_live_latency",
+    "measurements": {
+      "global": {
+        "mean_cpu_ms": 0.0005220000000001335,
+        "predictions": 500
+      },
+      "state": {
+        "mean_cpu_ms": 0.17130400000000012,
+        "predictions": 500
+      },
+      "task": {
+        "mean_cpu_ms": 0.16581400000000013,
+        "predictions": 500
+      }
+    }
+  },
+  "observed_benefit_mse": {
+    "api_state": {
+      "bootstrap_95": [
+        0.12474189999999999,
+        0.293209125
+      ],
+      "mean": 0.199313,
+      "task_clusters": 25
+    },
+    "api_task_only": {
+      "bootstrap_95": [
+        0.10437482499999999,
+        0.27078735
+      ],
+      "mean": 0.181766,
+      "task_clusters": 25
+    },
+    "global": {
+      "bootstrap_95": [
+        0.053368741426611806,
+        0.19235485253772294
+      ],
+      "mean": 0.11559327846364884,
+      "task_clusters": 25
+    },
+    "state": {
+      "bootstrap_95": [
+        0.07135999416156452,
+        0.21895809820981668
+      ],
+      "mean": 0.13615808803533472,
+      "task_clusters": 25
+    },
+    "task": {
+      "bootstrap_95": [
+        0.05941284648645773,
+        0.19559288539885694
+      ],
+      "mean": 0.12064841190042712,
+      "task_clusters": 25
+    }
+  },
+  "paired_context_contrasts": {
+    "large.both_minus_distractor": {
+      "bootstrap_95": [
+        -0.06,
+        0.06
+      ],
+      "mean": 0.0,
+      "task_clusters": 25
+    },
+    "large.both_minus_fresh": {
+      "bootstrap_95": [
+        -0.08,
+        0.12050000000000181
+      ],
+      "mean": 0.02,
+      "task_clusters": 25
+    },
+    "large.code_minus_fresh": {
+      "bootstrap_95": [
+        -0.08,
+        0.14
+      ],
+      "mean": 0.02,
+      "task_clusters": 25
+    },
+    "large.feedback_minus_fresh": {
+      "bootstrap_95": [
+        -0.16,
+        0.06
+      ],
+      "mean": -0.04,
+      "task_clusters": 25
+    },
+    "small.both_minus_distractor": {
+      "bootstrap_95": [
+        -0.18,
+        0.14
+      ],
+      "mean": -0.02,
+      "task_clusters": 25
+    },
+    "small.both_minus_fresh": {
+      "bootstrap_95": [
+        -0.22,
+        0.12
+      ],
+      "mean": -0.04,
+      "task_clusters": 25
+    },
+    "small.code_minus_fresh": {
+      "bootstrap_95": [
+        -0.3,
+        -0.04
+      ],
+      "mean": -0.16,
+      "task_clusters": 25
+    },
+    "small.feedback_minus_fresh": {
+      "bootstrap_95": [
+        -0.12,
+        0.08
+      ],
+      "mean": -0.02,
+      "task_clusters": 25
+    }
+  },
+  "policies": {
+    "0.003": {
+      "api_state": {
+        "mean_api_cost_usd": 0.0001372275,
+        "mean_net_utility_usd": 0.008529439166666666,
+        "selected_actions": {
+          "small.artifact_feedback": 22,
+          "small.feedback": 3
+        },
+        "success_rate": 0.8666666666666667,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 6,
+          "budget": 1,
+          "public_pass": 53
+        }
+      },
+      "api_task_only": {
+        "mean_api_cost_usd": 0.000127465,
+        "mean_net_utility_usd": 0.008372535,
+        "selected_actions": {
+          "small.artifact_feedback": 15,
+          "small.feedback": 10
+        },
+        "success_rate": 0.85,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 7,
+          "public_pass": 53
+        }
+      },
+      "best_fixed": {
+        "mean_api_cost_usd": 3.3486666666666666e-05,
+        "mean_net_utility_usd": 0.00563318,
+        "selected_actions": {
+          "large.feedback": 25
+        },
+        "success_rate": 0.5666666666666667,
+        "tasks": 60,
+        "terminations": {
+          "budget": 25,
+          "public_pass": 35
+        }
+      },
+      "development_replay_best": {
+        "mean_api_cost_usd": 8.284166666666667e-05,
+        "mean_net_utility_usd": 0.008417158333333334,
+        "selected_actions": {
+          "small.feedback": 25
+        },
+        "success_rate": 0.85,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 4,
+          "budget": 2,
+          "public_pass": 54
+        }
+      },
+      "direct_large": {
+        "mean_api_cost_usd": 0.0,
+        "mean_net_utility_usd": 0.0,
+        "selected_actions": {
+          "large.fresh": 60
+        },
+        "success_rate": 0,
+        "tasks": 60,
+        "terminations": {
+          "budget": 60
+        }
+      },
+      "direct_small": {
+        "mean_api_cost_usd": 7.356583333333333e-05,
+        "mean_net_utility_usd": 0.008259767500000001,
+        "selected_actions": {
+          "small.fresh": 60
+        },
+        "success_rate": 0.8333333333333334,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 6,
+          "public_pass": 54
+        }
+      },
+      "fixed:large.artifact": {
+        "mean_api_cost_usd": 3.3486666666666666e-05,
+        "mean_net_utility_usd": 0.00563318,
+        "selected_actions": {
+          "large.artifact": 25
+        },
+        "success_rate": 0.5666666666666667,
+        "tasks": 60,
+        "terminations": {
+          "budget": 25,
+          "public_pass": 35
+        }
+      },
+      "fixed:large.artifact_feedback": {
+        "mean_api_cost_usd": 3.3486666666666666e-05,
+        "mean_net_utility_usd": 0.00563318,
+        "selected_actions": {
+          "large.artifact_feedback": 25
+        },
+        "success_rate": 0.5666666666666667,
+        "tasks": 60,
+        "terminations": {
+          "budget": 25,
+          "public_pass": 35
+        }
+      },
+      "fixed:large.feedback": {
+        "mean_api_cost_usd": 3.3486666666666666e-05,
+        "mean_net_utility_usd": 0.00563318,
+        "selected_actions": {
+          "large.feedback": 25
+        },
+        "success_rate": 0.5666666666666667,
+        "tasks": 60,
+        "terminations": {
+          "budget": 25,
+          "public_pass": 35
+        }
+      },
+      "fixed:large.fresh": {
+        "mean_api_cost_usd": 3.3486666666666666e-05,
+        "mean_net_utility_usd": 0.00563318,
+        "selected_actions": {
+          "large.fresh": 25
+        },
+        "success_rate": 0.5666666666666667,
+        "tasks": 60,
+        "terminations": {
+          "budget": 25,
+          "public_pass": 35
+        }
+      },
+      "fixed:small.artifact": {
+        "mean_api_cost_usd": 8.422833333333333e-05,
+        "mean_net_utility_usd": 0.007915771666666667,
+        "selected_actions": {
+          "small.artifact": 25
+        },
+        "success_rate": 0.8,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 9,
+          "public_pass": 51
+        }
+      },
+      "fixed:small.artifact_feedback": {
+        "mean_api_cost_usd": 9.021083333333333e-05,
+        "mean_net_utility_usd": 0.008409789166666667,
+        "selected_actions": {
+          "small.artifact_feedback": 25
+        },
+        "success_rate": 0.85,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 8,
+          "public_pass": 52
+        }
+      },
+      "fixed:small.feedback": {
+        "mean_api_cost_usd": 8.284166666666667e-05,
+        "mean_net_utility_usd": 0.008417158333333334,
+        "selected_actions": {
+          "small.feedback": 25
+        },
+        "success_rate": 0.85,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 4,
+          "budget": 2,
+          "public_pass": 54
+        }
+      },
+      "fixed:small.fresh": {
+        "mean_api_cost_usd": 7.512833333333334e-05,
+        "mean_net_utility_usd": 0.008591538333333334,
+        "selected_actions": {
+          "small.fresh": 25
+        },
+        "success_rate": 0.8666666666666667,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 5,
+          "public_pass": 55
+        }
+      },
+      "global": {
+        "mean_api_cost_usd": 8.284166666666667e-05,
+        "mean_net_utility_usd": 0.008417158333333334,
+        "selected_actions": {
+          "small.feedback": 25
+        },
+        "success_rate": 0.85,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 4,
+          "budget": 2,
+          "public_pass": 54
+        }
+      },
+      "state": {
+        "mean_api_cost_usd": 8.329749999999999e-05,
+        "mean_net_utility_usd": 0.0084167025,
+        "selected_actions": {
+          "small.artifact_feedback": 2,
+          "small.feedback": 14,
+          "small.fresh": 9
+        },
+        "success_rate": 0.85,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 4,
+          "budget": 2,
+          "public_pass": 54
+        }
+      },
+      "state_context_large": {
+        "mean_api_cost_usd": 3.3486666666666666e-05,
+        "mean_net_utility_usd": 0.00563318,
+        "selected_actions": {},
+        "success_rate": 0.5666666666666667,
+        "tasks": 60,
+        "terminations": {
+          "budget": 25,
+          "public_pass": 35
+        }
+      },
+      "state_context_small": {
+        "mean_api_cost_usd": 8.329749999999999e-05,
+        "mean_net_utility_usd": 0.0084167025,
+        "selected_actions": {
+          "small.artifact_feedback": 2,
+          "small.feedback": 14,
+          "small.fresh": 9
+        },
+        "success_rate": 0.85,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 4,
+          "budget": 2,
+          "public_pass": 54
+        }
+      },
+      "state_model_only": {
+        "mean_api_cost_usd": 9.021083333333333e-05,
+        "mean_net_utility_usd": 0.008409789166666667,
+        "selected_actions": {
+          "small.artifact_feedback": 25
+        },
+        "success_rate": 0.85,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 8,
+          "public_pass": 52
+        }
+      },
+      "task": {
+        "mean_api_cost_usd": 8.456083333333333e-05,
+        "mean_net_utility_usd": 0.0082487725,
+        "selected_actions": {
+          "small.artifact": 1,
+          "small.artifact_feedback": 5,
+          "small.feedback": 19
+        },
+        "success_rate": 0.8333333333333334,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 5,
+          "budget": 2,
+          "public_pass": 53
+        }
+      }
+    },
+    "0.01": {
+      "api_state": {
+        "mean_api_cost_usd": 0.0004896008333333333,
+        "mean_net_utility_usd": 0.0088437325,
+        "selected_actions": {
+          "large.artifact_feedback": 18,
+          "large.feedback": 5,
+          "small.artifact_feedback": 2
+        },
+        "success_rate": 0.9333333333333333,
+        "tasks": 60,
+        "terminations": {
+          "budget": 1,
+          "public_pass": 59
+        }
+      },
+      "api_task_only": {
+        "mean_api_cost_usd": 0.0004866075,
+        "mean_net_utility_usd": 0.008680059166666667,
+        "selected_actions": {
+          "large.artifact_feedback": 14,
+          "large.feedback": 10,
+          "small.artifact_feedback": 1
+        },
+        "success_rate": 0.9166666666666666,
+        "tasks": 60,
+        "terminations": {
+          "budget": 2,
+          "public_pass": 58
+        }
+      },
+      "best_fixed": {
+        "mean_api_cost_usd": 0.0004459616666666667,
+        "mean_net_utility_usd": 0.008387371666666667,
+        "selected_actions": {
+          "large.feedback": 25
+        },
+        "success_rate": 0.8833333333333333,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 1,
+          "budget": 2,
+          "public_pass": 57
+        }
+      },
+      "development_replay_best": {
+        "mean_api_cost_usd": 0.0004001575,
+        "mean_net_utility_usd": 0.008766509166666667,
+        "selected_actions": {
+          "large.fresh": 25
+        },
+        "success_rate": 0.9166666666666666,
+        "tasks": 60,
+        "terminations": {
+          "public_pass": 60
+        }
+      },
+      "direct_large": {
+        "mean_api_cost_usd": 0.0007284916666666667,
+        "mean_net_utility_usd": 0.008104841666666666,
+        "selected_actions": {
+          "large.fresh": 60
+        },
+        "success_rate": 0.8833333333333333,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 1,
+          "public_pass": 59
+        }
+      },
+      "direct_small": {
+        "mean_api_cost_usd": 7.356583333333333e-05,
+        "mean_net_utility_usd": 0.008259767500000001,
+        "selected_actions": {
+          "small.fresh": 60
+        },
+        "success_rate": 0.8333333333333334,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 6,
+          "public_pass": 54
+        }
+      },
+      "fixed:large.artifact": {
+        "mean_api_cost_usd": 0.00034129083333333334,
+        "mean_net_utility_usd": 0.0089920425,
+        "selected_actions": {
+          "large.artifact": 25
+        },
+        "success_rate": 0.9333333333333333,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 1,
+          "public_pass": 59
+        }
+      },
+      "fixed:large.artifact_feedback": {
+        "mean_api_cost_usd": 0.00046341583333333334,
+        "mean_net_utility_usd": 0.0088699175,
+        "selected_actions": {
+          "large.artifact_feedback": 25
+        },
+        "success_rate": 0.9333333333333333,
+        "tasks": 60,
+        "terminations": {
+          "budget": 1,
+          "public_pass": 59
+        }
+      },
+      "fixed:large.feedback": {
+        "mean_api_cost_usd": 0.0004459616666666667,
+        "mean_net_utility_usd": 0.008387371666666667,
+        "selected_actions": {
+          "large.feedback": 25
+        },
+        "success_rate": 0.8833333333333333,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 1,
+          "budget": 2,
+          "public_pass": 57
+        }
+      },
+      "fixed:large.fresh": {
+        "mean_api_cost_usd": 0.0004001575,
+        "mean_net_utility_usd": 0.008766509166666667,
+        "selected_actions": {
+          "large.fresh": 25
+        },
+        "success_rate": 0.9166666666666666,
+        "tasks": 60,
+        "terminations": {
+          "public_pass": 60
+        }
+      },
+      "fixed:small.artifact": {
+        "mean_api_cost_usd": 8.422833333333333e-05,
+        "mean_net_utility_usd": 0.007915771666666667,
+        "selected_actions": {
+          "small.artifact": 25
+        },
+        "success_rate": 0.8,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 9,
+          "public_pass": 51
+        }
+      },
+      "fixed:small.artifact_feedback": {
+        "mean_api_cost_usd": 9.021083333333333e-05,
+        "mean_net_utility_usd": 0.008409789166666667,
+        "selected_actions": {
+          "small.artifact_feedback": 25
+        },
+        "success_rate": 0.85,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 8,
+          "public_pass": 52
+        }
+      },
+      "fixed:small.feedback": {
+        "mean_api_cost_usd": 8.718083333333333e-05,
+        "mean_net_utility_usd": 0.0087461525,
+        "selected_actions": {
+          "small.feedback": 25
+        },
+        "success_rate": 0.8833333333333333,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 4,
+          "public_pass": 56
+        }
+      },
+      "fixed:small.fresh": {
+        "mean_api_cost_usd": 7.512833333333334e-05,
+        "mean_net_utility_usd": 0.008591538333333334,
+        "selected_actions": {
+          "small.fresh": 25
+        },
+        "success_rate": 0.8666666666666667,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 5,
+          "public_pass": 55
+        }
+      },
+      "global": {
+        "mean_api_cost_usd": 0.0004459616666666667,
+        "mean_net_utility_usd": 0.008387371666666667,
+        "selected_actions": {
+          "large.feedback": 25
+        },
+        "success_rate": 0.8833333333333333,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 1,
+          "budget": 2,
+          "public_pass": 57
+        }
+      },
+      "state": {
+        "mean_api_cost_usd": 0.0003716433333333333,
+        "mean_net_utility_usd": 0.008795023333333334,
+        "selected_actions": {
+          "large.artifact": 2,
+          "large.feedback": 12,
+          "large.fresh": 5,
+          "small.feedback": 6
+        },
+        "success_rate": 0.9166666666666666,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 1,
+          "budget": 2,
+          "public_pass": 57
+        }
+      },
+      "state_context_large": {
+        "mean_api_cost_usd": 0.0004295908333333333,
+        "mean_net_utility_usd": 0.0084037425,
+        "selected_actions": {
+          "large.artifact": 2,
+          "large.artifact_feedback": 1,
+          "large.feedback": 16,
+          "large.fresh": 6
+        },
+        "success_rate": 0.8833333333333333,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 1,
+          "budget": 2,
+          "public_pass": 57
+        }
+      },
+      "state_context_small": {
+        "mean_api_cost_usd": 8.763666666666667e-05,
+        "mean_net_utility_usd": 0.008745696666666667,
+        "selected_actions": {
+          "small.artifact_feedback": 2,
+          "small.feedback": 14,
+          "small.fresh": 9
+        },
+        "success_rate": 0.8833333333333333,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 4,
+          "public_pass": 56
+        }
+      },
+      "state_model_only": {
+        "mean_api_cost_usd": 0.00043642416666666667,
+        "mean_net_utility_usd": 0.008896909166666666,
+        "selected_actions": {
+          "large.artifact_feedback": 21,
+          "small.artifact_feedback": 4
+        },
+        "success_rate": 0.9333333333333333,
+        "tasks": 60,
+        "terminations": {
+          "budget": 1,
+          "public_pass": 59
+        }
+      },
+      "task": {
+        "mean_api_cost_usd": 0.00044503666666666664,
+        "mean_net_utility_usd": 0.008388296666666666,
+        "selected_actions": {
+          "large.feedback": 20,
+          "large.fresh": 5
+        },
+        "success_rate": 0.8833333333333333,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 1,
+          "budget": 2,
+          "public_pass": 57
+        }
+      }
+    },
+    "0.02": {
+      "api_state": {
+        "mean_api_cost_usd": 0.0005142258333333333,
+        "mean_net_utility_usd": 0.0088191075,
+        "selected_actions": {
+          "large.artifact_feedback": 18,
+          "large.feedback": 5,
+          "small.artifact_feedback": 2
+        },
+        "success_rate": 0.9333333333333333,
+        "tasks": 60,
+        "terminations": {
+          "public_pass": 60
+        }
+      },
+      "api_task_only": {
+        "mean_api_cost_usd": 0.0005463366666666667,
+        "mean_net_utility_usd": 0.00862033,
+        "selected_actions": {
+          "large.artifact_feedback": 14,
+          "large.feedback": 10,
+          "small.artifact_feedback": 1
+        },
+        "success_rate": 0.9166666666666666,
+        "tasks": 60,
+        "terminations": {
+          "public_pass": 60
+        }
+      },
+      "best_fixed": {
+        "mean_api_cost_usd": 0.00051222,
+        "mean_net_utility_usd": 0.008321113333333333,
+        "selected_actions": {
+          "large.feedback": 25
+        },
+        "success_rate": 0.8833333333333333,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 1,
+          "public_pass": 59
+        }
+      },
+      "development_replay_best": {
+        "mean_api_cost_usd": 0.0004001575,
+        "mean_net_utility_usd": 0.008766509166666667,
+        "selected_actions": {
+          "large.fresh": 25
+        },
+        "success_rate": 0.9166666666666666,
+        "tasks": 60,
+        "terminations": {
+          "public_pass": 60
+        }
+      },
+      "direct_large": {
+        "mean_api_cost_usd": 0.0007284916666666667,
+        "mean_net_utility_usd": 0.008104841666666666,
+        "selected_actions": {
+          "large.fresh": 60
+        },
+        "success_rate": 0.8833333333333333,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 1,
+          "public_pass": 59
+        }
+      },
+      "direct_small": {
+        "mean_api_cost_usd": 7.356583333333333e-05,
+        "mean_net_utility_usd": 0.008259767500000001,
+        "selected_actions": {
+          "small.fresh": 60
+        },
+        "success_rate": 0.8333333333333334,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 6,
+          "public_pass": 54
+        }
+      },
+      "fixed:large.artifact": {
+        "mean_api_cost_usd": 0.00034129083333333334,
+        "mean_net_utility_usd": 0.0089920425,
+        "selected_actions": {
+          "large.artifact": 25
+        },
+        "success_rate": 0.9333333333333333,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 1,
+          "public_pass": 59
+        }
+      },
+      "fixed:large.artifact_feedback": {
+        "mean_api_cost_usd": 0.00048804083333333335,
+        "mean_net_utility_usd": 0.0088452925,
+        "selected_actions": {
+          "large.artifact_feedback": 25
+        },
+        "success_rate": 0.9333333333333333,
+        "tasks": 60,
+        "terminations": {
+          "public_pass": 60
+        }
+      },
+      "fixed:large.feedback": {
+        "mean_api_cost_usd": 0.00051222,
+        "mean_net_utility_usd": 0.008321113333333333,
+        "selected_actions": {
+          "large.feedback": 25
+        },
+        "success_rate": 0.8833333333333333,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 1,
+          "public_pass": 59
+        }
+      },
+      "fixed:large.fresh": {
+        "mean_api_cost_usd": 0.0004001575,
+        "mean_net_utility_usd": 0.008766509166666667,
+        "selected_actions": {
+          "large.fresh": 25
+        },
+        "success_rate": 0.9166666666666666,
+        "tasks": 60,
+        "terminations": {
+          "public_pass": 60
+        }
+      },
+      "fixed:small.artifact": {
+        "mean_api_cost_usd": 8.422833333333333e-05,
+        "mean_net_utility_usd": 0.007915771666666667,
+        "selected_actions": {
+          "small.artifact": 25
+        },
+        "success_rate": 0.8,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 9,
+          "public_pass": 51
+        }
+      },
+      "fixed:small.artifact_feedback": {
+        "mean_api_cost_usd": 9.021083333333333e-05,
+        "mean_net_utility_usd": 0.008409789166666667,
+        "selected_actions": {
+          "small.artifact_feedback": 25
+        },
+        "success_rate": 0.85,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 8,
+          "public_pass": 52
+        }
+      },
+      "fixed:small.feedback": {
+        "mean_api_cost_usd": 8.718083333333333e-05,
+        "mean_net_utility_usd": 0.0087461525,
+        "selected_actions": {
+          "small.feedback": 25
+        },
+        "success_rate": 0.8833333333333333,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 4,
+          "public_pass": 56
+        }
+      },
+      "fixed:small.fresh": {
+        "mean_api_cost_usd": 7.512833333333334e-05,
+        "mean_net_utility_usd": 0.008591538333333334,
+        "selected_actions": {
+          "small.fresh": 25
+        },
+        "success_rate": 0.8666666666666667,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 5,
+          "public_pass": 55
+        }
+      },
+      "global": {
+        "mean_api_cost_usd": 0.00051222,
+        "mean_net_utility_usd": 0.008321113333333333,
+        "selected_actions": {
+          "large.feedback": 25
+        },
+        "success_rate": 0.8833333333333333,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 1,
+          "public_pass": 59
+        }
+      },
+      "state": {
+        "mean_api_cost_usd": 0.0004379016666666667,
+        "mean_net_utility_usd": 0.008728765,
+        "selected_actions": {
+          "large.artifact": 2,
+          "large.feedback": 12,
+          "large.fresh": 5,
+          "small.feedback": 6
+        },
+        "success_rate": 0.9166666666666666,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 1,
+          "public_pass": 59
+        }
+      },
+      "state_context_large": {
+        "mean_api_cost_usd": 0.0004958491666666666,
+        "mean_net_utility_usd": 0.008337484166666667,
+        "selected_actions": {
+          "large.artifact": 2,
+          "large.artifact_feedback": 1,
+          "large.feedback": 16,
+          "large.fresh": 6
+        },
+        "success_rate": 0.8833333333333333,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 1,
+          "public_pass": 59
+        }
+      },
+      "state_context_small": {
+        "mean_api_cost_usd": 8.763666666666667e-05,
+        "mean_net_utility_usd": 0.008745696666666667,
+        "selected_actions": {
+          "small.artifact_feedback": 2,
+          "small.feedback": 14,
+          "small.fresh": 9
+        },
+        "success_rate": 0.8833333333333333,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 4,
+          "public_pass": 56
+        }
+      },
+      "state_model_only": {
+        "mean_api_cost_usd": 0.0004610491666666667,
+        "mean_net_utility_usd": 0.008872284166666668,
+        "selected_actions": {
+          "large.artifact_feedback": 21,
+          "small.artifact_feedback": 4
+        },
+        "success_rate": 0.9333333333333333,
+        "tasks": 60,
+        "terminations": {
+          "public_pass": 60
+        }
+      },
+      "task": {
+        "mean_api_cost_usd": 0.000511295,
+        "mean_net_utility_usd": 0.008322038333333334,
+        "selected_actions": {
+          "large.feedback": 20,
+          "large.fresh": 5
+        },
+        "success_rate": 0.8833333333333333,
+        "tasks": 60,
+        "terminations": {
+          "attempt_cap": 1,
+          "public_pass": 59
+        }
+      }
+    }
+  },
+  "policy_backed_zero_charge_provider_errors": 7,
+  "primary": {
+    "api_cost_difference_usd": {
+      "bootstrap_95": [
+        -0.0001298388125,
+        -2.865572916666667e-05
+      ],
+      "mean": -7.431833333333332e-05,
+      "task_clusters": 60
+    },
+    "budget_usd": 0.01,
+    "comparison": "state ridge minus development-selected best fixed recovery action",
+    "net_utility_difference_usd": {
+      "bootstrap_95": [
+        3.4823770833333404e-05,
+        0.0009522526875000001
+      ],
+      "mean": 0.00040765166666666667,
+      "task_clusters": 60
+    },
+    "success_difference": {
+      "bootstrap_95": [
+        0.0,
+        0.08333333333333333
+      ],
+      "mean": 0.03333333333333333,
+      "task_clusters": 60
+    }
+  },
+  "producer_model_transfer": true,
+  "producer_provider_transfer": true,
+  "prompt_token_controls": {
+    "large.artifact": {
+      "draws": 50,
+      "max": 613,
+      "mean": 414.6,
+      "min": 243,
+      "reported_token_receipts": 50
+    },
+    "large.artifact_feedback": {
+      "draws": 50,
+      "max": 955,
+      "mean": 573.5714285714286,
+      "min": 342,
+      "reported_token_receipts": 49
+    },
+    "large.distractor": {
+      "draws": 50,
+      "max": 799,
+      "mean": 537.64,
+      "min": 343,
+      "reported_token_receipts": 50
+    },
+    "large.feedback": {
+      "draws": 50,
+      "max": 779,
+      "mean": 451.36,
+      "min": 247,
+      "reported_token_receipts": 50
+    },
+    "large.fresh": {
+      "draws": 50,
+      "max": 456,
+      "mean": 293.8,
+      "min": 150,
+      "reported_token_receipts": 50
+    },
+    "small.artifact": {
+      "draws": 50,
+      "max": 613,
+      "mean": 414.6,
+      "min": 243,
+      "reported_token_receipts": 50
+    },
+    "small.artifact_feedback": {
+      "draws": 50,
+      "max": 955,
+      "mean": 572.16,
+      "min": 342,
+      "reported_token_receipts": 50
+    },
+    "small.distractor": {
+      "draws": 50,
+      "max": 799,
+      "mean": 537.64,
+      "min": 343,
+      "reported_token_receipts": 50
+    },
+    "small.feedback": {
+      "draws": 50,
+      "max": 779,
+      "mean": 451.36,
+      "min": 247,
+      "reported_token_receipts": 50
+    },
+    "small.fresh": {
+      "draws": 50,
+      "max": 456,
+      "mean": 293.8,
+      "min": 150,
+      "reported_token_receipts": 50
+    }
+  },
+  "provider_error_counts": {
+    "development.large": 5,
+    "development.small": 1,
+    "evaluation.large": 1
+  },
+  "public_pass_but_full_fail_draws": {
+    "large.artifact": 4,
+    "large.artifact_feedback": 3,
+    "large.distractor": 2,
+    "large.feedback": 6,
+    "large.fresh": 9,
+    "small.artifact": 2,
+    "small.distractor": 4,
+    "small.feedback": 3,
+    "small.fresh": 6
+  },
+  "secondary_paired_forecast_comparisons": {
+    "api_state_minus_api_task_only": {
+      "brier_difference": {
+        "bootstrap_95": [
+          -0.022924787500000005,
+          0.038132937500000005
+        ],
+        "mean": 0.0081465,
+        "task_clusters": 25
+      },
+      "observed_benefit_mse_difference": {
+        "bootstrap_95": [
+          -0.025313225000000026,
+          0.06648565000000002
+        ],
+        "mean": 0.017546999999999997,
+        "task_clusters": 25
+      }
+    },
+    "state_minus_global": {
+      "brier_difference": {
+        "bootstrap_95": [
+          -0.02736096918728484,
+          0.024727848525253445
+        ],
+        "mean": -0.0004980644804634249,
+        "task_clusters": 25
+      },
+      "observed_benefit_mse_difference": {
+        "bootstrap_95": [
+          -0.006055158408478701,
+          0.0475880634407609
+        ],
+        "mean": 0.020564809571685872,
+        "task_clusters": 25
+      }
+    },
+    "state_minus_task": {
+      "brier_difference": {
+        "bootstrap_95": [
+          -0.02276173346206923,
+          0.023405142469905146
+        ],
+        "mean": -6.357527580566235e-05,
+        "task_clusters": 25
+      },
+      "observed_benefit_mse_difference": {
+        "bootstrap_95": [
+          -0.005183416945348777,
+          0.0376440064079501
+        ],
+        "mean": 0.015509676134907596,
+        "task_clusters": 25
+      }
+    }
+  },
+  "secondary_state_minus_development_replay_best_utility_usd": {
+    "bootstrap_95": [
+      -0.00046099427083333335,
+      0.0005402700833333336
+    ],
+    "mean": 2.8514166666666723e-05,
+    "task_clusters": 60
+  }
+}
