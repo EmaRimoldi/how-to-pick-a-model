@@ -1,0 +1,105 @@
+VAO_CIFAR10_AGENT_MODEL_SELECTOR_V2
+
+You must choose exactly one candidate agent model to run a CIFAR-10
+code-editing optimization task.
+
+The task instance includes an initial trainable model implemented in
+`train.py`. This initial trainable model is not being selected. It is part of
+the task that the selected agent model must improve.
+
+The selected agent model will receive the original initial `train.py` and run
+the full edit-verify trajectory from scratch. At each deployment step, the
+selected agent model may propose edits to `train.py`; an external verifier then
+trains/evaluates the edited program under the declared checker budget.
+
+The allowed signal record may contain only the deployment contract, or it may
+also contain static information about the initial trainable model and/or
+pre-deployment scout measurements. If `candidate_agent_scouts` is present, each
+candidate agent model was run for a small fixed prefix of the edit-verify
+horizon on this same task instance. These measurements are evidence for
+choosing the agent model only. They are not a warm start: the selected agent
+model does not inherit edited code, checkpoints, hidden state, or partial
+progress from them.
+
+Decision objective:
+
+Choose the candidate agent model with the lowest expected deployment loss under
+the allowed signal record.
+
+Use the following criteria:
+
+1. Expected probability of verified success:
+   Prefer candidate agent models more likely to reach the declared success
+   threshold within the deployment horizon.
+
+2. Expected cost to first success:
+   Among candidate agent models with similar success probability, prefer the one
+   expected to reach the threshold with lower wall-clock, token, or verifier-use
+   cost.
+
+3. Fit to the task instance:
+   Use the signal record to reason about the initial trainable model and the
+   likely difficulty of improving it. Consider whether the task looks like a
+   simple local code-editing problem, architecture/hyperparameter tuning,
+   optimization-stability diagnosis, or broader experimental search.
+
+4. Failure risk:
+   Penalize candidate agent models likely to spend the horizon on low-yield
+   edits, invalid code, shallow search, overfitting to noisy signals, or
+   expensive exploration without reaching the verifier threshold.
+
+5. Signal reliability and measurement cost:
+   Use all and only the information present in the allowed signal record. Do
+   not assume that missing fields are zero, normal, failed, or unavailable. If a
+   field is missing, treat it as unknown. If measurement cost is provided,
+   account for it qualitatively when judging whether the extra information is
+   worth using.
+
+6. Candidate scout evidence:
+   If `candidate_agent_scouts` is present, compare the candidate agent models by
+   their prefix-scout behavior: valid selected edits, improvement within the
+   scout budget, success within the scout budget, wall-clock/token cost, and
+   error patterns. Treat scout performance as noisy but directly relevant
+   evidence about how each candidate responds to this task.
+
+Important constraints:
+
+- Do not edit `train.py`.
+- Do not propose a solution to the CIFAR-10 task.
+- Do not assume access to results not present in the allowed signal record.
+- Do not choose a candidate agent model merely because it is strongest, fastest,
+  cheapest, or newest.
+- Do not treat probe or scout results as deployment progress for the selected
+  agent model.
+- Do not infer or use full-horizon outcomes unless they are explicitly present
+  in the allowed signal record.
+
+Candidate agent models:
+$candidate_agent_models
+
+Allowed signal record:
+$signal_record
+
+Return only valid JSON matching this schema:
+
+{
+  "selected_agent_model": string,
+  "agent_model_ranking": [string],
+  "success_probability_estimates": {
+    "<candidate_agent_model>": number
+  },
+  "expected_cost_to_success": {
+    "<candidate_agent_model>": number
+  },
+  "task_diagnosis": string,
+  "evidence_used": [string],
+  "expected_failure_mode": string,
+  "expected_cost_risk": string,
+  "rationale": string,
+  "confidence": number
+}
+
+The `selected_agent_model` must be one of the candidate agent models.
+The `agent_model_ranking` must contain each candidate agent model exactly once.
+The `confidence` must be between 0 and 1.
+Do not include markdown.
