@@ -13,5 +13,5 @@
 
 Current data supplies baseline and matched development evidence. The context-value
 diagnostic adds prospective forecasts; learned policies and their validation
-remain planned in `docs/decision-protocol.md`. `make check` verifies
+remain planned in `docs/decision-protocol.md`. `uv run python scripts/maintenance/workflow.py check` verifies
 structure and unit behavior, not the scientific validity of new policy claims.

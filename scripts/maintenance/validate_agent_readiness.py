@@ -19,7 +19,8 @@ from agent_index_config import (
     GENERATED_AUDITS,
     LOCAL_PATH_PATTERNS,
     MARKDOWN_LINK_DOCS,
-    REQUIRED_MAKE_TARGETS,
+    REQUIRED_ACTIONS,
+    MAINTENANCE_COMMAND,
 )
 
 FORMAL_LABEL_RE = re.compile(r"^(ass|def|lem|thm|prop|cor|rem|claim):")
@@ -183,19 +184,19 @@ def check_experiment_bundles(knowledge: dict) -> list[str]:
 def check_command_targets(knowledge: dict) -> list[str]:
     problems: list[str] = []
     targets = {target["target"]: target for target in knowledge.get("command_targets", [])}
-    missing = [target for target in REQUIRED_MAKE_TARGETS if target not in targets]
+    missing = [target for target in REQUIRED_ACTIONS if target not in targets]
     if missing:
-        problems.append("missing required Makefile targets: " + ", ".join(missing))
+        problems.append("missing required maintenance actions: " + ", ".join(missing))
         return problems
 
     check_deps = set(targets["check"]["dependencies"].split())
     expected_deps = {"indexes", "readiness", "compile", "test"}
     if check_deps != expected_deps:
-        problems.append("Makefile target `check` must depend on indexes, readiness, compile, and test")
+        problems.append("Maintenance action `check` must depend on indexes, readiness, compile, and test")
 
-    for target in REQUIRED_MAKE_TARGETS:
+    for target in REQUIRED_ACTIONS:
         if not targets[target]["description"] or targets[target]["description"] == "Repository command target.":
-            problems.append(f"Makefile target lacks useful description `{target}`")
+            problems.append(f"Maintenance action lacks useful description `{target}`")
     return problems
 
 
@@ -238,19 +239,19 @@ def check_command_manifest(manifest: dict) -> list[str]:
 
     if manifest.get("root") != ".":
         problems.append("command manifest root must be '.'")
-    if manifest.get("missing_required_make_targets"):
+    if manifest.get("missing_required_actions"):
         problems.append(
-            "command manifest is missing required Make targets: "
-            + ", ".join(manifest["missing_required_make_targets"])
+            "command manifest is missing required maintenance actions: "
+            + ", ".join(manifest["missing_required_actions"])
         )
 
-    for required in ("make check", "make indexes", "make paper-build"):
+    for required in (f"{MAINTENANCE_COMMAND} {name}" for name in REQUIRED_ACTIONS):
         if required not in by_command:
             problems.append(f"command manifest missing `{required}`")
 
-    make_check = by_command.get("make check")
-    if make_check and (make_check["safety_class"] != "safe-local" or not make_check["default_safe"]):
-        problems.append("command manifest must classify `make check` as default-safe local")
+    check = by_command.get(f"{MAINTENANCE_COMMAND} check")
+    if check and (check["safety_class"] != "safe-local" or not check["default_safe"]):
+        problems.append("command manifest must classify the check action as default-safe local")
 
     live_classes = {"live-local", "live-cluster", "cluster-setup", "mixed-cli"}
     for command in commands:

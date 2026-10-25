@@ -20,7 +20,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | Path | Present |
 | --- | --- |
 | `README.md` | yes |
-| `AGENTS.md` | yes |
+| `docs/engineering/development.md` | yes |
 | `docs/README.md` | yes |
 | `docs/knowledge-map.md` | yes |
 | `docs/decision-protocol.md` | yes |
@@ -308,17 +308,17 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 
 | Target | Dependencies | Description | Commands | Required |
 | --- | --- | --- | --- | --- |
-| `make indexes` |  | Regenerate the agent-facing repository inventory, knowledge index, and manifests. | 4 | yes |
-| `make readiness` |  | Validate canonical docs, evidence links, duplicate policy, and generated audit freshness. | 1 | yes |
-| `make compile` |  | Byte-compile scripts and src for syntax/import-surface sanity. | 1 | yes |
-| `make test` |  | Run the repository test suite through uv. | 1 | yes |
-| `make check` | indexes readiness compile test | Run indexes, readiness, compile, and tests as the full local gate. | 0 | yes |
-| `make paper-build` |  | Compile active paper TeX sources out of tree with pdflatex and bibtex. | 1 | yes |
+| `python scripts/maintenance/workflow.py indexes` |  | Regenerate repository inventory, knowledge and command/experiment maps. | 4 | yes |
+| `python scripts/maintenance/workflow.py readiness` |  | Validate documentation, evidence links and generated-map freshness. | 1 | yes |
+| `python scripts/maintenance/workflow.py compile` |  | Byte-compile maintained Python sources, scripts and manuscript builders. | 1 | yes |
+| `python scripts/maintenance/workflow.py test` |  | Run the offline repository test suite. | 1 | yes |
+| `python scripts/maintenance/workflow.py check` | indexes readiness compile test | Run indexes, readiness, compilation and offline tests in order. | 0 | yes |
+| `python scripts/maintenance/workflow.py paper-build` |  | Compile retained manuscripts out of tree with pdflatex and bibtex. | 1 | yes |
 
 ## Agent Use
 
 - Use this file to locate relevant material quickly; use the source file for final claims.
 - If a formal object appears in an archived source but not in a canonical anchor, consult `docs/audits/theory-consolidation.md` before promoting it.
 - If an experiment status is partial or scaffold, do not cite it as completed evidence without checking its bundle README.
-- Use `make check` as the default local gate after structural, documentation, or code changes.
+- Use `uv run python scripts/maintenance/workflow.py check` as the default local gate after changes.
 - Regenerate this file after adding, moving, or deleting paper sources, experiment bundles, scripts, or command targets.

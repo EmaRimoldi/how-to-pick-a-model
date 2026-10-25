@@ -15,8 +15,9 @@ jobs:
           python-version: "3.11"
       - uses: astral-sh/setup-uv@v10.3.2
       - run: uv sync --dev --frozen
-      - run: uv run python scripts/maintenance/validate_agent_readiness.py
-      - run: uv run pytest tests -q
+      - run: uv run python scripts/maintenance/workflow.py check
+      - name: Ensure generated navigation is committed
+        run: git diff --exit-code -- docs/audits
       - name: Audit recorded recovery evidence without model calls
         run: >-
           uv run python scripts/analyze_recovery_validation.py

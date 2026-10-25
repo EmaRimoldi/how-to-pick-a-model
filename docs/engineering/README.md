@@ -7,6 +7,7 @@ and the recorded-evidence workflow.
 |---|---|
 | [`architecture.md`](architecture.md) | Current package/runtime architecture |
 | [`layout.md`](layout.md) | File placement, command compatibility and frozen provenance |
+| [`development.md`](development.md) | Reading order, evidence constraints and maintenance commands |
 
 The optional [environment example](environment.env.example) lists provider/router
 variables. Copy it to `.env` at the repository root if useful; runners read the

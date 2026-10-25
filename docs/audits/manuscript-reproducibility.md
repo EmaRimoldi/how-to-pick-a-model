@@ -6,7 +6,8 @@ Audited artifact: the historical
 [submitted manuscript](https://github.com/EmaRimoldi/how-to-pick-a-model/blob/d98e3f2209c6e470885e748aafb0a41ea6395291/paper/neurips-submission/archive/submitted-manuscript.pdf).
 The October 2026 cleanup removed this PDF from the working tree after the
 text-layer anomaly below was independently confirmed. This audit retains the
-historical findings; use `make paper-build` for current PDFs from active sources.
+historical findings. For current PDFs from active sources, run
+`uv run python scripts/maintenance/workflow.py paper-build`.
 
 The manuscript source and all twelve paper-facing AutoResearch figures were
 located in `paper/neurips-submission/` and in the imported Overleaf history. The

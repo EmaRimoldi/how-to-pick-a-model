@@ -85,5 +85,5 @@ prediction ablation, independent task-family/provider replication and realistic
 multi-step tests. Re-FORC, AI Functions, CodeRescue and the other cited systems are
 references, not reproduced implementations in this repository.
 
-Run `make check` for structure and unit tests. CIFAR-10 reproduction requires
+Run `uv run python scripts/maintenance/workflow.py check` for structure and unit tests. CIFAR-10 reproduction requires
 its archived sources; current saved-data replays cover the seven coding-task studies.

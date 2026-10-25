@@ -96,7 +96,7 @@ Run the offline repository checks:
 
 ```bash
 uv sync --dev --frozen
-make check
+uv run python scripts/maintenance/workflow.py check
 ```
 
 Live runs require explicit model/compute setup. Optional environments and safe
@@ -128,7 +128,8 @@ The scope reduction and recoverable Git snapshots are recorded in
 [branch review](docs/audits/branch-consolidation.md). The
 [runtime architecture](docs/engineering/architecture.md) describes the maintained
 package boundaries; the [layout guide](docs/engineering/layout.md) explains file
-placement and stable commands. `AGENTS.md` describes safe development.
+placement and stable commands. The
+[development guide](docs/engineering/development.md) describes safe maintenance.
 
 CIFAR-10 experiments, data and their dedicated launchers are retired from the
 maintained tree; see [provenance](docs/history-merge.md). Historical manuscripts

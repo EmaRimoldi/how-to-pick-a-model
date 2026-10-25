@@ -54,4 +54,4 @@ dev = [
     "pytest>=9.0.2",
 ]
 
-# Run offline checks with: uv run pytest tests -q
+# Run offline checks with: uv run python scripts/maintenance/workflow.py check

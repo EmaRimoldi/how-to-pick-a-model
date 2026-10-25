@@ -7,7 +7,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 - Commands indexed: `27`
 - Default-safe commands: `20`
-- Missing required Make targets: `0`
+- Missing required maintenance actions: `0`
 
 ## Safety Classes
 
@@ -23,7 +23,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 | Surface | Commands |
 | --- | --- |
-| `Makefile` | 6 |
+| `maintenance` | 6 |
 | `scripts` | 14 |
 | `scripts/cluster` | 1 |
 | `scripts/maintenance` | 6 |
@@ -32,17 +32,17 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 | Command | Surface | Safety | Default Safe | Prerequisites | Summary |
 | --- | --- | --- | --- | --- | --- |
-| `make check` | Makefile | `safe-local` | yes | python, uv, pytest | Run indexes, readiness, compile, and tests as the full local gate. |
-| `make compile` | Makefile | `safe-local` | yes | python | Byte-compile scripts and src for syntax/import-surface sanity. |
-| `make indexes` | Makefile | `safe-local` | yes | python | Regenerate the agent-facing repository inventory, knowledge index, and manifests. |
-| `make readiness` | Makefile | `safe-local` | yes | python | Validate canonical docs, evidence links, duplicate policy, and generated audit freshness. |
-| `make test` | Makefile | `safe-local` | yes | uv, pytest | Run the repository test suite through uv. |
+| `python scripts/maintenance/workflow.py check` | maintenance | `safe-local` | yes | python, pytest | Run indexes, readiness, compilation and offline tests in order. |
+| `python scripts/maintenance/workflow.py compile` | maintenance | `safe-local` | yes | python | Byte-compile maintained Python sources, scripts and manuscript builders. |
+| `python scripts/maintenance/workflow.py indexes` | maintenance | `safe-local` | yes | python | Regenerate repository inventory, knowledge and command/experiment maps. |
+| `python scripts/maintenance/workflow.py readiness` | maintenance | `safe-local` | yes | python | Validate documentation, evidence links and generated-map freshness. |
+| `python scripts/maintenance/workflow.py test` | maintenance | `safe-local` | yes | python, pytest | Run the offline repository test suite. |
 | `python scripts/maintenance/build_command_manifest.py` | scripts/maintenance | `safe-local` | yes | python | Build a safety-classified command manifest for agent-facing workflows. |
 | `python scripts/maintenance/build_experiment_manifest.py` | scripts/maintenance | `safe-local` | yes | python | Build a manifest of experiment bundles and their reproducibility assets. |
 | `python scripts/maintenance/build_knowledge_index.py` | scripts/maintenance | `safe-local` | yes | python | Build a compact knowledge index for LLM agents working in this repository. |
 | `python scripts/maintenance/build_repo_inventory.py` | scripts/maintenance | `safe-local` | yes | python | Build a deterministic repository inventory for agents and reviewers. |
 | `python scripts/maintenance/validate_agent_readiness.py` | scripts/maintenance | `safe-local` | yes | python | Validate that the repository is ready for LLM-agent navigation. |
-| `make paper-build` | Makefile | `safe-local-optional-tool` | yes | pdflatex, bibtex | Compile active paper TeX sources out of tree with pdflatex and bibtex. |
+| `python scripts/maintenance/workflow.py paper-build` | maintenance | `safe-local-optional-tool` | yes | pdflatex, bibtex | Compile retained manuscripts out of tree with pdflatex and bibtex. |
 | `python scripts/maintenance/check_paper_build.py` | scripts/maintenance | `safe-local-optional-tool` | yes | pdflatex, bibtex | Compile active paper TeX sources into an out-of-tree build directory. |
 | `python scripts/analyze_context_value.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit prospective context-value records and compare matched outcomes by task cluster. Public CLI facade; implementation lives in vao.analysis.analyze_context_value. |
 | `python scripts/analyze_continuation_pilot.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit saved pilot receipts/outcomes and render an exploratory cost/success plot. Public CLI facade; implementation lives in vao.analysis.analyze_continuation_pilot. |
@@ -64,4 +64,4 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 - Default-safe commands may be run during local audits when their prerequisites are installed.
 - `mixed-cli`, `live-local`, `live-cluster`, and `cluster-setup` commands require explicit user intent and environment review.
-- Use `make check` as the default structural gate and `make paper-build` only when TeX Live is available.
+- Use `uv run python scripts/maintenance/workflow.py check` as the default structural gate; `paper-build` requires TeX Live.

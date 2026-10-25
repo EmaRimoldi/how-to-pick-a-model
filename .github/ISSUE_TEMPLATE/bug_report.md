@@ -13,7 +13,7 @@ Describe the failure and what you expected instead.
 ## Reproduction
 
 ```bash
-make readiness
+uv run python scripts/maintenance/workflow.py readiness
 # command that failed
 ```
 

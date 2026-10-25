@@ -15,10 +15,14 @@ from agent_index_config import (
     CANONICAL_DOCS,
     CANONICAL_TEX,
     PAPER_ROOT,
-    REQUIRED_MAKE_TARGETS,
+    REQUIRED_ACTIONS,
+    MAINTENANCE_RUNNER,
+    MAINTENANCE_COMMAND,
     SCRIPT_DIRS,
     SCRIPT_SUPPORT_FILES,
 )
+
+from workflow import ACTIONS
 
 FORMAL_ENVS = (
     "assumption",
@@ -102,15 +106,6 @@ class ActivePaperReference:
     resolved_path: str
     present: bool
 
-
-MAKE_TARGET_DESCRIPTIONS = {
-    "indexes": "Regenerate the agent-facing repository inventory, knowledge index, and manifests.",
-    "readiness": "Validate canonical docs, evidence links, duplicate policy, and generated audit freshness.",
-    "compile": "Byte-compile scripts and src for syntax/import-surface sanity.",
-    "test": "Run the repository test suite through uv.",
-    "check": "Run indexes, readiness, compile, and tests as the full local gate.",
-    "paper-build": "Compile active paper TeX sources out of tree with pdflatex and bibtex.",
-}
 
 CODE_MODULE_SCOPES = (
     ("HumanEval+ workers and routing", Path("src/vao/humaneval"), 1),
@@ -529,38 +524,17 @@ def active_paper_references(root: Path) -> list[ActivePaperReference]:
 
 
 def command_targets(root: Path) -> list[CommandTarget]:
-    makefile = root / "Makefile"
-    if not makefile.exists():
+    if not (root / MAINTENANCE_RUNNER).is_file():
         return []
-
-    parsed: dict[str, dict[str, object]] = {}
-    current: str | None = None
-    target_re = re.compile(r"^(?P<target>[A-Za-z0-9_.-]+):(?P<deps>.*)$")
-    for line in read_text(makefile).splitlines():
-        match = target_re.match(line)
-        if match:
-            current = match.group("target")
-            if current.startswith("."):
-                current = None
-                continue
-            parsed[current] = {
-                "dependencies": " ".join(match.group("deps").split()),
-                "commands": 0,
-            }
-            continue
-        if current and line.startswith("\t"):
-            parsed[current]["commands"] = int(parsed[current]["commands"]) + 1
-
-    required_order = {target: index for index, target in enumerate(REQUIRED_MAKE_TARGETS)}
     return [
         CommandTarget(
-            target=target,
-            dependencies=str(meta["dependencies"]),
-            description=MAKE_TARGET_DESCRIPTIONS.get(target, "Repository command target."),
-            commands=int(meta["commands"]),
-            required=target in required_order,
+            target=name,
+            dependencies=" ".join(spec["dependencies"]),
+            description=spec["description"],
+            commands=len(spec["steps"]),
+            required=name in REQUIRED_ACTIONS,
         )
-        for target, meta in sorted(parsed.items(), key=lambda item: (required_order.get(item[0], 999), item[0]))
+        for name, spec in ACTIONS.items()
     ]
 
 
@@ -751,7 +725,7 @@ def render_markdown(index: dict) -> str:
             ["Target", "Dependencies", "Description", "Commands", "Required"],
             [
                 [
-                    f"`make {target['target']}`",
+                    f"`{MAINTENANCE_COMMAND} {target['target']}`",
                     target["dependencies"] or "",
                     target["description"],
                     str(target["commands"]),
@@ -769,7 +743,7 @@ def render_markdown(index: dict) -> str:
             "- Use this file to locate relevant material quickly; use the source file for final claims.",
             "- If a formal object appears in an archived source but not in a canonical anchor, consult `docs/audits/theory-consolidation.md` before promoting it.",
             "- If an experiment status is partial or scaffold, do not cite it as completed evidence without checking its bundle README.",
-            "- Use `make check` as the default local gate after structural, documentation, or code changes.",
+            f"- Use `uv run {MAINTENANCE_COMMAND} check` as the default local gate after changes.",
             "- Regenerate this file after adding, moving, or deleting paper sources, experiment bundles, scripts, or command targets.",
             "",
         ]

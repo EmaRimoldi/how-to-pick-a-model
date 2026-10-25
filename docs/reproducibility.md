@@ -17,10 +17,10 @@ recorded results.
 
 ```bash
 uv sync --dev --frozen
-make check
+uv run python scripts/maintenance/workflow.py check
 ```
 
-`make check` regenerates the inventory, knowledge, experiment, and command maps,
+`uv run python scripts/maintenance/workflow.py check` regenerates the inventory, knowledge, experiment, and command maps,
 validates references and evidence structure, compiles Python, and runs unit tests.
 These checks make no live model calls or GPU training runs.
 
@@ -163,7 +163,7 @@ provenance, not machine-independent launch commands.
 ## Historical manuscripts
 
 ```bash
-make paper-build
+uv run python scripts/maintenance/workflow.py paper-build
 ```
 
 This compiles both retained manuscripts with TeX Live into `/tmp/` and leaves the

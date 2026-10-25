@@ -21,8 +21,8 @@ For every change:
 2. Link it to a retained experiment and its declared data/protocol limitations.
 3. Distinguish observable first-hit outcomes from theoretical quantities.
 4. Keep held-out evaluation separate from controller tuning and visible feedback.
-5. Update the evidence map, regenerate indexes, and run `make check`.
-6. Use `make paper-build` for out-of-tree compilation after paper asset changes.
+5. Update the evidence map, regenerate indexes, and run `uv run python scripts/maintenance/workflow.py check`.
+6. Use `uv run python scripts/maintenance/workflow.py paper-build` for out-of-tree compilation after paper asset changes.
 
 Referenced figures are vendored under the paper directory. Keep generation code
 and evidence canonical in the experiment bundle. Do not claim new counterfactual
