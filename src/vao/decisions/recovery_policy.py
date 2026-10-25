@@ -29,7 +29,8 @@ def features(prompt: str, checkpoint: dict) -> dict:
         "format_error": float(visible["status"] == "format_error")}
 
 
-def fit_policy(checkpoints: list[dict], branches: list[dict], prompts: dict[str, str], config: dict) -> dict:
+def fit_policy(checkpoints: list[dict], branches: list[dict], prompts: dict[str, str], config: dict,
+               *, views: dict[str, tuple[str, ...]] | None = None) -> dict:
     """Fit declared shrinkage baselines on development outcomes only, one parent per task."""
     keys = [model + "." + arm for model in config["target_models"] for arm in ARMS]
     by_cp = {c["checkpoint_id"]: c for c in checkpoints}
@@ -46,7 +47,7 @@ def fit_policy(checkpoints: list[dict], branches: list[dict], prompts: dict[str,
             raise ValueError("Development cells are incomplete")
         priors[key] = (1 + sum(r["passed"] for r in rows)) / (2 + len(rows))
         costs[key] = float(np.mean([r["incremental_cost_usd"] for r in rows]))
-    for view, names in (("task", TASK_FEATURES), ("state", STATE_FEATURES)):
+    for view, names in (views or {"task": TASK_FEATURES, "state": STATE_FEATURES}).items():
         raw = np.array([[features(prompts[c["task_id"]], c)[n] for n in names] for c in checkpoints])
         mu, scale = raw.mean(axis=0), raw.std(axis=0)
         scale[scale < 1e-8] = 1.0

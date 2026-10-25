@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `2367`
-- Bytes indexed: `71.1M`
+- Files indexed: `2453`
+- Bytes indexed: `91.6M`
 
 ## Canonical Entrypoints
 
@@ -49,22 +49,22 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 2005 | 45.8M |
+| `experiments` | 2077 | 66.1M |
 | `artifacts` | 21 | 20.0M |
-| `paper` | 29 | 2.4M |
-| `src` | 135 | 1.0M |
+| `paper` | 33 | 2.5M |
+| `src` | 138 | 1.1M |
 | `uv.lock` | 1 | 972.4K |
 | `autoresearch` | 59 | 460.7K |
-| `scripts` | 22 | 227.1K |
-| `tests` | 38 | 143.7K |
-| `docs` | 23 | 88.2K |
+| `scripts` | 25 | 278.3K |
+| `tests` | 42 | 170.5K |
+| `docs` | 23 | 95.4K |
 | `prompts` | 6 | 21.6K |
 | `configs` | 7 | 12.7K |
-| `README.md` | 1 | 5.4K |
+| `README.md` | 1 | 6.1K |
+| `AGENTS.md` | 1 | 3.5K |
 | `.claude` | 4 | 3.3K |
 | `NOTES.md` | 1 | 3.2K |
-| `AGENTS.md` | 1 | 3.0K |
-| `.github` | 5 | 2.3K |
+| `.github` | 5 | 2.8K |
 | `pyproject.toml` | 1 | 1.6K |
 | `.gitignore` | 1 | 1.5K |
 | `CLAUDE.md` | 1 | 1.4K |
@@ -79,28 +79,28 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.json` | 1066 | 3.3M |
-| `.jsonl` | 276 | 31.3M |
+| `.json` | 1095 | 3.8M |
+| `.jsonl` | 291 | 49.8M |
+| `.txt` | 275 | 4.2M |
 | `.yaml` | 270 | 316.1K |
-| `.txt` | 260 | 3.9M |
-| `.py` | 229 | 1.8M |
-| `.md` | 90 | 299.3K |
-| `.png` | 60 | 7.6M |
-| `.pdf` | 35 | 712.5K |
+| `.py` | 244 | 2.0M |
+| `.md` | 95 | 346.4K |
+| `.png` | 62 | 7.7M |
+| `.pdf` | 37 | 745.3K |
 | `.csv` | 26 | 581.1K |
 | `.part-000` | 18 | 20.0M |
 | `.sh` | 13 | 24.8K |
 | `.sbatch` | 5 | 6.5K |
+| `.tex` | 5 | 297.7K |
 | `<none>` | 5 | 5.7K |
-| `.tex` | 4 | 258.2K |
 | `.svg` | 3 | 9.0K |
+| `.lock` | 2 | 1.9M |
+| `.toml` | 2 | 3.2K |
 | `.bib` | 1 | 13.6K |
 | `.example` | 1 | 1.0K |
-| `.lock` | 1 | 972.4K |
 | `.sty` | 1 | 13.2K |
-| `.toml` | 1 | 1.6K |
 | `.tsv` | 1 | 790B |
-| `.yml` | 1 | 688B |
+| `.yml` | 1 | 1.2K |
 
 ## Experiment Readmes
 
@@ -127,6 +127,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/humaneval-plus/qwen-model-size-frontier/README.md`
 - `experiments/humaneval-plus/retry-allocation-router/README.md`
 - `experiments/humaneval-plus/strategy-by-difficulty-grid/README.md`
+- `experiments/mbpp-plus/context-value-transfer/README.md`
+- `experiments/mbpp-plus/context-value-transfer/results/replication-20261022/README.md`
 
 ## Script Entrypoints
 
@@ -148,6 +150,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `autoresearch/scripts/slurm_autoresearch_worker_array.sh`
 - `scripts/analyze_context_value.py`
 - `scripts/analyze_continuation_pilot.py`
+- `scripts/analyze_recovery_transfer.py`
 - `scripts/analyze_recovery_validation.py`
 - `scripts/analyze_runs.py`
 - `scripts/benchmark_parallel_capacity.py`
@@ -163,8 +166,10 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/run_continuation_pilot.py`
 - `scripts/run_merge_phase.py`
 - `scripts/run_parallel_experiment.py`
+- `scripts/run_recovery_transfer.py`
 - `scripts/run_recovery_validation.py`
 - `scripts/run_single_long_experiment.py`
+- `scripts/run_transfer_forecasts.py`
 - `scripts/validate_agent_readiness.py`
 
 ## Exact Duplicates In Selected Types

@@ -1,0 +1,151 @@
+{
+  "config": {
+    "branch_repeats": 3,
+    "campaign_ceiling_usd": 2,
+    "dataset": "mbpp",
+    "dataset_hash": "ee43ecabebf20deef4bb776a405ac5b1",
+    "dataset_version": "v0.2.0",
+    "input_token_ceiling": 24576,
+    "max_tokens": 1536,
+    "maximum_attempts": 2,
+    "maximum_checkpoints": 96,
+    "minimum_development_failed_tasks": 20,
+    "models": {
+      "large": {
+        "id": "qwen/qwen3.5-27b",
+        "input_per_million": 0.25,
+        "output_per_million": 2.0
+      },
+      "producer": {
+        "id": "mistralai/ministral-3b-2512",
+        "input_per_million": 0.1,
+        "output_per_million": 0.1,
+        "provider": "mistral",
+        "provider_name": "Mistral",
+        "quantization": "unknown",
+        "reasoning_parameter": false
+      },
+      "small": {
+        "id": "qwen/qwen3.5-9b",
+        "input_per_million": 0.1,
+        "output_per_million": 0.15
+      }
+    },
+    "prior_committed_usd": 0.5149634,
+    "provider": "siliconflow/fp8",
+    "reference_audit": "experiments/mbpp-plus/context-value-transfer/data/reference-audit.jsonl",
+    "reference_audit_sha256": "6b4919549b4f3f9086c6452e243216416a88e99a7bdce1d90c7a52411338d16d",
+    "reference_exclusions": [
+      "Mbpp/599"
+    ],
+    "request_seed": false,
+    "ridge_penalty": 10,
+    "run_ceiling_usd": 1.48,
+    "seed": 20261025,
+    "solution_value_usd": 0.01,
+    "source_policy_digest": "0844595805c03b1f945cd18714e512b48fc099e285a4fa3c7102a9e60481d75e",
+    "stream": true,
+    "target_models": [
+      "small",
+      "large"
+    ],
+    "task_budgets_usd": [
+      0.003,
+      0.01,
+      0.02
+    ],
+    "temperature": 0.6,
+    "training_source": "experiments/humaneval-plus/context-value/results/validation-20261022",
+    "verifier_workers": 2,
+    "workers": 4
+  },
+  "created_utc": "2026-10-22T20:46:09.678455+00:00",
+  "endpoints": {
+    "small": {
+      "context_length": 262144,
+      "latency_last_30m": {
+        "p50": 1078,
+        "p75": 1647.75,
+        "p90": 3555.5,
+        "p99": 9932.650000000016
+      },
+      "max_completion_tokens": 235929,
+      "max_prompt_tokens": null,
+      "model_id": "qwen/qwen3.5-9b",
+      "model_name": "Qwen: Qwen3.5-9B",
+      "name": "SiliconFlow | qwen/qwen3.5-9b-20260310",
+      "native_tools": {},
+      "perf_last_30m_by_workload": {
+        "text_generation": {
+          "latency": {
+            "p50": 1078,
+            "p75": 1647.75,
+            "p90": 3555.5,
+            "p99": 9932.650000000016
+          },
+          "request_count": 4146,
+          "throughput": {
+            "p50": 28,
+            "p75": 22,
+            "p90": 17,
+            "p99": 9
+          }
+        }
+      },
+      "pricing": {
+        "completion": "0.00000015",
+        "discount": 0,
+        "prompt": "0.0000001"
+      },
+      "provider_name": "SiliconFlow",
+      "quantization": "fp8",
+      "service_tier": null,
+      "status": -2,
+      "supported_parameters": [
+        "reasoning",
+        "include_reasoning",
+        "temperature",
+        "top_p",
+        "top_k",
+        "frequency_penalty",
+        "repetition_penalty",
+        "presence_penalty",
+        "max_tokens",
+        "response_format",
+        "structured_outputs",
+        "tools",
+        "tool_choice"
+      ],
+      "supports_diarization": false,
+      "supports_image_reference": false,
+      "supports_implicit_caching": false,
+      "supports_multiple_audio_references": false,
+      "supports_tool_choice": {
+        "auto": true,
+        "function": true,
+        "none": false,
+        "required": false
+      },
+      "supports_voice_cloning": false,
+      "tag": "siliconflow/fp8",
+      "throughput_last_30m": {
+        "p50": 28,
+        "p75": 22,
+        "p90": 17,
+        "p99": 9
+      },
+      "uptime_last_1d": 99.41690962099126,
+      "uptime_last_30m": 93.33333333333333,
+      "uptime_last_5m": 100
+    }
+  },
+  "git_sha": "a9a371e8f0df6401296d5fd8fb99d12a4af099ff",
+  "kind": "prespecified_outcome_blind_semantic_control",
+  "maximum_new_budget_usd": 0.08,
+  "prediction_timing": "after primary collection; prompt/config fixed before any target recovery outcome",
+  "prior_upper_usd": 1.36747315,
+  "semantic_freeze_sha256": "f9a9fa6e68afb1581385036a37569863865372caa311d85fda8a4601ac411945",
+  "source_file_sha256": "fe594c3df6865f3c429d674e3f242a017f3515830d010e554bc3ce81f627cb09",
+  "source_manifest_sha256": "c598479550863ae766dab6b13b8a814de3023d4972769a6c0c2966e6559a8897",
+  "source_policy_sha256": "0844595805c03b1f945cd18714e512b48fc099e285a4fa3c7102a9e60481d75e"
+}
