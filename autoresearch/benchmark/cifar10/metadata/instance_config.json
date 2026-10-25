@@ -1,0 +1,19 @@
+{
+  "profiles": {
+    "autoresearch_cifar10": {
+      "workloads": [
+        "cnn_compact"
+      ],
+      "families": [
+        "cnn_compact"
+      ],
+      "train_subset_size": 50000,
+      "val_subset_size": 10000,
+      "label_noise_rate": 0.0,
+      "imbalance_ratio": 1.0,
+      "max_train_steps": 256,
+      "seed": 61,
+      "architecture_name": "compact_cnn"
+    }
+  }
+}

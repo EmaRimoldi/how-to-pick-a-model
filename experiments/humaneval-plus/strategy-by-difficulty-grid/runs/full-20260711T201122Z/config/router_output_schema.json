@@ -1,0 +1,120 @@
+{
+  "type": "object",
+  "properties": {
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string"
+          },
+          "p_mode1": {
+            "type": "number",
+            "minimum": 0
+          },
+          "p_mode2": {
+            "type": "number",
+            "minimum": 0
+          },
+          "p_mode3": {
+            "type": "number",
+            "minimum": 0
+          },
+          "allocations": {
+            "type": "object",
+            "properties": {
+              "1.5b": {
+                "type": "object",
+                "properties": {
+                  "n_mode1_direct": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "n_mode2_structured": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "n_mode3_robust": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "n_mode1_direct",
+                  "n_mode2_structured",
+                  "n_mode3_robust"
+                ],
+                "additionalProperties": false
+              },
+              "7b": {
+                "type": "object",
+                "properties": {
+                  "n_mode1_direct": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "n_mode2_structured": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "n_mode3_robust": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "n_mode1_direct",
+                  "n_mode2_structured",
+                  "n_mode3_robust"
+                ],
+                "additionalProperties": false
+              },
+              "32b": {
+                "type": "object",
+                "properties": {
+                  "n_mode1_direct": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "n_mode2_structured": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "n_mode3_robust": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "n_mode1_direct",
+                  "n_mode2_structured",
+                  "n_mode3_robust"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "1.5b",
+              "7b",
+              "32b"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "task_id",
+          "p_mode1",
+          "p_mode2",
+          "p_mode3",
+          "allocations"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "decisions"
+  ],
+  "additionalProperties": false
+}

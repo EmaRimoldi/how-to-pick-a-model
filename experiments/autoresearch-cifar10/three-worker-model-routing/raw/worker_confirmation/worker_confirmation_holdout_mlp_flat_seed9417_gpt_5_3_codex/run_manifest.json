@@ -1,0 +1,74 @@
+{
+  "config": {
+    "benchmark": {
+      "id": "autoresearch_cifar10",
+      "instance_overrides": {
+        "architecture_name": "flat_mlp",
+        "description": "A flattened-image MLP classifier on CIFAR-10; same verifier, but different architecture and optimization geometry.",
+        "families": [
+          "mlp_flat"
+        ],
+        "imbalance_ratio": 1.0,
+        "label_noise_rate": 0.0,
+        "max_train_steps": 256,
+        "seed": 9417,
+        "train_subset_size": 50000,
+        "val_subset_size": 10000,
+        "workloads": [
+          "mlp_flat"
+        ]
+      },
+      "profiles": [
+        "autoresearch_cifar10"
+      ],
+      "template_path": "/orcd/home/002/erimoldi/openclaw_remote/projects/NeurIPS_2026/autoresearch/benchmark/cifar10/workloads/mlp_flat.py"
+    },
+    "experiment": {
+      "branch_timeout_seconds": 1800,
+      "candidate_generation": "interactive_session",
+      "feedback_condition": "ca",
+      "incorrect_penalty": -1.0,
+      "name": "autoresearch_cifar10_model_routing",
+      "prompt_template": "autoresearch_program.txt",
+      "selection_policy": "top1",
+      "steps": 20,
+      "stop_on_success": false,
+      "success_relative_improvement_threshold": 0.05,
+      "task_mode_split": "holdout",
+      "visibility_regime": "top1_only",
+      "workload_split": "holdout"
+    },
+    "models": {
+      "include": [
+        "gpt_5_3_codex"
+      ]
+    },
+    "output": {
+      "root": "/home/erimoldi/openclaw_remote/projects/NeurIPS_2026/autoresearch/campaigns/h20_delta005_20260505/runs/worker_confirmation"
+    }
+  },
+  "created_at": "2026-05-06T11:11:21.347566+00:00",
+  "feedback_condition": "ca",
+  "instance_seed": 9417,
+  "max_steps": 20,
+  "model_alias": "gpt_5_3_codex",
+  "model_id": "gpt-5.3-codex",
+  "modes": [
+    "layout",
+    "indexing",
+    "topk",
+    "caching",
+    "summaries",
+    "micro"
+  ],
+  "profile_id": "autoresearch_cifar10",
+  "run_id": "worker_confirmation_holdout_mlp_flat_seed9417_gpt_5_3_codex",
+  "selection_policy": "top1",
+  "stop_on_success": false,
+  "success_threshold_relative": 0.05,
+  "task_mode_source": "task_mode_override",
+  "task_mode_split": "holdout",
+  "task_mode_true": "mlp_flat",
+  "visibility_regime": "top1_only",
+  "wall_budget_seconds": null
+}

@@ -1,0 +1,20 @@
+experiment:
+  name: autoresearch_cifar10_longrun
+  steps: 20
+  visibility_regime: top1_only
+  feedback_condition: ca
+  candidate_generation: batched
+  selection_policy: top1
+  branch_timeout_seconds: 300
+  incorrect_penalty: -1.0
+benchmark:
+  id: autoresearch_cifar10
+  template_path: autoresearch/benchmark/cifar10/solution_template.py
+  profiles:
+    - autoresearch_cifar10
+output:
+  root: autoresearch/runs/longrun_20step
+models:
+  include:
+    - autoresearch_local_stub
+    - gpt_5_3_codex

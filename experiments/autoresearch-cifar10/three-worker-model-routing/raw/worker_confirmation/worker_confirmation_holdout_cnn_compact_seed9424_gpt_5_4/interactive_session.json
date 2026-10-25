@@ -1,0 +1,24 @@
+{
+  "initial_meta": {
+    "cost_usd": null,
+    "elapsed_wall_seconds": 20.317032665014267,
+    "max_tokens_requested": 4096,
+    "model": "gpt-5.4",
+    "raw_cli_result": {
+      "stderr_tail": "WARNING: failed to clean up stale arg0 temp dirs: Directory not empty (os error 39)\n",
+      "stdout_tail": "E_LR_SCHEDULE:\\\\n        return None\\\\n    total_steps = TRAIN_MAX_STEPS if TRAIN_MAX_STEPS is not None else steps_per_epoch * 20\\\\n    if total_steps <= 1:\\\\n        return None\\\\n    warmup_steps = min(max(8, total_steps // 10), total_steps - 1)\\\\n    warmup = optim.lr_scheduler.LinearLR(optimizer, start_factor=0.2, end_factor=1.0, total_iters=warmup_steps)\\\\n    cosine = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=total_steps - warmup_steps)\\\\n    return optim.lr_scheduler.SequentialLR(optimizer, schedulers=[warmup, cosine], milestones=[warmup_steps])\\\",\\\"text\\\":\\\"\\\"}],\\\"primary_mode\\\":\\\"summaries\\\",\\\"rationale\\\":\\\"Use the fixed 256-step budget more effectively with a short warmup and cosine decay matched to the actual training horizon, plus a modestly higher Adam learning rate to improve early progress.\\\",\\\"secondary_modes\\\":[\\\"topk\\\"]}\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":25581,\"cached_input_tokens\":2432,\"output_tokens\":970,\"reasoning_output_tokens\":613}}\n"
+    },
+    "reasoning_effort": "medium",
+    "session_id": "019dfc9b-798a-7c71-a5d4-c8db158bd58e",
+    "transport": "codex_cli_persistent",
+    "usage": {
+      "cached_input_tokens": 2432,
+      "input_tokens": 25581,
+      "output_tokens": 970,
+      "reasoning_output_tokens": 613,
+      "total_tokens": 26551
+    }
+  },
+  "prompt_path": "/home/erimoldi/openclaw_remote/projects/NeurIPS_2026/autoresearch/campaigns/h20_delta005_20260505/runs/worker_confirmation/worker_confirmation_holdout_cnn_compact_seed9424_gpt_5_4/interactive_initial_prompt.txt",
+  "session_id": "019dfc9b-798a-7c71-a5d4-c8db158bd58e"
+}

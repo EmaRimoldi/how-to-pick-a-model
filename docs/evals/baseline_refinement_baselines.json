@@ -1,0 +1,52 @@
+[
+  {
+    "id": "width28_lr_low",
+    "category": "baseline",
+    "description": "Intermediate width 28 with conservative LR and no schedule.",
+    "changes": {
+      "BASE_CHANNELS": 28,
+      "LEARNING_RATE": 0.0005,
+      "USE_LR_SCHEDULE": false
+    }
+  },
+  {
+    "id": "width30_lr_low",
+    "category": "baseline",
+    "description": "Intermediate width 30 with conservative LR and no schedule.",
+    "changes": {
+      "BASE_CHANNELS": 30,
+      "LEARNING_RATE": 0.0005,
+      "USE_LR_SCHEDULE": false
+    }
+  },
+  {
+    "id": "width24_lr_mid",
+    "category": "baseline",
+    "description": "Width 24 with a less conservative LR and no schedule.",
+    "changes": {
+      "BASE_CHANNELS": 24,
+      "LEARNING_RATE": 0.0008,
+      "USE_LR_SCHEDULE": false
+    }
+  },
+  {
+    "id": "fc96_lr_low",
+    "category": "baseline",
+    "description": "Moderately smaller classifier head with conservative LR and no schedule.",
+    "changes": {
+      "FC_HIDDEN": 96,
+      "LEARNING_RATE": 0.0005,
+      "USE_LR_SCHEDULE": false
+    }
+  },
+  {
+    "id": "dropout005_lr_low",
+    "category": "baseline",
+    "description": "Very mild dropout with conservative LR and no schedule.",
+    "changes": {
+      "DROPOUT_RATE": 0.05,
+      "LEARNING_RATE": 0.0005,
+      "USE_LR_SCHEDULE": false
+    }
+  }
+]
