@@ -42,11 +42,3 @@ for the AutoResearch paper.
 These can launch live or cluster-backed work. Do not run them unless explicitly
 requested and after checking the target config, output root, model access, and
 compute environment.
-
-## Artifact Builder
-
-- `make_neurips2026_artifact.py`: whitelist-based anonymous supplementary ZIP
-  builder.
-
-The artifact builder writes under `dist/` and should be checked before sharing
-any generated archive.

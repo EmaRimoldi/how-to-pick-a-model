@@ -5,7 +5,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `52`
+- Commands indexed: `50`
 - Default-safe commands: `33`
 - Missing required Make targets: `0`
 
@@ -13,10 +13,9 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 | Safety Class | Commands |
 | --- | --- |
-| `artifact-builder` | 1 |
 | `cluster-setup` | 2 |
 | `live-cluster` | 3 |
-| `live-local` | 12 |
+| `live-local` | 11 |
 | `mixed-cli` | 1 |
 | `read-only-analysis` | 15 |
 | `safe-figure-regeneration` | 6 |
@@ -28,9 +27,9 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | Surface | Commands |
 | --- | --- |
 | `Makefile` | 7 |
-| `autoresearch/scripts` | 16 |
+| `autoresearch/scripts` | 15 |
 | `pyproject` | 1 |
-| `scripts` | 28 |
+| `scripts` | 27 |
 
 ## Commands
 
@@ -69,13 +68,11 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/prepare_feedback_routing.py` | scripts | `read-only-analysis` | yes | inspect script before running | Verify the pinned BigCodeBench download and reproduce reference-only eligibility. |
 | `python scripts/report_feedback_routing.py` | scripts | `read-only-analysis` | yes | inspect script before running | Publish a completed feedback-only bank, audited statistics and static figures. |
 | `python scripts/verify_feedback_evidence.py` | scripts | `read-only-analysis` | yes | inspect script before running | Verify published BigCodeBench evidence offline without executing candidate code. |
-| `python autoresearch/scripts/make_neurips2026_artifact.py` | autoresearch/scripts | `artifact-builder` | no | checked-in files, dist output review | Build an anonymous NeurIPS 2026 supplementary ZIP. The builder is intentionally whitelist-based and non-invasive: it reads from the development workspace and writes a clean export under ``dist/`` without touching live campaigns, raw run directories, or git metadata. |
 | `uv run agent-workflow` | pyproject | `mixed-cli` | no | subcommand-specific; run --help or doctor before live workflows | Console entrypoint `agent_workflow.cli:main`. |
 | `python autoresearch/scripts/generate_autoresearch_campaign_tasks.py` | autoresearch/scripts | `cluster-setup` | no | campaign config, output review | Generate TSV task manifests for AutoResearch CIFAR-10 Slurm arrays. |
 | `scripts/bootstrap_engaging.sh` | scripts | `cluster-setup` | no | cluster shell environment | Bootstrap the cluster Python environment for HumanEval+ routing runs. |
 | `autoresearch/scripts/run_autoresearch_allocation_router_batch.sh` | autoresearch/scripts | `live-local` | no | model access, isolated worktree, output root | Run allocation-router decision batches for the AutoResearch CIFAR-10 campaign. |
 | `autoresearch/scripts/run_autoresearch_cifar10_cnn4096_router_test.sh` | autoresearch/scripts | `live-local` | no | model access, isolated worktree, output root | Run the CNN-4096 AutoResearch router solver/probe comparison panel. |
-| `python scripts/run_best_params_merge.py` | scripts | `live-local` | no | model access, isolated worktree, output root | Best-params merge: read agent results.tsv + git history, build merged train.py. Strategy: 1. For each agent, parse results/results.tsv (commit_hash, val_bpb, status) 2. For each accepted ("keep") run, extract hyperparameters from that git commit 3. Find best val_bpb value per hyperparameter across all agents 4. Build merged train.py and submit to SLURM Usage: python scripts/run_best_params_merge.py --run-id exp_20260401_120000 python scripts/run_best_params_merge.py --run-id exp_20260401_120000 --submit |
 | `python scripts/run_context_value.py` | scripts | `live-local` | no | model access, isolated worktree, output root | Plan or explicitly run a budgeted artifact/feedback and prospective-forecast study. |
 | `python scripts/run_continuation_pilot.py` | scripts | `live-local` | no | model access, isolated worktree, output root | Run the explicit-budget OpenRouter/HumanEval+ pilot; defaults to plan only. |
 | `python scripts/run_feedback_routing.py` | scripts | `live-local` | no | model access, isolated worktree, output root | Plan or explicitly run new-task, feedback-only fixed-policy trajectories. |

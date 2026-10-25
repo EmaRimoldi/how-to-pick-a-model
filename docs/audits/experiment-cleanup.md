@@ -54,3 +54,22 @@ the three-worker replay produced three more. Saved pilot, HumanEval+ recovery,
 MBPP+ and BigCodeBench audits passed. All 27 relocated data/figure files match
 their original bytes. Optional sandbox tests use trusted fixtures; no historical
 candidates, provider calls, full training or cluster experiments were rerun.
+
+## Obsolete tooling and guide cleanup — 25 October 2026
+
+The old anonymous supplementary ZIP builder and standalone best-parameter merger
+are retired. The builder assumed a removed campaign path, old test and figure
+locations, and an earlier panel layout. The merger used a superseded parameter
+list and duplicated the maintained `agent-workflow merge` pipeline. Its
+`run_merge_phase.py` compatibility entrypoint remains supported.
+
+The AutoResearch family `catalog.md` and local `reproducibility.md` were
+near-duplicate pointers. The family README and central reproduction guide remain
+the entrypoints. Root `NOTES.md` is replaced by protocol and runtime notes in the
+Qwen frontier and retry-allocation READMEs, alongside their configurations.
+
+These five retired files remain recoverable from the parent of this maintenance
+commit, `e2a5172345df02e23e74dd9556fa6be9c82e4cf6`. Generated navigation and
+command maps are refreshed; the retired artifact-builder safety rule is removed.
+All nine experiment bundles, their recorded evidence, frozen sources, manuscript
+assets and supported runtime modes remain intact.
