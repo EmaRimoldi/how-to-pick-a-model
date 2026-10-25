@@ -1,0 +1,67 @@
+{
+  "actual_collection_cost_usd": 0.024332,
+  "budget_usd": 1.98,
+  "claim": "Exploratory one-checkpoint calibration; no learned-controller or generalization claim",
+  "complete_task_ids": [
+    "HumanEval/1",
+    "HumanEval/12",
+    "HumanEval/15",
+    "HumanEval/16",
+    "HumanEval/162",
+    "HumanEval/18",
+    "HumanEval/2",
+    "HumanEval/21",
+    "HumanEval/22",
+    "HumanEval/25",
+    "HumanEval/27",
+    "HumanEval/28",
+    "HumanEval/33",
+    "HumanEval/35",
+    "HumanEval/36",
+    "HumanEval/42",
+    "HumanEval/55",
+    "HumanEval/57",
+    "HumanEval/61",
+    "HumanEval/62",
+    "HumanEval/63",
+    "HumanEval/8",
+    "HumanEval/91",
+    "HumanEval/99"
+  ],
+  "evaluation_split": "development-pilot-only",
+  "requests": 88,
+  "status": "complete",
+  "strategies": {
+    "cheap_stop": {
+      "mean_policy_cost_usd": 2.998125e-05,
+      "success_rate": 0.875,
+      "tasks": 24
+    },
+    "continue": {
+      "mean_policy_cost_usd": 3.4646875e-05,
+      "success_rate": 0.9166666666666666,
+      "tasks": 24
+    },
+    "restart": {
+      "mean_policy_cost_usd": 3.3439583333333334e-05,
+      "success_rate": 0.8958333333333334,
+      "tasks": 24
+    },
+    "strong_direct": {
+      "mean_policy_cost_usd": 0.0003885625,
+      "success_rate": 0.9166666666666666,
+      "tasks": 24
+    },
+    "switch_context": {
+      "mean_policy_cost_usd": 7.36375e-05,
+      "success_rate": 0.9166666666666666,
+      "tasks": 24
+    },
+    "switch_fresh": {
+      "mean_policy_cost_usd": 8.156458333333333e-05,
+      "success_rate": 0.9166666666666666,
+      "tasks": 24
+    }
+  },
+  "unresolved_reserved_usd": 0.0
+}

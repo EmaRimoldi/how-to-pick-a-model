@@ -1,0 +1,60 @@
+{
+  "collector_launch_sha": "a3620ae9ddd5dfe6bbef5f09b46c76c6737c0229",
+  "continuation_rule": "Fresh journal; original 151 requests reused once, including the failed response.",
+  "development_stop_summary": {
+    "api_forecasts": 0,
+    "branch_and_direct_draws": 520,
+    "budget_usd": 1.97,
+    "collection_cost_usd": 0.1962289,
+    "failed_checkpoints": 26,
+    "initial_attempts": 83,
+    "prior_committed_usd": 0.0230224,
+    "requests": 607,
+    "status": "BackendStopped: OpenRouter HTTP 429; no automatic retry",
+    "unresolved_reserved_usd": 0.0055296
+  },
+  "first_attempt_summary": {
+    "api_forecasts": 0,
+    "branch_and_direct_draws": 67,
+    "budget_usd": 1.97,
+    "collection_cost_usd": 0.0268915,
+    "failed_checkpoints": 26,
+    "initial_attempts": 83,
+    "prior_committed_usd": 0.0230224,
+    "requests": 151,
+    "status": "BudgetStopped: Missing trustworthy billing; reservation retained",
+    "unresolved_reserved_usd": 0.002688
+  },
+  "normalized_error_raw_record": "original-call-134.json",
+  "original_generation_lookup_status": 404,
+  "policy_freeze_sha": "c562d7bee6ecc4738ef34f7e54620652ceb37dac",
+  "provider_probe_stop_summary": {
+    "api_forecasts": 0,
+    "branch_and_direct_draws": 520,
+    "budget_usd": 1.97,
+    "collection_cost_usd": 0.1962289,
+    "failed_checkpoints": 26,
+    "initial_attempts": 83,
+    "prior_committed_usd": 0.0230224,
+    "requests": 609,
+    "status": "BackendStopped: OpenRouter HTTP 429; no automatic retry",
+    "unresolved_reserved_usd": 0.0082944
+  },
+  "reference_exclusions": [
+    "HumanEval/32",
+    "HumanEval/47"
+  ],
+  "serial_probe_stop_summary": {
+    "api_forecasts": 0,
+    "branch_and_direct_draws": 520,
+    "budget_usd": 1.97,
+    "collection_cost_usd": 0.1962289,
+    "failed_checkpoints": 26,
+    "initial_attempts": 83,
+    "prior_committed_usd": 0.0230224,
+    "requests": 608,
+    "status": "BackendStopped: OpenRouter HTTP 429; no automatic retry",
+    "unresolved_reserved_usd": 0.006912
+  },
+  "source": "import-provenance.json"
+}

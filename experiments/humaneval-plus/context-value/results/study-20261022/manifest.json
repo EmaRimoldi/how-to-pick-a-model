@@ -1,0 +1,319 @@
+{
+  "config": {
+    "branch_repeats": 2,
+    "dataset_hash": "fe585eb4df8c88d844eeb463ea4d0302",
+    "eligible_task_count": 74,
+    "excluded_task_ids": [
+      "HumanEval/21",
+      "HumanEval/36",
+      "HumanEval/16",
+      "HumanEval/33",
+      "HumanEval/12",
+      "HumanEval/61",
+      "HumanEval/35",
+      "HumanEval/28",
+      "HumanEval/27",
+      "HumanEval/25",
+      "HumanEval/18",
+      "HumanEval/162",
+      "HumanEval/99",
+      "HumanEval/8",
+      "HumanEval/42",
+      "HumanEval/63",
+      "HumanEval/55",
+      "HumanEval/1",
+      "HumanEval/15",
+      "HumanEval/22",
+      "HumanEval/2",
+      "HumanEval/62",
+      "HumanEval/91",
+      "HumanEval/57"
+    ],
+    "input_token_ceiling": 32768,
+    "max_tokens": 1536,
+    "models": {
+      "large": {
+        "id": "qwen/qwen3.5-27b",
+        "input_per_million": 0.25,
+        "output_per_million": 2.0
+      },
+      "small": {
+        "id": "qwen/qwen3.5-9b",
+        "input_per_million": 0.1,
+        "output_per_million": 0.15
+      }
+    },
+    "prefix_repeats": 2,
+    "protocol_version": "artifact-feedback-factorial-v1",
+    "provider": "siliconflow/fp8",
+    "quality_exclusions": {
+      "HumanEval/47": "Public median doctest expects 15.0 but the correct median and canonical reference return 8.0; discovered before any model call."
+    },
+    "request_seed": false,
+    "seed": 20261023,
+    "stream": true,
+    "target_models": [
+      "small",
+      "large"
+    ],
+    "task_count": 30,
+    "temperature": 0.6
+  },
+  "config_sha256": "5057df4f3a984855689285b2592d680884d30b7f87620537f2fc8cdaef43bf0a",
+  "created_utc": "2026-10-22T10:28:14.214546+00:00",
+  "dataset_hash": "fe585eb4df8c88d844eeb463ea4d0302",
+  "git_sha": "e3f4b85e80cd314cc7b6cc4174eead76502ff36c",
+  "platform": "Darwin",
+  "preflight": {
+    "endpoints": {
+      "large": {
+        "context_length": 262144,
+        "latency_last_30m": {
+          "p50": 2963,
+          "p75": 6037,
+          "p90": 7314.799999999999,
+          "p99": 27942.64
+        },
+        "max_completion_tokens": 235929,
+        "max_prompt_tokens": null,
+        "model_id": "qwen/qwen3.5-27b",
+        "model_name": "Qwen: Qwen3.5-27B",
+        "name": "SiliconFlow | qwen/qwen3.5-27b-20260224",
+        "native_tools": {},
+        "perf_last_30m_by_workload": {
+          "text_generation": {
+            "latency": {
+              "p50": 2963,
+              "p75": 6037,
+              "p90": 7314.799999999999,
+              "p99": 27942.64
+            },
+            "request_count": 57,
+            "throughput": {
+              "p50": 18.5,
+              "p75": 13,
+              "p90": 8.3,
+              "p99": 2.7199999999999998
+            }
+          }
+        },
+        "pricing": {
+          "completion": "0.000002",
+          "discount": 0,
+          "prompt": "0.00000025"
+        },
+        "provider_name": "SiliconFlow",
+        "quantization": "fp8",
+        "service_tier": null,
+        "status": 0,
+        "supported_parameters": [
+          "reasoning",
+          "include_reasoning",
+          "temperature",
+          "top_p",
+          "top_k",
+          "frequency_penalty",
+          "repetition_penalty",
+          "presence_penalty",
+          "max_tokens",
+          "response_format",
+          "structured_outputs",
+          "tools",
+          "tool_choice"
+        ],
+        "supports_diarization": false,
+        "supports_image_reference": false,
+        "supports_implicit_caching": false,
+        "supports_multiple_audio_references": false,
+        "supports_tool_choice": {
+          "auto": true,
+          "function": true,
+          "none": false,
+          "required": false
+        },
+        "supports_voice_cloning": false,
+        "tag": "siliconflow/fp8",
+        "throughput_last_30m": {
+          "p50": 18.5,
+          "p75": 13,
+          "p90": 8.3,
+          "p99": 2.7199999999999998
+        },
+        "uptime_last_1d": 98.63013698630137,
+        "uptime_last_30m": null,
+        "uptime_last_5m": null
+      },
+      "small": {
+        "context_length": 262144,
+        "latency_last_30m": {
+          "p50": 1683,
+          "p75": 1959,
+          "p90": 2404,
+          "p99": 7318.800000000002
+        },
+        "max_completion_tokens": 235929,
+        "max_prompt_tokens": null,
+        "model_id": "qwen/qwen3.5-9b",
+        "model_name": "Qwen: Qwen3.5-9B",
+        "name": "SiliconFlow | qwen/qwen3.5-9b-20260310",
+        "native_tools": {},
+        "perf_last_30m_by_workload": {
+          "text_generation": {
+            "latency": {
+              "p50": 1683,
+              "p75": 1959,
+              "p90": 2404,
+              "p99": 7318.800000000002
+            },
+            "request_count": 1861,
+            "throughput": {
+              "p50": 25,
+              "p75": 19,
+              "p90": 16,
+              "p99": 9
+            }
+          }
+        },
+        "pricing": {
+          "completion": "0.00000015",
+          "discount": 0,
+          "prompt": "0.0000001"
+        },
+        "provider_name": "SiliconFlow",
+        "quantization": "fp8",
+        "service_tier": null,
+        "status": 0,
+        "supported_parameters": [
+          "reasoning",
+          "include_reasoning",
+          "temperature",
+          "top_p",
+          "top_k",
+          "frequency_penalty",
+          "repetition_penalty",
+          "presence_penalty",
+          "max_tokens",
+          "response_format",
+          "structured_outputs",
+          "tools",
+          "tool_choice"
+        ],
+        "supports_diarization": false,
+        "supports_image_reference": false,
+        "supports_implicit_caching": false,
+        "supports_multiple_audio_references": false,
+        "supports_tool_choice": {
+          "auto": true,
+          "function": true,
+          "none": false,
+          "required": false
+        },
+        "supports_voice_cloning": false,
+        "tag": "siliconflow/fp8",
+        "throughput_last_30m": {
+          "p50": 25,
+          "p75": 19,
+          "p90": 16,
+          "p99": 9
+        },
+        "uptime_last_1d": 99.14346895074947,
+        "uptime_last_30m": 100,
+        "uptime_last_5m": 100
+      }
+    }
+  },
+  "python": "3.13.12",
+  "reserved_task_ids": [
+    "HumanEval/145",
+    "HumanEval/60",
+    "HumanEval/108",
+    "HumanEval/64",
+    "HumanEval/39",
+    "HumanEval/17",
+    "HumanEval/40",
+    "HumanEval/19",
+    "HumanEval/23",
+    "HumanEval/20",
+    "HumanEval/14",
+    "HumanEval/56",
+    "HumanEval/9",
+    "HumanEval/51",
+    "HumanEval/31",
+    "HumanEval/49",
+    "HumanEval/116",
+    "HumanEval/26",
+    "HumanEval/34"
+  ],
+  "sandbox": {
+    "credential_environment_empty": true,
+    "evalplus_available": true,
+    "home_directories_denied": true,
+    "network_denied": true,
+    "private_files_denied": true
+  },
+  "scope": "prospective zero-shot forecast diagnostic; no trained controller",
+  "task_ids": [
+    "HumanEval/139",
+    "HumanEval/6",
+    "HumanEval/5",
+    "HumanEval/113",
+    "HumanEval/29",
+    "HumanEval/156",
+    "HumanEval/45",
+    "HumanEval/37",
+    "HumanEval/13",
+    "HumanEval/4",
+    "HumanEval/0",
+    "HumanEval/43",
+    "HumanEval/11",
+    "HumanEval/7",
+    "HumanEval/44",
+    "HumanEval/46",
+    "HumanEval/65",
+    "HumanEval/53",
+    "HumanEval/59",
+    "HumanEval/128",
+    "HumanEval/52",
+    "HumanEval/93",
+    "HumanEval/58",
+    "HumanEval/24",
+    "HumanEval/104",
+    "HumanEval/48",
+    "HumanEval/3",
+    "HumanEval/54",
+    "HumanEval/30",
+    "HumanEval/100"
+  ],
+  "task_prompt_hashes": {
+    "HumanEval/0": "5e49c4c725c2f136e05bdf904653856d81cdc5a7373b9ad3436b9abfffc4d489",
+    "HumanEval/100": "358148de7bfdb6549fd2184a29a79cffdb25cd50b36d800c5ceec0a297bcf62b",
+    "HumanEval/104": "56a024d85d3c7486a8cb9a42524a8d6a0bc9a7c758a2cfd77c98acb3af3bc8f2",
+    "HumanEval/11": "f681671303d0ea3300e7708a67c520ae009f70edbf43efb7af13b4c962f9165e",
+    "HumanEval/113": "fe48340eda613510327b9879824f2332c9ad14c2fa9df0b4cc2fd4b5547e0757",
+    "HumanEval/128": "42816b4ef9026d33ab0245dd0fba2dc9a14c11db88887c275dcd6892cced4702",
+    "HumanEval/13": "18d4067b8f5904a418c56061f5def760be8fb6f27360fc0cae8512dcf17fc8ae",
+    "HumanEval/139": "178c3dbb614c3978b3b40866b7431db65998aa04e64b76bad410737049c85906",
+    "HumanEval/156": "24cca08f4578f8811aa47fc3c42712967ea16054ba764799a199ae9aec6ad007",
+    "HumanEval/24": "e0bf86f9672228d228a043cba123f795514e97329f191b3bcdcfff8522870edb",
+    "HumanEval/29": "5f84a4aed95bd94509f86611790ee08be121938e37b9eb9e0eb9dfe61af1e966",
+    "HumanEval/3": "765a0c898d7d16d234b18eb2e3f9a2b5cde04a8a12ee90337012816dc2359a4b",
+    "HumanEval/30": "434aa4645bba2f53487917df3889383177056ed330795440a44d0d3839867d6f",
+    "HumanEval/37": "3bb1702767502c495740f46ea2a801ce6b282fb1743ab9e81d463e4ca03cf051",
+    "HumanEval/4": "43329a10b14062730978488d2889903aaafb07f6e96012df4e6e993a8479f53e",
+    "HumanEval/43": "e5383b5b47bf5642e9c7ce6d101a5521db868d873bd7706d2451010304d9fefa",
+    "HumanEval/44": "6437837fc510afdb980962ed7367bec61afa726091732f2fd91b90ff789d69ac",
+    "HumanEval/45": "787de17bd14fafbf88a9db477b230d89d5924b5cb90ce137b187ecf2deaa1d46",
+    "HumanEval/46": "afba952192c2c3a02285f08cd8040c0cd3660d39b651d1a2f072ac9eb29741c9",
+    "HumanEval/48": "9800fc3483a784205e651087474dd0402bc306bd0cf87658c5f92a5ecb218f95",
+    "HumanEval/5": "ad742acae298428e878232a0c11f752eeb64780e17c1ff0763de07ce0e97b712",
+    "HumanEval/52": "1aaf5d79454aa94890bad055da18036096033db49b26ce8c0d759ad606436595",
+    "HumanEval/53": "d48d67cb33a81c39bff849b6beee3ac6c572c5477ebb8168e1176d954e82d21b",
+    "HumanEval/54": "a60c68c13fcf8a911b4b31944a439c8cba0257ad73c28b1d07d59c1f3d7420d4",
+    "HumanEval/58": "55cd2af1a0a3adf2dfddc81e7db9bf3012a6cdc6b25c925aca6ad79b92de0ec6",
+    "HumanEval/59": "b652316e0104a551ad3d6df8145a25f5cd46e6724d0639ccd86a7ece2b1b316e",
+    "HumanEval/6": "aaac63404550eb753d94441810c4d2038136ad2ce7f3852d3d7b71d11f19cc71",
+    "HumanEval/65": "c6092623d906b92801784d817b2fba8d729b0702a3e83e95c312138f18530365",
+    "HumanEval/7": "4cfbe0a92209b7c662d32bf49f834dff4aa6d8b0f7f57513b8504907a33aa54b",
+    "HumanEval/93": "a2c82bbd8a7287f4b332c70de2b1728ca138e2ad9d0a44e1b72c340ebae1188c"
+  }
+}
