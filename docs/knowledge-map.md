@@ -23,7 +23,7 @@ The general multi-step controller remains future work.
 The focused [MBPP+ replication](../experiments/mbpp-plus/context-value-transfer/README.md)
 tests transfer to a fresh benchmark and adds a feedback-only predictor ablation.
 Its [audited results](../experiments/mbpp-plus/context-value-transfer/results/replication-20261022/README.md)
-and [separate empirical paper](../paper/recovery-value/README.md) retain 94/96
+and [separate empirical paper](paper/recovery-value/README.md) retain 94/96
 complete failures and no established primary gain, with missing-state bounds.
 The [audited transfer report](../experiments/humaneval-plus/context-value/results/validation-20261022/report.md)
 and [blog draft](blog/when-to-keep-failed-code.md) give the current results and limits.
@@ -59,8 +59,8 @@ adding interfaces or claiming offline replay can evaluate new handoffs.
 
 ## Manuscripts and navigation
 
-`paper/neurips-submission/main.tex` and `arxiv.tex` retain existing manuscripts.
-`paper/neurips-submission/archive/theory_anchor.tex` retains consolidated theory.
+`docs/paper/neurips-submission/main.tex` and `arxiv.tex` retain existing manuscripts.
+`docs/paper/neurips-submission/archive/theory_anchor.tex` retains consolidated theory.
 Only referenced paper figures are vendored; canonical evidence stays in bundles.
 
 Use `docs/paper-evidence-map.md` for claim boundaries,

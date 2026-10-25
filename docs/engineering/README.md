@@ -7,3 +7,8 @@ and the recorded-evidence workflow.
 |---|---|
 | [`architecture.md`](architecture.md) | Current package/runtime architecture |
 | [`layout.md`](layout.md) | File placement, command compatibility and frozen provenance |
+
+The optional [environment example](environment.env.example) lists provider/router
+variables. Copy it to `.env` at the repository root if useful; runners read the
+process environment and do not load this file automatically. Keep credentials
+untracked.

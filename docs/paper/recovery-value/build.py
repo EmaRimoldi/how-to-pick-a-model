@@ -16,7 +16,7 @@ def main():
     parser.add_argument("--pdflatex",default="pdflatex")
     args=parser.parse_args()
     source=Path(__file__).resolve().parent
-    root=source.parents[1]
+    root=source.parents[2]
     evidence=root/"experiments/mbpp-plus/context-value-transfer/results/replication-20261022"
     if "\\Pending" in (source/"main.tex").read_text():
         raise ValueError("Unfinished manuscript: do not build a final research artifact")

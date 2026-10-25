@@ -23,9 +23,9 @@ verifiable tasks. Read:
 | `src/vao/humaneval/` | HumanEval+ workers, traces and routing |
 | `src/vao/analysis/` | Saved-evidence audits and report generation |
 | `scripts/maintenance/` | Repository maps, validation and manuscript builds |
-| `paper/neurips-submission/` | Existing manuscripts and their referenced figures |
-| `paper/recovery-value/` | Separate empirical recovery draft, generated from the audited MBPP+ bank |
-| `paper/neurips-submission/archive/theory_anchor.tex` | Consolidated theory source |
+| `docs/paper/neurips-submission/` | Existing manuscripts and their referenced figures |
+| `docs/paper/recovery-value/` | Separate empirical recovery draft, generated from the audited MBPP+ bank |
+| `docs/paper/neurips-submission/archive/theory_anchor.tex` | Consolidated theory source |
 
 ## Safe defaults
 

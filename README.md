@@ -30,7 +30,7 @@ failed code is added; the 27B rates are 62.4% and 58.5%. Two solver responses
 remain censored: complete-case comparisons are descriptive, with all 96 selected
 failures retained in missing-state bounds. The primary selector advantage over
 feedback-only remains unproven. Read the [report](experiments/mbpp-plus/context-value-transfer/results/replication-20261022/report.md),
-[paper draft](paper/recovery-value/README.md), or [blog](docs/blog/when-to-keep-failed-code.md).
+[paper draft](docs/paper/recovery-value/README.md), or [blog](docs/blog/when-to-keep-failed-code.md).
 
 The [earlier HumanEval+ study](experiments/humaneval-plus/context-value/results/validation-20261022/report.md)
 trained on Gemma failures and evaluated on Ministral failures
@@ -112,8 +112,7 @@ commands are documented in [reproducibility](docs/reproducibility.md).
 | `src/vao/analysis/` | Saved-evidence audits, reports and figure generation |
 | `scripts/` | Experiment entrypoints, grouped maintenance and cluster setup |
 | `tests/` | Analysis, collector, HumanEval+, repository and shared-unit checks |
-| `paper/` | Existing manuscripts, theory anchor, and referenced figures |
-| `docs/` | Decision protocol, evidence boundaries, reproduction, and source maps |
+| `docs/` | Research guides, manuscripts in `docs/paper/`, engineering and source maps |
 
 ## Evidence limits
 

@@ -6,7 +6,7 @@ bundles with generation code under `src/`.
 
 CIFAR-10 figures under `autoresearch/` and `autoresearch_n20_confirmation/` are
 archival manuscript assets. Their code, data and canonical experiment outputs
-are available through [provenance](../../../docs/history-merge.md). They are not
+are available through [provenance](../../../history-merge.md). They are not
 a current runnable experiment family.
 
 A paper-facing copy is not independent evidence. Preserve original protocols,

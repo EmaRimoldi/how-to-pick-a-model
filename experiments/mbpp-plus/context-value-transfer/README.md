@@ -29,7 +29,7 @@ bounds for all 96 selected failures also span zero. The API semantic control
 does not establish an artifact-information gain either.
 
 Read the [full report](results/replication-20261022/report.md) and the
-[separate empirical paper](../../../paper/recovery-value/README.md).
+[separate empirical paper](../../../docs/paper/recovery-value/README.md).
 Cumulative known charges and every reservation total $1.39600335, below the
 unchanged $2 ceiling. Offline replay requires no credentials, GPUs or model calls.
 

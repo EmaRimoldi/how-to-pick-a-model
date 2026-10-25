@@ -12,7 +12,7 @@ solver cells and 288 API forecasts. Complete-case intervals are descriptive;
 all selected states remain in missing-state utility bounds. The primary
 state-minus-feedback selector advantage is not established. Context effects
 differ across the two model settings, which does not imply that a selector can
-predict their task-level value. A [separate empirical draft](../paper/recovery-value/README.md)
+predict their task-level value. A [separate empirical draft](paper/recovery-value/README.md)
 contains the audited comparisons; existing manuscripts remain separate.
 
 The existing manuscripts and theory are baseline research for the sequential

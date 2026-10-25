@@ -6,7 +6,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `380`
+- Files indexed: `379`
 - Bytes indexed: `45.9M`
 
 ## Canonical Entrypoints
@@ -15,7 +15,6 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | --- | --- |
 | `README.md` | yes |
 | `AGENTS.md` | yes |
-| `CLAUDE.md` | yes |
 | `docs/README.md` | yes |
 | `docs/knowledge-map.md` | yes |
 | `docs/decision-protocol.md` | yes |
@@ -33,46 +32,44 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `experiments/README.md` | yes |
 | `src/README.md` | yes |
 | `scripts/README.md` | yes |
-| `paper/README.md` | yes |
-| `paper/neurips-submission/README.md` | yes |
+| `docs/paper/README.md` | yes |
+| `docs/paper/neurips-submission/README.md` | yes |
+| `docs/paper/recovery-value/README.md` | yes |
 | `Makefile` | yes |
 
 ## Paper Sources
 
 | Path | Present |
 | --- | --- |
-| `paper/neurips-submission/main.tex` | yes |
-| `paper/neurips-submission/arxiv.tex` | yes |
-| `paper/neurips-submission/archive/theory_anchor.tex` | yes |
+| `docs/paper/neurips-submission/main.tex` | yes |
+| `docs/paper/neurips-submission/arxiv.tex` | yes |
+| `docs/paper/neurips-submission/archive/theory_anchor.tex` | yes |
 
 ## Top-Level Areas
 
 | Path | Files | Size |
 | --- | --- | --- |
 | `experiments` | 203 | 41.6M |
-| `paper` | 33 | 2.5M |
+| `docs` | 52 | 2.6M |
 | `uv.lock` | 1 | 937.0K |
 | `src` | 65 | 544.3K |
-| `docs` | 18 | 106.6K |
 | `tests` | 23 | 104.1K |
-| `scripts` | 24 | 97.1K |
+| `scripts` | 24 | 97.4K |
 | `README.md` | 1 | 7.3K |
 | `AGENTS.md` | 1 | 3.9K |
 | `.github` | 5 | 3.1K |
-| `CLAUDE.md` | 1 | 1.4K |
-| `.gitignore` | 1 | 1.3K |
+| `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
 | `LICENSE` | 1 | 1.0K |
 | `Makefile` | 1 | 845B |
-| `.env.example` | 1 | 735B |
 
 ## File Types
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 113 | 768.2K |
+| `.py` | 113 | 768.5K |
 | `.json` | 77 | 2.7M |
-| `.md` | 54 | 249.6K |
+| `.md` | 53 | 249.7K |
 | `.jsonl` | 45 | 36.7M |
 | `.txt` | 28 | 309.7K |
 | `.png` | 20 | 2.6M |
@@ -87,7 +84,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.toml` | 2 | 2.7K |
 | `.bib` | 1 | 13.6K |
 | `.dataset` | 1 | 11.1K |
-| `.example` | 1 | 735B |
+| `.example` | 1 | 773B |
 | `.sty` | 1 | 13.2K |
 | `.yml` | 1 | 1.4K |
 
@@ -137,7 +134,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 The readiness gate treats document/source duplicates as failures. The
 remaining allowed duplicates are paper-ready figure copies under
-`paper/neurips-submission/figures/` whose experiment outputs remain
+`docs/paper/neurips-submission/figures/` whose experiment outputs remain
 canonical.
 
 | Category | Groups | Extra Files |

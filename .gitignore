@@ -23,14 +23,14 @@ dist/
 # Temporary and archival workspaces
 tmp/
 .local_archive/
-paper/**/tmp/
+docs/paper/**/tmp/
 
 # LaTeX build intermediates. Source PDFs remain trackable.
-paper/**/*.aux
-paper/**/*.bbl
-paper/**/*.blg
-paper/**/*.log
-paper/**/*.out
+docs/paper/**/*.aux
+docs/paper/**/*.bbl
+docs/paper/**/*.blg
+docs/paper/**/*.log
+docs/paper/**/*.out
 
 # Runtime outputs that are not curated experiment evidence
 runs/
