@@ -1,0 +1,38 @@
+experiment:
+  name: autoresearch_cifar10_model_routing
+  steps: 20
+  visibility_regime: top1_only
+  feedback_condition: ca
+  candidate_generation: interactive_session
+  selection_policy: top1
+  prompt_template: autoresearch_program.txt
+  branch_timeout_seconds: 1800
+  incorrect_penalty: -1.0
+  success_relative_improvement_threshold: 0.05
+  stop_on_success: false
+  task_mode_split: holdout
+  workload_split: holdout
+benchmark:
+  id: autoresearch_cifar10
+  template_path: /orcd/home/002/erimoldi/openclaw_remote/projects/NeurIPS_2026/benchmarks/autoresearch_cifar10/workloads/resnet_micro.py
+  profiles:
+  - autoresearch_cifar10
+  instance_overrides:
+    workloads:
+    - resnet_micro
+    families:
+    - resnet_micro
+    description: A micro residual CNN on CIFAR-10 with skip connections but a smaller
+      channel and depth budget than resnet_tiny.
+    train_subset_size: 50000
+    val_subset_size: 10000
+    label_noise_rate: 0.0
+    imbalance_ratio: 1.0
+    max_train_steps: 256
+    seed: 9423
+    architecture_name: micro_resnet
+output:
+  root: /home/erimoldi/openclaw_remote/projects/NeurIPS_2026/campaigns/autoresearch_cifar10_h20_delta005_20260505/runs/worker_confirmation
+models:
+  include:
+  - gpt_5_4

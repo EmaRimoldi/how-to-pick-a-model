@@ -1,0 +1,24 @@
+{
+  "initial_meta": {
+    "cost_usd": null,
+    "elapsed_wall_seconds": 20.284043784980895,
+    "max_tokens_requested": 4096,
+    "model": "gpt-5.4",
+    "raw_cli_result": {
+      "stderr_tail": "",
+      "stdout_tail": "eps = TRAIN_MAX_STEPS if TRAIN_MAX_STEPS is not None else steps_per_epoch * 100\\\\n    warmup_steps = min(16, max(1, total_steps // 10))\\\\n\\\\n    def lr_lambda(step: int) -> float:\\\\n        if step < warmup_steps:\\\\n            return float(step + 1) / float(warmup_steps)\\\\n        progress = (step - warmup_steps) / max(1, total_steps - warmup_steps)\\\\n        return 0.5 * (1.0 + np.cos(np.pi * progress))\\\\n\\\\n    return optim.lr_scheduler.LambdaLR(optimizer, lr_lambda)\\\",\\\"text\\\":\\\"\\\"}],\\\"primary_mode\\\":\\\"summaries\\\",\\\"rationale\\\":\\\"Under a fixed 256-step budget, the baseline wastes optimization potential by using a constant low learning rate and a scheduler horizon unrelated to the actual run length. This change raises the LR and applies a short warmup plus cosine decay matched to the true step budget.\\\",\\\"secondary_modes\\\":[\\\"topk\\\",\\\"indexing\\\"]}\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":26534,\"cached_input_tokens\":2432,\"output_tokens\":700,\"reasoning_output_tokens\":335}}\n"
+    },
+    "reasoning_effort": "medium",
+    "session_id": "019dfc22-b67b-76e1-bdc4-517b8077c3ca",
+    "transport": "codex_cli_persistent",
+    "usage": {
+      "cached_input_tokens": 2432,
+      "input_tokens": 26534,
+      "output_tokens": 700,
+      "reasoning_output_tokens": 335,
+      "total_tokens": 27234
+    }
+  },
+  "prompt_path": "/home/erimoldi/openclaw_remote/projects/NeurIPS_2026/autoresearch/campaigns/h20_delta005_20260505/runs/worker_confirmation/worker_confirmation_holdout_cnn_compact_seed9403_gpt_5_4/interactive_initial_prompt.txt",
+  "session_id": "019dfc22-b67b-76e1-bdc4-517b8077c3ca"
+}

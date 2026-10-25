@@ -1,0 +1,23 @@
+{
+  "baseline_correctness": true,
+  "baseline_loss": 1.684542,
+  "best_counterfactual_loss": 1.238508,
+  "best_counterfactual_relative_improvement": 0.2647805753730094,
+  "best_visible_loss": 1.238508,
+  "best_visible_relative_improvement": 0.2647805753730094,
+  "branch_evaluations": 20,
+  "candidate_generation": "interactive_session",
+  "completed_at": "2026-05-06T13:22:11.000270+00:00",
+  "elapsed_wall_seconds": 1721.7395188808441,
+  "model_id": "gpt-5.4",
+  "profile_id": "autoresearch_cifar10",
+  "run_id": "worker_confirmation_holdout_mlp_flat_seed9413_gpt_5_4",
+  "selected_accounting_cost": 398.40000000000003,
+  "steps_completed": 20,
+  "stop_on_success": false,
+  "success": true,
+  "success_threshold_relative": 0.05,
+  "tau_step": 1,
+  "total_branch_accounting_cost": 398.40000000000003,
+  "visibility_regime": "top1_only"
+}

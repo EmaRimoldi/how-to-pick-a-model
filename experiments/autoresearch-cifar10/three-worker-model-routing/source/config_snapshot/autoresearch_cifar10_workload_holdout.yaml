@@ -1,0 +1,24 @@
+experiment:
+  name: autoresearch_cifar10_workload_holdout
+  steps: 20
+  visibility_regime: top1_only
+  feedback_condition: ca
+  candidate_generation: interactive_session
+  selection_policy: top1
+  prompt_template: autoresearch_program.txt
+  branch_timeout_seconds: 1800
+  incorrect_penalty: -1.0
+  success_relative_improvement_threshold: 0.05
+  stop_on_success: false
+benchmark:
+  id: autoresearch_cifar10
+  template_path: benchmarks/autoresearch_cifar10/workloads/cnn_compact.py
+  profiles:
+    - autoresearch_cifar10
+output:
+  root: runs/autoresearch_cifar10/workload_holdout
+models:
+  include:
+    - gpt_5_3_codex_spark
+    - gpt_5_3_codex
+    - gpt_5_4

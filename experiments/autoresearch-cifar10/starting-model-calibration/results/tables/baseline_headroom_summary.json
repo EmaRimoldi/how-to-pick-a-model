@@ -1,0 +1,394 @@
+{
+  "recommended": {
+    "run_id": "refinement_fixed1170",
+    "baseline_id": "width30_lr_low",
+    "q_star": 0.824
+  },
+  "baselines": [
+    {
+      "run_id": "default_fixed1170",
+      "fixed_steps": 1170,
+      "baseline_id": "lr_low_no_schedule",
+      "baseline_val_bpb": 0.823338,
+      "raw_wins": 3,
+      "edit_count": 7,
+      "raw_win_rate": 0.42857142857142855,
+      "category_count": 2,
+      "winning_categories": [
+        "data_batch",
+        "optimizer_lr"
+      ],
+      "q3": null,
+      "hits_at_q3": null,
+      "best_edit_trial": "lr_low_no_schedule__data_batch__batch256",
+      "best_edit_val_bpb": 0.762659
+    },
+    {
+      "run_id": "default_fixed1170",
+      "fixed_steps": 1170,
+      "baseline_id": "lr_very_low_no_schedule",
+      "baseline_val_bpb": 0.879914,
+      "raw_wins": 3,
+      "edit_count": 7,
+      "raw_win_rate": 0.42857142857142855,
+      "category_count": 2,
+      "winning_categories": [
+        "data_batch",
+        "optimizer_lr"
+      ],
+      "q3": null,
+      "hits_at_q3": null,
+      "best_edit_trial": "lr_very_low_no_schedule__data_batch__batch256",
+      "best_edit_val_bpb": 0.786776
+    },
+    {
+      "run_id": "default_fixed1170",
+      "fixed_steps": 1170,
+      "baseline_id": "narrow_lr_low",
+      "baseline_val_bpb": 0.864447,
+      "raw_wins": 4,
+      "edit_count": 8,
+      "raw_win_rate": 0.5,
+      "category_count": 3,
+      "winning_categories": [
+        "data_batch",
+        "normalization_capacity",
+        "optimizer_lr"
+      ],
+      "q3": 0.832826,
+      "hits_at_q3": 3,
+      "best_edit_trial": "narrow_lr_low__data_batch__batch256",
+      "best_edit_val_bpb": 0.797907
+    },
+    {
+      "run_id": "default_fixed1170",
+      "fixed_steps": 1170,
+      "baseline_id": "no_batchnorm_lr_low",
+      "baseline_val_bpb": 1.078067,
+      "raw_wins": 5,
+      "edit_count": 8,
+      "raw_win_rate": 0.625,
+      "category_count": 3,
+      "winning_categories": [
+        "data_batch",
+        "normalization_capacity",
+        "optimizer_lr"
+      ],
+      "q3": 0.963829,
+      "hits_at_q3": 4,
+      "best_edit_trial": "no_batchnorm_lr_low__normalization_capacity__bn_on_width32",
+      "best_edit_val_bpb": 0.823338
+    },
+    {
+      "run_id": "default_fixed1170",
+      "fixed_steps": 1170,
+      "baseline_id": "overregularized_lr_low",
+      "baseline_val_bpb": 0.966298,
+      "raw_wins": 5,
+      "edit_count": 8,
+      "raw_win_rate": 0.625,
+      "category_count": 4,
+      "winning_categories": [
+        "data_batch",
+        "normalization_capacity",
+        "optimizer_lr",
+        "regularization"
+      ],
+      "q3": 0.899594,
+      "hits_at_q3": 3,
+      "best_edit_trial": "overregularized_lr_low__regularization__low_wd_no_dropout",
+      "best_edit_val_bpb": 0.823338
+    },
+    {
+      "run_id": "extended_fixed1170",
+      "fixed_steps": 1170,
+      "baseline_id": "mild_dropout_no_schedule",
+      "baseline_val_bpb": 1.065839,
+      "raw_wins": 4,
+      "edit_count": 7,
+      "raw_win_rate": 0.5714285714285714,
+      "category_count": 4,
+      "winning_categories": [
+        "data_batch",
+        "optimizer_lr",
+        "optimizer_scheduler",
+        "regularization"
+      ],
+      "q3": 1.03512,
+      "hits_at_q3": 3,
+      "best_edit_trial": "mild_dropout_no_schedule__regularization__low_wd_no_dropout",
+      "best_edit_val_bpb": 0.823338
+    },
+    {
+      "run_id": "extended_fixed1170",
+      "fixed_steps": 1170,
+      "baseline_id": "sgd_baseline",
+      "baseline_val_bpb": 0.884132,
+      "raw_wins": 3,
+      "edit_count": 6,
+      "raw_win_rate": 0.5,
+      "category_count": 3,
+      "winning_categories": [
+        "data_batch",
+        "optimizer_lr",
+        "regularization"
+      ],
+      "q3": 0.872697,
+      "hits_at_q3": 3,
+      "best_edit_trial": "sgd_baseline__data_batch__batch256",
+      "best_edit_val_bpb": 0.733491
+    },
+    {
+      "run_id": "extended_fixed1170",
+      "fixed_steps": 1170,
+      "baseline_id": "shallow_lr_low",
+      "baseline_val_bpb": 0.98034,
+      "raw_wins": 6,
+      "edit_count": 7,
+      "raw_win_rate": 0.8571428571428571,
+      "category_count": 4,
+      "winning_categories": [
+        "data_batch",
+        "normalization_capacity",
+        "optimizer_lr",
+        "optimizer_scheduler"
+      ],
+      "q3": 0.939206,
+      "hits_at_q3": 4,
+      "best_edit_trial": "shallow_lr_low__normalization_capacity__depth3_width32",
+      "best_edit_val_bpb": 0.823338
+    },
+    {
+      "run_id": "extended_fixed1170",
+      "fixed_steps": 1170,
+      "baseline_id": "small_fc_lr_low",
+      "baseline_val_bpb": 0.889742,
+      "raw_wins": 7,
+      "edit_count": 7,
+      "raw_win_rate": 1.0,
+      "category_count": 5,
+      "winning_categories": [
+        "data_batch",
+        "normalization_capacity",
+        "optimizer_lr",
+        "optimizer_scheduler",
+        "regularization"
+      ],
+      "q3": 0.856229,
+      "hits_at_q3": 4,
+      "best_edit_trial": "small_fc_lr_low__data_batch__batch256",
+      "best_edit_val_bpb": 0.765545
+    },
+    {
+      "run_id": "extended_fixed1170",
+      "fixed_steps": 1170,
+      "baseline_id": "weak_regularization_no_schedule",
+      "baseline_val_bpb": 0.810496,
+      "raw_wins": 1,
+      "edit_count": 6,
+      "raw_win_rate": 0.16666666666666666,
+      "category_count": 1,
+      "winning_categories": [
+        "data_batch"
+      ],
+      "q3": null,
+      "hits_at_q3": null,
+      "best_edit_trial": "weak_regularization_no_schedule__data_batch__batch256",
+      "best_edit_val_bpb": 0.7707
+    },
+    {
+      "run_id": "refinement_fixed585",
+      "fixed_steps": 585,
+      "baseline_id": "dropout005_lr_low",
+      "baseline_val_bpb": 1.037707,
+      "raw_wins": 7,
+      "edit_count": 7,
+      "raw_win_rate": 1.0,
+      "category_count": 4,
+      "winning_categories": [
+        "data_batch",
+        "optimizer_lr",
+        "regularization",
+        "scheduler"
+      ],
+      "q3": 0.996972,
+      "hits_at_q3": 5,
+      "best_edit_trial": "dropout005_lr_low__data_batch__batch256",
+      "best_edit_val_bpb": 0.914745
+    },
+    {
+      "run_id": "refinement_fixed585",
+      "fixed_steps": 585,
+      "baseline_id": "fc96_lr_low",
+      "baseline_val_bpb": 1.039141,
+      "raw_wins": 6,
+      "edit_count": 7,
+      "raw_win_rate": 0.8571428571428571,
+      "category_count": 3,
+      "winning_categories": [
+        "data_batch",
+        "normalization_capacity",
+        "optimizer_lr"
+      ],
+      "q3": 0.996972,
+      "hits_at_q3": 6,
+      "best_edit_trial": "fc96_lr_low__data_batch__batch256",
+      "best_edit_val_bpb": 0.902988
+    },
+    {
+      "run_id": "refinement_fixed585",
+      "fixed_steps": 585,
+      "baseline_id": "width24_lr_mid",
+      "baseline_val_bpb": 0.998037,
+      "raw_wins": 5,
+      "edit_count": 7,
+      "raw_win_rate": 0.7142857142857143,
+      "category_count": 3,
+      "winning_categories": [
+        "data_batch",
+        "normalization_capacity",
+        "optimizer_lr"
+      ],
+      "q3": 0.973329,
+      "hits_at_q3": 4,
+      "best_edit_trial": "width24_lr_mid__data_batch__batch256",
+      "best_edit_val_bpb": 0.86079
+    },
+    {
+      "run_id": "refinement_fixed585",
+      "fixed_steps": 585,
+      "baseline_id": "width28_lr_low",
+      "baseline_val_bpb": 1.073051,
+      "raw_wins": 6,
+      "edit_count": 7,
+      "raw_win_rate": 0.8571428571428571,
+      "category_count": 3,
+      "winning_categories": [
+        "data_batch",
+        "normalization_capacity",
+        "optimizer_lr"
+      ],
+      "q3": 0.997878,
+      "hits_at_q3": 4,
+      "best_edit_trial": "width28_lr_low__data_batch__batch256",
+      "best_edit_val_bpb": 0.896199
+    },
+    {
+      "run_id": "refinement_fixed585",
+      "fixed_steps": 585,
+      "baseline_id": "width30_lr_low",
+      "baseline_val_bpb": 1.031767,
+      "raw_wins": 7,
+      "edit_count": 7,
+      "raw_win_rate": 1.0,
+      "category_count": 4,
+      "winning_categories": [
+        "data_batch",
+        "normalization_capacity",
+        "optimizer_lr",
+        "scheduler"
+      ],
+      "q3": 0.996972,
+      "hits_at_q3": 4,
+      "best_edit_trial": "width30_lr_low__data_batch__batch256",
+      "best_edit_val_bpb": 0.898305
+    },
+    {
+      "run_id": "refinement_fixed1170",
+      "fixed_steps": 1170,
+      "baseline_id": "dropout005_lr_low",
+      "baseline_val_bpb": 0.868005,
+      "raw_wins": 5,
+      "edit_count": 7,
+      "raw_win_rate": 0.7142857142857143,
+      "category_count": 3,
+      "winning_categories": [
+        "data_batch",
+        "optimizer_lr",
+        "regularization"
+      ],
+      "q3": 0.830335,
+      "hits_at_q3": 3,
+      "best_edit_trial": "dropout005_lr_low__data_batch__batch256",
+      "best_edit_val_bpb": 0.767591
+    },
+    {
+      "run_id": "refinement_fixed1170",
+      "fixed_steps": 1170,
+      "baseline_id": "fc96_lr_low",
+      "baseline_val_bpb": 0.851718,
+      "raw_wins": 5,
+      "edit_count": 7,
+      "raw_win_rate": 0.7142857142857143,
+      "category_count": 3,
+      "winning_categories": [
+        "data_batch",
+        "normalization_capacity",
+        "optimizer_lr"
+      ],
+      "q3": 0.834426,
+      "hits_at_q3": 4,
+      "best_edit_trial": "fc96_lr_low__data_batch__batch256",
+      "best_edit_val_bpb": 0.770057
+    },
+    {
+      "run_id": "refinement_fixed1170",
+      "fixed_steps": 1170,
+      "baseline_id": "width24_lr_mid",
+      "baseline_val_bpb": 0.862439,
+      "raw_wins": 7,
+      "edit_count": 7,
+      "raw_win_rate": 1.0,
+      "category_count": 4,
+      "winning_categories": [
+        "data_batch",
+        "normalization_capacity",
+        "optimizer_lr",
+        "scheduler"
+      ],
+      "q3": 0.838601,
+      "hits_at_q3": 5,
+      "best_edit_trial": "width24_lr_mid__data_batch__batch256",
+      "best_edit_val_bpb": 0.766064
+    },
+    {
+      "run_id": "refinement_fixed1170",
+      "fixed_steps": 1170,
+      "baseline_id": "width28_lr_low",
+      "baseline_val_bpb": 0.8794,
+      "raw_wins": 7,
+      "edit_count": 7,
+      "raw_win_rate": 1.0,
+      "category_count": 4,
+      "winning_categories": [
+        "data_batch",
+        "normalization_capacity",
+        "optimizer_lr",
+        "scheduler"
+      ],
+      "q3": 0.834142,
+      "hits_at_q3": 3,
+      "best_edit_trial": "width28_lr_low__normalization_capacity__width32",
+      "best_edit_val_bpb": 0.823338
+    },
+    {
+      "run_id": "refinement_fixed1170",
+      "fixed_steps": 1170,
+      "baseline_id": "width30_lr_low",
+      "baseline_val_bpb": 0.841354,
+      "raw_wins": 4,
+      "edit_count": 7,
+      "raw_win_rate": 0.5714285714285714,
+      "category_count": 3,
+      "winning_categories": [
+        "data_batch",
+        "normalization_capacity",
+        "optimizer_lr"
+      ],
+      "q3": 0.823338,
+      "hits_at_q3": 4,
+      "best_edit_trial": "width30_lr_low__data_batch__batch256",
+      "best_edit_val_bpb": 0.784812
+    }
+  ]
+}

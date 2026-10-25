@@ -1,0 +1,79 @@
+{
+  "decompositions": {
+    "d10": {
+      "cost_term_token": -0.16543399241168427,
+      "cost_term_wall": -0.4773322633714664,
+      "phi": 0.0,
+      "G": 0.0,
+      "epsilon": 0.0,
+      "delta_token": -0.16543399241168427,
+      "delta_wall": -0.4773322633714664,
+      "kappa_token": 2702.769230769231,
+      "kappa_wall": 137.24975941014978
+    },
+    "d01": {
+      "cost_term_token": -0.011473507762721373,
+      "cost_term_wall": -0.042954139575888464,
+      "phi": 0.0,
+      "G": 0.0,
+      "epsilon": 0.0,
+      "delta_token": -0.011473507762721373,
+      "delta_wall": -0.042954139575888464,
+      "kappa_token": 2317.1,
+      "kappa_wall": 88.8921825791811
+    },
+    "d11": {
+      "cost_term_token": -0.09018482761957593,
+      "cost_term_wall": -0.44393553633597976,
+      "phi": 0.0,
+      "G": 0.0,
+      "epsilon": 0.0,
+      "delta_token": -0.09018482761957593,
+      "delta_wall": -0.44393553633597976,
+      "kappa_token": 2506.8518518518517,
+      "kappa_wall": 132.7417618303314
+    }
+  },
+  "hypotheses": {
+    "H1_wall_positive": false,
+    "H1_token_nonpositive": true,
+    "H1_holds": false,
+    "H2_token_positive": false,
+    "H2_wall_positive": false,
+    "H2_holds": false,
+    "H3_epsilon_d11_lt_d01": false,
+    "H3_holds": false,
+    "H4_epsilon_exceeds_log2": false,
+    "H5_note": "Check kappa_by_context_bin for monotone increase",
+    "H6_wall_positive": false,
+    "H6_token_positive": false,
+    "H6_holds": false
+  },
+  "prior": {},
+  "context_bins": {
+    "d00": {
+      "0%-25%": 2290.6666666666665,
+      "25%-50%": null,
+      "50%-75%": null,
+      "75%-100%": null
+    },
+    "d10": {
+      "0%-25%": 2702.769230769231,
+      "25%-50%": null,
+      "50%-75%": null,
+      "75%-100%": null
+    },
+    "d01": {
+      "0%-25%": 2317.1,
+      "25%-50%": null,
+      "50%-75%": null,
+      "75%-100%": null
+    },
+    "d11": {
+      "0%-25%": 2506.8518518518517,
+      "25%-50%": null,
+      "50%-75%": null,
+      "75%-100%": null
+    }
+  }
+}

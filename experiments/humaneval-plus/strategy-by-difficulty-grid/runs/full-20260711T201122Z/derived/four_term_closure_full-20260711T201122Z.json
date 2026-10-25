@@ -1,0 +1,284 @@
+{
+  "baseline_model": "1.5b",
+  "clock": "seconds",
+  "finite_horizon_attempts": 20,
+  "focused_t0_tokens": {
+    "1.5b|easy": 88.58335481016887,
+    "1.5b|hard": 706.7975767240258,
+    "1.5b|medium": 410.58959332632907,
+    "32b|easy": 64.50020406569982,
+    "32b|hard": 240.34289102459886,
+    "32b|medium": 117.90215156745785,
+    "7b|easy": 70.48158951078794,
+    "7b|hard": 324.0208118146725,
+    "7b|medium": 360.95190668472645
+  },
+  "kappa_seconds_per_token": {
+    "1.5b": 0.011470328032265643,
+    "32b": 0.031365019091450466,
+    "7b": 0.011383079199988183
+  },
+  "results": {
+    "1.5b": {
+      "0": {
+        "competence": 0.0,
+        "information": 0.09928784380695121,
+        "n_tasks": 164,
+        "operational_any_success_95ci": [
+          -0.08836010387123308,
+          0.08408262391913837
+        ],
+        "operational_any_success_log_speedup": -0.0006865917459890462,
+        "operational_baseline_success_rate": 0.8597560975609756,
+        "operational_routed_success_rate": 0.8536585365853658,
+        "packed_baseline_success_rate": 0.7439024390243902,
+        "packed_closure_residual": 0.01742266244481569,
+        "packed_observed_95ci": [
+          0.025598135600534144,
+          0.1749180923899369
+        ],
+        "packed_observed_log_speedup": 0.10105963515768718,
+        "packed_routed_success_rate": 0.7317073170731707,
+        "per_step_cost": 0.0,
+        "predicted_log_speedup": 0.08363697271287149,
+        "q0_retry_allocation": {
+          "mode1_direct": 7,
+          "mode2_structured": 6,
+          "mode3_robust": 7
+        },
+        "routing_mismatch": 0.015650871094079723
+      },
+      "20": {
+        "competence": 0.0,
+        "information": 0.1283367907061097,
+        "n_tasks": 164,
+        "operational_any_success_95ci": [
+          -0.09320170637718848,
+          0.06921986665529085
+        ],
+        "operational_any_success_log_speedup": -0.012434927182113916,
+        "operational_baseline_success_rate": 0.8597560975609756,
+        "operational_routed_success_rate": 0.8536585365853658,
+        "packed_baseline_success_rate": 0.7439024390243902,
+        "packed_closure_residual": 0.021895289494742842,
+        "packed_observed_95ci": [
+          0.04683540549323245,
+          0.2095213633361266
+        ],
+        "packed_observed_log_speedup": 0.12752269828829896,
+        "packed_routed_success_rate": 0.7012195121951219,
+        "per_step_cost": 0.0,
+        "predicted_log_speedup": 0.10562740879355612,
+        "q0_retry_allocation": {
+          "mode1_direct": 7,
+          "mode2_structured": 6,
+          "mode3_robust": 7
+        },
+        "routing_mismatch": 0.022709381912553592
+      },
+      "5": {
+        "competence": 0.0,
+        "information": 0.12515261029756497,
+        "n_tasks": 164,
+        "operational_any_success_95ci": [
+          -0.11603865415619517,
+          0.06118145010652076
+        ],
+        "operational_any_success_log_speedup": -0.027290022606584904,
+        "operational_baseline_success_rate": 0.8597560975609756,
+        "operational_routed_success_rate": 0.8658536585365854,
+        "packed_baseline_success_rate": 0.7439024390243902,
+        "packed_closure_residual": 0.0015244667156766034,
+        "packed_observed_95ci": [
+          0.023623561497504966,
+          0.18498540341160416
+        ],
+        "packed_observed_log_speedup": 0.10597551679041328,
+        "packed_routed_success_rate": 0.7195121951219512,
+        "per_step_cost": 0.0,
+        "predicted_log_speedup": 0.10445105007473668,
+        "q0_retry_allocation": {
+          "mode1_direct": 7,
+          "mode2_structured": 6,
+          "mode3_robust": 7
+        },
+        "routing_mismatch": 0.02070156022282829
+      }
+    },
+    "32b": {
+      "0": {
+        "competence": 0.8789959871624207,
+        "information": 0.09928784380695121,
+        "n_tasks": 164,
+        "operational_any_success_95ci": [
+          -0.08058238917243167,
+          0.31177622726418763
+        ],
+        "operational_any_success_log_speedup": 0.11309301308887884,
+        "operational_baseline_success_rate": 0.8597560975609756,
+        "operational_routed_success_rate": 0.8353658536585366,
+        "packed_baseline_success_rate": 0.7439024390243902,
+        "packed_closure_residual": 0.26449180488432833,
+        "packed_observed_95ci": [
+          -0.12443885519989435,
+          0.27089705205614434
+        ],
+        "packed_observed_log_speedup": 0.07619201508958112,
+        "packed_routed_success_rate": 0.75,
+        "per_step_cost": -1.0059297003513183,
+        "predicted_log_speedup": -0.1882997897947472,
+        "q0_retry_allocation": {
+          "mode1_direct": 7,
+          "mode2_structured": 6,
+          "mode3_robust": 7
+        },
+        "routing_mismatch": 0.16065392041280074
+      },
+      "20": {
+        "competence": 0.8789959871624207,
+        "information": 0.1283367907061097,
+        "n_tasks": 164,
+        "operational_any_success_95ci": [
+          -0.1537936094665929,
+          0.2115075696820735
+        ],
+        "operational_any_success_log_speedup": 0.026056523224569916,
+        "operational_baseline_success_rate": 0.8597560975609756,
+        "operational_routed_success_rate": 0.8414634146341463,
+        "packed_baseline_success_rate": 0.7439024390243902,
+        "packed_closure_residual": 0.27163344874832557,
+        "packed_observed_95ci": [
+          -0.14065353785064372,
+          0.27633018724802755
+        ],
+        "packed_observed_log_speedup": 0.05943600067665224,
+        "packed_routed_success_rate": 0.75,
+        "per_step_cost": -1.0059297003513183,
+        "predicted_log_speedup": -0.21219744807167334,
+        "q0_retry_allocation": {
+          "mode1_direct": 7,
+          "mode2_structured": 6,
+          "mode3_robust": 7
+        },
+        "routing_mismatch": 0.21360052558888537
+      },
+      "5": {
+        "competence": 0.8789959871624207,
+        "information": 0.12515261029756497,
+        "n_tasks": 164,
+        "operational_any_success_95ci": [
+          -0.13610001180488107,
+          0.24767865955731883
+        ],
+        "operational_any_success_log_speedup": 0.05071940033187204,
+        "operational_baseline_success_rate": 0.8597560975609756,
+        "operational_routed_success_rate": 0.8353658536585366,
+        "packed_baseline_success_rate": 0.7439024390243902,
+        "packed_closure_residual": 0.29401875404715716,
+        "packed_observed_95ci": [
+          -0.1274720976388396,
+          0.261607871440655
+        ],
+        "packed_observed_log_speedup": 0.073192991676584,
+        "packed_routed_success_rate": 0.7439024390243902,
+        "per_step_cost": -1.0059297003513183,
+        "predicted_log_speedup": -0.22082576237057316,
+        "q0_retry_allocation": {
+          "mode1_direct": 7,
+          "mode2_structured": 6,
+          "mode3_robust": 7
+        },
+        "routing_mismatch": 0.21904465947924046
+      }
+    },
+    "7b": {
+      "0": {
+        "competence": 0.3806522219869394,
+        "information": 0.09928784380695121,
+        "n_tasks": 164,
+        "operational_any_success_95ci": [
+          0.30716567311008747,
+          0.6377017158766917
+        ],
+        "operational_any_success_log_speedup": 0.4703952663142919,
+        "operational_baseline_success_rate": 0.8597560975609756,
+        "operational_routed_success_rate": 0.9390243902439024,
+        "packed_baseline_success_rate": 0.7439024390243902,
+        "packed_closure_residual": -0.0972596571301062,
+        "packed_observed_95ci": [
+          0.17582123704068112,
+          0.5362318109743257
+        ],
+        "packed_observed_log_speedup": 0.3595781279078412,
+        "packed_routed_success_rate": 0.8353658536585366,
+        "per_step_cost": 0.007635557821810937,
+        "predicted_log_speedup": 0.4568377850379474,
+        "q0_retry_allocation": {
+          "mode1_direct": 7,
+          "mode2_structured": 6,
+          "mode3_robust": 7
+        },
+        "routing_mismatch": 0.030737838577754084
+      },
+      "20": {
+        "competence": 0.3806522219869394,
+        "information": 0.1283367907061097,
+        "n_tasks": 164,
+        "operational_any_success_95ci": [
+          0.22111153150927682,
+          0.5759658505960256
+        ],
+        "operational_any_success_log_speedup": 0.3999320590551579,
+        "operational_baseline_success_rate": 0.8597560975609756,
+        "operational_routed_success_rate": 0.9329268292682927,
+        "packed_baseline_success_rate": 0.7439024390243902,
+        "packed_closure_residual": -0.145395919472452,
+        "packed_observed_95ci": [
+          0.14517133390710085,
+          0.5057603222256016
+        ],
+        "packed_observed_log_speedup": 0.3189559284023538,
+        "packed_routed_success_rate": 0.823170731707317,
+        "per_step_cost": 0.007635557821810937,
+        "predicted_log_speedup": 0.4643518478748058,
+        "q0_retry_allocation": {
+          "mode1_direct": 7,
+          "mode2_structured": 6,
+          "mode3_robust": 7
+        },
+        "routing_mismatch": 0.052272722640054184
+      },
+      "5": {
+        "competence": 0.3806522219869394,
+        "information": 0.12515261029756497,
+        "n_tasks": 164,
+        "operational_any_success_95ci": [
+          0.1992969819647059,
+          0.5475070236314983
+        ],
+        "operational_any_success_log_speedup": 0.3733899973618278,
+        "operational_baseline_success_rate": 0.8597560975609756,
+        "operational_routed_success_rate": 0.9390243902439024,
+        "packed_baseline_success_rate": 0.7439024390243902,
+        "packed_closure_residual": -0.09299778305930523,
+        "packed_observed_95ci": [
+          0.13777191643205594,
+          0.47823546018545465
+        ],
+        "packed_observed_log_speedup": 0.3205241691635102,
+        "packed_routed_success_rate": 0.8353658536585366,
+        "per_step_cost": 0.007635557821810937,
+        "predicted_log_speedup": 0.4135219522228154,
+        "q0_retry_allocation": {
+          "mode1_direct": 7,
+          "mode2_structured": 6,
+          "mode3_robust": 7
+        },
+        "routing_mismatch": 0.09991843788349988
+      }
+    }
+  },
+  "right_censoring_note": "Unsolved cells are evaluated at their observed finite-horizon resource.",
+  "run_id": "full-20260711T201122Z",
+  "schema_version": 1
+}

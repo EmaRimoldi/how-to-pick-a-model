@@ -1,0 +1,69 @@
+{
+  "feature_sets": {
+    "budget_only": {
+      "accuracy": 0.3492063492063492,
+      "confusion": {
+        "cnn_compact": {
+          "cnn_compact": 22
+        },
+        "mlp_flat": {
+          "cnn_compact": 21
+        },
+        "resnet_micro": {
+          "cnn_compact": 20
+        }
+      },
+      "count": 63,
+      "macro_accuracy": 0.3333333333333333
+    },
+    "leaky_current": {
+      "accuracy": 1.0,
+      "confusion": {
+        "cnn_compact": {
+          "cnn_compact": 22
+        },
+        "mlp_flat": {
+          "mlp_flat": 21
+        },
+        "resnet_micro": {
+          "resnet_micro": 20
+        }
+      },
+      "count": 63,
+      "macro_accuracy": 1.0
+    },
+    "probe_only": {
+      "accuracy": 1.0,
+      "confusion": {
+        "cnn_compact": {
+          "cnn_compact": 22
+        },
+        "mlp_flat": {
+          "mlp_flat": 21
+        },
+        "resnet_micro": {
+          "resnet_micro": 20
+        }
+      },
+      "count": 63,
+      "macro_accuracy": 1.0
+    },
+    "probe_plus_budget": {
+      "accuracy": 1.0,
+      "confusion": {
+        "cnn_compact": {
+          "cnn_compact": 22
+        },
+        "mlp_flat": {
+          "mlp_flat": 21
+        },
+        "resnet_micro": {
+          "resnet_micro": 20
+        }
+      },
+      "count": 63,
+      "macro_accuracy": 1.0
+    }
+  },
+  "record_count": 63
+}

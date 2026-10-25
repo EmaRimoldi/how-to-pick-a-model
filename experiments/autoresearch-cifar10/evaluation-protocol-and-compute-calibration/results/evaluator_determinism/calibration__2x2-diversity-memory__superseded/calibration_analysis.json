@@ -1,0 +1,105 @@
+{
+  "experiment": "bp_2x2_calibration_phase02a",
+  "date": "2026-04-13",
+  "cells": {
+    "d00": {
+      "n_reps": 5,
+      "n_runs": 47,
+      "runs_per_rep": [
+        12,
+        2,
+        4,
+        14,
+        15
+      ],
+      "best_per_rep": [
+        0.855528,
+        0.925845,
+        0.925845,
+        0.921272,
+        0.824019
+      ],
+      "best_per_rep_mean": 0.890502,
+      "best_per_rep_std": 0.047666,
+      "all_bpb_mean": 1.002567,
+      "all_bpb_std": 0.109589,
+      "reps_beating_baseline": 3,
+      "mode_count": 5,
+      "modes_with_2_plus": 5,
+      "promoted_runs": 4,
+      "wall_clock_mean_s": 134.5,
+      "wall_clock_std_s": 85.5,
+      "wall_clock_cv": 0.636,
+      "jensen_gap_wall": 0.150614,
+      "jensen_gap_train": 0.135719
+    },
+    "d10": {
+      "n_reps": 5,
+      "n_runs": 69,
+      "runs_per_rep": [
+        3,
+        19,
+        20,
+        20,
+        7
+      ],
+      "best_per_rep": [
+        0.925845,
+        0.87549,
+        0.925845,
+        0.922538,
+        0.925845
+      ],
+      "best_per_rep_mean": 0.915113,
+      "best_per_rep_std": 0.022196,
+      "all_bpb_mean": 1.012721,
+      "all_bpb_std": 0.116656,
+      "reps_beating_baseline": 2,
+      "mode_count": 5,
+      "modes_with_2_plus": 4,
+      "promoted_runs": 4,
+      "wall_clock_mean_s": 83.1,
+      "wall_clock_std_s": 26.6,
+      "wall_clock_cv": 0.32,
+      "jensen_gap_wall": 0.041014,
+      "jensen_gap_train": 0.045353,
+      "memory_correlation_r": 0.04,
+      "memory_correlation_p": 0.747
+    }
+  },
+  "comparisons": {
+    "best_of_rep": {
+      "cohens_d": 0.6619,
+      "direction": "d10_worse",
+      "welch_t": -1.0466,
+      "welch_p": 0.3379,
+      "mannwhitney_u": 8.0,
+      "mannwhitney_p": 0.3727,
+      "significant_at_005": false
+    },
+    "all_runs": {
+      "cohens_d": 0.0892,
+      "direction": "negligible"
+    },
+    "iteration_throughput": {
+      "d00_mean_runs": 9.4,
+      "d10_mean_runs": 13.8,
+      "d10_advantage": "47%"
+    },
+    "jensen_gap_ratio": {
+      "wall": 3.67,
+      "train": 2.99
+    }
+  },
+  "decision_gate_inputs": {
+    "cohens_d": 0.6619,
+    "cohens_d_direction": "d10_worse",
+    "d00_mode_count": 5,
+    "d10_mode_count": 5,
+    "d00_modes_with_2_plus": 5,
+    "d10_modes_with_2_plus": 4,
+    "d00_n_runs": 47,
+    "d10_n_runs": 69,
+    "total_runs": 116
+  }
+}

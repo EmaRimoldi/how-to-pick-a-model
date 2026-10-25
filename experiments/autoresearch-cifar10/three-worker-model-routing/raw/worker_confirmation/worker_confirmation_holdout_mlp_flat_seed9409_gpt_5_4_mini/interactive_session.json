@@ -1,0 +1,24 @@
+{
+  "initial_meta": {
+    "cost_usd": null,
+    "elapsed_wall_seconds": 43.538793163141236,
+    "max_tokens_requested": 4096,
+    "model": "gpt-5.4-mini",
+    "raw_cli_result": {
+      "stderr_tail": "WARNING: failed to clean up stale arg0 temp dirs: Directory not empty (os error 39)\n",
+      "stdout_tail": "_DECAY = 1e-4\\\",\\\"op\\\":\\\"replace_exact\\\",\\\"source\\\":\\\"\\\",\\\"text\\\":\\\"\\\"},{\\\"anchor\\\":\\\"\\\",\\\"function\\\":\\\"\\\",\\\"new\\\":\\\"ADAM_BETAS = (0.8, 0.95)\\\",\\\"old\\\":\\\"ADAM_BETAS = (0.9, 0.999)\\\",\\\"op\\\":\\\"replace_exact\\\",\\\"source\\\":\\\"\\\",\\\"text\\\":\\\"\\\"},{\\\"anchor\\\":\\\"\\\",\\\"function\\\":\\\"\\\",\\\"new\\\":\\\"USE_LR_SCHEDULE = True\\\",\\\"old\\\":\\\"USE_LR_SCHEDULE = False\\\",\\\"op\\\":\\\"replace_exact\\\",\\\"source\\\":\\\"\\\",\\\"text\\\":\\\"\\\"},{\\\"anchor\\\":\\\"\\\",\\\"function\\\":\\\"\\\",\\\"new\\\":\\\"BATCH_SIZE = 320\\\",\\\"old\\\":\\\"BATCH_SIZE = 64\\\",\\\"op\\\":\\\"replace_exact\\\",\\\"source\\\":\\\"\\\",\\\"text\\\":\\\"\\\"}],\\\"primary_mode\\\":\\\"layout\\\",\\\"rationale\\\":\\\"Adopt a stronger MLP configuration: wider/deeper layers, AdamW, larger batch size, and an enabled cosine schedule with step-aware timing should improve optimization under the fixed-step budget.\\\",\\\"secondary_modes\\\":[\\\"indexing\\\",\\\"summaries\\\",\\\"topk\\\",\\\"micro\\\"]}\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":153710,\"cached_input_tokens\":140160,\"output_tokens\":3330,\"reasoning_output_tokens\":2578}}\n"
+    },
+    "reasoning_effort": "medium",
+    "session_id": "019e0063-cf23-7b53-a724-88a3fe295a53",
+    "transport": "codex_cli_persistent",
+    "usage": {
+      "cached_input_tokens": 140160,
+      "input_tokens": 153710,
+      "output_tokens": 3330,
+      "reasoning_output_tokens": 2578,
+      "total_tokens": 157040
+    }
+  },
+  "prompt_path": "/home/erimoldi/openclaw_remote/projects/NeurIPS_2026/campaigns/autoresearch_cifar10_h20_delta005_20260505/runs/worker_confirmation/worker_confirmation_holdout_mlp_flat_seed9409_gpt_5_4_mini/interactive_initial_prompt.txt",
+  "session_id": "019e0063-cf23-7b53-a724-88a3fe295a53"
+}

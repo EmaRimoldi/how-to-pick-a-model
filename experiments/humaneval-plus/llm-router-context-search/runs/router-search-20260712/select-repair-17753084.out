@@ -1,0 +1,55 @@
+Load from ground-truth from /home/erimoldi/.cache/evalplus/fe585eb4df8c88d844eeb463ea4d0302.pkl
+Wrote /orcd/data/tpoggio/001/erimoldi/theory-of-agents-strategy/runs/router-search-20260712/validation_selection.json
+{
+  "1.5b": {
+    "allocation_head": "posterior_floor",
+    "router_configuration": "gpt-5.5|n=0",
+    "validation_metrics": {
+      "baseline_success_rate": 0.9024390243902439,
+      "baseline_successes": 37,
+      "mean_log_speedup": -0.03123831150975829,
+      "multiplicative_speedup": 0.9692445634157562,
+      "n_tasks": 41,
+      "routed_success_rate": 0.8780487804878049,
+      "routed_successes": 36,
+      "speedup_95ci": [
+        0.8305593599567809,
+        1.1202423027637802
+      ]
+    }
+  },
+  "32b": {
+    "allocation_head": "performance_aware",
+    "router_configuration": "gpt-5.4|n=20",
+    "validation_metrics": {
+      "baseline_success_rate": 0.8292682926829268,
+      "baseline_successes": 34,
+      "mean_log_speedup": 0.06289632547687364,
+      "multiplicative_speedup": 1.0649164288051045,
+      "n_tasks": 41,
+      "routed_success_rate": 0.8780487804878049,
+      "routed_successes": 36,
+      "speedup_95ci": [
+        0.9577124970917843,
+        1.1867207251765994
+      ]
+    }
+  },
+  "7b": {
+    "allocation_head": "performance_aware",
+    "router_configuration": "gpt-5.5|n=5",
+    "validation_metrics": {
+      "baseline_success_rate": 0.975609756097561,
+      "baseline_successes": 40,
+      "mean_log_speedup": -0.03198590352980058,
+      "multiplicative_speedup": 0.9685202346995965,
+      "n_tasks": 41,
+      "routed_success_rate": 0.975609756097561,
+      "routed_successes": 40,
+      "speedup_95ci": [
+        0.8991157324854087,
+        1.0374959695539974
+      ]
+    }
+  }
+}

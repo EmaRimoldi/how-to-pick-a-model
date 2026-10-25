@@ -1,0 +1,184 @@
+{
+  "deployment_loss_summary": [
+    {
+      "deployment_loss_ci": {
+        "hi": 0.9329704673791447,
+        "lo": 0.7628905369852899,
+        "mean": 0.8481159023850017
+      },
+      "mode": "cnn_compact",
+      "run_count": 10,
+      "worker": "gpt_5_3_codex"
+    },
+    {
+      "deployment_loss_ci": {
+        "hi": 0.7122609993299215,
+        "lo": 0.7122609993299215,
+        "mean": 0.7122609993299215
+      },
+      "mode": "cnn_compact",
+      "run_count": 1,
+      "worker": "gpt_5_3_codex_spark"
+    },
+    {
+      "deployment_loss_ci": {
+        "hi": 2.2800501499213564,
+        "lo": 1.0416210204141105,
+        "mean": 1.579741175288101
+      },
+      "mode": "cnn_compact",
+      "run_count": 10,
+      "worker": "gpt_5_4"
+    },
+    {
+      "deployment_loss_ci": {
+        "hi": 1.1151886594209806,
+        "lo": 0.7047127559967773,
+        "mean": 0.8899264122540004
+      },
+      "mode": "mlp_flat",
+      "run_count": 10,
+      "worker": "gpt_5_3_codex"
+    },
+    {
+      "deployment_loss_ci": {
+        "hi": 1.3723645274707352,
+        "lo": 0.9346710815150239,
+        "mean": 1.1578759625274668
+      },
+      "mode": "mlp_flat",
+      "run_count": 10,
+      "worker": "gpt_5_4"
+    },
+    {
+      "deployment_loss_ci": {
+        "hi": 1.0528381771784283,
+        "lo": 0.8686110458859113,
+        "mean": 0.9616833867504477
+      },
+      "mode": "resnet_micro",
+      "run_count": 10,
+      "worker": "gpt_5_3_codex"
+    },
+    {
+      "deployment_loss_ci": {
+        "hi": 2.5078857262803904,
+        "lo": 1.4844834032573715,
+        "mean": 1.9344457943747928
+      },
+      "mode": "resnet_micro",
+      "run_count": 9,
+      "worker": "gpt_5_4"
+    }
+  ],
+  "frontier": [
+    {
+      "kappa_wall_median": 319.6470749974251,
+      "log_effort_objective": 5.8137375121642005,
+      "mean_deployment_loss": 0.8481159023850017,
+      "mean_final_relative_improvement": 0.23237062342609843,
+      "mean_occupancy": 0.725,
+      "mean_tau": 6.5,
+      "mode": "cnn_compact",
+      "p_jeffreys": 0.9545454545454546,
+      "p_raw": 1.0,
+      "run_count": 10,
+      "success_count": 10,
+      "worker": "gpt_5_3_codex"
+    },
+    {
+      "kappa_wall_median": 334.96268339157103,
+      "log_effort_objective": 6.10170120521122,
+      "mean_deployment_loss": 0.7122609993299215,
+      "mean_final_relative_improvement": 0.36185979930015333,
+      "mean_occupancy": 0.65,
+      "mean_tau": 8.0,
+      "mode": "cnn_compact",
+      "p_jeffreys": 0.75,
+      "p_raw": 1.0,
+      "run_count": 1,
+      "success_count": 1,
+      "worker": "gpt_5_3_codex_spark"
+    },
+    {
+      "kappa_wall_median": 234.26002920866011,
+      "log_effort_objective": 5.502951749961409,
+      "mean_deployment_loss": 1.579741175288101,
+      "mean_final_relative_improvement": 0.3729947337277467,
+      "mean_occupancy": 0.885,
+      "mean_tau": 3.3,
+      "mode": "cnn_compact",
+      "p_jeffreys": 0.9545454545454546,
+      "p_raw": 1.0,
+      "run_count": 10,
+      "success_count": 10,
+      "worker": "gpt_5_4"
+    },
+    {
+      "kappa_wall_median": 364.28327164649966,
+      "log_effort_objective": 6.044535257982435,
+      "mean_deployment_loss": 0.8899264122540004,
+      "mean_final_relative_improvement": 0.17073937971290765,
+      "mean_occupancy": 0.58,
+      "mean_tau": 8.11111111111111,
+      "mode": "mlp_flat",
+      "p_jeffreys": 0.8636363636363636,
+      "p_raw": 0.9,
+      "run_count": 10,
+      "success_count": 9,
+      "worker": "gpt_5_3_codex"
+    },
+    {
+      "kappa_wall_median": 202.60376415252685,
+      "log_effort_objective": 5.357772186509494,
+      "mean_deployment_loss": 1.1578759625274668,
+      "mean_final_relative_improvement": 0.2669160942294607,
+      "mean_occupancy": 0.9199999999999999,
+      "mean_tau": 2.6,
+      "mode": "mlp_flat",
+      "p_jeffreys": 0.9545454545454546,
+      "p_raw": 1.0,
+      "run_count": 10,
+      "success_count": 10,
+      "worker": "gpt_5_4"
+    },
+    {
+      "kappa_wall_median": 156.93057111501693,
+      "log_effort_objective": 5.102323500976784,
+      "mean_deployment_loss": 0.9616833867504477,
+      "mean_final_relative_improvement": 0.1937679874601846,
+      "mean_occupancy": 0.89,
+      "mean_tau": 3.2,
+      "mode": "resnet_micro",
+      "p_jeffreys": 0.9545454545454546,
+      "p_raw": 1.0,
+      "run_count": 10,
+      "success_count": 10,
+      "worker": "gpt_5_3_codex"
+    },
+    {
+      "kappa_wall_median": 263.7047851085663,
+      "log_effort_objective": 5.626123533613881,
+      "mean_deployment_loss": 1.9344457943747928,
+      "mean_final_relative_improvement": 0.2821971559703618,
+      "mean_occupancy": 0.9666666666666666,
+      "mean_tau": 1.6666666666666667,
+      "mode": "resnet_micro",
+      "p_jeffreys": 0.95,
+      "p_raw": 1.0,
+      "run_count": 9,
+      "success_count": 9,
+      "worker": "gpt_5_4"
+    }
+  ],
+  "router_residuals": [],
+  "run_count": 60,
+  "weights": {
+    "alpha_fail": 1.0,
+    "alpha_occ": 0.25,
+    "alpha_qual": 0.25,
+    "lambda_tokens": 0.0,
+    "lambda_wall": 0.0005555555555555556,
+    "threshold": 0.05
+  }
+}
