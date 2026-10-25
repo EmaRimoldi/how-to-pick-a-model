@@ -5,8 +5,8 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `49`
-- Default-safe commands: `32`
+- Commands indexed: `50`
+- Default-safe commands: `33`
 - Missing required Make targets: `0`
 
 ## Safety Classes
@@ -19,7 +19,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `mixed-cli` | 1 |
 | `read-only-analysis` | 14 |
 | `safe-figure-regeneration` | 6 |
-| `safe-local` | 10 |
+| `safe-local` | 11 |
 | `safe-local-optional-tool` | 2 |
 
 ## Surfaces
@@ -29,7 +29,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `Makefile` | 7 |
 | `autoresearch/scripts` | 14 |
 | `pyproject` | 1 |
-| `scripts` | 27 |
+| `scripts` | 28 |
 
 ## Commands
 
@@ -44,6 +44,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/build_experiment_manifest.py` | scripts | `safe-local` | yes | python | Build a manifest of experiment bundles and their reproducibility assets. |
 | `python scripts/build_knowledge_index.py` | scripts | `safe-local` | yes | python | Build a compact knowledge index for LLM agents working in this repository. |
 | `python scripts/build_repo_inventory.py` | scripts | `safe-local` | yes | python | Build a deterministic repository inventory for agents and reviewers. |
+| `python scripts/prepare_progress_history.py` | scripts | `safe-local` | yes | python; optional fresh output directory; no model access | Prepare offline-only development fixtures for the progress-history design; no API calls. |
 | `python scripts/validate_agent_readiness.py` | scripts | `safe-local` | yes | python | Validate that the repository is ready for LLM-agent navigation. |
 | `make paper-build` | Makefile | `safe-local-optional-tool` | yes | pdflatex, bibtex | Compile active paper TeX sources out of tree with pdflatex and bibtex. |
 | `python scripts/check_paper_build.py` | scripts | `safe-local-optional-tool` | yes | pdflatex, bibtex | Compile active paper TeX sources into an out-of-tree build directory. |

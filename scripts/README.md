@@ -1,5 +1,10 @@
 # Repository Scripts
 
+`prepare_progress_history.py` prints the next experiment's offline plan by default.
+With a fresh `--output`, it writes synthetic development fixtures and exact
+verifier checks. No live mode or model responses; see the
+[progress-history design](../experiments/finite-domain/progress-history/README.md).
+
 `verify_feedback_evidence.py` reproduces the complete published BigCodeBench
 bank without credentials, provider calls or candidate execution: file checksums,
 frozen sources, receipt/prompt projection, fixed statistics, verifier-repeat

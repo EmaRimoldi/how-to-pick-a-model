@@ -15,6 +15,14 @@ recorded results.
 
 ## Safe environment and checks
 
+The next [progress-history prototype](../experiments/finite-domain/progress-history/README.md)
+is offline only. `uv run python scripts/prepare_progress_history.py` prints its
+development plan; adding `--output runs/progress-history-development` writes
+handwritten fixtures to a fresh directory. It exhaustively interprets bounded
+expressions over 256 inputs, with no credentials, provider calls or arbitrary
+Python execution. Its `summary.json` is labelled `offline_fixtures_only`, not
+an empirical study result. The prototype has no live mode.
+
 ```bash
 uv sync --dev --frozen
 make check

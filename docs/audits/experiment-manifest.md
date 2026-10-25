@@ -5,7 +5,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 
 ## Summary
 
-- Bundles indexed: `9`
+- Bundles indexed: `10`
 - Missing bundle paths: `0`
 - Missing README files: `0`
 
@@ -13,7 +13,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 
 | Class | Bundles |
 | --- | --- |
-| `inspect-readme` | 3 |
+| `inspect-readme` | 4 |
 | `paper-supporting-evidence` | 5 |
 | `partial-evidence` | 1 |
 
@@ -23,6 +23,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | --- | --- |
 | `Tier 1: Main Evidence` | 5 |
 | `Tier 2: Supporting Or Diagnostic Evidence` | 4 |
+| `not tiered` | 1 |
 
 ## Bundle Assets
 
@@ -37,6 +38,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 56 | 6 | 9 | 40 | 3 | 0 | 0 | 0 | 5 |
 | `experiments/mbpp-plus/context-value-transfer/` | collection finished; censored descriptive bank | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 72 | 6 | 2 | 59 | 4 | 3 | 0 | 0 | 6 |
 | `experiments/bigcodebench/feedback-only-routing/` | complete; primary gate not passed | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 42 | 2 | 5 | 32 | 4 | 0 | 0 | 0 | 2 |
+| `experiments/finite-domain/progress-history/` | offline development prototype; no model collection | not tiered | `inspect-readme` | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 ## Key Files
 
@@ -177,3 +179,11 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 - `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/source/src__vao__decisions__pilot.py.txt`
 - `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/source/src__vao__decisions__verification.py.txt`
 - `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/source/src__vao__decisions__verifier_worker.py.txt`
+
+### `experiments/finite-domain/progress-history/`
+
+- Title: Does progress history predict the value of keeping failed work?
+- Evidence: Exhaustive 256-input verifier, matched branch projections and handwritten engineering fixtures; draft staged protocol
+- Asset directories: `configs`
+- `experiments/finite-domain/progress-history/README.md`
+- `experiments/finite-domain/progress-history/configs/offline-development.json`

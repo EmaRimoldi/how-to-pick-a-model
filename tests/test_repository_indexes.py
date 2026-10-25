@@ -149,10 +149,14 @@ def test_experiment_manifest_classifies_bundle_assets() -> None:
     bundles = {bundle["path"]: bundle for bundle in manifest["bundles"]}
 
     assert manifest["root"] == "."
-    assert manifest["bundle_count"] == len(bundles) == 9
+    assert manifest["bundle_count"] == len(bundles) == 10
     assert CORE_EXPERIMENT_BUNDLES <= set(bundles)
     assert manifest["missing_paths"] == []
     assert manifest["missing_readmes"] == []
+    prototype = bundles["experiments/finite-domain/progress-history/"]
+    assert prototype["result_files"] == prototype["figure_files"] == 0
+    assert prototype["evidence_tier"] == "not tiered"
+    assert prototype["reproducibility_class"] != "paper-supporting-evidence"
     assert all(bundles[path]["reproducibility_class"] in {
         "paper-supporting-evidence", "partial-evidence"
     } for path in CORE_EXPERIMENT_BUNDLES)

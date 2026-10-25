@@ -1,5 +1,11 @@
 # Knowledge Map
 
+Next, offline only: [progress-history design and development prototype](../experiments/finite-domain/progress-history/README.md),
+`src/vao/decisions/progress_history.py` (bounded expression interpreter, exhaustive
+verification, observable checkpoints and paired prompts), and
+`scripts/prepare_progress_history.py` (plan or handwritten fixtures, no API path).
+No empirical intervention gain, new predictor or held-out evaluation exists yet.
+
 Completed feedback-only stage: [protocol, exact task manifest and results](../experiments/bigcodebench/feedback-only-routing/README.md),
 `src/vao/decisions/feedback_routing.py` (fixed trajectories), `bigcode.py` and
 `bigcode_worker.py` (reference qualification and isolated verification),
