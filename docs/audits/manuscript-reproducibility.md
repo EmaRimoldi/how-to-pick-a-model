@@ -41,7 +41,11 @@ Under the declared loss, the mature two-worker winners are GPT-5.4 for MLP-flat
 and compact CNN, and GPT-5.3 Codex for micro ResNet. The later three-worker
 analysis selects GPT-5.4, GPT-5.4 Mini, and GPT-5.3 Codex respectively.
 
-## Evidence coverage
+## Archived evidence coverage
+
+The coverage below describes the verified pre-retirement snapshot. Current
+CIFAR-10 code/data are archived in [provenance](../history-merge.md); embedded
+manuscript figures remain available for compilation.
 
 - Historical two-worker panel: 210 processed trajectories; 150 raw holdout
   traces present; 60 pilot traces missing.

@@ -5,14 +5,12 @@ Completed [feedback-only fixed-policy evaluation](bigcodebench/feedback-only-rou
 outcomes. Immediate escalation versus retry 9B is −2.55 pp [−7.01, +1.27],
 95% paired interval; the primary gate fails. No new selector is trained.
 
-Nine maintained bundles support the sequential-decision question in
+Seven maintained bundles support the sequential-decision question in
 `docs/decision-protocol.md`. Each is grouped by benchmark and research question. A bundle owns its configs, launchers, inputs, processed
 results, figures, and run metadata whenever those artifacts are available.
 
 | Benchmark | Experiment bundle | Status | Evidence in the repository |
 | --- | --- | --- | --- |
-| AutoResearch / CIFAR-10 | [`calibration/`](autoresearch-cifar10/calibration/) | completed | 161 baseline evaluations, five determinism checks, CPU fixed-time/fixed-step controls, tables and figure generators |
-| AutoResearch / CIFAR-10 | [`three-worker-model-routing/`](autoresearch-cifar10/three-worker-model-routing/) | completed with raw-coverage gap | primary 300-record pooled accounting, 270-record balanced sensitivity and 180 balanced raw traces |
 | HumanEval+ | [`qwen-model-size-frontier/`](humaneval-plus/qwen-model-size-frontier/) | completed | three 164-task worker logs and processed frontier estimates |
 | HumanEval+ | [`retry-allocation-router/`](humaneval-plus/retry-allocation-router/) | completed | folds, router decisions, summary, configs, launchers |
 | HumanEval+ | [`strategy-by-difficulty-grid/`](humaneval-plus/strategy-by-difficulty-grid/) | completed | full run, source/config snapshot, raw shards, summaries, figures |
@@ -41,4 +39,4 @@ under separate protocols. The frozen transfer evaluates a one-checkpoint selecto
 its gain over a stronger static control remains inconclusive. It does not validate
 a general multi-step controller or complete the originally planned same-producer test.
 
-The standalone memory ablation and initial continuation pilot are archived; calibration is consolidated. See the [cleanup record](../docs/audits/experiment-cleanup.md). Pilot billing and task-exclusion provenance remains within the context-value bundle.
+The CIFAR-10 family, standalone memory ablation and initial continuation pilot are archived. See the [cleanup record](../docs/audits/experiment-cleanup.md). Pilot billing and task-exclusion provenance remains within the context-value bundle.

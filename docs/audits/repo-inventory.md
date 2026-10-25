@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `2446`
-- Bytes indexed: `100.6M`
+- Files indexed: `369`
+- Bytes indexed: `45.9M`
 
 ## Canonical Entrypoints
 
@@ -22,7 +22,6 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `docs/paper-evidence-map.md` | yes |
 | `docs/paper-revision-playbook.md` | yes |
 | `docs/reproducibility.md` | yes |
-| `docs/demo.md` | yes |
 | `docs/engineering/architecture.md` | yes |
 | `docs/audits/branch-consolidation.md` | yes |
 | `docs/audits/theory-consolidation.md` | yes |
@@ -33,8 +32,6 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `experiments/README.md` | yes |
 | `src/README.md` | yes |
 | `scripts/README.md` | yes |
-| `autoresearch/README.md` | yes |
-| `autoresearch/scripts/README.md` | yes |
 | `paper/README.md` | yes |
 | `paper/neurips-submission/README.md` | yes |
 | `Makefile` | yes |
@@ -51,70 +48,52 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 2059 | 75.0M |
-| `artifacts` | 21 | 20.0M |
+| `experiments` | 203 | 41.6M |
 | `paper` | 33 | 2.5M |
-| `src` | 141 | 1.1M |
-| `uv.lock` | 1 | 972.4K |
-| `autoresearch` | 57 | 395.8K |
-| `scripts` | 29 | 306.7K |
-| `tests` | 47 | 187.4K |
-| `docs` | 26 | 126.4K |
-| `prompts` | 6 | 21.6K |
-| `configs` | 7 | 12.7K |
-| `README.md` | 1 | 7.9K |
-| `AGENTS.md` | 1 | 4.0K |
-| `.github` | 5 | 3.4K |
-| `.claude` | 4 | 3.3K |
-| `pyproject.toml` | 1 | 1.6K |
-| `.gitignore` | 1 | 1.5K |
+| `uv.lock` | 1 | 937.0K |
+| `src` | 56 | 388.0K |
+| `scripts` | 23 | 248.6K |
+| `docs` | 17 | 103.1K |
+| `tests` | 22 | 102.7K |
+| `README.md` | 1 | 7.0K |
+| `AGENTS.md` | 1 | 3.7K |
+| `.github` | 5 | 3.1K |
 | `CLAUDE.md` | 1 | 1.4K |
-| `Makefile` | 1 | 1.1K |
+| `.gitignore` | 1 | 1.3K |
+| `pyproject.toml` | 1 | 1.2K |
 | `LICENSE` | 1 | 1.0K |
-| `.env.example` | 1 | 1.0K |
+| `Makefile` | 1 | 773B |
+| `.env.example` | 1 | 735B |
 | `requirements-cluster.txt` | 1 | 123B |
-| `.gitattributes` | 1 | 82B |
 
 ## File Types
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.json` | 1093 | 5.0M |
-| `.jsonl` | 295 | 59.0M |
-| `.txt` | 287 | 4.2M |
-| `.yaml` | 270 | 316.1K |
-| `.py` | 253 | 1.9M |
-| `.md` | 91 | 341.6K |
-| `.png` | 48 | 6.2M |
-| `.pdf` | 31 | 609.0K |
-| `.csv` | 20 | 558.5K |
-| `.part-000` | 18 | 20.0M |
-| `.sh` | 13 | 24.8K |
+| `.py` | 103 | 763.2K |
+| `.json` | 77 | 2.7M |
+| `.md` | 53 | 244.6K |
+| `.jsonl` | 45 | 36.7M |
+| `.txt` | 28 | 309.7K |
+| `.png` | 20 | 2.6M |
+| `.pdf` | 8 | 184.3K |
+| `.sh` | 8 | 14.9K |
 | `.sbatch` | 5 | 6.5K |
 | `.tex` | 5 | 297.7K |
-| `<none>` | 5 | 5.7K |
+| `.yaml` | 3 | 2.6K |
+| `<none>` | 3 | 3.1K |
 | `.lock` | 2 | 1.9M |
 | `.svg` | 2 | 156.5K |
-| `.toml` | 2 | 3.2K |
+| `.toml` | 2 | 2.8K |
 | `.bib` | 1 | 13.6K |
 | `.dataset` | 1 | 11.1K |
-| `.example` | 1 | 1.0K |
+| `.example` | 1 | 735B |
 | `.sty` | 1 | 13.2K |
-| `.tsv` | 1 | 790B |
-| `.yml` | 1 | 1.8K |
+| `.yml` | 1 | 1.4K |
 
 ## Experiment Readmes
 
 - `experiments/README.md`
-- `experiments/autoresearch-cifar10/README.md`
-- `experiments/autoresearch-cifar10/calibration/README.md`
-- `experiments/autoresearch-cifar10/calibration/results/evaluation-controls/evaluator_determinism/README.md`
-- `experiments/autoresearch-cifar10/calibration/results/evaluation-controls/fixed_step_cpu_pair_benchmark/README.md`
-- `experiments/autoresearch-cifar10/calibration/results/evaluation-controls/fixed_time_cpu_scaling/README.md`
-- `experiments/autoresearch-cifar10/three-worker-model-routing/README.md`
-- `experiments/autoresearch-cifar10/three-worker-model-routing/raw/README.md`
-- `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/README.md`
-- `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/README.md`
 - `experiments/bigcodebench/feedback-only-routing/README.md`
 - `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/README.md`
 - `experiments/humaneval-plus/README.md`
@@ -129,52 +108,32 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 ## Script Entrypoints
 
-- `autoresearch/scripts/analyze_autoresearch_allocation_router.py`
-- `autoresearch/scripts/analyze_autoresearch_threeworker_final.py`
-- `autoresearch/scripts/compute_autoresearch_factored_calibration.py`
-- `autoresearch/scripts/generate_autoresearch_campaign_tasks.py`
-- `autoresearch/scripts/plot_autoresearch_certified_resource.py`
-- `autoresearch/scripts/plot_autoresearch_router_shift_lookup_summary.py`
-- `autoresearch/scripts/plot_autoresearch_router_weight_shift.py`
-- `autoresearch/scripts/reproduce_appendix_figures_n20_confirmation.py`
-- `autoresearch/scripts/reproduce_main_figures_from_processed.py`
-- `autoresearch/scripts/run_autoresearch_allocation_router_batch.sh`
-- `autoresearch/scripts/run_autoresearch_cifar10_cnn4096_router_test.sh`
-- `autoresearch/scripts/run_threshold_calibration_array_task.sh`
-- `autoresearch/scripts/run_z_probe_array_task.sh`
-- `autoresearch/scripts/slurm_autoresearch_worker_array.sh`
 - `scripts/analyze_context_value.py`
 - `scripts/analyze_continuation_pilot.py`
 - `scripts/analyze_feedback_routing.py`
 - `scripts/analyze_recovery_transfer.py`
 - `scripts/analyze_recovery_validation.py`
-- `scripts/analyze_runs.py`
-- `scripts/benchmark_parallel_capacity.py`
 - `scripts/bootstrap_engaging.sh`
 - `scripts/build_command_manifest.py`
 - `scripts/build_experiment_manifest.py`
 - `scripts/build_knowledge_index.py`
 - `scripts/build_repo_inventory.py`
 - `scripts/check_paper_build.py`
-- `scripts/compare_experiments.py`
 - `scripts/prepare_feedback_routing.py`
 - `scripts/report_feedback_routing.py`
 - `scripts/run_context_value.py`
 - `scripts/run_continuation_pilot.py`
 - `scripts/run_feedback_routing.py`
-- `scripts/run_merge_phase.py`
-- `scripts/run_parallel_experiment.py`
 - `scripts/run_recovery_transfer.py`
 - `scripts/run_recovery_validation.py`
-- `scripts/run_single_long_experiment.py`
 - `scripts/run_transfer_forecasts.py`
 - `scripts/validate_agent_readiness.py`
 - `scripts/verify_feedback_evidence.py`
 
 ## Exact Duplicates In Selected Types
 
-- Groups: `7`
-- Extra files: `15`
+- Groups: `0`
+- Extra files: `0`
 
 The readiness gate treats document/source duplicates as failures. The
 remaining allowed duplicates are paper-ready figure copies under
@@ -183,35 +142,3 @@ canonical.
 
 | Category | Groups | Extra Files |
 | --- | --- | --- |
-| package initializers | 1 | 9 |
-| paper-ready figure copy | 6 | 6 |
-
-- Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/first_hit_ecdf_by_mode.png`
-  - `paper/neurips-submission/figures/autoresearch/first_hit_ecdf_by_mode.png`
-- Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_improvement_distribution.png`
-  - `paper/neurips-submission/figures/autoresearch/threeworker_improvement_distribution.png`
-- Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_negative_controls.png`
-  - `paper/neurips-submission/figures/autoresearch/threeworker_negative_controls.png`
-- Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_relative_improvement_trajectories.png`
-  - `paper/neurips-submission/figures/autoresearch/threeworker_relative_improvement_trajectories.png`
-- Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_tau_distribution.png`
-  - `paper/neurips-submission/figures/autoresearch/threeworker_tau_distribution.png`
-- Group:
-  - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/threeworker_threshold_sensitivity.png`
-  - `paper/neurips-submission/figures/autoresearch/threeworker_threshold_sensitivity.png`
-- Group:
-  - `autoresearch/__init__.py`
-  - `autoresearch/analysis/__init__.py`
-  - `autoresearch/benchmark/__init__.py`
-  - `src/agent_workflow/agents/__init__.py`
-  - `src/agent_workflow/experiment_modes/__init__.py`
-  - `src/agent_workflow/outputs/__init__.py`
-  - `src/agent_workflow/runtime/__init__.py`
-  - `src/agent_workflow/utils/__init__.py`
-  - `src/vao/agents/__init__.py`
-  - `src/vao/analysis/__init__.py`

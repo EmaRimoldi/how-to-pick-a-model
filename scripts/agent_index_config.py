@@ -26,7 +26,6 @@ CANONICAL_DOCS = [
     "docs/paper-evidence-map.md",
     "docs/paper-revision-playbook.md",
     "docs/reproducibility.md",
-    "docs/demo.md",
     "docs/engineering/architecture.md",
     "docs/audits/branch-consolidation.md",
     "docs/audits/theory-consolidation.md",
@@ -37,8 +36,6 @@ CANONICAL_DOCS = [
     "experiments/README.md",
     "src/README.md",
     "scripts/README.md",
-    "autoresearch/README.md",
-    "autoresearch/scripts/README.md",
     "paper/README.md",
     "paper/neurips-submission/README.md",
 ]
@@ -54,12 +51,9 @@ REQUIRED_MAKE_TARGETS = [
     "test",
     "check",
     "paper-build",
-    "paper-figures-autoresearch",
 ]
 
 CORE_EXPERIMENT_BUNDLES = {
-    "experiments/autoresearch-cifar10/calibration/",
-    "experiments/autoresearch-cifar10/three-worker-model-routing/",
     "experiments/humaneval-plus/qwen-model-size-frontier/",
     "experiments/humaneval-plus/retry-allocation-router/",
     "experiments/humaneval-plus/strategy-by-difficulty-grid/",
@@ -67,8 +61,6 @@ CORE_EXPERIMENT_BUNDLES = {
 }
 
 CORE_CODE_MODULES = {
-    "src/agent_workflow/cli.py",
-    "src/agent_workflow/communication/blackboard.py",
     "src/vao/schemas.py",
     "src/vao/decisions/pilot.py",
     "src/vao/decisions/context_value.py",
@@ -78,8 +70,6 @@ CORE_CODE_MODULES = {
     "src/vao/decisions/openrouter.py",
     "src/vao/decisions/verification.py",
     "src/load_traces.py",
-    "autoresearch/analysis/autoresearch_cifar10_model_routing.py",
-    "autoresearch/benchmark/cifar10/task_spec.py",
 }
 
 PAPER_ROOT = Path("paper/neurips-submission")
@@ -105,7 +95,6 @@ LOCAL_PATH_PATTERNS = (
 
 SCRIPT_DIRS = (
     Path("scripts"),
-    Path("autoresearch/scripts"),
 )
 SCRIPT_SUPPORT_FILES = {
     "README.md",
@@ -129,17 +118,10 @@ MARKDOWN_LINK_DOCS = [
         "docs/paper-evidence-map.md",
         "docs/paper-revision-playbook.md",
         "docs/reproducibility.md",
-        "docs/demo.md",
         "docs/engineering/architecture.md",
         "docs/audits/branch-consolidation.md",
         "docs/history-merge.md",
         "docs/audits/experiment-cleanup.md",
-        "experiments/autoresearch-cifar10/README.md",
-        "experiments/autoresearch-cifar10/calibration/README.md",
-        "experiments/autoresearch-cifar10/calibration/starting-model.md",
-        "experiments/autoresearch-cifar10/calibration/evaluation-controls.md",
-        "experiments/autoresearch-cifar10/calibration/task_warrant.md",
-        "experiments/autoresearch-cifar10/calibration/results/evaluation-controls/evaluator_determinism/README.md",
         "experiments/humaneval-plus/README.md",
         "experiments/humaneval-plus/qwen-model-size-frontier/README.md",
         "experiments/humaneval-plus/retry-allocation-router/README.md",
@@ -150,7 +132,5 @@ MARKDOWN_LINK_DOCS = [
         "paper/neurips-submission/README.md",
         "src/README.md",
         "scripts/README.md",
-        "autoresearch/README.md",
-        "autoresearch/scripts/README.md",
     ]
 ]

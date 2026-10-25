@@ -8,7 +8,7 @@ assignees: ""
 
 ## Problem
 
-What agent-workflow problem would this solve?
+What coding-task research problem would this solve?
 
 ## Proposed behavior
 

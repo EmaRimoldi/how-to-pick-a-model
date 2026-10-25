@@ -32,8 +32,6 @@ and [blog draft](blog/when-to-keep-failed-code.md) give the current results and 
 
 | Question | Bundle |
 | --- | --- |
-| Starting model, evaluator and compute controls | `experiments/autoresearch-cifar10/calibration/` |
-| Model choice and first-hit accounting | `experiments/autoresearch-cifar10/three-worker-model-routing/` |
 | Worker model-size frontier | `experiments/humaneval-plus/qwen-model-size-frontier/` |
 | Retry allocation | `experiments/humaneval-plus/retry-allocation-router/` |
 | Strategy routing | `experiments/humaneval-plus/strategy-by-difficulty-grid/` |
@@ -44,17 +42,13 @@ Use `experiments/README.md` and bundle-local READMEs before citing results.
 
 ## Code
 
-- `src/vao/orchestrator.py`, `src/vao/schemas.py`: execution and observable state.
-- `src/vao/agents/`: model adapters and supported session behavior.
+- `src/vao/schemas.py`, `src/vao/records.py`: observable run records.
 - `src/vao/decisions/`: budgeted OpenRouter calls, observable checkpoints,
   isolated public feedback and evaluation-only EvalPlus scoring.
 - `src/vao/decisions/recovery_policy.py`: frozen, inexpensive probability baselines.
 - `src/vao/decisions/recovery.py`: development/frozen-evaluation collection.
 - `src/vao/decisions/recovery_import.py`: explicit phase transitions and preserved charges/reservations.
 - `scripts/analyze_recovery_validation.py`: offline receipt/provenance audit and finite policy replay.
-- `src/agent_workflow/`: baseline CLI, snapshots, cost/trace collection, reports.
-- `autoresearch/benchmark/cifar10/`: workloads and verifier.
-- `autoresearch/analysis/`, `autoresearch/scripts/`: accounting and reproduction.
 - `src/load_traces.py`, `src/execute.py`, `src/simulate.py`: HumanEval+ traces,
   verification, and retry replay under its declared assumptions.
 - Other root `src/*.py` modules: retained HumanEval+ estimation and routing.
@@ -72,3 +66,6 @@ Only referenced paper figures are vendored; canonical evidence stays in bundles.
 Use `docs/paper-evidence-map.md` for claim boundaries,
 `docs/audits/theory-consolidation.md` for historical proof caveats, and generated
 maps in `docs/audits/` for retrieval. Retired sources remain in the [provenance history](history-merge.md).
+
+CIFAR-10 and its dedicated runtime are archived; historical manuscript figures
+point to their [provenance](history-merge.md).

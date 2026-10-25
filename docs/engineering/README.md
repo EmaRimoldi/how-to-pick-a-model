@@ -1,7 +1,7 @@
 # Engineering
 
 This section explains the verified-task collectors, shared accounting and verification,
-historical baseline CLI, and recorded-evidence workflow.
+and the recorded-evidence workflow.
 
 | File | Role |
 |---|---|

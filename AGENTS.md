@@ -16,18 +16,14 @@ verifiable tasks. Read:
 
 | Area | Role |
 | --- | --- |
-| `autoresearch/` | CIFAR-10 edit/verify benchmark and accounting |
-| `experiments/autoresearch-cifar10/` | Consolidated calibration and routing baseline evidence |
 | `experiments/humaneval-plus/` | Completed retry, strategy, and context-routing evidence |
 | `experiments/mbpp-plus/context-value-transfer/` | Focused, prospectively frozen cross-benchmark recovery replication |
 | `experiments/bigcodebench/feedback-only-routing/` | New-task feedback-only fixed-policy study; read its freeze before any calls |
-| `src/vao/` | Verified execution, model adapters, and observable run records |
-| `src/agent_workflow/` | Existing baseline CLI, instrumentation, and reporting |
+| `src/vao/` | Coding-task collectors, accounting, verification and observable records |
 | `src/*.py` | HumanEval+ worker traces and routing analysis |
 | `paper/neurips-submission/` | Existing manuscripts and their referenced figures |
 | `paper/recovery-value/` | Separate empirical recovery draft, generated from the audited MBPP+ bank |
 | `paper/neurips-submission/archive/theory_anchor.tex` | Consolidated theory source |
-| `artifacts/raw/` | Raw campaign archives, not runnable source |
 
 ## Safe defaults
 
@@ -46,8 +42,6 @@ verifiable tasks. Read:
   training data. Never describe the former evaluation set as a fresh holdout
   again, or pool protocols to manufacture independent task counts. Read its
   frozen protocol before collection and preserve all selected missing states.
-- Existing CLI modes are baseline execution tools, not evidence of an optimal
-  multi-agent architecture or a state-conditioned controller.
 - The BigCodeBench fixed-policy study is complete and its primary gate failed.
   Do not resume collection, train a new selector, recycle observed tasks as fresh,
   or change its frozen intervention/primary comparison. Its recorded $4.00
@@ -66,9 +60,11 @@ changing paper assets when TeX Live is available. The build is out of tree.
 ```bash
 uv sync --dev --frozen
 make check
-uv run agent-workflow demo --output-dir /tmp/how-to-pick-a-model-demo
-make paper-figures-autoresearch
 ```
 
 Live runs require isolated workspaces, a declared budget, and preserved configs,
 usage records, artifacts, verifier feedback, and provenance.
+
+CIFAR-10 and its legacy CLI/harness are retired. Preserve the seven retained
+coding-task studies and frozen sources. Historical manuscript figures remain
+vendored; their CIFAR-10 sources are available through the provenance tags.

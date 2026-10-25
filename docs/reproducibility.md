@@ -1,6 +1,6 @@
 # Reproducibility
 
-The retained evidence is AutoResearch/CIFAR-10 and completed HumanEval+ studies.
+The seven retained studies cover HumanEval+, MBPP+ and BigCodeBench coding tasks.
 The state-conditioned policy question is specified in
 [decision protocol](decision-protocol.md). The initial API pilot is archived with
 [billing, configuration and task-exclusion provenance](../experiments/humaneval-plus/context-value/provenance/continuation-pilot/README.md).
@@ -18,28 +18,22 @@ recorded results.
 ```bash
 uv sync --dev --frozen
 make check
-uv run agent-workflow demo --output-dir /tmp/how-to-pick-a-model-demo
-make paper-figures-autoresearch
 ```
 
 `make check` regenerates the inventory, knowledge, experiment, and command maps,
 validates references and evidence structure, compiles Python, and runs unit tests.
-The demo is deterministic fixture data; figure generation reads tracked results.
-Neither launches live models or GPU training.
+These checks make no live model calls or GPU training runs.
 
 Optional profiles:
 
-- `autoresearch`: Torch/Torchvision for CIFAR-10 verification.
 - `other-experiments`: HumanEval+ worker/verifier and routing dependencies.
 - `continuation-pilot`: EvalPlus for the API pilot, without requiring local LLM
   weights or Torch.
-- `analysis-ml`: optional runtime diversity/embedding analysis dependencies.
 - `all-experiments`: dependencies for the retained experiment surfaces.
 
 Install only the profile needed, for example:
 
 ```bash
-uv sync --dev --extra autoresearch --frozen
 uv sync --dev --extra other-experiments --frozen
 ```
 
@@ -145,20 +139,12 @@ completed collection nor the completed $2 campaign may be resumed. No uncertain 
 `scripts/analyze_feedback_routing.py` audits saved receipts/messages without
 provider calls; it refuses treatment analysis before `summary.json` exists.
 
-## AutoResearch evidence
+## Archived CIFAR-10 material
 
-The two maintained bundles cover [consolidated calibration](../experiments/autoresearch-cifar10/calibration/README.md)
-and three-worker routing. The exploratory memory study and superseded pilots are archived. The three-worker panel has
-300 records in the primary pooled accounting, 270 in the balanced sensitivity,
-and 180 balanced raw traces. The command below reads the primary pooled JSON;
-its bundle README distinguishes these panels and the missing pilot coverage.
-
-```bash
-uv run python -m autoresearch.scripts.reproduce_main_figures_from_processed   --input experiments/autoresearch-cifar10/three-worker-model-routing/results/accounting/threeworker_final_analysis.json   --out-dir /tmp/how_to_pick_a_model_autoresearch
-```
-
-Raw campaign archives remain under `artifacts/raw/` in Git LFS. Inventory sizes
-use logical LFS object sizes for both pointer-only and hydrated checkouts.
+CIFAR-10 calibration/routing experiments, raw archives and their dedicated
+launcher/harness are removed from the current package. Complete sources and
+historical data remain available through [provenance](history-merge.md).
+Embedded manuscript figures remain vendored so the historical documents compile.
 
 ## HumanEval+ evidence
 
@@ -174,19 +160,15 @@ Worker reruns require EvalPlus and the configured local models. Router reruns
 may require model CLI/API access. Original cluster run/config snapshots are
 provenance, not machine-independent launch commands.
 
-## Runtime baselines and paper
-
-The historical `agent-workflow` CLI remains for baseline execution,
-instrumentation, and reports. Before an explicitly requested live run, use its
-`doctor` command, fixed-step verification, and serialized evaluator controls.
-Keep generated runs, usage, snapshots, and configs under ignored output paths.
+## Historical manuscripts
 
 ```bash
 make paper-build
 ```
 
 This compiles both retained manuscripts with TeX Live into `/tmp/` and leaves the
-source tree clean. Only referenced paper figures are vendored.
+source tree clean. Only referenced paper figures are vendored. CIFAR-10 figures are archival
+assets; their experiment sources are recovered from the provenance tag.
 
 ## Limits
 

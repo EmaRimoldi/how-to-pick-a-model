@@ -11,6 +11,12 @@ The final tree preserves the verified cleanup. Files are grouped by component
 and study, with dedicated validation and integration commits. The original
 chronological development remains available through the tags below.
 
+The subsequent CIFAR-10 retirement removes its two experiment bundles, raw
+archives and dedicated runtime/CLI from the maintained tree. Seven coding-task
+studies remain. This maintenance commit builds on the 30 curated commits;
+retained coding-task evidence and historical manuscript sources stay intact.
+The verified-cleanup tag below preserves the complete retired family.
+
 ## Recover earlier versions
 
 | Provenance tag | Contents |

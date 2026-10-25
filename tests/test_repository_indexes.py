@@ -63,7 +63,10 @@ def test_knowledge_index_is_complete_and_descriptive() -> None:
     figures = {figure["path"]: figure for figure in index["paper_figures"]}
     assert figures[
         "paper/neurips-submission/figures/autoresearch/first_hit_ecdf_by_mode.png"
-    ]["provenance"] == "exact experiment copy"
+    ]["provenance"] == "archived experiment figure"
+    assert figures[
+        "paper/neurips-submission/figures/autoresearch/first_hit_ecdf_by_mode.png"
+    ]["source"] == "provenance/verified-cleanup-2026-10-25"
     assert all(ref["present"] for ref in index["active_paper_references"])
     assert {
         ref["resolved_path"] for ref in index["active_paper_references"] if ref["kind"] == "figure"
@@ -127,14 +130,15 @@ def test_command_manifest_classifies_safety_boundaries() -> None:
     assert manifest["command_count"] == len(commands)
     assert manifest["missing_required_make_targets"] == []
     assert manifest["safety_classes"]["safe-local"] >= 5
-    assert manifest["safety_classes"]["live-cluster"] >= 1
+    assert manifest["safety_classes"]["live-local"] >= 1
+    assert manifest["safety_classes"]["cluster-setup"] >= 1
 
     assert commands["make check"]["safety_class"] == "safe-local"
     assert commands["make check"]["default_safe"]
     assert commands["make paper-build"]["safety_class"] == "safe-local-optional-tool"
     assert commands["make paper-build"]["default_safe"]
-    assert commands["uv run agent-workflow"]["safety_class"] == "mixed-cli"
-    assert not commands["uv run agent-workflow"]["default_safe"]
+    assert "uv run agent-workflow" not in commands
+    assert "make paper-figures-autoresearch" not in commands
 
     live_commands = [
         command for command in manifest["commands"]
@@ -144,12 +148,27 @@ def test_command_manifest_classifies_safety_boundaries() -> None:
     assert all(not command["default_safe"] for command in live_commands)
 
 
+
+def test_command_validation_rejects_default_safe_provider_launchers(monkeypatch) -> None:
+    monkeypatch.syspath_prepend(str(ROOT / "scripts"))
+    from validate_agent_readiness import check_command_manifest
+
+    manifest = _run_json("scripts/build_command_manifest.py")
+    assert check_command_manifest(manifest) == []
+    collector = next(command for command in manifest["commands"]
+                     if command["command"] == "python scripts/run_context_value.py")
+    assert collector["safety_class"] == "live-local"
+    collector["default_safe"] = True
+    assert any("live command incorrectly marked default-safe" in problem
+               for problem in check_command_manifest(manifest))
+
+
 def test_experiment_manifest_classifies_bundle_assets() -> None:
     manifest = _run_json("scripts/build_experiment_manifest.py")
     bundles = {bundle["path"]: bundle for bundle in manifest["bundles"]}
 
     assert manifest["root"] == "."
-    assert manifest["bundle_count"] == len(bundles) == 9
+    assert manifest["bundle_count"] == len(bundles) == 7
     assert CORE_EXPERIMENT_BUNDLES <= set(bundles)
     assert manifest["missing_paths"] == []
     assert manifest["missing_readmes"] == []
@@ -157,16 +176,7 @@ def test_experiment_manifest_classifies_bundle_assets() -> None:
         "paper-supporting-evidence", "partial-evidence"
     } for path in CORE_EXPERIMENT_BUNDLES)
 
-    autoresearch = bundles[
-        "experiments/autoresearch-cifar10/three-worker-model-routing/"
-    ]
-    assert autoresearch["reproducibility_class"] in {
-        "partial-evidence",
-        "paper-supporting-evidence",
-    }
-    assert autoresearch["result_files"] > 0
-    assert autoresearch["raw_files"] > 0
-    assert any(path.endswith("README.md") for path in autoresearch["key_files"])
+    assert not any("cifar10" in path for path in bundles)
 
     strategy = bundles[
         "experiments/humaneval-plus/strategy-by-difficulty-grid/"
@@ -183,10 +193,10 @@ def test_readiness_rejects_empty_core_evidence_after_bundle_consolidation(monkey
 
     manifest = _run_json("scripts/build_experiment_manifest.py")
     assert check_experiment_manifest(manifest) == []
-    calibration = next(row for row in manifest["bundles"] if row["path"].endswith("/calibration/"))
-    calibration.update(result_files=0, figure_files=0, reproducibility_class="inspect-readme")
+    strategy = next(row for row in manifest["bundles"] if row["path"].endswith("/strategy-by-difficulty-grid/"))
+    strategy.update(result_files=0, figure_files=0, reproducibility_class="inspect-readme")
     problems = check_experiment_manifest(manifest)
-    assert any("lacks recorded evidence" in problem and "/calibration/" in problem for problem in problems)
+    assert any("lacks recorded evidence" in problem and "/strategy-by-difficulty-grid/" in problem for problem in problems)
     assert any("lacks an evidence classification" in problem for problem in problems)
 
 def test_inventory_is_identical_for_lfs_pointer_and_hydrated_object(tmp_path: Path) -> None:

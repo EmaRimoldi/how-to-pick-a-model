@@ -1,13 +1,13 @@
 # Paper Figures
 
-This directory contains paper-ready figure copies used by the LaTeX sources in
-`paper/neurips-submission/`. They are intentionally vendored here so the paper
-can compile from a checkout without reaching into experiment result trees.
+These figures are vendored for out-of-tree compilation of the historical
+manuscripts. HumanEval+ canonical inputs remain in the retained experiment
+bundles with generation code under `src/`.
 
-Canonical generation code and processed evidence live outside `paper/`, usually
-under `autoresearch/scripts/`, `src/`, and the corresponding
-`experiments/*/results/` bundle. When a figure is regenerated, update the
-experiment output first and then copy the paper-facing artifact here.
+CIFAR-10 figures under `autoresearch/` and `autoresearch_n20_confirmation/` are
+archival manuscript assets. Their code, data and canonical experiment outputs
+are available through [provenance](../../../docs/history-merge.md). They are not
+a current runnable experiment family.
 
-Do not treat a copied paper figure as an independent source of evidence. The
-experiment README, accounting table, and generation command remain canonical.
+A paper-facing copy is not independent evidence. Preserve original protocols,
+accounting, missing-data limitations and scientific claims when using a figure.

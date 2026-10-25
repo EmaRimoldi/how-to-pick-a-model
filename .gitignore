@@ -20,11 +20,6 @@ dist/
 *.tmp
 *.bak
 
-# Local Codex/Claude state. Shared agent definitions remain trackable.
-.claude/logs/
-.claude/settings.local.json
-.claude/worktrees/
-
 # Temporary and archival workspaces
 tmp/
 .local_archive/
@@ -41,7 +36,6 @@ paper/**/*.out
 runs/
 studies/*/runs/
 studies/*/logs/
-autoresearch/data/
 
 # Local run state and diagnostic output for benchmark bundles
 experiments/**/data/raw/.*
