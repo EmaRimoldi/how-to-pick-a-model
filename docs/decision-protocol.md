@@ -5,6 +5,13 @@
 After observing a verifiable task's execution history, which additional action
 is worth its incremental cost: continue, restart, switch models, or stop?
 
+The immediate question is narrower: **after visible failure, is the previous
+artifact useful to the next solver, and can its value be forecast before another
+attempt?** The [context-value diagnostic](../experiments/humaneval-plus/context-value/README.md)
+separates code from verifier feedback in matched conditions for 9B and 27B,
+and records task-only/state forecasts before any branch outcome. It evaluates
+zero-shot forecasts, not a learned policy.
+
 The first inexpensive API pilot uses HumanEval+ coding tasks and public-example
 feedback; AutoResearch/CIFAR-10 remains a subsequent transfer environment.
 Completed studies supply baselines, not validation of an adaptive policy. The
@@ -86,6 +93,7 @@ explicit dependency model before invoking index-policy optimality guarantees.
 
 This repository does not claim these ideas as new. Its proposed experiment tests
 observable verifier feedback and artifact/context transfer in edit/verify loops.
-The state-conditioned forecaster and learned controller remain to be implemented
+The context-value diagnostic implements a prospective zero-shot API forecaster.
+A calibrated learned forecaster and learned controller remain to be developed
 and validated. The one-checkpoint pilot collected matched handoff outcomes on two failed states;
 its development pilot is not a held-out evaluation of an adaptive controller.

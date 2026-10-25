@@ -11,6 +11,8 @@
 
 - [`openrouter-continuation-pilot/`](openrouter-continuation-pilot/): explicit-budget
   Qwen3.5 9B/27B one-checkpoint development experiment through OpenRouter.
+- [`context-value/`](context-value/): matched code/feedback conditions after
+  visible failure, with prospective task-only and state-conditioned forecasts.
 
 The bundles share the general-purpose pipeline under the repository's `src/`
 package but own their experiment-specific data and configuration.

@@ -1,0 +1,60 @@
+{
+  "branch_repeats": 2,
+  "dataset_hash": "fe585eb4df8c88d844eeb463ea4d0302",
+  "eligible_task_count": 74,
+  "excluded_task_ids": [
+    "HumanEval/21",
+    "HumanEval/36",
+    "HumanEval/16",
+    "HumanEval/33",
+    "HumanEval/12",
+    "HumanEval/61",
+    "HumanEval/35",
+    "HumanEval/28",
+    "HumanEval/27",
+    "HumanEval/25",
+    "HumanEval/18",
+    "HumanEval/162",
+    "HumanEval/99",
+    "HumanEval/8",
+    "HumanEval/42",
+    "HumanEval/63",
+    "HumanEval/55",
+    "HumanEval/1",
+    "HumanEval/15",
+    "HumanEval/22",
+    "HumanEval/2",
+    "HumanEval/62",
+    "HumanEval/91",
+    "HumanEval/57"
+  ],
+  "input_token_ceiling": 32768,
+  "max_tokens": 1536,
+  "models": {
+    "large": {
+      "id": "qwen/qwen3.5-27b",
+      "input_per_million": 0.25,
+      "output_per_million": 2.0
+    },
+    "small": {
+      "id": "qwen/qwen3.5-9b",
+      "input_per_million": 0.1,
+      "output_per_million": 0.15
+    }
+  },
+  "prefix_repeats": 2,
+  "protocol_version": "artifact-feedback-factorial-v1",
+  "provider": "siliconflow/fp8",
+  "quality_exclusions": {
+    "HumanEval/47": "Public median doctest expects 15.0 but the correct median and canonical reference return 8.0; discovered before any model call."
+  },
+  "request_seed": false,
+  "seed": 20261023,
+  "stream": true,
+  "target_models": [
+    "small",
+    "large"
+  ],
+  "task_count": 30,
+  "temperature": 0.6
+}

@@ -13,8 +13,7 @@
 | [Manuscript audit](audits/manuscript-reproducibility.md) | Historical accounting and PDF issues |
 | [Engineering](engineering/README.md) | Existing baseline runner architecture |
 | [Evaluations](evals/README.md) | Evaluator calibration and controls |
-| [Research](research/README.md) | Existing baseline run and merge protocols |
-| [Specs](specs/README.md) | Retained HumanEval+ implementation contracts |
+| [Context value](../experiments/humaneval-plus/context-value/README.md) | Matched code/feedback conditions and prospective forecasts after failure |
 | [History](history-merge.md) | Source provenance and recoverable cleanup snapshots |
 
 Generated navigation maps: [inventory](audits/repo-inventory.md),

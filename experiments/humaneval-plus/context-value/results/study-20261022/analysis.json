@@ -1,0 +1,394 @@
+{
+  "analysis": {
+    "cells": {
+      "large.artifact": {
+        "incremental_api_usd": {
+          "mean": 0.000535875,
+          "task_cluster_bootstrap_95": null,
+          "task_clusters": 3
+        },
+        "success": {
+          "mean": 0.4166666666666667,
+          "task_cluster_bootstrap_95": null,
+          "task_clusters": 3
+        }
+      },
+      "large.artifact_feedback": {
+        "incremental_api_usd": {
+          "mean": 0.000591875,
+          "task_cluster_bootstrap_95": null,
+          "task_clusters": 3
+        },
+        "success": {
+          "mean": 1.0,
+          "task_cluster_bootstrap_95": null,
+          "task_clusters": 3
+        }
+      },
+      "large.feedback": {
+        "incremental_api_usd": {
+          "mean": 0.0005656666666666667,
+          "task_cluster_bootstrap_95": null,
+          "task_clusters": 3
+        },
+        "success": {
+          "mean": 0.6666666666666666,
+          "task_cluster_bootstrap_95": null,
+          "task_clusters": 3
+        }
+      },
+      "large.fresh": {
+        "incremental_api_usd": {
+          "mean": 0.000855,
+          "task_cluster_bootstrap_95": null,
+          "task_clusters": 3
+        },
+        "success": {
+          "mean": 0.6666666666666666,
+          "task_cluster_bootstrap_95": null,
+          "task_clusters": 3
+        }
+      },
+      "small.artifact": {
+        "incremental_api_usd": {
+          "mean": 5.22125e-05,
+          "task_cluster_bootstrap_95": null,
+          "task_clusters": 3
+        },
+        "success": {
+          "mean": 0.3333333333333333,
+          "task_cluster_bootstrap_95": null,
+          "task_clusters": 3
+        }
+      },
+      "small.artifact_feedback": {
+        "incremental_api_usd": {
+          "mean": 6.243749999999999e-05,
+          "task_cluster_bootstrap_95": null,
+          "task_clusters": 3
+        },
+        "success": {
+          "mean": 0.3333333333333333,
+          "task_cluster_bootstrap_95": null,
+          "task_clusters": 3
+        }
+      },
+      "small.feedback": {
+        "incremental_api_usd": {
+          "mean": 6.56875e-05,
+          "task_cluster_bootstrap_95": null,
+          "task_clusters": 3
+        },
+        "success": {
+          "mean": 0.3333333333333333,
+          "task_cluster_bootstrap_95": null,
+          "task_clusters": 3
+        }
+      },
+      "small.fresh": {
+        "incremental_api_usd": {
+          "mean": 4.80625e-05,
+          "task_cluster_bootstrap_95": null,
+          "task_clusters": 3
+        },
+        "success": {
+          "mean": 0.4166666666666667,
+          "task_cluster_bootstrap_95": null,
+          "task_clusters": 3
+        }
+      }
+    },
+    "checkpoints": [
+      {
+        "brier": {
+          "state": 0.18911250000000002,
+          "task_only": 0.048725000000000004
+        },
+        "checkpoint_id": "19",
+        "features": {
+          "ast_nodes": 65,
+          "name_error": true,
+          "source_characters": 232,
+          "source_lines": 6,
+          "syntax_error": false,
+          "syntax_valid": true,
+          "timeout": false,
+          "type_error": false,
+          "visible_attempted": null,
+          "visible_failed": null,
+          "visible_status": "error"
+        },
+        "predicted_both_minus_fresh": {
+          "state": {
+            "large": 0.25,
+            "small": 0.24999999999999994
+          },
+          "task_only": {
+            "large": 0.10999999999999999,
+            "small": 0.19999999999999996
+          }
+        },
+        "success_rates": {
+          "large.artifact": 1.0,
+          "large.artifact_feedback": 1.0,
+          "large.feedback": 1.0,
+          "large.fresh": 1.0,
+          "small.artifact": 1.0,
+          "small.artifact_feedback": 1.0,
+          "small.feedback": 1.0,
+          "small.fresh": 1.0
+        },
+        "task_id": "HumanEval/4"
+      },
+      {
+        "brier": {
+          "state": 0.235,
+          "task_only": 0.4696
+        },
+        "checkpoint_id": "43",
+        "features": {
+          "ast_nodes": 108,
+          "name_error": false,
+          "source_characters": 578,
+          "source_lines": 17,
+          "syntax_error": false,
+          "syntax_valid": true,
+          "timeout": false,
+          "type_error": false,
+          "visible_attempted": 2,
+          "visible_failed": 2,
+          "visible_status": "fail"
+        },
+        "predicted_both_minus_fresh": {
+          "state": {
+            "large": 0.15000000000000002,
+            "small": 0.15000000000000002
+          },
+          "task_only": {
+            "large": 0.13,
+            "small": 0.26999999999999996
+          }
+        },
+        "success_rates": {
+          "large.artifact": 0.0,
+          "large.artifact_feedback": 1.0,
+          "large.feedback": 0.0,
+          "large.fresh": 0.0,
+          "small.artifact": 0.0,
+          "small.artifact_feedback": 0.0,
+          "small.feedback": 0.0,
+          "small.fresh": 0.0
+        },
+        "task_id": "HumanEval/93"
+      },
+      {
+        "brier": {
+          "state": 0.2008625,
+          "task_only": 0.23662499999999997
+        },
+        "checkpoint_id": "55",
+        "features": {
+          "ast_nodes": 26,
+          "name_error": false,
+          "source_characters": 112,
+          "source_lines": 4,
+          "syntax_error": false,
+          "syntax_valid": true,
+          "timeout": false,
+          "type_error": false,
+          "visible_attempted": 6,
+          "visible_failed": 3,
+          "visible_status": "fail"
+        },
+        "predicted_both_minus_fresh": {
+          "state": {
+            "large": 0.44999999999999996,
+            "small": 0.5
+          },
+          "task_only": {
+            "large": 0.13,
+            "small": 0.16999999999999998
+          }
+        },
+        "success_rates": {
+          "large.artifact": 0.0,
+          "large.artifact_feedback": 1.0,
+          "large.feedback": 1.0,
+          "large.fresh": 1.0,
+          "small.artifact": 0.0,
+          "small.artifact_feedback": 0.0,
+          "small.feedback": 0.0,
+          "small.fresh": 0.5
+        },
+        "task_id": "HumanEval/54"
+      },
+      {
+        "brier": {
+          "state": 0.1307125,
+          "task_only": 0.0859375
+        },
+        "checkpoint_id": "56",
+        "features": {
+          "ast_nodes": 24,
+          "name_error": false,
+          "source_characters": 108,
+          "source_lines": 3,
+          "syntax_error": false,
+          "syntax_valid": true,
+          "timeout": false,
+          "type_error": false,
+          "visible_attempted": 6,
+          "visible_failed": 3,
+          "visible_status": "fail"
+        },
+        "predicted_both_minus_fresh": {
+          "state": {
+            "large": 0.09999999999999998,
+            "small": 0.5
+          },
+          "task_only": {
+            "large": 0.19999999999999996,
+            "small": 0.19999999999999998
+          }
+        },
+        "success_rates": {
+          "large.artifact": 0.5,
+          "large.artifact_feedback": 1.0,
+          "large.feedback": 1.0,
+          "large.fresh": 1.0,
+          "small.artifact": 0.0,
+          "small.artifact_feedback": 0.0,
+          "small.feedback": 0.0,
+          "small.fresh": 0.0
+        },
+        "task_id": "HumanEval/54"
+      }
+    ],
+    "complete_checkpoint_ids": [
+      "19",
+      "43",
+      "55",
+      "56"
+    ],
+    "complete_failed_task_ids": [
+      "HumanEval/4",
+      "HumanEval/54",
+      "HumanEval/93"
+    ],
+    "contrasts": {
+      "large.artifact_minus_fresh": {
+        "mean": -0.25,
+        "task_cluster_bootstrap_95": null,
+        "task_clusters": 3
+      },
+      "large.both_minus_fresh": {
+        "mean": 0.3333333333333333,
+        "task_cluster_bootstrap_95": null,
+        "task_clusters": 3
+      },
+      "large.feedback_minus_fresh": {
+        "mean": 0.0,
+        "task_cluster_bootstrap_95": null,
+        "task_clusters": 3
+      },
+      "large.interaction": {
+        "mean": 0.5833333333333334,
+        "task_cluster_bootstrap_95": null,
+        "task_clusters": 3
+      },
+      "small.artifact_minus_fresh": {
+        "mean": -0.08333333333333333,
+        "task_cluster_bootstrap_95": null,
+        "task_clusters": 3
+      },
+      "small.both_minus_fresh": {
+        "mean": -0.08333333333333333,
+        "task_cluster_bootstrap_95": null,
+        "task_clusters": 3
+      },
+      "small.feedback_minus_fresh": {
+        "mean": -0.08333333333333333,
+        "task_cluster_bootstrap_95": null,
+        "task_clusters": 3
+      },
+      "small.interaction": {
+        "mean": 0.08333333333333333,
+        "task_cluster_bootstrap_95": null,
+        "task_clusters": 3
+      }
+    },
+    "forecast_api_usd": {
+      "state": {
+        "mean": 8.010000000000001e-05,
+        "task_cluster_bootstrap_95": null,
+        "task_clusters": 3
+      },
+      "task_only": {
+        "mean": 5.38e-05,
+        "task_cluster_bootstrap_95": null,
+        "task_clusters": 3
+      }
+    },
+    "forecast_brier": {
+      "constant_0.5": {
+        "mean": 0.25,
+        "task_cluster_bootstrap_95": null,
+        "task_clusters": 3
+      },
+      "state": {
+        "mean": 0.19663333333333333,
+        "task_cluster_bootstrap_95": null,
+        "task_clusters": 3
+      },
+      "task_only": {
+        "mean": 0.22653541666666666,
+        "task_cluster_bootstrap_95": null,
+        "task_clusters": 3
+      }
+    },
+    "incomplete_checkpoint_ids": [],
+    "invalid_forecasts_in_paired_sample": {
+      "state": 0,
+      "task_only": 0
+    },
+    "state_minus_task_brier": {
+      "mean": -0.02990208333333334,
+      "task_cluster_bootstrap_95": null,
+      "task_clusters": 3
+    }
+  },
+  "analysis_source_sha256": "d0c08acb1c7f873ecf31724f8252008c7639810f778d08e65b607217402cf520",
+  "billing_and_prospective_order_verified": true,
+  "calls_by_action": {
+    "artifact": 16,
+    "artifact_feedback": 16,
+    "feedback": 16,
+    "forecast": 8,
+    "fresh": 16,
+    "initial": 60
+  },
+  "candidate_verifier_seconds": 119.74578275159001,
+  "collection": {
+    "branches": 64,
+    "budget_usd": 2.0,
+    "collection_cost_usd": 0.0230224,
+    "forecasts": 8,
+    "initial_checkpoints": 60,
+    "requests": 132,
+    "status": "complete",
+    "unresolved_reserved_usd": 0.0,
+    "visible_failed_checkpoints": 4
+  },
+  "collector_git_sha": "e3f4b85e80cd314cc7b6cc4174eead76502ff36c",
+  "failed_checkpoint_tasks": [
+    "HumanEval/4",
+    "HumanEval/54",
+    "HumanEval/93"
+  ],
+  "forecast_api_cost_usd": 0.0005398,
+  "initial_full_suite_passes": 56,
+  "initial_visible_false_positive_count": 0,
+  "initial_visible_false_positive_tasks": [],
+  "model_calls": 132,
+  "model_request_seconds": 738.3122834200622
+}

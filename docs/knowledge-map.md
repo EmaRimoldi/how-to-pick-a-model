@@ -5,6 +5,9 @@ The retained studies provide baselines. The
 [OpenRouter development pilot](../experiments/humaneval-plus/openrouter-continuation-pilot/README.md)
 adds a one-checkpoint collector and small development dataset; learned policies
 and held-out validation remain future work.
+The [context-value diagnostic](../experiments/humaneval-plus/context-value/README.md)
+adds a code/feedback factorial and prospective zero-shot forecasts, without
+fitting a controller.
 
 ## Evidence
 
@@ -18,6 +21,7 @@ and held-out validation remain future work.
 | Retry allocation | `experiments/humaneval-plus/retry-allocation-router/` |
 | Strategy routing | `experiments/humaneval-plus/strategy-by-difficulty-grid/` |
 | Context selection with held-out evaluation | `experiments/humaneval-plus/llm-router-context-search/` |
+| Value of failed code versus public feedback | `experiments/humaneval-plus/context-value/` |
 
 Use `experiments/README.md` and bundle-local READMEs before citing results.
 

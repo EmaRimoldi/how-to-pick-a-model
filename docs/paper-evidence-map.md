@@ -35,6 +35,9 @@ not establish that a state-conditioned continue/restart/handoff controller works
 The [OpenRouter development pilot](../experiments/humaneval-plus/openrouter-continuation-pilot/README.md)
 provides a collector and matched continuations on two failed development states. Calibrated forecasts and
 held-out policy comparisons including switching/context costs remain planned.
+The [context-value diagnostic](../experiments/humaneval-plus/context-value/README.md)
+adds prospectively recorded zero-shot forecasts and a code/feedback factorial;
+it is diagnostic evidence, not an additional manuscript result or a trained-policy evaluation.
 Development results do not establish a learned controller gain. Re-FORC and AI Functions are related-work/baseline
 references, not implemented integrations or new results in this repository.
 
