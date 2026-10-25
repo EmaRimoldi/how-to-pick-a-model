@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `2464`
-- Bytes indexed: `101.3M`
+- Files indexed: `2459`
+- Bytes indexed: `101.2M`
 
 ## Canonical Entrypoints
 
@@ -51,22 +51,21 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 2072 | 75.7M |
+| `experiments` | 2070 | 75.7M |
 | `artifacts` | 21 | 20.0M |
 | `paper` | 33 | 2.5M |
 | `src` | 141 | 1.1M |
 | `uv.lock` | 1 | 972.4K |
-| `autoresearch` | 59 | 460.7K |
-| `scripts` | 30 | 316.7K |
+| `autoresearch` | 58 | 442.9K |
+| `scripts` | 29 | 306.7K |
 | `tests` | 47 | 187.4K |
-| `docs` | 26 | 125.0K |
+| `docs` | 26 | 126.1K |
 | `prompts` | 6 | 21.6K |
 | `configs` | 7 | 12.7K |
 | `README.md` | 1 | 7.8K |
 | `AGENTS.md` | 1 | 4.0K |
 | `.github` | 5 | 3.4K |
 | `.claude` | 4 | 3.3K |
-| `NOTES.md` | 1 | 3.2K |
 | `pyproject.toml` | 1 | 1.6K |
 | `.gitignore` | 1 | 1.5K |
 | `CLAUDE.md` | 1 | 1.4K |
@@ -85,8 +84,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.jsonl` | 295 | 59.0M |
 | `.txt` | 287 | 4.2M |
 | `.yaml` | 270 | 316.1K |
-| `.py` | 256 | 2.0M |
-| `.md` | 94 | 339.5K |
+| `.py` | 254 | 2.0M |
+| `.md` | 91 | 339.9K |
 | `.png` | 48 | 6.2M |
 | `.pdf` | 31 | 609.0K |
 | `.csv` | 26 | 581.1K |
@@ -136,7 +135,6 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `autoresearch/scripts/compute_autoresearch_factored_calibration.py`
 - `autoresearch/scripts/generate_autoresearch_campaign_tasks.py`
 - `autoresearch/scripts/generate_autoresearch_current_plots.py`
-- `autoresearch/scripts/make_neurips2026_artifact.py`
 - `autoresearch/scripts/plot_autoresearch_certified_resource.py`
 - `autoresearch/scripts/plot_autoresearch_router_shift_lookup_summary.py`
 - `autoresearch/scripts/plot_autoresearch_router_weight_shift.py`
@@ -163,7 +161,6 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/compare_experiments.py`
 - `scripts/prepare_feedback_routing.py`
 - `scripts/report_feedback_routing.py`
-- `scripts/run_best_params_merge.py`
 - `scripts/run_context_value.py`
 - `scripts/run_continuation_pilot.py`
 - `scripts/run_feedback_routing.py`

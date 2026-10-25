@@ -141,6 +141,8 @@ MARKDOWN_LINK_DOCS = [
         "experiments/autoresearch-cifar10/calibration/task_warrant.md",
         "experiments/autoresearch-cifar10/calibration/results/evaluation-controls/evaluator_determinism/README.md",
         "experiments/humaneval-plus/README.md",
+        "experiments/humaneval-plus/qwen-model-size-frontier/README.md",
+        "experiments/humaneval-plus/retry-allocation-router/README.md",
         "experiments/humaneval-plus/context-value/provenance/continuation-pilot/README.md",
             "docs/audits/experiment-manifest.md",
         "docs/audits/command-manifest.md",

@@ -9,7 +9,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `9`
-- Script entrypoints indexed: `44`
+- Script entrypoints indexed: `42`
 - Code modules indexed: `140`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
@@ -189,7 +189,6 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/compare_experiments.py` | python | CLI: compare two experiment directories (parallel vs single). |
 | `scripts/prepare_feedback_routing.py` | python | Verify the pinned BigCodeBench download and reproduce reference-only eligibility. |
 | `scripts/report_feedback_routing.py` | python | Publish a completed feedback-only bank, audited statistics and static figures. |
-| `scripts/run_best_params_merge.py` | python | Best-params merge: read agent results.tsv + git history, build merged train.py. Strategy: 1. For each agent, parse results/results.tsv (commit_hash, val_bpb, status) 2. For each accepted ("keep") run, extract hyperparameters from that git commit 3. Find best val_bpb value per hyperparameter across all agents 4. Build merged train.py and submit to SLURM Usage: python scripts/run_best_params_merge.py --run-id exp_20260401_120000 python scripts/run_best_params_merge.py --run-id exp_20260401_120000 --submit |
 | `scripts/run_context_value.py` | python | Plan or explicitly run a budgeted artifact/feedback and prospective-forecast study. |
 | `scripts/run_continuation_pilot.py` | python | Run the explicit-budget OpenRouter/HumanEval+ pilot; defaults to plan only. |
 | `scripts/run_feedback_routing.py` | python | Plan or explicitly run new-task, feedback-only fixed-policy trajectories. |
@@ -206,7 +205,6 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `autoresearch/scripts/compute_autoresearch_factored_calibration.py` | python | Compute factored certified-resource calibration tables for AutoResearch. |
 | `autoresearch/scripts/generate_autoresearch_campaign_tasks.py` | python | Generate TSV task manifests for AutoResearch CIFAR-10 Slurm arrays. |
 | `autoresearch/scripts/generate_autoresearch_current_plots.py` | python | Generate current snapshot plots for the AutoResearch CIFAR-10 campaign. |
-| `autoresearch/scripts/make_neurips2026_artifact.py` | python | Build an anonymous NeurIPS 2026 supplementary ZIP. The builder is intentionally whitelist-based and non-invasive: it reads from the development workspace and writes a clean export under ``dist/`` without touching live campaigns, raw run directories, or git metadata. |
 | `autoresearch/scripts/plot_autoresearch_certified_resource.py` | python | Generate certified-resource figures for the AutoResearch paper. |
 | `autoresearch/scripts/plot_autoresearch_router_shift_lookup_summary.py` | python | Summarize router mode-shift and lookup-calibrated choices in one figure. |
 | `autoresearch/scripts/plot_autoresearch_router_weight_shift.py` | python | Plot mode-posterior and allocation shifts for allocation-router outputs. |

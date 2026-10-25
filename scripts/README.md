@@ -37,9 +37,13 @@ make paper-build
 
 `analyze_runs.py`, `compare_experiments.py`, `benchmark_parallel_capacity.py`,
 `run_single_long_experiment.py`, `run_parallel_experiment.py`,
-`run_merge_phase.py`, and `run_best_params_merge.py` support the existing CLI
+and `run_merge_phase.py` support the existing CLI
 baseline runtime. Launch helpers may invoke live models or compute; use the
 command safety manifest and explicit run authorization.
+
+`agent-workflow merge` is the canonical merge command; `run_merge_phase.py` is
+its compatibility entrypoint. Both use `agent_workflow.modes.merge` and the
+shared merge orchestrator.
 
 `bootstrap_engaging.sh` is a historical HumanEval+ cluster environment helper.
 Current portable setup is documented in `docs/reproducibility.md`.

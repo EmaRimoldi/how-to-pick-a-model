@@ -20,7 +20,6 @@ READ_ONLY_ANALYSIS = "read-only-analysis"
 LIVE_LOCAL = "live-local"
 LIVE_CLUSTER = "live-cluster"
 CLUSTER_SETUP = "cluster-setup"
-ARTIFACT_BUILDER = "artifact-builder"
 MIXED_CLI = "mixed-cli"
 SUPPORT_CONFIG = "support-config"
 
@@ -29,7 +28,6 @@ SAFETY_ORDER = {
     SAFE_OPTIONAL_TOOL: 1,
     FIGURE_REGEN: 2,
     READ_ONLY_ANALYSIS: 3,
-    ARTIFACT_BUILDER: 4,
     SUPPORT_CONFIG: 5,
     MIXED_CLI: 6,
     CLUSTER_SETUP: 7,
@@ -131,8 +129,6 @@ def classify_script(rel: str, text: str) -> tuple[str, str]:
         return FIGURE_REGEN, "checked-in evidence"
     if name.startswith(("analyze_", "compare_", "compute_")):
         return READ_ONLY_ANALYSIS, "checked-in evidence or existing runs"
-    if name == "make_neurips2026_artifact.py":
-        return ARTIFACT_BUILDER, "checked-in files, dist output review"
     if name.startswith("generate_autoresearch_campaign_tasks"):
         return CLUSTER_SETUP, "campaign config, output review"
     if name.startswith("bootstrap_"):
