@@ -18,6 +18,7 @@
 | [Recovery related work](recovery-related-work.md) | Closest precedents and boundaries for a new paper claim |
 | [Recovery blog draft](blog/when-to-keep-failed-code.md) | Audited results, static controls, forecast limitations and reproduction |
 | [Feedback-only escalation note](blog/feedback-only-escalation.md) | Complete 157-task fixed-policy test, negative primary result, admission/verifier diagnostics and reproduction |
+| [Experiment cleanup](audits/experiment-cleanup.md) | Nine maintained bundles, archival decisions and moved paths |
 | [Branch review](audits/branch-consolidation.md) | Per-branch decisions, preserved history and consolidation checks |
 | [History](history-merge.md) | Source provenance and recoverable cleanup snapshots |
 

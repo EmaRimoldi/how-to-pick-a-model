@@ -12,8 +12,8 @@ and verifier limitations; no new selector is trained.
 
 The current research direction is defined in [decision protocol](decision-protocol.md).
 The retained studies provide baselines. The
-[OpenRouter development pilot](../experiments/humaneval-plus/openrouter-continuation-pilot/README.md)
-adds a one-checkpoint collector and small development dataset.
+[initial pilot provenance](../experiments/humaneval-plus/context-value/provenance/continuation-pilot/README.md)
+retains historical billing, task exclusions and the shared collector configuration.
 The [context-value diagnostic](../experiments/humaneval-plus/context-value/README.md)
 adds a code/feedback factorial and prospective zero-shot forecasts. Its separate
 [frozen transfer protocol](../experiments/humaneval-plus/context-value/VALIDATION.md)
@@ -32,9 +32,7 @@ and [blog draft](blog/when-to-keep-failed-code.md) give the current results and 
 
 | Question | Bundle |
 | --- | --- |
-| Fair starting model | `experiments/autoresearch-cifar10/starting-model-calibration/` |
-| Evaluator and compute confounds | `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/` |
-| Context/memory baseline | `experiments/autoresearch-cifar10/shared-memory-ablation/` |
+| Starting model, evaluator and compute controls | `experiments/autoresearch-cifar10/calibration/` |
 | Model choice and first-hit accounting | `experiments/autoresearch-cifar10/three-worker-model-routing/` |
 | Worker model-size frontier | `experiments/humaneval-plus/qwen-model-size-frontier/` |
 | Retry allocation | `experiments/humaneval-plus/retry-allocation-router/` |

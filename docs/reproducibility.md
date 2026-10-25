@@ -2,8 +2,8 @@
 
 The retained evidence is AutoResearch/CIFAR-10 and completed HumanEval+ studies.
 The state-conditioned policy question is specified in
-[decision protocol](decision-protocol.md). A cost-bounded API pilot now has a
-[separate protocol and runner](../experiments/humaneval-plus/openrouter-continuation-pilot/README.md).
+[decision protocol](decision-protocol.md). The initial API pilot is archived with
+[billing, configuration and task-exclusion provenance](../experiments/humaneval-plus/context-value/provenance/continuation-pilot/README.md).
 The subsequent [context-value diagnostic](../experiments/humaneval-plus/context-value/README.md)
 uses the same optional environment and billing/isolation controls, with separate
 code/feedback conditions and saved prospective forecasts.
@@ -147,8 +147,8 @@ provider calls; it refuses treatment analysis before `summary.json` exists.
 
 ## AutoResearch evidence
 
-The four retained bundles cover initial-model calibration, controlled evaluator
-behavior, shared memory, and three-worker routing. The three-worker panel has
+The two maintained bundles cover [consolidated calibration](../experiments/autoresearch-cifar10/calibration/README.md)
+and three-worker routing. The exploratory memory study and superseded pilots are archived. The three-worker panel has
 270 processed trajectories and 180 balanced raw traces; its bundle README is
 authoritative about missing pilot coverage.
 

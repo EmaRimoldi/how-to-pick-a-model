@@ -149,11 +149,13 @@ def test_experiment_manifest_classifies_bundle_assets() -> None:
     bundles = {bundle["path"]: bundle for bundle in manifest["bundles"]}
 
     assert manifest["root"] == "."
-    assert manifest["bundle_count"] == len(bundles)
+    assert manifest["bundle_count"] == len(bundles) == 9
     assert CORE_EXPERIMENT_BUNDLES <= set(bundles)
     assert manifest["missing_paths"] == []
     assert manifest["missing_readmes"] == []
-    assert manifest["reproducibility_classes"]["paper-supporting-evidence"] >= 6
+    assert all(bundles[path]["reproducibility_class"] in {
+        "paper-supporting-evidence", "partial-evidence"
+    } for path in CORE_EXPERIMENT_BUNDLES)
 
     autoresearch = bundles[
         "experiments/autoresearch-cifar10/three-worker-model-routing/"
@@ -173,6 +175,19 @@ def test_experiment_manifest_classifies_bundle_assets() -> None:
     assert strategy["configs"] > 0
     assert strategy["scripts"] > 0
     assert strategy["run_files"] > 0
+
+
+def test_readiness_rejects_empty_core_evidence_after_bundle_consolidation(monkeypatch):
+    monkeypatch.syspath_prepend(str(ROOT / "scripts"))
+    from validate_agent_readiness import check_experiment_manifest
+
+    manifest = _run_json("scripts/build_experiment_manifest.py")
+    assert check_experiment_manifest(manifest) == []
+    calibration = next(row for row in manifest["bundles"] if row["path"].endswith("/calibration/"))
+    calibration.update(result_files=0, figure_files=0, reproducibility_class="inspect-readme")
+    problems = check_experiment_manifest(manifest)
+    assert any("lacks recorded evidence" in problem and "/calibration/" in problem for problem in problems)
+    assert any("lacks an evidence classification" in problem for problem in problems)
 
 def test_inventory_is_identical_for_lfs_pointer_and_hydrated_object(tmp_path: Path) -> None:
     payload = b"archived campaign evidence\n" * 80

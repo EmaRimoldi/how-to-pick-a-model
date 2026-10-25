@@ -8,7 +8,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Canonical docs present: `24/24`
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
-- Experiment bundles indexed: `12`
+- Experiment bundles indexed: `9`
 - Script entrypoints indexed: `44`
 - Code modules indexed: `140`
 - Paper figures indexed: `19`
@@ -159,15 +159,12 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 
 | Benchmark | Path | Status | Evidence Tier | Evidence |
 | --- | --- | --- | --- | --- |
-| AutoResearch / CIFAR-10 | `experiments/autoresearch-cifar10/starting-model-calibration/` | completed | Tier 2: Supporting Or Diagnostic Evidence | 161 controlled evaluations, tables, figures, plotting script |
-| AutoResearch / CIFAR-10 | `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/` | completed | Tier 1: Main Evidence | deterministic-evaluator checks, CPU scaling, fixed-step/fixed-time summaries |
-| AutoResearch / CIFAR-10 | `experiments/autoresearch-cifar10/shared-memory-ablation/` | completed | Tier 1: Main Evidence | 11 trials, statistical summary, figures |
+| AutoResearch / CIFAR-10 | `experiments/autoresearch-cifar10/calibration/` | completed | Tier 1: Main Evidence | 161 baseline evaluations, five determinism checks, CPU fixed-time/fixed-step controls, tables and figure generators |
 | AutoResearch / CIFAR-10 | `experiments/autoresearch-cifar10/three-worker-model-routing/` | completed with raw-coverage gap | Tier 1: Main Evidence | processed 270-record accounting panel and 180 balanced raw traces |
 | HumanEval+ | `experiments/humaneval-plus/qwen-model-size-frontier/` | completed | Tier 2: Supporting Or Diagnostic Evidence | three 164-task worker logs and processed frontier estimates |
 | HumanEval+ | `experiments/humaneval-plus/retry-allocation-router/` | completed | Tier 1: Main Evidence | folds, router decisions, summary, configs, launchers |
 | HumanEval+ | `experiments/humaneval-plus/strategy-by-difficulty-grid/` | completed | Tier 1: Main Evidence | full run, source/config snapshot, raw shards, summaries, figures |
 | HumanEval+ | `experiments/humaneval-plus/llm-router-context-search/` | completed | Tier 1: Main Evidence | validation selection, held-out test evaluation, logs, figure |
-| HumanEval+ | `experiments/humaneval-plus/openrouter-continuation-pilot/` | development pilot | not tiered | 24 tasks, 88 calls, two failed checkpoints, receipts and separate public/full-suite scoring |
 | HumanEval+ | `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | Discovery: 30 tasks/132 calls. Transfer: 83 development + 60 evaluation tasks, 1,353 responses, frozen policies, forecasts, controls and cost audit |
 | MBPP+ | `experiments/mbpp-plus/context-value-transfer/` | collection finished; censored descriptive bank | Tier 2: Supporting Or Diagnostic Evidence | 94/96 complete failures, 2,878 recovery responses, two censored solver cells, 288 API forecasts, fixed comparisons and full accounting |
 | BigCodeBench standard-library subset | `experiments/bigcodebench/feedback-only-routing/` | complete; primary gate not passed | Tier 2: Supporting Or Diagnostic Evidence | 157 task clusters, 628/628 policy outcomes, 1,492 responses, no missing outcomes; fixed comparisons, receipts, source freeze, verifier repeat and disclosed single requested interim look |

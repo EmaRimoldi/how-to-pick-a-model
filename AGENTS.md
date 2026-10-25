@@ -17,7 +17,7 @@ verifiable tasks. Read:
 | Area | Role |
 | --- | --- |
 | `autoresearch/` | CIFAR-10 edit/verify benchmark and accounting |
-| `experiments/autoresearch-cifar10/` | Calibration, memory, and routing baseline evidence |
+| `experiments/autoresearch-cifar10/` | Consolidated calibration and routing baseline evidence |
 | `experiments/humaneval-plus/` | Completed retry, strategy, and context-routing evidence |
 | `experiments/mbpp-plus/context-value-transfer/` | Focused, prospectively frozen cross-benchmark recovery replication |
 | `experiments/bigcodebench/feedback-only-routing/` | New-task feedback-only fixed-policy study; read its freeze before any calls |

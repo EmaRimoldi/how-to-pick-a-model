@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `2509`
-- Bytes indexed: `103.3M`
+- Files indexed: `2464`
+- Bytes indexed: `101.3M`
 
 ## Canonical Entrypoints
 
@@ -51,22 +51,22 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 2119 | 77.7M |
+| `experiments` | 2072 | 75.7M |
 | `artifacts` | 21 | 20.0M |
 | `paper` | 33 | 2.5M |
 | `src` | 141 | 1.1M |
 | `uv.lock` | 1 | 972.4K |
 | `autoresearch` | 59 | 460.7K |
-| `scripts` | 30 | 315.8K |
-| `tests` | 46 | 185.5K |
-| `docs` | 25 | 121.0K |
+| `scripts` | 30 | 316.7K |
+| `tests` | 47 | 187.4K |
+| `docs` | 26 | 125.0K |
 | `prompts` | 6 | 21.6K |
 | `configs` | 7 | 12.7K |
-| `README.md` | 1 | 7.9K |
+| `README.md` | 1 | 7.8K |
 | `AGENTS.md` | 1 | 4.0K |
+| `.github` | 5 | 3.4K |
 | `.claude` | 4 | 3.3K |
 | `NOTES.md` | 1 | 3.2K |
-| `.github` | 5 | 3.1K |
 | `pyproject.toml` | 1 | 1.6K |
 | `.gitignore` | 1 | 1.5K |
 | `CLAUDE.md` | 1 | 1.4K |
@@ -81,54 +81,48 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.json` | 1110 | 5.7M |
+| `.json` | 1099 | 5.6M |
 | `.jsonl` | 295 | 59.0M |
 | `.txt` | 287 | 4.2M |
 | `.yaml` | 270 | 316.1K |
 | `.py` | 256 | 2.0M |
-| `.md` | 103 | 400.1K |
-| `.png` | 64 | 7.9M |
-| `.pdf` | 37 | 745.3K |
+| `.md` | 94 | 339.5K |
+| `.png` | 48 | 6.2M |
+| `.pdf` | 31 | 609.0K |
 | `.csv` | 26 | 581.1K |
 | `.part-000` | 18 | 20.0M |
 | `.sh` | 13 | 24.8K |
 | `.sbatch` | 5 | 6.5K |
-| `.svg` | 5 | 165.4K |
 | `.tex` | 5 | 297.7K |
 | `<none>` | 5 | 5.7K |
 | `.lock` | 2 | 1.9M |
+| `.svg` | 2 | 156.5K |
 | `.toml` | 2 | 3.2K |
 | `.bib` | 1 | 13.6K |
 | `.dataset` | 1 | 11.1K |
 | `.example` | 1 | 1.0K |
 | `.sty` | 1 | 13.2K |
 | `.tsv` | 1 | 790B |
-| `.yml` | 1 | 1.4K |
+| `.yml` | 1 | 1.8K |
 
 ## Experiment Readmes
 
 - `experiments/README.md`
 - `experiments/autoresearch-cifar10/README.md`
-- `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/README.md`
-- `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/results/evaluator_determinism/README.md`
-- `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/results/figures/README.md`
-- `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/results/fixed_step_cpu_pair_benchmark/README.md`
-- `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/results/fixed_time_cpu_scaling/README.md`
-- `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/results/raw_2x2_agent_pilot/README.md`
-- `experiments/autoresearch-cifar10/shared-memory-ablation/README.md`
-- `experiments/autoresearch-cifar10/shared-memory-ablation/results/figures/README.md`
-- `experiments/autoresearch-cifar10/starting-model-calibration/README.md`
+- `experiments/autoresearch-cifar10/calibration/README.md`
+- `experiments/autoresearch-cifar10/calibration/results/evaluation-controls/evaluator_determinism/README.md`
+- `experiments/autoresearch-cifar10/calibration/results/evaluation-controls/fixed_step_cpu_pair_benchmark/README.md`
+- `experiments/autoresearch-cifar10/calibration/results/evaluation-controls/fixed_time_cpu_scaling/README.md`
 - `experiments/autoresearch-cifar10/three-worker-model-routing/README.md`
 - `experiments/autoresearch-cifar10/three-worker-model-routing/raw/README.md`
 - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/README.md`
-- `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures/archive/distribution-aware-orchestration/README.md`
 - `experiments/autoresearch-cifar10/three-worker-model-routing/results/figures_n20_confirmation/README.md`
 - `experiments/bigcodebench/feedback-only-routing/README.md`
 - `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/README.md`
 - `experiments/humaneval-plus/README.md`
 - `experiments/humaneval-plus/context-value/README.md`
+- `experiments/humaneval-plus/context-value/provenance/continuation-pilot/README.md`
 - `experiments/humaneval-plus/llm-router-context-search/README.md`
-- `experiments/humaneval-plus/openrouter-continuation-pilot/README.md`
 - `experiments/humaneval-plus/qwen-model-size-frontier/README.md`
 - `experiments/humaneval-plus/retry-allocation-router/README.md`
 - `experiments/humaneval-plus/strategy-by-difficulty-grid/README.md`

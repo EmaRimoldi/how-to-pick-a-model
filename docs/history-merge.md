@@ -7,6 +7,10 @@ six-stage plan. The current code, configurations, data, results, source snapshot
 manuscripts and scientific limitations are preserved. Consolidation commits use
 the curation date; original dates and attribution remain in the provenance history.
 
+Later maintenance builds on these milestones. The [experiment cleanup](audits/experiment-cleanup.md)
+consolidates calibration and archives the initial pilot, memory study and
+superseded variants; it preserves the current paper inputs and recorded core results.
+
 ## Maintained milestones
 
 | Stage | Scope | Original source snapshot |

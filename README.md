@@ -49,8 +49,8 @@ Start with the [decision protocol](docs/decision-protocol.md), the
 
 ## What is retained
 
-- **AutoResearch/CIFAR-10:** starting-model calibration, controlled evaluation,
-  shared-memory ablation, and three-worker routing/first-hit accounting.
+- **AutoResearch/CIFAR-10:** consolidated starting-model/evaluator calibration
+  and three-worker routing/first-hit accounting.
 - **HumanEval+:** model-size frontier, retry allocation, strategy routing,
   and held-out router-context search.
 - **MBPP+:** frozen cross-benchmark recovery evaluation with feedback-only,
@@ -119,7 +119,7 @@ commands are documented in [reproducibility](docs/reproducibility.md).
 
 | Path | Role |
 | --- | --- |
-| `experiments/` | Baseline bundles, checkpoint recovery, MBPP+ replication and BigCodeBench fixed-policy evidence |
+| `experiments/` | Nine maintained bundles: calibration/routing, HumanEval+, MBPP+ and BigCodeBench |
 | `autoresearch/` | CIFAR-10 benchmark, verification, accounting, and analysis |
 | `src/vao/` | Verified execution and model adapters |
 | `src/agent_workflow/` | Baseline CLI, instrumentation, and reporting |

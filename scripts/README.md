@@ -46,11 +46,12 @@ Current portable setup is documented in `docs/reproducibility.md`.
 
 AutoResearch reproduction and campaign commands live under `autoresearch/scripts/`.
 
-## Continuation pilot
+## Recovery collection and archived pilot
 
 `run_continuation_pilot.py` writes a plan by default. Paid requests require
 `--live --budget-usd` and credentials; see the
-[pilot protocol](../experiments/humaneval-plus/openrouter-continuation-pilot/README.md).
+[archived pilot provenance](../experiments/humaneval-plus/context-value/provenance/continuation-pilot/README.md).
+The legacy runner remains for shared-runtime compatibility, not as a maintained study.
 
 `run_context_value.py` plans by default and requires the same explicit live/budget
 flags for the [context-value diagnostic](../experiments/humaneval-plus/context-value/README.md).

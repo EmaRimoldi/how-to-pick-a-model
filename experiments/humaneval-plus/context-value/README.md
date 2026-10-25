@@ -194,9 +194,9 @@ Planning makes no model calls. Authorized collection adds `--live --budget-usd 2
 and uses a fresh output directory. Supply the key through `--key-stdin` or the
 environment, never CLI arguments/tracked files. Uses the same macOS OS sandbox,
 reference preflight, protected feedback channels, and strict billing ledger as
-the [initial pilot](../openrouter-continuation-pilot/README.md).
+the [initial pilot](provenance/continuation-pilot/README.md).
 
-Dataset/task licensing: see the [upstream notices](../openrouter-continuation-pilot/NOTICE.md).
+Dataset/task licensing: see the [upstream notices](../NOTICE.md).
 
 Recompute the saved-data audit, paired estimates and figure without credentials:
 

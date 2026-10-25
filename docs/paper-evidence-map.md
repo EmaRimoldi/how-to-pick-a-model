@@ -27,7 +27,7 @@ not establish that a state-conditioned continue/restart/handoff controller works
 | Routing information | `thm:ri-identity` | `experiments/humaneval-plus/strategy-by-difficulty-grid/`, `experiments/humaneval-plus/llm-router-context-search/` | Conditional on the stated model; no universal value-of-information claim |
 | Cost/competence/information/mismatch | `thm:four-term` | AutoResearch accounting and HumanEval+ routing | Diagnostic under assumptions, not an exact law for arbitrary workflows |
 | Retry crossover | `thm:retry-crossover` | `experiments/humaneval-plus/retry-allocation-router/` | Replay follows the recorded retry protocol, not arbitrary handoffs |
-| Memory/context effects | `theory_anchor.tex` | `experiments/autoresearch-cifar10/shared-memory-ablation/` | Substrate-specific baseline, not proof of a cross-model transfer benefit |
+| Historical memory/context effects | `theory_anchor.tex` | [Archived exploratory memory study](https://github.com/EmaRimoldi/how-to-pick-a-model/tree/provenance/pre-curation-2026-10-24/experiments/autoresearch-cifar10/shared-memory-ablation) | Not an active comparison; limited replication and missing raw run directories |
 | Failed-code value and one-checkpoint selection | Frozen empirical protocol | `experiments/humaneval-plus/context-value/` | 25 evaluation failures; producer transfer; no reliable gain over stronger static control |
 | Cross-benchmark artifact versus feedback information | Frozen transfer protocol | `experiments/mbpp-plus/context-value-transfer/` | 94/96 complete failures; descriptive censored bank; no established primary selector gain |
 | Fixed feedback-only escalation on new tasks | Frozen BigCodeBench protocol | `experiments/bigcodebench/feedback-only-routing/` | Complete 157-task bank; primary −2.55 pp [−7.01, +1.27]; one requested interim look disclosed; unequal admission utilization and public-test false positives |
@@ -40,12 +40,10 @@ not establish that a state-conditioned continue/restart/handoff controller works
 - `experiments/humaneval-plus/llm-router-context-search/`
 - `experiments/humaneval-plus/retry-allocation-router/`
 - `experiments/autoresearch-cifar10/three-worker-model-routing/`
-- `experiments/autoresearch-cifar10/shared-memory-ablation/`
-- `experiments/autoresearch-cifar10/evaluation-protocol-and-compute-calibration/`
+- `experiments/autoresearch-cifar10/calibration/`
 
 ### Tier 2: Supporting Or Diagnostic Evidence
 
-- `experiments/autoresearch-cifar10/starting-model-calibration/`
 - `experiments/humaneval-plus/qwen-model-size-frontier/`
 - `experiments/humaneval-plus/context-value/` (discovery and amended transfer; not a current manuscript claim)
 - `experiments/mbpp-plus/context-value-transfer/` (censored external replica; separate empirical draft)
@@ -64,8 +62,9 @@ as an intervention. Keep this complete bank distinct from within-task sampling,
 the censored MBPP+ study and existing manuscripts. These tasks are now observed;
 a future intervention/selector requires a new freeze and independent evaluation.
 
-The [OpenRouter development pilot](../experiments/humaneval-plus/openrouter-continuation-pilot/README.md)
-provides a collector and matched continuations on two failed development states.
+The [archived initial pilot records](../experiments/humaneval-plus/context-value/provenance/continuation-pilot/README.md)
+preserve two failed development checkpoints, their receipts and the collector configuration;
+this is provenance rather than a separate maintained experiment.
 The [context-value diagnostic](../experiments/humaneval-plus/context-value/README.md)
 adds prospectively recorded zero-shot forecasts and a code/feedback factorial;
 its discovery is diagnostic evidence rather than an additional manuscript result.
