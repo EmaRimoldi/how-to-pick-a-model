@@ -1,0 +1,24 @@
+{
+  "initial_meta": {
+    "cost_usd": null,
+    "elapsed_wall_seconds": 28.226731998147443,
+    "max_tokens_requested": 4096,
+    "model": "gpt-5.4",
+    "raw_cli_result": {
+      "stderr_tail": "",
+      "stdout_tail": "rmup_steps:\\\\n            return float(step + 1) / float(warmup_steps)\\\\n        progress = (step - warmup_steps) / float(max(total_steps - warmup_steps, 1))\\\\n        return 0.1 + 0.9 * 0.5 * (1.0 + float(np.cos(np.pi * progress)))\\\\n\\\\n    return optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lr_lambda)\\\",\\\"text\\\":\\\"\\\"}],\\\"primary_mode\\\":\\\"summaries\\\",\\\"rationale\\\":\\\"The baseline has no schedule, and its existing cosine helper is effectively inert under a 256-step fixed budget because it decays over 100 full epochs. This candidate makes the scheduler budget-aware, adds a short warmup, and slightly increases Adam's learning rate so the model makes more progress early without a harsh late-stage collapse. The weight decay bump is a small companion regularization adjustment for the higher step efficiency.\\\",\\\"secondary_modes\\\":[\\\"topk\\\",\\\"caching\\\"]}\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":26674,\"cached_input_tokens\":2432,\"output_tokens\":970,\"reasoning_output_tokens\":516}}\n"
+    },
+    "reasoning_effort": "medium",
+    "session_id": "019dfe15-e77c-7f80-a803-7f6759c5d8d5",
+    "transport": "codex_cli_persistent",
+    "usage": {
+      "cached_input_tokens": 2432,
+      "input_tokens": 26674,
+      "output_tokens": 970,
+      "reasoning_output_tokens": 516,
+      "total_tokens": 27644
+    }
+  },
+  "prompt_path": "/home/erimoldi/openclaw_remote/projects/NeurIPS_2026/autoresearch/campaigns/h20_delta005_20260505/runs/worker_confirmation/worker_confirmation_holdout_resnet_micro_seed9402_gpt_5_4/interactive_initial_prompt.txt",
+  "session_id": "019dfe15-e77c-7f80-a803-7f6759c5d8d5"
+}

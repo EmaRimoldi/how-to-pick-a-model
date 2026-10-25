@@ -1,0 +1,24 @@
+{
+  "initial_meta": {
+    "cost_usd": null,
+    "elapsed_wall_seconds": 22.116071883123368,
+    "max_tokens_requested": 4096,
+    "model": "gpt-5.4",
+    "raw_cli_result": {
+      "stderr_tail": "WARNING: failed to clean up stale arg0 temp dirs: Directory not empty (os error 39)\n",
+      "stdout_tail": "S is not None else steps_per_epoch * 100\\\\n    warmup_steps = min(max(steps_per_epoch // 4, 1), max(total_steps // 10, 1))\\\\n\\\\n    def lr_lambda(current_step: int) -> float:\\\\n        if current_step < warmup_steps:\\\\n            return float(current_step + 1) / float(warmup_steps)\\\\n        progress = (current_step - warmup_steps) / float(max(total_steps - warmup_steps, 1))\\\\n        return 0.1 + 0.9 * 0.5 * (1.0 + np.cos(np.pi * progress))\\\\n\\\\n    return optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lr_lambda)\\\",\\\"text\\\":\\\"\\\"}],\\\"primary_mode\\\":\\\"summaries\\\",\\\"rationale\\\":\\\"Use the fixed 256-step budget more effectively by processing more examples per step and shaping optimization with a short warmup plus cosine decay; pair that with AdamW and a higher LR tuned for faster early progress.\\\",\\\"secondary_modes\\\":[\\\"micro\\\",\\\"topk\\\",\\\"indexing\\\"]}\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":26420,\"cached_input_tokens\":2432,\"output_tokens\":968,\"reasoning_output_tokens\":516}}\n"
+    },
+    "reasoning_effort": "medium",
+    "session_id": "019dfd3a-b7ef-7720-8565-c7f90f03b428",
+    "transport": "codex_cli_persistent",
+    "usage": {
+      "cached_input_tokens": 2432,
+      "input_tokens": 26420,
+      "output_tokens": 968,
+      "reasoning_output_tokens": 516,
+      "total_tokens": 27388
+    }
+  },
+  "prompt_path": "/home/erimoldi/openclaw_remote/projects/NeurIPS_2026/autoresearch/campaigns/h20_delta005_20260505/runs/worker_confirmation/worker_confirmation_holdout_mlp_flat_seed9406_gpt_5_4/interactive_initial_prompt.txt",
+  "session_id": "019dfd3a-b7ef-7720-8565-c7f90f03b428"
+}

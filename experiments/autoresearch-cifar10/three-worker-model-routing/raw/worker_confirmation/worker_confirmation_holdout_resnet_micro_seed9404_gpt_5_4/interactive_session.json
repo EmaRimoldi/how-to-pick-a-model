@@ -1,0 +1,24 @@
+{
+  "initial_meta": {
+    "cost_usd": null,
+    "elapsed_wall_seconds": 17.589508917182684,
+    "max_tokens_requested": 4096,
+    "model": "gpt-5.4",
+    "raw_cli_result": {
+      "stderr_tail": "",
+      "stdout_tail": "\\\":\\\"LEARNING_RATE = 5e-4\\\",\\\"op\\\":\\\"replace_exact\\\",\\\"source\\\":\\\"\\\",\\\"text\\\":\\\"\\\"},{\\\"anchor\\\":\\\"\\\",\\\"function\\\":\\\"\\\",\\\"new\\\":\\\"USE_LR_SCHEDULE = True\\\",\\\"old\\\":\\\"USE_LR_SCHEDULE = False\\\",\\\"op\\\":\\\"replace_exact\\\",\\\"source\\\":\\\"\\\",\\\"text\\\":\\\"\\\"},{\\\"anchor\\\":\\\"\\\",\\\"function\\\":\\\"\\\",\\\"new\\\":\\\"BATCH_SIZE = 128\\\",\\\"old\\\":\\\"BATCH_SIZE = 64\\\",\\\"op\\\":\\\"replace_exact\\\",\\\"source\\\":\\\"\\\",\\\"text\\\":\\\"\\\"}],\\\"primary_mode\\\":\\\"summaries\\\",\\\"rationale\\\":\\\"The run is capped at 256 optimizer steps, so the baseline is severely undertrained. This candidate uses the fixed-step budget more effectively by doubling batch size to expose the model to substantially more unique examples, increasing the learning rate to keep progress per update high, and turning on cosine decay to stabilize the higher initial rate over the short horizon.\\\",\\\"secondary_modes\\\":[\\\"micro\\\",\\\"topk\\\"]}\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":26674,\"cached_input_tokens\":2432,\"output_tokens\":741,\"reasoning_output_tokens\":516}}\n"
+    },
+    "reasoning_effort": "medium",
+    "session_id": "019dfe24-050f-7ba2-9d65-6eae09dfb285",
+    "transport": "codex_cli_persistent",
+    "usage": {
+      "cached_input_tokens": 2432,
+      "input_tokens": 26674,
+      "output_tokens": 741,
+      "reasoning_output_tokens": 516,
+      "total_tokens": 27415
+    }
+  },
+  "prompt_path": "/home/erimoldi/openclaw_remote/projects/NeurIPS_2026/autoresearch/campaigns/h20_delta005_20260505/runs/worker_confirmation/worker_confirmation_holdout_resnet_micro_seed9404_gpt_5_4/interactive_initial_prompt.txt",
+  "session_id": "019dfe24-050f-7ba2-9d65-6eae09dfb285"
+}
