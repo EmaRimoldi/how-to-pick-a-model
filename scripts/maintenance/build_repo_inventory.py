@@ -131,7 +131,7 @@ def duplicate_category(group: list[str]) -> str:
     if suffixes == {".py"} and all(Path(path).name == "__init__.py" for path in group):
         return "package initializers"
     if suffixes & {".pdf", ".png"}:
-        has_paper = any(path.startswith("paper/neurips-submission/figures/") for path in group)
+        has_paper = any(path.startswith("docs/paper/neurips-submission/figures/") for path in group)
         has_experiment = any(path.startswith("experiments/") for path in group)
         if has_paper and has_experiment:
             return "paper-ready figure copy"
@@ -281,7 +281,7 @@ def render_markdown(inventory: dict) -> str:
             "",
             "The readiness gate treats document/source duplicates as failures. The",
             "remaining allowed duplicates are paper-ready figure copies under",
-            "`paper/neurips-submission/figures/` whose experiment outputs remain",
+            "`docs/paper/neurips-submission/figures/` whose experiment outputs remain",
             "canonical.",
             "",
             markdown_table(

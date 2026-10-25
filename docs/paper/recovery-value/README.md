@@ -1,7 +1,7 @@
 # Measuring the value of failed code
 
 A separate empirical research draft, based on the retained HumanEval+ study and
-the [audited MBPP+ replication](../../experiments/mbpp-plus/context-value-transfer/results/replication-20261022/report.md).
+the [audited MBPP+ replication](../../../experiments/mbpp-plus/context-value-transfer/results/replication-20261022/report.md).
 The existing NeurIPS manuscripts and theory anchor remain separate.
 
 The MBPP+ bank contains 2,878 observed recovery responses and two permanently
@@ -14,7 +14,7 @@ Build from the repository root with the normal development environment and
 TeX Live. Use a fresh output directory:
 
 ```bash
-uv run python paper/recovery-value/build.py \
+uv run python docs/paper/recovery-value/build.py \
   --output /tmp/how-to-pick-a-model-recovery-paper
 ```
 

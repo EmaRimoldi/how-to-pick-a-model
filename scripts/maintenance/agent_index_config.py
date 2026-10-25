@@ -19,7 +19,6 @@ EXCLUDED_DIRS = {
 CANONICAL_DOCS = [
     "README.md",
     "AGENTS.md",
-    "CLAUDE.md",
     "docs/README.md",
     "docs/knowledge-map.md",
     "docs/decision-protocol.md",
@@ -37,8 +36,9 @@ CANONICAL_DOCS = [
     "experiments/README.md",
     "src/README.md",
     "scripts/README.md",
-    "paper/README.md",
-    "paper/neurips-submission/README.md",
+    "docs/paper/README.md",
+    "docs/paper/neurips-submission/README.md",
+    "docs/paper/recovery-value/README.md",
 ]
 
 COMMAND_ENTRYPOINTS = [
@@ -73,7 +73,7 @@ CORE_CODE_MODULES = {
     "src/vao/humaneval/load_traces.py",
 }
 
-PAPER_ROOT = Path("paper/neurips-submission")
+PAPER_ROOT = Path("docs/paper/neurips-submission")
 CANONICAL_TEX = [
     PAPER_ROOT / "main.tex",
     PAPER_ROOT / "arxiv.tex",
@@ -108,14 +108,12 @@ SCRIPT_SUPPORT_FILES = {
 AGENT_DOC_ROOT_FILES = [
     Path("README.md"),
     Path("AGENTS.md"),
-    Path("CLAUDE.md"),
 ]
 MARKDOWN_LINK_DOCS = [
     Path(path)
     for path in [
         "README.md",
         "AGENTS.md",
-        "CLAUDE.md",
         "docs/README.md",
         "docs/knowledge-map.md",
         "docs/decision-protocol.md",
@@ -133,8 +131,11 @@ MARKDOWN_LINK_DOCS = [
         "experiments/humaneval-plus/context-value/provenance/continuation-pilot/README.md",
         "docs/audits/experiment-manifest.md",
         "docs/audits/command-manifest.md",
-        "paper/README.md",
-        "paper/neurips-submission/README.md",
+        "docs/paper/README.md",
+        "docs/paper/neurips-submission/README.md",
+        "docs/paper/neurips-submission/figures/README.md",
+        "docs/paper/recovery-value/README.md",
+        "docs/engineering/README.md",
         "src/README.md",
         "scripts/README.md",
     ]

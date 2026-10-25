@@ -83,11 +83,11 @@ use 94 and are descriptive. The result README gives a command with
 in addition to checking raw journals and provenance. No optional EvalPlus
 installation is needed for this replay.
 
-Build the [separate empirical paper](../paper/recovery-value/README.md) with
+Build the [separate empirical paper](paper/recovery-value/README.md) with
 TeX Live and a fresh output directory:
 
 ```bash
-uv run python paper/recovery-value/build.py \
+uv run python docs/paper/recovery-value/build.py \
   --output /tmp/how-to-pick-a-model-recovery-paper
 ```
 

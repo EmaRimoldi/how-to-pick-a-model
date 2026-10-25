@@ -6,6 +6,7 @@
 | [Knowledge map](knowledge-map.md) | Retained evidence and code surfaces |
 | [Reproducibility](reproducibility.md) | Safe setup, reproduction, and live-run requirements |
 | [Review checklist](reviewer_checklist.md) | Evidence and evaluation checks |
+| [Manuscript sources](paper/README.md) | Existing manuscripts, theory anchor and empirical recovery draft |
 | [Paper evidence](paper-evidence-map.md) | Existing claims and retained baseline evidence |
 | [Paper revision](paper-revision-playbook.md) | Source selection and claim discipline |
 | [Theory audit](audits/theory-consolidation.md) | Historical theory consolidation and caveats |

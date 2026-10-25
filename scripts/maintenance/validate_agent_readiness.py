@@ -24,9 +24,9 @@ from agent_index_config import (
 
 FORMAL_LABEL_RE = re.compile(r"^(ass|def|lem|thm|prop|cor|rem|claim):")
 PAPER_SOURCE_ALIASES = {
-    "main.tex": [Path("paper/neurips-submission/main.tex")],
-    "arxiv.tex": [Path("paper/neurips-submission/arxiv.tex")],
-    "theory_anchor.tex": [Path("paper/neurips-submission/archive/theory_anchor.tex")],
+    "main.tex": [Path("docs/paper/neurips-submission/main.tex")],
+    "arxiv.tex": [Path("docs/paper/neurips-submission/arxiv.tex")],
+    "theory_anchor.tex": [Path("docs/paper/neurips-submission/archive/theory_anchor.tex")],
 }
 
 
@@ -103,7 +103,7 @@ def check_unexpected_duplicates(inventory: dict) -> list[str]:
             problems.append("unexpected Python duplicate: " + ", ".join(group))
             continue
         if suffixes & {".pdf", ".png"}:
-            has_paper = any(path.startswith("paper/neurips-submission/figures/") for path in group)
+            has_paper = any(path.startswith("docs/paper/neurips-submission/figures/") for path in group)
             has_experiment = any(path.startswith("experiments/") for path in group)
             if not (has_paper and has_experiment):
                 problems.append("unexpected figure/PDF duplicate: " + ", ".join(group))
@@ -148,7 +148,7 @@ def check_paper_figures(knowledge: dict) -> list[str]:
 def check_active_paper_references(knowledge: dict) -> list[str]:
     problems: list[str] = []
     refs = knowledge.get("active_paper_references", [])
-    for source in ("paper/neurips-submission/main.tex", "paper/neurips-submission/arxiv.tex"):
+    for source in ("docs/paper/neurips-submission/main.tex", "docs/paper/neurips-submission/arxiv.tex"):
         if not any(ref["source_tex"] == source for ref in refs):
             problems.append(f"knowledge index found no references for `{source}`")
     missing = [
@@ -284,7 +284,7 @@ def check_paper_evidence_map(root: Path, knowledge: dict) -> list[str]:
         candidate_paths: list[Path] = []
         if token in PAPER_SOURCE_ALIASES:
             candidate_paths = PAPER_SOURCE_ALIASES[token]
-        elif token.startswith(("paper/", "docs/", "experiments/", "scripts/", "src/")):
+        elif token.startswith(("docs/", "experiments/", "scripts/", "src/")):
             candidate_paths = [Path(token.rstrip("/"))]
 
         for rel_path in candidate_paths:

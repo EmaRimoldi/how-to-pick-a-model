@@ -19,7 +19,7 @@ The [new audited bank](../../experiments/mbpp-plus/context-value-transfer/result
 adds a different benchmark and the missing feedback-only prediction control.
 All 51 previously observed HumanEval+ failures become training data; none are
 reused as new evaluation. The models, prompts, weights and main comparison were
-fixed before target recovery. A [separate paper draft](../../paper/recovery-value/README.md)
+fixed before target recovery. A [separate paper draft](../paper/recovery-value/README.md)
 contains methods, full comparisons and standard diagnostic identities.
 
 We recorded **2,878 recovery responses and 288 valid API forecasts**. Two solver

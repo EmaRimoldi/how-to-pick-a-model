@@ -122,14 +122,14 @@ CODE_MODULE_EXCLUDED_PARTS = {
     "legacy",
     "scripts",
 }
-PAPER_FIGURE_ROOT = Path("paper/neurips-submission/figures")
+PAPER_FIGURE_ROOT = Path("docs/paper/neurips-submission/figures")
 PAPER_FIGURE_SUFFIXES = {".pdf", ".png"}
 FIGURE_GENERATOR_HINTS = {
-    "strategy_routing": "src/plot_strategy_results.py",
+    "strategy_routing": "src/vao/humaneval/plot_strategy_results.py",
 }
 ACTIVE_PAPER_TEX = (
-    Path("paper/neurips-submission/main.tex"),
-    Path("paper/neurips-submission/arxiv.tex"),
+    Path("docs/paper/neurips-submission/main.tex"),
+    Path("docs/paper/neurips-submission/arxiv.tex"),
 )
 
 

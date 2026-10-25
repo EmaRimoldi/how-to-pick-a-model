@@ -85,3 +85,12 @@ Published analysis script paths and checkout-only `python -m src.*` commands
 remain available. The seven study bundles, raw evidence, frozen collection
 sources and manuscripts keep their paths and contents. This is an appended
 maintenance change, not a new reconstruction of commit history.
+
+## Root directory consolidation (2026-10-25)
+
+Move manuscript sources and their referenced assets from `paper/` to
+`docs/paper/`, and the optional environment example from `.env.example` to
+`docs/engineering/environment.env.example`. Remove the redundant `CLAUDE.md`
+guide; `AGENTS.md` remains the canonical development guide. Update manuscript
+build commands, links, navigation and ignore patterns. No experimental evidence
+or frozen sources move or change. This appends a maintenance commit to `main`.

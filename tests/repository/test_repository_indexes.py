@@ -62,10 +62,10 @@ def test_knowledge_index_is_complete_and_descriptive() -> None:
 
     figures = {figure["path"]: figure for figure in index["paper_figures"]}
     assert figures[
-        "paper/neurips-submission/figures/autoresearch/first_hit_ecdf_by_mode.png"
+        "docs/paper/neurips-submission/figures/autoresearch/first_hit_ecdf_by_mode.png"
     ]["provenance"] == "archived experiment figure"
     assert figures[
-        "paper/neurips-submission/figures/autoresearch/first_hit_ecdf_by_mode.png"
+        "docs/paper/neurips-submission/figures/autoresearch/first_hit_ecdf_by_mode.png"
     ]["source"] == "provenance/verified-cleanup-2026-10-25"
     assert all(ref["present"] for ref in index["active_paper_references"])
     assert {
@@ -73,22 +73,22 @@ def test_knowledge_index_is_complete_and_descriptive() -> None:
     } <= set(figures)
     main_refs = [
         ref for ref in index["active_paper_references"]
-        if ref["source_tex"] == "paper/neurips-submission/main.tex" and ref["kind"] == "figure"
+        if ref["source_tex"] == "docs/paper/neurips-submission/main.tex" and ref["kind"] == "figure"
     ]
     assert len(main_refs) == 5
     assert {
         ref["resolved_path"] for ref in main_refs
     } == {
-        "paper/neurips-submission/figures/strategy_routing/four_term_accounting.pdf",
-        "paper/neurips-submission/figures/strategy_routing/confirmatory_speedup.pdf",
-        "paper/neurips-submission/figures/strategy_routing/strategy_specialization.pdf",
-        "paper/neurips-submission/figures/strategy_routing/information_speed_curve.pdf",
-        "paper/neurips-submission/figures/strategy_routing/router_allocations.pdf",
+        "docs/paper/neurips-submission/figures/strategy_routing/four_term_accounting.pdf",
+        "docs/paper/neurips-submission/figures/strategy_routing/confirmatory_speedup.pdf",
+        "docs/paper/neurips-submission/figures/strategy_routing/strategy_specialization.pdf",
+        "docs/paper/neurips-submission/figures/strategy_routing/information_speed_curve.pdf",
+        "docs/paper/neurips-submission/figures/strategy_routing/router_allocations.pdf",
     }
     assert any(
-        ref["source_tex"] == "paper/neurips-submission/arxiv.tex"
+        ref["source_tex"] == "docs/paper/neurips-submission/arxiv.tex"
         and ref["kind"] == "bibliography"
-        and ref["resolved_path"] == "paper/neurips-submission/references.bib"
+        and ref["resolved_path"] == "docs/paper/neurips-submission/references.bib"
         for ref in index["active_paper_references"]
     )
 
@@ -240,7 +240,7 @@ def test_inventory_has_no_unexpected_source_duplicates() -> None:
             assert all(Path(path).name == "__init__.py" for path in group)
 
         if suffixes & {".pdf", ".png"}:
-            assert any(path.startswith("paper/neurips-submission/figures/") for path in group)
+            assert any(path.startswith("docs/paper/neurips-submission/figures/") for path in group)
             assert any(path.startswith("experiments/") for path in group)
 
 

@@ -10,6 +10,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from agent_index_config import PAPER_ROOT
+
 
 DEFAULT_SOURCES = ("main.tex", "arxiv.tex")
 
@@ -126,12 +128,12 @@ def main() -> int:
         "--source",
         action="append",
         dest="sources",
-        help="TeX source filename under paper/neurips-submission. Repeatable.",
+        help="TeX source filename under docs/paper/neurips-submission. Repeatable.",
     )
     args = parser.parse_args()
 
     root = Path(args.root).resolve()
-    paper_dir = root / "paper" / "neurips-submission"
+    paper_dir = root / PAPER_ROOT
     output_root = Path(args.output_root).resolve()
     output_root.mkdir(parents=True, exist_ok=True)
     sources = args.sources or list(DEFAULT_SOURCES)

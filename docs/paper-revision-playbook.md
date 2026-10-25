@@ -6,9 +6,9 @@ new continuation-policy claims need their own verified evidence.
 
 | Source | Role |
 | --- | --- |
-| [main.tex](../paper/neurips-submission/main.tex) | Compact existing manuscript |
-| [arxiv.tex](../paper/neurips-submission/arxiv.tex) | Longer AutoResearch manuscript |
-| [theory anchor](../paper/neurips-submission/archive/theory_anchor.tex) | Consolidated theory under its assumptions |
+| [main.tex](paper/neurips-submission/main.tex) | Compact existing manuscript |
+| [arxiv.tex](paper/neurips-submission/arxiv.tex) | Longer AutoResearch manuscript |
+| [theory anchor](paper/neurips-submission/archive/theory_anchor.tex) | Consolidated theory under its assumptions |
 
 Use the [theory audit](audits/theory-consolidation.md) to understand historical
 claims that were not promoted. Removed drafts, planning documents, and reference
