@@ -18,6 +18,9 @@ dependencies = [
 
 [project.optional-dependencies]
 # Heavy dependencies are optional so `uv run agent-workflow demo` stays quick.
+continuation-pilot = [
+    "evalplus==0.3.1",
+]
 autoresearch = [
     "torch>=2.7",
     "torchvision>=0.22",

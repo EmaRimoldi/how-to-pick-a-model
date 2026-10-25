@@ -2,7 +2,8 @@
 
 The retained evidence is AutoResearch/CIFAR-10 and completed HumanEval+ studies.
 The next state-conditioned policy experiment is specified in
-[decision protocol](decision-protocol.md); matched handoff data is not yet present.
+[decision protocol](decision-protocol.md). A cost-bounded API pilot now has a
+[separate protocol and runner](../experiments/humaneval-plus/openrouter-continuation-pilot/README.md).
 
 ## Safe environment and checks
 
@@ -22,6 +23,8 @@ Optional profiles:
 
 - `autoresearch`: Torch/Torchvision for CIFAR-10 verification.
 - `other-experiments`: HumanEval+ worker/verifier and routing dependencies.
+- `continuation-pilot`: EvalPlus for the API pilot, without requiring local LLM
+  weights or Torch.
 - `analysis-ml`: optional runtime diversity/embedding analysis dependencies.
 - `all-experiments`: dependencies for the retained experiment surfaces.
 

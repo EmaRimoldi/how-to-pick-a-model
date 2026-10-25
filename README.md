@@ -10,8 +10,10 @@ to study that question: verified trajectories, retry-allocation baselines,
 context/routing experiments, cost accounting, and reproducible figures.
 
 **Current status:** the retained experiments measure model choice, retries, and
-information use. A state-conditioned continuation policy is the next experiment;
-it needs matched continuation runs and held-out evaluation. The existing traces
+information use. A budgeted [OpenRouter pilot](experiments/humaneval-plus/openrouter-continuation-pilot/README.md)
+now includes a runner and a 24-task development dataset with matched actions
+on two visibly failed checkpoints. A learned policy still
+needs training and held-out evaluation. The baseline traces
 are not evidence that an unobserved model handoff would have succeeded.
 
 Start with the [decision protocol](docs/decision-protocol.md), the
@@ -53,7 +55,7 @@ commands are documented in [reproducibility](docs/reproducibility.md).
 
 | Path | Role |
 | --- | --- |
-| `experiments/` | Eight retained evidence bundles across two benchmark families |
+| `experiments/` | Eight baseline bundles and a continuation pilot across two benchmark families |
 | `autoresearch/` | CIFAR-10 benchmark, verification, accounting, and analysis |
 | `src/vao/` | Verified execution and model adapters |
 | `src/agent_workflow/` | Baseline CLI, instrumentation, and reporting |

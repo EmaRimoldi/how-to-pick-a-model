@@ -9,5 +9,8 @@
 - [`llm-router-context-search/`](llm-router-context-search/): validation-only
   selection over model/context settings followed by a held-out test evaluation.
 
+- [`openrouter-continuation-pilot/`](openrouter-continuation-pilot/): explicit-budget
+  Qwen3.5 9B/27B one-checkpoint development experiment through OpenRouter.
+
 The bundles share the general-purpose pipeline under the repository's `src/`
 package but own their experiment-specific data and configuration.
