@@ -11,6 +11,8 @@ import os
 from pathlib import Path, PurePosixPath
 import re
 
+REPAIR_SYSTEM = "Repair the supplied Python files. Return only a JSON object mapping each editable filename to its complete replacement source. Preserve the function interface. The latest feedback describes the preceding failed attempt; it may refer to a different file state from the files supplied here."
+
 
 def canonical(value: object) -> str:
     """Encode finite JSON deterministically for identity and strict comparisons."""
@@ -111,9 +113,12 @@ class RepairTask:
 
 
 class RepairRun:
-    """Single-writer, append-only engineering run; no model transport or paid mode."""
+    """Single-writer artifact journal; transport and accounting remain external."""
 
-    def __init__(self, root: Path, task: RepairTask, verifier):
+    def __init__(self, root: Path, task: RepairTask, verifier, *, mode: str = "offline_engineering"):
+        if mode not in {"offline_engineering", "scripted_pilot", "model_pilot"}:
+            raise ValueError("Unknown run mode")
+        self.mode = mode
         self.root, self.task, self.verifier = root, task, verifier
         root.mkdir(parents=True, exist_ok=False)
         for name in ("objects", "events", "workspaces"):
@@ -122,7 +127,7 @@ class RepairRun:
         self.task_object = self.put({"kind": "task", "public": task.public,
                                      "evaluator": json.loads(task.evaluator_json)})
         self.initial = self.snapshot(task.public["files"])
-        self.record("initialized", [self.task_object, self.initial], {"mode": "offline_engineering", "api_calls": 0})
+        self.record("initialized", [self.task_object, self.initial], {"mode": mode})
 
     def put(self, value: dict) -> str:
         """Write once; identical objects are shared, corruption fails closed."""
@@ -203,7 +208,7 @@ class RepairRun:
                        "evaluation": evaluation, "parent": parent, "feedback": feedback,
                        "history": history + [{"passed_cases": feedback["passed_cases"],
                                                "total_cases": feedback["total_cases"]}],
-                       "mode": "offline_engineering", "api_spend_usd": "0"})
+                       "mode": self.mode})
         self.record("checkpoint", [cp], {})
         return cp
 
@@ -226,7 +231,7 @@ class RepairRun:
         artifact = cp["artifact"] if action == "continue" else self.initial
         branch = self.put({"kind": "branch", "checkpoint": checkpoint, "action": action,
                            "starting_artifact": artifact, "remaining_budget_usd": str(budget),
-                           "budget_is_illustrative": True, "mode": "offline_engineering"})
+                           "budget_is_illustrative": self.mode != "model_pilot", "mode": self.mode})
         self.record("forked", [checkpoint, branch, artifact], {})
         return branch
 
@@ -242,10 +247,10 @@ class RepairRun:
         payload = {"instruction": public["instruction"], "entrypoint": public["entrypoint"],
                    "public_cases": public["public_cases"], "latest_feedback": feedback,
                    "files": self.artifact(b["starting_artifact"])}
-        messages = [{"role": "system", "content": "Repair the supplied Python files. Return only a JSON object mapping each editable filename to its complete replacement source. Preserve the function interface. The latest feedback describes the preceding failed attempt; it may refer to a different file state from the files supplied here."},
+        messages = [{"role": "system", "content": REPAIR_SYSTEM},
                     {"role": "user", "content": canonical(payload)}]
         request = {"messages": messages, "remaining_budget_usd": b["remaining_budget_usd"],
-                   "mode": "offline_engineering", "provider_call_enabled": False}
+                   "mode": self.mode, "provider_call_enabled": self.mode == "model_pilot"}
         request_object = self.put({"kind": "request", "branch": branch, "request": request})
         self.record("request_prepared", [branch, request_object], {})
         return request

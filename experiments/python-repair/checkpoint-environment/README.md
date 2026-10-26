@@ -1,7 +1,8 @@
 # Python repair checkpoint environment
 
-**Status: executable offline engineering prototype. No model responses, real-bug
-benchmark results, paid collector, fitted selector or frozen scientific evaluation.**
+**Status: executable repair environment, scripted demo and gated OpenRouter
+collector tested offline; a new $0.60 pilot cap is authorized. No model responses, fitted selector or
+frozen scientific evaluation.**
 
 The [real-bug development pool](development/README.md) adds twelve adapted BugsInPy
 tasks with pinned source excerpts, public/evaluator cases, documented exclusions
@@ -14,15 +15,67 @@ earlier artifacts without changing saved checkpoints.
 
 The first question is whether public progress history predicts the benefit of
 keeping a failed patch rather than restoring the original buggy code. The
+expanded [related-work review](../../../docs/recovery-related-work.md) identifies
+direct precedents; this question is a replication target, not an established
+novel contribution. The
 finite-expression prototype in [PR 14](https://github.com/EmaRimoldi/how-to-pick-a-model/pull/14)
 remains a separate, unmerged design. This implementation starts from current main;
 completed HumanEval+, MBPP+ and BigCodeBench studies are unchanged.
+
+## Active goal and completion criteria
+
+Build an executable Python selector that chooses **continue from the current
+patch** or **restart from the original buggy files** before generating the next
+repair. Its inputs are the task, current/original artifacts, public feedback,
+optional public progress history and remaining budget. Evaluator tests and
+future branch outcomes are never decision inputs. Budget exhaustion and public
+success are explicit termination rules, not unbounded additional attempts.
+
+The engineering deliverable is a documented policy interface, an offline replay
+demo, fixed-action and two-candidate verifier-selection baselines, reproducible
+data/accounting, and a frozen evaluation on untouched bugs. A lightweight
+prospective router is a required comparator. A PATSSEL-inspired adaptation must
+declare its different restart contract and charge both candidates and selection.
+
+The scientific target is more fully solved tasks at the same declared total API
+budget than the strongest development-selected fixed strategy, with comparisons
+against the other baselines and actual spending reported. Include prefix work,
+selection, failed requests and unresolved reservations; report local verification
+costs separately. Preregister the primary budget, meaningful effect size, sample
+size, uncertainty method and pass/fail criterion after development calibration
+and before evaluation. Do not claim a successful adaptive policy from a favorable
+point estimate, an oracle, or predictor accuracy alone. A null result remains an
+honest evaluation outcome, not grounds for recycling the evaluation set.
+
+Milestones:
+
+1. Prepare a development-pilot protocol, collector and end-to-end offline demo.
+   Freeze the actual request/verification/accounting implementation before calls.
+2. Under a new explicit monetary cap, calibrate Gemma 3 4B on the twelve existing
+   development bugs. Measure natural partial progress, regressions, recovery,
+   sampling variability and cost; all twelve remain development data.
+3. Collect matched action outcomes and establish reproducible complementarity.
+   Train a selector only if there is useful decision headroom, then compare
+   current-state and history-augmented predictors with matched capacity/data.
+4. Freeze and evaluate on untouched bugs, grouping all versions and replicates
+   of a bug together and separating upstream projects where feasible. Deliver
+   the policy, reproducible report and limitations, whether the gain holds or not.
+5. As a separately budgeted extension, compare Gemma 3 4B/12B/27B over a common
+   task set and budget grid. Measure success, action preferences, selector value
+   and costs. Treat this as empirical scaling curves; three model sizes do not
+   establish a general scaling law or isolate parameter count as the cause.
+
+The goal is active; the full milestones above are not completed. The user has
+authorized a new $0.60 pilot cap including uncertain reserves; the funded config
+is [PILOT-AUTHORIZED.json](PILOT-AUTHORIZED.json). Closed historical budgets cannot
+fund this pilot. Collection still requires a clean, committed source/task freeze.
 
 ## Run locally
 
 Use the normal environment (`uv sync --dev --frozen`). Planning and saved-run
 audits are portable. Candidate execution requires macOS `sandbox-exec`, as in the
-existing verifier. There is no unrestricted fallback or provider-backed mode.
+existing verifier. There is no unrestricted execution fallback. The pilot's
+separate `live` command requires a newly funded, committed source freeze.
 
 ```bash
 uv run python scripts/prepare_python_repair.py
@@ -38,6 +91,49 @@ uv run python scripts/prepare_python_repair.py qualify \
   --bundle experiments/python-repair/checkpoint-environment/fixtures/record-normalization \
   --output runs/python-repair-qualification
 ```
+
+## Development pilot preparation
+
+The [draft pilot protocol](PILOT-PROTOCOL.md) specifies two prefixes per bug,
+up to three prefix attempts and two draws per recovery action: at most 360 calls
+over the twelve development bugs. The OpenRouter adapter and collector are tested
+with mocked transport; a source/budget freeze remains a prerequisite for `live`.
+The original draft disables live calls; the separately authorized config records
+the new $0.60 cap.
+Its synthetic demo tests bookkeeping and actual sandbox verification
+using handwritten responses and simulated dollar amounts, never model outcomes.
+
+```bash
+uv run python scripts/prepare_repair_pilot.py plan
+
+uv run python scripts/prepare_repair_pilot.py demo \
+  --bundle experiments/python-repair/checkpoint-environment/fixtures/record-normalization \
+  --output runs/repair-pilot-scripted
+
+uv run python scripts/prepare_repair_pilot.py audit --input runs/repair-pilot-scripted
+uv run python scripts/prepare_repair_pilot.py compare --input runs/repair-pilot-scripted
+```
+
+The comparison includes fixed one-candidate controls and public-test selection
+from two continue, two restart, or one of each candidate. It charges both
+candidates plus the shared prefix once, preserves missing outcomes, and cannot
+use evaluator outcomes to choose a candidate. These are one-checkpoint
+diagnostics, not an evaluated multi-step selector.
+
+Requests, receipts, ledger, checkpoint objects, prefix ancestry, missing sets
+and completion hashes are auditable. An interrupted call retains its reserve;
+existing run directories cannot be reused. Prefix progression never uses branch
+outcomes. Each valid artifact retains public and evaluator verification, so
+public false positives are visible without influencing collection.
+
+The proposed Parasail/bf16 endpoint reserves $0.00151552 per call, or $0.54558720
+for the maximum design, at the checked public price. This is a conservative API
+estimate, separate from the authorized $0.60 cap and local-compute costs; see the
+[pricing and launch prerequisites](PILOT-PROTOCOL.md#provider-and-cost-proposal).
+Live launch checks a clean source commit, frozen task/settings hashes, account
+credit and endpoint parameters/prices. A durable single-use campaign claim
+prevents two output directories from reusing the same collection authorization.
+No automatic retry, provider fallback, resume or historical monitor is enabled.
 
 Output directories must be new. Existing runs are never overwritten or resumed.
 Interrupted runs stay incomplete; their valid prefixes can be audited.
@@ -128,7 +224,7 @@ official BugsInPy scores. Never manufacture LLM progress from a reference fix.
 Select a development pool on technical criteria before model outcomes. Calibrate
 Gemma 3 4B there to establish natural recoverable failures. Every inspected case
 remains development data. A model pilot needs a new authorized budget, provider
-settings, collector implementation and protocol freeze; historical ceilings do
+settings and a protocol freeze; historical ceilings do
 not authorize new spending.
 
 ## Scientific gate
