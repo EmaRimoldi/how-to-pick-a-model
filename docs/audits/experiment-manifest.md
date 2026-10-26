@@ -13,16 +13,16 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 
 | Class | Bundles |
 | --- | --- |
-| `inspect-readme` | 4 |
+| `inspect-readme` | 3 |
 | `paper-supporting-evidence` | 4 |
+| `partial-evidence` | 1 |
 
 ## Evidence Tiers
 
 | Tier | Bundles |
 | --- | --- |
 | `Tier 1: Main Evidence` | 3 |
-| `Tier 2: Supporting Or Diagnostic Evidence` | 4 |
-| `Tier 3: Engineering Only — No Model Evidence` | 1 |
+| `Tier 2: Supporting Or Diagnostic Evidence` | 5 |
 
 ## Bundle Assets
 
@@ -35,7 +35,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 56 | 6 | 9 | 40 | 3 | 0 | 0 | 0 | 5 |
 | `experiments/mbpp-plus/context-value-transfer/` | collection finished; censored descriptive bank | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 72 | 6 | 2 | 59 | 4 | 3 | 0 | 0 | 6 |
 | `experiments/bigcodebench/feedback-only-routing/` | complete; primary gate not passed | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 42 | 2 | 5 | 32 | 4 | 0 | 0 | 0 | 2 |
-| `experiments/python-repair/checkpoint-environment/` | offline development prototype | Tier 3: Engineering Only — No Model Evidence | `inspect-readme` | 59 | 0 | 54 | 0 | 0 | 0 | 0 | 0 | 0 |
+| `experiments/python-repair/checkpoint-environment/` | incomplete development calibration | Tier 2: Supporting Or Diagnostic Evidence | `partial-evidence` | 67 | 0 | 54 | 8 | 2 | 0 | 0 | 0 | 1 |
 
 ## Key Files
 
@@ -144,6 +144,9 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 ### `experiments/python-repair/checkpoint-environment/`
 
 - Title: Python repair checkpoint environment
-- Evidence: handwritten demo and twelve adapted real-bug tasks; source audit, isolated qualification, immutable checkpoints and matched forks; no model results
-- Asset directories: `none`
+- Evidence: 84 Gemma 3 4B responses on twelve adapted bugs; zero observed recovery successes, four uncertain requests retained; no trained selector or held-out claim
+- Asset directories: `results`
 - `experiments/python-repair/checkpoint-environment/README.md`
+- `experiments/python-repair/checkpoint-environment/results/gemma4b-calibration-20261026/analysis.json`
+- `experiments/python-repair/checkpoint-environment/results/gemma4b-calibration-20261026/calibration-outcomes.png`
+- `experiments/python-repair/checkpoint-environment/results/gemma4b-calibration-20261026/calibration-outcomes.svg`

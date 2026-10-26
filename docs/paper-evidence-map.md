@@ -47,9 +47,11 @@ not establish that a state-conditioned continue/restart/handoff controller works
 - `experiments/mbpp-plus/context-value-transfer/` (censored external replica; separate empirical draft)
 - `experiments/bigcodebench/feedback-only-routing/` (complete fixed-policy study; no established primary gain or new selector)
 
+- `experiments/python-repair/checkpoint-environment/` (results in `results/gemma4b-calibration-20261026/`: incomplete 12-bug development pilot; 84 responses, no observed recovery success; no fitted selector or held-out claim)
+
 ### Tier 3: Engineering Only — No Model Evidence
 
-- `experiments/python-repair/checkpoint-environment/` (handwritten development fixtures and verified infrastructure; not efficacy evidence)
+- The Python repair bundle’s scripted demo and reference-task qualification remain engineering evidence, distinct from its separately reported paid calibration.
 
 ## Recovery evidence and remaining gaps
 

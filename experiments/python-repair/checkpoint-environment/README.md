@@ -1,22 +1,22 @@
 # Python repair checkpoint environment
 
-**Status: executable repair environment, scripted demo and gated OpenRouter
-collector; the $0.60 development pilot has 76 saved responses across three
-interrupted segments. No completed calibration, fitted selector or held-out
-scientific evaluation.**
+**Status: Gemma 3 4B development pilot closed as incomplete after repeated
+provider HTTP 429 errors. All four segments are preserved: 84 responses, 88
+admissions and $0.01011411 committed including four uncertain reserves. No
+observed recovery success; no fitted selector or held-out evaluation.**
 
-The [interruption record](INTERRUPTION-20261026.md) and
-[pacing amendment](PACING-AMENDMENT-20261026.md) preserve all historical data and
-three uncertain reserves. The user delegated continuation of only original
-unstarted trajectories under the same cumulative cap. The final reviewed
-segment includes the seven still untouched trajectories, with 60-second spacing;
-another provider error closes this pilot as incomplete. All segments remain
-development evidence. The known charges plus reserves are $0.00834277 before
-this final segment.
+Read the [findings and reproduction instructions](results/gemma4b-calibration-20261026/README.md)
+and [audited report](results/gemma4b-calibration-20261026/REPORT.md). Eighteen of
+24 planned trajectories finished; four are partial and two never started.
+The [original interruption](INTERRUPTION-20261026.md) and
+[pacing amendments](PACING-AMENDMENT-20261026.md) document every operational
+exception. The final one-minute segment also hit HTTP 429, activating its
+predeclared closure. No further calls or successors are authorized by those
+continuation configs. The historical monitor remains paused.
 
 The [real-bug development pool](development/README.md) adds twelve adapted BugsInPy
 tasks with pinned source excerpts, public/evaluator cases, documented exclusions
-and reproducible offline qualification. These are engineering fixtures, not model results.
+and reproducible offline qualification. The qualification is engineering evidence; the separate pilot is limited model evidence.
 
 The domain is function-level Python repair: one or two flat, standard-library
 modules, a named callable and JSON inputs/outputs. The environment saves complete
@@ -75,10 +75,10 @@ Milestones:
    and costs. Treat this as empirical scaling curves; three model sizes do not
    establish a general scaling law or isolate parameter count as the cause.
 
-The goal is active; the full milestones above are not completed. The user has
-authorized a new $0.60 pilot cap including uncertain reserves; the funded config
+The goal is active; the full milestones above are not completed. The closed
+pilot had a $0.60 cap including uncertain reserves; the funded config
 is [PILOT-AUTHORIZED.json](PILOT-AUTHORIZED.json). Closed historical budgets cannot
-fund this pilot. Collection still requires a clean, committed source/task freeze.
+fund this pilot. A further collection needs a separately reviewed protocol and authorization; the old continuation configurations cannot be reused.
 
 ## Run locally
 
@@ -266,8 +266,8 @@ full selected task/trajectory denominator and incomplete-checkpoint bounds.
 ```bash
 uv run python scripts/report_repair_calibration.py \
   --input runs/repair-gemma4b-development-final-20261026 \
-  --output runs/repair-calibration-report --export-evidence
-# Add --allow-interrupted only when the final collector has stopped in error.
+  --output runs/repair-calibration-report --allow-interrupted --export-evidence
+# Optional: --reverify executes saved artifacts in the macOS sandbox, with zero API calls.
 ```
 
 Policy diagnostics use the same complete checkpoints and equal weight per bug.

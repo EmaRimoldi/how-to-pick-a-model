@@ -142,6 +142,7 @@ def test_malformed_prefix_has_no_fabricated_public_progress(tmp_path):
     assert report['progress_rows'][0]['public_change'] is None
     assert report['progress_rows'][0]['no_op_from_supplied_artifact'] is None
     assert report['task_table'][0]['prefix_format_errors'] == 1
+    assert report['format_error_classes'] == {'invalid_json': 1}
 
 
 def test_evidence_package_reproduces_from_original_relative_layout(tmp_path, monkeypatch):
@@ -167,3 +168,25 @@ def test_evidence_package_reproduces_from_original_relative_layout(tmp_path, mon
     before.pop('replay_selection_timings')
     after.pop('replay_selection_timings')
     assert before == after
+
+
+def test_empty_object_is_an_artifact_failure_not_unparseable_json(tmp_path):
+    report = analyze(make_bank(tmp_path, lambda *_: {}))
+    assert report['format_error_classes'] == {'empty_object': 1}
+    assert report['branch_responses'] == 0
+    assert report['branch_full_successes'] == 0
+
+
+def test_reverification_checks_saved_scores_without_silently_rewriting_them(tmp_path):
+    from vao.analysis.repair_calibration import reverify_evidence
+    output = make_bank(tmp_path, repairs)
+    verified = reverify_evidence(output, Verifier())
+    assert verified['checked_evaluation_records'] == verified['unique_input_suites'] == 7
+    assert verified['discrepancies'] == [] and verified['api_calls'] == 0
+    class Drift(Verifier):
+        def check(self, *args):
+            result = super().check(*args)
+            result['passed'] = not result['passed']
+            return result
+    assert reverify_evidence(output, Drift())['discrepancies']
+    assert reverify_evidence(output, Verifier())['discrepancies'] == []

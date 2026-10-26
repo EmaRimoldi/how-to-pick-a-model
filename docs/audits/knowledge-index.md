@@ -163,7 +163,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | HumanEval+ | `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | Discovery: 30 tasks/132 calls. Transfer: 83 development + 60 evaluation tasks, 1,353 responses, frozen policies, forecasts, controls and cost audit |
 | MBPP+ | `experiments/mbpp-plus/context-value-transfer/` | collection finished; censored descriptive bank | Tier 2: Supporting Or Diagnostic Evidence | 94/96 complete failures, 2,878 recovery responses, two censored solver cells, 288 API forecasts, fixed comparisons and full accounting |
 | BigCodeBench standard-library subset | `experiments/bigcodebench/feedback-only-routing/` | complete; primary gate not passed | Tier 2: Supporting Or Diagnostic Evidence | 157 task clusters, 628/628 policy outcomes, 1,492 responses, no missing outcomes; fixed comparisons, receipts, source freeze, verifier repeat and disclosed single requested interim look |
-| Python function repair | `experiments/python-repair/checkpoint-environment/` | offline development prototype | Tier 3: Engineering Only — No Model Evidence | handwritten demo and twelve adapted real-bug tasks; source audit, isolated qualification, immutable checkpoints and matched forks; no model results |
+| Python function repair | `experiments/python-repair/checkpoint-environment/` | incomplete development calibration | Tier 2: Supporting Or Diagnostic Evidence | 84 Gemma 3 4B responses on twelve adapted bugs; zero observed recovery successes, four uncertain requests retained; no trained selector or held-out claim |
 
 ## Script Entrypoints
 

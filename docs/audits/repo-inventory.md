@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `457`
-- Bytes indexed: `46.6M`
+- Files indexed: `465`
+- Bytes indexed: `48.5M`
 
 ## Canonical Entrypoints
 
@@ -48,11 +48,11 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 262 | 42.1M |
+| `experiments` | 270 | 44.1M |
 | `docs` | 53 | 2.6M |
 | `uv.lock` | 1 | 937.0K |
-| `src` | 75 | 661.7K |
-| `tests` | 29 | 158.1K |
+| `src` | 75 | 667.6K |
+| `tests` | 29 | 159.2K |
 | `scripts` | 29 | 101.3K |
 | `.github` | 5 | 3.3K |
 | `.gitignore` | 1 | 1.4K |
@@ -63,19 +63,19 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 134 | 942.7K |
-| `.json` | 92 | 3.1M |
+| `.py` | 134 | 949.6K |
+| `.json` | 95 | 3.7M |
 | `.txt` | 67 | 349.7K |
-| `.md` | 57 | 306.0K |
+| `.md` | 59 | 317.1K |
 | `.jsonl` | 45 | 36.7M |
-| `.png` | 20 | 2.6M |
+| `.png` | 21 | 2.7M |
 | `.pdf` | 8 | 184.3K |
 | `.sh` | 8 | 15.5K |
 | `.sbatch` | 5 | 7.0K |
 | `.tex` | 5 | 297.7K |
+| `.svg` | 3 | 210.9K |
 | `.yaml` | 3 | 2.6K |
 | `.lock` | 2 | 1.9M |
-| `.svg` | 2 | 156.5K |
 | `.toml` | 2 | 2.8K |
 | `<none>` | 2 | 2.4K |
 | `.bib` | 1 | 13.6K |
@@ -83,6 +83,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.example` | 1 | 773B |
 | `.sty` | 1 | 13.2K |
 | `.yml` | 1 | 1.5K |
+| `.zip` | 1 | 1.3M |
 
 ## Experiment Readmes
 
@@ -100,6 +101,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/mbpp-plus/context-value-transfer/results/replication-20261022/README.md`
 - `experiments/python-repair/checkpoint-environment/README.md`
 - `experiments/python-repair/checkpoint-environment/development/README.md`
+- `experiments/python-repair/checkpoint-environment/results/gemma4b-calibration-20261026/README.md`
 
 ## Script Entrypoints
 

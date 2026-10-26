@@ -98,6 +98,7 @@ def analyze(leaf: Path, *, allow_interrupted=False) -> dict:
     observations, all_groups, policy_rows, trajectories = [], [], [], {}
     task_names, seen_attempts, generation_ids, admissions = {}, set(), set(), set()
     replay_timings, progress_rows = [], []
+    format_classes = Counter()
     for path, manifest in zip(paths, manifests):
         if path != leaf and not (path / "interruption.json").exists():
             raise ValueError("A predecessor must be a terminal interrupted segment")
@@ -121,6 +122,15 @@ def analyze(leaf: Path, *, allow_interrupted=False) -> dict:
                 raise ValueError("Repeated observation across segments")
             seen_attempts.add(row["attempt_id"])
             receipt = read_json(path / "receipts" / (row["attempt_id"] + ".json"))
+            if row["status"] == "format_error":
+                try:
+                    parsed = json.loads(receipt["content"])
+                    kind = "empty_object" if parsed == {} else "invalid_artifact_contract"
+                except (ValueError, TypeError):
+                    kind = "invalid_json"
+                if receipt["finish_reason"] != "stop":
+                    kind = "incomplete_response"
+                format_classes[kind] += 1
             if model_results:
                 if receipt["generation_id"] in generation_ids:
                     raise ValueError("Repeated provider generation identity")
@@ -228,11 +238,15 @@ def analyze(leaf: Path, *, allow_interrupted=False) -> dict:
         "timing_note": "Replay timings are fresh machine-dependent measurements; exclude this field from reproducibility equality. No selector inference cost is claimed.",
         "observed_public_false_positives": sum(r["public_pass"] and not r["full_pass"] for r in observations),
         "format_errors": sum(r["status"] == "format_error" for r in observations),
+        "format_error_classes": dict(format_classes),
+        "branch_responses": sum(r["phase"] == "branch" for r in observations),
+        "branch_full_successes": sum(r["phase"] == "branch" and r["full_pass"] for r in observations),
         "limitations": ["All tasks are inspected development adaptations; no held-out selector evaluation.",
             "Selected development tasks cannot establish generalization to other bugs/projects. The intended real pool has ten of twelve bugs from one upstream project.",
             "Policy table uses common complete observed checkpoints, averages within bug then across bugs, and can be biased by missing states.",
             "Missing-outcome bounds condition on observed eligible checkpoints; unobserved future states are not identified.",
             "Bootstrap intervals resample bug-level paired means (5000 draws, seed 261026); descriptive, no confirmatory p-values.",
+            "All-zero samples yield degenerate bootstrap intervals; these do not bound population recovery probability or establish action equivalence.",
             "One versus two candidates have the same allowance but different actual spending; these are one-checkpoint diagnostics, not deployed multi-step policies.",
             "Public selection can choose an incorrect candidate. No evaluator oracle is used to select answers.",
             "Two draws and a tiny task pool do not establish learnable or generalizable action complementarity."]}
@@ -248,9 +262,10 @@ def render(report: dict) -> str:
         f"Known generation charges: {report['known_generation_charges_usd']} {report['currency']}; "
         f"conservative commitment including unknown requests: {report['conservative_committed_usd']} against {report['cumulative_cap_usd']}.", "",
         f"Observed failed checkpoints: {report['eligible_checkpoints']}; complete matched checkpoints: {report['complete_checkpoints']}.",
-        f"Format failures: {report['format_errors']}. Public-test false positives among all observed artifacts: {report['observed_public_false_positives']}.", "",
+        f"Format failures: {report['format_errors']} ({json.dumps(report['format_error_classes'], sort_keys=True)}). Public-test false positives among all observed artifacts: {report['observed_public_false_positives']}.",
+        f"Observed recovery responses: {report['branch_responses']}; full recovery successes: {report['branch_full_successes']}. Missing responses are excluded from these counts, not marked as failures.", "",
         f"Checkpoints with identical continue/restart input files: {report['identical_action_input_checkpoints']} (retained as controls, not evidence of a distinct artifact intervention).",
-        "", "## Per-bug coverage and action difference", "",
+        "", "![Observed response outcomes](calibration-outcomes.png)", "", "## Per-bug coverage and action difference", "",
         "C−R bounds include missing draws at observed checkpoints; they are not confidence intervals. Prefix successes refer to observed full public+evaluator passes.", "",
         "| Task | Prefix success observed | Finished / planned | Checkpoints complete / observed | C−R lower | C−R upper |",
         "| --- | ---: | ---: | ---: | ---: | ---: |"]
@@ -325,19 +340,95 @@ def export_evidence(leaf: Path, output: Path) -> dict:
     return manifest
 
 
+
+def reverify_evidence(leaf: Path, verifier=None) -> dict:
+    """Re-execute saved artifacts locally; never mutate observations or call APIs."""
+    from vao.repair.environment import identity
+    from vao.repair.verifier import RepairVerifier
+    if not ((leaf / "pilot-completion.json").exists() or (leaf / "interruption.json").exists()):
+        raise ValueError("Cannot reverify a live bank")
+    verifier = verifier or RepairVerifier()
+    preflight = verifier.preflight()
+    cached, checked, discrepancies = {}, [], []
+    for segment in lineage(leaf):
+        audit(segment)
+        for trajectory in sorted((segment / "trajectories").glob("*")):
+            event = read_json(trajectory / "events" / "000000.json")
+            task = read_json(trajectory / "objects" / (event["objects"][0] + ".json"))
+            for path in sorted((trajectory / "objects").glob("*.json")):
+                evaluation = read_json(path)
+                if evaluation.get("kind") != "evaluation":
+                    continue
+                files = read_json(trajectory / "objects" / (evaluation["artifact"] + ".json"))["files"]
+                cases = task["public"]["public_cases"] if evaluation["channel"] == "public" else task["evaluator"]["cases"]
+                key = identity({"files": files, "entrypoint": task["public"]["entrypoint"], "cases": cases})
+                if key not in cached:
+                    cached[key] = verifier.check(files, task["public"]["entrypoint"], cases)
+                stable = lambda result: {k: v for k, v in result.items() if k != "verifier_seconds"}
+                same = stable(cached[key]) == stable(evaluation["result"])
+                checked.append({"evaluation": path.as_posix(), "input_id": key, "matched": same})
+                if not same:
+                    discrepancies.append({"evaluation": path.as_posix(), "original": stable(evaluation["result"]), "reexecuted": stable(cached[key])})
+    return {"mode": "offline_sandbox_reverification", "api_calls": 0, "preflight": preflight,
+            "checked_evaluation_records": len(checked), "unique_input_suites": len(cached),
+            "discrepancies": discrepancies, "checks": checked, "reexecuted_results": cached}
+
+
+
+def plot_summary(report: dict, output: Path) -> None:
+    """Observed response counts only; no claim of independent success trials."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    prefix_n = sum(t["prefix_attempts_observed"] for t in report["task_table"])
+    prefix_ok = sum(t["prefix_successes_observed"] for t in report["task_table"])
+    prefix_bad = sum(t["prefix_format_errors"] for t in report["task_table"])
+    success = [prefix_ok, report["branch_full_successes"]]
+    malformed = [prefix_bad, report["format_errors"] - prefix_bad]
+    totals = [prefix_n, report["branch_responses"]]
+    failed = [n - ok - bad for n, ok, bad in zip(totals, success, malformed)]
+    fig, ax = plt.subplots(figsize=(8.4, 3.8), layout="constrained")
+    left = [0, 0]
+    for label, values, color in (("Full test pass", success, "#238b69"),
+                                  ("Valid artifact; tests fail", failed, "#6f7f91"),
+                                  ("Invalid artifact contract", malformed, "#d88932")):
+        ax.barh([1, 0], values, left=left, color=color, label=label, height=.5)
+        for y, start, value in zip([1, 0], left, values):
+            if value:
+                ax.text(start + value / 2, y, str(value), va="center", ha="center", color="white", weight="bold")
+        left = [a + b for a, b in zip(left, values)]
+    ax.set_yticks([1, 0], ["Prefix attempts", "Recovery candidates"])
+    ax.set_xlabel("Observed responses (correlated within bugs and checkpoints)")
+    ax.set_title("Development calibration: response outcomes", loc="left", pad=28, weight="bold")
+    ax.text(0, 1.06, f"{report['tasks']} selected bugs; incomplete bank; missing responses excluded, not counted as failures",
+            transform=ax.transAxes, fontsize=9)
+    ax.spines[["top", "right"]].set_visible(False)
+    ax.legend(loc="upper center", bbox_to_anchor=(.5, -.3), ncols=3, frameon=False, fontsize=8)
+    fig.savefig(output / "calibration-outcomes.png", dpi=180)
+    fig.savefig(output / "calibration-outcomes.svg", metadata={"Date": None})
+    plt.close(fig)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--allow-interrupted", action="store_true")
     parser.add_argument("--export-evidence", action="store_true")
+    parser.add_argument("--reverify", action="store_true", help="Locally execute saved code in the existing macOS sandbox; zero API calls")
     args = parser.parse_args()
     result = analyze(args.input, allow_interrupted=args.allow_interrupted)
     args.output.mkdir(parents=True, exist_ok=False)
     save(args.output / "analysis.json", result)
     (args.output / "REPORT.md").write_text(render(result))
+    plot_summary(result, args.output)
     if args.export_evidence:
         export_evidence(args.input, args.output)
+    if args.reverify:
+        verified = reverify_evidence(args.input)
+        save(args.output / "reverification.json", verified)
+        if verified["discrepancies"]:
+            raise ValueError("Offline re-execution disagreed; inspect reverification.json")
     print(json.dumps({k: result[k] for k in ("evidence_status", "model_results", "observations", "complete_checkpoints", "conservative_committed_usd")}, indent=2))
 
 
