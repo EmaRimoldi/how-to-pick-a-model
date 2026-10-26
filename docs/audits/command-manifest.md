@@ -5,8 +5,8 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `50`
-- Default-safe commands: `40`
+- Commands indexed: `51`
+- Default-safe commands: `41`
 - Missing required maintenance actions: `0`
 
 ## Safety Classes
@@ -16,7 +16,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `cluster-setup` | 1 |
 | `live-local` | 6 |
 | `mixed-cli` | 3 |
-| `read-only-analysis` | 24 |
+| `read-only-analysis` | 25 |
 | `safe-figure-regeneration` | 4 |
 | `safe-local` | 10 |
 | `safe-local-optional-tool` | 2 |
@@ -26,7 +26,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | Surface | Commands |
 | --- | --- |
 | `maintenance` | 6 |
-| `scripts` | 37 |
+| `scripts` | 38 |
 | `scripts/cluster` | 1 |
 | `scripts/maintenance` | 6 |
 
@@ -62,6 +62,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/prepare_feedback_routing.py` | scripts | `read-only-analysis` | yes | inspect script before running | Verify the pinned BigCodeBench download and reproduce reference-only eligibility. |
 | `python scripts/prepare_repair_contract_probe.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare a reviewable, offline-only Gemma response-contract diagnostic. |
 | `python scripts/prepare_repair_diagnostics.py` | scripts | `read-only-analysis` | yes | inspect script before running | Execute a public-only offline diagnostic demo; never dispatch model requests. |
+| `python scripts/prepare_repair_extension_information_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare the independent development-extension information design offline. |
 | `python scripts/prepare_repair_information_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare a public-trace information experiment offline; never dispatch APIs. |
 | `python scripts/prepare_repair_interface_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare exact factorial repair-interface requests offline; no model calls. |
 | `python scripts/prepare_repair_qwen_information_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare matched Qwen trace-information requests offline; no API calls. |

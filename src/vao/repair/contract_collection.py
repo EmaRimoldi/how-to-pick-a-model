@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 import shutil
 
-from .contracts import STUDY, DEEPINFRA_STUDY, GEMMA12B_STUDY, GEMMA27B_STUDY, TRACE_STUDY, INTERFACE_STUDY, SOLVER_STUDY, QWEN_TRACE_STUDY, decode, provenance, provider_body, public_feedback, task_from_record, validate, study_settings, study_spacing
+from .contracts import STUDY, DEEPINFRA_STUDY, GEMMA12B_STUDY, GEMMA27B_STUDY, TRACE_STUDY, INTERFACE_STUDY, SOLVER_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, decode, provenance, provider_body, public_feedback, task_from_record, validate, study_settings, study_spacing
 from .environment import RepairRun, audit_run, identity
 from .pilot import file_hashes, source_commit
 from .provider import OpenRouterTransport, ProviderStopped, Settings, dollars
@@ -44,7 +44,12 @@ def authorization(config, packet, prior):
         raise ValueError('New study cap must cover the whole design without exceeding the proposal')
     if config.get('minimum_request_interval_seconds') != study_spacing(packet['study']):
         raise ValueError('The contract study requires its declared request spacing')
-    if packet['study'] == QWEN_TRACE_STUDY:
+    if packet['study'] == EXTENSION_TRACE_STUDY:
+        if (prior.get('study') != QWEN_TRACE_STUDY or prior.get('status') != 'incomplete_development_information_probe'
+                or prior.get('gate') != 'inconclusive_incomplete_bank' or prior.get('fit_selector') is not False):
+            raise ValueError('Extension calibration must carry the closed Qwen information bank')
+        carried = dollars(prior['accounting']['cumulative_committed_usd'])
+    elif packet['study'] == QWEN_TRACE_STUDY:
         if (prior.get('study') != SOLVER_STUDY or prior.get('status') != 'complete_development_solver_probe'
                 or prior.get('gate') != 'candidate_for_separate_intervention_calibration' or prior.get('fit_selector') is not False):
             raise ValueError('Qwen information calibration requires the closed successful compatibility screen')
@@ -82,8 +87,11 @@ def authorization(config, packet, prior):
 
 def freeze(packet, config, output: Path):
     validate(packet)
-    if packet['study'] == QWEN_TRACE_STUDY:
-        from .qwen_information_study import validate_origin
+    if packet['study'] in (QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY):
+        if packet['study'] == EXTENSION_TRACE_STUDY:
+            from .extension_information_study import validate_origin
+        else:
+            from .qwen_information_study import validate_origin
         validate_origin(packet)
     if packet['study'] == SOLVER_STUDY:
         from .solver_study import validate_origin
@@ -119,8 +127,11 @@ def validate_freeze(frozen, *, current=False):
     if dollars(frozen['authorized_limit_usd']) != limit or dollars(frozen['carried_commitment_usd']) != carried:
         raise ValueError('Frozen financial projection differs')
     if current:
-        if packet['study'] == QWEN_TRACE_STUDY:
-            from .qwen_information_study import validate_origin
+        if packet['study'] in (QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY):
+            if packet['study'] == EXTENSION_TRACE_STUDY:
+                from .extension_information_study import validate_origin
+            else:
+                from .qwen_information_study import validate_origin
             validate_origin(packet)
         if source_commit() != frozen['source_commit'] or provenance([task_from_record(t) for t in packet['tasks']], packet['study']) != packet['source_provenance']:
             raise ValueError('Current source differs from the reviewed freeze')
@@ -166,7 +177,7 @@ def collect(frozen, output: Path, *, claim_root=None, continuation=None):
         actual = verifier.check(task.public['files'], task.public['entrypoint'], task.public['public_cases'])
         if public_feedback(actual) != public_feedback(record['initial_public_result']):
             raise ValueError('Initial feedback no longer reproduces')
-    if packet['study'] in (TRACE_STUDY, QWEN_TRACE_STUDY):
+    if packet['study'] in (TRACE_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY):
         from .diagnostic_study import validate_diagnostics
         validate_diagnostics(packet, verifier)
     claims = claim_root or ROOT / 'runs' / 'repair-contract-admissions'
@@ -185,7 +196,11 @@ def collect(frozen, output: Path, *, claim_root=None, continuation=None):
         extra['continuation'] = continuation
     save(output / 'manifest.json', {'mode': 'model_contract_diagnostic', 'model_results': True,
                                     'currency': 'USD', 'freeze': frozen, **extra})
-    transport = OpenRouterTransport(output, key, ContractSettings(**packet['provider_settings']),
+    transport_type = OpenRouterTransport
+    if packet['study'] == EXTENSION_TRACE_STUDY:
+        from .independent_transport import IndependentCellTransport
+        transport_type = IndependentCellTransport
+    transport = transport_type(output, key, ContractSettings(**packet['provider_settings']),
         authorized_limit_usd=str(limit), minimum_interval_seconds=study_spacing(packet['study']))
     try:
         transport.preflight()
@@ -194,7 +209,13 @@ def collect(frozen, output: Path, *, claim_root=None, continuation=None):
             meta = planned['metadata']; attempt = meta['attempt_id']
             task = tasks[meta['task_index']]
             save(output / 'requests' / (attempt + '.json'), planned)
-            receipt = transport.complete(planned['request'], meta)
+            try:
+                receipt = transport.complete(planned['request'], meta)
+            except ProviderStopped:
+                if (packet['study'] == EXTENSION_TRACE_STUDY
+                        and transport.retain_missing_before_next(attempt)):
+                    continue
+                raise
             if receipt['generation_id'] in generation_ids:
                 raise ProviderStopped('Repeated provider generation identity; stop without another call')
             generation_ids.add(receipt['generation_id'])
@@ -227,7 +248,15 @@ def collect(frozen, output: Path, *, claim_root=None, continuation=None):
                                         + transport.conservative_committed_usd))
         save(output / 'interruption.json', interruption)
         raise
-    save(output / 'pilot-completion.json', {'observations': len(planned_requests), 'file_hashes': file_hashes(output)})
+    if transport.pending:
+        # All scheduled cells were visited, but transport uncertainty is not a complete bank.
+        save(output / 'interruption.json', {'exception_type': 'ScheduleExhaustedWithMissing',
+            'resume_allowed': False, 'scheduled_requests_exhausted': True,
+            'settled_usd': str(transport.spent), 'pending': {k: str(v) for k, v in transport.pending.items()},
+            'study_commitment_usd': str(transport.conservative_committed_usd),
+            'cumulative_commitment_usd': str(carried + transport.conservative_committed_usd)})
+    else:
+        save(output / 'pilot-completion.json', {'observations': len(planned_requests), 'file_hashes': file_hashes(output)})
     return audit(output)
 
 
@@ -268,12 +297,16 @@ def _audit_records(output, packet, limit, carried, requests):
     settings = ContractSettings(**packet['provider_settings'])
     planned = {r['metadata']['attempt_id']: r for r in requests}
     pending, settled, admitted = {}, {}, []
+    retained = set()
+    independent = packet["study"] == EXTENSION_TRACE_STUDY
+    errors = rows(output / "provider-errors.jsonl")
     for event in rows(output / 'ledger.jsonl'):
         key, amount = event['attempt_id'], dollars(event['usd'])
         if key not in planned or event['currency'] != 'USD':
             raise ValueError('Undeclared admission or currency')
         if event['event'] == 'reserve':
-            if pending or key in admitted or amount != settings.reserve or sum(settled.values()) + sum(pending.values()) + amount > limit:
+            if ((bool(pending) and (not independent or set(pending) != retained)) or key in admitted
+                    or amount != settings.reserve or sum(settled.values()) + sum(pending.values()) + amount > limit):
                 raise ValueError('Repeated admission or violated cap')
             pending[key] = amount; admitted.append(key)
             request = read(output / 'requests' / (key + '.json'))
@@ -281,9 +314,15 @@ def _audit_records(output, packet, limit, carried, requests):
             if request != planned[key] or body != planned[key]['provider_body']:
                 raise ValueError('Admitted request differs from packet')
         elif event['event'] == 'settle':
-            if key not in pending or amount > pending[key]:
+            if key not in pending or key in retained or amount > pending[key]:
                 raise ValueError('Invalid settlement')
             pending.pop(key); settled[key] = amount
+        elif event['event'] == 'retain_unknown':
+            if not independent or key not in pending or key in retained or key != admitted[-1] or amount != pending[key]:
+                raise ValueError('Undeclared missing-cell disposition')
+            from .independent_transport import validate_retention
+            validate_retention(output, event, errors, already_retained=len(retained))
+            retained.add(key)
         else:
             raise ValueError('Unknown ledger event')
     if admitted != list(planned)[:len(admitted)]:

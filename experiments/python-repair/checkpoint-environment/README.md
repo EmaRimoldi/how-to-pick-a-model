@@ -64,6 +64,13 @@ twelve-task pool and all closed studies retain their identities. The consolidate
 across ten projects. The [transport review](TRANSPORT-REVIEW-20261026.md) records
 the timeout evidence and requirements for a distinct future collection.
 
+The separately declared [extension information protocol](EXTENSION-INFORMATION-PROTOCOL.md)
+prepares 24 fresh matched requests on those three additional development bugs,
+within a new $0.18 allocation under the standing $0.60 ceiling. Its prospective
+independent-cell rule preserves one uncertain response and its reserve while
+allowing later scheduled cells; a second error stops. It never resumes the closed
+bank. No model results from this new study are available at declaration.
+
 The domain is function-level Python repair: one or two flat, standard-library
 modules, a named callable and JSON inputs/outputs. The environment saves complete
 artifacts, public verification, progress histories and branch ancestry. It restores

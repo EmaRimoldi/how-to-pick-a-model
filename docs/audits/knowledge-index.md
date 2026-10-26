@@ -9,8 +9,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `8`
-- Script entrypoints indexed: `44`
-- Code modules indexed: `85`
+- Script entrypoints indexed: `45`
+- Code modules indexed: `87`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `6`
@@ -186,6 +186,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/prepare_python_repair.py` | python | Plan or explicitly run an offline Python repair demo, qualification or audit. |
 | `scripts/prepare_repair_contract_probe.py` | python | Prepare a reviewable, offline-only Gemma response-contract diagnostic. |
 | `scripts/prepare_repair_diagnostics.py` | python | Execute a public-only offline diagnostic demo; never dispatch model requests. |
+| `scripts/prepare_repair_extension_information_study.py` | python | Prepare the independent development-extension information design offline. |
 | `scripts/prepare_repair_information_study.py` | python | Prepare a public-trace information experiment offline; never dispatch APIs. |
 | `scripts/prepare_repair_interface_study.py` | python | Prepare exact factorial repair-interface requests offline; no model calls. |
 | `scripts/prepare_repair_pilot.py` | python | Plan repair calibration offline; live collection requires a funded freeze. |
@@ -285,6 +286,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/repair/diagnostics.py` | Public-only diagnostic acquisition and matched offline prompt projections. This is an engineering component, not a fitted policy or a live collector. Callers pass public task data, never a RepairTask with evaluator cases. | validate_public, binding, observe, selected_failure, acquire, project |
 | verified orchestration runtime | `src/vao/repair/environment.py` | Store verifiable repair artifacts and fork matched continue/restart requests. | canonical, identity, validate_files, validate_cases, RepairTask, RepairRun, audit_run |
 | verified orchestration runtime | `src/vao/repair/exposure.py` | Conservative, reproducible development-exposure guard; never certifies a holdout. | normalize, build, assess_candidate, main |
+| verified orchestration runtime | `src/vao/repair/extension_information_study.py` | Independent three-bug development calibration; no historical bank is resumed. | design, schedule, planned_requests, construct, validate_packet, source_records, validate_origin, main |
+| verified orchestration runtime | `src/vao/repair/independent_transport.py` | Prospective missing-cell handling for a separately frozen independent design. Historical collectors never use this adapter. An uncertain request is never retried or settled. At most one uncertain cell may be retained while proceeding to the remaining independent scheduled cells. | validate_retention, IndependentCellTransport |
 | verified orchestration runtime | `src/vao/repair/information_continuation.py` | One reviewed exception for only the original trace probe's unsent requests. The original zero-response segment is immutable. There is no recursive resume, retry, replacement cell, changed prompt, new seed or additional budget. | reference_files, parent_evidence, validate_config, freeze, validate_continuation, audit_continuation, main |
 | verified orchestration runtime | `src/vao/repair/interface_study.py` | Prepare four matched interface conditions after the closed trace study. | design, remove_claim, project, schedule, planned_requests, construct, validate_packet, validate_origin |
 | verified orchestration runtime | `src/vao/repair/pilot.py` | Plan matched repair collection; live mode requires a funded source freeze. The default is offline planning. Scripted demonstrations never provide model evidence. Existing output directories and admitted calls cannot be resumed. | Design, fingerprint, schedule_for, check_continuation, ScriptedTransport, evaluate_response, public_choice, collect |

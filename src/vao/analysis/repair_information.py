@@ -7,7 +7,7 @@ from pathlib import Path
 import random
 
 from vao.repair.contract_collection import audit, read
-from vao.repair.contracts import TRACE_STUDY, QWEN_TRACE_STUDY
+from vao.repair.contracts import TRACE_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY
 from vao.repair.diagnostic_study import DRAWS
 from vao.repair.diagnostics import ARMS
 from vao.repair.records import rows, save
@@ -27,9 +27,9 @@ def summarize(output):
     checked = audit(output)
     frozen = read(output / "manifest.json")["freeze"]
     packet = frozen["packet"]
-    if packet["study"] not in (TRACE_STUDY, QWEN_TRACE_STUDY):
+    if packet["study"] not in (TRACE_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY):
         raise ValueError("Expected the public trace information study")
-    arms = ("focused", "focused_trace") if packet["study"] == QWEN_TRACE_STUDY else ARMS
+    arms = ("focused", "focused_trace") if packet["study"] in (QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY) else ARMS
     observed = {r["attempt_id"]: r for r in rows(output / "observations.jsonl")}
     cells = []
     for planned in packet["requests"]:
@@ -134,6 +134,12 @@ def summarize(output):
     if packet["study"] == QWEN_TRACE_STUDY:
         report["limitations"][2] = "Primary and only arm contrast: focused_trace minus focused; fresh concurrent controls, no historical-control substitution."
         report["limitations"].append("Solver compatibility qualified this development model. This is not a causal comparison with Gemma or evidence of a scaling law.")
+    if packet["study"] == EXTENSION_TRACE_STUDY:
+        report["limitations"][0] = "Three inspected development bugs from two projects; four draws each, no held-out or population inference."
+        report["limitations"][1] = "Initial checkpoints are original upstream buggy versions, not LLM-generated failures; all three are retained. No generated-prefix API cost exists."
+        report["limitations"][2] = "Only primary contrast: focused_trace minus focused on fresh matched requests. No pooling with the closed eight-checkpoint bank."
+        report["limitations"][6] = "Bootstrap intervals describe only three purposively selected bug clusters and can be unstable; they cannot justify a population claim or selector training."
+        report["limitations"].append("The prospective transport policy can retain one missing call and continue independent cells; a second error stops. Every unknown remains reserved and missing; any incomplete bank has a null mean/bootstrap and inconclusive gate.")
     successor = read(output / 'manifest.json').get('continuation')
     if successor is not None:
         report['continuation'] = {k: successor[k] for k in ('continuation_id', 'source_commit',
@@ -152,8 +158,9 @@ def render(report):
         "| --- | ---: | ---: | ---: | ---: | ---: | ---: |"]
     for r in report["arm_table"]:
         lines.append(f"| {r['arm']} | {r['observed']}/{r['planned']} | {r['successes']} | {r['false_positives']} | {r['regressions']} | {r['missing']} | {r['known_usd']} |")
+    task_label = "all three task records" if report["study"] == EXTENSION_TRACE_STUDY else "all twelve task records"
     lines += ["", "Primary contrast and all secondary contrasts:", "", "```json", json.dumps(report["contrasts"], indent=2), "```", "",
-              "The screening rule cannot train or certify a policy. Full costs, prefix accounting, local acquisition/verification and all twelve task records are in analysis.json.", "", "## Limitations", ""]
+              f"The screening rule cannot train or certify a policy. Full costs, prefix accounting, local acquisition/verification and {task_label} are in analysis.json.", "", "## Limitations", ""]
     lines += ["- " + item for item in report["limitations"]]
     return "\n".join(lines) + "\n"
 
