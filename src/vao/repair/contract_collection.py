@@ -9,7 +9,7 @@ import json
 import os
 from pathlib import Path
 
-from .contracts import STUDY, DEEPINFRA_STUDY, GEMMA12B_STUDY, GEMMA27B_STUDY, decode, provenance, provider_body, public_feedback, task_from_record, validate, study_settings, study_spacing
+from .contracts import STUDY, DEEPINFRA_STUDY, GEMMA12B_STUDY, GEMMA27B_STUDY, TRACE_STUDY, decode, provenance, provider_body, public_feedback, task_from_record, validate, study_settings, study_spacing
 from .environment import RepairRun, audit_run, identity
 from .pilot import file_hashes, source_commit
 from .provider import OpenRouterTransport, ProviderStopped, Settings, dollars
@@ -47,8 +47,9 @@ def authorization(config, packet, prior):
         if prior.get('study') != STUDY or prior.get('status') != 'incomplete_development_diagnostic':
             raise ValueError('DeepInfra study must carry the closed Parasail diagnostic')
         carried = dollars(prior['accounting']['cumulative_committed_usd'])
-    elif packet['study'] in (GEMMA12B_STUDY, GEMMA27B_STUDY):
-        previous = DEEPINFRA_STUDY if packet['study'] == GEMMA12B_STUDY else GEMMA12B_STUDY
+    elif packet['study'] in (GEMMA12B_STUDY, GEMMA27B_STUDY, TRACE_STUDY):
+        previous = {GEMMA12B_STUDY: DEEPINFRA_STUDY, GEMMA27B_STUDY: GEMMA12B_STUDY,
+                    TRACE_STUDY: GEMMA27B_STUDY}[packet['study']]
         if (prior.get('study') != previous or prior.get('status') != 'development_diagnostic_complete'
                 or prior.get('gate') != 'no_contract_meets_engineering_checks'):
             raise ValueError('Capability calibration must carry the completed unsuccessful preceding contract diagnostic')
@@ -65,6 +66,9 @@ def authorization(config, packet, prior):
 
 def freeze(packet, config, output: Path):
     validate(packet)
+    if packet['study'] == TRACE_STUDY:
+        from .diagnostic_study import validate_origin
+        validate_origin(packet)
     tasks = [task_from_record(t) for t in packet['tasks']]
     if packet['source_provenance'] != provenance(tasks, packet['study']):
         raise ValueError('Rebuild the offline packet after source changes')
@@ -95,6 +99,9 @@ def validate_freeze(frozen, *, current=False):
         prior_path = Path(frozen['config']['closed_pilot_report'])
         if content_hash(prior_path) != frozen['prior_report_sha256'] or read(prior_path) != frozen['prior_report']:
             raise ValueError('Closed prior evidence changed')
+        if packet['study'] == TRACE_STUDY:
+            from .diagnostic_study import validate_origin
+            validate_origin(packet)
     return packet, limit, carried
 
 
@@ -113,6 +120,9 @@ def collect(frozen, output: Path, *, claim_root=None):
         actual = verifier.check(task.public['files'], task.public['entrypoint'], task.public['public_cases'])
         if public_feedback(actual) != public_feedback(record['initial_public_result']):
             raise ValueError('Initial feedback no longer reproduces')
+    if packet['study'] == TRACE_STUDY:
+        from .diagnostic_study import validate_diagnostics
+        validate_diagnostics(packet, verifier)
     claims = claim_root or ROOT / 'runs' / 'repair-contract-admissions'
     claims.mkdir(parents=True, exist_ok=True)
     # Fixed study identity, not caller-controlled campaign names: one attempt only.

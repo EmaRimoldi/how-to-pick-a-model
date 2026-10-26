@@ -28,6 +28,7 @@ PROPOSED_LIMIT = Decimal("0.06")
 DEEPINFRA_STUDY = "repair-contract-deepinfra-v1"
 GEMMA12B_STUDY = "repair-contract-gemma12b-v1"
 GEMMA27B_STUDY = "repair-contract-gemma27b-v1"
+TRACE_STUDY = "repair-public-trace-information-v1"
 EXAMPLE = {"example.py": "def identity(value):\n    return value\n"}
 INSTRUCTIONS = {
     "json_current": REPAIR_SYSTEM,
@@ -40,6 +41,10 @@ INSTRUCTIONS = {
 
 
 def study_settings(study):
+    if study == TRACE_STUDY:
+        return Settings(model="google/gemma-3-27b-it", endpoint="deepinfra/fp8", provider_name="DeepInfra",
+                        quantization="fp8", input_per_million="0.08", output_per_million="0.16",
+                        seed=43122), Decimal("0.34")
     if study == STUDY:
         return Settings(seed=SEED), PROPOSED_LIMIT
     if study == DEEPINFRA_STUDY:
@@ -57,7 +62,7 @@ def study_settings(study):
 
 def study_spacing(study):
     study_settings(study)  # Reject undeclared studies; historical pacing is unchanged.
-    return 10 if study in (GEMMA12B_STUDY, GEMMA27B_STUDY) else 60
+    return 10 if study in (GEMMA12B_STUDY, GEMMA27B_STUDY, TRACE_STUDY) else 60
 
 
 def public_feedback(result: dict) -> dict:
@@ -116,6 +121,14 @@ def task_from_record(record):
 
 def provenance(tasks, study=STUDY):
     runtime = fingerprint(tasks, Design())
+    if study == TRACE_STUDY:
+        from .diagnostic_study import design
+        import hashlib
+        runtime["design"] = design()
+        for name in ("repair_information.py", "contract_diagnostic.py", "contract_verification.py"):
+            report = Path(__file__).parent.parent / "analysis" / name
+            runtime["sources"]["analysis/" + name] = hashlib.sha256(report.read_bytes()).hexdigest()
+        return runtime
     runtime["design"] = {"contracts": list(CONTRACTS), "draws_per_contract": 1, "seed": study_settings(study)[0].seed}
     return runtime
 
@@ -170,6 +183,9 @@ def construct(tasks: list[RepairTask], verifier, *, prior_commitment="0.01011411
 
 
 def validate(plan: dict) -> dict:
+    if plan.get("study") == TRACE_STUDY:
+        from .diagnostic_study import validate_packet
+        return validate_packet(plan)
     if identity({k: v for k, v in plan.items() if k != "packet_id"}) != plan["packet_id"]:
         raise ValueError("Packet identity differs")
     if plan["status"] != "draft_not_authorized" or plan["live_calls_enabled"] or plan["monetary_authorization_usd"] is not None:

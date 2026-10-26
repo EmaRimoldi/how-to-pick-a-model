@@ -5,8 +5,8 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `36`
-- Default-safe commands: `26`
+- Commands indexed: `38`
+- Default-safe commands: `28`
 - Missing required maintenance actions: `0`
 
 ## Safety Classes
@@ -16,7 +16,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `cluster-setup` | 1 |
 | `live-local` | 6 |
 | `mixed-cli` | 3 |
-| `read-only-analysis` | 14 |
+| `read-only-analysis` | 16 |
 | `safe-local` | 10 |
 | `safe-local-optional-tool` | 2 |
 
@@ -25,7 +25,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | Surface | Commands |
 | --- | --- |
 | `maintenance` | 6 |
-| `scripts` | 23 |
+| `scripts` | 25 |
 | `scripts/cluster` | 1 |
 | `scripts/maintenance` | 6 |
 
@@ -54,9 +54,11 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/prepare_feedback_routing.py` | scripts | `read-only-analysis` | yes | inspect script before running | Verify the pinned BigCodeBench download and reproduce reference-only eligibility. |
 | `python scripts/prepare_repair_contract_probe.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare a reviewable, offline-only Gemma response-contract diagnostic. |
 | `python scripts/prepare_repair_diagnostics.py` | scripts | `read-only-analysis` | yes | inspect script before running | Execute a public-only offline diagnostic demo; never dispatch model requests. |
+| `python scripts/prepare_repair_information_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare a public-trace information experiment offline; never dispatch APIs. |
 | `python scripts/report_feedback_routing.py` | scripts | `read-only-analysis` | yes | inspect script before running | Publish a completed feedback-only bank, audited statistics and static figures. Public CLI facade; implementation lives in vao.analysis.report_feedback_routing. |
 | `python scripts/report_repair_calibration.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit terminal repair-pilot segments and report descriptive results offline. |
 | `python scripts/report_repair_contract_probe.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit and describe a terminal output-contract diagnostic; no API calls. |
+| `python scripts/report_repair_information_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Report a terminal public-trace information study without model calls. |
 | `python scripts/verify_feedback_evidence.py` | scripts | `read-only-analysis` | yes | inspect script before running | Verify published BigCodeBench evidence offline without executing candidate code. Public CLI facade; implementation lives in vao.analysis.verify_feedback_evidence. |
 | `python scripts/verify_repair_contract_evidence.py` | scripts | `read-only-analysis` | yes | inspect script before running | Verify archived contract reports and independently replay saved artifacts. |
 | `python scripts/prepare_python_repair.py` | scripts | `mixed-cli` | no | plan/audit are read-only; demo/qualify require macOS sandbox-exec and a fresh output directory; no provider calls | Plan or explicitly run an offline Python repair demo, qualification or audit. |

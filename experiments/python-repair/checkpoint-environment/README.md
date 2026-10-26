@@ -12,6 +12,13 @@ Eight of twelve saved JSON candidates expose a public failure and yield a
 consistent bounded execution trace; four do not trigger a probe. No model has
 yet received the new diagnostic, so no repair benefit is established.
 
+The [prospective information probe](INFORMATION-PROTOCOL.md) fixes 96 requests:
+eight failed checkpoints, four draws and three information conditions. Its
+[declared allocation](INFORMATION-AUTHORIZED.json) is $0.34 within the existing
+$0.60 cumulative ceiling, carrying $0.02211715 once. Shared receipt/accounting
+and freeze machinery is reused; the new study has a separate identity and
+analysis. Passing its screen permits only independent calibration, not training.
+
 Read the [complete contract findings](results/contract-deepinfra-20261026/README.md).
 The earlier recovery pilot remains incomplete after repeated provider HTTP 429
 errors: 84 responses, 88 admissions and $0.01011411 committed including four

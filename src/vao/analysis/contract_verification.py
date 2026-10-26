@@ -35,11 +35,20 @@ def reproduce(source, output):
                 target = root / path
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(content)
-        report = summarize(root / 'collection')
+        from vao.repair.contracts import TRACE_STUDY
+        frozen = read(root / 'collection/manifest.json')['freeze']
+        summarizer, renderer = summarize, render
+        trace_study = frozen['study'] == TRACE_STUDY
+        if trace_study:
+            from vao.analysis.repair_information import summarize as summarizer, render as renderer
+        report = summarizer(root / 'collection')
         assert report == read(source / 'analysis.json')
-        assert render(report) == (source / 'REPORT.md').read_text()
+        assert renderer(report) == (source / 'REPORT.md').read_text()
         verifier = RepairVerifier()
         preflight = verifier.preflight()
+        if trace_study:
+            from vao.repair.diagnostic_study import validate_diagnostics
+            validate_diagnostics(frozen['packet'], verifier)
         results, checks, discrepancies = {}, [], []
         for cell in sorted((root / 'collection/cells').iterdir()):
             def obj(key):
@@ -67,6 +76,8 @@ def reproduce(source, output):
                   'preflight': preflight, 'checked_evaluation_records': len(checks),
                   'unique_input_suites': len(results), 'discrepancies': discrepancies,
                   'checks': checks, 'reexecuted_results': results}
+        if trace_study:
+            result['public_diagnostic_projections_reexecuted'] = True
         with output.open('x') as stream:
             json.dump(result, stream, sort_keys=True)
             stream.write('\n')

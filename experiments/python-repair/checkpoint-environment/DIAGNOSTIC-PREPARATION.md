@@ -2,6 +2,9 @@
 
 Status: implemented engineering prototype; **no live collection or model claim**.
 Research motivation and stop rules are in the [goal amendment](GOAL-AMENDMENT-20261026.md).
+The subsequent [prospective collection protocol](INFORMATION-PROTOCOL.md) now
+specifies exact draws, analysis, accounting and launch requirements. This earlier
+offline preparation document remains the adapter's engineering contract.
 
 The adapter accepts only public task data and a candidate artifact. It runs the
 existing public suite, chooses the first failed case in its declared order,

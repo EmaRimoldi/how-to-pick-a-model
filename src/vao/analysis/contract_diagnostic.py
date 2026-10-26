@@ -8,7 +8,7 @@ import re
 import subprocess
 import zipfile
 
-from vao.repair.contracts import CONTRACTS
+from vao.repair.contracts import CONTRACTS, TRACE_STUDY
 from vao.repair.contract_collection import ROOT, audit, read
 from vao.repair.records import rows, save
 
@@ -19,6 +19,8 @@ def summarize(output: Path):
     checked = audit(output)
     frozen = read(output / 'manifest.json')['freeze']
     packet = frozen['packet']
+    if packet['study'] == TRACE_STUDY:
+        raise ValueError('Use the public-trace information report, not the historical contract gate')
     observed = {r['attempt_id']: r for r in rows(output / 'observations.jsonl')}
     cells = []
     for planned in packet['requests']:
@@ -96,9 +98,9 @@ def render(report):
     return '\n'.join(lines) + '\n'
 
 
-def export_evidence(source: Path, output: Path):
+def export_evidence(source: Path, output: Path, *, summarize_fn=None, report_entrypoint='report_repair_contract_probe'):
     """Export audited terminal records and inert, hash-verified source snapshots."""
-    summarize(source)  # Includes terminal-only, receipt and ledger validation.
+    (summarize_fn or summarize)(source)  # Includes terminal-only, receipt and ledger validation.
     frozen = read(source / 'manifest.json')['freeze']
     commit = frozen['source_commit']
     if not re.fullmatch(r'[a-f0-9]{40}', commit):
@@ -133,7 +135,7 @@ def export_evidence(source: Path, output: Path):
         'archive_sha256': hashlib.sha256(archive.read_bytes()).hexdigest(),
         'files': {name: hashlib.sha256(content).hexdigest() for name, content in sorted(entries.items())},
         'source_format': 'Frozen source snapshots are inert .txt files; model outputs remain JSON data.',
-        'reproduction': 'Verify hashes, extract into a fresh directory, then run the installed report_repair_contract_probe entry point with --input <extracted>/collection and a fresh --output. All analysis and Markdown fields must match; no model calls are made.'}
+        'reproduction': f'Verify hashes, extract into a fresh directory, then run the installed {report_entrypoint} entry point with --input <extracted>/collection and a fresh --output. All analysis and Markdown fields must match; no model calls are made.'}
     save(output / 'evidence-manifest.json', manifest)
     return manifest
 
