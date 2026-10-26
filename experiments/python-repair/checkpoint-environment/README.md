@@ -14,6 +14,11 @@ consistent bounded execution trace; four do not trigger a probe. The
 contains 65 usable responses but no complete repair. A post hoc audit finds
 25 exact copies and 25 further entrypoint-only syntax changes. This motivates
 the [next interface control](STAGNATION-CONTROL-DESIGN.md), not selector training.
+Its [v1 protocol](INTERFACE-PROTOCOL.md) and offline preparer fix 128 fresh
+requests in a four-condition factorial design. The separate declared $0.43
+allocation remains inside the cumulative $0.60 ceiling, carrying $0.04058467.
+Exact requests, source freeze and CI review are prerequisites for the one-use
+collector; preparing the packet makes no model calls.
 
 The [prospective information probe](INFORMATION-PROTOCOL.md) fixes 96 requests:
 eight failed checkpoints, four draws and three information conditions. Its

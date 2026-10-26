@@ -29,6 +29,7 @@ DEEPINFRA_STUDY = "repair-contract-deepinfra-v1"
 GEMMA12B_STUDY = "repair-contract-gemma12b-v1"
 GEMMA27B_STUDY = "repair-contract-gemma27b-v1"
 TRACE_STUDY = "repair-public-trace-information-v1"
+INTERFACE_STUDY = "repair-interface-cues-v1"
 EXAMPLE = {"example.py": "def identity(value):\n    return value\n"}
 INSTRUCTIONS = {
     "json_current": REPAIR_SYSTEM,
@@ -41,6 +42,10 @@ INSTRUCTIONS = {
 
 
 def study_settings(study):
+    if study == INTERFACE_STUDY:
+        return Settings(model="google/gemma-3-27b-it", endpoint="deepinfra/fp8", provider_name="DeepInfra",
+                        quantization="fp8", input_per_million="0.08", output_per_million="0.16",
+                        seed=43126), Decimal("0.43")
     if study == TRACE_STUDY:
         return Settings(model="google/gemma-3-27b-it", endpoint="deepinfra/fp8", provider_name="DeepInfra",
                         quantization="fp8", input_per_million="0.08", output_per_million="0.16",
@@ -62,6 +67,8 @@ def study_settings(study):
 
 def study_spacing(study):
     study_settings(study)  # Reject undeclared studies; historical pacing is unchanged.
+    if study == INTERFACE_STUDY:
+        return 30
     return 10 if study in (GEMMA12B_STUDY, GEMMA27B_STUDY, TRACE_STUDY) else 60
 
 
@@ -121,6 +128,14 @@ def task_from_record(record):
 
 def provenance(tasks, study=STUDY):
     runtime = fingerprint(tasks, Design())
+    if study == INTERFACE_STUDY:
+        from .interface_study import design
+        import hashlib
+        runtime['design'] = design()
+        for name in ('repair_interface.py', 'repair_stagnation.py', 'contract_diagnostic.py', 'contract_verification.py'):
+            report = Path(__file__).parent.parent / 'analysis' / name
+            runtime['sources']['analysis/' + name] = hashlib.sha256(report.read_bytes()).hexdigest()
+        return runtime
     if study == TRACE_STUDY:
         from .diagnostic_study import design
         import hashlib
@@ -183,6 +198,9 @@ def construct(tasks: list[RepairTask], verifier, *, prior_commitment="0.01011411
 
 
 def validate(plan: dict) -> dict:
+    if plan.get('study') == INTERFACE_STUDY:
+        from .interface_study import validate_packet
+        return validate_packet(plan)
     if plan.get("study") == TRACE_STUDY:
         from .diagnostic_study import validate_packet
         return validate_packet(plan)

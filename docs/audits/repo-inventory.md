@@ -6,7 +6,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `559`
+- Files indexed: `566`
 - Bytes indexed: `53.5M`
 
 ## Canonical Entrypoints
@@ -48,12 +48,12 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 338 | 48.8M |
+| `experiments` | 340 | 48.9M |
 | `docs` | 53 | 2.6M |
 | `uv.lock` | 1 | 937.0K |
-| `src` | 86 | 777.0K |
-| `tests` | 35 | 213.1K |
-| `scripts` | 38 | 108.4K |
+| `src` | 88 | 800.8K |
+| `tests` | 36 | 225.1K |
+| `scripts` | 40 | 108.7K |
 | `.github` | 5 | 3.3K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
@@ -63,9 +63,9 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 164 | 1.1M |
-| `.json` | 127 | 4.8M |
-| `.md` | 83 | 439.9K |
+| `.py` | 169 | 1.1M |
+| `.json` | 128 | 4.8M |
+| `.md` | 84 | 447.8K |
 | `.txt` | 67 | 349.7K |
 | `.jsonl` | 45 | 36.7M |
 | `.png` | 22 | 2.8M |
@@ -133,12 +133,14 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/prepare_repair_contract_probe.py`
 - `scripts/prepare_repair_diagnostics.py`
 - `scripts/prepare_repair_information_study.py`
+- `scripts/prepare_repair_interface_study.py`
 - `scripts/prepare_repair_pilot.py`
 - `scripts/qualify_python_repair_pool.py`
 - `scripts/report_feedback_routing.py`
 - `scripts/report_repair_calibration.py`
 - `scripts/report_repair_contract_probe.py`
 - `scripts/report_repair_information_study.py`
+- `scripts/report_repair_interface_study.py`
 - `scripts/run_context_value.py`
 - `scripts/run_continuation_pilot.py`
 - `scripts/run_feedback_routing.py`

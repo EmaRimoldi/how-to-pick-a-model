@@ -9,8 +9,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `8`
-- Script entrypoints indexed: `34`
-- Code modules indexed: `79`
+- Script entrypoints indexed: `36`
+- Code modules indexed: `81`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `6`
@@ -182,12 +182,14 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/prepare_repair_contract_probe.py` | python | Prepare a reviewable, offline-only Gemma response-contract diagnostic. |
 | `scripts/prepare_repair_diagnostics.py` | python | Execute a public-only offline diagnostic demo; never dispatch model requests. |
 | `scripts/prepare_repair_information_study.py` | python | Prepare a public-trace information experiment offline; never dispatch APIs. |
+| `scripts/prepare_repair_interface_study.py` | python | Prepare exact factorial repair-interface requests offline; no model calls. |
 | `scripts/prepare_repair_pilot.py` | python | Plan repair calibration offline; live collection requires a funded freeze. |
 | `scripts/qualify_python_repair_pool.py` | python | Offline build, provenance audit and isolated qualification of real-bug tasks. |
 | `scripts/report_feedback_routing.py` | python | Publish a completed feedback-only bank, audited statistics and static figures. Public CLI facade; implementation lives in vao.analysis.report_feedback_routing. |
 | `scripts/report_repair_calibration.py` | python | Audit terminal repair-pilot segments and report descriptive results offline. |
 | `scripts/report_repair_contract_probe.py` | python | Audit and describe a terminal output-contract diagnostic; no API calls. |
 | `scripts/report_repair_information_study.py` | python | Report a terminal public-trace information study without model calls. |
+| `scripts/report_repair_interface_study.py` | python | Analyze a terminal factorial repair-interface study offline; no model calls. |
 | `scripts/run_context_value.py` | python | Plan or explicitly run a budgeted artifact/feedback and prospective-forecast study. |
 | `scripts/run_continuation_pilot.py` | python | Run the explicit-budget OpenRouter/HumanEval+ pilot; defaults to plan only. |
 | `scripts/run_feedback_routing.py` | python | Plan or explicitly run new-task, feedback-only fixed-policy trajectories. |
@@ -245,6 +247,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | saved-evidence analysis | `src/vao/analysis/repair_artifacts.py` | Post hoc structural-edit diagnostic for a closed repair bank; zero model calls. | same_ast, diagnose, main |
 | saved-evidence analysis | `src/vao/analysis/repair_calibration.py` | Audit terminal repair-calibration segments and report descriptive diagnostics. No model calls, training, stopping decisions or claim of held-out policy value. | read_json, lineage, group_estimate, mean, descriptive_interval, analyze, render, export_evidence |
 | saved-evidence analysis | `src/vao/analysis/repair_information.py` | Frozen descriptive analysis of public trace acquisition on failed checkpoints. | interval, summarize, render, main |
+| saved-evidence analysis | `src/vao/analysis/repair_interface.py` | Prespecified terminal analysis of the four repair-interface conditions. | linear_bounds, interval, summarize, render, main |
 | saved-evidence analysis | `src/vao/analysis/repair_stagnation.py` | Post hoc edit audit of a terminal information archive; never execute candidates. | syntax, classify, summarize, main |
 | saved-evidence analysis | `src/vao/analysis/report_feedback_routing.py` | Publish a completed feedback-only bank, audited statistics and static figures. | report_text, accounting_diagnostics, diagnostic_text, plot, diagnostic_plot, publish, main |
 | saved-evidence analysis | `src/vao/analysis/verify_feedback_evidence.py` | Verify published BigCodeBench evidence offline without executing candidate code. | equivalent, checked_path, checksum_audit, verify_interim, source_audit, verify, main |
@@ -273,6 +276,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/repair/diagnostics.py` | Public-only diagnostic acquisition and matched offline prompt projections. This is an engineering component, not a fitted policy or a live collector. Callers pass public task data, never a RepairTask with evaluator cases. | validate_public, binding, observe, selected_failure, acquire, project |
 | verified orchestration runtime | `src/vao/repair/environment.py` | Store verifiable repair artifacts and fork matched continue/restart requests. | canonical, identity, validate_files, validate_cases, RepairTask, RepairRun, audit_run |
 | verified orchestration runtime | `src/vao/repair/information_continuation.py` | One reviewed exception for only the original trace probe's unsent requests. The original zero-response segment is immutable. There is no recursive resume, retry, replacement cell, changed prompt, new seed or additional budget. | reference_files, parent_evidence, validate_config, freeze, validate_continuation, audit_continuation, main |
+| verified orchestration runtime | `src/vao/repair/interface_study.py` | Prepare four matched interface conditions after the closed trace study. | design, remove_claim, project, schedule, planned_requests, construct, validate_packet, validate_origin |
 | verified orchestration runtime | `src/vao/repair/pilot.py` | Plan matched repair collection; live mode requires a funded source freeze. The default is offline planning. Scripted demonstrations never provide model evidence. Existing output directories and admitted calls cannot be resumed. | Design, fingerprint, schedule_for, check_continuation, ScriptedTransport, evaluate_response, public_choice, collect |
 | verified orchestration runtime | `src/vao/repair/pool.py` | Build and qualify a published development pool without executing upstream setup. | sha256, local_file, read_pool, audit_sources, write_json, build_pool, qualify_pool, main |
 | verified orchestration runtime | `src/vao/repair/provider.py` | Pinned OpenRouter adapter for the repair pilot; no implicit calls or retries. Constructing this adapter does not authorize a collection: the pilot launcher enforces the separately funded source freeze and a single-use campaign claim. | ProviderStopped, safe_error_details, dollars, Settings, NoRedirects, OpenRouterTransport |

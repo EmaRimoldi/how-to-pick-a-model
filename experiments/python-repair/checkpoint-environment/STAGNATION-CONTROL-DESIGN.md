@@ -1,7 +1,9 @@
 # Next development control: can the solver act on an explicit public failure?
 
-**Design proposal after terminal inspection; not an authorized live configuration,
-not a continuation of the closed information study, and not a selector.**
+**Design rationale after terminal inspection.** The [prospective v1 protocol](INTERFACE-PROTOCOL.md)
+and [separate declared allocation](INTERFACE-AUTHORIZED.json) now specify the
+implementation. This is not a continuation of the closed information study or a
+selector; a clean source freeze and technical review remain launch prerequisites.
 
 The [terminal bank](results/information-stopped-20261026/README.md) contains 65
 usable artifacts but zero complete repairs. Twenty-five outputs exactly copy
@@ -15,9 +17,9 @@ interpretation from insufficient repair capability.
 Use the same eight development checkpoints and the same public failure evidence.
 Cross two independently controlled changes, giving four conditions:
 
-1. Preserve or remove only the provenance comment claiming the upstream
-   definitions are unchanged from the **prompt's** file representation. Keep
-   attribution outside the request, every executable syntax node and all licenses.
+1. Preserve or remove only the clause claiming the upstream definitions are
+   unchanged from the **prompt's** comment. Keep attribution, every executable
+   syntax node, line count and all licenses.
 2. Keep the original repair instruction or explicitly state that every supplied
    function/helper is editable and only the external callable contract must be
    preserved. Do not provide a fault location, suggested patch or evaluator fact.
@@ -41,11 +43,12 @@ literal copies, entrypoint-only edits, other edits, partial improvements,
 regressions, false acceptance and actual API/local costs separately. Changing
 more code without solving more tasks does not satisfy the objective.
 
-The provisional engineering requirement is repeated complete repairs on at least
-three distinct development bugs (at least two of four draws on each), followed
-by independent calibration. Finalize the contrasts, effect criterion, treatment
-of missingness and analysis code before collection. Never call a post hoc winner
-a validated selector. Keep the original information-study gate unchanged.
+The v1 engineering requirement is repeated complete repairs in the combined
+condition on at least three distinct development bugs (at least two of four draws
+on each), at least four net successes over the original condition, and positive
+gain in both draw halves, in a complete bank. Passing permits independent
+calibration only. The protocol fixes all primary/secondary contrasts and missingness
+handling before collection. Keep the original information-study gate unchanged.
 
 If neither cue helps, test solver/task compatibility under a separately matched
 capability control; do not conclude that traces or small models never work. If an
@@ -54,8 +57,8 @@ study, then test useful fixed interventions before fitting any policy.
 
 ## Launch prerequisites
 
-This file enables **zero calls**. A new study requires its own exact request
-manifest, declared sublimit within the remaining cumulative authorization, clean
+This design document alone enables **zero calls**. The separate allocation and
+protocol require an exact request manifest, clean
 source freeze, tests and receipt accounting. No old missing request is repeated
 or filled in. The earlier 429s also require a reviewed provider operational plan;
 no automatic retry, recursive continuation, fallback or key rotation follows from

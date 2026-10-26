@@ -89,6 +89,12 @@ evaluation records and public diagnostic projections reproduce offline.
 25 exact copies, 25 further entrypoint-only syntax changes, 15 other edits.
 No collector is active. The [next design](../experiments/python-repair/checkpoint-environment/STAGNATION-CONTROL-DESIGN.md)
 tests interface cues without adding bug facts; it enables no live calls.
+The [implemented v1 interface protocol](../experiments/python-repair/checkpoint-environment/INTERFACE-PROTOCOL.md)
+now fixes 128 fresh requests, a separate allocation and terminal-only factorial
+analysis. `prepare_repair_interface_study.py` verifies the comment transformation
+and exact projections offline; `report_repair_interface_study.py` retains all
+missing cells and the declared primary contrast. The shared collector requires
+a separately reviewed clean freeze and a new single-use study claim.
 
 The [checkpoint environment](../experiments/python-repair/checkpoint-environment/README.md)
 retains the incomplete recovery pilot and both output-contract diagnostics.

@@ -8,7 +8,7 @@ import re
 import subprocess
 import zipfile
 
-from vao.repair.contracts import CONTRACTS, TRACE_STUDY
+from vao.repair.contracts import CONTRACTS, TRACE_STUDY, INTERFACE_STUDY
 from vao.repair.contract_collection import ROOT, audit, read
 from vao.repair.records import rows, save
 
@@ -21,6 +21,8 @@ def summarize(output: Path):
     packet = frozen['packet']
     if packet['study'] == TRACE_STUDY:
         raise ValueError('Use the public-trace information report, not the historical contract gate')
+    if packet['study'] == INTERFACE_STUDY:
+        raise ValueError('Use the interface-cue report, not the historical contract gate')
     observed = {r['attempt_id']: r for r in rows(output / 'observations.jsonl')}
     cells = []
     for planned in packet['requests']:

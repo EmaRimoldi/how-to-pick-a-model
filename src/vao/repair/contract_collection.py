@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 import shutil
 
-from .contracts import STUDY, DEEPINFRA_STUDY, GEMMA12B_STUDY, GEMMA27B_STUDY, TRACE_STUDY, decode, provenance, provider_body, public_feedback, task_from_record, validate, study_settings, study_spacing
+from .contracts import STUDY, DEEPINFRA_STUDY, GEMMA12B_STUDY, GEMMA27B_STUDY, TRACE_STUDY, INTERFACE_STUDY, decode, provenance, provider_body, public_feedback, task_from_record, validate, study_settings, study_spacing
 from .environment import RepairRun, audit_run, identity
 from .pilot import file_hashes, source_commit
 from .provider import OpenRouterTransport, ProviderStopped, Settings, dollars
@@ -44,7 +44,12 @@ def authorization(config, packet, prior):
         raise ValueError('New study cap must cover the whole design without exceeding the proposal')
     if config.get('minimum_request_interval_seconds') != study_spacing(packet['study']):
         raise ValueError('The contract study requires its declared request spacing')
-    if packet['study'] == DEEPINFRA_STUDY:
+    if packet['study'] == INTERFACE_STUDY:
+        if (prior.get('study') != TRACE_STUDY or prior.get('status') != 'incomplete_development_information_probe'
+                or prior.get('gate') != 'inconclusive_incomplete_bank' or prior.get('fit_selector') is not False):
+            raise ValueError('Interface study must carry the closed incomplete information bank')
+        carried = dollars(prior['accounting']['cumulative_committed_usd'])
+    elif packet['study'] == DEEPINFRA_STUDY:
         if prior.get('study') != STUDY or prior.get('status') != 'incomplete_development_diagnostic':
             raise ValueError('DeepInfra study must carry the closed Parasail diagnostic')
         carried = dollars(prior['accounting']['cumulative_committed_usd'])
@@ -67,6 +72,9 @@ def authorization(config, packet, prior):
 
 def freeze(packet, config, output: Path):
     validate(packet)
+    if packet['study'] == INTERFACE_STUDY:
+        from .interface_study import validate_origin
+        validate_origin(packet)
     if packet['study'] == TRACE_STUDY:
         from .diagnostic_study import validate_origin
         validate_origin(packet)
@@ -102,6 +110,9 @@ def validate_freeze(frozen, *, current=False):
             raise ValueError('Closed prior evidence changed')
         if packet['study'] == TRACE_STUDY:
             from .diagnostic_study import validate_origin
+            validate_origin(packet)
+        if packet['study'] == INTERFACE_STUDY:
+            from .interface_study import validate_origin
             validate_origin(packet)
     return packet, limit, carried
 
