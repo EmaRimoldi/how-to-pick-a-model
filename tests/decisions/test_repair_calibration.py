@@ -125,3 +125,45 @@ def test_interval_is_reproducible_descriptive_bug_bootstrap():
     assert descriptive_interval([1]) is None
     assert descriptive_interval([0, 0]) == [0, 0]
     assert descriptive_interval([-1, 0, 1]) == descriptive_interval([-1, 0, 1])
+
+
+def test_no_op_checkpoints_remain_visible_as_identical_action_inputs(tmp_path):
+    report = analyze(make_bank(tmp_path, lambda *_: {'solution.py': 'original'}))
+    assert report['identical_action_input_checkpoints'] == 2
+    assert report['task_table'][0]['prefix_no_ops'] == 2
+    assert report['task_table'][0]['prefix_public_improvements'] == 0
+    assert report['task_table'][0]['prefix_public_regressions'] == 0
+    assert all(r['no_op_from_supplied_artifact'] for r in report['progress_rows'])
+    assert all(r['public_change'] == 0 for r in report['progress_rows'])
+
+
+def test_malformed_prefix_has_no_fabricated_public_progress(tmp_path):
+    report = analyze(make_bank(tmp_path, lambda *_: 'invalid JSON'))
+    assert report['progress_rows'][0]['public_change'] is None
+    assert report['progress_rows'][0]['no_op_from_supplied_artifact'] is None
+    assert report['task_table'][0]['prefix_format_errors'] == 1
+
+
+def test_evidence_package_reproduces_from_original_relative_layout(tmp_path, monkeypatch):
+    import hashlib
+    import zipfile
+    from vao.analysis.repair_calibration import export_evidence
+    monkeypatch.chdir(tmp_path)
+    output = make_bank(__import__('pathlib').Path('runs'), repairs)
+    before = analyze(output)
+    artifact = tmp_path / 'artifact'
+    artifact.mkdir()
+    manifest = export_evidence(output, artifact)
+    assert hashlib.sha256((artifact / 'evidence.zip').read_bytes()).hexdigest() == manifest['archive_sha256']
+    replay = tmp_path / 'replay'
+    replay.mkdir()
+    with zipfile.ZipFile(artifact / 'evidence.zip') as archive:
+        assert all(name.startswith('runs/bank/') and '..' not in name for name in archive.namelist())
+        for name in archive.namelist():
+            assert hashlib.sha256(archive.read(name)).hexdigest() == manifest['files'][name]
+        archive.extractall(replay)
+    monkeypatch.chdir(replay)
+    after = analyze(output)
+    before.pop('replay_selection_timings')
+    after.pop('replay_selection_timings')
+    assert before == after

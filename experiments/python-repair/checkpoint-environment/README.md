@@ -266,7 +266,7 @@ full selected task/trajectory denominator and incomplete-checkpoint bounds.
 ```bash
 uv run python scripts/report_repair_calibration.py \
   --input runs/repair-gemma4b-development-final-20261026 \
-  --output runs/repair-calibration-report
+  --output runs/repair-calibration-report --export-evidence
 # Add --allow-interrupted only when the final collector has stopped in error.
 ```
 
@@ -276,3 +276,11 @@ as independent. Costs include prefix work and discarded candidates. Fresh
 replay-selection timings are machine-dependent; all outcome and cost fields
 must reproduce independently of those timings. No prospective-selector value or
 scaling law follows from this small development pool.
+
+The optional evidence export preserves original relative `runs/` paths inside a
+hash-manifested ZIP so lineage can be audited after extraction into a fresh
+working directory. Saved model artifacts remain inert JSON; frozen collector
+sources are archived as `.txt` and checked against each segment's committed
+source hashes. Never modify historical manifests to relocate ancestors. Prefix
+progress, regressions, no-op patches and identical action input files remain
+visible in the report, including states that offer no artifact intervention.
