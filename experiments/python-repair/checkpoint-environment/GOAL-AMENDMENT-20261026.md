@@ -184,9 +184,31 @@ calibration is only a milestone; an unfavorable result is retained and prevents
 unsupported selector training. Equal-total-resource benefit and generalization
 require subsequent separately declared studies.
 
-The app goal manager currently reports the old objective as blocked and rejects
-creation of a replacement while it is unfinished. The new operative scope is
+At the initial replacement attempt the app goal manager reported the old objective
+as blocked and rejected a replacement while it was unfinished. The new operative scope is
 recorded here and in the research state; the old objective has not been falsely
 marked complete. The user has authorized proceeding, and no active collector is
 being resumed. The new allocation is $0.47 within the retained $0.60 total, with
 $0.06942739 carried once including all eight old uncertain reservations.
+
+
+## Terminal status and managed goal update
+
+The user subsequently set the new objective manually; `get_goal` confirms it
+active. The earlier rejected replacement is history, not a current blocker.
+The full selector objective remains unfinished and must not be marked complete
+at the end of a calibration or infrastructure milestone.
+
+The [matched Qwen information study](results/information-qwen-stopped-20261026/README.md)
+closed after a connection timeout: 18/64 responses, nine per arm, with 3 versus
+2 full repairs. One unknown request retains its reservation and 45 were never
+admitted. The frozen primary bounds are −68.75 to +75.00 percentage points;
+mean/bootstrap remain null and the gate inconclusive. No selector training,
+retry, resumption or successor is authorized by that protocol. Its cumulative
+commitment is $0.08592275, including nine unresolved requests across studies.
+
+This does not establish an ineffective intervention either. The immediate
+research dependency is reliable collection of the planned comparison under a
+separately reviewed prospective protocol; no favorable complete-case metric
+can replace the missing evidence. The original benefit, equal-total-resource
+policy comparison and untouched-bug evaluation remain required.

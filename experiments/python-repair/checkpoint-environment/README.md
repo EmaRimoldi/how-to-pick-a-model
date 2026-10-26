@@ -1,15 +1,17 @@
 # Python repair checkpoint environment
 
-Next milestone: [matched Qwen public-trace calibration](QWEN-INFORMATION-PROTOCOL.md),
-64 fresh requests with focused feedback versus the same feedback plus a trace.
-This is a development information-value screen; the final acquisition policy
-and its equal-total-budget benefit on untouched bugs remain unproven.
+**Current result: the [matched Qwen information study](results/information-qwen-stopped-20261026/README.md)
+is interrupted and inconclusive.** It received 18/64 responses (nine per arm):
+three full repairs with trace, two without. Forty-six outcomes remain unknown,
+including one reserved timeout; primary bounds span −68.75 to +75.00 percentage
+points. This establishes neither benefit nor absence of benefit. No selector
+has been trained, and this study cannot resume.
 
-**Current result: the Qwen coding-solver compatibility screen passes, with
-10 complete repairs in 32 attempts and repeated success on three bugs.** The
-next milestone is a separately frozen comparison of diagnostic acquisition
-against direct repair. No acquisition benefit, trained selector, equal-budget
-policy gain or scaling law has been demonstrated.
+The preceding [Qwen compatibility screen](results/solver-qwen-20261026/README.md)
+passed with 10/32 complete repairs and repeated success on three bugs. It
+qualified a solver, not an acquisition policy. The final user goal is active:
+learn a cost-aware diagnostic-acquisition selector and validate it against the
+best fixed policy on untouched bugs under the same total resource envelope.
 
 Read the [current goal amendment](GOAL-AMENDMENT-20261026.md) and
 [complete solver findings and replay](results/solver-qwen-20261026/README.md).
@@ -28,7 +30,8 @@ shows why conditional recovery success cannot substitute for end-to-end acceptan
 | [27B contract control](results/contract-gemma27b-20261026/README.md) | 36 responses; 3 full repairs on two bugs | Gate failed |
 | [Public-information probe](results/information-stopped-20261026/README.md) | 65 responses; no full repair; 31 unknown cells | Closed, inconclusive |
 | [Interface control](results/interface-stopped-20261026/README.md) | 44 responses; no full repair; 84 unknown cells | Closed, inconclusive |
-| [Qwen compatibility control](results/solver-qwen-20261026/README.md) | 32 responses; 10 full repairs; three bugs solved in both draw halves | Screen passed; intervention study still required |
+| [Qwen compatibility control](results/solver-qwen-20261026/README.md) | 32 responses; 10 full repairs; three bugs solved in both draw halves | Screen passed; subsequent information bank inconclusive |
+| [Matched Qwen information](results/information-qwen-stopped-20261026/README.md) | 18/64 responses; 3 trace versus 2 focused full repairs; 46 unknown | Closed, inconclusive |
 
 These are distinct protocols, not a pooled model-size comparison. Historical
 [capability and partial-progress findings](results/capability-comparison-20261026/README.md),
@@ -43,11 +46,12 @@ screen before calls. Its complete bank reproduces independently, including all
 62 saved verification records. It contains one public false acceptance and
 eleven public-score regressions, retained alongside the ten successes.
 
-Cumulative repair commitment is **$0.06942739 / $0.60**, including eight historical
-uncertain reservations. The closed solver control spent $0.01816000 of its
-separate $0.24 cap, with no new uncertainty. All collectors are closed. A future
-intervention study needs a new declared sublimit, reviewed clean source freeze,
-exact requests and fixed analysis; passing this screen does not launch calls.
+Cumulative repair commitment is **$0.08592275 / $0.60**, including nine unresolved
+reservations across closed studies. The latest information study paid $0.00928640
+and retained a $0.00720896 timeout reservation within its separate $0.47 cap.
+All collectors are closed. Further research requires a separately reviewed
+protocol and declared allocation; the interrupted bank cannot be resumed or used
+to fit a selector.
 
 The [real-bug development pool](development/README.md) adds twelve adapted BugsInPy
 tasks with pinned source excerpts, public/evaluator cases, documented exclusions

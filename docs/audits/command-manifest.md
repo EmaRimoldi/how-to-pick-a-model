@@ -5,8 +5,8 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `48`
-- Default-safe commands: `38`
+- Commands indexed: `49`
+- Default-safe commands: `39`
 - Missing required maintenance actions: `0`
 
 ## Safety Classes
@@ -17,7 +17,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `live-local` | 6 |
 | `mixed-cli` | 3 |
 | `read-only-analysis` | 23 |
-| `safe-figure-regeneration` | 3 |
+| `safe-figure-regeneration` | 4 |
 | `safe-local` | 10 |
 | `safe-local-optional-tool` | 2 |
 
@@ -26,7 +26,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | Surface | Commands |
 | --- | --- |
 | `maintenance` | 6 |
-| `scripts` | 35 |
+| `scripts` | 36 |
 | `scripts/cluster` | 1 |
 | `scripts/maintenance` | 6 |
 
@@ -48,6 +48,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/maintenance/check_paper_build.py` | scripts/maintenance | `safe-local-optional-tool` | yes | pdflatex, bibtex | Compile active paper TeX sources into an out-of-tree build directory. |
 | `python scripts/plot_repair_information.py` | scripts | `safe-figure-regeneration` | yes | checked-in evidence | Plot the frozen information report and separate post hoc edit audit, offline. |
 | `python scripts/plot_repair_interface.py` | scripts | `safe-figure-regeneration` | yes | checked-in evidence | Plot all four terminal repair-interface conditions; never read a live collection. |
+| `python scripts/plot_repair_qwen_information.py` | scripts | `safe-figure-regeneration` | yes | checked-in evidence | Plot the prespecified two-arm terminal report, never inspect a live collection. |
 | `python scripts/plot_repair_solver.py` | scripts | `safe-figure-regeneration` | yes | checked-in evidence | Render terminal solver draws; synthetic layout data requires an explicit flag. |
 | `python scripts/analyze_context_value.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit prospective context-value records and compare matched outcomes by task cluster. Public CLI facade; implementation lives in vao.analysis.analyze_context_value. |
 | `python scripts/analyze_continuation_pilot.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit saved pilot receipts/outcomes and render an exploratory cost/success plot. Public CLI facade; implementation lives in vao.analysis.analyze_continuation_pilot. |

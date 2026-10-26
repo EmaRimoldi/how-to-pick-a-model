@@ -135,3 +135,12 @@ The [post hoc capability comparison](../experiments/python-repair/checkpoint-env
 separates syntax validity, partial test progress and full repairs; it preserves
 FP8/BF16 confounding, regressions and public-test false positives. No repair
 selector or scaling law is demonstrated.
+
+
+The subsequent [matched Qwen public-trace study](../experiments/python-repair/checkpoint-environment/results/information-qwen-stopped-20261026/README.md)
+closed on a connection timeout with 18/64 responses: nine per arm, three trace
+and two focused full repairs. Forty-six cells remain unknown; primary bounds
+are −68.75 to +75.00 percentage points, mean/bootstrap null and gate inconclusive.
+All 36 saved evaluations and public diagnostic projections reproduce. This is
+neither evidence of benefit nor a null effect. The operative selector goal is
+active, with no selector fit, retry or continuation of this bank.

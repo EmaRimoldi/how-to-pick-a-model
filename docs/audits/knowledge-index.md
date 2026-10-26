@@ -9,7 +9,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `8`
-- Script entrypoints indexed: `42`
+- Script entrypoints indexed: `43`
 - Code modules indexed: `84`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
@@ -179,6 +179,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/collect_repair_contract_probe.py` | python | Run only an explicitly authorized and frozen output-contract study. |
 | `scripts/plot_repair_information.py` | python | Plot the frozen information report and separate post hoc edit audit, offline. |
 | `scripts/plot_repair_interface.py` | python | Plot all four terminal repair-interface conditions; never read a live collection. |
+| `scripts/plot_repair_qwen_information.py` | python | Plot the prespecified two-arm terminal report, never inspect a live collection. |
 | `scripts/plot_repair_solver.py` | python | Render terminal solver draws; synthetic layout data requires an explicit flag. |
 | `scripts/prepare_feedback_routing.py` | python | Verify the pinned BigCodeBench download and reproduce reference-only eligibility. |
 | `scripts/prepare_python_repair.py` | python | Plan or explicitly run an offline Python repair demo, qualification or audit. |

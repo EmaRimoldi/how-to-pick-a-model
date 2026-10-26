@@ -386,3 +386,14 @@ No new model calls, selected evaluation sample, fitted exponent or prospective
 selector is authorized or produced by this literature note alone. The existing
 user instruction to continue research remains the authorization context; each
 new collection still needs a declared, frozen protocol and bounded accounting.
+
+
+### Subsequent matched Qwen calibration (2026-10-26)
+
+The [prospectively specified information comparison](../experiments/python-repair/checkpoint-environment/results/information-qwen-stopped-20261026/README.md)
+is incomplete after a connection timeout. The 18 received responses include
+three trace and two focused full repairs, with 46 selected cells unknown. Its
+frozen primary bounds span −68.75 to +75.00 percentage points, and the gate is
+inconclusive. It supplies no evidence for a new acquisition policy or a causal
+scaling claim. Reliable collection, equal-total-resource action headroom and
+untouched-bug evaluation remain prerequisites for the intended contribution.
