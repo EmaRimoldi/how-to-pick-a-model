@@ -54,7 +54,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `uv.lock` | 1 | 937.0K |
 | `src` | 65 | 544.3K |
 | `tests` | 24 | 105.9K |
-| `scripts` | 25 | 99.6K |
+| `scripts` | 25 | 99.7K |
 | `README.md` | 1 | 7.4K |
 | `.github` | 5 | 3.3K |
 | `.gitignore` | 1 | 1.4K |
@@ -65,7 +65,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 115 | 772.3K |
+| `.py` | 115 | 772.4K |
 | `.json` | 77 | 2.7M |
 | `.md` | 53 | 251.6K |
 | `.jsonl` | 45 | 36.7M |

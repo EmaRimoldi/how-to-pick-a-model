@@ -7,6 +7,8 @@ from pathlib import Path
 
 EXCLUDED_DIRS = {
     ".git",
+    ".local_archive",
+    ".DS_Store",
     ".venv",
     ".pytest_cache",
     ".mypy_cache",
@@ -100,6 +102,7 @@ SCRIPT_DIRS = (
     Path("scripts/cluster"),
 )
 SCRIPT_SUPPORT_FILES = {
+    ".DS_Store",
     "README.md",
     "agent_index_config.py",
     "workflow.py",
