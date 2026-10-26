@@ -18,7 +18,7 @@ results, figures, and run metadata whenever those artifacts are available.
 | HumanEval+ | [`context-value/`](humaneval-plus/context-value/) | discovery + producer-transfer evaluation | Discovery: 30 tasks/132 calls. Transfer: 83 development + 60 evaluation tasks, 1,353 responses, frozen policies, forecasts, controls and cost audit |
 | MBPP+ | [`context-value-transfer/`](mbpp-plus/context-value-transfer/) | collection finished; censored descriptive bank | 94/96 complete failures, 2,878 recovery responses, two censored solver cells, 288 API forecasts, fixed comparisons and full accounting |
 | BigCodeBench standard-library subset | [`feedback-only-routing/`](bigcodebench/feedback-only-routing/) | complete; primary gate not passed | 157 task clusters, 628/628 policy outcomes, 1,492 responses, no missing outcomes; fixed comparisons, receipts, source freeze, verifier repeat and disclosed single requested interim look |
-| Python function repair | [`checkpoint-environment/`](python-repair/checkpoint-environment/) | recovery pilot incomplete; contract follow-up complete, gate failed | Prior 84-response recovery bank retained; separate 36/36-call contract diagnostic yields 0/12, 1/12 and 0/12 successes. No trained selector or held-out claim |
+| Python function repair | [`checkpoint-environment/`](python-repair/checkpoint-environment/) | recovery pilot incomplete; 4B/12B contract banks complete, gates failed | Prior recovery evidence retained; separate complete 36-call 4B and 12B diagnostics both fail calibration. The 12B JSON formats solve only Tornado/9. No trained selector or held-out claim |
 
 ## Families
 

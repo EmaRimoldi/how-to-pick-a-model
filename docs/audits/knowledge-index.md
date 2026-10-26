@@ -9,8 +9,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `8`
-- Script entrypoints indexed: `28`
-- Code modules indexed: `72`
+- Script entrypoints indexed: `29`
+- Code modules indexed: `73`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `6`
@@ -163,7 +163,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | HumanEval+ | `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | Discovery: 30 tasks/132 calls. Transfer: 83 development + 60 evaluation tasks, 1,353 responses, frozen policies, forecasts, controls and cost audit |
 | MBPP+ | `experiments/mbpp-plus/context-value-transfer/` | collection finished; censored descriptive bank | Tier 2: Supporting Or Diagnostic Evidence | 94/96 complete failures, 2,878 recovery responses, two censored solver cells, 288 API forecasts, fixed comparisons and full accounting |
 | BigCodeBench standard-library subset | `experiments/bigcodebench/feedback-only-routing/` | complete; primary gate not passed | Tier 2: Supporting Or Diagnostic Evidence | 157 task clusters, 628/628 policy outcomes, 1,492 responses, no missing outcomes; fixed comparisons, receipts, source freeze, verifier repeat and disclosed single requested interim look |
-| Python function repair | `experiments/python-repair/checkpoint-environment/` | recovery pilot incomplete; contract follow-up complete, gate failed | Tier 2: Supporting Or Diagnostic Evidence | Prior 84-response recovery bank retained; separate 36/36-call contract diagnostic yields 0/12, 1/12 and 0/12 successes. No trained selector or held-out claim |
+| Python function repair | `experiments/python-repair/checkpoint-environment/` | recovery pilot incomplete; 4B/12B contract banks complete, gates failed | Tier 2: Supporting Or Diagnostic Evidence | Prior recovery evidence retained; separate complete 36-call 4B and 12B diagnostics both fail calibration. The 12B JSON formats solve only Tornado/9. No trained selector or held-out claim |
 
 ## Script Entrypoints
 
@@ -190,6 +190,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/run_recovery_validation.py` | python | Plan or explicitly run the task-held-out recovery validation within its cumulative budget. |
 | `scripts/run_transfer_forecasts.py` | python | Plan or explicitly collect the prespecified outcome-blind semantic forecast control. |
 | `scripts/verify_feedback_evidence.py` | python | Verify published BigCodeBench evidence offline without executing candidate code. Public CLI facade; implementation lives in vao.analysis.verify_feedback_evidence. |
+| `scripts/verify_repair_contract_evidence.py` | python | Verify archived contract reports and independently replay saved artifacts. |
 | `scripts/maintenance/build_command_manifest.py` | python | Build a safety-classified command manifest for agent-facing workflows. |
 | `scripts/maintenance/build_experiment_manifest.py` | python | Build a manifest of experiment bundles and their reproducibility assets. |
 | `scripts/maintenance/build_knowledge_index.py` | python | Build a compact knowledge index for LLM agents working in this repository. |
@@ -235,6 +236,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | saved-evidence analysis | `src/vao/analysis/analyze_recovery_transfer.py` | Audit recorded MBPP+ recovery evidence and reproduce the frozen statistical comparisons. | require, same, interval, recovery_lineages, audit, variance_stat, analyze, markdown |
 | saved-evidence analysis | `src/vao/analysis/analyze_recovery_validation.py` | Audit frozen held-out recovery data and replay its finite budgeted policy bank. | read, require, reservation, paired_interval, audit, rollout, development_replay_best, analyze |
 | saved-evidence analysis | `src/vao/analysis/contract_diagnostic.py` | Prespecified descriptive report for the terminal output-contract diagnostic. | summarize, render, export_evidence, main |
+| saved-evidence analysis | `src/vao/analysis/contract_verification.py` | Verify and independently re-execute terminal archived contract evidence; no API calls. | read, stable, reproduce, main |
 | saved-evidence analysis | `src/vao/analysis/repair_artifacts.py` | Post hoc structural-edit diagnostic for a closed repair bank; zero model calls. | same_ast, diagnose, main |
 | saved-evidence analysis | `src/vao/analysis/repair_calibration.py` | Audit terminal repair-calibration segments and report descriptive diagnostics. No model calls, training, stopping decisions or claim of held-out policy value. | read_json, lineage, group_estimate, mean, descriptive_interval, analyze, render, export_evidence |
 | saved-evidence analysis | `src/vao/analysis/report_feedback_routing.py` | Publish a completed feedback-only bank, audited statistics and static figures. | report_text, accounting_diagnostics, diagnostic_text, plot, diagnostic_plot, publish, main |

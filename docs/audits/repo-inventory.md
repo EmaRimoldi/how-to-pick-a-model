@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `496`
-- Bytes indexed: `49.6M`
+- Files indexed: `506`
+- Bytes indexed: `50.3M`
 
 ## Canonical Entrypoints
 
@@ -48,12 +48,12 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 291 | 45.0M |
+| `experiments` | 299 | 45.8M |
 | `docs` | 53 | 2.6M |
 | `uv.lock` | 1 | 937.0K |
-| `src` | 79 | 715.0K |
+| `src` | 80 | 719.0K |
 | `tests` | 32 | 185.1K |
-| `scripts` | 32 | 101.7K |
+| `scripts` | 33 | 101.9K |
 | `.github` | 5 | 3.3K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
@@ -63,9 +63,9 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 145 | 1.0M |
-| `.json` | 105 | 3.9M |
-| `.md` | 67 | 359.8K |
+| `.py` | 148 | 1.0M |
+| `.json` | 109 | 4.0M |
+| `.md` | 69 | 368.1K |
 | `.txt` | 67 | 349.7K |
 | `.jsonl` | 45 | 36.7M |
 | `.png` | 21 | 2.7M |
@@ -73,9 +73,9 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.sh` | 8 | 15.5K |
 | `.sbatch` | 5 | 7.0K |
 | `.tex` | 5 | 297.7K |
+| `.zip` | 4 | 2.6M |
 | `.svg` | 3 | 210.9K |
 | `.yaml` | 3 | 2.6K |
-| `.zip` | 3 | 2.0M |
 | `.lock` | 2 | 1.9M |
 | `.toml` | 2 | 2.8K |
 | `<none>` | 2 | 2.4K |
@@ -103,6 +103,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/python-repair/checkpoint-environment/development/README.md`
 - `experiments/python-repair/checkpoint-environment/results/contract-deepinfra-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/contract-diagnostic-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/contract-gemma12b-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/gemma4b-calibration-20261026/README.md`
 
 ## Script Entrypoints
@@ -135,6 +136,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/run_recovery_validation.py`
 - `scripts/run_transfer_forecasts.py`
 - `scripts/verify_feedback_evidence.py`
+- `scripts/verify_repair_contract_evidence.py`
 
 ## Exact Duplicates In Selected Types
 

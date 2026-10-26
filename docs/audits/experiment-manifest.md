@@ -35,7 +35,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 56 | 6 | 9 | 40 | 3 | 0 | 0 | 0 | 5 |
 | `experiments/mbpp-plus/context-value-transfer/` | collection finished; censored descriptive bank | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 72 | 6 | 2 | 59 | 4 | 3 | 0 | 0 | 6 |
 | `experiments/bigcodebench/feedback-only-routing/` | complete; primary gate not passed | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 42 | 2 | 5 | 32 | 4 | 0 | 0 | 0 | 2 |
-| `experiments/python-repair/checkpoint-environment/` | recovery pilot incomplete; contract follow-up complete, gate failed | Tier 2: Supporting Or Diagnostic Evidence | `partial-evidence` | 88 | 0 | 57 | 23 | 2 | 1 | 0 | 0 | 3 |
+| `experiments/python-repair/checkpoint-environment/` | recovery pilot incomplete; 4B/12B contract banks complete, gates failed | Tier 2: Supporting Or Diagnostic Evidence | `partial-evidence` | 96 | 0 | 57 | 31 | 2 | 2 | 0 | 0 | 4 |
 
 ## Key Files
 
@@ -144,12 +144,14 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 ### `experiments/python-repair/checkpoint-environment/`
 
 - Title: Python repair checkpoint environment
-- Evidence: Prior 84-response recovery bank retained; separate 36/36-call contract diagnostic yields 0/12, 1/12 and 0/12 successes. No trained selector or held-out claim
+- Evidence: Prior recovery evidence retained; separate complete 36-call 4B and 12B diagnostics both fail calibration. The 12B JSON formats solve only Tornado/9. No trained selector or held-out claim
 - Asset directories: `results`
 - `experiments/python-repair/checkpoint-environment/README.md`
 - `experiments/python-repair/checkpoint-environment/results/contract-deepinfra-20261026/analysis.json`
 - `experiments/python-repair/checkpoint-environment/results/contract-diagnostic-20261026/analysis.json`
+- `experiments/python-repair/checkpoint-environment/results/contract-gemma12b-20261026/analysis.json`
 - `experiments/python-repair/checkpoint-environment/results/gemma4b-calibration-20261026/analysis.json`
 - `experiments/python-repair/checkpoint-environment/results/gemma4b-calibration-20261026/calibration-outcomes.png`
 - `experiments/python-repair/checkpoint-environment/results/gemma4b-calibration-20261026/calibration-outcomes.svg`
 - `experiments/python-repair/checkpoint-environment/results/contract-deepinfra-20261026/reproduce.py`
+- `experiments/python-repair/checkpoint-environment/results/contract-gemma12b-20261026/diagnose.py`

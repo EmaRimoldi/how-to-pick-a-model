@@ -1,8 +1,9 @@
 # Python repair checkpoint environment
 
-**Status: the follow-up Gemma 3 4B contract diagnostic completed all 36 calls,
-but none of its three formats met the fixed calibration gate. One full success
-across 36 initial attempts; no selected format or trained repair selector.**
+**Status: the 4B and 12B output-contract studies each completed all 36 calls,
+but neither passed the fixed calibration gate. The 12B JSON formats produce
+11/12 usable artifacts each, yet fully solve only Tornado/9. No selected format,
+trained repair selector or scaling-law claim.**
 
 Read the [complete contract findings](results/contract-deepinfra-20261026/README.md).
 The earlier recovery pilot remains incomplete after repeated provider HTTP 429
@@ -319,3 +320,10 @@ existing $0.60 cumulative ceiling, carrying $0.01419331 once. The same twelve
 bugs, three response contracts and fixed gate are retained; 36 fresh initial
 attempts are planned. Ten-second dispatch spacing and a new seed are declared
 before calls. No 12B outcome or scaling claim exists at preparation time.
+
+The [12B calibration is complete](results/contract-gemma12b-20261026/README.md):
+1/12, 1/12 and 0/12 full successes under current JSON, example JSON and Python
+text, with both successes on the same bug. All72 saved evaluation records
+reproduce, no new uncertain calls, cumulative commitment $0.01760731 including
+all historical reserves. Increased artifact validity alone does not establish
+useful recovery. The gate remains failed and no selector is trained.

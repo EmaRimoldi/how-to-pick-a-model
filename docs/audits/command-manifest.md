@@ -5,8 +5,8 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `34`
-- Default-safe commands: `24`
+- Commands indexed: `35`
+- Default-safe commands: `25`
 - Missing required maintenance actions: `0`
 
 ## Safety Classes
@@ -16,7 +16,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `cluster-setup` | 1 |
 | `live-local` | 6 |
 | `mixed-cli` | 3 |
-| `read-only-analysis` | 12 |
+| `read-only-analysis` | 13 |
 | `safe-local` | 10 |
 | `safe-local-optional-tool` | 2 |
 
@@ -25,7 +25,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | Surface | Commands |
 | --- | --- |
 | `maintenance` | 6 |
-| `scripts` | 21 |
+| `scripts` | 22 |
 | `scripts/cluster` | 1 |
 | `scripts/maintenance` | 6 |
 
@@ -57,6 +57,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/report_repair_calibration.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit terminal repair-pilot segments and report descriptive results offline. |
 | `python scripts/report_repair_contract_probe.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit and describe a terminal output-contract diagnostic; no API calls. |
 | `python scripts/verify_feedback_evidence.py` | scripts | `read-only-analysis` | yes | inspect script before running | Verify published BigCodeBench evidence offline without executing candidate code. Public CLI facade; implementation lives in vao.analysis.verify_feedback_evidence. |
+| `python scripts/verify_repair_contract_evidence.py` | scripts | `read-only-analysis` | yes | inspect script before running | Verify archived contract reports and independently replay saved artifacts. |
 | `python scripts/prepare_python_repair.py` | scripts | `mixed-cli` | no | plan/audit are read-only; demo/qualify require macOS sandbox-exec and a fresh output directory; no provider calls | Plan or explicitly run an offline Python repair demo, qualification or audit. |
 | `python scripts/prepare_repair_pilot.py` | scripts | `mixed-cli` | no | plan/audit/compare are offline; demo requires macOS isolation; live requires new funding, clean source freeze, private key, single-use campaign claim and fresh output | Plan repair calibration offline; live collection requires a funded freeze. |
 | `python scripts/qualify_python_repair_pool.py` | scripts | `mixed-cli` | no | plan/audit-sources read inert local data; build writes fresh bundles; qualify requires macOS sandbox-exec and fresh output; no network/provider calls | Offline build, provenance audit and isolated qualification of real-bug tasks. |

@@ -78,3 +78,8 @@ The [complete DeepInfra diagnostic](../experiments/python-repair/checkpoint-envi
 contains all 36 calls, frozen requests, inert source evidence and independent
 sandbox reproduction. No format met the calibration gate; no repair selector
 has been trained. These twelve bugs are development-exposed.
+
+The [complete 12B capability diagnostic](../experiments/python-repair/checkpoint-environment/results/contract-gemma12b-20261026/README.md)
+also fails the unchanged gate despite more usable outputs. All36 calls and72
+verifier records are preserved and independently reproduced; no recovery or
+selector gain is inferred from this initial-repair study.
