@@ -5,8 +5,8 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `52`
-- Default-safe commands: `42`
+- Commands indexed: `53`
+- Default-safe commands: `43`
 - Missing required maintenance actions: `0`
 
 ## Safety Classes
@@ -16,7 +16,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `cluster-setup` | 1 |
 | `live-local` | 6 |
 | `mixed-cli` | 3 |
-| `read-only-analysis` | 25 |
+| `read-only-analysis` | 26 |
 | `safe-figure-regeneration` | 5 |
 | `safe-local` | 10 |
 | `safe-local-optional-tool` | 2 |
@@ -26,7 +26,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | Surface | Commands |
 | --- | --- |
 | `maintenance` | 6 |
-| `scripts` | 39 |
+| `scripts` | 40 |
 | `scripts/cluster` | 1 |
 | `scripts/maintenance` | 6 |
 
@@ -68,6 +68,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/prepare_repair_interface_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare exact factorial repair-interface requests offline; no model calls. |
 | `python scripts/prepare_repair_qwen_information_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare matched Qwen trace-information requests offline; no API calls. |
 | `python scripts/prepare_repair_solver_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare the fixed coding-solver compatibility control offline; no model calls. |
+| `python scripts/repair_transport_probe.py` | scripts | `read-only-analysis` | yes | inspect script before running | Freeze, run once, or audit the separately funded SSE compatibility probe. |
 | `python scripts/report_feedback_routing.py` | scripts | `read-only-analysis` | yes | inspect script before running | Publish a completed feedback-only bank, audited statistics and static figures. Public CLI facade; implementation lives in vao.analysis.report_feedback_routing. |
 | `python scripts/report_repair_calibration.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit terminal repair-pilot segments and report descriptive results offline. |
 | `python scripts/report_repair_contract_probe.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit and describe a terminal output-contract diagnostic; no API calls. |

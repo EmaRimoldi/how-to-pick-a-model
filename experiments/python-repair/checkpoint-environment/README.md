@@ -77,6 +77,13 @@ cells; the second error stopped the study. The terminal archive independently
 replays all 18 saved evaluation records without discrepancies and preserves all
 24 selected cells. It never resumes or pools the historical eight-checkpoint bank.
 
+A separately declared [SSE compatibility probe](SSE-COMPATIBILITY-PROTOCOL.md)
+prepares three new synthetic payloads under a $0.03 allocation within the standing
+ceiling. The opt-in streaming adapter has offline framing, failure and accounting
+checks; historical collectors remain unchanged. No live compatibility or research
+gain is inferred from those tests. The probe must pass source/CI review before
+its single-use launch, and stops on its first error without a successor.
+
 The domain is function-level Python repair: one or two flat, standard-library
 modules, a named callable and JSON inputs/outputs. The environment saves complete
 artifacts, public verification, progress histories and branch ancestry. It restores

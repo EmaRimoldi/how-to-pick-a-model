@@ -156,3 +156,11 @@ reproduce independently. `plot_repair_extension_information.py` renders the
 checked terminal figure. The development adapters remain exposed; all collectors
 are closed, collection reliability and information value remain unresolved,
 and the overall acquisition-selector goal stays active.
+
+
+`src/vao/repair/streaming.py` adds an opt-in SSE adapter; the
+[synthetic compatibility protocol](../experiments/python-repair/checkpoint-environment/SSE-COMPATIBILITY-PROTOCOL.md)
+and `scripts/repair_transport_probe.py` separately freeze, run once and audit
+three bounded engineering requests. Historical studies are untouched. Fault
+injection and tamper tests verify uncertainty accounting, not live reliability
+or a diagnostic-acquisition gain.

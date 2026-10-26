@@ -82,3 +82,20 @@ closed and incomplete outcomes remain missing. Before another collection,
 validate a transport change independently with failure injection and a separately
 reviewed prospective allocation. Streaming is still a candidate, not an established
 fix. Do not modify or reuse the closed schedules to test it.
+
+
+## Prospective SSE compatibility implementation
+
+The opt-in `src/vao/repair/streaming.py` leaves historical collectors unchanged.
+Offline fixtures cover byte-split UTF-8, SSE line endings and multiline data,
+terminal accounting, HTTP/body failures, identity changes, malformed framing,
+cost overages, missing terminal receipts and secret echoes split across chunks.
+An incomplete stream retains its reservation; complete generated-but-invalid
+content remains a billed observation. Raw partial text is not persisted.
+
+The [separate compatibility protocol](SSE-COMPATIBILITY-PROTOCOL.md) and one-use
+collector prepare three synthetic payloads, without scoring repair or inspecting
+new benchmark tasks. This makes the engineering check bounded and reviewable;
+it does not establish that streaming resolves the observed resets. Runtime proxy
+inspection found no configured urllib proxy schemes in this process, which
+excludes neither system/network intermediaries nor changes at collection time.

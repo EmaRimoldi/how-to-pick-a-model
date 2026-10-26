@@ -9,8 +9,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `8`
-- Script entrypoints indexed: `46`
-- Code modules indexed: `87`
+- Script entrypoints indexed: `47`
+- Code modules indexed: `89`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `6`
@@ -194,6 +194,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/prepare_repair_qwen_information_study.py` | python | Prepare matched Qwen trace-information requests offline; no API calls. |
 | `scripts/prepare_repair_solver_study.py` | python | Prepare the fixed coding-solver compatibility control offline; no model calls. |
 | `scripts/qualify_python_repair_pool.py` | python | Offline build, provenance audit and isolated qualification of real-bug tasks. |
+| `scripts/repair_transport_probe.py` | python | Freeze, run once, or audit the separately funded SSE compatibility probe. |
 | `scripts/report_feedback_routing.py` | python | Publish a completed feedback-only bank, audited statistics and static figures. Public CLI facade; implementation lives in vao.analysis.report_feedback_routing. |
 | `scripts/report_repair_calibration.py` | python | Audit terminal repair-pilot segments and report descriptive results offline. |
 | `scripts/report_repair_contract_probe.py` | python | Audit and describe a terminal output-contract diagnostic; no API calls. |
@@ -297,7 +298,9 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/repair/qwen_information_study.py` | Fresh two-arm public-trace development calibration after solver compatibility. | design, schedule, planned_requests, construct, validate_packet, validate_origin, main |
 | verified orchestration runtime | `src/vao/repair/records.py` | Durable, exclusive records shared by offline and provider-backed adapters. | save, append, rows |
 | verified orchestration runtime | `src/vao/repair/solver_study.py` | Prepare a coding-solver compatibility control on fixed failed checkpoints. | design, planned_requests, construct, validate_packet, validate_origin, main |
+| verified orchestration runtime | `src/vao/repair/streaming.py` | Opt-in SSE transport; historical collectors keep their non-streaming adapter. This module enables no collection on import. A new protocol/freeze must opt in. Only a completed identity/usage/terminal sequence becomes a billed observation. Partial text is never treated as a result or retried. Wire bytes stay in memory; safe counts and a digest are persisted, without free-form error/partial content. | StreamProtocolError, SSEFrames, strict_json, ChatStream, StreamingSettings, StreamingOpenRouterTransport |
 | verified orchestration runtime | `src/vao/repair/trace_worker.py` | Bounded execution observations, with no expected values or reference program. Copied as a standalone worker into the same OS sandbox as ordinary verification. Only exact built-in values are inspected: never call candidate repr/str methods. The trace is diagnostic candidate data, not a trusted correctness certificate. | compact, Trace, main |
+| verified orchestration runtime | `src/vao/repair/transport_probe.py` | Separately funded, single-use SSE compatibility probe on synthetic payloads. No benchmark/repair outcome is evaluated. No closed request is replayed. | read, sha, packet, validate, freeze, collect, audit, main |
 | verified orchestration runtime | `src/vao/repair/verifier.py` | Verify function-repair artifacts in fresh macOS sandboxes with parent-side scoring. | RepairVerifier |
 | verified orchestration runtime | `src/vao/repair/worker.py` | Execute one JSON function call; expected answers stay in the parent process. | main |
 | verified orchestration runtime | `src/vao/schemas.py` | Pydantic schemas for protocol records. | utc_now_iso, ModeDistribution, CandidateProposal, BranchEvaluation, StepRecord, RunManifest, RoutingRecord |
