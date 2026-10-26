@@ -83,3 +83,11 @@ The [complete 12B capability diagnostic](../experiments/python-repair/checkpoint
 also fails the unchanged gate despite more usable outputs. All36 calls and72
 verifier records are preserved and independently reproduced; no recovery or
 selector gain is inferred from this initial-repair study.
+
+The [27B capability control](../experiments/python-repair/checkpoint-environment/results/contract-gemma27b-20261026/README.md)
+is complete too: 36 responses, three successes on two distinct bugs, unchanged
+gate failed. Independent execution reproduced all 72 saved verification records.
+The [post hoc capability comparison](../experiments/python-repair/checkpoint-environment/results/capability-comparison-20261026/README.md)
+separates syntax validity, partial test progress and full repairs; it preserves
+FP8/BF16 confounding, regressions and public-test false positives. No repair
+selector or scaling law is demonstrated.
