@@ -7,7 +7,7 @@ Paths below are relative to the repository root.
 The project studies cost-aware continue/restart/switch/stop decisions on
 verifiable tasks. Read:
 
-1. `README.md` and `docs/decision-protocol.md` for scope and implementation status.
+1. `docs/decision-protocol.md` for the retained experiments and implementation status.
 2. `docs/knowledge-map.md` for code and evidence locations.
 3. `docs/reproducibility.md` for safe commands and live-run prerequisites.
 4. `experiments/README.md` and each relevant bundle README for evidence status.
