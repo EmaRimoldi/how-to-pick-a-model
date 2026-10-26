@@ -309,3 +309,38 @@ def test_manual_continuation_excludes_started_trajectories_and_carries_uncertain
     new = rows(tmp_path / "successor" / "observations.jsonl")
     assert all(r["trajectory"] in allowed and r["trajectory"] not in started for r in new)
     assert before == pilot.file_hashes(parent)
+
+
+def test_later_manual_segment_preserves_entire_lineage_and_original_cap(tmp_path, task, monkeypatch):
+    monkeypatch.setattr(pilot, "source_commit", lambda: "a" * 40)
+    tasks = [RepairTask.from_dicts({**task.public, "task_id": f"development/bug-{i}"}, json.loads(task.evaluator_json)) for i in range(3)]
+    design, config = Design(1, 1, 2), funded_config()
+    started_all = []
+    for segment in range(2):
+        frozen = pilot.funded_freeze(config, tasks, tmp_path / f"freeze-{segment}.json")
+        parent = tmp_path / f"segment-{segment}"
+        def failing(output):
+            client = OpenRouterTransport(output, "fixture", Settings(), authorized_limit_usd=config["monetary_authorization_usd"])
+            monkeypatch.setattr(client, "preflight", lambda: setattr(client, "ready", True))
+            def exchange(*_):
+                raise TimeoutError("offline test")
+            monkeypatch.setattr(client, "_exchange", exchange)
+            return client
+        with pytest.raises(RuntimeError):
+            collect(tasks, design, parent, Verifier(), failing, freeze=frozen)
+        retained = audit(parent)["conservative_committed_usd"]
+        assert Decimal(retained) == (segment + 1) * Settings().reserve
+        started_all += [p.name for p in (parent / "trajectories").iterdir()]
+        allowed = [f"task-{i:03d}-rep-{r:02d}" for i, r in pilot.schedule_for(tasks, design)
+                   if f"task-{i:03d}-rep-{r:02d}" not in started_all]
+        config = {**funded_config(), "campaign_id": f"offline-chain-segment-{segment+1}",
+            "monetary_authorization_usd": str(Decimal(".60")-Decimal(retained)),
+            "continuation": {"parent_run": str(parent), "parent_freeze_id": frozen["freeze_id"],
+                "parent_hashes": pilot.file_hashes(parent), "retained_committed_usd": retained,
+                "cumulative_limit_usd": "0.60", "omitted_started_trajectories": sorted(started_all),
+                "allowed_trajectories": allowed}}
+        assert pilot.check_continuation(config, tasks, design) == Decimal(retained)
+    assert len(config["continuation"]["allowed_trajectories"]) == 1
+    config["continuation"]["omitted_started_trajectories"] = started_all[-1:]
+    with pytest.raises(ValueError, match="unstarted"):
+        pilot.check_continuation(config, tasks, design)

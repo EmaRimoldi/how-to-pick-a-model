@@ -19,10 +19,11 @@ from .records import append, save
 class ProviderStopped(RuntimeError):
     """Stop without exposing credentials or automatically retrying a request."""
 
-    def __init__(self, message: str, *, http_status=None, transport_kind=None):
+    def __init__(self, message: str, *, http_status=None, transport_kind=None, retry_after=None):
         super().__init__(message)
         self.http_status = http_status
         self.transport_kind = transport_kind
+        self.retry_after = retry_after
 
 
 def dollars(value) -> Decimal:
@@ -103,11 +104,16 @@ class OpenRouterTransport:
 
     mode = "model_pilot"
 
-    def __init__(self, output: Path, key: str, settings: Settings, *, authorized_limit_usd: str):
+    def __init__(self, output: Path, key: str, settings: Settings, *, authorized_limit_usd: str,
+                 minimum_interval_seconds: float = 0):
         self.output, self._key, self.settings = output, key, settings
         self.limit, self.reserve = dollars(authorized_limit_usd), settings.reserve
         if not key or not 0 < self.limit <= 5 or self.reserve > self.limit:
             raise ValueError("A key and an explicitly declared sufficient pilot cap are required")
+        if type(minimum_interval_seconds) not in (int, float) or not 0 <= minimum_interval_seconds <= 60:
+            raise ValueError("Request pacing must be finite and between 0 and 60 seconds")
+        self.minimum_interval_seconds = minimum_interval_seconds
+        self.last_dispatch = None
         if (output / "ledger.jsonl").exists() or (output / "provider-preflight.json").exists():
             raise ValueError("Existing provider state cannot be resumed")
         self.spent, self.pending, self.seen = Decimal(0), {}, set()
@@ -125,8 +131,12 @@ class OpenRouterTransport:
             with urllib.request.build_opener(NoRedirects).open(request, timeout=180) as response:
                 return json.loads(response.read())
         except urllib.error.HTTPError as exc:
+            retry_after = (exc.headers or {}).get("Retry-After")
+            if (not isinstance(retry_after, str) or len(retry_after) > 120
+                    or self._key in retry_after or "sk-" in retry_after):
+                retry_after = None
             raise ProviderStopped(f"HTTP {exc.code}; no retry; admission remains reserved",
-                                  http_status=exc.code, transport_kind="http_error") from None
+                                  http_status=exc.code, transport_kind="http_error", retry_after=retry_after) from None
         except (OSError, ValueError) as exc:
             raise ProviderStopped(f"{type(exc).__name__}; no retry; admission remains reserved",
                                   transport_kind=type(exc).__name__) from None
@@ -170,6 +180,7 @@ class OpenRouterTransport:
             # No key label, identifier or account balance is persisted.
             record = {"settings": asdict(self.settings), "endpoint": endpoint,
                       "credit_covers_declared_cap": True, "cap_usd": str(self.limit),
+                      "minimum_interval_seconds": self.minimum_interval_seconds,
                       "reservation_usd": str(self.reserve)}
             save(self.output / "provider-preflight.json", record)
             self.ready = True
@@ -190,6 +201,10 @@ class OpenRouterTransport:
         if not self.available() or metadata["attempt_id"] in self.seen:
             raise ProviderStopped("Duplicate attempt, missing preflight or unavailable budget")
         body = self.settings.body(request, metadata)  # Bounds checked before admission.
+        if self.last_dispatch is not None:
+            delay = self.minimum_interval_seconds - (time.monotonic() - self.last_dispatch)
+            if delay > 0:
+                time.sleep(delay)  # Pace distinct new requests; never retry a failed one.
         attempt = metadata["attempt_id"]
         self.seen.add(attempt)
         self.pending[attempt] = self.reserve
@@ -198,6 +213,7 @@ class OpenRouterTransport:
                "usd": str(self.reserve), "currency": "USD"})
         start = time.perf_counter()
         try:
+            self.last_dispatch = time.monotonic()
             payload = self._exchange("/chat/completions", body)
             # Preserve a received payload before validating or settling. Never
             # persist the bearer key, even if a server unexpectedly echoes it.
@@ -237,5 +253,6 @@ class OpenRouterTransport:
                    "exception_type": type(exc).__name__, "reservation_retained": attempt in self.pending,
                    "http_status": getattr(exc, "http_status", None),
                    "transport_kind": getattr(exc, "transport_kind", None),
+                   "retry_after": getattr(exc, "retry_after", None),
                    "conservative_committed_usd": str(self.conservative_committed_usd)})
             raise ProviderStopped("Provider call stopped; inspect saved receipt/reservation; no retry") from None

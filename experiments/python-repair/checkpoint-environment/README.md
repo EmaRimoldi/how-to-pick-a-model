@@ -8,8 +8,10 @@ fitted selector or frozen scientific evaluation.**
 The [interruption record and authorized manual exception](INTERRUPTION-20261026.md)
 preserve all responses and the uncertain reserve. Only the 22 entirely unstarted
 trajectories are proposed for continuation, under the same cumulative cap;
-the user authorized that reviewed exception. A separate funded config preserves
-the original disabled draft and carries forward the uncertain reservation.
+the user authorized that reviewed exception. Its successor subsequently hit
+HTTP 429. The [pacing amendment](PACING-AMENDMENT-20261026.md) covers only the
+thirteen trajectories still unstarted, with 15-second spacing and both uncertain
+reserves retained. All segments remain development evidence, not a held-out test.
 
 The [real-bug development pool](development/README.md) adds twelve adapted BugsInPy
 tasks with pinned source excerpts, public/evaluator cases, documented exclusions

@@ -84,30 +84,53 @@ def check_continuation(config, tasks, design) -> Decimal:
         return Decimal(0)
     parent = Path(carried["parent_run"])
     manifest = json.loads((parent / "manifest.json").read_text())
-    original = manifest["freeze"]
+    immediate_freeze = manifest["freeze"]
+    chain, chain_paths, cursor = [], set(), parent
+    while True:
+        resolved = cursor.resolve()
+        if resolved in chain_paths:
+            raise ValueError("Cyclic continuation lineage")
+        chain_paths.add(resolved)
+        current = json.loads((cursor / "manifest.json").read_text())
+        chain.append((cursor, current))
+        ancestor = current["freeze"]["config"].get("continuation")
+        if not ancestor:
+            break
+        cursor = Path(ancestor["parent_run"])
+    original = chain[-1][1]["freeze"]
     checked = audit(parent)
     if (checked["sealed"] or not (parent / "interruption.json").exists()
-            or manifest["mode"] != "model_pilot" or original["config"].get("continuation")
-            or original["freeze_id"] != carried["parent_freeze_id"]
+            or manifest["mode"] != "model_pilot"
+            or immediate_freeze["freeze_id"] != carried["parent_freeze_id"]
             or original["provider_settings"] != config["provider_settings"]
             or original["provenance"]["tasks"] != [t.task_hash for t in tasks]
             or original["provenance"]["design"] != asdict(design)
             or file_hashes(parent) != carried["parent_hashes"]):
         raise ValueError("Continuation parent is changed, unsupported or not the original interrupted pilot")
-    started = sorted(p.name for p in (parent / "trajectories").glob("*"))
+    started = []
+    for ancestor, ancestor_manifest in chain:
+        if (ancestor_manifest["provenance"]["tasks"] != original["provenance"]["tasks"]
+                or ancestor_manifest["provenance"]["design"] != asdict(design)
+                or ancestor_manifest["provider_settings"] != config["provider_settings"]):
+            raise ValueError("Scientific settings changed between segments")
+        started.extend(p.name for p in (ancestor / "trajectories").glob("*"))
+    if len(started) != len(set(started)):
+        raise ValueError("A trajectory was already restarted across segments")
+    started.sort()
     expected = [f"task-{i:03d}-rep-{r:02d}" for i, r in schedule_for(tasks, design)
                 if f"task-{i:03d}-rep-{r:02d}" not in started]
     if carried["allowed_trajectories"] != expected or carried["omitted_started_trajectories"] != started:
         raise ValueError("Only original, entirely unstarted trajectories may continue")
-    for event in rows(parent / "ledger.jsonl"):
-        if event["event"] == "reserve":
-            request = json.loads((parent / "requests" / (event["attempt_id"] + ".json")).read_text())
-            if request["metadata"]["trajectory"] in expected:
-                raise ValueError("Continuation overlaps an admitted attempt")
+    for ancestor, _ in chain:
+        for event in rows(ancestor / "ledger.jsonl"):
+            if event["event"] == "reserve":
+                request = json.loads((ancestor / "requests" / (event["attempt_id"] + ".json")).read_text())
+                if request["metadata"]["trajectory"] in expected:
+                    raise ValueError("Continuation overlaps an admitted attempt")
     retained = dollars(checked["conservative_committed_usd"])
     ceiling = dollars(carried["cumulative_limit_usd"])
     if (retained != dollars(carried["retained_committed_usd"])
-            or ceiling != dollars(manifest["limit_usd"])
+            or ceiling != dollars(chain[-1][1]["limit_usd"])
             or dollars(config["monetary_authorization_usd"]) + retained != ceiling):
         raise ValueError("Continuation fails cumulative reservation accounting")
     return retained
@@ -194,6 +217,7 @@ def collect(tasks: list[RepairTask], design: Design, output: Path, verifier, fac
         if (not isinstance(transport, OpenRouterTransport) or transport.mode != "model_pilot"
                 or freeze["provenance"] != fingerprint(tasks, design)
                 or freeze["provider_settings"] != asdict(transport.settings)
+                or transport.minimum_interval_seconds != freeze["config"].get("minimum_request_interval_seconds", 0)
                 or dollars(freeze["authorized_limit_usd"]) != transport.limit):
             raise ValueError("Live adapter does not match the funded freeze")
     elif type(transport) is not ScriptedTransport or transport.mode != "scripted_pilot":
@@ -313,8 +337,12 @@ def file_hashes(output: Path) -> dict:
             for p in sorted(output.rglob("*")) if p.is_file() and p.name != "pilot-completion.json"}
 
 
-def audit(output: Path) -> dict:
+def audit(output: Path, *, _ancestors=None) -> dict:
     """Audit saved requests, response identities, matched inputs and ledger offline."""
+    ancestors = set() if _ancestors is None else set(_ancestors)
+    if output.resolve() in ancestors:
+        raise ValueError("Cyclic continuation lineage")
+    ancestors.add(output.resolve())
     manifest = json.loads((output / "manifest.json").read_text())
     live = manifest["mode"] == "model_pilot"
     currency = "USD" if live else "simulated_USD"
@@ -440,7 +468,7 @@ def audit(output: Path) -> dict:
     if live and carried:
         link = manifest["freeze"]["config"]["continuation"]
         parent = Path(link["parent_run"])
-        if file_hashes(parent) != link["parent_hashes"] or dollars(audit(parent)["conservative_committed_usd"]) != carried:
+        if file_hashes(parent) != link["parent_hashes"] or dollars(audit(parent, _ancestors=ancestors)["conservative_committed_usd"]) != carried:
             raise ValueError("Continuation parent or retained accounting changed")
     committed = used + carried
     for key, reserved in pending.items():
@@ -596,7 +624,8 @@ def live_collect(freeze: dict, tasks: list[RepairTask], output: Path, *, claim_r
         save(claims / ("continuation-" + freeze["config"]["continuation"]["parent_freeze_id"] + ".json"), {
              "freeze_id": freeze["freeze_id"], "output": str(output.resolve()), "single_successor_only": True})
     return collect(tasks, design, output, verifier, lambda out: OpenRouterTransport(
-        out, key, Settings(**freeze["provider_settings"]), authorized_limit_usd=freeze["authorized_limit_usd"]),
+        out, key, Settings(**freeze["provider_settings"]), authorized_limit_usd=freeze["authorized_limit_usd"],
+        minimum_interval_seconds=freeze["config"].get("minimum_request_interval_seconds", 0)),
         freeze=freeze)
 
 

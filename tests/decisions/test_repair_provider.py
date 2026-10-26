@@ -40,10 +40,11 @@ def receipt(**updates):
     return result
 
 
-def client(tmp_path, monkeypatch, response=None, endpoints=None, credits=None, keyinfo=None):
+def client(tmp_path, monkeypatch, response=None, endpoints=None, credits=None, keyinfo=None, minimum_interval_seconds=0):
     (tmp_path / "requests").mkdir()
     (tmp_path / "receipts").mkdir()
-    transport = OpenRouterTransport(tmp_path, "fixture-bearer-canary", Settings(), authorized_limit_usd="0.60")
+    transport = OpenRouterTransport(tmp_path, "fixture-bearer-canary", Settings(), authorized_limit_usd="0.60",
+                                    minimum_interval_seconds=minimum_interval_seconds)
     calls = []
     def exchange(path, body=None):
         calls.append((path, body))
@@ -198,13 +199,35 @@ def test_invalid_numeric_settings_and_funding_fail_closed(tmp_path):
 
 
 def test_http_status_is_retained_without_server_body_or_credentials(tmp_path, monkeypatch, solver_request, meta):
-    error = ProviderStopped("Do not persist this text: fixture-bearer-canary", http_status=429, transport_kind="http_error")
+    error = ProviderStopped("Do not persist this text: fixture-bearer-canary", http_status=429, transport_kind="http_error", retry_after="120")
     transport, calls = client(tmp_path, monkeypatch, response=error)
     transport.preflight()
     with pytest.raises(ProviderStopped):
         transport.complete(solver_request, meta)
     record = rows(tmp_path / "provider-errors.jsonl")[0]
     assert record["http_status"] == 429 and record["transport_kind"] == "http_error"
+    assert record["retry_after"] == "120"
     assert "fixture-bearer-canary" not in canonical(record)
     assert len(transport.pending) == 1
     assert sum(path == "/chat/completions" for path, _ in calls) == 1
+
+
+def test_distinct_calls_are_paced_without_retrying(tmp_path, monkeypatch, solver_request, meta):
+    from vao.repair import provider
+    transport, _ = client(tmp_path, monkeypatch, minimum_interval_seconds=15)
+    transport.preflight()
+    clock, pauses, sent = [100.0], [], []
+    monkeypatch.setattr(provider.time, "monotonic", lambda: clock[0])
+    def sleep(seconds):
+        pauses.append(seconds)
+        clock[0] += seconds
+    monkeypatch.setattr(provider.time, "sleep", sleep)
+    def exchange(*_):
+        sent.append(clock[0])
+        return receipt(id="generation-" + str(len(sent)))
+    monkeypatch.setattr(transport, "_exchange", exchange)
+    transport.complete(solver_request, meta)
+    clock[0] += 3
+    transport.complete(solver_request, {**meta, "attempt_id": "b"})
+    assert sent == [100, 115] and pauses == [12]
+    assert len(transport.seen) == 2 and len(rows(tmp_path / "ledger.jsonl")) == 4
