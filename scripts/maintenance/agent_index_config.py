@@ -19,9 +19,8 @@ EXCLUDED_DIRS = {
 }
 
 CANONICAL_DOCS = [
-    "README.md",
     "docs/engineering/development.md",
-    "docs/README.md",
+    "docs/index.md",
     "docs/knowledge-map.md",
     "docs/decision-protocol.md",
     "docs/paper-evidence-map.md",
@@ -110,15 +109,13 @@ SCRIPT_SUPPORT_FILES = {
 }
 
 AGENT_DOC_ROOT_FILES = [
-    Path("README.md"),
     Path("docs/engineering/development.md"),
 ]
 MARKDOWN_LINK_DOCS = [
     Path(path)
     for path in [
-        "README.md",
         "docs/engineering/development.md",
-        "docs/README.md",
+        "docs/index.md",
         "docs/knowledge-map.md",
         "docs/decision-protocol.md",
         "docs/paper-evidence-map.md",

@@ -5,7 +5,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 
 ## Summary
 
-- Canonical docs present: `22/22`
+- Canonical docs present: `21/21`
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `7`
@@ -19,9 +19,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 
 | Path | Present |
 | --- | --- |
-| `README.md` | yes |
 | `docs/engineering/development.md` | yes |
-| `docs/README.md` | yes |
+| `docs/index.md` | yes |
 | `docs/knowledge-map.md` | yes |
 | `docs/decision-protocol.md` | yes |
 | `docs/paper-evidence-map.md` | yes |

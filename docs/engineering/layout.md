@@ -17,7 +17,6 @@ src/vao/
   analysis/        # saved-evidence audits, reports and figures
   *.py             # shared schemas, records and workspace primitives
 tests/             # analysis, decisions, humaneval, repository and unit checks
-README.md          # project entrypoint
 LICENSE            # project license
 pyproject.toml     # package and tool configuration
 uv.lock            # reproducible Python dependency resolution
