@@ -9,7 +9,7 @@ import json
 import os
 from pathlib import Path
 
-from .contracts import STUDY, DEEPINFRA_STUDY, decode, provenance, provider_body, public_feedback, task_from_record, validate, study_settings
+from .contracts import STUDY, DEEPINFRA_STUDY, GEMMA12B_STUDY, decode, provenance, provider_body, public_feedback, task_from_record, validate, study_settings, study_spacing
 from .environment import RepairRun, audit_run, identity
 from .pilot import file_hashes, source_commit
 from .provider import OpenRouterTransport, ProviderStopped, Settings, dollars
@@ -41,11 +41,16 @@ def authorization(config, packet, prior):
         raise ValueError('Authorization belongs to another study')
     if not dollars(packet['maximum_new_reservations_usd']) <= limit <= study_settings(packet['study'])[1]:
         raise ValueError('New study cap must cover the whole design without exceeding the proposal')
-    if config.get('minimum_request_interval_seconds') != 60:
-        raise ValueError('The contract study requires declared 60-second spacing')
+    if config.get('minimum_request_interval_seconds') != study_spacing(packet['study']):
+        raise ValueError('The contract study requires its declared request spacing')
     if packet['study'] == DEEPINFRA_STUDY:
         if prior.get('study') != STUDY or prior.get('status') != 'incomplete_development_diagnostic':
             raise ValueError('DeepInfra study must carry the closed Parasail diagnostic')
+        carried = dollars(prior['accounting']['cumulative_committed_usd'])
+    elif packet['study'] == GEMMA12B_STUDY:
+        if (prior.get('study') != DEEPINFRA_STUDY or prior.get('status') != 'development_diagnostic_complete'
+                or prior.get('gate') != 'no_contract_meets_engineering_checks'):
+            raise ValueError('12B calibration must carry the completed unsuccessful 4B contract diagnostic')
         carried = dollars(prior['accounting']['cumulative_committed_usd'])
     else:
         carried = dollars(prior['conservative_committed_usd'])
@@ -118,7 +123,7 @@ def collect(frozen, output: Path, *, claim_root=None):
     save(output / 'manifest.json', {'mode': 'model_contract_diagnostic', 'model_results': True,
                                     'currency': 'USD', 'freeze': frozen})
     transport = OpenRouterTransport(output, key, ContractSettings(**packet['provider_settings']),
-        authorized_limit_usd=str(limit), minimum_interval_seconds=60)
+        authorized_limit_usd=str(limit), minimum_interval_seconds=study_spacing(packet['study']))
     try:
         transport.preflight()
         generation_ids = set()

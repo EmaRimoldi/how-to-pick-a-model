@@ -311,3 +311,11 @@ None passes the fixed engineering gate. All 36 outcomes and 42 verifier records
 are retained; no new uncertain calls. The cumulative commitment is $0.01419331,
 including historical reserves. A stronger capability/calibration setting is
 needed before collecting matched recovery outcomes or fitting a selector.
+
+A separately bounded [Gemma 3 12B capability calibration](CONTRACT-12B-PROTOCOL.md)
+is prepared under the user's instruction to continue research. Its
+[funded configuration](CONTRACT-12B-AUTHORIZED.json) declares $0.09 within the
+existing $0.60 cumulative ceiling, carrying $0.01419331 once. The same twelve
+bugs, three response contracts and fixed gate are retained; 36 fresh initial
+attempts are planned. Ten-second dispatch spacing and a new seed are declared
+before calls. No 12B outcome or scaling claim exists at preparation time.

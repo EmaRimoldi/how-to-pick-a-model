@@ -320,3 +320,46 @@ def test_duplicate_provider_identity_stops_before_third_call(tmp_path, monkeypat
     assert json.loads((out / 'interruption.json').read_text())['settled_usd'] == '0.00016'
     with pytest.raises(ValueError, match='Repeated provider'):
         cc.audit(out)
+
+
+def test_12b_calibration_preserves_inputs_carries_prior_and_pins_new_limits(tmp_path, monkeypatch):
+    from vao.repair.contracts import DEEPINFRA_STUDY, GEMMA12B_STUDY, study_spacing, validate
+    from vao.repair.environment import identity
+    from vao.analysis.contract_diagnostic import summarize
+    _, config = prepare(tmp_path, monkeypatch)
+    prior = tmp_path / 'complete-4b.json'
+    prior.write_text(json.dumps({'model_results': True, 'study': DEEPINFRA_STUDY,
+        'status': 'development_diagnostic_complete', 'gate': 'no_contract_meets_engineering_checks',
+        'accounting': {'cumulative_committed_usd': '0.01419331'}}))
+    new = construct([task()], Verifier(), study=GEMMA12B_STUDY, prior_commitment='0.01419331')
+    old = construct([task()], Verifier(), study=DEEPINFRA_STUDY)
+    bodies = lambda p: {r['metadata']['contract']: r['provider_body'] for r in p['requests']}
+    for contract, body in bodies(new).items():
+        assert body['messages'] == bodies(old)[contract]['messages']
+        assert body['model'] == 'google/gemma-3-12b-it'
+        assert body['provider']['only'] == ['deepinfra/bf16']
+        assert body['provider']['quantizations'] == ['bf16']
+        assert not body['provider']['allow_fallbacks']
+    assert new['reservation_usd'] == '0.0022528'
+    assert study_spacing(GEMMA12B_STUDY) == 10 and study_spacing(DEEPINFRA_STUDY) == 60
+    assert not ({r['metadata']['attempt_id'] for r in old['requests']} &
+                {r['metadata']['attempt_id'] for r in new['requests']})
+    config = {**config, 'study': GEMMA12B_STUDY, 'minimum_request_interval_seconds': 10,
+              'monetary_authorization_usd': '.09', 'closed_pilot_report': str(prior)}
+    frozen = cc.freeze(new, config, tmp_path / '12b-freeze.json')
+    sent = network(monkeypatch)
+    result = cc.collect(frozen, tmp_path / '12b-run', claim_root=tmp_path / 'claims')
+    assert len(sent) == 3 and result['sealed']
+    assert result['carried_committed_usd'] == '0.01419331'
+    assert Decimal(result['cumulative_committed_usd']) == Decimal('.01419331') + Decimal('.00024')
+    assert summarize(tmp_path / '12b-run')['fit_selector'] is False
+    for change in ({'minimum_request_interval_seconds': 60}, {'monetary_authorization_usd': '.10'},
+                   {'study': DEEPINFRA_STUDY}, {'cumulative_limit_usd': '.10'}):
+        with pytest.raises(ValueError):cc.freeze(new, {**config, **change}, tmp_path / 'reject.json')
+    wrong_prior = json.loads(prior.read_text()); wrong_prior['status'] = 'incomplete_development_diagnostic'
+    with pytest.raises(ValueError, match='completed unsuccessful'):
+        cc.authorization(config, new, wrong_prior)
+    changed = json.loads(json.dumps(new)); changed['provider_settings']['model'] = 'google/gemma-3-4b-it'
+    changed['packet_id'] = identity({k:v for k,v in changed.items() if k != 'packet_id'})
+    with pytest.raises(ValueError, match='settings'):
+        validate(changed)

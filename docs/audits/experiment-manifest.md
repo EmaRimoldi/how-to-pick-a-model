@@ -35,7 +35,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 56 | 6 | 9 | 40 | 3 | 0 | 0 | 0 | 5 |
 | `experiments/mbpp-plus/context-value-transfer/` | collection finished; censored descriptive bank | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 72 | 6 | 2 | 59 | 4 | 3 | 0 | 0 | 6 |
 | `experiments/bigcodebench/feedback-only-routing/` | complete; primary gate not passed | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 42 | 2 | 5 | 32 | 4 | 0 | 0 | 0 | 2 |
-| `experiments/python-repair/checkpoint-environment/` | recovery pilot incomplete; contract follow-up complete, gate failed | Tier 2: Supporting Or Diagnostic Evidence | `partial-evidence` | 86 | 0 | 56 | 23 | 2 | 1 | 0 | 0 | 3 |
+| `experiments/python-repair/checkpoint-environment/` | recovery pilot incomplete; contract follow-up complete, gate failed | Tier 2: Supporting Or Diagnostic Evidence | `partial-evidence` | 88 | 0 | 57 | 23 | 2 | 1 | 0 | 0 | 3 |
 
 ## Key Files
 

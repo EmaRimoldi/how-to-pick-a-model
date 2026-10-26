@@ -50,9 +50,11 @@ class Settings:
     seed: int = 43117
 
     def __post_init__(self):
-        if (self.model != "google/gemma-3-4b-it" or self.quantization != "bf16"
-                or (self.endpoint, self.provider_name) not in {
-                    ("parasail/bf16", "Parasail"), ("deepinfra/bf16", "DeepInfra")}):
+        if (self.quantization != "bf16"
+                or (self.model, self.endpoint, self.provider_name) not in {
+                    ("google/gemma-3-4b-it", "parasail/bf16", "Parasail"),
+                    ("google/gemma-3-4b-it", "deepinfra/bf16", "DeepInfra"),
+                    ("google/gemma-3-12b-it", "deepinfra/bf16", "DeepInfra")}):
             raise ValueError("This development adapter requires a declared Gemma endpoint")
         for name in ("input_token_ceiling", "max_tokens", "seed"):
             if type(getattr(self, name)) is not int:

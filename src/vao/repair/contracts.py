@@ -26,6 +26,7 @@ STUDY = "repair-contract-diagnostic-v1"
 SEED = 43118
 PROPOSED_LIMIT = Decimal("0.06")
 DEEPINFRA_STUDY = "repair-contract-deepinfra-v1"
+GEMMA12B_STUDY = "repair-contract-gemma12b-v1"
 EXAMPLE = {"example.py": "def identity(value):\n    return value\n"}
 INSTRUCTIONS = {
     "json_current": REPAIR_SYSTEM,
@@ -43,7 +44,15 @@ def study_settings(study):
     if study == DEEPINFRA_STUDY:
         return Settings(endpoint="deepinfra/bf16", provider_name="DeepInfra",
                         input_per_million="0.05", output_per_million="0.10", seed=43119), Decimal("0.08")
+    if study == GEMMA12B_STUDY:
+        return Settings(model="google/gemma-3-12b-it", endpoint="deepinfra/bf16", provider_name="DeepInfra",
+                        input_per_million="0.05", output_per_million="0.15", seed=43120), Decimal("0.09")
     raise ValueError("Undeclared contract study")
+
+
+def study_spacing(study):
+    study_settings(study)  # Reject undeclared studies; historical pacing is unchanged.
+    return 10 if study == GEMMA12B_STUDY else 60
 
 
 def public_feedback(result: dict) -> dict:
@@ -245,7 +254,7 @@ def main():
     parser.add_argument("--pool", type=Path, default=DEFAULT_POOL)
     parser.add_argument("--input", type=Path)
     parser.add_argument("--output", type=Path)
-    parser.add_argument("--study", choices=(STUDY, DEEPINFRA_STUDY), default=STUDY)
+    parser.add_argument("--study", choices=(STUDY, DEEPINFRA_STUDY, GEMMA12B_STUDY), default=STUDY)
     parser.add_argument("--prior-commitment", default="0.01011411")
     args = parser.parse_args()
     if args.action == "plan":
