@@ -8,6 +8,7 @@ from dataclasses import asdict, dataclass
 from decimal import Decimal, InvalidOperation
 import json
 from pathlib import Path
+import re
 import time
 import urllib.error
 import urllib.request
@@ -19,11 +20,47 @@ from .records import append, save
 class ProviderStopped(RuntimeError):
     """Stop without exposing credentials or automatically retrying a request."""
 
-    def __init__(self, message: str, *, http_status=None, transport_kind=None, retry_after=None):
+    def __init__(self, message: str, *, http_status=None, transport_kind=None, retry_after=None,
+                 error_details=None):
         super().__init__(message)
         self.http_status = http_status
         self.transport_kind = transport_kind
         self.retry_after = retry_after
+        self.error_details = error_details
+
+
+def safe_error_details(payload, headers=None):
+    """Allowlist diagnostic codes, never free-form messages or raw metadata.
+
+    Provider messages can echo prompts, keys or account identifiers. Unknown
+    values are intentionally discarded instead of redacted heuristically.
+    These details cannot settle a charge or authorize a retry.
+    """
+    result = {}
+    error = payload.get('error') if isinstance(payload, dict) else None
+    if isinstance(error, dict):
+        if type(error.get('code')) is int and 100 <= error['code'] <= 599:
+            result['code'] = error['code']
+        metadata = error.get('metadata')
+        if isinstance(metadata, dict):
+            allowed = {
+                'error_type': {'rate_limit_exceeded', 'insufficient_quota', 'server',
+                               'model_not_available', 'provider_overloaded', 'timeout'},
+                'provider_code': {'rate_limited', 'rate_limit_exceeded', 'insufficient_quota'},
+                'limit_source': {'openrouter_guardrail_budget', 'openrouter_workspace_budget',
+                                 'openrouter_key_limit', 'openrouter_in_flight_budget'},
+            }
+            for name, vocabulary in allowed.items():
+                value = metadata.get(name)
+                if isinstance(value, str) and value in vocabulary:
+                    result[name] = value
+    # Only numeric rate counters/delays; omit dates, identifiers and free text.
+    for name in ('Retry-After', 'X-RateLimit-Limit-Requests', 'X-RateLimit-Remaining-Requests',
+                 'X-RateLimit-Limit-Tokens', 'X-RateLimit-Remaining-Tokens'):
+        value = (headers or {}).get(name)
+        if isinstance(value, str) and re.fullmatch(r'[0-9]{1,12}', value):
+            result.setdefault('rate_headers', {})[name.lower()] = int(value)
+    return result
 
 
 def dollars(value) -> Decimal:
@@ -138,8 +175,18 @@ class OpenRouterTransport:
             if (not isinstance(retry_after, str) or len(retry_after) > 120
                     or self._key in retry_after or "sk-" in retry_after):
                 retry_after = None
+            payload = None
+            try:
+                data = exc.read(8193)
+                if len(data) <= 8192:
+                    payload = json.loads(data)
+            except (OSError, ValueError, RecursionError):
+                pass  # Reading diagnostic text must not mask the HTTP failure.
+            finally:
+                exc.close()
             raise ProviderStopped(f"HTTP {exc.code}; no retry; admission remains reserved",
-                                  http_status=exc.code, transport_kind="http_error", retry_after=retry_after) from None
+                                  http_status=exc.code, transport_kind="http_error", retry_after=retry_after,
+                                  error_details=safe_error_details(payload, exc.headers)) from None
         except (OSError, ValueError) as exc:
             raise ProviderStopped(f"{type(exc).__name__}; no retry; admission remains reserved",
                                   transport_kind=type(exc).__name__) from None
@@ -257,5 +304,6 @@ class OpenRouterTransport:
                    "http_status": getattr(exc, "http_status", None),
                    "transport_kind": getattr(exc, "transport_kind", None),
                    "retry_after": getattr(exc, "retry_after", None),
+                   "error_details": getattr(exc, "error_details", None),
                    "conservative_committed_usd": str(self.conservative_committed_usd)})
             raise ProviderStopped("Provider call stopped; inspect saved receipt/reservation; no retry") from None

@@ -50,7 +50,9 @@ def reproduce(source, output):
             from vao.repair.diagnostic_study import validate_diagnostics
             validate_diagnostics(frozen['packet'], verifier)
         results, checks, discrepancies = {}, [], []
-        for cell in sorted((root / 'collection/cells').iterdir()):
+        # File-only archives omit empty directories. A stopped first request
+        # legitimately has no cells; summarize() above still audits all receipts.
+        for cell in sorted((root / 'collection/cells').glob('*')):
             def obj(key):
                 return read(cell / 'objects' / (key + '.json'))
             event = read(cell / 'events/000000.json')

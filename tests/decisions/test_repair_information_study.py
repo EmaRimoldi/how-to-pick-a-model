@@ -181,3 +181,44 @@ def test_changed_trace_is_rejected_before_provider_dispatch(tmp_path, monkeypatc
     with pytest.raises(ValueError, match="diagnostic does not reproduce"):
         cc.collect(frozen, tmp_path / "run", claim_root=tmp_path / "claims")
     assert not sent and not (tmp_path / "run").exists()
+
+
+def test_zero_response_archive_replays_without_an_empty_cells_directory(tmp_path, monkeypatch):
+    import hashlib
+    import zipfile
+    from vao.analysis import contract_verification as cv
+    from vao.analysis.repair_information import render
+
+    p, config, frozen = prepare(tmp_path, monkeypatch)
+    network(monkeypatch, p)
+    exchange = OpenRouterTransport._exchange
+    def stop_first(self, endpoint, body=None):
+        if endpoint == '/chat/completions':
+            raise ProviderStopped('HTTP 429 test fixture', http_status=429)
+        return exchange(self, endpoint, body)
+    monkeypatch.setattr(OpenRouterTransport, '_exchange', stop_first)
+    run = tmp_path / 'run'
+    with pytest.raises(ProviderStopped): cc.collect(frozen, run, claim_root=tmp_path / 'claims')
+    report = summarize(run)
+    source = tmp_path / 'export'
+    source.mkdir()
+    (source / 'analysis.json').write_text(json.dumps(report))
+    (source / 'REPORT.md').write_text(render(report))
+    members = {}
+    with zipfile.ZipFile(source / 'evidence.zip', 'w') as z:
+        for path in run.rglob('*'):
+            if path.is_file():
+                name = 'collection/' + path.relative_to(run).as_posix()
+                content = path.read_bytes()
+                z.writestr(name, content)
+                members[name] = hashlib.sha256(content).hexdigest()
+    assert not any(name.startswith('collection/cells/') for name in members)
+    (source / 'evidence-manifest.json').write_text(json.dumps({
+        'files': members, 'archive_sha256': hashlib.sha256((source / 'evidence.zip').read_bytes()).hexdigest()}))
+    monkeypatch.setattr(cv, 'RepairVerifier', Verifier)
+    result = tmp_path / 'reverified.json'
+    cv.reproduce(source, result)
+    verified = json.loads(result.read_text())
+    assert verified['full_analysis_and_markdown_reproduced']
+    assert verified['public_diagnostic_projections_reexecuted']
+    assert verified['checked_evaluation_records'] == 0 and verified['discrepancies'] == []

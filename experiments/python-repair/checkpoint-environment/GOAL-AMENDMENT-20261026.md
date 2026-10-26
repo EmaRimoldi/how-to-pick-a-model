@@ -104,10 +104,13 @@ public test cannot be assumed to reveal an untested requirement.
 ## Current action and limits
 
 The [diagnostic preparation protocol](DIAGNOSTIC-PREPARATION.md) and offline
-adapter are the first implementation. The collector remains disabled: no API
-calls, no new model results, no selected response format and no relaxed gate.
-The three previous capability controls remain closed. Their accounting totals
-$0.02211715 including five unresolved reserves, under the existing $0.60 ceiling.
+adapter are implemented. The separate [information study](INFORMATION-PROTOCOL.md)
+froze 96 requests under a declared $0.34 sublimit. Its
+[first launch stopped with HTTP 429](results/information-interrupted-20261026/README.md)
+before receiving a response. There are no new model outcomes, no selected response
+format and no relaxed gate. The three previous capability controls remain closed.
+Accounting now totals $0.02539395 including six unresolved reserves, under the
+existing $0.60 ceiling. No collector is active; the uncertainty is preserved.
 Every new collection still needs an explicit sublimit, a reviewed clean source
 freeze, exact requests and a single-use launch claim; the broad instruction to
 continue does not authorize duplicate calls or unlimited expenditure.

@@ -76,9 +76,12 @@ The user-requested [goal amendment](../experiments/python-repair/checkpoint-envi
 prioritizes the value of acquiring public execution evidence before another
 repair. The [offline diagnostic adapter](../experiments/python-repair/checkpoint-environment/DIAGNOSTIC-PREPARATION.md)
 and [case audit / replay](../experiments/python-repair/checkpoint-environment/results/diagnostic-audit-20261026/README.md)
-are implemented; no new model calls or selector benefit have been demonstrated.
+are implemented; no diagnostic benefit or selector advantage has been demonstrated.
 The [prospective information study](../experiments/python-repair/checkpoint-environment/INFORMATION-PROTOCOL.md)
 adds a 96-request frozen design and terminal-only report, with no selector fitting.
+Its [first-request interruption](../experiments/python-repair/checkpoint-environment/results/information-interrupted-20261026/README.md)
+retains zero responses, one uncertain reservation and 95 never-admitted requests.
+The archived report and prepared public diagnostics reproduce; no collector is active.
 
 The [checkpoint environment](../experiments/python-repair/checkpoint-environment/README.md)
 retains the incomplete recovery pilot and both output-contract diagnostics.

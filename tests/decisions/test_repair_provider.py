@@ -231,3 +231,44 @@ def test_distinct_calls_are_paced_without_retrying(tmp_path, monkeypatch, solver
     transport.complete(solver_request, {**meta, "attempt_id": "b"})
     assert sent == [100, 115] and pauses == [12]
     assert len(transport.seen) == 2 and len(rows(tmp_path / "ledger.jsonl")) == 4
+
+
+@pytest.mark.parametrize('body_kind', ['structured', 'malformed', 'oversized'])
+def test_http_failure_diagnostics_are_bounded_allowlisted_and_never_retry(
+        tmp_path, monkeypatch, solver_request, meta, body_kind):
+    import io
+    import urllib.error
+    from vao.repair import provider
+
+    secret = 'fixture-bearer-canary'
+    body = {'error': {'code': 429, 'message': secret,
+        'metadata': {'error_type': 'rate_limit_exceeded', 'provider_code': secret,
+                     'raw': secret, 'account_id': secret, 'limit_source': ['bad-shape']}}}
+    raw = canonical(body).encode()
+    if body_kind == 'malformed': raw = b'not json: ' + secret.encode()
+    if body_kind == 'oversized': raw = b' ' * 8200 + raw
+    calls = []
+    class Opener:
+        def open(self, request, timeout):
+            calls.append(request.full_url)
+            raise urllib.error.HTTPError(request.full_url, 429, secret,
+                {'Retry-After': '60', 'X-RateLimit-Remaining-Requests': '0',
+                 'X-RateLimit-Limit-Requests': secret, 'X-Request-Id': secret}, io.BytesIO(raw))
+    monkeypatch.setattr(provider.urllib.request, 'build_opener', lambda *_: Opener())
+    (tmp_path / 'requests').mkdir()
+    (tmp_path / 'receipts').mkdir()
+    transport = OpenRouterTransport(tmp_path, secret, Settings(), authorized_limit_usd='.60')
+    transport.ready = True  # Exercise the real HTTP path without a network preflight.
+    with pytest.raises(ProviderStopped): transport.complete(solver_request, meta)
+    with pytest.raises(ProviderStopped): transport.complete(solver_request, {**meta, 'attempt_id': 'b'})
+    error = rows(tmp_path / 'provider-errors.jsonl')[0]
+    details = error['error_details']
+    assert details['rate_headers'] == {'retry-after': 60, 'x-ratelimit-remaining-requests': 0}
+    if body_kind == 'structured':
+        assert details['code'] == 429 and details['error_type'] == 'rate_limit_exceeded'
+    else:
+        assert set(details) == {'rate_headers'}
+    assert error['http_status'] == 429 and error['reservation_retained']
+    assert len(calls) == 1 and transport.pending == {'a': Settings().reserve}
+    saved = ''.join(p.read_text() for p in tmp_path.rglob('*.json*'))
+    assert secret not in saved and 'account_id' not in saved and 'provider_code' not in saved

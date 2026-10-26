@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `534`
-- Bytes indexed: `51.4M`
+- Files indexed: `541`
+- Bytes indexed: `51.6M`
 
 ## Canonical Entrypoints
 
@@ -48,11 +48,11 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 318 | 46.8M |
+| `experiments` | 325 | 47.0M |
 | `docs` | 53 | 2.6M |
 | `uv.lock` | 1 | 937.0K |
-| `src` | 84 | 756.5K |
-| `tests` | 34 | 202.8K |
+| `src` | 84 | 759.1K |
+| `tests` | 34 | 207.0K |
 | `scripts` | 36 | 104.3K |
 | `.github` | 5 | 3.3K |
 | `.gitignore` | 1 | 1.4K |
@@ -64,16 +64,16 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | Extension | Files | Size |
 | --- | --- | --- |
 | `.py` | 159 | 1.1M |
-| `.json` | 117 | 4.4M |
-| `.md` | 77 | 413.4K |
+| `.json` | 121 | 4.5M |
+| `.md` | 79 | 420.1K |
 | `.txt` | 67 | 349.7K |
 | `.jsonl` | 45 | 36.7M |
 | `.png` | 21 | 2.7M |
 | `.pdf` | 8 | 184.3K |
 | `.sh` | 8 | 15.5K |
+| `.zip` | 6 | 3.3M |
 | `.sbatch` | 5 | 7.0K |
 | `.tex` | 5 | 297.7K |
-| `.zip` | 5 | 3.2M |
 | `.svg` | 3 | 210.9K |
 | `.yaml` | 3 | 2.6K |
 | `.lock` | 2 | 1.9M |
@@ -108,6 +108,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/python-repair/checkpoint-environment/results/contract-gemma27b-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/diagnostic-audit-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/gemma4b-calibration-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/information-interrupted-20261026/README.md`
 
 ## Script Entrypoints
 

@@ -9,8 +9,8 @@ Read the [current goal amendment and literature basis](GOAL-AMENDMENT-20261026.m
 [public-only diagnostic prototype](DIAGNOSTIC-PREPARATION.md), and
 [failure audit / offline replay](results/diagnostic-audit-20261026/README.md).
 Eight of twelve saved JSON candidates expose a public failure and yield a
-consistent bounded execution trace; four do not trigger a probe. No model has
-yet received the new diagnostic, so no repair benefit is established.
+consistent bounded execution trace; four do not trigger a probe. No new model
+response is available for this intervention, so no repair benefit is established.
 
 The [prospective information probe](INFORMATION-PROTOCOL.md) fixes 96 requests:
 eight failed checkpoints, four draws and three information conditions. Its
@@ -18,6 +18,11 @@ eight failed checkpoints, four draws and three information conditions. Its
 $0.60 cumulative ceiling, carrying $0.02211715 once. Shared receipt/accounting
 and freeze machinery is reused; the new study has a separate identity and
 analysis. Passing its screen permits only independent calibration, not training.
+The [first launch stopped with HTTP 429](results/information-interrupted-20261026/README.md)
+on its first admission: zero responses, one retained reserve and 95 requests
+never sent. Cumulative commitment is $0.02539395, including six unresolved calls.
+The terminal archive/report and public diagnostic projections reproduce offline.
+No collector is active and no automatic continuation is enabled.
 
 Read the [complete contract findings](results/contract-deepinfra-20261026/README.md).
 The earlier recovery pilot remains incomplete after repeated provider HTTP 429
