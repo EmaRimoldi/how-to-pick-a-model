@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 import shutil
 
-from .contracts import STUDY, DEEPINFRA_STUDY, GEMMA12B_STUDY, GEMMA27B_STUDY, TRACE_STUDY, INTERFACE_STUDY, SOLVER_STUDY, decode, provenance, provider_body, public_feedback, task_from_record, validate, study_settings, study_spacing
+from .contracts import STUDY, DEEPINFRA_STUDY, GEMMA12B_STUDY, GEMMA27B_STUDY, TRACE_STUDY, INTERFACE_STUDY, SOLVER_STUDY, QWEN_TRACE_STUDY, decode, provenance, provider_body, public_feedback, task_from_record, validate, study_settings, study_spacing
 from .environment import RepairRun, audit_run, identity
 from .pilot import file_hashes, source_commit
 from .provider import OpenRouterTransport, ProviderStopped, Settings, dollars
@@ -44,7 +44,12 @@ def authorization(config, packet, prior):
         raise ValueError('New study cap must cover the whole design without exceeding the proposal')
     if config.get('minimum_request_interval_seconds') != study_spacing(packet['study']):
         raise ValueError('The contract study requires its declared request spacing')
-    if packet['study'] == SOLVER_STUDY:
+    if packet['study'] == QWEN_TRACE_STUDY:
+        if (prior.get('study') != SOLVER_STUDY or prior.get('status') != 'complete_development_solver_probe'
+                or prior.get('gate') != 'candidate_for_separate_intervention_calibration' or prior.get('fit_selector') is not False):
+            raise ValueError('Qwen information calibration requires the closed successful compatibility screen')
+        carried = dollars(prior['accounting']['cumulative_committed_usd'])
+    elif packet['study'] == SOLVER_STUDY:
         if (prior.get('study') != INTERFACE_STUDY or prior.get('status') != 'incomplete_development_interface_probe'
                 or prior.get('gate') != 'inconclusive_incomplete_bank' or prior.get('fit_selector') is not False):
             raise ValueError('Solver control must carry the closed incomplete interface bank')
@@ -77,6 +82,9 @@ def authorization(config, packet, prior):
 
 def freeze(packet, config, output: Path):
     validate(packet)
+    if packet['study'] == QWEN_TRACE_STUDY:
+        from .qwen_information_study import validate_origin
+        validate_origin(packet)
     if packet['study'] == SOLVER_STUDY:
         from .solver_study import validate_origin
         validate_origin(packet)
@@ -111,6 +119,9 @@ def validate_freeze(frozen, *, current=False):
     if dollars(frozen['authorized_limit_usd']) != limit or dollars(frozen['carried_commitment_usd']) != carried:
         raise ValueError('Frozen financial projection differs')
     if current:
+        if packet['study'] == QWEN_TRACE_STUDY:
+            from .qwen_information_study import validate_origin
+            validate_origin(packet)
         if source_commit() != frozen['source_commit'] or provenance([task_from_record(t) for t in packet['tasks']], packet['study']) != packet['source_provenance']:
             raise ValueError('Current source differs from the reviewed freeze')
         prior_path = Path(frozen['config']['closed_pilot_report'])
@@ -155,7 +166,7 @@ def collect(frozen, output: Path, *, claim_root=None, continuation=None):
         actual = verifier.check(task.public['files'], task.public['entrypoint'], task.public['public_cases'])
         if public_feedback(actual) != public_feedback(record['initial_public_result']):
             raise ValueError('Initial feedback no longer reproduces')
-    if packet['study'] == TRACE_STUDY:
+    if packet['study'] in (TRACE_STUDY, QWEN_TRACE_STUDY):
         from .diagnostic_study import validate_diagnostics
         validate_diagnostics(packet, verifier)
     claims = claim_root or ROOT / 'runs' / 'repair-contract-admissions'

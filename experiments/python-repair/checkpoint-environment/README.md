@@ -1,5 +1,10 @@
 # Python repair checkpoint environment
 
+Next milestone: [matched Qwen public-trace calibration](QWEN-INFORMATION-PROTOCOL.md),
+64 fresh requests with focused feedback versus the same feedback plus a trace.
+This is a development information-value screen; the final acquisition policy
+and its equal-total-budget benefit on untouched bugs remain unproven.
+
 **Current result: the Qwen coding-solver compatibility screen passes, with
 10 complete repairs in 32 attempts and repeated success on three bugs.** The
 next milestone is a separately frozen comparison of diagnostic acquisition

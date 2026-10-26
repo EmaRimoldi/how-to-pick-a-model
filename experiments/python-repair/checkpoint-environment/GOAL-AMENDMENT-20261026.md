@@ -166,3 +166,27 @@ scores, manuscripts and failed gates remain preserved.
 The managed goal tool cannot edit an active objective's text. This user-authorized
 amendment and `runs/ACTIVE_RESEARCH_STATE.json` therefore record the operative
 scope; the earlier objective must not be marked achieved merely to replace it.
+
+
+## Operative milestone renewed by the user
+
+On 2026-10-26 the user instructed “Procedi, set the new goal.” The immediate
+measurable deliverable is now the [matched Qwen information calibration](QWEN-INFORMATION-PROTOCOL.md):
+64 fresh requests, eight failed checkpoints, four draws per arm, focused public
+feedback versus the same feedback plus a bounded public execution trace. Keep
+all twelve source candidates and report full repairs, false acceptance,
+regressions and all costs. The prospective engineering gate and incomplete-data
+rules are fixed in that protocol before collection.
+
+The final goal remains a prospective, cost-aware diagnostic-acquisition selector
+that improves on the best fixed policy on untouched bugs/projects. A completed
+calibration is only a milestone; an unfavorable result is retained and prevents
+unsupported selector training. Equal-total-resource benefit and generalization
+require subsequent separately declared studies.
+
+The app goal manager currently reports the old objective as blocked and rejects
+creation of a replacement while it is unfinished. The new operative scope is
+recorded here and in the research state; the old objective has not been falsely
+marked complete. The user has authorized proceeding, and no active collector is
+being resumed. The new allocation is $0.47 within the retained $0.60 total, with
+$0.06942739 carried once including all eight old uncertain reservations.

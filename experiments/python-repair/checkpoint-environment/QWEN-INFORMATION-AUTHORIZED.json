@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "status": "authorized_contract_diagnostic",
+  "study": "repair-qwen-public-trace-information-v1",
+  "live_calls_enabled": true,
+  "monetary_authorization_usd": "0.47",
+  "cumulative_limit_usd": "0.60",
+  "minimum_request_interval_seconds": 60,
+  "closed_pilot_report": "experiments/python-repair/checkpoint-environment/results/solver-qwen-20261026/analysis.json",
+  "authorization_reference": "User instructed Non farti problemi di denaro. Continua. and later Procedi, set the new goal. Agent declares a separate bounded 0.47 USD allocation within the retained cumulative 0.60 USD ceiling before any calls. This is not a newly user-typed amount, a continuation, or unlimited spending. Recorded 2026-10-26.",
+  "note": "Fresh matched information calibration: eight existing public failures, four draws per arm, focused feedback versus identical feedback plus bounded public trace, pinned Qwen3-Coder-Next/Parasail/BF16. Retain all twelve sources and carry 0.06942739 once including eight historical unresolved calls. Read QWEN-INFORMATION-PROTOCOL.md. Reviewed exact requests, clean commit, full checks, CI and single-use claim required. No retries, resume, successor, fallback, key rotation, interim outcomes or selector training."
+}

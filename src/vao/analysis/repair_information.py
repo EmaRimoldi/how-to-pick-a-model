@@ -7,7 +7,7 @@ from pathlib import Path
 import random
 
 from vao.repair.contract_collection import audit, read
-from vao.repair.contracts import TRACE_STUDY
+from vao.repair.contracts import TRACE_STUDY, QWEN_TRACE_STUDY
 from vao.repair.diagnostic_study import DRAWS
 from vao.repair.diagnostics import ARMS
 from vao.repair.records import rows, save
@@ -27,8 +27,9 @@ def summarize(output):
     checked = audit(output)
     frozen = read(output / "manifest.json")["freeze"]
     packet = frozen["packet"]
-    if packet["study"] != TRACE_STUDY:
+    if packet["study"] not in (TRACE_STUDY, QWEN_TRACE_STUDY):
         raise ValueError("Expected the public trace information study")
+    arms = ("focused", "focused_trace") if packet["study"] == QWEN_TRACE_STUDY else ARMS
     observed = {r["attempt_id"]: r for r in rows(output / "observations.jsonl")}
     cells = []
     for planned in packet["requests"]:
@@ -62,7 +63,7 @@ def summarize(output):
             "response_verification_seconds": verification_seconds})
     complete = checked["sealed"] and not checked["cap_exceeded"]
     table = []
-    for arm in ARMS:
+    for arm in arms:
         scoped = [r for r in cells if r["arm"] == arm]
         successes = sum(r["full_pass"] is True for r in scoped)
         missing = sum(not r["observed"] for r in scoped)
@@ -90,6 +91,8 @@ def summarize(output):
     contrasts = {}
     by_arm = {r["arm"]: r for r in table}
     for treatment, control in (("focused_trace", "focused"), ("focused", "raw"), ("focused_trace", "raw")):
+        if control not in arms:
+            continue
         a, b = by_arm[treatment], by_arm[control]
         values = []
         if complete:
@@ -115,7 +118,7 @@ def summarize(output):
         components = {"bugs_with_two_trace_successes": repeated_bugs, "net_trace_successes": net,
                       "two_draw_half_differences": halves}
         gate = "candidate_for_independent_acquisition_calibration" if repeated_bugs >= 3 and net >= 4 and all(h > 0 for h in halves) else "no_repeated_information_benefit_demonstrated"
-    report = {"study": TRACE_STUDY, "model_results": True, "status": "complete_development_information_probe" if complete else "incomplete_development_information_probe",
+    report = {"study": packet["study"], "model_results": True, "status": "complete_development_information_probe" if complete else "incomplete_development_information_probe",
         "packet_id": packet["packet_id"], "freeze_id": frozen["freeze_id"], "source_commit": frozen["source_commit"],
         "accounting": checked, "study_limit_usd": frozen["authorized_limit_usd"],
         "cumulative_limit_usd": frozen["config"]["cumulative_limit_usd"], "arm_table": table,
@@ -128,6 +131,9 @@ def summarize(output):
             "Local executions and measured seconds are separate resources, not converted into API dollars.",
             "Bootstrap intervals describe eight selected bug clusters; repeated draws and a screening gate do not establish action complementarity or authorize selector training.",
             "A complete-test pass is not a proof of all semantic requirements. Missing outcomes remain unknown; no repeat or imputation."]}
+    if packet["study"] == QWEN_TRACE_STUDY:
+        report["limitations"][2] = "Primary and only arm contrast: focused_trace minus focused; fresh concurrent controls, no historical-control substitution."
+        report["limitations"].append("Solver compatibility qualified this development model. This is not a causal comparison with Gemma or evidence of a scaling law.")
     successor = read(output / 'manifest.json').get('continuation')
     if successor is not None:
         report['continuation'] = {k: successor[k] for k in ('continuation_id', 'source_commit',
