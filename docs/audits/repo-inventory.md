@@ -6,16 +6,15 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `392`
+- Files indexed: `391`
 - Bytes indexed: `45.9M`
 
 ## Canonical Entrypoints
 
 | Path | Present |
 | --- | --- |
-| `README.md` | yes |
 | `docs/engineering/development.md` | yes |
-| `docs/README.md` | yes |
+| `docs/index.md` | yes |
 | `docs/knowledge-map.md` | yes |
 | `docs/decision-protocol.md` | yes |
 | `docs/paper-evidence-map.md` | yes |
@@ -54,20 +53,19 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `uv.lock` | 1 | 937.0K |
 | `src` | 70 | 574.2K |
 | `tests` | 25 | 118.6K |
-| `scripts` | 26 | 100.4K |
-| `README.md` | 1 | 7.7K |
+| `scripts` | 26 | 100.3K |
 | `.github` | 5 | 3.3K |
 | `.gitignore` | 1 | 1.4K |
-| `pyproject.toml` | 1 | 1.2K |
+| `pyproject.toml` | 1 | 1.1K |
 | `LICENSE` | 1 | 1.0K |
 
 ## File Types
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 122 | 814.8K |
+| `.py` | 122 | 814.7K |
 | `.json` | 81 | 2.7M |
-| `.md` | 54 | 261.5K |
+| `.md` | 53 | 254.1K |
 | `.jsonl` | 45 | 36.7M |
 | `.txt` | 28 | 309.7K |
 | `.png` | 20 | 2.6M |

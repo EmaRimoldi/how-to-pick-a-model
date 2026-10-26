@@ -1,5 +1,10 @@
 # Documentation
 
+The new [Python repair environment](../experiments/python-repair/checkpoint-environment/README.md)
+provides an executable offline demo, immutable checkpoints, matched recovery
+requests and task qualification. Its handwritten fixtures are engineering checks,
+not model findings; there is no live collector.
+
 | Guide | Purpose |
 | --- | --- |
 | [Decision protocol](decision-protocol.md) | Research question, actions, costs, first experiment, and implementation limits |
