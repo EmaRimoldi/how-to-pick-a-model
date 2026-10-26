@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import shutil
 
 from .contracts import STUDY, DEEPINFRA_STUDY, GEMMA12B_STUDY, GEMMA27B_STUDY, TRACE_STUDY, decode, provenance, provider_body, public_feedback, task_from_record, validate, study_settings, study_spacing
 from .environment import RepairRun, audit_run, identity
@@ -105,8 +106,20 @@ def validate_freeze(frozen, *, current=False):
     return packet, limit, carried
 
 
-def collect(frozen, output: Path, *, claim_root=None):
-    packet, limit, carried = validate_freeze(frozen, current=True)
+def collect(frozen, output: Path, *, claim_root=None, continuation=None):
+    if continuation is None:
+        packet, limit, carried = validate_freeze(frozen, current=True)
+        planned_requests = packet['requests']
+        expected_provenance = packet['source_provenance']
+        claim_name = packet['study']
+    else:
+        from .information_continuation import validate_continuation, CLAIM
+        packet, limit, carried, planned_requests = validate_continuation(
+            continuation, Path(continuation['parent_run']), current=True)
+        if frozen != continuation['original_freeze']:
+            raise ValueError('Continuation changed original freeze')
+        expected_provenance = continuation['source_provenance']
+        claim_name = CLAIM
     key = os.environ.get('OPENROUTER_API_KEY')
     if not key:
         raise ValueError('Set the authorized key privately in the process environment')
@@ -126,19 +139,25 @@ def collect(frozen, output: Path, *, claim_root=None):
     claims = claim_root or ROOT / 'runs' / 'repair-contract-admissions'
     claims.mkdir(parents=True, exist_ok=True)
     # Fixed study identity, not caller-controlled campaign names: one attempt only.
-    save(claims / (packet['study'] + '.json'), {'freeze_id': frozen['freeze_id'], 'output': str(output.resolve()),
+    save(claims / (claim_name + '.json'), {'freeze_id': frozen['freeze_id'], 'output': str(output.resolve()),
                                    'created_at': datetime.now(timezone.utc).isoformat(), 'resume_allowed': False})
     output.mkdir(parents=True, exist_ok=False)
     for name in ('requests', 'receipts', 'cells'):
         (output / name).mkdir()
+    extra = {}
+    if continuation is not None:
+        shutil.copytree(continuation['parent_run'], output / 'parent')
+        from .information_continuation import validate_continuation
+        validate_continuation(continuation, output / 'parent')
+        extra['continuation'] = continuation
     save(output / 'manifest.json', {'mode': 'model_contract_diagnostic', 'model_results': True,
-                                    'currency': 'USD', 'freeze': frozen})
+                                    'currency': 'USD', 'freeze': frozen, **extra})
     transport = OpenRouterTransport(output, key, ContractSettings(**packet['provider_settings']),
         authorized_limit_usd=str(limit), minimum_interval_seconds=study_spacing(packet['study']))
     try:
         transport.preflight()
         generation_ids = set()
-        for planned in packet['requests']:
+        for planned in planned_requests:
             meta = planned['metadata']; attempt = meta['attempt_id']
             task = tasks[meta['task_index']]
             save(output / 'requests' / (attempt + '.json'), planned)
@@ -159,15 +178,23 @@ def collect(frozen, output: Path, *, claim_root=None):
                       'full_pass': full_pass, 'cost_usd': receipt['cost_usd']}
             append(output / 'observations.jsonl', result)
             save(run.root / 'completion.json', {'audit': audit_run(run.root), 'mode': 'model_pilot'})
-        if provenance(tasks, packet['study']) != packet['source_provenance']:
+        if provenance(tasks, packet['study']) != expected_provenance:
             raise ValueError('Source changed during collection')
     except Exception as exc:
-        save(output / 'interruption.json', {'exception_type': type(exc).__name__, 'resume_allowed': False,
+        interruption = {'exception_type': type(exc).__name__, 'resume_allowed': False,
             'settled_usd': str(transport.spent), 'pending': {k:str(v) for k,v in transport.pending.items()},
             'study_commitment_usd': str(transport.conservative_committed_usd),
-            'cumulative_commitment_usd': str(carried + transport.conservative_committed_usd)})
+            'cumulative_commitment_usd': str(carried + transport.conservative_committed_usd)}
+        if continuation is not None:
+            original_accounting = audit(output / 'parent')
+            interruption.update(segment_commitment_usd=interruption['study_commitment_usd'],
+                segment_pending=dict(interruption['pending']),
+                pending={**original_accounting['pending'], **interruption['pending']},
+                study_commitment_usd=str(dollars(original_accounting['study_committed_usd'])
+                                        + transport.conservative_committed_usd))
+        save(output / 'interruption.json', interruption)
         raise
-    save(output / 'pilot-completion.json', {'observations': len(packet['requests']), 'file_hashes': file_hashes(output)})
+    save(output / 'pilot-completion.json', {'observations': len(planned_requests), 'file_hashes': file_hashes(output)})
     return audit(output)
 
 
@@ -195,9 +222,18 @@ def audit(output: Path):
     manifest = read(output / 'manifest.json')
     if manifest['mode'] != 'model_contract_diagnostic' or not manifest['model_results'] or manifest['currency'] != 'USD':
         raise ValueError('Incorrect evidence mode/currency')
+    if 'continuation' in manifest:
+        from .information_continuation import audit_continuation
+        return audit_continuation(output, manifest)
     packet, limit, carried = validate_freeze(manifest['freeze'])
+    return _audit_records(output, packet, limit, carried, packet['requests'])
+
+
+def _audit_records(output, packet, limit, carried, requests):
+    """Audit one already validated segment; admission lists are never inferred."""
+    manifest = read(output / 'manifest.json')
     settings = ContractSettings(**packet['provider_settings'])
-    planned = {r['metadata']['attempt_id']: r for r in packet['requests']}
+    planned = {r['metadata']['attempt_id']: r for r in requests}
     pending, settled, admitted = {}, {}, []
     for event in rows(output / 'ledger.jsonl'):
         key, amount = event['attempt_id'], dollars(event['usd'])

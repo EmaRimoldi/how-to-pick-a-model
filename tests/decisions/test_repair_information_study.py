@@ -222,3 +222,83 @@ def test_zero_response_archive_replays_without_an_empty_cells_directory(tmp_path
     assert verified['full_analysis_and_markdown_reproduced']
     assert verified['public_diagnostic_projections_reexecuted']
     assert verified['checked_evaluation_records'] == 0 and verified['discrepancies'] == []
+
+
+def prepare_successor(tmp_path, monkeypatch):
+    from vao.repair import information_continuation as ic
+    p, config, frozen = prepare(tmp_path, monkeypatch)
+    network(monkeypatch, p)
+    exchange = OpenRouterTransport._exchange
+    def first_failure(self, endpoint, body=None):
+        if endpoint == '/chat/completions': raise ProviderStopped('Mock HTTP 429', http_status=429)
+        return exchange(self, endpoint, body)
+    monkeypatch.setattr(OpenRouterTransport, '_exchange', first_failure)
+    parent = tmp_path / 'parent-run'
+    with pytest.raises(ProviderStopped): cc.collect(frozen, parent, claim_root=tmp_path / 'claims')
+    immutable_files = cc.file_hashes(parent)
+    monkeypatch.setattr(ic, 'reference_files', lambda: dict(immutable_files))
+    monkeypatch.setattr(ic, 'source_commit', lambda: 'a' * 40)
+    config = {'status': 'authorized_manual_never_admitted_exception', 'live_calls_enabled': True,
+              'claim': ic.CLAIM, 'study_limit_usd': '0.34', 'cumulative_limit_usd': '0.60',
+              'minimum_request_interval_seconds': 10, 'authorization_reference': 'OFFLINE MOCK ONLY'}
+    successor = ic.freeze(parent, config, tmp_path / 'successor.json')
+    return p, parent, successor
+
+
+@pytest.mark.parametrize('interrupt', [False, True])
+def test_successor_uses_only_original_unsent_cells_and_carries_each_reserve_once(tmp_path, monkeypatch, interrupt):
+    from vao.repair import information_continuation as ic
+    p, parent, successor = prepare_successor(tmp_path, monkeypatch)
+    sent = network(monkeypatch, p, interrupt=interrupt, useful=True)
+    output = tmp_path / 'successor-run'
+    if interrupt:
+        with pytest.raises(ProviderStopped):
+            cc.collect(successor['original_freeze'], output, continuation=successor, claim_root=tmp_path / 'claims')
+    else:
+        cc.collect(successor['original_freeze'], output, continuation=successor, claim_root=tmp_path / 'claims')
+    expected_count = 2 if interrupt else 95
+    assert sent == [r['provider_body'] for r in p['requests'][1:1+expected_count]]
+    report = summarize(output)
+    checked = report['accounting']
+    assert checked['admissions'] == expected_count + 1
+    assert checked['observations'] == (1 if interrupt else 95)
+    assert checked['planned_calls'] == 96 and not checked['sealed']
+    assert checked['segment_sealed'] == (not interrupt)
+    assert len(checked['pending']) == (2 if interrupt else 1)
+    assert checked['cumulative_committed_usd'] == ('0.02875075' if interrupt else '0.03299395')
+    if interrupt:
+        stopped = cc.read(output / 'interruption.json')
+        assert stopped['pending'] == checked['pending']
+        assert stopped['study_commitment_usd'] == checked['study_committed_usd']
+        assert len(stopped['segment_pending']) == 1
+    assert report['gate'] == 'inconclusive_incomplete_bank' and not report['fit_selector']
+    assert report['contrasts']['focused_trace_minus_focused']['mean_difference'] is None
+    assert report['contrasts']['focused_trace_minus_focused']['descriptive_bug_bootstrap_95'] is None
+    assert cc.file_hashes(parent) == successor['parent_file_hashes']
+    with pytest.raises(FileExistsError):
+        cc.collect(successor['original_freeze'], tmp_path / 'duplicate', continuation=successor, claim_root=tmp_path / 'claims')
+    assert len(sent) == expected_count
+    # A second successor cannot use the newly interrupted or finished segment.
+    with pytest.raises(ValueError): ic.freeze(output, successor['config'], tmp_path / 'recursive.json')
+
+
+def test_rehashed_successor_cannot_reintroduce_a_request_or_drop_a_reserve(tmp_path, monkeypatch):
+    from vao.repair import information_continuation as ic
+    p, parent, original = prepare_successor(tmp_path, monkeypatch)
+    sent = network(monkeypatch, p)
+    for change in (lambda s: s['allowed_attempt_ids'].insert(0, p['requests'][0]['metadata']['attempt_id']),
+                   lambda s: s['allowed_attempt_ids'].reverse(),
+                   lambda s: s.update(carried_cumulative_usd='0.02211715'),
+                   lambda s: s.update(remaining_segment_limit_usd='0.34'),
+                   lambda s: s['config'].update(live_calls_enabled=False),
+                   lambda s: s['original_freeze']['packet']['requests'][1]['provider_body'].update(temperature=1)):
+        candidate = copy.deepcopy(original)
+        change(candidate)
+        candidate['continuation_id'] = identity({k:v for k,v in candidate.items() if k != 'continuation_id'})
+        with pytest.raises(ValueError): ic.validate_continuation(candidate, parent, current=True)
+    monkeypatch.setattr(ic, 'source_commit', lambda: 'b' * 40)
+    with pytest.raises(ValueError, match='source differs'):
+        cc.collect(original['original_freeze'], tmp_path / 'run', continuation=original, claim_root=tmp_path / 'claims')
+    assert not sent
+    (parent / 'ledger.jsonl').write_text('')
+    with pytest.raises(ValueError, match='immutable interruption'): ic.validate_continuation(original, parent)

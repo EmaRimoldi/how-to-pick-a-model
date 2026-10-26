@@ -22,7 +22,10 @@ The [first launch stopped with HTTP 429](results/information-interrupted-2026102
 on its first admission: zero responses, one retained reserve and 95 requests
 never sent. Cumulative commitment is $0.02539395, including six unresolved calls.
 The terminal archive/report and public diagnostic projections reproduce offline.
-No collector is active and no automatic continuation is enabled.
+The [recorded manual exception](INFORMATION-CONTINUATION-AMENDMENT.md) permits
+one reviewed segment containing only the 95 original never-admitted requests.
+The first cell stays missing and reserved, and the complete-bank screening gate
+cannot pass. No automatic or recursive continuation is enabled.
 
 Read the [complete contract findings](results/contract-deepinfra-20261026/README.md).
 The earlier recovery pilot remains incomplete after repeated provider HTTP 429

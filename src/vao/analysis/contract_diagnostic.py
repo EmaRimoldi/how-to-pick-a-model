@@ -101,7 +101,8 @@ def render(report):
 def export_evidence(source: Path, output: Path, *, summarize_fn=None, report_entrypoint='report_repair_contract_probe'):
     """Export audited terminal records and inert, hash-verified source snapshots."""
     (summarize_fn or summarize)(source)  # Includes terminal-only, receipt and ledger validation.
-    frozen = read(source / 'manifest.json')['freeze']
+    source_manifest = read(source / 'manifest.json')
+    frozen = source_manifest['freeze']
     commit = frozen['source_commit']
     if not re.fullmatch(r'[a-f0-9]{40}', commit):
         raise ValueError('Invalid frozen source commit')
@@ -113,15 +114,22 @@ def export_evidence(source: Path, output: Path, *, summarize_fn=None, report_ent
             if path.suffix not in ('.json', '.jsonl'):
                 raise ValueError('Only inert JSON evidence can be exported')
             entries['collection/' + path.relative_to(source).as_posix()] = path.read_bytes()
-    for name, expected in frozen['packet']['source_provenance']['sources'].items():
-        relative = Path(name)
-        if relative.is_absolute() or '..' in relative.parts:
-            raise ValueError('Unsafe frozen source path')
-        content = subprocess.run(['git', 'show', f'{commit}:src/vao/{name}'], cwd=ROOT,
-                                 capture_output=True, check=True).stdout
-        if hashlib.sha256(content).hexdigest() != expected:
-            raise ValueError('Committed source differs from frozen source hash')
-        entries[f'frozen-sources/{commit}/{name}.txt'] = content
+    snapshots = [(commit, frozen['packet']['source_provenance']['sources'])]
+    if 'continuation' in source_manifest:
+        successor = source_manifest['continuation']
+        snapshots.append((successor['source_commit'], successor['source_provenance']['sources']))
+    for source_revision, sources in snapshots:
+        if not re.fullmatch(r'[a-f0-9]{40}', source_revision):
+            raise ValueError('Invalid frozen continuation commit')
+        for name, expected in sources.items():
+            relative = Path(name)
+            if relative.is_absolute() or '..' in relative.parts:
+                raise ValueError('Unsafe frozen source path')
+            content = subprocess.run(['git', 'show', f'{source_revision}:src/vao/{name}'], cwd=ROOT,
+                                     capture_output=True, check=True).stdout
+            if hashlib.sha256(content).hexdigest() != expected:
+                raise ValueError('Committed source differs from frozen source hash')
+            entries[f'frozen-sources/{source_revision}/{name}.txt'] = content
     if any(re.search(rb'sk-or-v1-[a-f0-9]{64}', content) for content in entries.values()):
         raise ValueError('Credential-shaped content prevents export')
     archive = output / 'evidence.zip'

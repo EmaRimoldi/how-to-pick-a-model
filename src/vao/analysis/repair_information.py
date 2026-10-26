@@ -115,7 +115,7 @@ def summarize(output):
         components = {"bugs_with_two_trace_successes": repeated_bugs, "net_trace_successes": net,
                       "two_draw_half_differences": halves}
         gate = "candidate_for_independent_acquisition_calibration" if repeated_bugs >= 3 and net >= 4 and all(h > 0 for h in halves) else "no_repeated_information_benefit_demonstrated"
-    return {"study": TRACE_STUDY, "model_results": True, "status": "complete_development_information_probe" if complete else "incomplete_development_information_probe",
+    report = {"study": TRACE_STUDY, "model_results": True, "status": "complete_development_information_probe" if complete else "incomplete_development_information_probe",
         "packet_id": packet["packet_id"], "freeze_id": frozen["freeze_id"], "source_commit": frozen["source_commit"],
         "accounting": checked, "study_limit_usd": frozen["authorized_limit_usd"],
         "cumulative_limit_usd": frozen["config"]["cumulative_limit_usd"], "arm_table": table,
@@ -128,6 +128,14 @@ def summarize(output):
             "Local executions and measured seconds are separate resources, not converted into API dollars.",
             "Bootstrap intervals describe eight selected bug clusters; repeated draws and a screening gate do not establish action complementarity or authorize selector training.",
             "A complete-test pass is not a proof of all semantic requirements. Missing outcomes remain unknown; no repeat or imputation."]}
+    successor = read(output / 'manifest.json').get('continuation')
+    if successor is not None:
+        report['continuation'] = {k: successor[k] for k in ('continuation_id', 'source_commit',
+            'parent_archive_sha256', 'excluded_attempt_ids', 'allowed_requests_sha256')}
+        report['limitations'].append('A manually reviewed successor admits only the original 95 unsent requests. '
+            'The original uncertain first call stays missing and reserved; even a finished successor is an incomplete '
+            '96-cell bank, with bounds and no passed screening gate or bootstrap interval.')
+    return report
 
 
 def render(report):

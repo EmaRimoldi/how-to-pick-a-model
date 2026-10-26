@@ -10,7 +10,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `8`
 - Script entrypoints indexed: `32`
-- Code modules indexed: `77`
+- Code modules indexed: `78`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `6`
@@ -269,6 +269,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/repair/diagnostic_study.py` | Prepare a separately funded public-trace information experiment, never retry. Existing transport, receipts, source freezes and cell audits are reused. The new intervention, repeated schedule and report have their own study identity. | design, without_times, source_records, schedule, planned_requests, construct, validate_packet, validate_origin |
 | verified orchestration runtime | `src/vao/repair/diagnostics.py` | Public-only diagnostic acquisition and matched offline prompt projections. This is an engineering component, not a fitted policy or a live collector. Callers pass public task data, never a RepairTask with evaluator cases. | validate_public, binding, observe, selected_failure, acquire, project |
 | verified orchestration runtime | `src/vao/repair/environment.py` | Store verifiable repair artifacts and fork matched continue/restart requests. | canonical, identity, validate_files, validate_cases, RepairTask, RepairRun, audit_run |
+| verified orchestration runtime | `src/vao/repair/information_continuation.py` | One reviewed exception for only the original trace probe's unsent requests. The original zero-response segment is immutable. There is no recursive resume, retry, replacement cell, changed prompt, new seed or additional budget. | reference_files, parent_evidence, validate_config, freeze, validate_continuation, audit_continuation, main |
 | verified orchestration runtime | `src/vao/repair/pilot.py` | Plan matched repair collection; live mode requires a funded source freeze. The default is offline planning. Scripted demonstrations never provide model evidence. Existing output directories and admitted calls cannot be resumed. | Design, fingerprint, schedule_for, check_continuation, ScriptedTransport, evaluate_response, public_choice, collect |
 | verified orchestration runtime | `src/vao/repair/pool.py` | Build and qualify a published development pool without executing upstream setup. | sha256, local_file, read_pool, audit_sources, write_json, build_pool, qualify_pool, main |
 | verified orchestration runtime | `src/vao/repair/provider.py` | Pinned OpenRouter adapter for the repair pilot; no implicit calls or retries. Constructing this adapter does not authorize a collection: the pilot launcher enforces the separately funded source freeze and a single-use campaign claim. | ProviderStopped, safe_error_details, dollars, Settings, NoRedirects, OpenRouterTransport |
