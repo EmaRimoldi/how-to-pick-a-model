@@ -1,0 +1,289 @@
+"""Funded contract diagnostic: exact prepared requests, durable billing, no retries."""
+from __future__ import annotations
+
+import argparse
+from datetime import datetime, timezone
+from decimal import Decimal
+import hashlib
+import json
+import os
+from pathlib import Path
+
+from .contracts import CONTRACTS, PROPOSED_LIMIT, STUDY, decode, provenance, provider_body, public_feedback, task_from_record, validate
+from .environment import RepairRun, audit_run, identity
+from .pilot import file_hashes, source_commit
+from .provider import OpenRouterTransport, ProviderStopped, Settings, dollars
+from .records import append, rows, save
+from .verifier import RepairVerifier
+
+ROOT = Path(__file__).resolve().parents[3]
+
+
+class ContractSettings(Settings):
+    def body(self, request, metadata):
+        return provider_body(self, request, metadata)
+
+
+def read(path):
+    return json.loads(path.read_text())
+
+
+def content_hash(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def authorization(config, packet, prior):
+    if (config.get('status') != 'authorized_contract_diagnostic' or config.get('live_calls_enabled') is not True
+            or not isinstance(config.get('authorization_reference'), str) or not config['authorization_reference'].strip()):
+        raise ValueError('Explicit authorization for the new contract study is required')
+    limit = dollars(config['monetary_authorization_usd'])
+    if not dollars(packet['maximum_new_reservations_usd']) <= limit <= PROPOSED_LIMIT:
+        raise ValueError('New study cap must cover the whole design without exceeding the proposal')
+    if config.get('minimum_request_interval_seconds') != 60:
+        raise ValueError('The contract study requires declared 60-second spacing')
+    carried = dollars(prior['conservative_committed_usd'])
+    if prior.get('model_results') is not True or carried != dollars(packet['closed_pilot_commitment_usd']):
+        raise ValueError('Closed-pilot commitment is not preserved')
+    cumulative = dollars(config['cumulative_limit_usd'])
+    if carried + limit > cumulative or cumulative > Decimal('.60'):
+        raise ValueError('Cumulative cap omits prior charges/reserves or exceeds 0.60 USD')
+    return limit, carried
+
+
+def freeze(packet, config, output: Path):
+    validate(packet)
+    tasks = [task_from_record(t) for t in packet['tasks']]
+    if packet['source_provenance'] != provenance(tasks):
+        raise ValueError('Rebuild the offline packet after source changes')
+    prior_path = Path(config['closed_pilot_report'])
+    prior = read(prior_path)
+    limit, carried = authorization(config, packet, prior)
+    record = {'schema_version': 1, 'study': STUDY, 'created_at': datetime.now(timezone.utc).isoformat(),
+              'source_commit': source_commit(), 'packet': packet, 'config': config,
+              'authorized_limit_usd': str(limit), 'carried_commitment_usd': str(carried),
+              'prior_report_sha256': content_hash(prior_path), 'prior_report': prior}
+    record['freeze_id'] = identity(record)
+    save(output, record)
+    return record
+
+
+def validate_freeze(frozen, *, current=False):
+    if (frozen['study'] != STUDY or frozen['schema_version'] != 1
+            or identity({k:v for k,v in frozen.items() if k != 'freeze_id'}) != frozen['freeze_id']):
+        raise ValueError('Contract freeze identity changed')
+    packet = frozen['packet']
+    validate(packet)
+    limit, carried = authorization(frozen['config'], packet, frozen['prior_report'])
+    if dollars(frozen['authorized_limit_usd']) != limit or dollars(frozen['carried_commitment_usd']) != carried:
+        raise ValueError('Frozen financial projection differs')
+    if current:
+        if source_commit() != frozen['source_commit'] or provenance([task_from_record(t) for t in packet['tasks']]) != packet['source_provenance']:
+            raise ValueError('Current source differs from the reviewed freeze')
+        prior_path = Path(frozen['config']['closed_pilot_report'])
+        if content_hash(prior_path) != frozen['prior_report_sha256'] or read(prior_path) != frozen['prior_report']:
+            raise ValueError('Closed prior evidence changed')
+    return packet, limit, carried
+
+
+def collect(frozen, output: Path, *, claim_root=None):
+    packet, limit, carried = validate_freeze(frozen, current=True)
+    key = os.environ.get('OPENROUTER_API_KEY')
+    if not key:
+        raise ValueError('Set the authorized key privately in the process environment')
+    if output.exists():
+        raise ValueError('Existing output cannot be resumed')
+    verifier = RepairVerifier()
+    verifier.preflight()
+    tasks = [task_from_record(t) for t in packet['tasks']]
+    # Check frozen initial feedback before any provider operation; never retune it.
+    for task, record in zip(tasks, packet['tasks']):
+        actual = verifier.check(task.public['files'], task.public['entrypoint'], task.public['public_cases'])
+        if public_feedback(actual) != public_feedback(record['initial_public_result']):
+            raise ValueError('Initial feedback no longer reproduces')
+    claims = claim_root or ROOT / 'runs' / 'repair-contract-admissions'
+    claims.mkdir(parents=True, exist_ok=True)
+    # Fixed study identity, not caller-controlled campaign names: one attempt only.
+    save(claims / (STUDY + '.json'), {'freeze_id': frozen['freeze_id'], 'output': str(output.resolve()),
+                                   'created_at': datetime.now(timezone.utc).isoformat(), 'resume_allowed': False})
+    output.mkdir(parents=True, exist_ok=False)
+    for name in ('requests', 'receipts', 'cells'):
+        (output / name).mkdir()
+    save(output / 'manifest.json', {'mode': 'model_contract_diagnostic', 'model_results': True,
+                                    'currency': 'USD', 'freeze': frozen})
+    transport = OpenRouterTransport(output, key, ContractSettings(**packet['provider_settings']),
+        authorized_limit_usd=str(limit), minimum_interval_seconds=60)
+    try:
+        transport.preflight()
+        generation_ids = set()
+        for planned in packet['requests']:
+            meta = planned['metadata']; attempt = meta['attempt_id']
+            task = tasks[meta['task_index']]
+            save(output / 'requests' / (attempt + '.json'), planned)
+            receipt = transport.complete(planned['request'], meta)
+            if receipt['generation_id'] in generation_ids:
+                raise ProviderStopped('Repeated provider generation identity; stop without another call')
+            generation_ids.add(receipt['generation_id'])
+            decoded = decode(task, receipt['content'], receipt['finish_reason'], meta['contract'])
+            run = RepairRun(output / 'cells' / attempt, task, verifier, mode='model_pilot')
+            artifact = public = evaluator = None
+            full_pass = False
+            if decoded['artifact_valid']:
+                artifact = run.snapshot(decoded['files'])
+                public, evaluator = run.evaluate(artifact, 'public'), run.evaluate(artifact, 'evaluator')
+                full_pass = run.get(public)['result']['passed'] and run.get(evaluator)['result']['passed']
+            result = {**meta, 'decoded': {k:v for k,v in decoded.items() if k != 'files'},
+                      'artifact': artifact, 'public': public, 'evaluator': evaluator,
+                      'full_pass': full_pass, 'cost_usd': receipt['cost_usd']}
+            append(output / 'observations.jsonl', result)
+            save(run.root / 'completion.json', {'audit': audit_run(run.root), 'mode': 'model_pilot'})
+        if provenance(tasks) != packet['source_provenance']:
+            raise ValueError('Source changed during collection')
+    except Exception as exc:
+        save(output / 'interruption.json', {'exception_type': type(exc).__name__, 'resume_allowed': False,
+            'settled_usd': str(transport.spent), 'pending': {k:str(v) for k,v in transport.pending.items()},
+            'study_commitment_usd': str(transport.conservative_committed_usd),
+            'cumulative_commitment_usd': str(carried + transport.conservative_committed_usd)})
+        raise
+    save(output / 'pilot-completion.json', {'observations': len(packet['requests']), 'file_hashes': file_hashes(output)})
+    return audit(output)
+
+
+
+def settled_receipt(output, key, amount, settings):
+    receipt = read(output / 'receipts' / (key + '.json'))
+    raw = read(output / 'receipts' / (key + '.raw.json'))
+    if (receipt['attempt_id'] != key or receipt['mode'] != 'model_pilot'
+            or receipt['model'] != settings.model or receipt['provider'] != settings.provider_name
+            or dollars(receipt['cost_usd']) != amount
+            or raw['model'] != settings.model or raw['provider'] != settings.provider_name
+            or len(raw['choices']) != 1 or receipt['generation_id'] != raw['id']
+            or receipt['usage'] != raw['usage']
+            or dollars(raw['usage']['cost']) != amount
+            or receipt['content'] != raw['choices'][0].get('message', {}).get('content')
+            or receipt['finish_reason'] != raw['choices'][0].get('finish_reason')):
+        raise ValueError('Receipt projection or accounting differs')
+    for field, bound in [('prompt_tokens', settings.input_token_ceiling), ('completion_tokens', settings.max_tokens)]:
+        if type(raw['usage'][field]) is not int or not 0 <= raw['usage'][field] <= bound:
+            raise ValueError('Unreserved token usage')
+    return receipt
+
+
+def audit(output: Path):
+    manifest = read(output / 'manifest.json')
+    if manifest['mode'] != 'model_contract_diagnostic' or not manifest['model_results'] or manifest['currency'] != 'USD':
+        raise ValueError('Incorrect evidence mode/currency')
+    packet, limit, carried = validate_freeze(manifest['freeze'])
+    settings = ContractSettings(**packet['provider_settings'])
+    planned = {r['metadata']['attempt_id']: r for r in packet['requests']}
+    pending, settled, admitted = {}, {}, []
+    for event in rows(output / 'ledger.jsonl'):
+        key, amount = event['attempt_id'], dollars(event['usd'])
+        if key not in planned or event['currency'] != 'USD':
+            raise ValueError('Undeclared admission or currency')
+        if event['event'] == 'reserve':
+            if pending or key in admitted or amount != settings.reserve or sum(settled.values()) + sum(pending.values()) + amount > limit:
+                raise ValueError('Repeated admission or violated cap')
+            pending[key] = amount; admitted.append(key)
+            request = read(output / 'requests' / (key + '.json'))
+            body = read(output / 'requests' / (key + '.provider.json'))
+            if request != planned[key] or body != planned[key]['provider_body']:
+                raise ValueError('Admitted request differs from packet')
+        elif event['event'] == 'settle':
+            if key not in pending or amount > pending[key]:
+                raise ValueError('Invalid settlement')
+            pending.pop(key); settled[key] = amount
+        else:
+            raise ValueError('Unknown ledger event')
+    if admitted != list(planned)[:len(admitted)]:
+        raise ValueError('Collection order changed')
+    seen, generations, receipts = set(), set(), {}
+    for key, amount in settled.items():
+        receipt = settled_receipt(output, key, amount, settings)
+        if receipt['generation_id'] in generations:
+            raise ValueError('Repeated provider generation identity')
+        generations.add(receipt['generation_id']); receipts[key] = receipt
+    for row in rows(output / 'observations.jsonl'):
+        key = row['attempt_id']
+        if key in seen or key not in settled:
+            raise ValueError('Repeated or unaccounted observation')
+        seen.add(key)
+        expected = planned[key]; meta = expected['metadata']
+        if any(row.get(k) != v for k,v in meta.items()):
+            raise ValueError('Observation metadata drift')
+        receipt = receipts[key]
+        if dollars(row['cost_usd']) != settled[key]:
+            raise ValueError('Observation charge differs')
+        task = task_from_record(packet['tasks'][meta['task_index']])
+        decoded = decode(task, receipt['content'], receipt['finish_reason'], meta['contract'])
+        if row['decoded'] != {k:v for k,v in decoded.items() if k != 'files'}:
+            raise ValueError('Decoder drift or altered classification')
+        cell = output / 'cells' / key
+        audit_run(cell)
+        obj = lambda ref: read(cell / 'objects' / (ref + '.json'))
+        task_obj = obj(read(cell / 'events' / '000000.json')['objects'][0])
+        if task_obj['public'] != task.public or task_obj['evaluator'] != json.loads(task.evaluator_json):
+            raise ValueError('Verifier task differs from prepared task')
+        if decoded['artifact_valid']:
+            if obj(row['artifact'])['files'] != decoded['files']:
+                raise ValueError('Evaluated code differs from decoded response')
+            pub, ev = obj(row['public']), obj(row['evaluator'])
+            if (pub['artifact'] != row['artifact'] or ev['artifact'] != row['artifact']
+                    or pub['channel'] != 'public' or ev['channel'] != 'evaluator'
+                    or row['full_pass'] != (pub['result']['passed'] and ev['result']['passed'])):
+                raise ValueError('Verifier outcome or attachment mismatch')
+        elif any(row[k] is not None for k in ('artifact','public','evaluator')) or row['full_pass']:
+            raise ValueError('Malformed output given fabricated success/artifact')
+    for cell in (output / 'cells').glob('*'):
+        if cell.name not in settled:
+            raise ValueError('Unaccounted verifier cell')
+        audit_run(cell)
+    committed_by_attempt = dict(settled)
+    committed = sum(settled.values(), Decimal(0))
+    for key, reserve in pending.items():
+        known = Decimal(0)
+        raw = output / 'receipts' / (key + '.raw.json')
+        if raw.exists():
+            try:
+                known = dollars(read(raw)['usage']['cost'])
+            except (KeyError, TypeError, ValueError, ProviderStopped):
+                pass
+        committed_by_attempt[key] = max(reserve, known)
+        committed += max(reserve, known)
+    completion = output / 'pilot-completion.json'
+    if completion.exists():
+        saved = read(completion)
+        if pending or seen != set(planned) or set(settled) != seen or saved['observations'] != len(seen) or saved['file_hashes'] != file_hashes(output):
+            raise ValueError('Sealed bank is incomplete or modified')
+    return {'observations': len(seen), 'admissions': len(admitted), 'planned_calls': len(planned),
+            'paid_without_outcome': sorted(set(settled) - seen),
+            'pending': {k:str(v) for k,v in pending.items()}, 'settled_usd': str(sum(settled.values(), Decimal(0))),
+            'study_committed_usd': str(committed),
+            'committed_by_attempt_usd': {k:str(v) for k,v in committed_by_attempt.items()},
+            'carried_committed_usd': str(carried),
+            'cumulative_committed_usd': str(carried + committed), 'sealed': completion.exists(),
+            'cap_exceeded': committed > limit or carried + committed > dollars(manifest['freeze']['config']['cumulative_limit_usd'])}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('action', choices=('freeze','live','audit'))
+    parser.add_argument('--input', type=Path, required=True)
+    parser.add_argument('--config', type=Path)
+    parser.add_argument('--output', type=Path)
+    args = parser.parse_args()
+    if args.action == 'freeze':
+        if not args.config or not args.output:
+            parser.error('freeze requires --config and fresh --output')
+        frozen = freeze(read(args.input), read(args.config), args.output)
+        result = {k:frozen[k] for k in ('freeze_id','source_commit','authorized_limit_usd')}
+    elif args.action == 'live':
+        if not args.output:
+            parser.error('live requires fresh --output')
+        result = collect(read(args.input), args.output)
+    else:
+        result = audit(args.input)
+    print(json.dumps(result, indent=2))
+
+
+if __name__ == '__main__':
+    main()

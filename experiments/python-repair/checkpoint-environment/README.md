@@ -289,7 +289,8 @@ visible in the report, including states that offer no artifact intervention.
 
 The [output-contract protocol](CONTRACT-PROBE-PROTOCOL.md) prepares 36 paired
 initial attempts across three response formats on the same twelve development
-bugs. The packet and scripted demo are offline; no collector or new authorization
-is implied. The proposal is motivated partly by the
+bugs. The packet and scripted demo are offline. A separately gated collector and
+terminal report are implemented and tested with mocked transport; no new
+authorization or model call is implied. The proposal is motivated partly by the
 [post hoc structural-edit diagnostic](results/gemma4b-calibration-20261026/ARTIFACT-DIAGNOSTIC.md),
 which preserves the original policy comparisons and all observations.

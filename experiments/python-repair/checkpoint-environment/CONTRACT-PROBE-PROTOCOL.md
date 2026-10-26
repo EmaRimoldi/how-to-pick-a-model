@@ -64,7 +64,8 @@ verification separately: equal per-call allowance does not imply equal spending.
 
 An engineering candidate for further recovery calibration must solve at least
 three distinct bugs, produce syntactically valid source with the declared entrypoint
-on at least ten bugs, and still leave at least two valid-but-unsolved bugs. These
+on at least ten bugs, and still leave at least two syntactically valid, declared-entrypoint bugs unsolved. The bank must be complete before applying these checks; an interrupted bank
+gets an inconclusive gate and no selected contract. These
 are prospective practical checks, not powered scientific thresholds or evidence
 of action complementarity. Prefer more fully solved bugs, then lower measured
 API cost, then the declared contract order. Report every contract, including
@@ -82,8 +83,9 @@ if the whole proposed cap were spent. Historical $2/$5 campaigns remain separate
 The existing continuation approval covered only never-started trajectories of
 the closed pilot. It does not launch this changed-protocol study. The packet has
 `live_calls_enabled: false` and `monetary_authorization_usd: null`. Preparation
-and the scripted demo cannot dispatch a network request. Before any collection,
-finish and validate the dedicated collector, review a clean source/packet freeze,
+and the scripted demo cannot dispatch a network request. The dedicated collector, ledger/receipt audit and terminal reporter are now
+implemented and exercised with a completely mocked transport. Before collection,
+review a clean source/packet freeze,
 record authorization for this new cap and contract comparison, verify current
 endpoint identity/prices/credit, and claim the study once. Do not spend based on
 this proposed cap or unused funds from a closed campaign.
@@ -110,3 +112,46 @@ private/public separation and real sandbox verification, with zero API calls;
 they are not model efficacy evidence. The source packet may contain evaluator
 data for subsequent local scoring, but each exact API payload is independently
 projected without it. Inspect payloads rather than forwarding the whole packet.
+
+## Gated collection and terminal analysis
+
+The [draft launch config](CONTRACT-PROBE-DRAFT.json) intentionally has no monetary
+authorization. After the user authorizes this specific new study, save a separate
+funded copy with status `authorized_contract_diagnostic`, live enabled, the actual
+per-study cap and authorization reference. Preserve the unchanged draft and
+original unsuccessful recovery bank. Preparation is not authorization.
+
+```bash
+# Only after actual authorization, a clean source commit and a fresh packet:
+uv run python scripts/collect_repair_contract_probe.py freeze \
+  --input runs/repair-contract-probe-packet.json \
+  --config runs/repair-contract-probe-authorized.json \
+  --output runs/repair-contract-probe-freeze.json
+# Supply OPENROUTER_API_KEY only in the private process environment.
+uv run python scripts/collect_repair_contract_probe.py live \
+  --input runs/repair-contract-probe-freeze.json \
+  --output runs/repair-contract-probe
+uv run python scripts/collect_repair_contract_probe.py audit \
+  --input runs/repair-contract-probe
+# Only after completion or a recorded interruption:
+uv run python scripts/report_repair_contract_probe.py \
+  --input runs/repair-contract-probe \
+  --output runs/repair-contract-probe-report
+```
+
+The launch checks current source/packet identity, the unchanged prior financial
+report and sandbox feedback before any provider request. A fixed study claim
+prevents repeated launch under another output directory. This is a new study,
+not a successor of the closed recovery collectors. The full exact payload is
+saved before admission; response bytes precede settlement. Account/key identifiers
+and credentials are not logged. API errors are never retried. Any known charge
+above its reserve remains counted at its larger value and stops collection.
+
+The audit covers each admitted payload, all settled receipts even when local
+scoring failed, model/provider identity, native token counts, decode projection,
+artifact/test attachment, outcomes, uniqueness and the completion seal. A paid
+response without an outcome is retained as missing. The report keeps all selected
+task/contract cells, accounts for unscored charges and uncertain reserves per arm,
+and reproduces the study total without charging prior expenditure three times.
+It cannot read treatment outcomes from an active collection and cannot train a
+selector even when the future-calibration gate passes.

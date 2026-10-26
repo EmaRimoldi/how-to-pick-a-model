@@ -5,8 +5,8 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `32`
-- Default-safe commands: `22`
+- Commands indexed: `34`
+- Default-safe commands: `24`
 - Missing required maintenance actions: `0`
 
 ## Safety Classes
@@ -16,7 +16,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `cluster-setup` | 1 |
 | `live-local` | 6 |
 | `mixed-cli` | 3 |
-| `read-only-analysis` | 10 |
+| `read-only-analysis` | 12 |
 | `safe-local` | 10 |
 | `safe-local-optional-tool` | 2 |
 
@@ -25,7 +25,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | Surface | Commands |
 | --- | --- |
 | `maintenance` | 6 |
-| `scripts` | 19 |
+| `scripts` | 21 |
 | `scripts/cluster` | 1 |
 | `scripts/maintenance` | 6 |
 
@@ -50,10 +50,12 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/analyze_feedback_routing.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit and analyze fixed feedback-only trajectories without making model calls. Public CLI facade; implementation lives in vao.analysis.analyze_feedback_routing. |
 | `python scripts/analyze_recovery_transfer.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit recorded MBPP+ recovery evidence and reproduce the frozen statistical comparisons. Public CLI facade; implementation lives in vao.analysis.analyze_recovery_transfer. |
 | `python scripts/analyze_recovery_validation.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit frozen held-out recovery data and replay its finite budgeted policy bank. Public CLI facade; implementation lives in vao.analysis.analyze_recovery_validation. |
+| `python scripts/collect_repair_contract_probe.py` | scripts | `read-only-analysis` | yes | inspect script before running | Run only an explicitly authorized and frozen output-contract study. |
 | `python scripts/prepare_feedback_routing.py` | scripts | `read-only-analysis` | yes | inspect script before running | Verify the pinned BigCodeBench download and reproduce reference-only eligibility. |
 | `python scripts/prepare_repair_contract_probe.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare a reviewable, offline-only Gemma response-contract diagnostic. |
 | `python scripts/report_feedback_routing.py` | scripts | `read-only-analysis` | yes | inspect script before running | Publish a completed feedback-only bank, audited statistics and static figures. Public CLI facade; implementation lives in vao.analysis.report_feedback_routing. |
 | `python scripts/report_repair_calibration.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit terminal repair-pilot segments and report descriptive results offline. |
+| `python scripts/report_repair_contract_probe.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit and describe a terminal output-contract diagnostic; no API calls. |
 | `python scripts/verify_feedback_evidence.py` | scripts | `read-only-analysis` | yes | inspect script before running | Verify published BigCodeBench evidence offline without executing candidate code. Public CLI facade; implementation lives in vao.analysis.verify_feedback_evidence. |
 | `python scripts/prepare_python_repair.py` | scripts | `mixed-cli` | no | plan/audit are read-only; demo/qualify require macOS sandbox-exec and a fresh output directory; no provider calls | Plan or explicitly run an offline Python repair demo, qualification or audit. |
 | `python scripts/prepare_repair_pilot.py` | scripts | `mixed-cli` | no | plan/audit/compare are offline; demo requires macOS isolation; live requires new funding, clean source freeze, private key, single-use campaign claim and fresh output | Plan repair calibration offline; live collection requires a funded freeze. |

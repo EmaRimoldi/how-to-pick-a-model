@@ -9,8 +9,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `8`
-- Script entrypoints indexed: `26`
-- Code modules indexed: `70`
+- Script entrypoints indexed: `28`
+- Code modules indexed: `72`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `6`
@@ -174,6 +174,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/analyze_feedback_routing.py` | python | Audit and analyze fixed feedback-only trajectories without making model calls. Public CLI facade; implementation lives in vao.analysis.analyze_feedback_routing. |
 | `scripts/analyze_recovery_transfer.py` | python | Audit recorded MBPP+ recovery evidence and reproduce the frozen statistical comparisons. Public CLI facade; implementation lives in vao.analysis.analyze_recovery_transfer. |
 | `scripts/analyze_recovery_validation.py` | python | Audit frozen held-out recovery data and replay its finite budgeted policy bank. Public CLI facade; implementation lives in vao.analysis.analyze_recovery_validation. |
+| `scripts/collect_repair_contract_probe.py` | python | Run only an explicitly authorized and frozen output-contract study. |
 | `scripts/prepare_feedback_routing.py` | python | Verify the pinned BigCodeBench download and reproduce reference-only eligibility. |
 | `scripts/prepare_python_repair.py` | python | Plan or explicitly run an offline Python repair demo, qualification or audit. |
 | `scripts/prepare_repair_contract_probe.py` | python | Prepare a reviewable, offline-only Gemma response-contract diagnostic. |
@@ -181,6 +182,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/qualify_python_repair_pool.py` | python | Offline build, provenance audit and isolated qualification of real-bug tasks. |
 | `scripts/report_feedback_routing.py` | python | Publish a completed feedback-only bank, audited statistics and static figures. Public CLI facade; implementation lives in vao.analysis.report_feedback_routing. |
 | `scripts/report_repair_calibration.py` | python | Audit terminal repair-pilot segments and report descriptive results offline. |
+| `scripts/report_repair_contract_probe.py` | python | Audit and describe a terminal output-contract diagnostic; no API calls. |
 | `scripts/run_context_value.py` | python | Plan or explicitly run a budgeted artifact/feedback and prospective-forecast study. |
 | `scripts/run_continuation_pilot.py` | python | Run the explicit-budget OpenRouter/HumanEval+ pilot; defaults to plan only. |
 | `scripts/run_feedback_routing.py` | python | Plan or explicitly run new-task, feedback-only fixed-policy trajectories. |
@@ -232,6 +234,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | saved-evidence analysis | `src/vao/analysis/analyze_feedback_routing.py` | Audit and analyze fixed feedback-only trajectories without making model calls. | records, audit, analyze, main |
 | saved-evidence analysis | `src/vao/analysis/analyze_recovery_transfer.py` | Audit recorded MBPP+ recovery evidence and reproduce the frozen statistical comparisons. | require, same, interval, recovery_lineages, audit, variance_stat, analyze, markdown |
 | saved-evidence analysis | `src/vao/analysis/analyze_recovery_validation.py` | Audit frozen held-out recovery data and replay its finite budgeted policy bank. | read, require, reservation, paired_interval, audit, rollout, development_replay_best, analyze |
+| saved-evidence analysis | `src/vao/analysis/contract_diagnostic.py` | Prespecified descriptive report for the terminal output-contract diagnostic. | summarize, render, main |
 | saved-evidence analysis | `src/vao/analysis/repair_artifacts.py` | Post hoc structural-edit diagnostic for a closed repair bank; zero model calls. | same_ast, diagnose, main |
 | saved-evidence analysis | `src/vao/analysis/repair_calibration.py` | Audit terminal repair-calibration segments and report descriptive diagnostics. No model calls, training, stopping decisions or claim of held-out policy value. | read_json, lineage, group_estimate, mean, descriptive_interval, analyze, render, export_evidence |
 | saved-evidence analysis | `src/vao/analysis/report_feedback_routing.py` | Publish a completed feedback-only bank, audited statistics and static figures. | report_text, accounting_diagnostics, diagnostic_text, plot, diagnostic_plot, publish, main |
@@ -255,6 +258,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/patches.py` | Patch application utilities for model-produced source edits. | PatchApplyError, apply_unified_diff |
 | verified orchestration runtime | `src/vao/records.py` | Record loading helpers. | iter_run_dirs, load_step_records, load_records_from_roots |
 | verified orchestration runtime | `src/vao/repair/cli.py` | Plan, demonstrate, qualify and audit the offline Python repair environment. | source_manifest, finish, qualify, demo, main |
+| verified orchestration runtime | `src/vao/repair/contract_collection.py` | Funded contract diagnostic: exact prepared requests, durable billing, no retries. | ContractSettings, read, content_hash, authorization, freeze, validate_freeze, collect, settled_receipt |
 | verified orchestration runtime | `src/vao/repair/contracts.py` | Offline preparation of a paired output-contract diagnostic; never dispatch APIs. The unsuccessful recovery bank remains immutable. This module compiles reviewable requests and checks decoding boundaries before another campaign is authorized. | public_feedback, request, provider_body, decode, task_from_record, provenance, construct, validate |
 | verified orchestration runtime | `src/vao/repair/environment.py` | Store verifiable repair artifacts and fork matched continue/restart requests. | canonical, identity, validate_files, validate_cases, RepairTask, RepairRun, audit_run |
 | verified orchestration runtime | `src/vao/repair/pilot.py` | Plan matched repair collection; live mode requires a funded source freeze. The default is offline planning. Scripted demonstrations never provide model evidence. Existing output directories and admitted calls cannot be resumed. | Design, fingerprint, schedule_for, check_continuation, ScriptedTransport, evaluate_response, public_choice, collect |
