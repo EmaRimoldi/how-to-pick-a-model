@@ -3,6 +3,10 @@
 **Status: executable offline engineering prototype. No model responses, real-bug
 benchmark results, paid collector, fitted selector or frozen scientific evaluation.**
 
+The [real-bug development pool](development/README.md) adds twelve adapted BugsInPy
+tasks with pinned source excerpts, public/evaluator cases, documented exclusions
+and reproducible offline qualification. These are engineering fixtures, not model results.
+
 The domain is function-level Python repair: one or two flat, standard-library
 modules, a named callable and JSON inputs/outputs. The environment saves complete
 artifacts, public verification, progress histories and branch ancestry. It restores
@@ -113,8 +117,8 @@ stable outcomes, initial failures on both suites and reference success on both.
 Failure returns a nonzero exit status. Qualification establishes reproducibility
 of this harness, not model difficulty, test completeness or recoverability.
 
-[BugsInPy](https://github.com/soarsmu/BugsInPy) is a candidate source, not an
-implemented full-repository importer. For an adapted function-level task, record
+[BugsInPy](https://github.com/soarsmu/BugsInPy) supplies the adapted development
+pool; this is not a full-repository importer. For an adapted function-level task, record
 the upstream bug ID, repository URL, buggy/fixed commits, source hashes, license,
 runtime requirements and every extraction/change in provenance. Preserve original
 sources locally. Reject tasks whose dependencies or semantics cannot be reproduced

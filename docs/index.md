@@ -2,8 +2,8 @@
 
 The new [Python repair environment](../experiments/python-repair/checkpoint-environment/README.md)
 provides an executable offline demo, immutable checkpoints, matched recovery
-requests and task qualification. Its handwritten fixtures are engineering checks,
-not model findings; there is no live collector.
+requests and task qualification. Its [twelve adapted real-bug tasks](../experiments/python-repair/checkpoint-environment/development/README.md)
+and handwritten demo are engineering checks, not model findings; there is no live collector.
 
 | Guide | Purpose |
 | --- | --- |

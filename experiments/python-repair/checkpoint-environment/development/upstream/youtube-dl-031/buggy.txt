@@ -1,0 +1,27 @@
+def float_or_none(v, scale=1, invscale=1, default=None):
+    return default if v is None else (float(v) * invscale / scale)
+
+
+def parse_duration(s):
+    if s is None:
+        return None
+
+    s = s.strip()
+
+    m = re.match(
+        r'''(?ix)T?
+            (?:
+                (?:(?P<hours>[0-9]+)\s*(?:[:h]|hours?)\s*)?
+                (?P<mins>[0-9]+)\s*(?:[:m]|mins?|minutes?)\s*
+            )?
+            (?P<secs>[0-9]+)(?P<ms>\.[0-9]+)?\s*(?:s|secs?|seconds?)?$''', s)
+    if not m:
+        return None
+    res = int(m.group('secs'))
+    if m.group('mins'):
+        res += int(m.group('mins')) * 60
+        if m.group('hours'):
+            res += int(m.group('hours')) * 60 * 60
+    if m.group('ms'):
+        res += float(m.group('ms'))
+    return res

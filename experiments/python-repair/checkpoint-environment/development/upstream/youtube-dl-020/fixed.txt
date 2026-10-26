@@ -1,0 +1,63 @@
+def get_elements_by_attribute(attribute, value, html, escape_value=True):
+    """Return the content of the tag with the specified attribute in the passed HTML document"""
+
+    value = re.escape(value) if escape_value else value
+
+    retlist = []
+    for m in re.finditer(r'''(?xs)
+        <([a-zA-Z0-9:._-]+)
+         (?:\s+[a-zA-Z0-9:._-]+(?:=[a-zA-Z0-9:._-]*|="[^"]*"|='[^']*'|))*?
+         \s+%s=['"]?%s['"]?
+         (?:\s+[a-zA-Z0-9:._-]+(?:=[a-zA-Z0-9:._-]*|="[^"]*"|='[^']*'|))*?
+        \s*>
+        (?P<content>.*?)
+        </\1>
+    ''' % (re.escape(attribute), value), html):
+        res = m.group('content')
+
+        if res.startswith('"') or res.startswith("'"):
+            res = res[1:-1]
+
+        retlist.append(unescapeHTML(res))
+
+    return retlist
+
+
+def _htmlentity_transform(entity_with_semicolon):
+    """Transforms an HTML entity to a character."""
+    entity = entity_with_semicolon[:-1]
+
+    # Known non-numeric HTML entity
+    if entity in compat_html_entities.name2codepoint:
+        return compat_chr(compat_html_entities.name2codepoint[entity])
+
+    # TODO: HTML5 allows entities without a semicolon. For example,
+    # '&Eacuteric' should be decoded as 'Éric'.
+    if entity_with_semicolon in compat_html_entities_html5:
+        return compat_html_entities_html5[entity_with_semicolon]
+
+    mobj = re.match(r'#(x[0-9a-fA-F]+|[0-9]+)', entity)
+    if mobj is not None:
+        numstr = mobj.group(1)
+        if numstr.startswith('x'):
+            base = 16
+            numstr = '0%s' % numstr
+        else:
+            base = 10
+        # See https://github.com/rg3/youtube-dl/issues/7518
+        try:
+            return compat_chr(int(numstr, base))
+        except ValueError:
+            pass
+
+    # Unknown entity in name, return its literal representation
+    return '&%s;' % entity
+
+
+def unescapeHTML(s):
+    if s is None:
+        return None
+    assert type(s) == compat_str
+
+    return re.sub(
+        r'&([^;]+;)', lambda m: _htmlentity_transform(m.group(1)), s)

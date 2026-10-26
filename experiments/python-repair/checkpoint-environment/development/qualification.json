@@ -1,0 +1,3341 @@
+{
+  "schema_version": 1,
+  "status": "offline_development_qualification",
+  "created_utc": "2026-10-26T04:22:57.409478+00:00",
+  "pool_sha256": "37f1900eaf52ab8ba85c7927a1bf5c19e31e13a1dea8c5e2c9f7872267fd7608",
+  "runtime": {
+    "python": "3.13.12 | packaged by conda-forge | (main, Feb  5 2026, 06:11:05) [Clang 19.1.7 ]",
+    "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+    "sha256": {
+      "fixture/evaluator.json": "535cd9b27915a632dfa9474a4f390dd1a588ce831604ed6950416789db0a1e12",
+      "fixture/reference.json": "41e34b819ae8ee6bfdd36b18721014d79c96f19556dfac30e66a8ac380c03cc8",
+      "fixture/task.json": "99c6974b88b1915d2d685861feb104254f0910c0aaae7f52f39f14ba6e07616a",
+      "runtime/__init__.py": "54b577b505955fe21dc1b841a71c75aaf63f57d2bd1e8bf3bece36d30dd1518e",
+      "runtime/cli.py": "5556f65f077aa0aa9e6f726fa2db55f13448df14828b16fb5e16f14dd556d3bc",
+      "runtime/environment.py": "8dff3b6cb454bf4607e9543a36c581469e435dcc0f7b74113ac56462961346d4",
+      "runtime/pool.py": "85d0296abcf538ff09341b8ab2ceb3299772a2068de1a06cc22ed882c141a8ce",
+      "runtime/verification.py": "301f2af2cfbffa509a9dacfd2f920b7e7ef8bcaab68c8d56a050a3c054dcf0b4",
+      "runtime/verifier.py": "008ab627c1db7fee254353f90f73ec1ef3f8d3f621983cf7e2b77c6dbdf6e9c0",
+      "runtime/worker.py": "c604e16a51fc44898fcfebf6e74c1bc01636e9f29c6486e78bcb93d2b8bfa858"
+    }
+  },
+  "selected": 12,
+  "qualified": 12,
+  "tasks": [
+    {
+      "id": "youtube-dl-003",
+      "task_hash": "e60bd2b6b3c839c47476e032bed5feae5453472d74e6920000e30a216687e658",
+      "engineering_qualified": true,
+      "checks": {
+        "initial": {
+          "public": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          }
+        },
+        "reference": {
+          "public": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          }
+        }
+      },
+      "outcomes": {
+        "initial": {
+          "public": {
+            "passed_cases": 5,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "stray-before-quote",
+                "observed": {
+                  "status": "returned",
+                  "value": "&a&quot;"
+                },
+                "passed": false
+              },
+              {
+                "id": "named",
+                "observed": {
+                  "status": "returned",
+                  "value": "café"
+                },
+                "passed": true
+              },
+              {
+                "id": "numeric",
+                "observed": {
+                  "status": "returned",
+                  "value": "/"
+                },
+                "passed": true
+              },
+              {
+                "id": "plain",
+                "observed": {
+                  "status": "returned",
+                  "value": "hello"
+                },
+                "passed": true
+              },
+              {
+                "id": "unknown",
+                "observed": {
+                  "status": "returned",
+                  "value": "&noSuchEntity;"
+                },
+                "passed": true
+              },
+              {
+                "id": "null",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              }
+            ]
+          },
+          "evaluator": {
+            "passed_cases": 4,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "double-amp",
+                "observed": {
+                  "status": "returned",
+                  "value": "&&amp;"
+                },
+                "passed": false
+              },
+              {
+                "id": "stray-before-lt",
+                "observed": {
+                  "status": "returned",
+                  "value": "A &x&lt; B"
+                },
+                "passed": false
+              },
+              {
+                "id": "hex",
+                "observed": {
+                  "status": "returned",
+                  "value": "A"
+                },
+                "passed": true
+              },
+              {
+                "id": "html5",
+                "observed": {
+                  "status": "returned",
+                  "value": ".'"
+                },
+                "passed": true
+              },
+              {
+                "id": "out-of-range",
+                "observed": {
+                  "status": "returned",
+                  "value": "&#2013266066;"
+                },
+                "passed": true
+              },
+              {
+                "id": "empty",
+                "observed": {
+                  "status": "returned",
+                  "value": ""
+                },
+                "passed": true
+              }
+            ]
+          }
+        },
+        "reference": {
+          "evaluator": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "double-amp",
+                "observed": {
+                  "status": "returned",
+                  "value": "&&"
+                },
+                "passed": true
+              },
+              {
+                "id": "stray-before-lt",
+                "observed": {
+                  "status": "returned",
+                  "value": "A &x< B"
+                },
+                "passed": true
+              },
+              {
+                "id": "hex",
+                "observed": {
+                  "status": "returned",
+                  "value": "A"
+                },
+                "passed": true
+              },
+              {
+                "id": "html5",
+                "observed": {
+                  "status": "returned",
+                  "value": ".'"
+                },
+                "passed": true
+              },
+              {
+                "id": "out-of-range",
+                "observed": {
+                  "status": "returned",
+                  "value": "&#2013266066;"
+                },
+                "passed": true
+              },
+              {
+                "id": "empty",
+                "observed": {
+                  "status": "returned",
+                  "value": ""
+                },
+                "passed": true
+              }
+            ]
+          },
+          "public": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "stray-before-quote",
+                "observed": {
+                  "status": "returned",
+                  "value": "&a\""
+                },
+                "passed": true
+              },
+              {
+                "id": "named",
+                "observed": {
+                  "status": "returned",
+                  "value": "café"
+                },
+                "passed": true
+              },
+              {
+                "id": "numeric",
+                "observed": {
+                  "status": "returned",
+                  "value": "/"
+                },
+                "passed": true
+              },
+              {
+                "id": "plain",
+                "observed": {
+                  "status": "returned",
+                  "value": "hello"
+                },
+                "passed": true
+              },
+              {
+                "id": "unknown",
+                "observed": {
+                  "status": "returned",
+                  "value": "&noSuchEntity;"
+                },
+                "passed": true
+              },
+              {
+                "id": "null",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              }
+            ]
+          }
+        }
+      },
+      "completion_sha256": "9251f777fc0315f40d977152a615fbf4fd2c2a7ab89b5c32b4993c5e70b2022c",
+      "audit": {
+        "status": "verified",
+        "objects": 11,
+        "events": 9,
+        "event_head": "51e27465b7e8bca7689db150529d0b1941c15a3becbdb843d1874fcda7f4c26c"
+      }
+    },
+    {
+      "id": "youtube-dl-011",
+      "task_hash": "f88da14adef616e1a9b41e6203529701308c77aea7020a7d4446b457bf1b2fd4",
+      "engineering_qualified": true,
+      "checks": {
+        "initial": {
+          "public": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          }
+        },
+        "reference": {
+          "public": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          }
+        }
+      },
+      "outcomes": {
+        "initial": {
+          "evaluator": {
+            "passed_cases": 3,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "zero",
+                "observed": {
+                  "exception": "TypeError",
+                  "status": "exception"
+                },
+                "passed": false
+              },
+              {
+                "id": "negative-number",
+                "observed": {
+                  "exception": "TypeError",
+                  "status": "exception"
+                },
+                "passed": false
+              },
+              {
+                "id": "float",
+                "observed": {
+                  "exception": "TypeError",
+                  "status": "exception"
+                },
+                "passed": false
+              },
+              {
+                "id": "plus",
+                "observed": {
+                  "status": "returned",
+                  "value": 2345
+                },
+                "passed": true
+              },
+              {
+                "id": "space",
+                "observed": {
+                  "status": "returned",
+                  "value": 17
+                },
+                "passed": true
+              },
+              {
+                "id": "empty",
+                "observed": {
+                  "exception": "ValueError",
+                  "status": "exception"
+                },
+                "passed": true
+              }
+            ]
+          },
+          "public": {
+            "passed_cases": 5,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "numeric",
+                "observed": {
+                  "exception": "TypeError",
+                  "status": "exception"
+                },
+                "passed": false
+              },
+              {
+                "id": "comma",
+                "observed": {
+                  "status": "returned",
+                  "value": 123456
+                },
+                "passed": true
+              },
+              {
+                "id": "dot",
+                "observed": {
+                  "status": "returned",
+                  "value": 123456
+                },
+                "passed": true
+              },
+              {
+                "id": "none",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              },
+              {
+                "id": "negative",
+                "observed": {
+                  "status": "returned",
+                  "value": -12
+                },
+                "passed": true
+              },
+              {
+                "id": "bad",
+                "observed": {
+                  "exception": "ValueError",
+                  "status": "exception"
+                },
+                "passed": true
+              }
+            ]
+          }
+        },
+        "reference": {
+          "evaluator": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "zero",
+                "observed": {
+                  "status": "returned",
+                  "value": 0
+                },
+                "passed": true
+              },
+              {
+                "id": "negative-number",
+                "observed": {
+                  "status": "returned",
+                  "value": -42
+                },
+                "passed": true
+              },
+              {
+                "id": "float",
+                "observed": {
+                  "status": "returned",
+                  "value": 1.25
+                },
+                "passed": true
+              },
+              {
+                "id": "plus",
+                "observed": {
+                  "status": "returned",
+                  "value": 2345
+                },
+                "passed": true
+              },
+              {
+                "id": "space",
+                "observed": {
+                  "status": "returned",
+                  "value": 17
+                },
+                "passed": true
+              },
+              {
+                "id": "empty",
+                "observed": {
+                  "exception": "ValueError",
+                  "status": "exception"
+                },
+                "passed": true
+              }
+            ]
+          },
+          "public": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "numeric",
+                "observed": {
+                  "status": "returned",
+                  "value": 523
+                },
+                "passed": true
+              },
+              {
+                "id": "comma",
+                "observed": {
+                  "status": "returned",
+                  "value": 123456
+                },
+                "passed": true
+              },
+              {
+                "id": "dot",
+                "observed": {
+                  "status": "returned",
+                  "value": 123456
+                },
+                "passed": true
+              },
+              {
+                "id": "none",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              },
+              {
+                "id": "negative",
+                "observed": {
+                  "status": "returned",
+                  "value": -12
+                },
+                "passed": true
+              },
+              {
+                "id": "bad",
+                "observed": {
+                  "exception": "ValueError",
+                  "status": "exception"
+                },
+                "passed": true
+              }
+            ]
+          }
+        }
+      },
+      "completion_sha256": "4b1da74f94bda6006eef2021f80c26bbfb2ce4c594503cf64647072373f6830c",
+      "audit": {
+        "status": "verified",
+        "objects": 11,
+        "events": 9,
+        "event_head": "76c8d33bcfc5f73d47fe8c1122bdd1a45ededb4aac17bd9a85bc4a03e4bc82ad"
+      }
+    },
+    {
+      "id": "youtube-dl-013",
+      "task_hash": "69df1c5a2a87c99a91076ecd91c671612b5b519810417e0b25d015076c1d3090",
+      "engineering_qualified": true,
+      "checks": {
+        "initial": {
+          "public": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          }
+        },
+        "reference": {
+          "public": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          }
+        }
+      },
+      "outcomes": {
+        "initial": {
+          "public": {
+            "passed_cases": 5,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "rtmp-no-base",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": false
+              },
+              {
+                "id": "relative",
+                "observed": {
+                  "status": "returned",
+                  "value": "https://example.org/a/b"
+                },
+                "passed": true
+              },
+              {
+                "id": "root",
+                "observed": {
+                  "status": "returned",
+                  "value": "https://example.org/b"
+                },
+                "passed": true
+              },
+              {
+                "id": "http-no-base",
+                "observed": {
+                  "status": "returned",
+                  "value": "http://example.org/x"
+                },
+                "passed": true
+              },
+              {
+                "id": "empty",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              },
+              {
+                "id": "bad-base",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              }
+            ]
+          },
+          "evaluator": {
+            "passed_cases": 4,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "custom-no-base",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": false
+              },
+              {
+                "id": "srt-invalid-base",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": false
+              },
+              {
+                "id": "scheme-relative",
+                "observed": {
+                  "status": "returned",
+                  "value": "//cdn.example/a"
+                },
+                "passed": true
+              },
+              {
+                "id": "parent",
+                "observed": {
+                  "status": "returned",
+                  "value": "https://example.org/a/d"
+                },
+                "passed": true
+              },
+              {
+                "id": "null-path",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              },
+              {
+                "id": "list-path",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              }
+            ]
+          }
+        },
+        "reference": {
+          "public": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "rtmp-no-base",
+                "observed": {
+                  "status": "returned",
+                  "value": "rtmp://media.example/live"
+                },
+                "passed": true
+              },
+              {
+                "id": "relative",
+                "observed": {
+                  "status": "returned",
+                  "value": "https://example.org/a/b"
+                },
+                "passed": true
+              },
+              {
+                "id": "root",
+                "observed": {
+                  "status": "returned",
+                  "value": "https://example.org/b"
+                },
+                "passed": true
+              },
+              {
+                "id": "http-no-base",
+                "observed": {
+                  "status": "returned",
+                  "value": "http://example.org/x"
+                },
+                "passed": true
+              },
+              {
+                "id": "empty",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              },
+              {
+                "id": "bad-base",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              }
+            ]
+          },
+          "evaluator": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "custom-no-base",
+                "observed": {
+                  "status": "returned",
+                  "value": "abc+v1://host/x"
+                },
+                "passed": true
+              },
+              {
+                "id": "srt-invalid-base",
+                "observed": {
+                  "status": "returned",
+                  "value": "srt://host:22/stream"
+                },
+                "passed": true
+              },
+              {
+                "id": "scheme-relative",
+                "observed": {
+                  "status": "returned",
+                  "value": "//cdn.example/a"
+                },
+                "passed": true
+              },
+              {
+                "id": "parent",
+                "observed": {
+                  "status": "returned",
+                  "value": "https://example.org/a/d"
+                },
+                "passed": true
+              },
+              {
+                "id": "null-path",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              },
+              {
+                "id": "list-path",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              }
+            ]
+          }
+        }
+      },
+      "completion_sha256": "91d5ec2b75eb6741a0013895ed0ebb6756010836d38ce7fe36d32154001f0e90",
+      "audit": {
+        "status": "verified",
+        "objects": 11,
+        "events": 9,
+        "event_head": "0185fbada442cdcc49732e8c0116e121a5c65cc6aa02ccfcf11a3b5f5877c49d"
+      }
+    },
+    {
+      "id": "youtube-dl-020",
+      "task_hash": "be822259bd46303fb6cebb02aabfc4a56658d2c3dd377b865ef22038cfb44a04",
+      "engineering_qualified": true,
+      "checks": {
+        "initial": {
+          "public": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          }
+        },
+        "reference": {
+          "public": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          }
+        }
+      },
+      "outcomes": {
+        "reference": {
+          "evaluator": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "boolean-after",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "go"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "both",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "x"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "multiple",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "1",
+                    "2"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "unquoted",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "v"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "regex",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "yes"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "empty",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              }
+            ]
+          },
+          "public": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "boolean-before",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "ok"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "plain",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "yes"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "wrong",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              },
+              {
+                "id": "entities",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "A & B"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "quote",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "hi"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "literal",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              }
+            ]
+          }
+        },
+        "initial": {
+          "public": {
+            "passed_cases": 5,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "boolean-before",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": false
+              },
+              {
+                "id": "plain",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "yes"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "wrong",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              },
+              {
+                "id": "entities",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "A & B"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "quote",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "hi"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "literal",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              }
+            ]
+          },
+          "evaluator": {
+            "passed_cases": 4,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "boolean-after",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": false
+              },
+              {
+                "id": "both",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": false
+              },
+              {
+                "id": "multiple",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "1",
+                    "2"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "unquoted",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "v"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "regex",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "yes"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "empty",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              }
+            ]
+          }
+        }
+      },
+      "completion_sha256": "05927cc0786cbdec39996f63006d494fb72125bc8e610b5d1909347ce9519a7c",
+      "audit": {
+        "status": "verified",
+        "objects": 11,
+        "events": 9,
+        "event_head": "937d9e57b76ad81802fe26057df6d481820f6abd959d756cee35cd0432d43e7c"
+      }
+    },
+    {
+      "id": "youtube-dl-027",
+      "task_hash": "ee49e7ac580273c11dd611fb74f5671381f9e07a4f1dfc8d2f865c2583c48aa7",
+      "engineering_qualified": true,
+      "checks": {
+        "initial": {
+          "public": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          }
+        },
+        "reference": {
+          "public": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          }
+        }
+      },
+      "outcomes": {
+        "reference": {
+          "public": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "colon-fraction",
+                "observed": {
+                  "status": "returned",
+                  "value": 1.1
+                },
+                "passed": true
+              },
+              {
+                "id": "offset",
+                "observed": {
+                  "status": "returned",
+                  "value": 2.5
+                },
+                "passed": true
+              },
+              {
+                "id": "clock",
+                "observed": {
+                  "status": "returned",
+                  "value": 3723.0
+                },
+                "passed": true
+              },
+              {
+                "id": "dot",
+                "observed": {
+                  "status": "returned",
+                  "value": 1.1
+                },
+                "passed": true
+              },
+              {
+                "id": "none",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              },
+              {
+                "id": "invalid",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              }
+            ]
+          },
+          "evaluator": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "colon-larger",
+                "observed": {
+                  "status": "returned",
+                  "value": 7384.25
+                },
+                "passed": true
+              },
+              {
+                "id": "colon-short",
+                "observed": {
+                  "status": "returned",
+                  "value": 0.5
+                },
+                "passed": true
+              },
+              {
+                "id": "zero",
+                "observed": {
+                  "status": "returned",
+                  "value": 0.0
+                },
+                "passed": true
+              },
+              {
+                "id": "hours",
+                "observed": {
+                  "status": "returned",
+                  "value": 43200.0
+                },
+                "passed": true
+              },
+              {
+                "id": "empty",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              },
+              {
+                "id": "negative",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              }
+            ]
+          }
+        },
+        "initial": {
+          "public": {
+            "passed_cases": 5,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "colon-fraction",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": false
+              },
+              {
+                "id": "offset",
+                "observed": {
+                  "status": "returned",
+                  "value": 2.5
+                },
+                "passed": true
+              },
+              {
+                "id": "clock",
+                "observed": {
+                  "status": "returned",
+                  "value": 3723.0
+                },
+                "passed": true
+              },
+              {
+                "id": "dot",
+                "observed": {
+                  "status": "returned",
+                  "value": 1.1
+                },
+                "passed": true
+              },
+              {
+                "id": "none",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              },
+              {
+                "id": "invalid",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              }
+            ]
+          },
+          "evaluator": {
+            "passed_cases": 4,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "colon-larger",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": false
+              },
+              {
+                "id": "colon-short",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": false
+              },
+              {
+                "id": "zero",
+                "observed": {
+                  "status": "returned",
+                  "value": 0.0
+                },
+                "passed": true
+              },
+              {
+                "id": "hours",
+                "observed": {
+                  "status": "returned",
+                  "value": 43200.0
+                },
+                "passed": true
+              },
+              {
+                "id": "empty",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              },
+              {
+                "id": "negative",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              }
+            ]
+          }
+        }
+      },
+      "completion_sha256": "2a9d1817fef9369710f34945f92473449191d8bb6de76da6ce8e4eb237ad51be",
+      "audit": {
+        "status": "verified",
+        "objects": 11,
+        "events": 9,
+        "event_head": "f40b79c7087b1957f9e501e35a651e2d40444dfc91757393683b8707dc8bf9bf"
+      }
+    },
+    {
+      "id": "youtube-dl-031",
+      "task_hash": "ea3a2f3757355ed503444c8daae3f6c8a0f7e63a19cda3f861080bcc657ad870",
+      "engineering_qualified": true,
+      "checks": {
+        "initial": {
+          "public": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          }
+        },
+        "reference": {
+          "public": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          }
+        }
+      },
+      "outcomes": {
+        "reference": {
+          "public": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "minutes",
+                "observed": {
+                  "status": "returned",
+                  "value": 180.0
+                },
+                "passed": true
+              },
+              {
+                "id": "hours",
+                "observed": {
+                  "status": "returned",
+                  "value": 9000.0
+                },
+                "passed": true
+              },
+              {
+                "id": "clock",
+                "observed": {
+                  "status": "returned",
+                  "value": 61
+                },
+                "passed": true
+              },
+              {
+                "id": "units",
+                "observed": {
+                  "status": "returned",
+                  "value": 11513
+                },
+                "passed": true
+              },
+              {
+                "id": "none",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              },
+              {
+                "id": "bad",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              }
+            ]
+          },
+          "evaluator": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "fractional-minutes",
+                "observed": {
+                  "status": "returned",
+                  "value": 90.0
+                },
+                "passed": true
+              },
+              {
+                "id": "single-hour",
+                "observed": {
+                  "status": "returned",
+                  "value": 3600.0
+                },
+                "passed": true
+              },
+              {
+                "id": "clock-fraction",
+                "observed": {
+                  "status": "returned",
+                  "value": 3723.05
+                },
+                "passed": true
+              },
+              {
+                "id": "tcase",
+                "observed": {
+                  "status": "returned",
+                  "value": 1838
+                },
+                "passed": true
+              },
+              {
+                "id": "trim",
+                "observed": {
+                  "status": "returned",
+                  "value": 49
+                },
+                "passed": true
+              },
+              {
+                "id": "zero",
+                "observed": {
+                  "status": "returned",
+                  "value": 0
+                },
+                "passed": true
+              }
+            ]
+          }
+        },
+        "initial": {
+          "public": {
+            "passed_cases": 4,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "minutes",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": false
+              },
+              {
+                "id": "hours",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": false
+              },
+              {
+                "id": "clock",
+                "observed": {
+                  "status": "returned",
+                  "value": 61
+                },
+                "passed": true
+              },
+              {
+                "id": "units",
+                "observed": {
+                  "status": "returned",
+                  "value": 11513
+                },
+                "passed": true
+              },
+              {
+                "id": "none",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              },
+              {
+                "id": "bad",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              }
+            ]
+          },
+          "evaluator": {
+            "passed_cases": 4,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "fractional-minutes",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": false
+              },
+              {
+                "id": "single-hour",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": false
+              },
+              {
+                "id": "clock-fraction",
+                "observed": {
+                  "status": "returned",
+                  "value": 3723.05
+                },
+                "passed": true
+              },
+              {
+                "id": "tcase",
+                "observed": {
+                  "status": "returned",
+                  "value": 1838
+                },
+                "passed": true
+              },
+              {
+                "id": "trim",
+                "observed": {
+                  "status": "returned",
+                  "value": 49
+                },
+                "passed": true
+              },
+              {
+                "id": "zero",
+                "observed": {
+                  "status": "returned",
+                  "value": 0
+                },
+                "passed": true
+              }
+            ]
+          }
+        }
+      },
+      "completion_sha256": "aa2b97c62116d2eeccb3a07c332e2eaa0ed02f1a9e867b22f8adcce65c7cd32d",
+      "audit": {
+        "status": "verified",
+        "objects": 11,
+        "events": 9,
+        "event_head": "7f6617304d048bd7efe17a31c71ff3a5a28fbbb27bde9628db05c29d5103a848"
+      }
+    },
+    {
+      "id": "youtube-dl-032",
+      "task_hash": "85930875d2714c595dd7c6e665ef6a555b208c17a5ea3f594b63ef3477720f7e",
+      "engineering_qualified": true,
+      "checks": {
+        "initial": {
+          "public": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          }
+        },
+        "reference": {
+          "public": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          }
+        }
+      },
+      "outcomes": {
+        "reference": {
+          "public": {
+            "passed_cases": 5,
+            "total_cases": 5,
+            "cases": [
+              {
+                "id": "comment",
+                "observed": {
+                  "status": "returned",
+                  "value": "{\"ok\":true}"
+                },
+                "passed": true
+              },
+              {
+                "id": "simple",
+                "observed": {
+                  "status": "returned",
+                  "value": "[1,2]"
+                },
+                "passed": true
+              },
+              {
+                "id": "space",
+                "observed": {
+                  "status": "returned",
+                  "value": "42"
+                },
+                "passed": true
+              },
+              {
+                "id": "raw",
+                "observed": {
+                  "status": "returned",
+                  "value": "{\"x\":1}"
+                },
+                "passed": true
+              },
+              {
+                "id": "empty",
+                "observed": {
+                  "status": "returned",
+                  "value": ""
+                },
+                "passed": true
+              }
+            ]
+          },
+          "evaluator": {
+            "passed_cases": 5,
+            "total_cases": 5,
+            "cases": [
+              {
+                "id": "newline-comment",
+                "observed": {
+                  "status": "returned",
+                  "value": "{\"STATUS\":\"OK\"}"
+                },
+                "passed": true
+              },
+              {
+                "id": "array-comment",
+                "observed": {
+                  "status": "returned",
+                  "value": "[3,4]"
+                },
+                "passed": true
+              },
+              {
+                "id": "multiline",
+                "observed": {
+                  "status": "returned",
+                  "value": "{\n\"x\": 2\n}"
+                },
+                "passed": true
+              },
+              {
+                "id": "bare",
+                "observed": {
+                  "status": "returned",
+                  "value": "[3]"
+                },
+                "passed": true
+              },
+              {
+                "id": "no-semicolon",
+                "observed": {
+                  "status": "returned",
+                  "value": "false"
+                },
+                "passed": true
+              }
+            ]
+          }
+        },
+        "initial": {
+          "evaluator": {
+            "passed_cases": 3,
+            "total_cases": 5,
+            "cases": [
+              {
+                "id": "newline-comment",
+                "observed": {
+                  "status": "returned",
+                  "value": "parseMetadata({\"STATUS\":\"OK\"})\n\n//epc"
+                },
+                "passed": false
+              },
+              {
+                "id": "array-comment",
+                "observed": {
+                  "status": "returned",
+                  "value": "fn_2([3,4]); //done"
+                },
+                "passed": false
+              },
+              {
+                "id": "multiline",
+                "observed": {
+                  "status": "returned",
+                  "value": "{\n\"x\": 2\n}"
+                },
+                "passed": true
+              },
+              {
+                "id": "bare",
+                "observed": {
+                  "status": "returned",
+                  "value": "[3]"
+                },
+                "passed": true
+              },
+              {
+                "id": "no-semicolon",
+                "observed": {
+                  "status": "returned",
+                  "value": "false"
+                },
+                "passed": true
+              }
+            ]
+          },
+          "public": {
+            "passed_cases": 4,
+            "total_cases": 5,
+            "cases": [
+              {
+                "id": "comment",
+                "observed": {
+                  "status": "returned",
+                  "value": "cb({\"ok\":true}); //status"
+                },
+                "passed": false
+              },
+              {
+                "id": "simple",
+                "observed": {
+                  "status": "returned",
+                  "value": "[1,2]"
+                },
+                "passed": true
+              },
+              {
+                "id": "space",
+                "observed": {
+                  "status": "returned",
+                  "value": "42"
+                },
+                "passed": true
+              },
+              {
+                "id": "raw",
+                "observed": {
+                  "status": "returned",
+                  "value": "{\"x\":1}"
+                },
+                "passed": true
+              },
+              {
+                "id": "empty",
+                "observed": {
+                  "status": "returned",
+                  "value": ""
+                },
+                "passed": true
+              }
+            ]
+          }
+        }
+      },
+      "completion_sha256": "0986410dda0dc7022736753e22f8a7e5d34c1661f1a1d5cf039983fd1d703051",
+      "audit": {
+        "status": "verified",
+        "objects": 11,
+        "events": 9,
+        "event_head": "cc9d98d6709e8fc60dbb6b37d3644be5bee4841a19b92801bfa72ac8ea774f35"
+      }
+    },
+    {
+      "id": "youtube-dl-033",
+      "task_hash": "0a5a47f53cafce28c9d0ceb5dd6cc923f5d9245bce3a5ca11d7c9e365a047856",
+      "engineering_qualified": true,
+      "checks": {
+        "initial": {
+          "public": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          }
+        },
+        "reference": {
+          "public": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          }
+        }
+      },
+      "outcomes": {
+        "initial": {
+          "evaluator": {
+            "passed_cases": 4,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "fraction-plus",
+                "observed": {
+                  "exception": "ValueError",
+                  "status": "exception"
+                },
+                "passed": false
+              },
+              {
+                "id": "fraction-minus",
+                "observed": {
+                  "exception": "ValueError",
+                  "status": "exception"
+                },
+                "passed": false
+              },
+              {
+                "id": "space",
+                "observed": {
+                  "status": "returned",
+                  "value": 2
+                },
+                "passed": true
+              },
+              {
+                "id": "negative",
+                "observed": {
+                  "status": "returned",
+                  "value": -1
+                },
+                "passed": true
+              },
+              {
+                "id": "offset",
+                "observed": {
+                  "status": "returned",
+                  "value": 0
+                },
+                "passed": true
+              },
+              {
+                "id": "bad-month",
+                "observed": {
+                  "exception": "ValueError",
+                  "status": "exception"
+                },
+                "passed": true
+              }
+            ]
+          },
+          "public": {
+            "passed_cases": 5,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "fraction-z",
+                "observed": {
+                  "exception": "ValueError",
+                  "status": "exception"
+                },
+                "passed": false
+              },
+              {
+                "id": "zone",
+                "observed": {
+                  "status": "returned",
+                  "value": 1395612266
+                },
+                "passed": true
+              },
+              {
+                "id": "epoch",
+                "observed": {
+                  "status": "returned",
+                  "value": 0
+                },
+                "passed": true
+              },
+              {
+                "id": "nozone",
+                "observed": {
+                  "status": "returned",
+                  "value": 1
+                },
+                "passed": true
+              },
+              {
+                "id": "none",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              },
+              {
+                "id": "bad",
+                "observed": {
+                  "exception": "ValueError",
+                  "status": "exception"
+                },
+                "passed": true
+              }
+            ]
+          }
+        },
+        "reference": {
+          "public": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "fraction-z",
+                "observed": {
+                  "status": "returned",
+                  "value": 1395612266
+                },
+                "passed": true
+              },
+              {
+                "id": "zone",
+                "observed": {
+                  "status": "returned",
+                  "value": 1395612266
+                },
+                "passed": true
+              },
+              {
+                "id": "epoch",
+                "observed": {
+                  "status": "returned",
+                  "value": 0
+                },
+                "passed": true
+              },
+              {
+                "id": "nozone",
+                "observed": {
+                  "status": "returned",
+                  "value": 1
+                },
+                "passed": true
+              },
+              {
+                "id": "none",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": true
+              },
+              {
+                "id": "bad",
+                "observed": {
+                  "exception": "ValueError",
+                  "status": "exception"
+                },
+                "passed": true
+              }
+            ]
+          },
+          "evaluator": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "fraction-plus",
+                "observed": {
+                  "status": "returned",
+                  "value": 0
+                },
+                "passed": true
+              },
+              {
+                "id": "fraction-minus",
+                "observed": {
+                  "status": "returned",
+                  "value": 1
+                },
+                "passed": true
+              },
+              {
+                "id": "space",
+                "observed": {
+                  "status": "returned",
+                  "value": 2
+                },
+                "passed": true
+              },
+              {
+                "id": "negative",
+                "observed": {
+                  "status": "returned",
+                  "value": -1
+                },
+                "passed": true
+              },
+              {
+                "id": "offset",
+                "observed": {
+                  "status": "returned",
+                  "value": 0
+                },
+                "passed": true
+              },
+              {
+                "id": "bad-month",
+                "observed": {
+                  "exception": "ValueError",
+                  "status": "exception"
+                },
+                "passed": true
+              }
+            ]
+          }
+        }
+      },
+      "completion_sha256": "3e7b1e5dbd6ac763d20c0e439f64b340ccd16c466829873fd4ecad149ac5d238",
+      "audit": {
+        "status": "verified",
+        "objects": 11,
+        "events": 9,
+        "event_head": "1164ef60dd8d851ef7afe652b51400203dfe82c5008341de8e271a8bb74b1e8b"
+      }
+    },
+    {
+      "id": "youtube-dl-042",
+      "task_hash": "5d6af140cad21a465b456a24886c183d7441485bc12f3ab90c8ae1b3fa853973",
+      "engineering_qualified": true,
+      "checks": {
+        "initial": {
+          "public": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          }
+        },
+        "reference": {
+          "public": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          }
+        }
+      },
+      "outcomes": {
+        "initial": {
+          "evaluator": {
+            "passed_cases": 3,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "named",
+                "observed": {
+                  "status": "returned",
+                  "value": "&amp;apos;&amp;gt;&amp;quot;"
+                },
+                "passed": false
+              },
+              {
+                "id": "hex",
+                "observed": {
+                  "status": "returned",
+                  "value": "&amp;#x1abC;"
+                },
+                "passed": false
+              },
+              {
+                "id": "unknown",
+                "observed": {
+                  "status": "returned",
+                  "value": "&amp;wrong;"
+                },
+                "passed": true
+              },
+              {
+                "id": "adjacent",
+                "observed": {
+                  "status": "returned",
+                  "value": "&amp;&amp;amp;"
+                },
+                "passed": false
+              },
+              {
+                "id": "incomplete",
+                "observed": {
+                  "status": "returned",
+                  "value": "&amp;#&amp;#"
+                },
+                "passed": true
+              },
+              {
+                "id": "too-long",
+                "observed": {
+                  "status": "returned",
+                  "value": "&amp;#12345;"
+                },
+                "passed": true
+              }
+            ]
+          },
+          "public": {
+            "passed_cases": 3,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "existing",
+                "observed": {
+                  "status": "returned",
+                  "value": "&amp;amp;"
+                },
+                "passed": false
+              },
+              {
+                "id": "mixed",
+                "observed": {
+                  "status": "returned",
+                  "value": "a &amp; b &amp;lt; c"
+                },
+                "passed": false
+              },
+              {
+                "id": "raw",
+                "observed": {
+                  "status": "returned",
+                  "value": "&amp;x=y&amp;z=a"
+                },
+                "passed": true
+              },
+              {
+                "id": "decimal",
+                "observed": {
+                  "status": "returned",
+                  "value": "&amp;#1234;"
+                },
+                "passed": false
+              },
+              {
+                "id": "plain",
+                "observed": {
+                  "status": "returned",
+                  "value": "hello"
+                },
+                "passed": true
+              },
+              {
+                "id": "empty",
+                "observed": {
+                  "status": "returned",
+                  "value": ""
+                },
+                "passed": true
+              }
+            ]
+          }
+        },
+        "reference": {
+          "evaluator": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "named",
+                "observed": {
+                  "status": "returned",
+                  "value": "&apos;&gt;&quot;"
+                },
+                "passed": true
+              },
+              {
+                "id": "hex",
+                "observed": {
+                  "status": "returned",
+                  "value": "&#x1abC;"
+                },
+                "passed": true
+              },
+              {
+                "id": "unknown",
+                "observed": {
+                  "status": "returned",
+                  "value": "&amp;wrong;"
+                },
+                "passed": true
+              },
+              {
+                "id": "adjacent",
+                "observed": {
+                  "status": "returned",
+                  "value": "&amp;&amp;"
+                },
+                "passed": true
+              },
+              {
+                "id": "incomplete",
+                "observed": {
+                  "status": "returned",
+                  "value": "&amp;#&amp;#"
+                },
+                "passed": true
+              },
+              {
+                "id": "too-long",
+                "observed": {
+                  "status": "returned",
+                  "value": "&amp;#12345;"
+                },
+                "passed": true
+              }
+            ]
+          },
+          "public": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "existing",
+                "observed": {
+                  "status": "returned",
+                  "value": "&amp;"
+                },
+                "passed": true
+              },
+              {
+                "id": "mixed",
+                "observed": {
+                  "status": "returned",
+                  "value": "a &amp; b &lt; c"
+                },
+                "passed": true
+              },
+              {
+                "id": "raw",
+                "observed": {
+                  "status": "returned",
+                  "value": "&amp;x=y&amp;z=a"
+                },
+                "passed": true
+              },
+              {
+                "id": "decimal",
+                "observed": {
+                  "status": "returned",
+                  "value": "&#1234;"
+                },
+                "passed": true
+              },
+              {
+                "id": "plain",
+                "observed": {
+                  "status": "returned",
+                  "value": "hello"
+                },
+                "passed": true
+              },
+              {
+                "id": "empty",
+                "observed": {
+                  "status": "returned",
+                  "value": ""
+                },
+                "passed": true
+              }
+            ]
+          }
+        }
+      },
+      "completion_sha256": "9e4d8f0b950d7cf560e968c60982da198b62cac4bc4fb580e6f78d9aeadad95e",
+      "audit": {
+        "status": "verified",
+        "objects": 11,
+        "events": 9,
+        "event_head": "1375d8fe3593376991273e644e86d1812b07ee5541c0ee668d8f61839b74b533"
+      }
+    },
+    {
+      "id": "youtube-dl-043",
+      "task_hash": "65b9858bb5ce63111130e0944595653508b70f8ae88d7b12a15d99ca56a56479",
+      "engineering_qualified": true,
+      "checks": {
+        "initial": {
+          "public": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          }
+        },
+        "reference": {
+          "public": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          }
+        }
+      },
+      "outcomes": {
+        "reference": {
+          "public": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "deep",
+                "observed": {
+                  "status": "returned",
+                  "value": "trailer.mp4"
+                },
+                "passed": true
+              },
+              {
+                "id": "root",
+                "observed": {
+                  "status": "returned",
+                  "value": ""
+                },
+                "passed": true
+              },
+              {
+                "id": "two",
+                "observed": {
+                  "status": "returned",
+                  "value": "baz"
+                },
+                "passed": true
+              },
+              {
+                "id": "query",
+                "observed": {
+                  "status": "returned",
+                  "value": "a"
+                },
+                "passed": true
+              },
+              {
+                "id": "fragment",
+                "observed": {
+                  "status": "returned",
+                  "value": "a"
+                },
+                "passed": true
+              },
+              {
+                "id": "invalid",
+                "observed": {
+                  "status": "returned",
+                  "value": ""
+                },
+                "passed": true
+              }
+            ]
+          },
+          "evaluator": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "deep-query",
+                "observed": {
+                  "status": "returned",
+                  "value": "d.json"
+                },
+                "passed": true
+              },
+              {
+                "id": "deep-slash",
+                "observed": {
+                  "status": "returned",
+                  "value": "c"
+                },
+                "passed": true
+              },
+              {
+                "id": "single",
+                "observed": {
+                  "status": "returned",
+                  "value": "x"
+                },
+                "passed": true
+              },
+              {
+                "id": "encoded",
+                "observed": {
+                  "status": "returned",
+                  "value": "a%20b"
+                },
+                "passed": true
+              },
+              {
+                "id": "unsupported",
+                "observed": {
+                  "status": "returned",
+                  "value": ""
+                },
+                "passed": true
+              },
+              {
+                "id": "no-path",
+                "observed": {
+                  "status": "returned",
+                  "value": ""
+                },
+                "passed": true
+              }
+            ]
+          }
+        },
+        "initial": {
+          "public": {
+            "passed_cases": 5,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "deep",
+                "observed": {
+                  "status": "returned",
+                  "value": ""
+                },
+                "passed": false
+              },
+              {
+                "id": "root",
+                "observed": {
+                  "status": "returned",
+                  "value": ""
+                },
+                "passed": true
+              },
+              {
+                "id": "two",
+                "observed": {
+                  "status": "returned",
+                  "value": "baz"
+                },
+                "passed": true
+              },
+              {
+                "id": "query",
+                "observed": {
+                  "status": "returned",
+                  "value": "a"
+                },
+                "passed": true
+              },
+              {
+                "id": "fragment",
+                "observed": {
+                  "status": "returned",
+                  "value": "a"
+                },
+                "passed": true
+              },
+              {
+                "id": "invalid",
+                "observed": {
+                  "status": "returned",
+                  "value": ""
+                },
+                "passed": true
+              }
+            ]
+          },
+          "evaluator": {
+            "passed_cases": 4,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "deep-query",
+                "observed": {
+                  "status": "returned",
+                  "value": ""
+                },
+                "passed": false
+              },
+              {
+                "id": "deep-slash",
+                "observed": {
+                  "status": "returned",
+                  "value": ""
+                },
+                "passed": false
+              },
+              {
+                "id": "single",
+                "observed": {
+                  "status": "returned",
+                  "value": "x"
+                },
+                "passed": true
+              },
+              {
+                "id": "encoded",
+                "observed": {
+                  "status": "returned",
+                  "value": "a%20b"
+                },
+                "passed": true
+              },
+              {
+                "id": "unsupported",
+                "observed": {
+                  "status": "returned",
+                  "value": ""
+                },
+                "passed": true
+              },
+              {
+                "id": "no-path",
+                "observed": {
+                  "status": "returned",
+                  "value": ""
+                },
+                "passed": true
+              }
+            ]
+          }
+        }
+      },
+      "completion_sha256": "759740203a0ac2f973cd4de28bdff255994aabb65bd2a9cf7eaf5c474408297e",
+      "audit": {
+        "status": "verified",
+        "objects": 11,
+        "events": 9,
+        "event_head": "50d03311b3479c031572fbe90cd643588fd58b69533099dcf505e6753089f847"
+      }
+    },
+    {
+      "id": "httpie-005",
+      "task_hash": "ef73334b4264a12375a8be91d0d612c637cd589da2ae4aded7f2a749a09a7236",
+      "engineering_qualified": true,
+      "checks": {
+        "initial": {
+          "public": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          }
+        },
+        "reference": {
+          "public": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          }
+        }
+      },
+      "outcomes": {
+        "initial": {
+          "public": {
+            "passed_cases": 4,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "empty-header",
+                "observed": {
+                  "exception": "ValueError",
+                  "status": "exception"
+                },
+                "passed": false
+              },
+              {
+                "id": "long-escape",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "key": "bob:",
+                    "orig": "bob\\:==foo",
+                    "sep": "=",
+                    "value": "=foo"
+                  }
+                },
+                "passed": false
+              },
+              {
+                "id": "ordinary",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "key": "name",
+                    "orig": "name=value",
+                    "sep": "=",
+                    "value": "value"
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "json",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "key": "bool",
+                    "orig": "bool:=true",
+                    "sep": ":=",
+                    "value": "true"
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "escaped-colon",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "key": "foo:bar",
+                    "orig": "foo\\:bar:baz",
+                    "sep": ":",
+                    "value": "baz"
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "missing",
+                "observed": {
+                  "exception": "ValueError",
+                  "status": "exception"
+                },
+                "passed": true
+              }
+            ]
+          },
+          "evaluator": {
+            "passed_cases": 4,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "empty-data",
+                "observed": {
+                  "exception": "ValueError",
+                  "status": "exception"
+                },
+                "passed": false
+              },
+              {
+                "id": "other-long",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "key": "x:",
+                    "orig": "x\\:==y",
+                    "sep": "=",
+                    "value": "=y"
+                  }
+                },
+                "passed": false
+              },
+              {
+                "id": "empty-value",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "key": "eh",
+                    "orig": "eh:",
+                    "sep": ":",
+                    "value": ""
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "file",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "key": "test",
+                    "orig": "test@path",
+                    "sep": "@",
+                    "value": "path"
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "escape-value",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "key": "a",
+                    "orig": "a=b\\=c",
+                    "sep": "=",
+                    "value": "b=c"
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "only-escaped",
+                "observed": {
+                  "exception": "ValueError",
+                  "status": "exception"
+                },
+                "passed": true
+              }
+            ]
+          }
+        },
+        "reference": {
+          "evaluator": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "empty-data",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "key": "",
+                    "orig": "=xyz",
+                    "sep": "=",
+                    "value": "xyz"
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "other-long",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "key": "x:=",
+                    "orig": "x\\:==y",
+                    "sep": "=",
+                    "value": "y"
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "empty-value",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "key": "eh",
+                    "orig": "eh:",
+                    "sep": ":",
+                    "value": ""
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "file",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "key": "test",
+                    "orig": "test@path",
+                    "sep": "@",
+                    "value": "path"
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "escape-value",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "key": "a",
+                    "orig": "a=b\\=c",
+                    "sep": "=",
+                    "value": "b=c"
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "only-escaped",
+                "observed": {
+                  "exception": "ValueError",
+                  "status": "exception"
+                },
+                "passed": true
+              }
+            ]
+          },
+          "public": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "empty-header",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "key": "",
+                    "orig": ":hello",
+                    "sep": ":",
+                    "value": "hello"
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "long-escape",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "key": "bob:=",
+                    "orig": "bob\\:==foo",
+                    "sep": "=",
+                    "value": "foo"
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "ordinary",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "key": "name",
+                    "orig": "name=value",
+                    "sep": "=",
+                    "value": "value"
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "json",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "key": "bool",
+                    "orig": "bool:=true",
+                    "sep": ":=",
+                    "value": "true"
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "escaped-colon",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "key": "foo:bar",
+                    "orig": "foo\\:bar:baz",
+                    "sep": ":",
+                    "value": "baz"
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "missing",
+                "observed": {
+                  "exception": "ValueError",
+                  "status": "exception"
+                },
+                "passed": true
+              }
+            ]
+          }
+        }
+      },
+      "completion_sha256": "9aab94fbae718d9ff8955a4f0a1624788030f85e4d9391743067e56e63f58790",
+      "audit": {
+        "status": "verified",
+        "objects": 11,
+        "events": 9,
+        "event_head": "bca0c1c6e107cce8e923b3c458b6a85cc34d3401100a0b754647204349c6de31"
+      }
+    },
+    {
+      "id": "tornado-009",
+      "task_hash": "01574bc7db57845608cc350c623b67c80a4a54ebb2f98b0f3e9579970e00bbab",
+      "engineering_qualified": true,
+      "checks": {
+        "initial": {
+          "public": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          }
+        },
+        "reference": {
+          "public": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          }
+        }
+      },
+      "outcomes": {
+        "reference": {
+          "evaluator": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "none-trailing",
+                "observed": {
+                  "status": "returned",
+                  "value": "http://example.org/p?#x"
+                },
+                "passed": true
+              },
+              {
+                "id": "none-raw",
+                "observed": {
+                  "status": "returned",
+                  "value": "http://example.org/p?x=%20"
+                },
+                "passed": true
+              },
+              {
+                "id": "duplicates",
+                "observed": {
+                  "status": "returned",
+                  "value": "http://example.org/p?a=1&x=a&x=b"
+                },
+                "passed": true
+              },
+              {
+                "id": "blank",
+                "observed": {
+                  "status": "returned",
+                  "value": "http://example.org/p?x=&y=%2Fy"
+                },
+                "passed": true
+              },
+              {
+                "id": "emptydict",
+                "observed": {
+                  "status": "returned",
+                  "value": "http://example.org/p"
+                },
+                "passed": true
+              },
+              {
+                "id": "string",
+                "observed": {
+                  "exception": "TypeError",
+                  "status": "exception"
+                },
+                "passed": true
+              }
+            ]
+          },
+          "public": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "none",
+                "observed": {
+                  "status": "returned",
+                  "value": "https://localhost/path?r=1&t=2"
+                },
+                "passed": true
+              },
+              {
+                "id": "list",
+                "observed": {
+                  "status": "returned",
+                  "value": "https://localhost/path?y=y&z=z"
+                },
+                "passed": true
+              },
+              {
+                "id": "dict",
+                "observed": {
+                  "status": "returned",
+                  "value": "http://example.org/?x=a+b"
+                },
+                "passed": true
+              },
+              {
+                "id": "fragment",
+                "observed": {
+                  "status": "returned",
+                  "value": "http://example.org/p?x=1#tab"
+                },
+                "passed": true
+              },
+              {
+                "id": "empty",
+                "observed": {
+                  "status": "returned",
+                  "value": "http://example.org/p?a=1"
+                },
+                "passed": true
+              },
+              {
+                "id": "invalid",
+                "observed": {
+                  "exception": "TypeError",
+                  "status": "exception"
+                },
+                "passed": true
+              }
+            ]
+          }
+        },
+        "initial": {
+          "evaluator": {
+            "passed_cases": 4,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "none-trailing",
+                "observed": {
+                  "exception": "TypeError",
+                  "status": "exception"
+                },
+                "passed": false
+              },
+              {
+                "id": "none-raw",
+                "observed": {
+                  "exception": "TypeError",
+                  "status": "exception"
+                },
+                "passed": false
+              },
+              {
+                "id": "duplicates",
+                "observed": {
+                  "status": "returned",
+                  "value": "http://example.org/p?a=1&x=a&x=b"
+                },
+                "passed": true
+              },
+              {
+                "id": "blank",
+                "observed": {
+                  "status": "returned",
+                  "value": "http://example.org/p?x=&y=%2Fy"
+                },
+                "passed": true
+              },
+              {
+                "id": "emptydict",
+                "observed": {
+                  "status": "returned",
+                  "value": "http://example.org/p"
+                },
+                "passed": true
+              },
+              {
+                "id": "string",
+                "observed": {
+                  "exception": "TypeError",
+                  "status": "exception"
+                },
+                "passed": true
+              }
+            ]
+          },
+          "public": {
+            "passed_cases": 5,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "none",
+                "observed": {
+                  "exception": "TypeError",
+                  "status": "exception"
+                },
+                "passed": false
+              },
+              {
+                "id": "list",
+                "observed": {
+                  "status": "returned",
+                  "value": "https://localhost/path?y=y&z=z"
+                },
+                "passed": true
+              },
+              {
+                "id": "dict",
+                "observed": {
+                  "status": "returned",
+                  "value": "http://example.org/?x=a+b"
+                },
+                "passed": true
+              },
+              {
+                "id": "fragment",
+                "observed": {
+                  "status": "returned",
+                  "value": "http://example.org/p?x=1#tab"
+                },
+                "passed": true
+              },
+              {
+                "id": "empty",
+                "observed": {
+                  "status": "returned",
+                  "value": "http://example.org/p?a=1"
+                },
+                "passed": true
+              },
+              {
+                "id": "invalid",
+                "observed": {
+                  "exception": "TypeError",
+                  "status": "exception"
+                },
+                "passed": true
+              }
+            ]
+          }
+        }
+      },
+      "completion_sha256": "28df86c6e87b62e0276830cb893e192dbf13fa0c23b16c14037fb772535630fd",
+      "audit": {
+        "status": "verified",
+        "objects": 11,
+        "events": 9,
+        "event_head": "bae1e90773ecda2a434e81bbf11d398cd49eaae0fa85a3be382eff8290872829"
+      }
+    }
+  ],
+  "api_calls": 0,
+  "api_spend_usd": "0",
+  "model_results": false,
+  "evaluation_ready": false,
+  "limitations": [
+    "Adapted function-level bugs, not official BugsInPy scores.",
+    "Both finite suites are published development data; not exhaustive correctness.",
+    "No model difficulty, recoverability, generalization or action-value evidence."
+  ]
+}

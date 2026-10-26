@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `391`
-- Bytes indexed: `45.9M`
+- Files indexed: `439`
+- Bytes indexed: `46.3M`
 
 ## Canonical Entrypoints
 
@@ -48,12 +48,12 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 208 | 41.6M |
+| `experiments` | 253 | 41.9M |
 | `docs` | 53 | 2.6M |
 | `uv.lock` | 1 | 937.0K |
-| `src` | 70 | 574.2K |
-| `tests` | 25 | 118.6K |
-| `scripts` | 26 | 100.3K |
+| `src` | 71 | 583.5K |
+| `tests` | 26 | 120.9K |
+| `scripts` | 27 | 100.7K |
 | `.github` | 5 | 3.3K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
@@ -63,11 +63,11 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 122 | 814.7K |
-| `.json` | 81 | 2.7M |
-| `.md` | 53 | 254.1K |
+| `.py` | 125 | 826.8K |
+| `.json` | 86 | 3.0M |
+| `.txt` | 67 | 349.7K |
+| `.md` | 54 | 261.4K |
 | `.jsonl` | 45 | 36.7M |
-| `.txt` | 28 | 309.7K |
 | `.png` | 20 | 2.6M |
 | `.pdf` | 8 | 184.3K |
 | `.sh` | 8 | 15.5K |
@@ -99,6 +99,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/mbpp-plus/context-value-transfer/README.md`
 - `experiments/mbpp-plus/context-value-transfer/results/replication-20261022/README.md`
 - `experiments/python-repair/checkpoint-environment/README.md`
+- `experiments/python-repair/checkpoint-environment/development/README.md`
 
 ## Script Entrypoints
 
@@ -116,6 +117,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/maintenance/validate_agent_readiness.py`
 - `scripts/prepare_feedback_routing.py`
 - `scripts/prepare_python_repair.py`
+- `scripts/qualify_python_repair_pool.py`
 - `scripts/report_feedback_routing.py`
 - `scripts/run_context_value.py`
 - `scripts/run_continuation_pilot.py`

@@ -128,6 +128,8 @@ def classify_script(rel: str, text: str) -> tuple[str, str]:
         return SUPPORT_CONFIG, "none"
     if name == "prepare_python_repair.py":
         return MIXED_CLI, "plan/audit are read-only; demo/qualify require macOS sandbox-exec and a fresh output directory; no provider calls"
+    if name == "qualify_python_repair_pool.py":
+        return MIXED_CLI, "plan/audit-sources read inert local data; build writes fresh bundles; qualify requires macOS sandbox-exec and fresh output; no network/provider calls"
     if name.startswith(("build_", "validate_")):
         return SAFE_LOCAL, "python"
     if name == "check_paper_build.py":

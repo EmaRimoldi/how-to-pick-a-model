@@ -1,0 +1,6 @@
+def fix_xml_ampersands(xml_str):
+    """Replace all the '&' by '&amp;' in XML"""
+    return re.sub(
+        r'&(?!amp;|lt;|gt;|apos;|quot;|#x[0-9a-fA-F]{,4};|#[0-9]{,4};)',
+        u'&amp;',
+        xml_str)
