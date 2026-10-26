@@ -171,3 +171,9 @@ retains two completed receipts and one uncertain response stopped by the client'
 offline regression supports an explicit 8 MiB cap for future protocols; the old
 probe remains inconclusive and closed. This is a client-sizing finding, not
 repair or acquisition efficacy evidence.
+
+The [separate wire-envelope protocol](../experiments/python-repair/checkpoint-environment/SSE-WIRE-ENVELOPE-PROTOCOL.md)
+uses the same audited engineering CLI with a distinct study identity, one new
+synthetic enumeration request, explicit 8 MiB cap and independent $0.01 allocation.
+The old packet/audit remains exactly reproducible. Its new engineering gate
+requires a complete receipt beyond 1 MiB at the 4096-token output limit.

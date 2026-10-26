@@ -84,6 +84,11 @@ explicit 8 MiB cap passes the same failure-mode regression offline; a future
 protocol must freeze that setting separately. This engineering finding does not
 establish diagnostic benefit or explain the earlier network resets.
 
+A distinct [wire-envelope validation](SSE-WIRE-ENVELOPE-PROTOCOL.md) now fixes one
+new integer-enumeration request with an explicit 8 MiB cap and a $0.01 allocation.
+It must cross the old wire limit and reach the output ceiling with a validated
+receipt. It does not replace the interrupted clamp fixture or its gate.
+
 The domain is function-level Python repair: one or two flat, standard-library
 modules, a named callable and JSON inputs/outputs. The environment saves complete
 artifacts, public verification, progress histories and branch ancestry. It restores

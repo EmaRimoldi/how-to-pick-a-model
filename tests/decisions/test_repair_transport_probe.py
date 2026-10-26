@@ -111,3 +111,53 @@ def test_terminal_audit_rejects_changed_evidence(tmp_path,monkeypatch,damage):
         else:d[1]['usd']='0'
         path.write_text('\n'.join(json.dumps(x) for x in d)+'\n')
     with pytest.raises(ValueError):probe.audit(out)
+
+
+def prepare_wire(tmp_path,monkeypatch):
+    monkeypatch.setattr(probe,'source_commit',lambda:'offline-test-commit')
+    p=tmp_path/'wire-freeze.json';probe.freeze(p,probe.WIRE_STUDY)
+    return json.loads(p.read_text())
+
+
+def test_wire_request_is_new_and_carries_every_previous_reserve():
+    old=probe.packet();new=probe.packet(probe.WIRE_STUDY)
+    assert len(new['requests'])==1 and new['max_wire_bytes']==8388608
+    assert new['requests'][0]['metadata']['attempt_id'] not in {r['metadata']['attempt_id'] for r in old['requests']}
+    assert new['requests'][0]['provider_body'] not in [r['provider_body'] for r in old['requests']]
+    assert new['maximum_reservations_usd']=='0.00720896'
+    assert probe.specification(probe.WIRE_STUDY)['carry']==probe.dollars('.11456635')
+
+
+@pytest.mark.parametrize('large,capped,passed',[(True,True,True),(False,True,False),(True,False,False)])
+def test_wire_gate_needs_full_receipt_size_and_output_cap(tmp_path,monkeypatch,large,capped,passed):
+    f=prepare_wire(tmp_path,monkeypatch);calls=[]
+    def preflight(self):self.ready=True
+    def exchange(self,endpoint,body=None):
+        assert body==f['packet']['requests'][0]['provider_body'];calls.append(body)
+        key=self._stream_attempt;n=4096 if capped else 100
+        save(self.output/'stream-metrics'/(key+'.json'),{'stream_complete':True,'done_received':True,
+            'usage_received':True,'parsed_chunks':n+2,'wire_bytes':1200000 if large else 20000,
+            'wire_limit_bytes':self.max_wire_bytes,'reported_cost_usd':'.0035'})
+        return {'id':'gen-wire-synthetic','model':self.settings.model,'provider':self.settings.provider_name,
+            'reconstructed_from_sse':True,'choices':[{'finish_reason':'length' if capped else 'stop',
+            'message':{'content':'{"sequence":[0,1'}}],
+            'usage':{'cost':.0035,'prompt_tokens':200,'completion_tokens':n,'total_tokens':200+n}}
+    monkeypatch.setattr(probe.StreamingOpenRouterTransport,'preflight',preflight)
+    monkeypatch.setattr(probe.StreamingOpenRouterTransport,'_exchange',exchange)
+    monkeypatch.setenv('OPENROUTER_API_KEY','synthetic-key-never-live')
+    out=tmp_path/'run';probe.collect(f,out,tmp_path/'claims');a=probe.audit(out)
+    assert len(calls)==1 and a['received']==a['planned']==1
+    assert a['old_limit_crossed_with_complete_receipt']==passed
+    assert a['gate']==('larger_wire_envelope_observed' if passed else 'inconclusive')
+    assert a['cumulative_committed_usd']=='0.11806635'
+    assert 'json_file_contract' not in a['received_records'][0]
+
+
+def test_wire_first_error_retains_new_and_historical_reserves(tmp_path,monkeypatch):
+    f=prepare_wire(tmp_path,monkeypatch);calls=network(monkeypatch,1)
+    out=tmp_path/'run'
+    with pytest.raises(ProviderStopped):probe.collect(f,out,tmp_path/'claims')
+    a=probe.audit(out)
+    assert a['planned']==a['admitted']==a['uncertain']==1 and a['received']==0
+    assert a['cumulative_committed_usd']=='0.12177531' and a['gate']=='inconclusive'
+    assert len(calls)==1
