@@ -6,7 +6,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `380`
+- Files indexed: `392`
 - Bytes indexed: `45.9M`
 
 ## Canonical Entrypoints
@@ -49,13 +49,13 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 203 | 41.6M |
+| `experiments` | 208 | 41.6M |
 | `docs` | 53 | 2.6M |
 | `uv.lock` | 1 | 937.0K |
-| `src` | 65 | 544.3K |
-| `tests` | 24 | 105.9K |
-| `scripts` | 25 | 99.7K |
-| `README.md` | 1 | 7.4K |
+| `src` | 70 | 574.2K |
+| `tests` | 25 | 118.6K |
+| `scripts` | 26 | 100.4K |
+| `README.md` | 1 | 7.7K |
 | `.github` | 5 | 3.3K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.2K |
@@ -65,9 +65,9 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 115 | 772.4K |
-| `.json` | 77 | 2.7M |
-| `.md` | 53 | 251.6K |
+| `.py` | 122 | 814.8K |
+| `.json` | 81 | 2.7M |
+| `.md` | 54 | 261.5K |
 | `.jsonl` | 45 | 36.7M |
 | `.txt` | 28 | 309.7K |
 | `.png` | 20 | 2.6M |
@@ -100,6 +100,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/humaneval-plus/strategy-by-difficulty-grid/README.md`
 - `experiments/mbpp-plus/context-value-transfer/README.md`
 - `experiments/mbpp-plus/context-value-transfer/results/replication-20261022/README.md`
+- `experiments/python-repair/checkpoint-environment/README.md`
 
 ## Script Entrypoints
 
@@ -116,6 +117,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/maintenance/check_paper_build.py`
 - `scripts/maintenance/validate_agent_readiness.py`
 - `scripts/prepare_feedback_routing.py`
+- `scripts/prepare_python_repair.py`
 - `scripts/report_feedback_routing.py`
 - `scripts/run_context_value.py`
 - `scripts/run_continuation_pilot.py`

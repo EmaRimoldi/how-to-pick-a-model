@@ -5,7 +5,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `27`
+- Commands indexed: `28`
 - Default-safe commands: `20`
 - Missing required maintenance actions: `0`
 
@@ -15,6 +15,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | --- | --- |
 | `cluster-setup` | 1 |
 | `live-local` | 6 |
+| `mixed-cli` | 1 |
 | `read-only-analysis` | 8 |
 | `safe-local` | 10 |
 | `safe-local-optional-tool` | 2 |
@@ -24,7 +25,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | Surface | Commands |
 | --- | --- |
 | `maintenance` | 6 |
-| `scripts` | 14 |
+| `scripts` | 15 |
 | `scripts/cluster` | 1 |
 | `scripts/maintenance` | 6 |
 
@@ -52,6 +53,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/prepare_feedback_routing.py` | scripts | `read-only-analysis` | yes | inspect script before running | Verify the pinned BigCodeBench download and reproduce reference-only eligibility. |
 | `python scripts/report_feedback_routing.py` | scripts | `read-only-analysis` | yes | inspect script before running | Publish a completed feedback-only bank, audited statistics and static figures. Public CLI facade; implementation lives in vao.analysis.report_feedback_routing. |
 | `python scripts/verify_feedback_evidence.py` | scripts | `read-only-analysis` | yes | inspect script before running | Verify published BigCodeBench evidence offline without executing candidate code. Public CLI facade; implementation lives in vao.analysis.verify_feedback_evidence. |
+| `python scripts/prepare_python_repair.py` | scripts | `mixed-cli` | no | plan/audit are read-only; demo/qualify require macOS sandbox-exec and a fresh output directory; no provider calls | Plan or explicitly run an offline Python repair demo, qualification or audit. |
 | `scripts/cluster/bootstrap_engaging.sh` | scripts/cluster | `cluster-setup` | no | cluster shell environment | Bootstrap the cluster Python environment for HumanEval+ routing runs. |
 | `python scripts/run_context_value.py` | scripts | `live-local` | no | model access, isolated worktree, output root | Plan or explicitly run a budgeted artifact/feedback and prospective-forecast study. |
 | `python scripts/run_continuation_pilot.py` | scripts | `live-local` | no | model access, isolated worktree, output root | Run the explicit-budget OpenRouter/HumanEval+ pilot; defaults to plan only. |

@@ -6,6 +6,11 @@ We study whether code and verifier feedback from a failed attempt help the next
 attempt, and whether that benefit can be predicted before paying for it. The
 longer-term goal is cost-aware continue/restart/switch/stop decisions for agents.
 
+**In development:** the [Python repair environment](experiments/python-repair/checkpoint-environment/README.md)
+saves failed patches, restores checkpoints and prepares matched continue/restart
+requests. Its runnable offline demo uses handwritten fixtures; it contains no
+new model results or live collector.
+
 **Latest result:** [four feedback-only policies on 157 new BigCodeBench tasks](experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/report.md).
 Immediate 9B → 27B escalation solves **98/157** tasks versus **102/157** for
 repeated 9B: **−2.55 percentage points**, paired 95% interval **[−7.01, +1.27]**.
@@ -106,7 +111,7 @@ commands are documented in [reproducibility](docs/reproducibility.md).
 
 | Path | Role |
 | --- | --- |
-| `experiments/` | Seven maintained bundles on HumanEval+, MBPP+ and BigCodeBench |
+| `experiments/` | Seven evidence bundles and an offline Python repair environment |
 | `src/vao/` | Task collectors, accounting, isolated verification and recorded-run primitives |
 | `src/vao/humaneval/` | HumanEval+ workers, traces, retries and routing |
 | `src/vao/analysis/` | Saved-evidence audits, reports and figure generation |

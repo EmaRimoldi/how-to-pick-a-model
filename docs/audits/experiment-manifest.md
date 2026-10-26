@@ -5,7 +5,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 
 ## Summary
 
-- Bundles indexed: `7`
+- Bundles indexed: `8`
 - Missing bundle paths: `0`
 - Missing README files: `0`
 
@@ -13,7 +13,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 
 | Class | Bundles |
 | --- | --- |
-| `inspect-readme` | 3 |
+| `inspect-readme` | 4 |
 | `paper-supporting-evidence` | 4 |
 
 ## Evidence Tiers
@@ -22,6 +22,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | --- | --- |
 | `Tier 1: Main Evidence` | 3 |
 | `Tier 2: Supporting Or Diagnostic Evidence` | 4 |
+| `Tier 3: Engineering Only — No Model Evidence` | 1 |
 
 ## Bundle Assets
 
@@ -34,6 +35,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 56 | 6 | 9 | 40 | 3 | 0 | 0 | 0 | 5 |
 | `experiments/mbpp-plus/context-value-transfer/` | collection finished; censored descriptive bank | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 72 | 6 | 2 | 59 | 4 | 3 | 0 | 0 | 6 |
 | `experiments/bigcodebench/feedback-only-routing/` | complete; primary gate not passed | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 42 | 2 | 5 | 32 | 4 | 0 | 0 | 0 | 2 |
+| `experiments/python-repair/checkpoint-environment/` | offline development prototype | Tier 3: Engineering Only — No Model Evidence | `inspect-readme` | 5 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 ## Key Files
 
@@ -138,3 +140,10 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 - `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/source/src__vao__decisions__pilot.py.txt`
 - `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/source/src__vao__decisions__verification.py.txt`
 - `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/source/src__vao__decisions__verifier_worker.py.txt`
+
+### `experiments/python-repair/checkpoint-environment/`
+
+- Title: Python repair checkpoint environment
+- Evidence: handwritten fixture, isolated verification, immutable checkpoints, matched forks and local qualification; no model results
+- Asset directories: `none`
+- `experiments/python-repair/checkpoint-environment/README.md`

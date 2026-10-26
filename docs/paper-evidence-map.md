@@ -47,6 +47,10 @@ not establish that a state-conditioned continue/restart/handoff controller works
 - `experiments/mbpp-plus/context-value-transfer/` (censored external replica; separate empirical draft)
 - `experiments/bigcodebench/feedback-only-routing/` (complete fixed-policy study; no established primary gain or new selector)
 
+### Tier 3: Engineering Only — No Model Evidence
+
+- `experiments/python-repair/checkpoint-environment/` (handwritten development fixtures and verified infrastructure; not efficacy evidence)
+
 ## Recovery evidence and remaining gaps
 
 The completed [feedback-only study](../experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/report.md)

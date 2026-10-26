@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "task_id": "development/record-normalization-v1",
+  "instruction": "Implement normalize_record(record). Input must be a dict; name, amount and date values must be strings or None. Ignore other keys. Trim whitespace. Return exactly name (trimmed or empty string), amount_cents (integer cents or None for missing/blank), and day (ISO YYYY-MM-DD or None for missing/blank). Amounts accept an optional sign, decimal digits and optionally a dot with one or two decimal digits; preserve cents exactly and reject other forms with ValueError. Dates accept strictly YYYY-MM-DD or DD/MM/YYYY and must be valid calendar dates; invalid dates raise ValueError. Non-dict records and non-string/non-None field values raise TypeError. Do not change the callable interface.",
+  "entrypoint": {
+    "module": "normalizer",
+    "function": "normalize_record"
+  },
+  "files": {
+    "normalizer.py": "def normalize_record(record):\n    return {\"name\": record[\"name\"].strip(),\n            \"amount_cents\": int(float(record[\"amount\"])) * 100,\n            \"day\": record[\"date\"].strip()}\n"
+  },
+  "public_cases": [
+    {
+      "id": "decimal_amount",
+      "args": [
+        {
+          "name": " Ada ",
+          "amount": "12.50",
+          "date": "2026-10-25"
+        }
+      ],
+      "expected": {
+        "name": "Ada",
+        "amount_cents": 1250,
+        "day": "2026-10-25"
+      }
+    },
+    {
+      "id": "missing_fields",
+      "args": [
+        {}
+      ],
+      "expected": {
+        "name": "",
+        "amount_cents": null,
+        "day": null
+      }
+    },
+    {
+      "id": "local_date",
+      "args": [
+        {
+          "name": "Bob",
+          "amount": "2.00",
+          "date": "25/10/2026"
+        }
+      ],
+      "expected": {
+        "name": "Bob",
+        "amount_cents": 200,
+        "day": "2026-10-25"
+      }
+    },
+    {
+      "id": "zero",
+      "args": [
+        {
+          "name": "C",
+          "amount": "0",
+          "date": "2026-01-01"
+        }
+      ],
+      "expected": {
+        "name": "C",
+        "amount_cents": 0,
+        "day": "2026-01-01"
+      }
+    },
+    {
+      "id": "negative_amount",
+      "args": [
+        {
+          "name": "D",
+          "amount": "-1.50",
+          "date": "2026-01-01"
+        }
+      ],
+      "expected": {
+        "name": "D",
+        "amount_cents": -150,
+        "day": "2026-01-01"
+      }
+    },
+    {
+      "id": "blank_fields",
+      "args": [
+        {
+          "name": " ",
+          "amount": " ",
+          "date": null
+        }
+      ],
+      "expected": {
+        "name": "",
+        "amount_cents": null,
+        "day": null
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "synthetic_engineering_fixture",
+    "author": "repository-authored",
+    "split": "development_only",
+    "license": "MIT",
+    "not_model_results": true
+  }
+}

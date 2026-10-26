@@ -170,7 +170,7 @@ def test_experiment_manifest_classifies_bundle_assets() -> None:
     bundles = {bundle["path"]: bundle for bundle in manifest["bundles"]}
 
     assert manifest["root"] == "."
-    assert manifest["bundle_count"] == len(bundles) == 7
+    assert manifest["bundle_count"] == len(bundles) == 8
     assert CORE_EXPERIMENT_BUNDLES <= set(bundles)
     assert manifest["missing_paths"] == []
     assert manifest["missing_readmes"] == []

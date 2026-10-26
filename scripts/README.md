@@ -5,6 +5,11 @@ are small facades over `vao.analysis`; keep these published paths stable.
 Repository tooling lives in `maintenance/`, and cluster setup in `cluster/`.
 See the [layout guide](../docs/engineering/layout.md).
 
+`prepare_python_repair.py` plans by default and has explicit `demo`, `qualify`
+and `audit` subcommands. Demo/qualification execute Python in macOS sandboxes;
+no command calls a model. The [environment guide](../experiments/python-repair/checkpoint-environment/README.md)
+documents fixture status, fresh output directories and information boundaries.
+
 `verify_feedback_evidence.py` reproduces the complete published BigCodeBench
 bank without credentials, provider calls or candidate execution: file checksums,
 frozen sources, receipt/prompt projection, fixed statistics, verifier-repeat

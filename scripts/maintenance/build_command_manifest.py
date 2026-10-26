@@ -126,6 +126,8 @@ def classify_script(rel: str, text: str) -> tuple[str, str]:
 
     if name == "agent_index_config.py":
         return SUPPORT_CONFIG, "none"
+    if name == "prepare_python_repair.py":
+        return MIXED_CLI, "plan/audit are read-only; demo/qualify require macOS sandbox-exec and a fresh output directory; no provider calls"
     if name.startswith(("build_", "validate_")):
         return SAFE_LOCAL, "python"
     if name == "check_paper_build.py":
