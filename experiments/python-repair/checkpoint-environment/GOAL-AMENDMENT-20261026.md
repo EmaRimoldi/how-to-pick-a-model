@@ -212,3 +212,23 @@ research dependency is reliable collection of the planned comparison under a
 separately reviewed prospective protocol; no favorable complete-case metric
 can replace the missing evidence. The original benefit, equal-total-resource
 policy comparison and untouched-bug evaluation remain required.
+
+
+## Independent development extension: terminal status
+
+The separately frozen [three-bug extension calibration](results/information-extension-stopped-20261026/README.md)
+received 9/24 responses before its second `ConnectionResetError`, both localized
+to reading response bodies. Two requests remain uncertain and thirteen were
+never admitted. Four focused-feedback versus two trace-assisted full repairs
+are observed; primary bounds remain −75 to +50 percentage points, mean/bootstrap
+null and the gate inconclusive. All 18 saved evaluations reproduce independently.
+The study is closed with no retry, resumption or successor; no selector is trained.
+
+Cumulative commitment is now $0.10576463 / $0.60, including eleven unresolved
+requests across closed studies. The collector followed its prospective bounded
+uncertainty rule, but that rule did not establish reliable collection. The cause
+of the body resets remains unestablished. Technical validation of transport is
+the immediate dependency before another scientific bank; an incomplete bank is
+not evidence for choosing a preferred diagnostic strategy. The larger goal and
+its requirements for repeatable benefit, equal total resources and untouched
+bugs remain unchanged and active.

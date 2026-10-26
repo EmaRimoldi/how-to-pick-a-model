@@ -1,11 +1,15 @@
 # Python repair checkpoint environment
 
-**Current result: the [matched Qwen information study](results/information-qwen-stopped-20261026/README.md)
-is interrupted and inconclusive.** It received 18/64 responses (nine per arm):
-three full repairs with trace, two without. Forty-six outcomes remain unknown,
-including one reserved timeout; primary bounds span −68.75 to +75.00 percentage
-points. This establishes neither benefit nor absence of benefit. No selector
-has been trained, and this study cannot resume.
+**Current result: the [independent extension trace calibration](results/information-extension-stopped-20261026/README.md)
+is interrupted and inconclusive.** It received 9/24 responses on three additional
+development bugs: four focused-feedback repairs and two trace-assisted repairs.
+Two requests are uncertain and thirteen were never admitted. Primary bounds
+span −75 to +50 percentage points; mean/bootstrap remain null. No trace benefit,
+absence of benefit or selector advantage follows. This study cannot resume.
+
+The earlier [matched Qwen information bank](results/information-qwen-stopped-20261026/README.md)
+remains separate: 18/64 responses, three trace versus two focused repairs, and
+46 missing cells. Its unchanged primary bounds are −68.75 to +75.00 points.
 
 The preceding [Qwen compatibility screen](results/solver-qwen-20261026/README.md)
 passed with 10/32 complete repairs and repeated success on three bugs. It
@@ -32,6 +36,7 @@ shows why conditional recovery success cannot substitute for end-to-end acceptan
 | [Interface control](results/interface-stopped-20261026/README.md) | 44 responses; no full repair; 84 unknown cells | Closed, inconclusive |
 | [Qwen compatibility control](results/solver-qwen-20261026/README.md) | 32 responses; 10 full repairs; three bugs solved in both draw halves | Screen passed; subsequent information bank inconclusive |
 | [Matched Qwen information](results/information-qwen-stopped-20261026/README.md) | 18/64 responses; 3 trace versus 2 focused full repairs; 46 unknown | Closed, inconclusive |
+| [Independent extension trace calibration](results/information-extension-stopped-20261026/README.md) | 9/24 responses; 2 trace versus 4 focused full repairs; 15 unknown | Closed, inconclusive |
 
 These are distinct protocols, not a pooled model-size comparison. Historical
 [capability and partial-progress findings](results/capability-comparison-20261026/README.md),
@@ -46,30 +51,31 @@ screen before calls. Its complete bank reproduces independently, including all
 62 saved verification records. It contains one public false acceptance and
 eleven public-score regressions, retained alongside the ten successes.
 
-Cumulative repair commitment is **$0.08592275 / $0.60**, including nine unresolved
-reservations across closed studies. The latest information study paid $0.00928640
-and retained a $0.00720896 timeout reservation within its separate $0.47 cap.
-All collectors are closed. Further research requires a separately reviewed
-protocol and declared allocation; the interrupted bank cannot be resumed or used
-to fit a selector.
+Cumulative repair commitment is **$0.10576463 / $0.60**, including eleven unresolved
+reservations across closed studies. The latest extension calibration paid
+$0.00542396 and retained $0.01441792 in two uncertain reserves, within its
+separate $0.18 cap. All collectors are closed. Further research requires a
+separately reviewed protocol and declared allocation; interrupted banks cannot
+be resumed or used to fit a selector.
 
 The [real-bug development pool](development/README.md) adds twelve adapted BugsInPy
 tasks with pinned source excerpts, public/evaluator cases, documented exclusions
 and reproducible offline qualification. The qualification is engineering evidence; the separate pilot is limited model evidence.
 
 A separate [development extension](development-extension/README.md) now publishes
-three qualified Luigi/The Fuck adapters, with no model results. The original
+three qualified Luigi/The Fuck adapters and their separately reported incomplete
+model calibration. The original
 twelve-task pool and all closed studies retain their identities. The consolidated
 [exposure guard](development/exposure-registry.json) covers 174 inspected bug IDs
 across ten projects. The [transport review](TRANSPORT-REVIEW-20261026.md) records
-the timeout evidence and requirements for a distinct future collection.
+the timeout and response-body-reset evidence; the root causes remain unestablished.
 
-The separately declared [extension information protocol](EXTENSION-INFORMATION-PROTOCOL.md)
-prepares 24 fresh matched requests on those three additional development bugs,
-within a new $0.18 allocation under the standing $0.60 ceiling. Its prospective
-independent-cell rule preserves one uncertain response and its reserve while
-allowing later scheduled cells; a second error stops. It never resumes the closed
-bank. No model results from this new study are available at declaration.
+The [extension information protocol](EXTENSION-INFORMATION-PROTOCOL.md) fixed
+24 matched requests on all three adapters. Its prospective independent-cell rule
+retained one uncertain response, waited 120 seconds and allowed later scheduled
+cells; the second error stopped the study. The terminal archive independently
+replays all 18 saved evaluation records without discrepancies and preserves all
+24 selected cells. It never resumes or pools the historical eight-checkpoint bank.
 
 The domain is function-level Python repair: one or two flat, standard-library
 modules, a named callable and JSON inputs/outputs. The environment saves complete

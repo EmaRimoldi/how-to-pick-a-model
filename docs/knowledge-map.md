@@ -144,3 +144,15 @@ are −68.75 to +75.00 percentage points, mean/bootstrap null and gate inconclus
 All 36 saved evaluations and public diagnostic projections reproduce. This is
 neither evidence of benefit nor a null effect. The operative selector goal is
 active, with no selector fit, retry or continuation of this bank.
+
+
+The [independent extension trace calibration](../experiments/python-repair/checkpoint-environment/results/information-extension-stopped-20261026/README.md)
+closed after two response-body connection resets: nine received responses,
+two uncertain requests and thirteen never admitted, retaining all 24 planned
+cells. Four focused versus two trace-assisted repairs cannot establish an effect;
+primary bounds are −75 to +50 points, mean/bootstrap null and gate inconclusive.
+All 18 saved evaluations, diagnostic projections and the generated report
+reproduce independently. `plot_repair_extension_information.py` renders the
+checked terminal figure. The development adapters remain exposed; all collectors
+are closed, collection reliability and information value remain unresolved,
+and the overall acquisition-selector goal stays active.

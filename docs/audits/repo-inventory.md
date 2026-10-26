@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `641`
-- Bytes indexed: `57.1M`
+- Files indexed: `651`
+- Bytes indexed: `57.8M`
 
 ## Canonical Entrypoints
 
@@ -48,12 +48,12 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 396 | 52.3M |
+| `experiments` | 405 | 53.0M |
 | `docs` | 53 | 2.6M |
 | `uv.lock` | 1 | 937.0K |
 | `src` | 94 | 857.2K |
 | `tests` | 40 | 262.5K |
-| `scripts` | 49 | 133.4K |
+| `scripts` | 50 | 141.0K |
 | `.github` | 5 | 3.3K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
@@ -63,16 +63,16 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 188 | 1.3M |
-| `.json` | 152 | 5.6M |
-| `.md` | 95 | 512.9K |
+| `.py` | 189 | 1.3M |
+| `.json` | 156 | 5.6M |
+| `.md` | 97 | 524.8K |
 | `.txt` | 79 | 373.1K |
 | `.jsonl` | 45 | 36.7M |
-| `.png` | 25 | 3.3M |
-| `.zip` | 10 | 6.4M |
+| `.png` | 26 | 3.5M |
+| `.zip` | 11 | 6.7M |
 | `.pdf` | 8 | 184.3K |
 | `.sh` | 8 | 15.5K |
-| `.svg` | 7 | 639.4K |
+| `.svg` | 8 | 777.2K |
 | `.sbatch` | 5 | 7.0K |
 | `.tex` | 5 | 297.7K |
 | `.yaml` | 3 | 2.6K |
@@ -109,6 +109,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/python-repair/checkpoint-environment/results/contract-gemma27b-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/diagnostic-audit-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/gemma4b-calibration-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/information-extension-stopped-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/information-interrupted-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/information-qwen-stopped-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/information-stopped-20261026/README.md`
@@ -133,6 +134,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/maintenance/build_repo_inventory.py`
 - `scripts/maintenance/check_paper_build.py`
 - `scripts/maintenance/validate_agent_readiness.py`
+- `scripts/plot_repair_extension_information.py`
 - `scripts/plot_repair_information.py`
 - `scripts/plot_repair_interface.py`
 - `scripts/plot_repair_qwen_information.py`

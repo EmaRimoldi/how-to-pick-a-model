@@ -58,3 +58,27 @@ current cumulative commitment at **$0.08592275**, including all nine unknown
 requests. Any future collection needs its own declared allocation within the
 standing ceiling, reviewed protocol and clean source freeze. Unspent allocations
 from closed studies do not become an automatic continuation budget.
+
+
+## Subsequent independent extension: response-body resets
+
+The [separate extension protocol](EXTENSION-INFORMATION-PROTOCOL.md) implemented
+and froze the proposed single-uncertainty rule. Its [terminal bank](results/information-extension-stopped-20261026/README.md)
+contains 11 admissions, nine received responses, two uncertainties and thirteen
+never-admitted cells. After the first retained unknown the collector waited
+120 seconds and admitted only new independent cells. The second error stopped
+it, as specified. There was no retry, replacement, resumption or key rotation.
+
+Both exceptions were `ConnectionResetError` during `reading_response`, at
+14.968684 and 12.188266 seconds of recorded exchange time, without an HTTP status.
+They were not recorded rate-limit responses or 180-second timeouts. This narrows
+the failure phase but does not distinguish a local-network, intermediary or
+service cause. The old timeout remains a different observation with no phase
+record; do not retroactively infer its cause from these resets.
+
+Both reserves ($0.01441792) remain, bringing cumulative commitment to
+$0.10576463 / $0.60 including eleven unresolved calls. All scientific banks are
+closed and incomplete outcomes remain missing. Before another collection,
+validate a transport change independently with failure injection and a separately
+reviewed prospective allocation. Streaming is still a candidate, not an established
+fix. Do not modify or reuse the closed schedules to test it.
