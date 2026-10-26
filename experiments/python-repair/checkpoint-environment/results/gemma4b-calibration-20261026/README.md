@@ -87,3 +87,11 @@ This would require a new protocol, exact prompts, freeze and authorization;
 no such calls have been launched. It is a diagnostic on already inspected tasks,
 not a holdout or an adaptive-selector gain. Retain the full empty/failed/missing
 bank above rather than replacing it with favorable samples.
+
+## Additional diagnostic, kept separate
+
+The [post hoc AST audit](ARTIFACT-DIAGNOSTIC.md) finds unchanged program structure
+in 41/67 valid outputs and AST-identical action inputs at 6/15 checkpoints. It does
+not filter any observations or change the primary report. The concrete
+[next diagnostic protocol](../../CONTRACT-PROBE-PROTOCOL.md) is prepared offline;
+no new paid study has started.

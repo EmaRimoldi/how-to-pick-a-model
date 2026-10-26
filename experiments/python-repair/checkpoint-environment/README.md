@@ -284,3 +284,12 @@ sources are archived as `.txt` and checked against each segment's committed
 source hashes. Never modify historical manifests to relocate ancestors. Prefix
 progress, regressions, no-op patches and identical action input files remain
 visible in the report, including states that offer no artifact intervention.
+
+## Next calibration diagnostic (offline only)
+
+The [output-contract protocol](CONTRACT-PROBE-PROTOCOL.md) prepares 36 paired
+initial attempts across three response formats on the same twelve development
+bugs. The packet and scripted demo are offline; no collector or new authorization
+is implied. The proposal is motivated partly by the
+[post hoc structural-edit diagnostic](results/gemma4b-calibration-20261026/ARTIFACT-DIAGNOSTIC.md),
+which preserves the original policy comparisons and all observations.

@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `465`
-- Bytes indexed: `48.5M`
+- Files indexed: `473`
+- Bytes indexed: `48.6M`
 
 ## Canonical Entrypoints
 
@@ -48,12 +48,12 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 270 | 44.1M |
+| `experiments` | 273 | 44.1M |
 | `docs` | 53 | 2.6M |
 | `uv.lock` | 1 | 937.0K |
-| `src` | 75 | 667.6K |
-| `tests` | 29 | 159.2K |
-| `scripts` | 29 | 101.3K |
+| `src` | 77 | 685.9K |
+| `tests` | 31 | 165.4K |
+| `scripts` | 30 | 101.4K |
 | `.github` | 5 | 3.3K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
@@ -63,10 +63,10 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 134 | 949.6K |
-| `.json` | 95 | 3.7M |
+| `.py` | 139 | 974.3K |
+| `.json` | 96 | 3.7M |
 | `.txt` | 67 | 349.7K |
-| `.md` | 59 | 317.1K |
+| `.md` | 61 | 326.2K |
 | `.jsonl` | 45 | 36.7M |
 | `.png` | 21 | 2.7M |
 | `.pdf` | 8 | 184.3K |
@@ -119,6 +119,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/maintenance/validate_agent_readiness.py`
 - `scripts/prepare_feedback_routing.py`
 - `scripts/prepare_python_repair.py`
+- `scripts/prepare_repair_contract_probe.py`
 - `scripts/prepare_repair_pilot.py`
 - `scripts/qualify_python_repair_pool.py`
 - `scripts/report_feedback_routing.py`
