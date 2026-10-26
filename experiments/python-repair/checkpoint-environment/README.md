@@ -51,9 +51,9 @@ screen before calls. Its complete bank reproduces independently, including all
 62 saved verification records. It contains one public false acceptance and
 eleven public-score regressions, retained alongside the ten successes.
 
-Cumulative repair commitment is **$0.11456635 / $0.60**, including twelve unresolved
-reservations across closed studies. The latest engineering probe paid $0.00159276
-and retained one $0.00720896 reservation, within its separate $0.03 cap. All collectors are closed. Further research requires a
+Cumulative repair commitment is **$0.11785551 / $0.60**, including twelve unresolved
+reservations across closed studies. The latest one-request envelope validation
+paid $0.00328916 within its separate $0.01 cap and introduced no new uncertainty. All collectors are closed. Further research requires a
 separately reviewed protocol and declared allocation; interrupted banks cannot
 be resumed or used to fit a selector.
 
@@ -84,10 +84,12 @@ explicit 8 MiB cap passes the same failure-mode regression offline; a future
 protocol must freeze that setting separately. This engineering finding does not
 establish diagnostic benefit or explain the earlier network resets.
 
-A distinct [wire-envelope validation](SSE-WIRE-ENVELOPE-PROTOCOL.md) now fixes one
-new integer-enumeration request with an explicit 8 MiB cap and a $0.01 allocation.
-It must cross the old wire limit and reach the output ceiling with a validated
-receipt. It does not replace the interrupted clamp fixture or its gate.
+The distinct [wire-envelope validation](results/sse-wire-envelope-20261026/README.md)
+met its fixed engineering criterion: one complete receipt, 1,112,924 wire bytes,
+4,096 output tokens and a `length` finish under the explicit 8 MiB cap. It verifies
+one concrete exchange, not reliability or diagnostic benefit. The old clamp
+fixture and inconclusive gate remain unchanged. Scientific comparison can now
+be prepared under a separate reviewed protocol and allocation.
 
 The domain is function-level Python repair: one or two flat, standard-library
 modules, a named callable and JSON inputs/outputs. The environment saves complete

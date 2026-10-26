@@ -115,3 +115,14 @@ default. Future freezes must explicitly select the larger tested cap and retain
 all other accounting guards. This is offline sizing evidence, not proof of
 live long-response completion or a reason to reinterpret the prior resets.
 Cumulative commitment is $0.11456635, including twelve unresolved requests.
+
+
+The separately frozen [wire-envelope validation](results/sse-wire-envelope-20261026/README.md)
+then received a complete final usage record after 1,112,924 wire bytes and all
+4096 output tokens, with `length` finish and the explicitly configured 8 MiB
+cap. All four declared engineering conditions hold. This is one observed
+exchange, not a reliability estimate or a causal streaming comparison. The old
+three-fixture bank remains inconclusive and its unknown is unchanged. New charge
+$0.00328916 brings cumulative commitment to $0.11785551, with twelve old uncertain
+requests and no new uncertainty. Further work returns to separately frozen
+scientific calibration; no source or budget from a closed bank is resumed.

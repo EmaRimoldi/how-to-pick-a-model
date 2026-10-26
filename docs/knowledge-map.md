@@ -177,3 +177,9 @@ uses the same audited engineering CLI with a distinct study identity, one new
 synthetic enumeration request, explicit 8 MiB cap and independent $0.01 allocation.
 The old packet/audit remains exactly reproducible. Its new engineering gate
 requires a complete receipt beyond 1 MiB at the 4096-token output limit.
+
+The [terminal wire-envelope validation](../experiments/python-repair/checkpoint-environment/results/sse-wire-envelope-20261026/README.md)
+met all prospective engineering conditions: a complete receipt beyond 1 MiB
+at 4096 output tokens with a length finish, using the explicit 8 MiB cap.
+Frozen-source audit reproduces exactly; no new uncertainty. This permits
+scientific-calibration preparation, not a reliability or acquisition-benefit claim.
