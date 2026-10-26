@@ -1,9 +1,13 @@
 # Python repair checkpoint environment
 
-**Status: Gemma 3 4B development pilot closed as incomplete after repeated
-provider HTTP 429 errors. All four segments are preserved: 84 responses, 88
-admissions and $0.01011411 committed including four uncertain reserves. No
-observed recovery success; no fitted selector or held-out evaluation.**
+**Status: the follow-up Gemma 3 4B contract diagnostic completed all 36 calls,
+but none of its three formats met the fixed calibration gate. One full success
+across 36 initial attempts; no selected format or trained repair selector.**
+
+Read the [complete contract findings](results/contract-deepinfra-20261026/README.md).
+The earlier recovery pilot remains incomplete after repeated provider HTTP 429
+errors: 84 responses, 88 admissions and $0.01011411 committed including four
+uncertain reserves, with no observed recovery success.
 
 Read the [findings and reproduction instructions](results/gemma4b-calibration-20261026/README.md)
 and [audited report](results/gemma4b-calibration-20261026/REPORT.md). Eighteen of
@@ -300,3 +304,10 @@ same twelve inspected bugs, three formats and verifier in a separately identifie
 bank. Its new $0.08 sublimit stays within the existing $0.60 total ceiling and
 carries all prior commitments once. It changes provider and sampling seed;
 observations cannot be pooled or interpreted as a controlled provider comparison.
+
+The follow-up is now [complete and independently reproduced](results/contract-deepinfra-20261026/README.md):
+current JSON 0/12, example JSON 1/12, plain Python 0/12 full successes.
+None passes the fixed engineering gate. All 36 outcomes and 42 verifier records
+are retained; no new uncertain calls. The cumulative commitment is $0.01419331,
+including historical reserves. A stronger capability/calibration setting is
+needed before collecting matched recovery outcomes or fitting a selector.

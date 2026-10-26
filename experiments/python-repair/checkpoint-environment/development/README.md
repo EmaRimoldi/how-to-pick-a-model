@@ -3,7 +3,10 @@
 Twelve function-level repair tasks extracted from real BugsInPy bug/fix pairs:
 ten youtube-dl utilities, one HTTPie parser and one Tornado URL utility. This is
 an **offline development pool**, not a new benchmark score or an evaluation holdout.
-No models have attempted these tasks and no API calls have been made.
+Qualification itself used no model calls. These tasks have since been used in the
+[closed recovery pilot](../results/gemma4b-calibration-20261026/README.md) and
+[completed contract diagnostic](../results/contract-deepinfra-20261026/README.md).
+They remain development data.
 
 All **12/12** pass offline qualification on the recorded macOS/Python 3.13.12
 runtime: buggy versions fail both suites; upstream fixes pass both, twice.
@@ -109,9 +112,9 @@ correctness, absence of pretraining contamination, natural intermediate progress
 model difficulty or a benefit of continuing over restarting. Many fixes are tiny
 and could be too easy for the intended recovery experiment.
 
-Next is a separately authorized Gemma 3 4B development calibration, after adding
-and freezing the paid collector and accounting. Observe genuine failed/partial
-patches before deciding whether this domain supports a meaningful paired recovery
-study. If it does not, retain that negative calibration rather than manufacture
+The Gemma 3 4B recovery pilot and separate contract diagnostics are now recorded.
+No format passed the latest calibration gate. A new capability/calibration study
+is required before fitting a selector; inspect the linked results before any
+further collection. If it does not, retain that negative calibration rather than manufacture
 partial LLM attempts. Keep all variants of these functions and inspected bug IDs
 out of any future fresh-task evaluation. Historical budgets are closed.

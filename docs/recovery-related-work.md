@@ -260,3 +260,81 @@ validated new recovery-routing method.
 Keep benchmark/product utility and scientific novelty separate: an inexpensive,
 auditable benchmark can support a useful blog and integration work without
 claiming a new research method.
+
+## Scale, apparent emergence and repair capability — 2026-10-26 update
+
+This review follows the completed 36-call Gemma 3 4B contract diagnostic; it does
+not change that study's gate or convert its twelve development bugs into an
+untouched evaluation set. No contract passed. Failure at one size cannot establish
+a scaling law, a discontinuity, or a minimum parameter threshold.
+
+- [Wei et al., *Emergent Abilities of Large Language Models*, TMLR 2022](https://arxiv.org/abs/2206.07682)
+  documents capabilities observed at larger scales but absent at smaller scales.
+  It motivates testing a size-dependent capability hypothesis, not assuming a
+  universal threshold for debugging.
+- [Schaeffer et al., *Are Emergent Abilities of Large Language Models a Mirage?*, 2023](https://arxiv.org/abs/2304.15004)
+  shows how nonlinear/discontinuous metrics and limited statistics can create
+  apparent emergence. Our all-tests-pass endpoint must remain the product metric,
+  accompanied by per-test progress and output-validity diagnostics. Those smoother
+  diagnostics are not substitutes for full correctness.
+- [Snell et al., ICLR 2025](https://proceedings.iclr.cc/paper_files/paper/2025/hash/1b623663fd9b874366f3ce019fdfdd44-Abstract-Conference.html)
+  finds that allocating inference computation depends on task difficulty and
+  existing model competence. Its reasoning results motivate jointly varying
+  solver size and inference allowance; they do not prove transfer to our repair
+  domain or equal-dollar benefit.
+- [Cho et al., *Self-Correcting Code Generation Using Small Language Models*, Findings EMNLP 2025](https://arxiv.org/abs/2505.23060)
+  reports difficulties with small-model revision and improves correction with
+  targeted multi-turn reinforcement learning at approximately 1B scale. Small
+  size is therefore not an absolute barrier; training matters. This is not an
+  off-the-shelf Gemma result.
+- [Yang et al., *A Probabilistic Inference Scaling Theory for LLM Self-Correction*, EMNLP 2025](https://arxiv.org/abs/2508.16456)
+  models repeated correction using recovery and preservation behavior, yielding
+  convergence curves under its assumptions. These are inference-iteration curves,
+  not parameter-count power laws. A state-dependent repair environment needs
+  its own checks before importing the stationary-transition approximation.
+- [Arimbur, *How Many Tries Does It Take?*, April 2026 preprint](https://arxiv.org/abs/2604.10508)
+  reports execution-feedback repair improvements across seven models including
+  an 8B model, mostly in early rounds. Its HumanEval/MBPP results are adjacent
+  evidence, not a Gemma threshold, our paired continue/restart experiment, or
+  proof of a learned selector's benefit. No venue acceptance was verified.
+
+The [Gemma 3 technical report, section 2.2](https://arxiv.org/html/2503.19786v1#S2.SS2)
+reports different pretraining token budgets: 4T for 4B, 12T for 12B and 14T for
+27B. A same-family comparison still changes training exposure alongside model
+size. Provider, numerical precision, templates, instruction tuning and decoding
+must also be recorded; API model names do not pin immutable weight hashes.
+
+### Proposed research hypothesis, not an observed result
+
+The useful question is whether the **incremental value of state-dependent
+continue/restart selection** changes with solver capability and task difficulty
+at a fixed total budget. A plausible alternative to monotonic growth is an
+intermediate-capability window: very weak solvers fail under either action,
+moderate solvers offer complementary recoverable errors, and strong solvers
+leave fewer initial failures. This is our testable conjecture, not a conclusion
+of the papers above. Hard residual failures could behave differently.
+
+Distinguish (1) initial repair capability, (2) conditional value of preserving a
+failed artifact, and (3) a prospective selector's advantage over the best fixed
+strategy. Better standalone solving does not imply a larger selection advantage.
+For a future comparison:
+
+1. Separate natural on-policy failures from a common frozen checkpoint bank.
+   Larger models' remaining failures may be harder; comparing each model only
+   on its own failures confounds solver size with checkpoint composition.
+2. Keep task, feedback, test suites, contract and decoder controlled; record
+   serving differences. Report malformed responses separately without dropping
+   them. A paired action contrast within each model changes only the artifact.
+3. Use repeated draws and a common task-difficulty grid; report full success,
+   per-test progress, preservation/regression, and matched continue/restart value.
+4. Report a token/attempt-matched capability comparison separately from an
+   equal-total-API-budget product comparison, including prefix and selection
+   costs. Equal request limits are not equal actual spending or FLOPs.
+5. Freeze an untouched evaluation and uncertainty method after development.
+   Three sizes can motivate empirical size/cost curves; they cannot by themselves
+   discriminate a power law, a smooth sigmoid and a sharp capability threshold.
+
+No new model calls, selected evaluation sample, fitted exponent or prospective
+selector is authorized or produced by this literature note alone. The existing
+user instruction to continue research remains the authorization context; each
+new collection still needs a declared, frozen protocol and bounded accounting.

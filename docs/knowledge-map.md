@@ -69,3 +69,12 @@ maps in `docs/audits/` for retrieval. Retired sources remain in the [provenance 
 
 CIFAR-10 and its dedicated runtime are archived; historical manuscript figures
 point to their [provenance](history-merge.md).
+
+## Current Python repair calibration
+
+The [checkpoint environment](../experiments/python-repair/checkpoint-environment/README.md)
+retains the incomplete recovery pilot and both output-contract diagnostics.
+The [complete DeepInfra diagnostic](../experiments/python-repair/checkpoint-environment/results/contract-deepinfra-20261026/README.md)
+contains all 36 calls, frozen requests, inert source evidence and independent
+sandbox reproduction. No format met the calibration gate; no repair selector
+has been trained. These twelve bugs are development-exposed.
