@@ -25,6 +25,7 @@ CONTRACTS = ("json_current", "json_example", "python_text")
 STUDY = "repair-contract-diagnostic-v1"
 SEED = 43118
 PROPOSED_LIMIT = Decimal("0.06")
+DEEPINFRA_STUDY = "repair-contract-deepinfra-v1"
 EXAMPLE = {"example.py": "def identity(value):\n    return value\n"}
 INSTRUCTIONS = {
     "json_current": REPAIR_SYSTEM,
@@ -36,11 +37,20 @@ INSTRUCTIONS = {
 }
 
 
+def study_settings(study):
+    if study == STUDY:
+        return Settings(seed=SEED), PROPOSED_LIMIT
+    if study == DEEPINFRA_STUDY:
+        return Settings(endpoint="deepinfra/bf16", provider_name="DeepInfra",
+                        input_per_million="0.05", output_per_million="0.10", seed=43119), Decimal("0.08")
+    raise ValueError("Undeclared contract study")
+
+
 def public_feedback(result: dict) -> dict:
     return {key: result[key] for key in ("passed", "passed_cases", "total_cases", "cases")}
 
 
-def request(task: RepairTask, feedback: dict, contract: str) -> dict:
+def request(task: RepairTask, feedback: dict, contract: str, settings=None) -> dict:
     if contract not in CONTRACTS or len(task.public["files"]) != 1:
         raise ValueError("Declare one of three contracts for a single-file task")
     p = task.public
@@ -48,7 +58,7 @@ def request(task: RepairTask, feedback: dict, contract: str) -> dict:
                "public_cases": p["public_cases"], "latest_feedback": public_feedback(feedback), "files": p["files"]}
     return {"messages": [{"role": "system", "content": INSTRUCTIONS[contract]},
                           {"role": "user", "content": canonical(payload)}],
-            "remaining_budget_usd": str(Settings().reserve), "mode": "model_pilot", "provider_call_enabled": True}
+            "remaining_budget_usd": str((settings or Settings()).reserve), "mode": "model_pilot", "provider_call_enabled": True}
 
 
 def provider_body(settings: Settings, projected: dict, metadata: dict) -> dict:
@@ -90,47 +100,48 @@ def task_from_record(record):
 
 
 
-def provenance(tasks):
+def provenance(tasks, study=STUDY):
     runtime = fingerprint(tasks, Design())
-    runtime["design"] = {"contracts": list(CONTRACTS), "draws_per_contract": 1, "seed": SEED}
+    runtime["design"] = {"contracts": list(CONTRACTS), "draws_per_contract": 1, "seed": study_settings(study)[0].seed}
     return runtime
 
 
-def construct(tasks: list[RepairTask], verifier, *, prior_commitment="0.01011411") -> dict:
+def construct(tasks: list[RepairTask], verifier, *, prior_commitment="0.01011411", study=STUDY) -> dict:
     """Qualify inputs offline and construct all paired requests before outcomes."""
     if not tasks or any(len(t.public["files"]) != 1 for t in tasks):
         raise ValueError("Nonempty single-file development pool required")
-    settings = Settings(seed=SEED)
+    settings, limit = study_settings(study)
+    seed = settings.seed
     ceiling = len(tasks) * len(CONTRACTS) * settings.reserve
-    if ceiling > PROPOSED_LIMIT:
+    if ceiling > limit:
         raise ValueError("Proposed cap does not cover the entire design")
     preflight = verifier.preflight()
     original = [verifier.check(t.public["files"], t.public["entrypoint"], t.public["public_cases"]) for t in tasks]
     if any(f["passed"] for f in original):
         raise ValueError("Diagnostic requires initially failing bugs; do not silently drop tasks")
     order = list(range(len(tasks)))
-    random.Random(SEED).shuffle(order)
+    random.Random(seed).shuffle(order)
     permutations = list(itertools.permutations(CONTRACTS))
-    random.Random(SEED + 1).shuffle(permutations)
+    random.Random(seed + 1).shuffle(permutations)
     requests = []
     for position, task_index in enumerate(order):
         task = tasks[task_index]
         for contract in permutations[position % len(permutations)]:
-            meta = {"study": STUDY, "trajectory": f"{STUDY}-task-{task_index:03d}",
+            meta = {"study": study, "trajectory": f"{study}-task-{task_index:03d}",
                     "phase": "contract_probe", "depth": 1, "contract": contract,
                     "task_index": task_index, "task_hash": task.task_hash}
             meta["attempt_id"] = identity(meta)
-            projected = request(task, original[task_index], contract)
+            projected = request(task, original[task_index], contract, settings)
             requests.append({"metadata": meta, "request": projected,
                              "provider_body": provider_body(settings, projected, meta)})
-    plan = {"schema_version": 1, "study": STUDY, "status": "draft_not_authorized",
+    plan = {"schema_version": 1, "study": study, "status": "draft_not_authorized",
             "api_calls": 0, "live_calls_enabled": False, "monetary_authorization_usd": None,
             "model_results": False, "provider_settings": asdict(settings), "contracts": list(CONTRACTS),
             "maximum_calls": len(requests), "reservation_usd": str(settings.reserve),
-            "maximum_new_reservations_usd": str(ceiling), "proposed_cap_usd": str(PROPOSED_LIMIT),
+            "maximum_new_reservations_usd": str(ceiling), "proposed_cap_usd": str(limit),
             "closed_pilot_commitment_usd": str(Decimal(prior_commitment)),
             "maximum_cumulative_commitment_usd": str(ceiling + Decimal(prior_commitment)),
-            "source_provenance": provenance(tasks),
+            "source_provenance": provenance(tasks, study),
             "verifier_preflight": preflight,
             "tasks": [{"public": t.public, "evaluator": json.loads(t.evaluator_json), "task_hash": t.task_hash,
                        "initial_public_result": f} for t, f in zip(tasks, original)],
@@ -149,24 +160,25 @@ def validate(plan: dict) -> dict:
         raise ValueError("Packet identity differs")
     if plan["status"] != "draft_not_authorized" or plan["live_calls_enabled"] or plan["monetary_authorization_usd"] is not None:
         raise ValueError("This offline packet cannot grant live authorization")
-    if plan["study"] != STUDY or plan["schema_version"] != 1 or plan["model_results"] or plan["api_calls"] != 0:
+    settings, limit = study_settings(plan["study"])
+    study, seed = plan["study"], settings.seed
+    if plan["schema_version"] != 1 or plan["model_results"] or plan["api_calls"] != 0:
         raise ValueError("Undeclared study or model evidence in an offline packet")
-    if plan["source_provenance"]["design"] != {"contracts": list(CONTRACTS), "draws_per_contract": 1, "seed": SEED}:
+    if plan["source_provenance"]["design"] != {"contracts": list(CONTRACTS), "draws_per_contract": 1, "seed": seed}:
         raise ValueError("Diagnostic design drift")
     if [task_from_record(t).task_hash for t in plan["tasks"]] != plan["source_provenance"]["tasks"]:
         raise ValueError("Task provenance differs")
-    if Decimal(plan["proposed_cap_usd"]) != PROPOSED_LIMIT:
+    if Decimal(plan["proposed_cap_usd"]) != limit:
         raise ValueError("Proposed cap differs")
     if Decimal(plan["maximum_cumulative_commitment_usd"]) != Decimal(plan["closed_pilot_commitment_usd"]) + Decimal(plan["maximum_new_reservations_usd"]):
         raise ValueError("Prior commitment missing from total")
-    settings = Settings(**plan["provider_settings"])
-    if settings != Settings(seed=SEED) or plan["contracts"] != list(CONTRACTS):
+    if Settings(**plan["provider_settings"]) != settings or plan["contracts"] != list(CONTRACTS):
         raise ValueError("Undeclared settings/contracts")
     seen, bodies = set(), {}
     for row in plan["requests"]:
         meta = row["metadata"]
-        if (meta["study"] != STUDY or meta["phase"] != "contract_probe" or meta["depth"] != 1
-                or meta["trajectory"] != f"{STUDY}-task-{meta['task_index']:03d}"):
+        if (meta["study"] != study or meta["phase"] != "contract_probe" or meta["depth"] != 1
+                or meta["trajectory"] != f"{study}-task-{meta['task_index']:03d}"):
             raise ValueError("Sampling identity drift")
         task_row = plan["tasks"][meta["task_index"]]
         task = task_from_record(task_row)
@@ -176,7 +188,7 @@ def validate(plan: dict) -> dict:
         if key in seen or identity({k: v for k, v in meta.items() if k != "attempt_id"}) != meta["attempt_id"]:
             raise ValueError("Duplicate or altered admission identity")
         seen.add(key)
-        expected = request(task, task_row["initial_public_result"], meta["contract"])
+        expected = request(task, task_row["initial_public_result"], meta["contract"], settings)
         body = provider_body(settings, expected, meta)
         if row["request"] != expected or row["provider_body"] != body:
             raise ValueError("Request projection includes drift or undeclared information")
@@ -187,9 +199,9 @@ def validate(plan: dict) -> dict:
         bodies[meta["task_index"]] = paired
     expected_cells = {(i, c) for i in range(len(plan["tasks"])) for c in CONTRACTS}
     order = list(range(len(plan["tasks"])))
-    random.Random(SEED).shuffle(order)
+    random.Random(seed).shuffle(order)
     permutations = list(itertools.permutations(CONTRACTS))
-    random.Random(SEED + 1).shuffle(permutations)
+    random.Random(seed + 1).shuffle(permutations)
     expected_order = [(i, c) for pos, i in enumerate(order) for c in permutations[pos % len(permutations)]]
     actual_order = [(r["metadata"]["task_index"], r["metadata"]["contract"]) for r in plan["requests"]]
     if seen != expected_cells or plan["maximum_calls"] != len(seen):
@@ -233,11 +245,14 @@ def main():
     parser.add_argument("--pool", type=Path, default=DEFAULT_POOL)
     parser.add_argument("--input", type=Path)
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--study", choices=(STUDY, DEEPINFRA_STUDY), default=STUDY)
+    parser.add_argument("--prior-commitment", default="0.01011411")
     args = parser.parse_args()
     if args.action == "plan":
         if not args.output:
             parser.error("plan needs a fresh --output JSON path")
-        plan = construct([t for _, t, _ in read_pool(args.pool)], RepairVerifier())
+        plan = construct([t for _, t, _ in read_pool(args.pool)], RepairVerifier(),
+                         study=args.study, prior_commitment=args.prior_commitment)
         save(args.output, plan)
         result = {**validate(plan), "maximum_new_reservations_usd": plan["maximum_new_reservations_usd"],
                   "proposed_cap_usd": plan["proposed_cap_usd"], "live_calls_enabled": False}

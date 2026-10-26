@@ -285,12 +285,18 @@ source hashes. Never modify historical manifests to relocate ancestors. Prefix
 progress, regressions, no-op patches and identical action input files remain
 visible in the report, including states that offer no artifact intervention.
 
-## Next calibration diagnostic (offline only)
+## Output-contract diagnostic and provider follow-up
 
-The [output-contract protocol](CONTRACT-PROBE-PROTOCOL.md) prepares 36 paired
-initial attempts across three response formats on the same twelve development
-bugs. The packet and scripted demo are offline. A separately gated collector and
-terminal report are implemented and tested with mocked transport; no new
-authorization or model call is implied. The proposal is motivated partly by the
-[post hoc structural-edit diagnostic](results/gemma4b-calibration-20261026/ARTIFACT-DIAGNOSTIC.md),
-which preserves the original policy comparisons and all observations.
+The [first contract diagnostic](results/contract-diagnostic-20261026/README.md)
+is terminal and inconclusive: three responses on one bug, followed by HTTP 429
+on the fourth admission. All 36 planned cells remain visible; 33 outcomes are
+missing. The $0.06 study committed $0.00179665 including its uncertain reserve,
+bringing the recovery-pilot-plus-diagnostic total to $0.01191076. No format won
+the gate and no selector was trained. The [original protocol](CONTRACT-PROBE-PROTOCOL.md)
+and portable evidence remain immutable.
+
+The [DeepInfra follow-up protocol](CONTRACT-DEEPINFRA-PROTOCOL.md) preserves the
+same twelve inspected bugs, three formats and verifier in a separately identified
+bank. Its new $0.08 sublimit stays within the existing $0.60 total ceiling and
+carries all prior commitments once. It changes provider and sampling seed;
+observations cannot be pooled or interpreted as a controlled provider comparison.

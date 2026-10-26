@@ -9,7 +9,7 @@ import json
 import os
 from pathlib import Path
 
-from .contracts import CONTRACTS, PROPOSED_LIMIT, STUDY, decode, provenance, provider_body, public_feedback, task_from_record, validate
+from .contracts import STUDY, DEEPINFRA_STUDY, decode, provenance, provider_body, public_feedback, task_from_record, validate, study_settings
 from .environment import RepairRun, audit_run, identity
 from .pilot import file_hashes, source_commit
 from .provider import OpenRouterTransport, ProviderStopped, Settings, dollars
@@ -37,11 +37,18 @@ def authorization(config, packet, prior):
             or not isinstance(config.get('authorization_reference'), str) or not config['authorization_reference'].strip()):
         raise ValueError('Explicit authorization for the new contract study is required')
     limit = dollars(config['monetary_authorization_usd'])
-    if not dollars(packet['maximum_new_reservations_usd']) <= limit <= PROPOSED_LIMIT:
+    if config.get('study', packet['study']) != packet['study']:
+        raise ValueError('Authorization belongs to another study')
+    if not dollars(packet['maximum_new_reservations_usd']) <= limit <= study_settings(packet['study'])[1]:
         raise ValueError('New study cap must cover the whole design without exceeding the proposal')
     if config.get('minimum_request_interval_seconds') != 60:
         raise ValueError('The contract study requires declared 60-second spacing')
-    carried = dollars(prior['conservative_committed_usd'])
+    if packet['study'] == DEEPINFRA_STUDY:
+        if prior.get('study') != STUDY or prior.get('status') != 'incomplete_development_diagnostic':
+            raise ValueError('DeepInfra study must carry the closed Parasail diagnostic')
+        carried = dollars(prior['accounting']['cumulative_committed_usd'])
+    else:
+        carried = dollars(prior['conservative_committed_usd'])
     if prior.get('model_results') is not True or carried != dollars(packet['closed_pilot_commitment_usd']):
         raise ValueError('Closed-pilot commitment is not preserved')
     cumulative = dollars(config['cumulative_limit_usd'])
@@ -53,12 +60,12 @@ def authorization(config, packet, prior):
 def freeze(packet, config, output: Path):
     validate(packet)
     tasks = [task_from_record(t) for t in packet['tasks']]
-    if packet['source_provenance'] != provenance(tasks):
+    if packet['source_provenance'] != provenance(tasks, packet['study']):
         raise ValueError('Rebuild the offline packet after source changes')
     prior_path = Path(config['closed_pilot_report'])
     prior = read(prior_path)
     limit, carried = authorization(config, packet, prior)
-    record = {'schema_version': 1, 'study': STUDY, 'created_at': datetime.now(timezone.utc).isoformat(),
+    record = {'schema_version': 1, 'study': packet['study'], 'created_at': datetime.now(timezone.utc).isoformat(),
               'source_commit': source_commit(), 'packet': packet, 'config': config,
               'authorized_limit_usd': str(limit), 'carried_commitment_usd': str(carried),
               'prior_report_sha256': content_hash(prior_path), 'prior_report': prior}
@@ -68,7 +75,7 @@ def freeze(packet, config, output: Path):
 
 
 def validate_freeze(frozen, *, current=False):
-    if (frozen['study'] != STUDY or frozen['schema_version'] != 1
+    if (frozen['study'] != frozen['packet']['study'] or frozen['schema_version'] != 1
             or identity({k:v for k,v in frozen.items() if k != 'freeze_id'}) != frozen['freeze_id']):
         raise ValueError('Contract freeze identity changed')
     packet = frozen['packet']
@@ -77,7 +84,7 @@ def validate_freeze(frozen, *, current=False):
     if dollars(frozen['authorized_limit_usd']) != limit or dollars(frozen['carried_commitment_usd']) != carried:
         raise ValueError('Frozen financial projection differs')
     if current:
-        if source_commit() != frozen['source_commit'] or provenance([task_from_record(t) for t in packet['tasks']]) != packet['source_provenance']:
+        if source_commit() != frozen['source_commit'] or provenance([task_from_record(t) for t in packet['tasks']], packet['study']) != packet['source_provenance']:
             raise ValueError('Current source differs from the reviewed freeze')
         prior_path = Path(frozen['config']['closed_pilot_report'])
         if content_hash(prior_path) != frozen['prior_report_sha256'] or read(prior_path) != frozen['prior_report']:
@@ -103,7 +110,7 @@ def collect(frozen, output: Path, *, claim_root=None):
     claims = claim_root or ROOT / 'runs' / 'repair-contract-admissions'
     claims.mkdir(parents=True, exist_ok=True)
     # Fixed study identity, not caller-controlled campaign names: one attempt only.
-    save(claims / (STUDY + '.json'), {'freeze_id': frozen['freeze_id'], 'output': str(output.resolve()),
+    save(claims / (packet['study'] + '.json'), {'freeze_id': frozen['freeze_id'], 'output': str(output.resolve()),
                                    'created_at': datetime.now(timezone.utc).isoformat(), 'resume_allowed': False})
     output.mkdir(parents=True, exist_ok=False)
     for name in ('requests', 'receipts', 'cells'):
@@ -136,7 +143,7 @@ def collect(frozen, output: Path, *, claim_root=None):
                       'full_pass': full_pass, 'cost_usd': receipt['cost_usd']}
             append(output / 'observations.jsonl', result)
             save(run.root / 'completion.json', {'audit': audit_run(run.root), 'mode': 'model_pilot'})
-        if provenance(tasks) != packet['source_provenance']:
+        if provenance(tasks, packet['study']) != packet['source_provenance']:
             raise ValueError('Source changed during collection')
     except Exception as exc:
         save(output / 'interruption.json', {'exception_type': type(exc).__name__, 'resume_allowed': False,

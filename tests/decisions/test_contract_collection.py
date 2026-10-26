@@ -53,7 +53,7 @@ def network(monkeypatch, failure=None, content_for=None):
     def exchange(self, endpoint, body=None):
         if endpoint.endswith('/endpoints'):
             return {'data': {'id': self.settings.model, 'endpoints': [{
-                'tag': self.settings.endpoint, 'provider_name': 'Parasail', 'quantization': 'bf16',
+                'tag': self.settings.endpoint, 'provider_name': self.settings.provider_name, 'quantization': 'bf16',
                 'context_length': 131072, 'max_completion_tokens': 117964,
                 'supported_parameters': ['seed','temperature','max_tokens','response_format'],
                 'pricing': {'prompt': '.00000004', 'completion': '.00000005'}}]}}
@@ -69,7 +69,7 @@ def network(monkeypatch, failure=None, content_for=None):
         text = FIXED if 'response_format' not in body else canonical({'solution.py': FIXED})
         if failure == 'empty':text = '{}'
         if content_for is not None:text = content_for(body)
-        result = {'id': 'mock-gen-' + str(len(sent)), 'model': self.settings.model, 'provider': 'Parasail',
+        result = {'id': 'mock-gen-' + str(len(sent)), 'model': self.settings.model, 'provider': self.settings.provider_name,
                   'usage': {'cost': .00008, 'prompt_tokens': 100, 'completion_tokens': 10},
                   'choices': [{'finish_reason': 'stop', 'message': {'content': text}}]}
         if failure == 'overrun':result['usage']['cost'] = .07
@@ -234,6 +234,73 @@ def test_full_36_cell_mock_bank_obeys_prespecified_gate_without_training(tmp_pat
     assert report['engineering_candidate_for_future_calibration'] == 'json_current'
     assert report['fit_selector'] is False and len(report['task_table']) == 12
     assert report['accounting']['settled_usd'] == '0.00288'
+
+
+def test_terminal_archive_reproduces_partial_report_in_isolation(tmp_path, monkeypatch):
+    import hashlib
+    from pathlib import Path
+    from types import SimpleNamespace
+    import zipfile
+    from vao.analysis import contract_diagnostic as report
+    packet, config = prepare(tmp_path, monkeypatch)
+    frozen = cc.freeze(packet, config, tmp_path / 'freeze.json')
+    network(monkeypatch, 'timeout')
+    source = tmp_path / 'run'
+    with pytest.raises(ProviderStopped):
+        cc.collect(frozen, source, claim_root=tmp_path / 'claims')
+    def git_source(args, **kwargs):
+        return SimpleNamespace(stdout=(cc.ROOT / args[-1].split(':', 1)[1]).read_bytes())
+    monkeypatch.setattr(report.subprocess, 'run', git_source)
+    destination = tmp_path / 'export'; destination.mkdir()
+    manifest = report.export_evidence(source, destination)
+    archive = destination / 'evidence.zip'
+    assert hashlib.sha256(archive.read_bytes()).hexdigest() == manifest['archive_sha256']
+    isolated = tmp_path / 'isolated'
+    with zipfile.ZipFile(archive) as zipped:
+        assert set(zipped.namelist()) == set(manifest['files'])
+        assert all(not Path(n).is_absolute() and '..' not in Path(n).parts for n in zipped.namelist())
+        for name, digest in manifest['files'].items():
+            assert hashlib.sha256(zipped.read(name)).hexdigest() == digest
+            assert name.startswith('collection/') or name.endswith('.py.txt')
+        zipped.extractall(isolated)
+    assert report.summarize(isolated / 'collection') == report.summarize(source)
+    assert report.render(report.summarize(isolated / 'collection')) == report.render(report.summarize(source))
+    monkeypatch.setattr(report.subprocess, 'run', lambda *a, **kw: SimpleNamespace(stdout=b'changed'))
+    with pytest.raises(ValueError, match='source hash'):
+        report.export_evidence(source, destination)
+
+
+def test_deepinfra_is_a_separate_pinned_study_and_carries_both_closed_banks(tmp_path, monkeypatch):
+    from vao.analysis.contract_diagnostic import summarize
+    from vao.repair.contracts import DEEPINFRA_STUDY, validate
+    from vao.repair.environment import identity
+    packet, config = prepare(tmp_path, monkeypatch)
+    frozen = cc.freeze(packet, config, tmp_path / 'first-freeze.json')
+    network(monkeypatch, 'timeout')
+    old = tmp_path / 'old'; claims = tmp_path / 'claims'
+    with pytest.raises(ProviderStopped):cc.collect(frozen, old, claim_root=claims)
+    report = summarize(old)
+    prior = tmp_path / 'closed-contract-report.json'; prior.write_text(json.dumps(report))
+    carried = report['accounting']['cumulative_committed_usd']
+    new = construct([task()], Verifier(), study=DEEPINFRA_STUDY, prior_commitment=carried)
+    config = {**config, 'study': DEEPINFRA_STUDY, 'monetary_authorization_usd': '.08', 'closed_pilot_report': str(prior)}
+    assert new['reservation_usd'] == '0.002048'
+    assert not ({r['metadata']['attempt_id'] for r in packet['requests']} & {r['metadata']['attempt_id'] for r in new['requests']})
+    assert all(r['provider_body']['provider']['only'] == ['deepinfra/bf16'] for r in new['requests'])
+    assert all(not r['provider_body']['provider']['allow_fallbacks'] for r in new['requests'])
+    frozen = cc.freeze(new, config, tmp_path / 'new-freeze.json')
+    sent = network(monkeypatch)
+    result = cc.collect(frozen, tmp_path / 'new', claim_root=claims)
+    assert len(sent) == 3 and result['sealed']
+    assert Decimal(result['cumulative_committed_usd']) == Decimal(carried) + Decimal('.00024')
+    assert result['carried_committed_usd'] == carried
+    with pytest.raises(ValueError, match='another study'):
+        cc.freeze(new, {**config, 'study': packet['study']}, tmp_path / 'wrong-authorization.json')
+    changed = json.loads(json.dumps(new)); changed['provider_settings']['endpoint'] = 'parasail/bf16'
+    changed['provider_settings']['provider_name'] = 'Parasail'
+    changed['packet_id'] = identity({k:v for k,v in changed.items() if k != 'packet_id'})
+    with pytest.raises(ValueError, match='settings'):
+        validate(changed)
 
 
 def test_duplicate_provider_identity_stops_before_third_call(tmp_path, monkeypatch):

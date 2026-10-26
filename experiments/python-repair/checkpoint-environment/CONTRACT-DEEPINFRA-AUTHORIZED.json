@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "status": "authorized_contract_diagnostic",
+  "study": "repair-contract-deepinfra-v1",
+  "live_calls_enabled": true,
+  "monetary_authorization_usd": "0.08",
+  "cumulative_limit_usd": "0.60",
+  "minimum_request_interval_seconds": 60,
+  "closed_pilot_report": "experiments/python-repair/checkpoint-environment/results/contract-diagnostic-20261026/analysis.json",
+  "authorization_reference": "User explicitly instructed \u00abNon farti problemi di denaro. Continua.\u00bb after the fourth-call HTTP429 in the 0.06 USD study. In response, the assistant declared a separate 0.08 USD sublimit within the existing 0.60 USD cumulative ceiling before any new model call. This is authorization to continue the research within that conservative envelope, not a claim that the user specified 0.08 USD or authorized unlimited spending. Recorded 2026-10-26T10:14:08.487449+00:00",
+  "note": "Fresh separately identified DeepInfra study; no retry, resume, fallback or pooling with the closed Parasail bank. All prior commitments retained once."
+}

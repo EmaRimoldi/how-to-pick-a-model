@@ -1,11 +1,15 @@
 """Prespecified descriptive report for the terminal output-contract diagnostic."""
 import argparse
 from decimal import Decimal
+import hashlib
 import json
 from pathlib import Path
+import re
+import subprocess
+import zipfile
 
 from vao.repair.contracts import CONTRACTS
-from vao.repair.contract_collection import audit, read
+from vao.repair.contract_collection import ROOT, audit, read
 from vao.repair.records import rows, save
 
 
@@ -92,15 +96,60 @@ def render(report):
     return '\n'.join(lines) + '\n'
 
 
+def export_evidence(source: Path, output: Path):
+    """Export audited terminal records and inert, hash-verified source snapshots."""
+    summarize(source)  # Includes terminal-only, receipt and ledger validation.
+    frozen = read(source / 'manifest.json')['freeze']
+    commit = frozen['source_commit']
+    if not re.fullmatch(r'[a-f0-9]{40}', commit):
+        raise ValueError('Invalid frozen source commit')
+    entries = {}
+    for path in sorted(source.rglob('*')):
+        if path.is_symlink():
+            raise ValueError('Evidence cannot contain symlinks')
+        if path.is_file():
+            if path.suffix not in ('.json', '.jsonl'):
+                raise ValueError('Only inert JSON evidence can be exported')
+            entries['collection/' + path.relative_to(source).as_posix()] = path.read_bytes()
+    for name, expected in frozen['packet']['source_provenance']['sources'].items():
+        relative = Path(name)
+        if relative.is_absolute() or '..' in relative.parts:
+            raise ValueError('Unsafe frozen source path')
+        content = subprocess.run(['git', 'show', f'{commit}:src/vao/{name}'], cwd=ROOT,
+                                 capture_output=True, check=True).stdout
+        if hashlib.sha256(content).hexdigest() != expected:
+            raise ValueError('Committed source differs from frozen source hash')
+        entries[f'frozen-sources/{commit}/{name}.txt'] = content
+    if any(re.search(rb'sk-or-v1-[a-f0-9]{64}', content) for content in entries.values()):
+        raise ValueError('Credential-shaped content prevents export')
+    archive = output / 'evidence.zip'
+    with zipfile.ZipFile(archive, 'x', compression=zipfile.ZIP_DEFLATED) as zipped:
+        for name, content in sorted(entries.items()):
+            info = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.external_attr = 0o100644 << 16
+            zipped.writestr(info, content)
+    manifest = {'leaf': 'collection', 'source_commit': commit,
+        'archive_sha256': hashlib.sha256(archive.read_bytes()).hexdigest(),
+        'files': {name: hashlib.sha256(content).hexdigest() for name, content in sorted(entries.items())},
+        'source_format': 'Frozen source snapshots are inert .txt files; model outputs remain JSON data.',
+        'reproduction': 'Verify hashes, extract into a fresh directory, then run the installed report_repair_contract_probe entry point with --input <extracted>/collection and a fresh --output. All analysis and Markdown fields must match; no model calls are made.'}
+    save(output / 'evidence-manifest.json', manifest)
+    return manifest
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--input', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--export-evidence', action='store_true')
     args = parser.parse_args()
     report = summarize(args.input)
     args.output.mkdir(parents=True, exist_ok=False)
     save(args.output / 'analysis.json', report)
     (args.output / 'REPORT.md').write_text(render(report))
+    if args.export_evidence:
+        export_evidence(args.input, args.output)
     print(json.dumps({'status': report['status'], 'gate': report['gate'], 'fit_selector': False}, indent=2))
 
 

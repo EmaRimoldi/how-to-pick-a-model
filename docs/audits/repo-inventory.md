@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `479`
-- Bytes indexed: `48.6M`
+- Files indexed: `487`
+- Bytes indexed: `48.9M`
 
 ## Canonical Entrypoints
 
@@ -48,11 +48,11 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 274 | 44.1M |
+| `experiments` | 282 | 44.4M |
 | `docs` | 53 | 2.6M |
 | `uv.lock` | 1 | 937.0K |
-| `src` | 79 | 709.8K |
-| `tests` | 32 | 178.2K |
+| `src` | 79 | 714.0K |
+| `tests` | 32 | 182.2K |
 | `scripts` | 32 | 101.7K |
 | `.github` | 5 | 3.3K |
 | `.gitignore` | 1 | 1.4K |
@@ -63,10 +63,10 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 144 | 1011.3K |
-| `.json` | 97 | 3.7M |
+| `.py` | 144 | 1019.6K |
+| `.json` | 101 | 3.7M |
 | `.txt` | 67 | 349.7K |
-| `.md` | 61 | 328.9K |
+| `.md` | 64 | 340.7K |
 | `.jsonl` | 45 | 36.7M |
 | `.png` | 21 | 2.7M |
 | `.pdf` | 8 | 184.3K |
@@ -77,13 +77,13 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.yaml` | 3 | 2.6K |
 | `.lock` | 2 | 1.9M |
 | `.toml` | 2 | 2.8K |
+| `.zip` | 2 | 1.5M |
 | `<none>` | 2 | 2.4K |
 | `.bib` | 1 | 13.6K |
 | `.dataset` | 1 | 11.1K |
 | `.example` | 1 | 773B |
 | `.sty` | 1 | 13.2K |
 | `.yml` | 1 | 1.5K |
-| `.zip` | 1 | 1.3M |
 
 ## Experiment Readmes
 
@@ -101,6 +101,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/mbpp-plus/context-value-transfer/results/replication-20261022/README.md`
 - `experiments/python-repair/checkpoint-environment/README.md`
 - `experiments/python-repair/checkpoint-environment/development/README.md`
+- `experiments/python-repair/checkpoint-environment/results/contract-diagnostic-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/gemma4b-calibration-20261026/README.md`
 
 ## Script Entrypoints
