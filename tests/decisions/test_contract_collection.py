@@ -380,5 +380,5 @@ def test_model_precision_route_mismatch_is_rejected():
     assert settings.reserve * 36 == Decimal('.1179648')
     for change in ({'quantization': 'bf16'}, {'endpoint': 'deepinfra/bf16'},
                    {'model': 'google/gemma-3-12b-it'}, {'provider_name': 'Novita'}):
-        with pytest.raises(ValueError, match='declared Gemma endpoint'):
+        with pytest.raises(ValueError, match='declared endpoint'):
             Settings(**{**asdict(settings), **change})

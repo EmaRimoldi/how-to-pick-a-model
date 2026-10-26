@@ -8,7 +8,7 @@ import re
 import subprocess
 import zipfile
 
-from vao.repair.contracts import CONTRACTS, TRACE_STUDY, INTERFACE_STUDY
+from vao.repair.contracts import CONTRACTS, TRACE_STUDY, INTERFACE_STUDY, SOLVER_STUDY
 from vao.repair.contract_collection import ROOT, audit, read
 from vao.repair.records import rows, save
 
@@ -19,6 +19,8 @@ def summarize(output: Path):
     checked = audit(output)
     frozen = read(output / 'manifest.json')['freeze']
     packet = frozen['packet']
+    if packet['study'] == SOLVER_STUDY:
+        raise ValueError('Use the solver-compatibility report, not the historical contract gate')
     if packet['study'] == TRACE_STUDY:
         raise ValueError('Use the public-trace information report, not the historical contract gate')
     if packet['study'] == INTERFACE_STUDY:

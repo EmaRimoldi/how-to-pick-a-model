@@ -127,16 +127,20 @@ span −65.625 to +65.625 percentage points. Thus the observed failures have not
 been resolved by either tested cue. This is not proof that instructions never
 matter or that the model cannot repair these tasks under another setup.
 
-A separately controlled solver-compatibility positive control is the next
-calibration candidate, preserving the same task and verification contract and
-reviewing the repeated provider failures before a new launch. Establish repeated
+A separately controlled [solver-compatibility positive control](SOLVER-PROTOCOL.md)
+now fixes 32 fresh Qwen3-Coder-Next/Parasail/BF16 draws, preserving the same task,
+original messages and verification contract. A public endpoint and private
+read-only account review precede the clean source freeze; neither establishes
+that previous provider limits have reset. Establish repeated
 full repairs, then return to costed diagnostic acquisition. The final goal remains a deployable acquisition
 policy that improves on the best fixed action on untouched bugs; its benefit and
 novelty are still unproven. This development control is not that policy or its
 held-out evaluation.
 
 Accounting totals $0.05126739 including eight unresolved reserves, under the
-existing $0.60 ceiling. No collector is active; no recursive successor is enabled.
+existing $0.60 ceiling. Both preceding collectors are closed; no recursive
+successor is enabled. The new solver control declares a separate $0.24 allocation
+inside that ceiling and requires its own reviewed source freeze before launch.
 Every new collection needs a separately declared sublimit, reviewed clean source
 freeze, exact requests, analysis and single-use launch claim. Historic uncertainties,
 scores, manuscripts and failed gates remain preserved.

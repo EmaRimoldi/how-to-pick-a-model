@@ -91,8 +91,9 @@ class Settings:
                 ("google/gemma-3-4b-it", "parasail/bf16", "Parasail", "bf16"),
                 ("google/gemma-3-4b-it", "deepinfra/bf16", "DeepInfra", "bf16"),
                 ("google/gemma-3-12b-it", "deepinfra/bf16", "DeepInfra", "bf16"),
-                ("google/gemma-3-27b-it", "deepinfra/fp8", "DeepInfra", "fp8")}:
-            raise ValueError("This development adapter requires a declared Gemma endpoint")
+                ("google/gemma-3-27b-it", "deepinfra/fp8", "DeepInfra", "fp8"),
+                ("qwen/qwen3-coder-next", "parasail/bf16", "Parasail", "bf16")}:
+            raise ValueError("This development adapter requires a declared endpoint")
         for name in ("input_token_ceiling", "max_tokens", "seed"):
             if type(getattr(self, name)) is not int:
                 raise ValueError("Token bounds and seed must be integers")

@@ -25,6 +25,14 @@ repair. It retains 84 unknown cells and an inconclusive gate. Independent replay
 reproduces all 88 saved evaluation records; no successor or selector is enabled.
 Cumulative repair commitment is $0.05126739 including eight unresolved calls.
 
+The next [solver-compatibility control](SOLVER-PROTOCOL.md) prepares 32 fresh
+Qwen3-Coder-Next requests on the same eight failed checkpoints. It preserves the
+original public messages and JSON contract, pins Parasail/BF16, and requires
+repeated full repairs before a separate intervention study. The new $0.24
+allocation carries $0.05126739 under the same $0.60 ceiling. Preparation makes no
+model calls; clean source, exact request review and CI precede the single-use
+collector. This is not a causal model-size comparison or a selector.
+
 The [prospective information probe](INFORMATION-PROTOCOL.md) fixes 96 requests:
 eight failed checkpoints, four draws and three information conditions. Its
 [declared allocation](INFORMATION-AUTHORIZED.json) is $0.34 within the existing

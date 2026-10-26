@@ -9,8 +9,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `8`
-- Script entrypoints indexed: `37`
-- Code modules indexed: `81`
+- Script entrypoints indexed: `39`
+- Code modules indexed: `83`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `6`
@@ -185,12 +185,14 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/prepare_repair_information_study.py` | python | Prepare a public-trace information experiment offline; never dispatch APIs. |
 | `scripts/prepare_repair_interface_study.py` | python | Prepare exact factorial repair-interface requests offline; no model calls. |
 | `scripts/prepare_repair_pilot.py` | python | Plan repair calibration offline; live collection requires a funded freeze. |
+| `scripts/prepare_repair_solver_study.py` | python | Prepare the fixed coding-solver compatibility control offline; no model calls. |
 | `scripts/qualify_python_repair_pool.py` | python | Offline build, provenance audit and isolated qualification of real-bug tasks. |
 | `scripts/report_feedback_routing.py` | python | Publish a completed feedback-only bank, audited statistics and static figures. Public CLI facade; implementation lives in vao.analysis.report_feedback_routing. |
 | `scripts/report_repair_calibration.py` | python | Audit terminal repair-pilot segments and report descriptive results offline. |
 | `scripts/report_repair_contract_probe.py` | python | Audit and describe a terminal output-contract diagnostic; no API calls. |
 | `scripts/report_repair_information_study.py` | python | Report a terminal public-trace information study without model calls. |
 | `scripts/report_repair_interface_study.py` | python | Analyze a terminal factorial repair-interface study offline; no model calls. |
+| `scripts/report_repair_solver_study.py` | python | Audit terminal coding-solver evidence and preserve every planned cell; no API calls. |
 | `scripts/run_context_value.py` | python | Plan or explicitly run a budgeted artifact/feedback and prospective-forecast study. |
 | `scripts/run_continuation_pilot.py` | python | Run the explicit-budget OpenRouter/HumanEval+ pilot; defaults to plan only. |
 | `scripts/run_feedback_routing.py` | python | Plan or explicitly run new-task, feedback-only fixed-policy trajectories. |
@@ -249,6 +251,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | saved-evidence analysis | `src/vao/analysis/repair_calibration.py` | Audit terminal repair-calibration segments and report descriptive diagnostics. No model calls, training, stopping decisions or claim of held-out policy value. | read_json, lineage, group_estimate, mean, descriptive_interval, analyze, render, export_evidence |
 | saved-evidence analysis | `src/vao/analysis/repair_information.py` | Frozen descriptive analysis of public trace acquisition on failed checkpoints. | interval, summarize, render, main |
 | saved-evidence analysis | `src/vao/analysis/repair_interface.py` | Prespecified terminal analysis of the four repair-interface conditions. | linear_bounds, interval, summarize, render, main |
+| saved-evidence analysis | `src/vao/analysis/repair_solver.py` | Terminal-only coding-solver compatibility report; no selector or model comparison. | interval, summarize, render, main |
 | saved-evidence analysis | `src/vao/analysis/repair_stagnation.py` | Post hoc edit audit of a terminal information archive; never execute candidates. | syntax, classify, summarize, main |
 | saved-evidence analysis | `src/vao/analysis/report_feedback_routing.py` | Publish a completed feedback-only bank, audited statistics and static figures. | report_text, accounting_diagnostics, diagnostic_text, plot, diagnostic_plot, publish, main |
 | saved-evidence analysis | `src/vao/analysis/verify_feedback_evidence.py` | Verify published BigCodeBench evidence offline without executing candidate code. | equivalent, checked_path, checksum_audit, verify_interim, source_audit, verify, main |
@@ -282,6 +285,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/repair/pool.py` | Build and qualify a published development pool without executing upstream setup. | sha256, local_file, read_pool, audit_sources, write_json, build_pool, qualify_pool, main |
 | verified orchestration runtime | `src/vao/repair/provider.py` | Pinned OpenRouter adapter for the repair pilot; no implicit calls or retries. Constructing this adapter does not authorize a collection: the pilot launcher enforces the separately funded source freeze and a single-use campaign claim. | ProviderStopped, safe_error_details, dollars, Settings, NoRedirects, OpenRouterTransport |
 | verified orchestration runtime | `src/vao/repair/records.py` | Durable, exclusive records shared by offline and provider-backed adapters. | save, append, rows |
+| verified orchestration runtime | `src/vao/repair/solver_study.py` | Prepare a coding-solver compatibility control on fixed failed checkpoints. | design, planned_requests, construct, validate_packet, validate_origin, main |
 | verified orchestration runtime | `src/vao/repair/trace_worker.py` | Bounded execution observations, with no expected values or reference program. Copied as a standalone worker into the same OS sandbox as ordinary verification. Only exact built-in values are inspected: never call candidate repr/str methods. The trace is diagnostic candidate data, not a trusted correctness certificate. | compact, Trace, main |
 | verified orchestration runtime | `src/vao/repair/verifier.py` | Verify function-repair artifacts in fresh macOS sandboxes with parent-side scoring. | RepairVerifier |
 | verified orchestration runtime | `src/vao/repair/worker.py` | Execute one JSON function call; expected answers stay in the parent process. | main |

@@ -35,7 +35,7 @@ def reproduce(source, output):
                 target = root / path
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(content)
-        from vao.repair.contracts import TRACE_STUDY, INTERFACE_STUDY
+        from vao.repair.contracts import TRACE_STUDY, INTERFACE_STUDY, SOLVER_STUDY
         frozen = read(root / 'collection/manifest.json')['freeze']
         summarizer, renderer = summarize, render
         trace_study = frozen['study'] == TRACE_STUDY
@@ -43,6 +43,8 @@ def reproduce(source, output):
             from vao.analysis.repair_information import summarize as summarizer, render as renderer
         if frozen['study'] == INTERFACE_STUDY:
             from vao.analysis.repair_interface import summarize as summarizer, render as renderer
+        if frozen['study'] == SOLVER_STUDY:
+            from vao.analysis.repair_solver import summarize as summarizer, render as renderer
         report = summarizer(root / 'collection')
         assert report == read(source / 'analysis.json')
         assert renderer(report) == (source / 'REPORT.md').read_text()
