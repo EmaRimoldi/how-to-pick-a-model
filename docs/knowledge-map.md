@@ -81,7 +81,14 @@ The [prospective information study](../experiments/python-repair/checkpoint-envi
 adds a 96-request frozen design and terminal-only report, with no selector fitting.
 Its [first-request interruption](../experiments/python-repair/checkpoint-environment/results/information-interrupted-20261026/README.md)
 retains zero responses, one uncertain reservation and 95 never-admitted requests.
-The archived report and prepared public diagnostics reproduce; no collector is active.
+The [only successor's terminal bank](../experiments/python-repair/checkpoint-environment/results/information-stopped-20261026/README.md)
+retains 65 responses and 31 missing outcomes after another HTTP 429. No complete
+repair was observed; the original screen is inconclusive. The report, 130 saved
+evaluation records and public diagnostic projections reproduce offline.
+`scripts/audit_repair_stagnation.py` reproduces the separate post hoc edit audit:
+25 exact copies, 25 further entrypoint-only syntax changes, 15 other edits.
+No collector is active. The [next design](../experiments/python-repair/checkpoint-environment/STAGNATION-CONTROL-DESIGN.md)
+tests interface cues without adding bug facts; it enables no live calls.
 
 The [checkpoint environment](../experiments/python-repair/checkpoint-environment/README.md)
 retains the incomplete recovery pilot and both output-contract diagnostics.

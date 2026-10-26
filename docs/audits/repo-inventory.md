@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `544`
-- Bytes indexed: `51.6M`
+- Files indexed: `559`
+- Bytes indexed: `53.5M`
 
 ## Canonical Entrypoints
 
@@ -48,12 +48,12 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 327 | 47.0M |
+| `experiments` | 338 | 48.8M |
 | `docs` | 53 | 2.6M |
 | `uv.lock` | 1 | 937.0K |
-| `src` | 85 | 771.3K |
-| `tests` | 34 | 211.9K |
-| `scripts` | 36 | 104.3K |
+| `src` | 86 | 777.0K |
+| `tests` | 35 | 213.1K |
+| `scripts` | 38 | 108.4K |
 | `.github` | 5 | 3.3K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
@@ -63,18 +63,18 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 160 | 1.1M |
-| `.json` | 122 | 4.5M |
-| `.md` | 80 | 424.5K |
+| `.py` | 164 | 1.1M |
+| `.json` | 127 | 4.8M |
+| `.md` | 83 | 439.9K |
 | `.txt` | 67 | 349.7K |
 | `.jsonl` | 45 | 36.7M |
-| `.png` | 21 | 2.7M |
+| `.png` | 22 | 2.8M |
 | `.pdf` | 8 | 184.3K |
 | `.sh` | 8 | 15.5K |
-| `.zip` | 6 | 3.3M |
+| `.zip` | 7 | 4.6M |
 | `.sbatch` | 5 | 7.0K |
 | `.tex` | 5 | 297.7K |
-| `.svg` | 3 | 210.9K |
+| `.svg` | 4 | 281.3K |
 | `.yaml` | 3 | 2.6K |
 | `.lock` | 2 | 1.9M |
 | `.toml` | 2 | 2.8K |
@@ -109,6 +109,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/python-repair/checkpoint-environment/results/diagnostic-audit-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/gemma4b-calibration-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/information-interrupted-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/information-stopped-20261026/README.md`
 
 ## Script Entrypoints
 
@@ -117,6 +118,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/analyze_feedback_routing.py`
 - `scripts/analyze_recovery_transfer.py`
 - `scripts/analyze_recovery_validation.py`
+- `scripts/audit_repair_stagnation.py`
 - `scripts/cluster/bootstrap_engaging.sh`
 - `scripts/collect_repair_contract_probe.py`
 - `scripts/maintenance/build_command_manifest.py`
@@ -125,6 +127,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/maintenance/build_repo_inventory.py`
 - `scripts/maintenance/check_paper_build.py`
 - `scripts/maintenance/validate_agent_readiness.py`
+- `scripts/plot_repair_information.py`
 - `scripts/prepare_feedback_routing.py`
 - `scripts/prepare_python_repair.py`
 - `scripts/prepare_repair_contract_probe.py`

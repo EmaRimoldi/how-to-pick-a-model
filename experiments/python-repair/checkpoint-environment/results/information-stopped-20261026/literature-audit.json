@@ -1,0 +1,47 @@
+{
+  "recorded_utc": "2026-10-26T13:38:54.509670+00:00",
+  "scope": "Primary-source comparator audit while collector is active; no active treatment outcomes read or protocol/source changes.",
+  "novelty_established": false,
+  "sources": [
+    {
+      "title": "The Fact Selection Problem in LLM-Based Program Repair (Maniple)",
+      "url": "https://arxiv.org/html/2404.05520",
+      "sections": [
+        "IV definition",
+        "V-A/V-B",
+        "VI",
+        "III-B"
+      ],
+      "observed": "Maniple predicts success from fact-set identity, repository identity, prompt length and cyclomatic complexity, then chooses among selected fact sets. The objective is repair success, and the paper reports experimental API expense. One fact category uses angelic values extracted from fixed programs. The reported 88 test-passing fixes include 37 judged correct by human review.",
+      "inference": "A prospective acquisition comparator must not obtain trace-derived prompt length or reference-derived facts for free. This is a proposed deployment restriction, not a claim that Maniple did not consider cost at all."
+    },
+    {
+      "title": "DynaFix: Iterative Automated Program Repair Driven by Execution-Level Dynamic Information",
+      "url": "https://arxiv.org/html/2512.24635v2",
+      "sections": [
+        "3.4 Algorithm 1",
+        "5.3.1",
+        "5.3.2",
+        "5.3.3",
+        "5.4.1"
+      ],
+      "observed": "LPR uses fixed breadth/depth limits. Invalid or fatal patches end that refinement path; refinable failures receive newly acquired runtime information and patch history before another generation. The study separately measures instrumentation overhead, token usage and search-parameter trade-offs, with feedback ablations. Therefore iterative trace-guided repair, recovery heuristics and acquisition-cost measurement are prior art.",
+      "inference": "A bounded LPR-style fixed recovery rule is a relevant future comparator. A prospective learned decision to acquire a trace versus immediately repair at the same failure state still requires separate evidence. This reading does not prove a literature gap."
+    },
+    {
+      "title": "Multi-Perspective Agentic Program Repair via Code Property Graphs and Temporal Execution Graphs (CT-Repair)",
+      "url": "https://arxiv.org/html/2607.12605v1",
+      "sections": [
+        "III-A/B",
+        "III-D/E",
+        "IV-E",
+        "V-A",
+        "VII repair costs"
+      ],
+      "observed": "The framework builds static and dynamic graphs, then provides query tools to static, dynamic and hybrid agents. It generates candidates under the resulting strategies and concentrates a later iteration on the best-performing strategy. It reports token and runtime costs with bounded tool transitions and patch sampling; its token/runtime comparisons have stated model/environment limitations.",
+      "inference": "On-demand evidence retrieval and feedback-guided allocation also have direct precedents. Distinguish building a diagnostic representation from querying one already built. A fair future comparison must charge construction, querying, reasoning and candidate generation."
+    }
+  ],
+  "delivery_action": "After the current segment terminates, incorporate these source-based qualifications into related work alongside the terminal evidence. Do not alter the frozen three-arm study, screen, missingness handling or source while it runs.",
+  "baseline_implication": "If a useful intervention is later established, compare any acquisition selector with direct repair, always-diagnose, a bounded fixed LPR-style recovery rule, static fact-selection and costed two-candidate selection under separately frozen evaluation. These are future comparator requirements, not implemented or evaluated gains."
+}

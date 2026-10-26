@@ -13,6 +13,26 @@ reference-derived diagnostics, and untouched evaluation. Its novelty and benefit
 remain unestablished. Historical protocols and the broad-precedent verdict below
 are unchanged.
 
+A further primary-source check adds two close comparators. [DynaFix
+v2](https://arxiv.org/html/2512.24635v2), §3.4 and §5.3–5.4, combines bounded
+refinement/restart with fresh runtime feedback and measures acquisition overhead
+and token costs. [CT-Repair](https://arxiv.org/html/2607.12605v1), §III and §IV-E,
+builds queryable static/dynamic representations and allocates later refinement
+using feedback. Both are treated here as preprints, not replicated results.
+Neither iterative traces nor cost accounting nor on-demand evidence is a novelty
+claim. A future comparison needs a bounded fixed recovery heuristic and must
+charge evidence construction, queries, reasoning and generation. These additions
+were reviewed while collection ran, without changing its frozen protocol.
+
+Maniple's §V also uses prompt length as a fact-selection feature and reports
+experimental expenditure. Our prospective acquisition rule cannot obtain a
+future trace's length or reference-derived facts for free; that deployment
+restriction is our interpretation, not proof of a gap in all prior work.
+
+The [terminal information probe](../experiments/python-repair/checkpoint-environment/results/information-stopped-20261026/README.md)
+does not establish an acquisition benefit. A post hoc preservation pattern now
+motivates an interface control before further solver-capability or selector claims.
+
 ## Expanded novelty review — 2026-10-25
 
 **Verdict: the broad research premise already has direct precedents. Neither

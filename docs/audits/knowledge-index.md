@@ -9,8 +9,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `8`
-- Script entrypoints indexed: `32`
-- Code modules indexed: `78`
+- Script entrypoints indexed: `34`
+- Code modules indexed: `79`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `6`
@@ -174,7 +174,9 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/analyze_feedback_routing.py` | python | Audit and analyze fixed feedback-only trajectories without making model calls. Public CLI facade; implementation lives in vao.analysis.analyze_feedback_routing. |
 | `scripts/analyze_recovery_transfer.py` | python | Audit recorded MBPP+ recovery evidence and reproduce the frozen statistical comparisons. Public CLI facade; implementation lives in vao.analysis.analyze_recovery_transfer. |
 | `scripts/analyze_recovery_validation.py` | python | Audit frozen held-out recovery data and replay its finite budgeted policy bank. Public CLI facade; implementation lives in vao.analysis.analyze_recovery_validation. |
+| `scripts/audit_repair_stagnation.py` | python | Audit saved edits after a repair information study terminates; no API calls. |
 | `scripts/collect_repair_contract_probe.py` | python | Run only an explicitly authorized and frozen output-contract study. |
+| `scripts/plot_repair_information.py` | python | Plot the frozen information report and separate post hoc edit audit, offline. |
 | `scripts/prepare_feedback_routing.py` | python | Verify the pinned BigCodeBench download and reproduce reference-only eligibility. |
 | `scripts/prepare_python_repair.py` | python | Plan or explicitly run an offline Python repair demo, qualification or audit. |
 | `scripts/prepare_repair_contract_probe.py` | python | Prepare a reviewable, offline-only Gemma response-contract diagnostic. |
@@ -243,6 +245,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | saved-evidence analysis | `src/vao/analysis/repair_artifacts.py` | Post hoc structural-edit diagnostic for a closed repair bank; zero model calls. | same_ast, diagnose, main |
 | saved-evidence analysis | `src/vao/analysis/repair_calibration.py` | Audit terminal repair-calibration segments and report descriptive diagnostics. No model calls, training, stopping decisions or claim of held-out policy value. | read_json, lineage, group_estimate, mean, descriptive_interval, analyze, render, export_evidence |
 | saved-evidence analysis | `src/vao/analysis/repair_information.py` | Frozen descriptive analysis of public trace acquisition on failed checkpoints. | interval, summarize, render, main |
+| saved-evidence analysis | `src/vao/analysis/repair_stagnation.py` | Post hoc edit audit of a terminal information archive; never execute candidates. | syntax, classify, summarize, main |
 | saved-evidence analysis | `src/vao/analysis/report_feedback_routing.py` | Publish a completed feedback-only bank, audited statistics and static figures. | report_text, accounting_diagnostics, diagnostic_text, plot, diagnostic_plot, publish, main |
 | saved-evidence analysis | `src/vao/analysis/verify_feedback_evidence.py` | Verify published BigCodeBench evidence offline without executing candidate code. | equivalent, checked_path, checksum_audit, verify_interim, source_audit, verify, main |
 | verified orchestration runtime | `src/vao/decisions/bigcode.py` | Pinned, standard-library BigCodeBench subset and sandbox reference audit. | sha, stdlib_task, shingles, similarity, BigCodeVerifier, audit_tasks |

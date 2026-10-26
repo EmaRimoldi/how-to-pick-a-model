@@ -43,6 +43,8 @@ not a proof that no other relevant paper exists.
 | [Chen et al., ACL 2025](https://aclanthology.org/2025.acl-long.881/) | Generated expected answers can introduce misleading feedback. Study observed intermediate execution states without inventing an oracle. |
 | [Haque et al., KnowledgeNLP 2025](https://aclanthology.org/2025.knowledgenlp-1.17/) | Naively adding execution traces helps only two of six configurations; complexity matters. Bound trace size and retain negative effects. |
 | [TraceRepair, ASE 2026 per author record](https://arxiv.org/abs/2604.02647) | Trace-guided diagnosis and repair are already proposed. Collecting a trace is not a new method by itself. |
+| [DynaFix, v2 preprint](https://arxiv.org/html/2512.24635v2) | Iterative runtime feedback and bounded refinement/restart already include acquisition-overhead and token-cost measurements. Costed traces alone are not new. |
+| [CT-Repair, July 2026 preprint](https://arxiv.org/html/2607.12605v1) | Queryable static/dynamic evidence and feedback-guided strategy allocation are prior art. Charge representation construction as well as subsequent queries. |
 | [VeriHarness, July 2026 preprint](https://arxiv.org/html/2607.14167) | On TextWorld, actionable alternatives matter more than JSON versus prose. Its HumanEval scope check exposes the limit of invisible failures. Our existing feedback already includes public inputs, expected values and observations; reformatting them must be a separate control. |
 | [S*, 2025](https://arxiv.org/html/2502.14382) and [PATSSEL, 2026](https://aclanthology.org/2026.findings-emnlp.2173/) | Execution-based candidate selection, iterative refinement and prospective routing have direct precedents. Include their relevant simplified baselines and all inference costs. |
 
@@ -103,17 +105,32 @@ public test cannot be assumed to reveal an untested requirement.
 
 ## Current action and limits
 
-The [diagnostic preparation protocol](DIAGNOSTIC-PREPARATION.md) and offline
-adapter are implemented. The separate [information study](INFORMATION-PROTOCOL.md)
-froze 96 requests under a declared $0.34 sublimit. Its
-[first launch stopped with HTTP 429](results/information-interrupted-20261026/README.md)
-before receiving a response. There are no new model outcomes, no selected response
-format and no relaxed gate. The three previous capability controls remain closed.
-Accounting now totals $0.02539395 including six unresolved reserves, under the
-existing $0.60 ceiling. No collector is active; the uncertainty is preserved.
-Every new collection still needs an explicit sublimit, a reviewed clean source
-freeze, exact requests and a single-use launch claim; the broad instruction to
-continue does not authorize duplicate calls or unlimited expenditure.
+The [diagnostic adapter](DIAGNOSTIC-PREPARATION.md), frozen information study and
+[terminal replay](results/information-stopped-20261026/README.md) are delivered.
+After two HTTP 429 interruptions, 65 of 96 planned outcomes were received; all
+65 are usable but none fully repairs a bug. Thirty-one cells remain unknown,
+so the original screen is inconclusive. Do not convert this into a general null
+effect or change the gate to permit training.
+
+The post hoc edit audit sharpens the immediate diagnosis: 25 exact copies and
+25 additional entrypoint-only syntax changes preserve the internal implementation
+in many answers. Limited capacity, code preservation and ambiguous interpretation
+of the repair instructions remain competing explanations. More trace information
+has not yet supplied successful alternatives for a selector to choose from.
+
+The next milestone is therefore an [interface control](STAGNATION-CONTROL-DESIGN.md)
+that changes two non-oracle cues independently: the provenance comment and explicit
+permission to edit internal helpers. Establish repeated full repairs, then return
+to costed diagnostic acquisition. The final goal remains a deployable acquisition
+policy that improves on the best fixed action on untouched bugs; its benefit and
+novelty are still unproven. This development control is not that policy or its
+held-out evaluation.
+
+Accounting totals $0.04058467 including seven unresolved reserves, under the
+existing $0.60 ceiling. No collector is active; no recursive successor is enabled.
+Every new collection needs a separately declared sublimit, reviewed clean source
+freeze, exact requests, analysis and single-use launch claim. Historic uncertainties,
+scores, manuscripts and failed gates remain preserved.
 
 The managed goal tool cannot edit an active objective's text. This user-authorized
 amendment and `runs/ACTIVE_RESEARCH_STATE.json` therefore record the operative

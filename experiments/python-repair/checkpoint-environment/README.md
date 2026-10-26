@@ -9,8 +9,11 @@ Read the [current goal amendment and literature basis](GOAL-AMENDMENT-20261026.m
 [public-only diagnostic prototype](DIAGNOSTIC-PREPARATION.md), and
 [failure audit / offline replay](results/diagnostic-audit-20261026/README.md).
 Eight of twelve saved JSON candidates expose a public failure and yield a
-consistent bounded execution trace; four do not trigger a probe. No new model
-response is available for this intervention, so no repair benefit is established.
+consistent bounded execution trace; four do not trigger a probe. The
+[terminal information bank](results/information-stopped-20261026/README.md)
+contains 65 usable responses but no complete repair. A post hoc audit finds
+25 exact copies and 25 further entrypoint-only syntax changes. This motivates
+the [next interface control](STAGNATION-CONTROL-DESIGN.md), not selector training.
 
 The [prospective information probe](INFORMATION-PROTOCOL.md) fixes 96 requests:
 eight failed checkpoints, four draws and three information conditions. Its
@@ -20,12 +23,17 @@ and freeze machinery is reused; the new study has a separate identity and
 analysis. Passing its screen permits only independent calibration, not training.
 The [first launch stopped with HTTP 429](results/information-interrupted-20261026/README.md)
 on its first admission: zero responses, one retained reserve and 95 requests
-never sent. Cumulative commitment is $0.02539395, including six unresolved calls.
+never sent. Its cumulative commitment was $0.02539395, including six unresolved calls.
 The terminal archive/report and public diagnostic projections reproduce offline.
 The [recorded manual exception](INFORMATION-CONTINUATION-AMENDMENT.md) permits
 one reviewed segment containing only the 95 original never-admitted requests.
 The first cell stays missing and reserved, and the complete-bank screening gate
-cannot pass. No automatic or recursive continuation is enabled.
+cannot pass. That segment also stopped with HTTP 429: 65 responses, one new
+uncertain admission and 29 requests never admitted. The full design retains 31
+unknown cells; trace-minus-focused bounds span −31.25 to +31.25 percentage
+points. Cumulative commitment is $0.04058467 including seven unresolved calls.
+No collector is active and no further successor is enabled. The report, 130
+saved evaluation records and public diagnostic projections reproduce offline.
 
 Read the [complete contract findings](results/contract-deepinfra-20261026/README.md).
 The earlier recovery pilot remains incomplete after repeated provider HTTP 429
