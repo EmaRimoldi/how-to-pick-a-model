@@ -51,3 +51,33 @@ Report segment and pacing changes alongside outcomes; the bank is incomplete
 and remains development data. Pacing time is collection overhead, not model
 inference time or a demonstrated deployment cost. Do not pool observations as
 independent bugs or claim a held-out selector result from this calibration.
+
+## Final operational segment (recorded before treatment analysis)
+
+The 15-second segment, frozen at `26c01a6`, stopped on HTTP 429 after 34 saved
+responses and 35 admissions, with no Retry-After header. It completed five
+trajectories and partially started a sixth. Across the three immutable segments,
+76 responses and 79 admissions are retained: 14 trajectories finished, three
+remain partial and seven were never started. Known charges total $0.00379621;
+three uncertain reserves total $0.00454656. Commitment is **$0.00834277**.
+
+The user's delegated exception still covers the seven untouched trajectories,
+a subset of the authorized original 22. The [final continuation config](PILOT-FINAL-CONTINUATION.json)
+excludes every started trajectory across all ancestors and preserves their
+receipts/reserves once. It changes only dispatch spacing to **60 seconds**;
+this is a conservative serving choice, not an established provider requirement.
+No model/provider, task, seed, prompt, action or verifier changes. At most 105
+new calls reserve $0.15912960, at most $0.16747237 with prior commitments.
+The segment allowance is $0.59165723 under the same $0.60 cumulative cap.
+
+This is the last operational continuation of this pilot: another provider error
+closes the incomplete bank for descriptive analysis. No treatment outcomes were
+inspected to choose this cutoff. Successful completion would give at most 21 of
+24 complete trajectories, retaining the three partial ones. No learned selector
+or action-efficacy result can be claimed before auditing and analyzing the bank.
+
+The offline calibration reporter is prepared and tested on scripted data. Its
+policy table uses a common complete-checkpoint cohort for all five controls,
+averages within bugs before across bugs, and retains missing-draw bounds for
+all observed eligible checkpoints. It separates fresh replay timings from
+reproducible outcome/cost fields and makes no evaluator-oracle selection.

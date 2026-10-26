@@ -9,8 +9,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `8`
-- Script entrypoints indexed: `24`
-- Code modules indexed: `67`
+- Script entrypoints indexed: `25`
+- Code modules indexed: `68`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `6`
@@ -179,6 +179,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/prepare_repair_pilot.py` | python | Plan repair calibration offline; live collection requires a funded freeze. |
 | `scripts/qualify_python_repair_pool.py` | python | Offline build, provenance audit and isolated qualification of real-bug tasks. |
 | `scripts/report_feedback_routing.py` | python | Publish a completed feedback-only bank, audited statistics and static figures. Public CLI facade; implementation lives in vao.analysis.report_feedback_routing. |
+| `scripts/report_repair_calibration.py` | python | Audit terminal repair-pilot segments and report descriptive results offline. |
 | `scripts/run_context_value.py` | python | Plan or explicitly run a budgeted artifact/feedback and prospective-forecast study. |
 | `scripts/run_continuation_pilot.py` | python | Run the explicit-budget OpenRouter/HumanEval+ pilot; defaults to plan only. |
 | `scripts/run_feedback_routing.py` | python | Plan or explicitly run new-task, feedback-only fixed-policy trajectories. |
@@ -230,6 +231,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | saved-evidence analysis | `src/vao/analysis/analyze_feedback_routing.py` | Audit and analyze fixed feedback-only trajectories without making model calls. | records, audit, analyze, main |
 | saved-evidence analysis | `src/vao/analysis/analyze_recovery_transfer.py` | Audit recorded MBPP+ recovery evidence and reproduce the frozen statistical comparisons. | require, same, interval, recovery_lineages, audit, variance_stat, analyze, markdown |
 | saved-evidence analysis | `src/vao/analysis/analyze_recovery_validation.py` | Audit frozen held-out recovery data and replay its finite budgeted policy bank. | read, require, reservation, paired_interval, audit, rollout, development_replay_best, analyze |
+| saved-evidence analysis | `src/vao/analysis/repair_calibration.py` | Audit terminal repair-calibration segments and report descriptive diagnostics. No model calls, training, stopping decisions or claim of held-out policy value. | read_json, lineage, group_estimate, mean, descriptive_interval, analyze, render, main |
 | saved-evidence analysis | `src/vao/analysis/report_feedback_routing.py` | Publish a completed feedback-only bank, audited statistics and static figures. | report_text, accounting_diagnostics, diagnostic_text, plot, diagnostic_plot, publish, main |
 | saved-evidence analysis | `src/vao/analysis/verify_feedback_evidence.py` | Verify published BigCodeBench evidence offline without executing candidate code. | equivalent, checked_path, checksum_audit, verify_interim, source_audit, verify, main |
 | verified orchestration runtime | `src/vao/decisions/bigcode.py` | Pinned, standard-library BigCodeBench subset and sandbox reference audit. | sha, stdlib_task, shingles, similarity, BigCodeVerifier, audit_tasks |

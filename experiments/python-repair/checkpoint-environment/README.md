@@ -1,17 +1,18 @@
 # Python repair checkpoint environment
 
 **Status: executable repair environment, scripted demo and gated OpenRouter
-collector; a new $0.60 pilot cap is authorized. The first calibration segment
-stopped after ten responses and one uncertain request. No completed calibration,
-fitted selector or frozen scientific evaluation.**
+collector; the $0.60 development pilot has 76 saved responses across three
+interrupted segments. No completed calibration, fitted selector or held-out
+scientific evaluation.**
 
-The [interruption record and authorized manual exception](INTERRUPTION-20261026.md)
-preserve all responses and the uncertain reserve. Only the 22 entirely unstarted
-trajectories are proposed for continuation, under the same cumulative cap;
-the user authorized that reviewed exception. Its successor subsequently hit
-HTTP 429. The [pacing amendment](PACING-AMENDMENT-20261026.md) covers only the
-thirteen trajectories still unstarted, with 15-second spacing and both uncertain
-reserves retained. All segments remain development evidence, not a held-out test.
+The [interruption record](INTERRUPTION-20261026.md) and
+[pacing amendment](PACING-AMENDMENT-20261026.md) preserve all historical data and
+three uncertain reserves. The user delegated continuation of only original
+unstarted trajectories under the same cumulative cap. The final reviewed
+segment includes the seven still untouched trajectories, with 60-second spacing;
+another provider error closes this pilot as incomplete. All segments remain
+development evidence. The known charges plus reserves are $0.00834277 before
+this final segment.
 
 The [real-bug development pool](development/README.md) adds twelve adapted BugsInPy
 tasks with pinned source excerpts, public/evaluator cases, documented exclusions
@@ -254,3 +255,24 @@ beyond the complete current request-to-outcome law.
 12B/27B handoffs, an experimental rollback arm, SQL, ATIF export and full-repository
 repair are later extensions. Source: `src/vao/repair/`; tests:
 `tests/decisions/test_python_repair.py`.
+
+## Offline calibration report
+
+The reporter never calls a model or trains a selector. Only use it after the
+last segment ends; interrupted banks require an explicit flag. It follows all
+immutable ancestors, audits receipts and prompt projections, and retains the
+full selected task/trajectory denominator and incomplete-checkpoint bounds.
+
+```bash
+uv run python scripts/report_repair_calibration.py \
+  --input runs/repair-gemma4b-development-final-20261026 \
+  --output runs/repair-calibration-report
+# Add --allow-interrupted only when the final collector has stopped in error.
+```
+
+Policy diagnostics use the same complete checkpoints and equal weight per bug.
+Descriptive intervals resample bugs rather than treating correlated checkpoints
+as independent. Costs include prefix work and discarded candidates. Fresh
+replay-selection timings are machine-dependent; all outcome and cost fields
+must reproduce independently of those timings. No prospective-selector value or
+scaling law follows from this small development pool.
