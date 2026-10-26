@@ -5,8 +5,8 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `45`
-- Default-safe commands: `35`
+- Commands indexed: `47`
+- Default-safe commands: `37`
 - Missing required maintenance actions: `0`
 
 ## Safety Classes
@@ -16,8 +16,8 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `cluster-setup` | 1 |
 | `live-local` | 6 |
 | `mixed-cli` | 3 |
-| `read-only-analysis` | 21 |
-| `safe-figure-regeneration` | 2 |
+| `read-only-analysis` | 22 |
+| `safe-figure-regeneration` | 3 |
 | `safe-local` | 10 |
 | `safe-local-optional-tool` | 2 |
 
@@ -26,7 +26,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | Surface | Commands |
 | --- | --- |
 | `maintenance` | 6 |
-| `scripts` | 32 |
+| `scripts` | 34 |
 | `scripts/cluster` | 1 |
 | `scripts/maintenance` | 6 |
 
@@ -48,12 +48,14 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/maintenance/check_paper_build.py` | scripts/maintenance | `safe-local-optional-tool` | yes | pdflatex, bibtex | Compile active paper TeX sources into an out-of-tree build directory. |
 | `python scripts/plot_repair_information.py` | scripts | `safe-figure-regeneration` | yes | checked-in evidence | Plot the frozen information report and separate post hoc edit audit, offline. |
 | `python scripts/plot_repair_interface.py` | scripts | `safe-figure-regeneration` | yes | checked-in evidence | Plot all four terminal repair-interface conditions; never read a live collection. |
+| `python scripts/plot_repair_solver.py` | scripts | `safe-figure-regeneration` | yes | checked-in evidence | Render terminal solver draws; synthetic layout data requires an explicit flag. |
 | `python scripts/analyze_context_value.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit prospective context-value records and compare matched outcomes by task cluster. Public CLI facade; implementation lives in vao.analysis.analyze_context_value. |
 | `python scripts/analyze_continuation_pilot.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit saved pilot receipts/outcomes and render an exploratory cost/success plot. Public CLI facade; implementation lives in vao.analysis.analyze_continuation_pilot. |
 | `python scripts/analyze_feedback_routing.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit and analyze fixed feedback-only trajectories without making model calls. Public CLI facade; implementation lives in vao.analysis.analyze_feedback_routing. |
 | `python scripts/analyze_recovery_transfer.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit recorded MBPP+ recovery evidence and reproduce the frozen statistical comparisons. Public CLI facade; implementation lives in vao.analysis.analyze_recovery_transfer. |
 | `python scripts/analyze_recovery_validation.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit frozen held-out recovery data and replay its finite budgeted policy bank. Public CLI facade; implementation lives in vao.analysis.analyze_recovery_validation. |
 | `python scripts/audit_repair_stagnation.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit saved edits after a repair information study terminates; no API calls. |
+| `python scripts/audit_repair_trigger_coverage.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit only closed 27B source checkpoints, never ongoing model outcomes. |
 | `python scripts/collect_repair_contract_probe.py` | scripts | `read-only-analysis` | yes | inspect script before running | Run only an explicitly authorized and frozen output-contract study. |
 | `python scripts/prepare_feedback_routing.py` | scripts | `read-only-analysis` | yes | inspect script before running | Verify the pinned BigCodeBench download and reproduce reference-only eligibility. |
 | `python scripts/prepare_repair_contract_probe.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare a reviewable, offline-only Gemma response-contract diagnostic. |

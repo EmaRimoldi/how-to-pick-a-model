@@ -1,0 +1,42 @@
+{
+  "observed_utc": "2026-10-26T15:46:55.730406+00:00",
+  "scope": "Targeted primary-source follow-up while the frozen solver control remains live; no active outcomes inspected or protocol changed.",
+  "sources": [
+    {
+      "title": "Calibrate-Then-Act: Cost-Aware Exploration in LLM Agents",
+      "url": "https://arxiv.org/html/2602.16699v1",
+      "status": "arXiv v1 preprint, 2026-02-18",
+      "locations": [
+        "5.2",
+        "6",
+        "7",
+        "Appendix C"
+      ],
+      "verified": "CTA explicitly conditions decisions on estimated priors. Its coding task infers three latent CSV formatting attributes. UNIT_TEST reveals one true attribute; CODE executes a proposed configuration. Reward discounts correctness multiplicatively for tests and code attempts. FileReading has 1,400 training, 300 validation and 300 test tasks; four relative-cost settings reuse each task. A filename predictor supplies priors to Qwen3-8B, with prompted and RL comparisons.",
+      "inference_for_our_goal": "Prospective cost-aware information acquisition is prior art. A possible contribution requires real failed patches, imperfect observable diagnostics and measured deployment resource envelopes; changing the domain alone does not establish novelty. A calibrated prior/value comparator belongs in a future protocol, not in this live solver control."
+    },
+    {
+      "title": "Rethinking the Value of Agent-Generated Tests for LLM-Based Software Engineering Agents",
+      "url": "https://arxiv.org/html/2602.07900v1",
+      "status": "arXiv v1 preprint, 2026-02-08; venue/DOI placeholders are not publication evidence",
+      "locations": [
+        "2.4",
+        "5.1",
+        "Table 6",
+        "5.2",
+        "Table 7"
+      ],
+      "verified": "The study analyzes six models on SWE-bench Verified and changes test-writing instructions for four. Table 7 reports GPT-5.2 at 359/500 resolutions both before and after encouragement, with average calls rising 19.76 to 20.84. Discouragement reduces Kimi calls 46.82 to 30.25 and resolutions 317 to 304; DeepSeek calls 46.40 to 35.06 and resolutions 300 to 291.",
+      "inference_for_our_goal": "Prompt interventions alter the workflow, not only the information content. These observations motivate measuring diagnostic opportunity cost; they do not show diagnostics are generally useless or isolate our trace intervention. No claim of statistical equivalence is imported."
+    }
+  ],
+  "novelty_status": "Not established. Do not describe prospective acquisition or costed testing itself as a new method.",
+  "current_protocol_unchanged": true,
+  "active_outcomes_read": false,
+  "provider_generation_calls": 0,
+  "integrate_after_terminal": [
+    "docs/recovery-related-work.md",
+    "experiments/python-repair/checkpoint-environment/GOAL-AMENDMENT-20261026.md"
+  ],
+  "future_comparison_requirement": "Only after repeated solver and intervention usefulness: compare a pre-acquisition calibrated expected-value baseline, best fixed rule, static fact-selection rule and selector on untouched grouped bugs, charging all acquisition and selection resources."
+}

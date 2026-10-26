@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "kind": "closed_source_trigger_coverage_audit",
+  "checked_utc": "2026-10-26T15:34:50.054506+00:00",
+  "source_result": "experiments/python-repair/checkpoint-environment/results/contract-gemma27b-20261026",
+  "source_archive_sha256": "f2a3b228425ee98a8a5bbc0422f6bdb486d44eeb1a2a86d4cabeba309103c913",
+  "api_calls": 0,
+  "active_collection_outcomes_read": false,
+  "historical_outcomes_changed": false,
+  "source_evaluations_reexecuted": 24,
+  "sandbox_preflight": {
+    "filesystem_denied": true,
+    "network_denied": true,
+    "credentials_absent": true,
+    "backend": "macos-sandbox-exec",
+    "python": "3.13.12"
+  },
+  "source_candidates": 12,
+  "public_failure_triggered": 8,
+  "untriggered_full_passes": 1,
+  "untriggered_evaluator_failures": 3,
+  "perfect_recovery_counterfactual_ceiling": {
+    "full_passes": 9,
+    "denominator": 12,
+    "fraction": 0.75,
+    "assumptions": [
+      "Every triggered source is fully repaired.",
+      "Public-pass source artifacts are accepted unchanged.",
+      "The original frozen public-plus-evaluator criterion is retained."
+    ],
+    "not_an_observed_policy_result": true
+  },
+  "original_prefix_cost_once_usd": "0.00152456",
+  "known_specification_ambiguity": {
+    "task": "development/bugsinpy-adapted/youtube-dl-027",
+    "source": "experiments/python-repair/checkpoint-environment/results/diagnostic-audit-20261026/README.md",
+    "note": "One of the three untriggered evaluator failures involves the previously documented timestamp ambiguity; do not count all three as unambiguous model errors."
+  },
+  "interpretation": "Success conditional on eight triggered failures must remain separate from end-to-end success over twelve retained sources. A recovery-only policy cannot change accepted unchanged sources. A future verifier/specification revision needs separate versioning and evaluation; current tasks and gates stay frozen.",
+  "fit_selector": false,
+  "task_table": [
+    {
+      "task": "development/bugsinpy-adapted/youtube-dl-003",
+      "source_attempt_id": "394be8d25c6a2e1b4670138ec4e5e4ed1a4456975341a9230c2b8e7ebb695dcb",
+      "public_pass": false,
+      "full_pass": false,
+      "triggered": true,
+      "untriggered_evaluator_failure": false,
+      "prefix_usd": "0.00016088",
+      "verification_seconds": 0.5711288739694282
+    },
+    {
+      "task": "development/bugsinpy-adapted/youtube-dl-011",
+      "source_attempt_id": "a57eb5cfc99cad402db0e89796164bc58a5fb6f3bf72ac2b8732dc40789292df",
+      "public_pass": true,
+      "full_pass": false,
+      "triggered": false,
+      "untriggered_evaluator_failure": true,
+      "prefix_usd": "0.0000724",
+      "verification_seconds": 0.5744707500562072
+    },
+    {
+      "task": "development/bugsinpy-adapted/youtube-dl-013",
+      "source_attempt_id": "aec861ef253b0a5fe8f5daa3c1aa35f803228e5904ffdb868960cd2507d76d02",
+      "public_pass": false,
+      "full_pass": false,
+      "triggered": true,
+      "untriggered_evaluator_failure": false,
+      "prefix_usd": "0.00009792",
+      "verification_seconds": 0.6056988760828972
+    },
+    {
+      "task": "development/bugsinpy-adapted/youtube-dl-020",
+      "source_attempt_id": "91cbfb266e55b579641dc86eb4a12855db10cb6fd0d36d07d258195c8b73cf9d",
+      "public_pass": false,
+      "full_pass": false,
+      "triggered": true,
+      "untriggered_evaluator_failure": false,
+      "prefix_usd": "0.00024288",
+      "verification_seconds": 0.5517208749661222
+    },
+    {
+      "task": "development/bugsinpy-adapted/youtube-dl-027",
+      "source_attempt_id": "5ec5ae466631b43b38756dcf73c82093c496853478f1273cd05091d20b15859e",
+      "public_pass": true,
+      "full_pass": false,
+      "triggered": false,
+      "untriggered_evaluator_failure": true,
+      "prefix_usd": "0.00011024",
+      "verification_seconds": 0.557791666011326
+    },
+    {
+      "task": "development/bugsinpy-adapted/youtube-dl-031",
+      "source_attempt_id": "b9406574fe6e7bbe8f345ac4c7cc8960cd96779a595a6e2a0e92387d7bf6ba48",
+      "public_pass": false,
+      "full_pass": false,
+      "triggered": true,
+      "untriggered_evaluator_failure": false,
+      "prefix_usd": "0.000154",
+      "verification_seconds": 0.566021875012666
+    },
+    {
+      "task": "development/bugsinpy-adapted/youtube-dl-032",
+      "source_attempt_id": "71e076fd8d72d776a1d1c0fa23de82ca25e97ea464920fd4c90f88e754c44c4f",
+      "public_pass": true,
+      "full_pass": true,
+      "triggered": false,
+      "untriggered_evaluator_failure": false,
+      "prefix_usd": "0.00006128",
+      "verification_seconds": 0.4437900419579819
+    },
+    {
+      "task": "development/bugsinpy-adapted/youtube-dl-033",
+      "source_attempt_id": "124975883e46e8ed461c7bdb271f088c69e7acf873acc3605844de4dd24ae8a3",
+      "public_pass": false,
+      "full_pass": false,
+      "triggered": true,
+      "untriggered_evaluator_failure": false,
+      "prefix_usd": "0.0001372",
+      "verification_seconds": 0.8950443750945851
+    },
+    {
+      "task": "development/bugsinpy-adapted/youtube-dl-042",
+      "source_attempt_id": "8bd4c5cf0ee68ac17ef4831115efff4628d6594666daf43bfc39e80592747b18",
+      "public_pass": false,
+      "full_pass": false,
+      "triggered": true,
+      "untriggered_evaluator_failure": false,
+      "prefix_usd": "0.0000828",
+      "verification_seconds": 0.56069316691719
+    },
+    {
+      "task": "development/bugsinpy-adapted/youtube-dl-043",
+      "source_attempt_id": "7bc35974504bc6007120bfb2a7d45be9595f6a2a79d4f5a1b8162609f67c5a96",
+      "public_pass": false,
+      "full_pass": false,
+      "triggered": true,
+      "untriggered_evaluator_failure": false,
+      "prefix_usd": "0.0000656",
+      "verification_seconds": 0.5759038330288604
+    },
+    {
+      "task": "development/bugsinpy-adapted/httpie-005",
+      "source_attempt_id": "18ecfedf9a387df38d3421e42bf763d7a78679459f5f441b57b4f9ddf0dc6243",
+      "public_pass": false,
+      "full_pass": false,
+      "triggered": true,
+      "untriggered_evaluator_failure": false,
+      "prefix_usd": "0.00015792",
+      "verification_seconds": 0.5548656668979675
+    },
+    {
+      "task": "development/bugsinpy-adapted/tornado-009",
+      "source_attempt_id": "343fbb6910a1a96d06599b0af3f0e055c9247f4b7449c34e17dd75d7c143b8b6",
+      "public_pass": true,
+      "full_pass": false,
+      "triggered": false,
+      "untriggered_evaluator_failure": true,
+      "prefix_usd": "0.00018144",
+      "verification_seconds": 0.5590749580878764
+    }
+  ],
+  "reproducer_sha256": "21594f82df2066fab47c4533296d695c09f158a90a02901c55a76269167f4ede"
+}

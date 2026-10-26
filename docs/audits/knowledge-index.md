@@ -9,7 +9,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `8`
-- Script entrypoints indexed: `39`
+- Script entrypoints indexed: `41`
 - Code modules indexed: `83`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
@@ -175,9 +175,11 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/analyze_recovery_transfer.py` | python | Audit recorded MBPP+ recovery evidence and reproduce the frozen statistical comparisons. Public CLI facade; implementation lives in vao.analysis.analyze_recovery_transfer. |
 | `scripts/analyze_recovery_validation.py` | python | Audit frozen held-out recovery data and replay its finite budgeted policy bank. Public CLI facade; implementation lives in vao.analysis.analyze_recovery_validation. |
 | `scripts/audit_repair_stagnation.py` | python | Audit saved edits after a repair information study terminates; no API calls. |
+| `scripts/audit_repair_trigger_coverage.py` | python | Audit only closed 27B source checkpoints, never ongoing model outcomes. |
 | `scripts/collect_repair_contract_probe.py` | python | Run only an explicitly authorized and frozen output-contract study. |
 | `scripts/plot_repair_information.py` | python | Plot the frozen information report and separate post hoc edit audit, offline. |
 | `scripts/plot_repair_interface.py` | python | Plot all four terminal repair-interface conditions; never read a live collection. |
+| `scripts/plot_repair_solver.py` | python | Render terminal solver draws; synthetic layout data requires an explicit flag. |
 | `scripts/prepare_feedback_routing.py` | python | Verify the pinned BigCodeBench download and reproduce reference-only eligibility. |
 | `scripts/prepare_python_repair.py` | python | Plan or explicitly run an offline Python repair demo, qualification or audit. |
 | `scripts/prepare_repair_contract_probe.py` | python | Prepare a reviewable, offline-only Gemma response-contract diagnostic. |

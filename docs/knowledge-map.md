@@ -107,7 +107,14 @@ uses `prepare_repair_solver_study.py` and `report_repair_solver_study.py` with t
 same one-use collector and independent archived replay. It fixes 32 new draws
 on eight already exposed failures, keeps original public messages, and checks
 repeated full repairs with Qwen3-Coder-Next before any separate policy study.
-It supplies no causal cross-model comparison or selector training.
+Its [complete bank](../experiments/python-repair/checkpoint-environment/results/solver-qwen-20261026/README.md)
+has ten full repairs in 32 attempts and meets the repeated-success screen on
+three bugs; 62 saved evaluation records reproduce independently. All collectors
+are closed. `plot_repair_solver.py` renders the complete planned grid;
+`audit_repair_trigger_coverage.py` independently checks the twelve closed source
+candidates and their conditional acceptance ceiling. The next stage is a new
+intervention calibration. No causal cross-model comparison, acquisition advantage
+or selector training is established.
 
 The [checkpoint environment](../experiments/python-repair/checkpoint-environment/README.md)
 retains the incomplete recovery pilot and both output-contract diagnostics.

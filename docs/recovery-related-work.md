@@ -31,7 +31,22 @@ restriction is our interpretation, not proof of a gap in all prior work.
 
 The [terminal information probe](../experiments/python-repair/checkpoint-environment/results/information-stopped-20261026/README.md)
 does not establish an acquisition benefit. A post hoc preservation pattern now
-motivates an interface control before further solver-capability or selector claims.
+motivated the separately preserved interface and solver controls; it remains
+inconclusive and does not become a positive acquisition result.
+
+[Calibrate-Then-Act v3](https://arxiv.org/html/2602.16699v3) supplies a direct
+prospective cost-aware acquisition comparator. Its [official code](https://github.com/NSF-Simons-CosmicAI-Institute/CalibrateThenAct/blob/33164d5fe68d666381598f17fb01f1a7410489f4/env_explorer/src/conversation/conversation_manager_code.py#L81)
+reveals true formatting attributes. A calibrated pre-acquisition baseline belongs
+in our later comparison; imperfect real-bug observations do not alone establish
+novelty. [Rethinking Agent-Generated Tests](https://arxiv.org/html/2602.07900v1)
+further motivates measuring diagnostic opportunity cost. These are preprints.
+The [review record](../experiments/python-repair/checkpoint-environment/results/solver-qwen-20261026/cta-source-review.json)
+was prepared without inspecting live outcomes.
+
+The [complete solver control](../experiments/python-repair/checkpoint-environment/results/solver-qwen-20261026/README.md)
+now establishes repeated repair compatibility on three exposed bugs. This
+permits a separately frozen intervention calibration, not selector fitting or
+an acquisition-benefit claim.
 
 ## Expanded novelty review — 2026-10-25
 

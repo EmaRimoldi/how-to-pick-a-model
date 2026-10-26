@@ -1,71 +1,48 @@
 # Python repair checkpoint environment
 
-**Status: all three 4B/12B/27B contract studies completed their 36 calls and failed
-the unchanged calibration gate. The user has redirected the immediate research
-goal toward deciding when acquiring a diagnostic is worth its cost before another
-repair. No trained selector, selected response format or scaling-law claim.**
+**Current result: the Qwen coding-solver compatibility screen passes, with
+10 complete repairs in 32 attempts and repeated success on three bugs.** The
+next milestone is a separately frozen comparison of diagnostic acquisition
+against direct repair. No acquisition benefit, trained selector, equal-budget
+policy gain or scaling law has been demonstrated.
 
-Read the [current goal amendment and literature basis](GOAL-AMENDMENT-20261026.md),
-[public-only diagnostic prototype](DIAGNOSTIC-PREPARATION.md), and
-[failure audit / offline replay](results/diagnostic-audit-20261026/README.md).
-Eight of twelve saved JSON candidates expose a public failure and yield a
-consistent bounded execution trace; four do not trigger a probe. The
-[terminal information bank](results/information-stopped-20261026/README.md)
-contains 65 usable responses but no complete repair. A post hoc audit finds
-25 exact copies and 25 further entrypoint-only syntax changes. This motivates
-the [next interface control](STAGNATION-CONTROL-DESIGN.md), not selector training.
-Its [v1 protocol](INTERFACE-PROTOCOL.md) and offline preparer fix 128 fresh
-requests in a four-condition factorial design. The separate declared $0.43
-allocation remains inside the cumulative $0.60 ceiling, carrying $0.04058467.
-Exact requests, source freeze and CI review are prerequisites for the one-use
-collector; preparing the packet makes no model calls.
-The [interface control is now closed](results/interface-stopped-20261026/README.md)
-after HTTP 429: 44 responses, eleven per condition, all usable but no complete
-repair. It retains 84 unknown cells and an inconclusive gate. Independent replay
-reproduces all 88 saved evaluation records; no successor or selector is enabled.
-Cumulative repair commitment is $0.05126739 including eight unresolved calls.
+Read the [current goal amendment](GOAL-AMENDMENT-20261026.md) and
+[complete solver findings and replay](results/solver-qwen-20261026/README.md).
+The user-directed goal is to learn when acquiring public execution evidence is
+worth its cost before another repair, conditional on a useful intervention.
+The [diagnostic adapter](DIAGNOSTIC-PREPARATION.md) already supplies bounded
+public-only traces. All twelve source candidates remain recorded; eight expose
+public failures and four do not trigger recovery. The [source coverage audit](results/solver-qwen-20261026/trigger-coverage-audit.json)
+shows why conditional recovery success cannot substitute for end-to-end acceptance.
 
-The next [solver-compatibility control](SOLVER-PROTOCOL.md) prepares 32 fresh
-Qwen3-Coder-Next requests on the same eight failed checkpoints. It preserves the
-original public messages and JSON contract, pins Parasail/BF16, and requires
-repeated full repairs before a separate intervention study. The new $0.24
-allocation carries $0.05126739 under the same $0.60 ceiling. Preparation makes no
-model calls; clean source, exact request review and CI precede the single-use
-collector. This is not a causal model-size comparison or a selector.
+| Development study | Preserved outcome | Status |
+| --- | --- | --- |
+| [Original 4B recovery pilot](results/gemma4b-calibration-20261026/README.md) | 84 responses; no observed recovery success; four uncertain calls | Closed, incomplete |
+| [4B contract control](results/contract-deepinfra-20261026/README.md) | 36 responses; 1 full repair | Gate failed |
+| [12B contract control](results/contract-gemma12b-20261026/README.md) | 36 responses; 2 full repairs | Gate failed |
+| [27B contract control](results/contract-gemma27b-20261026/README.md) | 36 responses; 3 full repairs on two bugs | Gate failed |
+| [Public-information probe](results/information-stopped-20261026/README.md) | 65 responses; no full repair; 31 unknown cells | Closed, inconclusive |
+| [Interface control](results/interface-stopped-20261026/README.md) | 44 responses; no full repair; 84 unknown cells | Closed, inconclusive |
+| [Qwen compatibility control](results/solver-qwen-20261026/README.md) | 32 responses; 10 full repairs; three bugs solved in both draw halves | Screen passed; intervention study still required |
 
-The [prospective information probe](INFORMATION-PROTOCOL.md) fixes 96 requests:
-eight failed checkpoints, four draws and three information conditions. Its
-[declared allocation](INFORMATION-AUTHORIZED.json) is $0.34 within the existing
-$0.60 cumulative ceiling, carrying $0.02211715 once. Shared receipt/accounting
-and freeze machinery is reused; the new study has a separate identity and
-analysis. Passing its screen permits only independent calibration, not training.
-The [first launch stopped with HTTP 429](results/information-interrupted-20261026/README.md)
-on its first admission: zero responses, one retained reserve and 95 requests
-never sent. Its cumulative commitment was $0.02539395, including six unresolved calls.
-The terminal archive/report and public diagnostic projections reproduce offline.
-The [recorded manual exception](INFORMATION-CONTINUATION-AMENDMENT.md) permits
-one reviewed segment containing only the 95 original never-admitted requests.
-The first cell stays missing and reserved, and the complete-bank screening gate
-cannot pass. That segment also stopped with HTTP 429: 65 responses, one new
-uncertain admission and 29 requests never admitted. The full design retains 31
-unknown cells; trace-minus-focused bounds span −31.25 to +31.25 percentage
-points. Cumulative commitment is $0.04058467 including seven unresolved calls.
-No trace collector is active and no further successor is enabled. The report, 130
-saved evaluation records and public diagnostic projections reproduce offline.
+These are distinct protocols, not a pooled model-size comparison. Historical
+[capability and partial-progress findings](results/capability-comparison-20261026/README.md),
+[specification/acceptance audit](results/diagnostic-audit-20261026/README.md),
+[interruption](INTERRUPTION-20261026.md), [pacing amendments](PACING-AMENDMENT-20261026.md)
+and [one-use information continuation](INFORMATION-CONTINUATION-AMENDMENT.md)
+remain preserved. No old collector may be resumed or its missing cells filled.
 
-Read the [complete contract findings](results/contract-deepinfra-20261026/README.md).
-The earlier recovery pilot remains incomplete after repeated provider HTTP 429
-errors: 84 responses, 88 admissions and $0.01011411 committed including four
-uncertain reserves, with no observed recovery success.
+The [solver protocol](SOLVER-PROTOCOL.md) preserved original public messages and
+the JSON contract, pinned Qwen3-Coder-Next/Parasail/BF16 and fixed its engineering
+screen before calls. Its complete bank reproduces independently, including all
+62 saved verification records. It contains one public false acceptance and
+eleven public-score regressions, retained alongside the ten successes.
 
-Read the [findings and reproduction instructions](results/gemma4b-calibration-20261026/README.md)
-and [audited report](results/gemma4b-calibration-20261026/REPORT.md). Eighteen of
-24 planned trajectories finished; four are partial and two never started.
-The [original interruption](INTERRUPTION-20261026.md) and
-[pacing amendments](PACING-AMENDMENT-20261026.md) document every operational
-exception. The final one-minute segment also hit HTTP 429, activating its
-predeclared closure. No further calls or successors are authorized by those
-continuation configs. The historical monitor remains paused.
+Cumulative repair commitment is **$0.06942739 / $0.60**, including eight historical
+uncertain reservations. The closed solver control spent $0.01816000 of its
+separate $0.24 cap, with no new uncertainty. All collectors are closed. A future
+intervention study needs a new declared sublimit, reviewed clean source freeze,
+exact requests and fixed analysis; passing this screen does not launch calls.
 
 The [real-bug development pool](development/README.md) adds twelve adapted BugsInPy
 tasks with pinned source excerpts, public/evaluator cases, documented exclusions

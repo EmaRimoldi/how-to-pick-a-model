@@ -45,6 +45,7 @@ not a proof that no other relevant paper exists.
 | [TraceRepair, ASE 2026 per author record](https://arxiv.org/abs/2604.02647) | Trace-guided diagnosis and repair are already proposed. Collecting a trace is not a new method by itself. |
 | [DynaFix, v2 preprint](https://arxiv.org/html/2512.24635v2) | Iterative runtime feedback and bounded refinement/restart already include acquisition-overhead and token-cost measurements. Costed traces alone are not new. |
 | [CT-Repair, July 2026 preprint](https://arxiv.org/html/2607.12605v1) | Queryable static/dynamic evidence and feedback-guided strategy allocation are prior art. Charge representation construction as well as subsequent queries. |
+| [Calibrate-Then-Act, v3 preprint](https://arxiv.org/html/2602.16699v3) | Prospective cost-aware acquisition already exists; include a calibrated pre-acquisition comparator. |
 | [VeriHarness, July 2026 preprint](https://arxiv.org/html/2607.14167) | On TextWorld, actionable alternatives matter more than JSON versus prose. Its HumanEval scope check exposes the limit of invisible failures. Our existing feedback already includes public inputs, expected values and observations; reformatting them must be a separate control. |
 | [S*, 2025](https://arxiv.org/html/2502.14382) and [PATSSEL, 2026](https://aclanthology.org/2026.findings-emnlp.2173/) | Execution-based candidate selection, iterative refinement and prospective routing have direct precedents. Include their relevant simplified baselines and all inference costs. |
 
@@ -89,7 +90,10 @@ public-trace adapter, not an adaptive policy.
 4. **Learn only after repeatable action headroom.** Before the trace is acquired,
    a selector may see code, public feedback, progress and remaining budget; it
    cannot see the future trace for free. Compare a static fact-selection router,
-   fixed policies, and a two-candidate verifier baseline that pays for both.
+   a calibrated expected-value rule, fixed policies, and a two-candidate verifier
+   baseline that pays for both. Calibrate only on development data and charge
+   estimation/selection as part of deployment; include unreliable estimates
+   in a separately declared robustness check.
    Sparse two-draw action differences are not sufficient training evidence.
 5. **Freeze an untouched evaluation.** Group all variants/replicates of a bug,
    separate projects where feasible, declare a meaningful effect and powered
@@ -128,19 +132,33 @@ been resolved by either tested cue. This is not proof that instructions never
 matter or that the model cannot repair these tasks under another setup.
 
 A separately controlled [solver-compatibility positive control](SOLVER-PROTOCOL.md)
-now fixes 32 fresh Qwen3-Coder-Next/Parasail/BF16 draws, preserving the same task,
-original messages and verification contract. A public endpoint and private
-read-only account review precede the clean source freeze; neither establishes
-that previous provider limits have reset. Establish repeated
-full repairs, then return to costed diagnostic acquisition. The final goal remains a deployable acquisition
-policy that improves on the best fixed action on untouched bugs; its benefit and
-novelty are still unproven. This development control is not that policy or its
-held-out evaluation.
+has now [completed all 32 Qwen3-Coder-Next/Parasail/BF16 draws](results/solver-qwen-20261026/README.md),
+preserving the same tasks, original messages and verification contract. Ten
+complete repairs span five bugs; three bugs have success in both draw halves,
+passing the unchanged compatibility screen. All 62 saved evaluation records
+reproduce independently. One public false acceptance, eleven public-score
+regressions and six unusable responses remain in the report.
 
-Accounting totals $0.05126739 including eight unresolved reserves, under the
-existing $0.60 ceiling. Both preceding collectors are closed; no recursive
-successor is enabled. The new solver control declares a separate $0.24 allocation
-inside that ceiling and requires its own reviewed source freeze before launch.
+The next step is a separately frozen diagnostic-intervention calibration with
+fresh matched control requests. The historical controls cannot serve as its
+concurrent baseline. This result demonstrates practical repair compatibility,
+not why Gemma differed or whether traces help. The final goal remains a deployable
+acquisition policy that improves on the best fixed action on untouched bugs;
+its benefit and novelty are still unproven. This development control is not
+that policy or its held-out evaluation.
+
+The independent [source-trigger audit](results/solver-qwen-20261026/trigger-coverage-audit.json)
+also retains three evaluator failures among four unchanged public-pass sources,
+including one known specification ambiguity. Under the frozen criterion, even
+perfect recovery of every triggered failure would reach at most 9/12 accepted
+source tasks if the public-pass artifacts stay unchanged. This conditional ceiling
+is not an observed policy result. Recovery and acceptance coverage require
+separate reporting; any verifier/specification revision needs a new version.
+
+Accounting totals $0.06942739 including eight historical unresolved reserves,
+under the existing $0.60 ceiling. All collectors are closed; no recursive
+successor is enabled. The solver control spent $0.01816000 of its separately
+declared $0.24 allocation and introduced no new uncertainty.
 Every new collection needs a separately declared sublimit, reviewed clean source
 freeze, exact requests, analysis and single-use launch claim. Historic uncertainties,
 scores, manuscripts and failed gates remain preserved.
