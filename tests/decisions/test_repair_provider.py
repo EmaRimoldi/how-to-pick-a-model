@@ -195,3 +195,16 @@ def test_invalid_numeric_settings_and_funding_fail_closed(tmp_path):
     for limit in ("0", "NaN", "Infinity", "6", ".00001"):
         with pytest.raises((ValueError, ProviderStopped)):
             OpenRouterTransport(tmp_path, "fixture", Settings(), authorized_limit_usd=limit)
+
+
+def test_http_status_is_retained_without_server_body_or_credentials(tmp_path, monkeypatch, solver_request, meta):
+    error = ProviderStopped("Do not persist this text: fixture-bearer-canary", http_status=429, transport_kind="http_error")
+    transport, calls = client(tmp_path, monkeypatch, response=error)
+    transport.preflight()
+    with pytest.raises(ProviderStopped):
+        transport.complete(solver_request, meta)
+    record = rows(tmp_path / "provider-errors.jsonl")[0]
+    assert record["http_status"] == 429 and record["transport_kind"] == "http_error"
+    assert "fixture-bearer-canary" not in canonical(record)
+    assert len(transport.pending) == 1
+    assert sum(path == "/chat/completions" for path, _ in calls) == 1

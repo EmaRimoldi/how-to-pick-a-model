@@ -1,7 +1,8 @@
 # Gemma 3 4B development calibration — draft
 
 Status: collector and pinned provider adapter implemented and tested offline;
-no model responses yet. The user subsequently authorized a new **$0.60** cap,
+the first segment subsequently stopped after ten responses and one uncertain
+request. See the [interruption record](INTERRUPTION-20261026.md). The user authorized a new **$0.60** cap,
 including unresolved reservations, recorded in [PILOT-AUTHORIZED.json](PILOT-AUTHORIZED.json).
 The initial unfunded proposal remains in [PILOT-DRAFT.json](PILOT-DRAFT.json).
 The source/task freeze is created from the committed authorized configuration

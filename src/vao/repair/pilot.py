@@ -64,6 +64,55 @@ def fingerprint(tasks: list[RepairTask], design: Design) -> dict:
                         for p in sorted(paths)}}
 
 
+def schedule_for(tasks, design, config=None):
+    schedule = [(i, r) for r in range(design.prefix_replicates) for i in range(len(tasks))]
+    random.Random(design.seed).shuffle(schedule)
+    if config and config.get("continuation"):
+        allowed = config["continuation"]["allowed_trajectories"]
+        if not allowed or len(allowed) != len(set(allowed)):
+            raise ValueError("Continuation requires distinct unstarted trajectories")
+        schedule = [(i, r) for i, r in schedule if f"task-{i:03d}-rep-{r:02d}" in allowed]
+        if len(schedule) != len(allowed):
+            raise ValueError("Continuation includes an undeclared trajectory")
+    return schedule
+
+
+def check_continuation(config, tasks, design) -> Decimal:
+    """Validate a proposed manual exception; never retry an admitted trajectory."""
+    carried = config.get("continuation")
+    if not carried:
+        return Decimal(0)
+    parent = Path(carried["parent_run"])
+    manifest = json.loads((parent / "manifest.json").read_text())
+    original = manifest["freeze"]
+    checked = audit(parent)
+    if (checked["sealed"] or not (parent / "interruption.json").exists()
+            or manifest["mode"] != "model_pilot" or original["config"].get("continuation")
+            or original["freeze_id"] != carried["parent_freeze_id"]
+            or original["provider_settings"] != config["provider_settings"]
+            or original["provenance"]["tasks"] != [t.task_hash for t in tasks]
+            or original["provenance"]["design"] != asdict(design)
+            or file_hashes(parent) != carried["parent_hashes"]):
+        raise ValueError("Continuation parent is changed, unsupported or not the original interrupted pilot")
+    started = sorted(p.name for p in (parent / "trajectories").glob("*"))
+    expected = [f"task-{i:03d}-rep-{r:02d}" for i, r in schedule_for(tasks, design)
+                if f"task-{i:03d}-rep-{r:02d}" not in started]
+    if carried["allowed_trajectories"] != expected or carried["omitted_started_trajectories"] != started:
+        raise ValueError("Only original, entirely unstarted trajectories may continue")
+    for event in rows(parent / "ledger.jsonl"):
+        if event["event"] == "reserve":
+            request = json.loads((parent / "requests" / (event["attempt_id"] + ".json")).read_text())
+            if request["metadata"]["trajectory"] in expected:
+                raise ValueError("Continuation overlaps an admitted attempt")
+    retained = dollars(checked["conservative_committed_usd"])
+    ceiling = dollars(carried["cumulative_limit_usd"])
+    if (retained != dollars(carried["retained_committed_usd"])
+            or ceiling != dollars(manifest["limit_usd"])
+            or dollars(config["monetary_authorization_usd"]) + retained != ceiling):
+        raise ValueError("Continuation fails cumulative reservation accounting")
+    return retained
+
+
 class ScriptedTransport:
     """Offline fake with a real reservation journal and synthetic dollar amounts."""
 
@@ -134,6 +183,8 @@ def collect(tasks: list[RepairTask], design: Design, output: Path, verifier, fac
     """Collect a development bank under the supplied, independently frozen cap."""
     if not tasks or len({t.public["task_id"] for t in tasks}) != len(tasks):
         raise ValueError("Tasks must be nonempty and unique")
+    carried = check_continuation(freeze["config"], tasks, design) if freeze else Decimal(0)
+    schedule = schedule_for(tasks, design, freeze["config"] if freeze else None)
     output.mkdir(parents=True, exist_ok=False)
     (output / "receipts").mkdir()
     (output / "requests").mkdir()
@@ -151,13 +202,13 @@ def collect(tasks: list[RepairTask], design: Design, output: Path, verifier, fac
                 "provenance": fingerprint(tasks, design), "resume_allowed": False,
                 "limit_usd": str(transport.limit), "reservation_usd": str(transport.reserve),
                 "checkpoint_allowance_usd": str(2 * transport.reserve),
-                "currency": "USD" if live else "simulated_USD", "maximum_calls": design.maximum_calls(len(tasks))}
+                "currency": "USD" if live else "simulated_USD",
+                "maximum_calls": len(schedule) * design.prefix_attempts * (1 + 2 * design.draws_per_action),
+                "carried_committed_usd": str(carried)}
     if live:
         manifest.update({"freeze": freeze, "provider_settings": asdict(transport.settings)})
     save(output / "manifest.json", manifest)
     observations, trajectories = [], []
-    schedule = [(i, r) for r in range(design.prefix_replicates) for i in range(len(tasks))]
-    random.Random(design.seed).shuffle(schedule)
     save(output / "schedule.json", {"trajectories": schedule})
     try:
         if live:
@@ -240,11 +291,13 @@ def collect(tasks: list[RepairTask], design: Design, output: Path, verifier, fac
         save(output / "interruption.json", {"exception_type": type(exc).__name__,
              "resume_allowed": False, "pending": {k: str(v) for k, v in transport.pending.items()},
              "settled_usd": str(transport.spent),
-             "conservative_committed_usd": str(transport.conservative_committed_usd if live else
-                                              transport.spent + sum(transport.pending.values()))})
+             "carried_committed_usd": str(carried),
+             "conservative_committed_usd": str(carried + (transport.conservative_committed_usd if live else
+                                              transport.spent + sum(transport.pending.values())))})
         raise
     report = {"mode": transport.mode, "model_results": live, "api_calls": len(transport.seen) if live else 0,
               "api_spend_usd": str(transport.spent) if live else "0",
+              "carried_committed_usd": str(carried), "cumulative_committed_usd": str(carried + transport.spent),
               "observations": len(observations), "trajectories": len(trajectories),
               "simulated_spend_usd": "0" if live else str(transport.spent),
               "missing_groups": len(rows(output / "missing.jsonl")),
@@ -383,7 +436,13 @@ def audit(output: Path) -> dict:
             raise ValueError("Incomplete or modified sealed pilot")
         if saved["observations"] != len(seen) or saved["api_calls"] != (len(settled) if live else 0):
             raise ValueError("Completion counts mismatch")
-    committed = used
+    carried = dollars(manifest.get("carried_committed_usd", "0"))
+    if live and carried:
+        link = manifest["freeze"]["config"]["continuation"]
+        parent = Path(link["parent_run"])
+        if file_hashes(parent) != link["parent_hashes"] or dollars(audit(parent)["conservative_committed_usd"]) != carried:
+            raise ValueError("Continuation parent or retained accounting changed")
+    committed = used + carried
     for key, reserved in pending.items():
         known = Decimal(0)
         raw = output / "receipts" / (key + ".raw.json")
@@ -395,7 +454,8 @@ def audit(output: Path) -> dict:
         committed += max(reserved, known)
     return {"verified_observations": len(seen), "pending": {k: str(v) for k, v in pending.items()},
             "settled_usd": str(used), "conservative_committed_usd": str(committed),
-            "cap_exceeded": committed > Decimal(manifest["limit_usd"]),
+            "carried_committed_usd": str(carried),
+            "cap_exceeded": committed > Decimal(manifest["limit_usd"]) + carried,
             "sealed": completion.exists(), "api_calls": len(settled) + len(pending) if live else 0}
 
 
@@ -485,7 +545,8 @@ def funded_freeze(config: dict, tasks: list[RepairTask], output: Path) -> dict:
         raise ValueError("Explicit new authorization and a funded pilot config are required")
     design, settings = Design(**config["design"]), Settings(**config["provider_settings"])
     limit = dollars(config["monetary_authorization_usd"])
-    maximum = settings.reserve * design.maximum_calls(len(tasks))
+    check_continuation(config, tasks, design)
+    maximum = settings.reserve * len(schedule_for(tasks, design, config)) * design.prefix_attempts * (1 + 2 * design.draws_per_action)
     if not maximum <= limit <= 5:
         raise ValueError("Pilot cap must cover the full conservative design and be at most 5 USD")
     record = {"schema_version": 1, "created_at": datetime.now(timezone.utc).isoformat(),
@@ -511,8 +572,9 @@ def validate_freeze(freeze: dict, tasks: list[RepairTask]) -> Design:
             or not freeze["authorization_reference"]
             or not re.fullmatch(r"[a-z][a-z0-9-]{5,100}", config.get("campaign_id", ""))
             or dollars(config["monetary_authorization_usd"]) != dollars(freeze["authorized_limit_usd"])
-            or not settings.reserve * design.maximum_calls(len(tasks)) <= dollars(freeze["authorized_limit_usd"]) <= 5):
+            or not settings.reserve * len(schedule_for(tasks, design, config)) * design.prefix_attempts * (1 + 2 * design.draws_per_action) <= dollars(freeze["authorized_limit_usd"]) <= 5):
         raise ValueError("Source, tasks, settings or authorization differ from the freeze")
+    check_continuation(config, tasks, design)
     return design
 
 
@@ -530,6 +592,9 @@ def live_collect(freeze: dict, tasks: list[RepairTask], output: Path, *, claim_r
     save(claims / (freeze["config"]["campaign_id"] + ".json"), {
          "freeze_id": freeze["freeze_id"], "output": str(output.resolve()),
          "created_at": datetime.now(timezone.utc).isoformat(), "resume_allowed": False})
+    if freeze["config"].get("continuation"):
+        save(claims / ("continuation-" + freeze["config"]["continuation"]["parent_freeze_id"] + ".json"), {
+             "freeze_id": freeze["freeze_id"], "output": str(output.resolve()), "single_successor_only": True})
     return collect(tasks, design, output, verifier, lambda out: OpenRouterTransport(
         out, key, Settings(**freeze["provider_settings"]), authorized_limit_usd=freeze["authorized_limit_usd"]),
         freeze=freeze)
@@ -549,13 +614,20 @@ def main() -> int:
         design = Design(**config["design"])
         tasks = [task for _, task, _ in read_pool(args.pool)]
         settings = Settings(**config["provider_settings"])
+        scheduled = len(schedule_for(tasks, design, config))
+        maximum_calls = scheduled * design.prefix_attempts * (1 + 2 * design.draws_per_action)
+        carried = check_continuation(config, tasks, design)
         result = {"mode": "plan_only", "api_calls": 0, "live_mode_requires_funded_freeze": True,
-                  "tasks": len(tasks), "design": asdict(design), "maximum_calls": design.maximum_calls(len(tasks)),
+                  "tasks": len(tasks), "scheduled_trajectories": scheduled, "design": asdict(design), "maximum_calls": maximum_calls,
                   "task_hashes": [t.task_hash for t in tasks],
                   "proposed_provider_settings": asdict(settings), "reserved_usd_per_call": str(settings.reserve),
-                  "maximum_reserved_usd": str(settings.reserve * design.maximum_calls(len(tasks))),
-                  "budget_authorized": config.get("live_calls_enabled") is True,
-                  "next_step": "Obtain a new explicit cap, commit source, freeze the funded config, then collect once."}
+                  "maximum_reserved_usd": str(settings.reserve * maximum_calls),
+                  "carried_committed_usd": str(carried),
+                  "maximum_cumulative_committed_usd": str(carried + settings.reserve * maximum_calls),
+                  "budget_authorized": config.get("monetary_authorization_usd") is not None,
+                  "launch_enabled_by_config": config.get("live_calls_enabled") is True,
+                  "next_step": ("Authorize the documented manual exception within the existing cumulative cap, commit and freeze." if config.get("continuation") else
+                                "Obtain or verify the explicit cap, commit source, freeze the funded config, then collect once.")}
         if args.action == "freeze":
             if not args.output:
                 parser.error("freeze requires --config with new authorization and a fresh --output file")

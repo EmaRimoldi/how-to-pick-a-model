@@ -1,8 +1,14 @@
 # Python repair checkpoint environment
 
 **Status: executable repair environment, scripted demo and gated OpenRouter
-collector tested offline; a new $0.60 pilot cap is authorized. No model responses, fitted selector or
-frozen scientific evaluation.**
+collector; a new $0.60 pilot cap is authorized. The first calibration segment
+stopped after ten responses and one uncertain request. No completed calibration,
+fitted selector or frozen scientific evaluation.**
+
+The [interruption record and proposed manual exception](INTERRUPTION-20261026.md)
+preserve all responses and the uncertain reserve. Only the 22 entirely unstarted
+trajectories are proposed for continuation, under the same cumulative cap;
+the continuation draft is disabled pending explicit authorization.
 
 The [real-bug development pool](development/README.md) adds twelve adapted BugsInPy
 tasks with pinned source excerpts, public/evaluator cases, documented exclusions

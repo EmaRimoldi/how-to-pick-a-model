@@ -253,3 +253,59 @@ def test_incomplete_live_bank_counts_known_overrun_not_just_reserve(tmp_path, ta
     assert result["api_calls"] == 1 and result["verified_observations"] == 0
     assert result["conservative_committed_usd"] == "0.61" and result["cap_exceeded"]
     assert not result["sealed"]
+
+
+def test_manual_continuation_excludes_started_trajectories_and_carries_uncertain_cost(tmp_path, task, monkeypatch):
+    monkeypatch.setattr(pilot, "source_commit", lambda: "a" * 40)
+    second = RepairTask.from_dicts({**task.public, "task_id": "development/second"},
+                                  json.loads(task.evaluator_json))
+    tasks, design = [task, second], Design(1, 1, 2)
+    original = pilot.funded_freeze(funded_config(), tasks, tmp_path / "original.json")
+    parent = tmp_path / "parent"
+    def failing(output):
+        client = OpenRouterTransport(output, "fixture", Settings(), authorized_limit_usd="0.60")
+        monkeypatch.setattr(client, "preflight", lambda: setattr(client, "ready", True))
+        def exchange(*_):
+            raise TimeoutError("offline test")
+        monkeypatch.setattr(client, "_exchange", exchange)
+        return client
+    with pytest.raises(RuntimeError):
+        collect(tasks, design, parent, Verifier(), failing, freeze=original)
+    before = pilot.file_hashes(parent)
+    started = sorted(p.name for p in (parent / "trajectories").iterdir())
+    allowed = [f"task-{i:03d}-rep-{r:02d}" for i, r in pilot.schedule_for(tasks, design)
+               if f"task-{i:03d}-rep-{r:02d}" not in started]
+    carried = audit(parent)["conservative_committed_usd"]
+    config = {**funded_config(), "campaign_id": "offline-contract-test-successor",
+              "monetary_authorization_usd": str(Decimal(".60")-Decimal(carried)),
+              "continuation": {"parent_run": str(parent), "parent_freeze_id": original["freeze_id"],
+                 "parent_hashes": before, "retained_committed_usd": carried,
+                 "cumulative_limit_usd": "0.60", "omitted_started_trajectories": started,
+                 "allowed_trajectories": allowed}}
+    assert len(allowed) == 1
+    assert pilot.check_continuation(config, tasks, design) == Settings().reserve
+    bad = json.loads(json.dumps(config))
+    bad["continuation"]["allowed_trajectories"] = started
+    with pytest.raises(ValueError, match="unstarted"):
+        pilot.check_continuation(bad, tasks, design)
+    bad = json.loads(json.dumps(config))
+    bad["monetary_authorization_usd"] = "0.60"
+    with pytest.raises(ValueError, match="accounting"):
+        pilot.check_continuation(bad, tasks, design)
+    successor = pilot.funded_freeze(config, tasks, tmp_path / "successor.json")
+    def succeeding(output):
+        client = OpenRouterTransport(output, "fixture", Settings(), authorized_limit_usd=config["monetary_authorization_usd"])
+        monkeypatch.setattr(client, "preflight", lambda: setattr(client, "ready", True))
+        monkeypatch.setattr(client, "_exchange", lambda *_: {
+            "id": "fixture", "model": client.settings.model, "provider": client.settings.provider_name,
+            "usage": {"cost": .00008, "prompt_tokens": 100, "completion_tokens": 10},
+            "choices": [{"finish_reason": "stop", "message": {"content": '{"solution.py":"fixed"}'}}]})
+        return client
+    report = collect(tasks, design, tmp_path / "successor", Verifier(), succeeding, freeze=successor)
+    assert report["trajectories"] == 1 and report["api_calls"] == 1
+    assert report["carried_committed_usd"] == carried
+    assert Decimal(report["cumulative_committed_usd"]) == Settings().reserve + Decimal(".00008")
+    assert audit(tmp_path / "successor")["conservative_committed_usd"] == report["cumulative_committed_usd"]
+    new = rows(tmp_path / "successor" / "observations.jsonl")
+    assert all(r["trajectory"] in allowed and r["trajectory"] not in started for r in new)
+    assert before == pilot.file_hashes(parent)

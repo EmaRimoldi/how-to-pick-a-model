@@ -19,6 +19,11 @@ from .records import append, save
 class ProviderStopped(RuntimeError):
     """Stop without exposing credentials or automatically retrying a request."""
 
+    def __init__(self, message: str, *, http_status=None, transport_kind=None):
+        super().__init__(message)
+        self.http_status = http_status
+        self.transport_kind = transport_kind
+
 
 def dollars(value) -> Decimal:
     try:
@@ -120,9 +125,11 @@ class OpenRouterTransport:
             with urllib.request.build_opener(NoRedirects).open(request, timeout=180) as response:
                 return json.loads(response.read())
         except urllib.error.HTTPError as exc:
-            raise ProviderStopped(f"HTTP {exc.code}; no retry; admission remains reserved") from None
+            raise ProviderStopped(f"HTTP {exc.code}; no retry; admission remains reserved",
+                                  http_status=exc.code, transport_kind="http_error") from None
         except (OSError, ValueError) as exc:
-            raise ProviderStopped(f"{type(exc).__name__}; no retry; admission remains reserved") from None
+            raise ProviderStopped(f"{type(exc).__name__}; no retry; admission remains reserved",
+                                  transport_kind=type(exc).__name__) from None
 
     def preflight(self) -> dict:
         if self.ready or self.stopped or self.seen:
@@ -228,5 +235,7 @@ class OpenRouterTransport:
             self.stopped = True
             append(self.output / "provider-errors.jsonl", {"attempt_id": attempt,
                    "exception_type": type(exc).__name__, "reservation_retained": attempt in self.pending,
+                   "http_status": getattr(exc, "http_status", None),
+                   "transport_kind": getattr(exc, "transport_kind", None),
                    "conservative_committed_usd": str(self.conservative_committed_usd)})
             raise ProviderStopped("Provider call stopped; inspect saved receipt/reservation; no retry") from None
