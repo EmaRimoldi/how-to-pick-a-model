@@ -104,6 +104,24 @@ inspection). Not selected does not mean tested and failed. Dependency-heavy,
 filesystem-specific, platform-dependent and overlapping function variants were
 left out; the original patches are not silently rewritten to fit the harness.
 
+The consolidated [exposure registry](exposure-registry.json) includes 174 known
+bug IDs across ten projects, including metadata-only inspections from the
+[supplemental note](exposure-notes.json) and the separate
+[three-task extension](../development-extension/README.md). It is rebuilt from
+tracked source records and checks normalized ID aliases. It can reject known
+exposure; it cannot certify that an absent ID is untouched or uncontaminated.
+
+```bash
+uv run python scripts/audit_repair_exposure.py
+uv run python scripts/audit_repair_exposure.py --candidate luigi/003 --project-disjoint
+```
+
+The second command rejects the already inspected bug. Project-disjoint evaluation
+must additionally exclude every listed project; other inspection records and
+function/patch families still require review before a future evaluation freeze.
+No holdout is selected by these commands. To update source records, regenerate
+the registry with `--write` and review the resulting diff.
+
 ## What this establishes
 
 The fixtures can expose their historical defects and recognize the supplied

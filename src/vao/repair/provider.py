@@ -6,6 +6,7 @@ enforces the separately funded source freeze and a single-use campaign claim.
 
 from dataclasses import asdict, dataclass
 from decimal import Decimal, InvalidOperation
+import http.client
 import json
 from pathlib import Path
 import re
@@ -21,12 +22,14 @@ class ProviderStopped(RuntimeError):
     """Stop without exposing credentials or automatically retrying a request."""
 
     def __init__(self, message: str, *, http_status=None, transport_kind=None, retry_after=None,
-                 error_details=None):
+                 error_details=None, transport_phase=None, exchange_elapsed_seconds=None):
         super().__init__(message)
         self.http_status = http_status
         self.transport_kind = transport_kind
         self.retry_after = retry_after
         self.error_details = error_details
+        self.transport_phase = transport_phase
+        self.exchange_elapsed_seconds = exchange_elapsed_seconds
 
 
 def safe_error_details(payload, headers=None):
@@ -168,9 +171,17 @@ class OpenRouterTransport:
             data=None if body is None else canonical(body).encode(),
             headers={"Authorization": "Bearer " + self._key, "Content-Type": "application/json"},
             method="GET" if body is None else "POST")
+        # "Awaiting headers" includes connection establishment, upload and server
+        # waiting. It cannot identify which of those caused a timeout or prove
+        # that an admitted request was not processed/billed.
+        phase = "awaiting_response_headers"
+        start = time.monotonic()
         try:
             with urllib.request.build_opener(NoRedirects).open(request, timeout=180) as response:
-                return json.loads(response.read())
+                phase = "reading_response"
+                raw = response.read()
+                phase = "decoding_response"
+                return json.loads(raw)
         except urllib.error.HTTPError as exc:
             retry_after = (exc.headers or {}).get("Retry-After")
             if (not isinstance(retry_after, str) or len(retry_after) > 120
@@ -187,10 +198,13 @@ class OpenRouterTransport:
                 exc.close()
             raise ProviderStopped(f"HTTP {exc.code}; no retry; admission remains reserved",
                                   http_status=exc.code, transport_kind="http_error", retry_after=retry_after,
-                                  error_details=safe_error_details(payload, exc.headers)) from None
-        except (OSError, ValueError) as exc:
+                                  error_details=safe_error_details(payload, exc.headers),
+                                  transport_phase=phase,
+                                  exchange_elapsed_seconds=round(time.monotonic() - start, 6)) from None
+        except (OSError, ValueError, http.client.HTTPException) as exc:
             raise ProviderStopped(f"{type(exc).__name__}; no retry; admission remains reserved",
-                                  transport_kind=type(exc).__name__) from None
+                                  transport_kind=type(exc).__name__, transport_phase=phase,
+                                  exchange_elapsed_seconds=round(time.monotonic() - start, 6)) from None
 
     def preflight(self) -> dict:
         if self.ready or self.stopped or self.seen:
@@ -306,5 +320,7 @@ class OpenRouterTransport:
                    "transport_kind": getattr(exc, "transport_kind", None),
                    "retry_after": getattr(exc, "retry_after", None),
                    "error_details": getattr(exc, "error_details", None),
+                   "transport_phase": getattr(exc, "transport_phase", None),
+                   "exchange_elapsed_seconds": getattr(exc, "exchange_elapsed_seconds", None),
                    "conservative_committed_usd": str(self.conservative_committed_usd)})
             raise ProviderStopped("Provider call stopped; inspect saved receipt/reservation; no retry") from None

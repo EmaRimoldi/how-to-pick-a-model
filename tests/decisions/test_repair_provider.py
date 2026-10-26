@@ -212,6 +212,61 @@ def test_http_status_is_retained_without_server_body_or_credentials(tmp_path, mo
     assert sum(path == "/chat/completions" for path, _ in calls) == 1
 
 
+@pytest.mark.parametrize("failure,phase", [
+    ("headers", "awaiting_response_headers"),
+    ("body", "reading_response"),
+    ("truncated_body", "reading_response"),
+    ("json", "decoding_response"),
+])
+def test_transport_failure_phase_is_durable_without_retry_or_secret(
+        tmp_path, monkeypatch, solver_request, meta, failure, phase):
+    import http.client
+    from vao.repair import provider
+
+    transport, _ = client(tmp_path, monkeypatch)
+    transport.preflight()  # Mocked account checks only.
+    monkeypatch.setattr(transport, "_exchange", OpenRouterTransport._exchange.__get__(transport))
+    calls, closed = [], []
+    secret = "fixture-bearer-canary"
+
+    class Response:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_):
+            closed.append(True)
+
+        def read(self):
+            if failure == "body":
+                raise TimeoutError(secret)
+            if failure == "truncated_body":
+                raise http.client.IncompleteRead(secret.encode(), 123)
+            return ("not json " + secret).encode()
+
+    class Opener:
+        def open(self, request, timeout):
+            calls.append((request.full_url, timeout))
+            if failure == "headers":
+                raise TimeoutError(secret)
+            return Response()
+
+    monkeypatch.setattr(provider.urllib.request, "build_opener", lambda *_: Opener())
+    with pytest.raises(ProviderStopped):
+        transport.complete(solver_request, meta)
+    record = rows(tmp_path / "provider-errors.jsonl")[0]
+    assert record["transport_phase"] == phase
+    assert record["exchange_elapsed_seconds"] >= 0
+    assert secret not in canonical(record)
+    assert record["reservation_retained"] is True
+    assert transport.pending == {"a": transport.reserve}
+    assert transport.conservative_committed_usd == transport.reserve
+    assert len(rows(tmp_path / "ledger.jsonl")) == 1  # No invented settlement.
+    with pytest.raises(ProviderStopped):
+        transport.complete(solver_request, {**meta, "attempt_id": "b"})
+    assert calls == [("https://openrouter.ai/api/v1/chat/completions", 180)]
+    assert bool(closed) == (failure != "headers")
+
+
 def test_distinct_calls_are_paced_without_retrying(tmp_path, monkeypatch, solver_request, meta):
     from vao.repair import provider
     transport, _ = client(tmp_path, monkeypatch, minimum_interval_seconds=15)

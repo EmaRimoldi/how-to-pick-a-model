@@ -13,10 +13,11 @@ from vao.repair.environment import RepairTask
 POOL = Path(__file__).resolve().parents[2] / "experiments/python-repair/checkpoint-environment/development"
 
 
-def test_real_pool_rebuild_is_deterministic_and_executable_source_is_only_data(tmp_path):
-    first = build_pool(POOL, tmp_path / "first")
-    second = build_pool(POOL, tmp_path / "second")
-    assert len(first) == len(second) == 12
+@pytest.mark.parametrize("pool,count", [(POOL, 12), (POOL.parent / "development-extension", 3)])
+def test_real_pool_rebuild_is_deterministic_and_executable_source_is_only_data(tmp_path, pool, count):
+    first = build_pool(pool, tmp_path / "first")
+    second = build_pool(pool, tmp_path / "second")
+    assert len(first) == len(second) == count
     for a, b in zip(first, second, strict=True):
         assert {p.name: p.read_bytes() for p in a.iterdir()} == {p.name: p.read_bytes() for p in b.iterdir()}
         task = RepairTask.load(a)
@@ -26,7 +27,7 @@ def test_real_pool_rebuild_is_deterministic_and_executable_source_is_only_data(t
             for name, source in files.items():
                 compile(source, name, "exec")  # Parse only; never execute upstream code in the test host.
     with pytest.raises(FileExistsError):
-        build_pool(POOL, tmp_path / "first")
+        build_pool(pool, tmp_path / "first")
 
 
 def test_changed_upstream_excerpt_is_rejected(tmp_path):

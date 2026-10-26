@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `612`
-- Bytes indexed: `57.0M`
+- Files indexed: `635`
+- Bytes indexed: `57.1M`
 
 ## Canonical Entrypoints
 
@@ -48,12 +48,12 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 374 | 52.2M |
+| `experiments` | 394 | 52.3M |
 | `docs` | 53 | 2.6M |
 | `uv.lock` | 1 | 937.0K |
-| `src` | 91 | 832.7K |
-| `tests` | 38 | 249.3K |
-| `scripts` | 47 | 133.1K |
+| `src` | 92 | 838.4K |
+| `tests` | 39 | 253.0K |
+| `scripts` | 48 | 133.3K |
 | `.github` | 5 | 3.3K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
@@ -63,10 +63,10 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 181 | 1.2M |
-| `.json` | 145 | 5.5M |
-| `.md` | 92 | 496.0K |
-| `.txt` | 67 | 349.7K |
+| `.py` | 184 | 1.2M |
+| `.json` | 151 | 5.6M |
+| `.md` | 94 | 505.0K |
+| `.txt` | 79 | 373.1K |
 | `.jsonl` | 45 | 36.7M |
 | `.png` | 25 | 3.3M |
 | `.zip` | 10 | 6.4M |
@@ -100,6 +100,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/mbpp-plus/context-value-transfer/README.md`
 - `experiments/mbpp-plus/context-value-transfer/results/replication-20261022/README.md`
 - `experiments/python-repair/checkpoint-environment/README.md`
+- `experiments/python-repair/checkpoint-environment/development-extension/README.md`
 - `experiments/python-repair/checkpoint-environment/development/README.md`
 - `experiments/python-repair/checkpoint-environment/results/capability-comparison-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/contract-deepinfra-20261026/README.md`
@@ -121,6 +122,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/analyze_feedback_routing.py`
 - `scripts/analyze_recovery_transfer.py`
 - `scripts/analyze_recovery_validation.py`
+- `scripts/audit_repair_exposure.py`
 - `scripts/audit_repair_stagnation.py`
 - `scripts/audit_repair_trigger_coverage.py`
 - `scripts/cluster/bootstrap_engaging.sh`

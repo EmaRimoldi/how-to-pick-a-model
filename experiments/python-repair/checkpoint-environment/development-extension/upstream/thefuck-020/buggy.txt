@@ -1,0 +1,15 @@
+def _zip_file(command):
+    # unzip works that way:
+    # unzip [-flags] file[.zip] [file(s) ...] [-x file(s) ...]
+    #                ^          ^ files to unzip from the archive
+    #                archive to unzip
+    for c in command.script.split()[1:]:
+        if not c.startswith('-'):
+            if c.endswith('.zip'):
+                return c
+            else:
+                return '{}.zip'.format(c)
+
+
+def get_new_command(command):
+    return '{} -d {}'.format(command.script, _zip_file(command)[:-4])

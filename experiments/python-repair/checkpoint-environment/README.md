@@ -57,6 +57,13 @@ The [real-bug development pool](development/README.md) adds twelve adapted BugsI
 tasks with pinned source excerpts, public/evaluator cases, documented exclusions
 and reproducible offline qualification. The qualification is engineering evidence; the separate pilot is limited model evidence.
 
+A separate [development extension](development-extension/README.md) now publishes
+three qualified Luigi/The Fuck adapters, with no model results. The original
+twelve-task pool and all closed studies retain their identities. The consolidated
+[exposure guard](development/exposure-registry.json) covers 174 inspected bug IDs
+across ten projects. The [transport review](TRANSPORT-REVIEW-20261026.md) records
+the timeout evidence and requirements for a distinct future collection.
+
 The domain is function-level Python repair: one or two flat, standard-library
 modules, a named callable and JSON inputs/outputs. The environment saves complete
 artifacts, public verification, progress histories and branch ancestry. It restores
@@ -275,10 +282,10 @@ with this standard-library contract. Report adapted tasks as adapted tasks, not
 official BugsInPy scores. Never manufacture LLM progress from a reference fix.
 
 Select a development pool on technical criteria before model outcomes. Calibrate
-Gemma 3 4B there to establish natural recoverable failures. Every inspected case
-remains development data. A model pilot needs a new authorized budget, provider
-settings and a protocol freeze; historical ceilings do
-not authorize new spending.
+the chosen solver on those tasks before interpreting an acquisition intervention.
+Every inspected case remains development data. A model pilot needs its own declared
+allocation, provider settings and protocol freeze under the user's authorization;
+a closed study's unspent allocation does not enable automatic continuation.
 
 ## Scientific gate
 

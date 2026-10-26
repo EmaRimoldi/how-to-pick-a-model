@@ -5,8 +5,8 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `49`
-- Default-safe commands: `39`
+- Commands indexed: `50`
+- Default-safe commands: `40`
 - Missing required maintenance actions: `0`
 
 ## Safety Classes
@@ -16,7 +16,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `cluster-setup` | 1 |
 | `live-local` | 6 |
 | `mixed-cli` | 3 |
-| `read-only-analysis` | 23 |
+| `read-only-analysis` | 24 |
 | `safe-figure-regeneration` | 4 |
 | `safe-local` | 10 |
 | `safe-local-optional-tool` | 2 |
@@ -26,7 +26,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | Surface | Commands |
 | --- | --- |
 | `maintenance` | 6 |
-| `scripts` | 36 |
+| `scripts` | 37 |
 | `scripts/cluster` | 1 |
 | `scripts/maintenance` | 6 |
 
@@ -55,6 +55,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/analyze_feedback_routing.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit and analyze fixed feedback-only trajectories without making model calls. Public CLI facade; implementation lives in vao.analysis.analyze_feedback_routing. |
 | `python scripts/analyze_recovery_transfer.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit recorded MBPP+ recovery evidence and reproduce the frozen statistical comparisons. Public CLI facade; implementation lives in vao.analysis.analyze_recovery_transfer. |
 | `python scripts/analyze_recovery_validation.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit frozen held-out recovery data and replay its finite budgeted policy bank. Public CLI facade; implementation lives in vao.analysis.analyze_recovery_validation. |
+| `python scripts/audit_repair_exposure.py` | scripts | `read-only-analysis` | yes | inspect script before running | Rebuild/check the minimum documented development-exposure registry, offline. |
 | `python scripts/audit_repair_stagnation.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit saved edits after a repair information study terminates; no API calls. |
 | `python scripts/audit_repair_trigger_coverage.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit only closed 27B source checkpoints, never ongoing model outcomes. |
 | `python scripts/collect_repair_contract_probe.py` | scripts | `read-only-analysis` | yes | inspect script before running | Run only an explicitly authorized and frozen output-contract study. |
