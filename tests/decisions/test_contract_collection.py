@@ -53,7 +53,7 @@ def network(monkeypatch, failure=None, content_for=None):
     def exchange(self, endpoint, body=None):
         if endpoint.endswith('/endpoints'):
             return {'data': {'id': self.settings.model, 'endpoints': [{
-                'tag': self.settings.endpoint, 'provider_name': self.settings.provider_name, 'quantization': 'bf16',
+                'tag': self.settings.endpoint, 'provider_name': self.settings.provider_name, 'quantization': self.settings.quantization,
                 'context_length': 131072, 'max_completion_tokens': 117964,
                 'supported_parameters': ['seed','temperature','max_tokens','response_format'],
                 'pricing': {'prompt': '.00000004', 'completion': '.00000005'}}]}}
@@ -322,44 +322,63 @@ def test_duplicate_provider_identity_stops_before_third_call(tmp_path, monkeypat
         cc.audit(out)
 
 
-def test_12b_calibration_preserves_inputs_carries_prior_and_pins_new_limits(tmp_path, monkeypatch):
-    from vao.repair.contracts import DEEPINFRA_STUDY, GEMMA12B_STUDY, study_spacing, validate
+@pytest.mark.parametrize('size,carried,price_cap,reserve,precision,prior_study', [
+    ('12b', '0.01419331', '.09', '0.0022528', 'bf16', 'repair-contract-deepinfra-v1'),
+    ('27b', '0.01760731', '.13', '0.0032768', 'fp8', 'repair-contract-gemma12b-v1'),
+])
+def test_capability_calibration_preserves_inputs_and_pins_limits(tmp_path, monkeypatch,
+        size, carried, price_cap, reserve, precision, prior_study):
+    from vao.repair.contracts import DEEPINFRA_STUDY, study_spacing, validate
     from vao.repair.environment import identity
     from vao.analysis.contract_diagnostic import summarize
     _, config = prepare(tmp_path, monkeypatch)
-    prior = tmp_path / 'complete-4b.json'
-    prior.write_text(json.dumps({'model_results': True, 'study': DEEPINFRA_STUDY,
+    study = f'repair-contract-gemma{size}-v1'
+    prior = tmp_path / 'preceding-calibration.json'
+    prior.write_text(json.dumps({'model_results': True, 'study': prior_study,
         'status': 'development_diagnostic_complete', 'gate': 'no_contract_meets_engineering_checks',
-        'accounting': {'cumulative_committed_usd': '0.01419331'}}))
-    new = construct([task()], Verifier(), study=GEMMA12B_STUDY, prior_commitment='0.01419331')
+        'accounting': {'cumulative_committed_usd': carried}}))
+    new = construct([task()], Verifier(), study=study, prior_commitment=carried)
     old = construct([task()], Verifier(), study=DEEPINFRA_STUDY)
     bodies = lambda p: {r['metadata']['contract']: r['provider_body'] for r in p['requests']}
     for contract, body in bodies(new).items():
         assert body['messages'] == bodies(old)[contract]['messages']
-        assert body['model'] == 'google/gemma-3-12b-it'
-        assert body['provider']['only'] == ['deepinfra/bf16']
-        assert body['provider']['quantizations'] == ['bf16']
+        assert body['model'] == f'google/gemma-3-{size}-it'
+        assert body['provider']['only'] == [f'deepinfra/{precision}']
+        assert body['provider']['quantizations'] == [precision]
         assert not body['provider']['allow_fallbacks']
-    assert new['reservation_usd'] == '0.0022528'
-    assert study_spacing(GEMMA12B_STUDY) == 10 and study_spacing(DEEPINFRA_STUDY) == 60
+    assert new['reservation_usd'] == reserve
+    assert study_spacing(study) == 10 and study_spacing(DEEPINFRA_STUDY) == 60
     assert not ({r['metadata']['attempt_id'] for r in old['requests']} &
                 {r['metadata']['attempt_id'] for r in new['requests']})
-    config = {**config, 'study': GEMMA12B_STUDY, 'minimum_request_interval_seconds': 10,
-              'monetary_authorization_usd': '.09', 'closed_pilot_report': str(prior)}
-    frozen = cc.freeze(new, config, tmp_path / '12b-freeze.json')
+    config = {**config, 'study': study, 'minimum_request_interval_seconds': 10,
+              'monetary_authorization_usd': price_cap, 'closed_pilot_report': str(prior)}
+    frozen = cc.freeze(new, config, tmp_path / 'capability-freeze.json')
     sent = network(monkeypatch)
-    result = cc.collect(frozen, tmp_path / '12b-run', claim_root=tmp_path / 'claims')
+    result = cc.collect(frozen, tmp_path / 'capability-run', claim_root=tmp_path / 'claims')
     assert len(sent) == 3 and result['sealed']
-    assert result['carried_committed_usd'] == '0.01419331'
-    assert Decimal(result['cumulative_committed_usd']) == Decimal('.01419331') + Decimal('.00024')
-    assert summarize(tmp_path / '12b-run')['fit_selector'] is False
-    for change in ({'minimum_request_interval_seconds': 60}, {'monetary_authorization_usd': '.10'},
+    assert result['carried_committed_usd'] == carried
+    assert Decimal(result['cumulative_committed_usd']) == Decimal(carried) + Decimal('.00024')
+    assert summarize(tmp_path / 'capability-run')['fit_selector'] is False
+    for change in ({'minimum_request_interval_seconds': 60}, {'monetary_authorization_usd': str(Decimal(price_cap) + Decimal('.01'))},
                    {'study': DEEPINFRA_STUDY}, {'cumulative_limit_usd': '.10'}):
         with pytest.raises(ValueError):cc.freeze(new, {**config, **change}, tmp_path / 'reject.json')
     wrong_prior = json.loads(prior.read_text()); wrong_prior['status'] = 'incomplete_development_diagnostic'
     with pytest.raises(ValueError, match='completed unsuccessful'):
         cc.authorization(config, new, wrong_prior)
-    changed = json.loads(json.dumps(new)); changed['provider_settings']['model'] = 'google/gemma-3-4b-it'
+    changed = json.loads(json.dumps(new))
+    changed['provider_settings'].update(model='google/gemma-3-4b-it', endpoint='deepinfra/bf16', quantization='bf16')
     changed['packet_id'] = identity({k:v for k,v in changed.items() if k != 'packet_id'})
     with pytest.raises(ValueError, match='settings'):
         validate(changed)
+
+
+def test_model_precision_route_mismatch_is_rejected():
+    from dataclasses import asdict
+    from vao.repair.contracts import GEMMA27B_STUDY, study_settings
+    from vao.repair.provider import Settings
+    settings, _ = study_settings(GEMMA27B_STUDY)
+    assert settings.reserve * 36 == Decimal('.1179648')
+    for change in ({'quantization': 'bf16'}, {'endpoint': 'deepinfra/bf16'},
+                   {'model': 'google/gemma-3-12b-it'}, {'provider_name': 'Novita'}):
+        with pytest.raises(ValueError, match='declared Gemma endpoint'):
+            Settings(**{**asdict(settings), **change})

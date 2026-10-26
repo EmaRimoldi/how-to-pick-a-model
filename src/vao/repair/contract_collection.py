@@ -9,7 +9,7 @@ import json
 import os
 from pathlib import Path
 
-from .contracts import STUDY, DEEPINFRA_STUDY, GEMMA12B_STUDY, decode, provenance, provider_body, public_feedback, task_from_record, validate, study_settings, study_spacing
+from .contracts import STUDY, DEEPINFRA_STUDY, GEMMA12B_STUDY, GEMMA27B_STUDY, decode, provenance, provider_body, public_feedback, task_from_record, validate, study_settings, study_spacing
 from .environment import RepairRun, audit_run, identity
 from .pilot import file_hashes, source_commit
 from .provider import OpenRouterTransport, ProviderStopped, Settings, dollars
@@ -47,10 +47,11 @@ def authorization(config, packet, prior):
         if prior.get('study') != STUDY or prior.get('status') != 'incomplete_development_diagnostic':
             raise ValueError('DeepInfra study must carry the closed Parasail diagnostic')
         carried = dollars(prior['accounting']['cumulative_committed_usd'])
-    elif packet['study'] == GEMMA12B_STUDY:
-        if (prior.get('study') != DEEPINFRA_STUDY or prior.get('status') != 'development_diagnostic_complete'
+    elif packet['study'] in (GEMMA12B_STUDY, GEMMA27B_STUDY):
+        previous = DEEPINFRA_STUDY if packet['study'] == GEMMA12B_STUDY else GEMMA12B_STUDY
+        if (prior.get('study') != previous or prior.get('status') != 'development_diagnostic_complete'
                 or prior.get('gate') != 'no_contract_meets_engineering_checks'):
-            raise ValueError('12B calibration must carry the completed unsuccessful 4B contract diagnostic')
+            raise ValueError('Capability calibration must carry the completed unsuccessful preceding contract diagnostic')
         carried = dollars(prior['accounting']['cumulative_committed_usd'])
     else:
         carried = dollars(prior['conservative_committed_usd'])

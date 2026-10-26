@@ -327,3 +327,10 @@ text, with both successes on the same bug. All72 saved evaluation records
 reproduce, no new uncertain calls, cumulative commitment $0.01760731 including
 all historical reserves. Increased artifact validity alone does not establish
 useful recovery. The gate remains failed and no selector is trained.
+
+A separately frozen [27B capability control](CONTRACT-27B-PROTOCOL.md) is prepared
+under a declared [$0.13 sublimit](CONTRACT-27B-AUTHORIZED.json), within $0.60
+cumulative and carrying $0.01760731 once. It retains the twelve bugs, three
+formats, strict decoder and fixed gate. The DeepInfra 27B route is FP8, whereas
+4B/12B used BF16: this is a capability control, not a pure model-size experiment.
+No 27B outcomes exist at preparation time; no selector fitting is enabled.
