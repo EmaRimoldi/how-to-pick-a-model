@@ -20,6 +20,11 @@ results, figures, and run metadata whenever those artifacts are available.
 | BigCodeBench standard-library subset | [`feedback-only-routing/`](bigcodebench/feedback-only-routing/) | complete; primary gate not passed | 157 task clusters, 628/628 policy outcomes, 1,492 responses, no missing outcomes; fixed comparisons, receipts, source freeze, verifier repeat and disclosed single requested interim look |
 | Python function repair | [`checkpoint-environment/`](python-repair/checkpoint-environment/) | recovery pilot incomplete; 4B/12B/27B contract banks complete, gates failed | Prior recovery evidence retained; complete 36-call banks at all three sizes fail calibration. 27B improves partial test scores but solves only two distinct bugs across formats; FP8/BF16 confounded. No trained selector or held-out claim |
 
+The [current Python research amendment](python-repair/checkpoint-environment/GOAL-AMENDMENT-20261026.md)
+tests whether acquiring public execution evidence before another repair is worth
+its cost. The bounded diagnostic adapter has an offline replay on twelve saved
+artifacts; no new model outcome or acquisition-policy benefit is claimed.
+
 ## Families
 
 - [`autoresearch-cifar10/`](autoresearch-cifar10/)

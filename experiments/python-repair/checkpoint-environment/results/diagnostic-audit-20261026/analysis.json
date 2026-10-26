@@ -1,0 +1,3785 @@
+{
+  "post_hoc": true,
+  "model_calls": 0,
+  "archive_sha256": "f2a3b228425ee98a8a5bbc0422f6bdb486d44eeb1a2a86d4cabeba309103c913",
+  "false_positive_outputs": 7,
+  "distinct_false_positive_bugs": 3,
+  "records": [
+    {
+      "attempt_id": "343fbb6910a1a96d06599b0af3f0e055c9247f4b7449c34e17dd75d7c143b8b6",
+      "task": "development/bugsinpy-adapted/tornado-009",
+      "contract": "json_current",
+      "specification": "Append query arguments to a URL while preserving its fragment and existing query parameter order. args is a dict or list of key/value pairs (duplicate keys allowed). Encode values using urllib.parse.urlencode; retain blank existing query values. If args is None, return the exact original URL without normalizing it. Other types raise TypeError.",
+      "failures": [
+        {
+          "case": {
+            "args": [
+              "http://example.org/p?#x",
+              null
+            ],
+            "expected": "http://example.org/p?#x",
+            "id": "none-trailing"
+          },
+          "observed": {
+            "status": "returned",
+            "value": "http://example.org/p#x"
+          }
+        }
+      ]
+    },
+    {
+      "attempt_id": "49fd33bbbd7380665611d9158ff57b04aee5bb13e9e9d0ae58fafe08eab41850",
+      "task": "development/bugsinpy-adapted/tornado-009",
+      "contract": "json_example",
+      "specification": "Append query arguments to a URL while preserving its fragment and existing query parameter order. args is a dict or list of key/value pairs (duplicate keys allowed). Encode values using urllib.parse.urlencode; retain blank existing query values. If args is None, return the exact original URL without normalizing it. Other types raise TypeError.",
+      "failures": [
+        {
+          "case": {
+            "args": [
+              "http://example.org/p?#x",
+              null
+            ],
+            "expected": "http://example.org/p?#x",
+            "id": "none-trailing"
+          },
+          "observed": {
+            "status": "returned",
+            "value": "http://example.org/p#x"
+          }
+        }
+      ]
+    },
+    {
+      "attempt_id": "4d15fcfc5b6d665f6c521479f156e94943245c8204c567db7cc0c8f54e0f909b",
+      "task": "development/bugsinpy-adapted/youtube-dl-027",
+      "contract": "python_text",
+      "specification": "Parse the supported DFXP timestamp dialect into seconds as a float. Accept a nonnegative numeric offset with optional s, or hours:MM:SS with an optional fractional part introduced by a dot OR colon. For example, the last component in 00:00:01:100 is decimal milliseconds, not a frame count. Return None for empty, None or unrecognized text.",
+      "failures": [
+        {
+          "case": {
+            "args": [
+              "00:00:00:5"
+            ],
+            "expected": 0.5,
+            "id": "colon-short"
+          },
+          "observed": {
+            "status": "returned",
+            "value": 0.005
+          }
+        }
+      ]
+    },
+    {
+      "attempt_id": "5ec5ae466631b43b38756dcf73c82093c496853478f1273cd05091d20b15859e",
+      "task": "development/bugsinpy-adapted/youtube-dl-027",
+      "contract": "json_current",
+      "specification": "Parse the supported DFXP timestamp dialect into seconds as a float. Accept a nonnegative numeric offset with optional s, or hours:MM:SS with an optional fractional part introduced by a dot OR colon. For example, the last component in 00:00:01:100 is decimal milliseconds, not a frame count. Return None for empty, None or unrecognized text.",
+      "failures": [
+        {
+          "case": {
+            "args": [
+              "00:00:00:5"
+            ],
+            "expected": 0.5,
+            "id": "colon-short"
+          },
+          "observed": {
+            "status": "returned",
+            "value": 0.005
+          }
+        }
+      ]
+    },
+    {
+      "attempt_id": "98fb22aa29ba9e351eb0caf26c0b78e39bc13a48c7fad7e51625f3b81c56b857",
+      "task": "development/bugsinpy-adapted/youtube-dl-011",
+      "contract": "json_example",
+      "specification": "Convert a decimal integer string after removing commas, dots and plus signs. Preserve an already numeric value or None unchanged. Invalid integer text raises ValueError. This is an integer-count parser: punctuation is a grouping separator, not a decimal point.",
+      "failures": [
+        {
+          "case": {
+            "args": [
+              1.25
+            ],
+            "expected": 1.25,
+            "id": "float"
+          },
+          "observed": {
+            "exception": "TypeError",
+            "status": "exception"
+          }
+        }
+      ]
+    },
+    {
+      "attempt_id": "a57eb5cfc99cad402db0e89796164bc58a5fb6f3bf72ac2b8732dc40789292df",
+      "task": "development/bugsinpy-adapted/youtube-dl-011",
+      "contract": "json_current",
+      "specification": "Convert a decimal integer string after removing commas, dots and plus signs. Preserve an already numeric value or None unchanged. Invalid integer text raises ValueError. This is an integer-count parser: punctuation is a grouping separator, not a decimal point.",
+      "failures": [
+        {
+          "case": {
+            "args": [
+              1.25
+            ],
+            "expected": 1.25,
+            "id": "float"
+          },
+          "observed": {
+            "exception": "TypeError",
+            "status": "exception"
+          }
+        }
+      ]
+    },
+    {
+      "attempt_id": "d6fe035acff38c2a2b727d3b1cd60d3b7f4c25e2efa6d725d29b3bab78e317c1",
+      "task": "development/bugsinpy-adapted/youtube-dl-011",
+      "contract": "python_text",
+      "specification": "Convert a decimal integer string after removing commas, dots and plus signs. Preserve an already numeric value or None unchanged. Invalid integer text raises ValueError. This is an integer-count parser: punctuation is a grouping separator, not a decimal point.",
+      "failures": [
+        {
+          "case": {
+            "args": [
+              1.25
+            ],
+            "expected": 1.25,
+            "id": "float"
+          },
+          "observed": {
+            "exception": "TypeError",
+            "status": "exception"
+          }
+        }
+      ]
+    }
+  ],
+  "preflight": {
+    "filesystem_denied": true,
+    "network_denied": true,
+    "credentials_absent": true,
+    "backend": "macos-sandbox-exec",
+    "python": "3.13.12"
+  },
+  "public_probes": [
+    {
+      "attempt_id": "124975883e46e8ed461c7bdb271f088c69e7acf873acc3605844de4dd24ae8a3",
+      "task_id": "development/bugsinpy-adapted/youtube-dl-033",
+      "status": "observed",
+      "observation": {
+        "binding": "2ac6459dba72e81b84e14d104e5f150c7f41ac124c535e719a884ccca392567d",
+        "feedback": {
+          "passed": false,
+          "passed_cases": 5,
+          "total_cases": 6,
+          "cases": [
+            {
+              "id": "fraction-z",
+              "passed": false,
+              "observed": {
+                "status": "exception",
+                "exception": "ValueError"
+              }
+            },
+            {
+              "id": "zone",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": 1395612266
+              }
+            },
+            {
+              "id": "epoch",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": 0
+              }
+            },
+            {
+              "id": "nozone",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": 1
+              }
+            },
+            {
+              "id": "none",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": null
+              }
+            },
+            {
+              "id": "bad",
+              "passed": true,
+              "observed": {
+                "status": "exception",
+                "exception": "ValueError"
+              }
+            }
+          ]
+        },
+        "verifier_seconds": 0.4189599580131471
+      },
+      "diagnostic": {
+        "binding": "2ac6459dba72e81b84e14d104e5f150c7f41ac124c535e719a884ccca392567d",
+        "available": true,
+        "reason": null,
+        "additional_executions": 2,
+        "case_id": "fraction-z",
+        "untraced_observation": {
+          "status": "exception",
+          "exception": "ValueError"
+        },
+        "trace_result": {
+          "available": true,
+          "reason": null,
+          "observed": {
+            "status": "exception",
+            "exception": "ValueError"
+          },
+          "trace": {
+            "events": [
+              {
+                "file": "solution.py",
+                "function": "solve",
+                "line": 40,
+                "event": "line",
+                "locals": {
+                  "args": {
+                    "items": [
+                      "2014-03-23T22:04:26.1234Z"
+                    ],
+                    "length": 1
+                  },
+                  "kwargs": {
+                    "items": [],
+                    "length": 0
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_iso8601",
+                "line": 10,
+                "event": "line",
+                "locals": {
+                  "date_str": "2014-03-23T22:04:26.1234Z",
+                  "delimiter": "T"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_iso8601",
+                "line": 13,
+                "event": "line",
+                "locals": {
+                  "date_str": "2014-03-23T22:04:26.1234Z",
+                  "delimiter": "T"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_iso8601",
+                "line": 14,
+                "event": "line",
+                "locals": {
+                  "date_str": "2014-03-23T22:04:26.1234Z",
+                  "delimiter": "T"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_iso8601",
+                "line": 15,
+                "event": "line",
+                "locals": {
+                  "date_str": "2014-03-23T22:04:26.1234Z",
+                  "delimiter": "T"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_iso8601",
+                "line": 13,
+                "event": "line",
+                "locals": {
+                  "date_str": "2014-03-23T22:04:26.1234Z",
+                  "delimiter": "T"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_iso8601",
+                "line": 16,
+                "event": "line",
+                "locals": {
+                  "date_str": "2014-03-23T22:04:26.1234Z",
+                  "delimiter": "T",
+                  "m": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_iso8601",
+                "line": 19,
+                "event": "line",
+                "locals": {
+                  "date_str": "2014-03-23T22:04:26.1234Z",
+                  "delimiter": "T",
+                  "m": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_iso8601",
+                "line": 20,
+                "event": "line",
+                "locals": {
+                  "date_str": "2014-03-23T22:04:26.1234",
+                  "delimiter": "T",
+                  "m": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_iso8601",
+                "line": 21,
+                "event": "line",
+                "locals": {
+                  "date_str": "2014-03-23T22:04:26.1234",
+                  "delimiter": "T",
+                  "m": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_iso8601",
+                "line": 29,
+                "event": "line",
+                "locals": {
+                  "date_str": "2014-03-23T22:04:26.1234",
+                  "delimiter": "T",
+                  "m": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "timezone": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_iso8601",
+                "line": 30,
+                "event": "line",
+                "locals": {
+                  "date_str": "2014-03-23T22:04:26.1234",
+                  "delimiter": "T",
+                  "m": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "timezone": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "date_format": "%Y-%m-%dT%H:%M:%S"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_iso8601",
+                "line": 31,
+                "event": "line",
+                "locals": {
+                  "date_str": "2014-03-23T22:04:26.1234",
+                  "delimiter": "T",
+                  "m": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "timezone": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "date_format": "%Y-%m-%dT%H:%M:%S"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_iso8601",
+                "line": 31,
+                "event": "exception",
+                "locals": {
+                  "date_str": "2014-03-23T22:04:26.1234",
+                  "delimiter": "T",
+                  "m": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "timezone": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "date_format": "%Y-%m-%dT%H:%M:%S"
+                },
+                "exception": "ValueError"
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_iso8601",
+                "line": 32,
+                "event": "line",
+                "locals": {
+                  "date_str": "2014-03-23T22:04:26.1234",
+                  "delimiter": "T",
+                  "m": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "timezone": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "date_format": "%Y-%m-%dT%H:%M:%S"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_iso8601",
+                "line": 33,
+                "event": "line",
+                "locals": {
+                  "date_str": "2014-03-23T22:04:26.1234",
+                  "delimiter": "T",
+                  "m": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "timezone": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "date_format": "%Y-%m-%dT%H:%M:%S"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_iso8601",
+                "line": 34,
+                "event": "line",
+                "locals": {
+                  "date_str": "2014-03-23T22:04:26.1234",
+                  "delimiter": "T",
+                  "m": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "timezone": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "date_format": "%Y-%m-%dT%H:%M:%S"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_iso8601",
+                "line": 33,
+                "event": "line",
+                "locals": {
+                  "date_str": "2014-03-23T22:04:26.1234",
+                  "delimiter": "T",
+                  "m": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "timezone": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "date_format": "%Y-%m-%dT%H:%M:%S"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_iso8601",
+                "line": 33,
+                "event": "exception",
+                "locals": {
+                  "date_str": "2014-03-23T22:04:26.1234",
+                  "delimiter": "T",
+                  "m": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "timezone": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "date_format": "%Y-%m-%dT%H:%M:%S"
+                },
+                "exception": "ValueError"
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_iso8601",
+                "line": 33,
+                "event": "return",
+                "locals": {
+                  "date_str": "2014-03-23T22:04:26.1234",
+                  "delimiter": "T",
+                  "m": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "timezone": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "date_format": "%Y-%m-%dT%H:%M:%S"
+                },
+                "returned": null
+              },
+              {
+                "file": "solution.py",
+                "function": "solve",
+                "line": 40,
+                "event": "exception",
+                "locals": {
+                  "args": {
+                    "items": [
+                      "2014-03-23T22:04:26.1234Z"
+                    ],
+                    "length": 1
+                  },
+                  "kwargs": {
+                    "items": [],
+                    "length": 0
+                  }
+                },
+                "exception": "ValueError"
+              },
+              {
+                "file": "solution.py",
+                "function": "solve",
+                "line": 40,
+                "event": "return",
+                "locals": {
+                  "args": {
+                    "items": [
+                      "2014-03-23T22:04:26.1234Z"
+                    ],
+                    "length": 1
+                  },
+                  "kwargs": {
+                    "items": [],
+                    "length": 0
+                  }
+                },
+                "returned": null
+              }
+            ],
+            "events_seen": 22,
+            "events_dropped": 0,
+            "capture_limit_reached": false,
+            "intact": true,
+            "line_semantics": "locals before executing the reported line",
+            "limits": {
+              "events": 32,
+              "event_bytes": 12000,
+              "captured_events": 512,
+              "locals_per_event": 8,
+              "value_depth": 2,
+              "container_items": 6,
+              "string_chars": 96
+            }
+          }
+        },
+        "diagnostic_seconds": 0.1337279169820249
+      },
+      "request_sha256": {
+        "raw": "f7e2a9a9e875891ab50bed4c8366945040a538c556f02bb16d53b77417cf839d",
+        "focused": "a53a24d89cfe61aaa135375757b142abebe7e2c1de8564bd17222e0a3eecaf0b",
+        "focused_trace": "d79007a23bf47067feb5a6d395d699923bd53c7a9a5b0139f10712758041fbbe"
+      }
+    },
+    {
+      "attempt_id": "18ecfedf9a387df38d3421e42bf763d7a78679459f5f441b57b4f9ddf0dc6243",
+      "task_id": "development/bugsinpy-adapted/httpie-005",
+      "status": "observed",
+      "observation": {
+        "binding": "3e991bff6852daa54e4569be63ade3c435e8135c2a1b0f4120967f6a87c601b8",
+        "feedback": {
+          "passed": false,
+          "passed_cases": 4,
+          "total_cases": 6,
+          "cases": [
+            {
+              "id": "empty-header",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": {
+                  "key": "",
+                  "value": "hello",
+                  "sep": ":",
+                  "orig": ":hello"
+                }
+              }
+            },
+            {
+              "id": "long-escape",
+              "passed": false,
+              "observed": {
+                "status": "returned",
+                "value": {
+                  "key": "bob\\",
+                  "value": "=foo",
+                  "sep": ":=",
+                  "orig": "bob\\:==foo"
+                }
+              }
+            },
+            {
+              "id": "ordinary",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": {
+                  "key": "name",
+                  "value": "value",
+                  "sep": "=",
+                  "orig": "name=value"
+                }
+              }
+            },
+            {
+              "id": "json",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": {
+                  "key": "bool",
+                  "value": "true",
+                  "sep": ":=",
+                  "orig": "bool:=true"
+                }
+              }
+            },
+            {
+              "id": "escaped-colon",
+              "passed": false,
+              "observed": {
+                "status": "returned",
+                "value": {
+                  "key": "foo\\",
+                  "value": "bar:baz",
+                  "sep": ":",
+                  "orig": "foo\\:bar:baz"
+                }
+              }
+            },
+            {
+              "id": "missing",
+              "passed": true,
+              "observed": {
+                "status": "exception",
+                "exception": "ValueError"
+              }
+            }
+          ]
+        },
+        "verifier_seconds": 0.27160199999343604
+      },
+      "diagnostic": {
+        "binding": "3e991bff6852daa54e4569be63ade3c435e8135c2a1b0f4120967f6a87c601b8",
+        "available": true,
+        "reason": null,
+        "additional_executions": 2,
+        "case_id": "long-escape",
+        "untraced_observation": {
+          "status": "returned",
+          "value": {
+            "key": "bob\\",
+            "value": "=foo",
+            "sep": ":=",
+            "orig": "bob\\:==foo"
+          }
+        },
+        "trace_result": {
+          "available": true,
+          "reason": null,
+          "observed": {
+            "status": "returned",
+            "value": {
+              "key": "bob\\",
+              "value": "=foo",
+              "sep": ":=",
+              "orig": "bob\\:==foo"
+            }
+          },
+          "trace": {
+            "events": [
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 16,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":"
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": "=",
+                  "regex": "=",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 17,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":"
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": ":=",
+                  "regex": "=",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 18,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":"
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": ":=",
+                  "regex": ":=",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 19,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":"
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": ":=",
+                  "regex": ":=",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 20,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":"
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": ":=",
+                  "regex": ":=",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 19,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": ":=",
+                  "regex": ":=",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 16,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": ":=",
+                  "regex": ":=",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 17,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": "@",
+                  "regex": ":=",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 18,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": "@",
+                  "regex": "@",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 19,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": "@",
+                  "regex": "@",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 16,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": "@",
+                  "regex": "@",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 22,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": "@",
+                  "regex": "@",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 28,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": "@",
+                  "regex": "@",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 29,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": "@",
+                  "regex": "@",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "seploc": 4
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 30,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": ":=",
+                  "regex": "@",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "seploc": 4
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 31,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": ":=",
+                  "regex": "@",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "seploc": 4
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 34,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": ":=",
+                  "regex": "@",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "seploc": 4
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 35,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": ":=",
+                  "regex": "@",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "seploc": 4
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 36,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": ":=",
+                  "regex": "@",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "seploc": 4
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 34,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": ":=",
+                  "regex": "@",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "seploc": 4
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 35,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": ":=",
+                  "regex": "@",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "seploc": 4
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 36,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": ":=",
+                  "regex": "@",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "seploc": 4
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 34,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": ":=",
+                  "regex": "@",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "seploc": 4
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 35,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": ":=",
+                  "regex": "@",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "seploc": 4
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 36,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": ":=",
+                  "regex": "@",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "seploc": 4
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 34,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": ":=",
+                  "regex": "@",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "seploc": 4
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 35,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": ":=",
+                  "regex": "@",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "seploc": 4
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 36,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": ":=",
+                  "regex": "@",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "seploc": 4
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 34,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": ":=",
+                  "regex": "@",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "seploc": 4
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 37,
+                "event": "line",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": ":=",
+                  "regex": "@",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "seploc": 4
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "__call__",
+                "line": 37,
+                "event": "return",
+                "locals": {
+                  "self": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "string": "bob\\:==foo",
+                  "found": {
+                    "items": [
+                      [
+                        4,
+                        ":="
+                      ],
+                      [
+                        5,
+                        "="
+                      ],
+                      [
+                        6,
+                        "="
+                      ]
+                    ],
+                    "length": 3
+                  },
+                  "sep": ":=",
+                  "regex": "@",
+                  "matches": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "seploc": 4
+                },
+                "returned": {
+                  "omitted": "object_or_depth_limit"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "solve",
+                "line": 42,
+                "event": "return",
+                "locals": {
+                  "string": "bob\\:==foo"
+                },
+                "returned": {
+                  "items": [
+                    [
+                      "key",
+                      "bob\\"
+                    ],
+                    [
+                      "value",
+                      "=foo"
+                    ],
+                    [
+                      "sep",
+                      ":="
+                    ],
+                    [
+                      "orig",
+                      "bob\\:==foo"
+                    ]
+                  ],
+                  "length": 4
+                }
+              }
+            ],
+            "events_seen": 51,
+            "events_dropped": 19,
+            "capture_limit_reached": false,
+            "intact": true,
+            "line_semantics": "locals before executing the reported line",
+            "limits": {
+              "events": 32,
+              "event_bytes": 12000,
+              "captured_events": 512,
+              "locals_per_event": 8,
+              "value_depth": 2,
+              "container_items": 6,
+              "string_chars": 96
+            }
+          }
+        },
+        "diagnostic_seconds": 0.09819020808208734
+      },
+      "request_sha256": {
+        "raw": "c8fbee9dc3769132a2d53fef60067824d446471f5b1493a0cd3c928596248a29",
+        "focused": "0b5d30f1419148fe008f07dbd4872c3b5287c37f9e81d87c4ea4d5a10ac2e5d2",
+        "focused_trace": "4da2a7de7942801dd7b17e3ee4fe6503485bb322514c4280b940488eb43e3f80"
+      }
+    },
+    {
+      "attempt_id": "343fbb6910a1a96d06599b0af3f0e055c9247f4b7449c34e17dd75d7c143b8b6",
+      "task_id": "development/bugsinpy-adapted/tornado-009",
+      "status": "observed",
+      "observation": {
+        "binding": "70dae4dff5b6a295e00bbb38af31050dcc42274484399d0af4d9cfd195823697",
+        "feedback": {
+          "passed": true,
+          "passed_cases": 6,
+          "total_cases": 6,
+          "cases": [
+            {
+              "id": "none",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": "https://localhost/path?r=1&t=2"
+              }
+            },
+            {
+              "id": "list",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": "https://localhost/path?y=y&z=z"
+              }
+            },
+            {
+              "id": "dict",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": "http://example.org/?x=a+b"
+              }
+            },
+            {
+              "id": "fragment",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": "http://example.org/p?x=1#tab"
+              }
+            },
+            {
+              "id": "empty",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": "http://example.org/p?a=1"
+              }
+            },
+            {
+              "id": "invalid",
+              "passed": true,
+              "observed": {
+                "status": "exception",
+                "exception": "TypeError"
+              }
+            }
+          ]
+        },
+        "verifier_seconds": 0.3081532910000533
+      },
+      "diagnostic": {
+        "binding": "70dae4dff5b6a295e00bbb38af31050dcc42274484399d0af4d9cfd195823697",
+        "available": false,
+        "reason": "no_public_failure",
+        "additional_executions": 0,
+        "diagnostic_seconds": 8.749775588512421e-07
+      },
+      "request_sha256": {
+        "raw": "daff24e64317f3cbc3897a525d735123c4ef2d921a481518b5afbbc71b9b05c9",
+        "focused": "8551547eee63cb3aad85675ae52e030194d48ba895124c47f67360b46298a83c",
+        "focused_trace": "0dc1e2233bd558ce68dedf5fb46bd0cd66caa1c602748d2850ece108125471e9"
+      }
+    },
+    {
+      "attempt_id": "394be8d25c6a2e1b4670138ec4e5e4ed1a4456975341a9230c2b8e7ebb695dcb",
+      "task_id": "development/bugsinpy-adapted/youtube-dl-003",
+      "status": "observed",
+      "observation": {
+        "binding": "2974c03e7ff6643d18f4221472014ad5845ffcd62e614fd6725c063659f06865",
+        "feedback": {
+          "passed": false,
+          "passed_cases": 5,
+          "total_cases": 6,
+          "cases": [
+            {
+              "id": "stray-before-quote",
+              "passed": false,
+              "observed": {
+                "status": "returned",
+                "value": "&a&quot;"
+              }
+            },
+            {
+              "id": "named",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": "caf\u00e9"
+              }
+            },
+            {
+              "id": "numeric",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": "/"
+              }
+            },
+            {
+              "id": "plain",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": "hello"
+              }
+            },
+            {
+              "id": "unknown",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": "&noSuchEntity;"
+              }
+            },
+            {
+              "id": "null",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": null
+              }
+            }
+          ]
+        },
+        "verifier_seconds": 0.27450691699050367
+      },
+      "diagnostic": {
+        "binding": "2974c03e7ff6643d18f4221472014ad5845ffcd62e614fd6725c063659f06865",
+        "available": true,
+        "reason": null,
+        "additional_executions": 2,
+        "case_id": "stray-before-quote",
+        "untraced_observation": {
+          "status": "returned",
+          "value": "&a&quot;"
+        },
+        "trace_result": {
+          "available": true,
+          "reason": null,
+          "observed": {
+            "status": "returned",
+            "value": "&a&quot;"
+          },
+          "trace": {
+            "events": [
+              {
+                "file": "solution.py",
+                "function": "solve",
+                "line": 50,
+                "event": "line",
+                "locals": {
+                  "args": {
+                    "items": [
+                      "&a&quot;"
+                    ],
+                    "length": 1
+                  },
+                  "kwargs": {
+                    "items": [],
+                    "length": 0
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "unescapeHTML",
+                "line": 41,
+                "event": "line",
+                "locals": {
+                  "s": "&a&quot;"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "unescapeHTML",
+                "line": 43,
+                "event": "line",
+                "locals": {
+                  "s": "&a&quot;"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "unescapeHTML",
+                "line": 45,
+                "event": "line",
+                "locals": {
+                  "s": "&a&quot;"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "unescapeHTML",
+                "line": 46,
+                "event": "line",
+                "locals": {
+                  "s": "&a&quot;"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "unescapeHTML",
+                "line": 45,
+                "event": "line",
+                "locals": {
+                  "s": "&a&quot;"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "<lambda>",
+                "line": 46,
+                "event": "line",
+                "locals": {
+                  "m": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "_htmlentity_transform",
+                "line": 11,
+                "event": "line",
+                "locals": {
+                  "entity_with_semicolon": "a&quot;"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "_htmlentity_transform",
+                "line": 14,
+                "event": "line",
+                "locals": {
+                  "entity_with_semicolon": "a&quot;",
+                  "entity": "a&quot"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "_htmlentity_transform",
+                "line": 19,
+                "event": "line",
+                "locals": {
+                  "entity_with_semicolon": "a&quot;",
+                  "entity": "a&quot"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "_htmlentity_transform",
+                "line": 22,
+                "event": "line",
+                "locals": {
+                  "entity_with_semicolon": "a&quot;",
+                  "entity": "a&quot"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "_htmlentity_transform",
+                "line": 23,
+                "event": "line",
+                "locals": {
+                  "entity_with_semicolon": "a&quot;",
+                  "entity": "a&quot",
+                  "mobj": null
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "_htmlentity_transform",
+                "line": 37,
+                "event": "line",
+                "locals": {
+                  "entity_with_semicolon": "a&quot;",
+                  "entity": "a&quot",
+                  "mobj": null
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "_htmlentity_transform",
+                "line": 37,
+                "event": "return",
+                "locals": {
+                  "entity_with_semicolon": "a&quot;",
+                  "entity": "a&quot",
+                  "mobj": null
+                },
+                "returned": "&a&quot;"
+              },
+              {
+                "file": "solution.py",
+                "function": "<lambda>",
+                "line": 46,
+                "event": "return",
+                "locals": {
+                  "m": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                },
+                "returned": "&a&quot;"
+              },
+              {
+                "file": "solution.py",
+                "function": "unescapeHTML",
+                "line": 45,
+                "event": "return",
+                "locals": {
+                  "s": "&a&quot;"
+                },
+                "returned": "&a&quot;"
+              },
+              {
+                "file": "solution.py",
+                "function": "solve",
+                "line": 50,
+                "event": "return",
+                "locals": {
+                  "args": {
+                    "items": [
+                      "&a&quot;"
+                    ],
+                    "length": 1
+                  },
+                  "kwargs": {
+                    "items": [],
+                    "length": 0
+                  }
+                },
+                "returned": "&a&quot;"
+              }
+            ],
+            "events_seen": 17,
+            "events_dropped": 0,
+            "capture_limit_reached": false,
+            "intact": true,
+            "line_semantics": "locals before executing the reported line",
+            "limits": {
+              "events": 32,
+              "event_bytes": 12000,
+              "captured_events": 512,
+              "locals_per_event": 8,
+              "value_depth": 2,
+              "container_items": 6,
+              "string_chars": 96
+            }
+          }
+        },
+        "diagnostic_seconds": 0.09884854196570814
+      },
+      "request_sha256": {
+        "raw": "eb1bbdcd59c6345c9436a8fcca8e8094be0978c8889e32b36c2d5d4fc95ff133",
+        "focused": "757a27a3c5459db5152f2d18fa0b2f24ebe41638801c43946c88b2d1b3147839",
+        "focused_trace": "a683756b93d314375830e20f8b462e8577e5fe65fe740b6e1ab32b33c4f97a3c"
+      }
+    },
+    {
+      "attempt_id": "5ec5ae466631b43b38756dcf73c82093c496853478f1273cd05091d20b15859e",
+      "task_id": "development/bugsinpy-adapted/youtube-dl-027",
+      "status": "observed",
+      "observation": {
+        "binding": "bc1ee396b778e7b1e1757d28b8bad625f8729a067d75f6a5999c3755e5a7254a",
+        "feedback": {
+          "passed": true,
+          "passed_cases": 6,
+          "total_cases": 6,
+          "cases": [
+            {
+              "id": "colon-fraction",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": 1.1
+              }
+            },
+            {
+              "id": "offset",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": 2.5
+              }
+            },
+            {
+              "id": "clock",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": 3723.0
+              }
+            },
+            {
+              "id": "dot",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": 1.1
+              }
+            },
+            {
+              "id": "none",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": null
+              }
+            },
+            {
+              "id": "invalid",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": null
+              }
+            }
+          ]
+        },
+        "verifier_seconds": 0.2713883329415694
+      },
+      "diagnostic": {
+        "binding": "bc1ee396b778e7b1e1757d28b8bad625f8729a067d75f6a5999c3755e5a7254a",
+        "available": false,
+        "reason": "no_public_failure",
+        "additional_executions": 0,
+        "diagnostic_seconds": 5.420297384262085e-07
+      },
+      "request_sha256": {
+        "raw": "af985a4a6cc6ca75b8b63567d007980d539c5bfe1d6a2cf8c75f0403cd33c2a1",
+        "focused": "33d62e1d1151357d8cdffdc1d989617ae8ffca701e4cca8bb4013077d78c3ad7",
+        "focused_trace": "ae66a7a1f76e4694c0b6a3b3946397ba617df5b43e80177f4ba17b3a69741f5c"
+      }
+    },
+    {
+      "attempt_id": "71e076fd8d72d776a1d1c0fa23de82ca25e97ea464920fd4c90f88e754c44c4f",
+      "task_id": "development/bugsinpy-adapted/youtube-dl-032",
+      "status": "observed",
+      "observation": {
+        "binding": "661a602f23b3176c933ee0512e49fe299e8ffc70be566e37f71ab9194d6f3406",
+        "feedback": {
+          "passed": true,
+          "passed_cases": 5,
+          "total_cases": 5,
+          "cases": [
+            {
+              "id": "comment",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": "{\"ok\":true}"
+              }
+            },
+            {
+              "id": "simple",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": "[1,2]"
+              }
+            },
+            {
+              "id": "space",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": "42"
+              }
+            },
+            {
+              "id": "raw",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": "{\"x\":1}"
+              }
+            },
+            {
+              "id": "empty",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": ""
+              }
+            }
+          ]
+        },
+        "verifier_seconds": 0.2334068330237642
+      },
+      "diagnostic": {
+        "binding": "661a602f23b3176c933ee0512e49fe299e8ffc70be566e37f71ab9194d6f3406",
+        "available": false,
+        "reason": "no_public_failure",
+        "additional_executions": 0,
+        "diagnostic_seconds": 1.0409858077764511e-06
+      },
+      "request_sha256": {
+        "raw": "b7dcc96bd271a0661ad4bbf6283c27b5ab30f00c94734f8bb1e7155091983fd2",
+        "focused": "6c31491d83ce86c42af00357b26965945794dfd10c1cbc3ffb1c7c67391b401c",
+        "focused_trace": "a68f4df643fbb99cbc3f9fea9c611c27493b4a1e043e318e4ec254c0a56543f8"
+      }
+    },
+    {
+      "attempt_id": "7bc35974504bc6007120bfb2a7d45be9595f6a2a79d4f5a1b8162609f67c5a96",
+      "task_id": "development/bugsinpy-adapted/youtube-dl-043",
+      "status": "observed",
+      "observation": {
+        "binding": "644b968818219bba1899d29ccfeac5631c0f7787725e72e08a7de87b3531d27b",
+        "feedback": {
+          "passed": false,
+          "passed_cases": 5,
+          "total_cases": 6,
+          "cases": [
+            {
+              "id": "deep",
+              "passed": false,
+              "observed": {
+                "status": "returned",
+                "value": "05"
+              }
+            },
+            {
+              "id": "root",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": ""
+              }
+            },
+            {
+              "id": "two",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": "baz"
+              }
+            },
+            {
+              "id": "query",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": "a"
+              }
+            },
+            {
+              "id": "fragment",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": "a"
+              }
+            },
+            {
+              "id": "invalid",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": ""
+              }
+            }
+          ]
+        },
+        "verifier_seconds": 0.2692611659877002
+      },
+      "diagnostic": {
+        "binding": "644b968818219bba1899d29ccfeac5631c0f7787725e72e08a7de87b3531d27b",
+        "available": true,
+        "reason": null,
+        "additional_executions": 2,
+        "case_id": "deep",
+        "untraced_observation": {
+          "status": "returned",
+          "value": "05"
+        },
+        "trace_result": {
+          "available": true,
+          "reason": null,
+          "observed": {
+            "status": "returned",
+            "value": "05"
+          },
+          "trace": {
+            "events": [
+              {
+                "file": "solution.py",
+                "function": "solve",
+                "line": 13,
+                "event": "line",
+                "locals": {
+                  "args": {
+                    "items": [
+                      "http://media.w3.org/2010/05/sintel/trailer.mp4"
+                    ],
+                    "length": 1
+                  },
+                  "kwargs": {
+                    "items": [],
+                    "length": 0
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "url_basename",
+                "line": 6,
+                "event": "line",
+                "locals": {
+                  "url": "http://media.w3.org/2010/05/sintel/trailer.mp4"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "url_basename",
+                "line": 7,
+                "event": "line",
+                "locals": {
+                  "url": "http://media.w3.org/2010/05/sintel/trailer.mp4",
+                  "m": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "url_basename",
+                "line": 9,
+                "event": "line",
+                "locals": {
+                  "url": "http://media.w3.org/2010/05/sintel/trailer.mp4",
+                  "m": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "url_basename",
+                "line": 9,
+                "event": "return",
+                "locals": {
+                  "url": "http://media.w3.org/2010/05/sintel/trailer.mp4",
+                  "m": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                },
+                "returned": "05"
+              },
+              {
+                "file": "solution.py",
+                "function": "solve",
+                "line": 13,
+                "event": "return",
+                "locals": {
+                  "args": {
+                    "items": [
+                      "http://media.w3.org/2010/05/sintel/trailer.mp4"
+                    ],
+                    "length": 1
+                  },
+                  "kwargs": {
+                    "items": [],
+                    "length": 0
+                  }
+                },
+                "returned": "05"
+              }
+            ],
+            "events_seen": 6,
+            "events_dropped": 0,
+            "capture_limit_reached": false,
+            "intact": true,
+            "line_semantics": "locals before executing the reported line",
+            "limits": {
+              "events": 32,
+              "event_bytes": 12000,
+              "captured_events": 512,
+              "locals_per_event": 8,
+              "value_depth": 2,
+              "container_items": 6,
+              "string_chars": 96
+            }
+          }
+        },
+        "diagnostic_seconds": 0.09838316589593887
+      },
+      "request_sha256": {
+        "raw": "6e1062c99e37d5e28989abb05853b381ead5245230d629c1cb3de308b98c63e0",
+        "focused": "85a76dec66f4a0283212908c78b514989e6e30b69f7f403745a46bb524cdd8ff",
+        "focused_trace": "528096fd36a97d25357b890fab08a68c486a0c7aa70aeff54c1c883050991e2c"
+      }
+    },
+    {
+      "attempt_id": "8bd4c5cf0ee68ac17ef4831115efff4628d6594666daf43bfc39e80592747b18",
+      "task_id": "development/bugsinpy-adapted/youtube-dl-042",
+      "status": "observed",
+      "observation": {
+        "binding": "ebc406a8eff083316f5e374e1efdabdc6fa95897df422258f70404b25a46e5d9",
+        "feedback": {
+          "passed": false,
+          "passed_cases": 4,
+          "total_cases": 6,
+          "cases": [
+            {
+              "id": "existing",
+              "passed": false,
+              "observed": {
+                "status": "returned",
+                "value": "&amp;amp;"
+              }
+            },
+            {
+              "id": "mixed",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": "a &amp; b &lt; c"
+              }
+            },
+            {
+              "id": "raw",
+              "passed": false,
+              "observed": {
+                "status": "returned",
+                "value": "&amp;x=y&z=a"
+              }
+            },
+            {
+              "id": "decimal",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": "&#1234;"
+              }
+            },
+            {
+              "id": "plain",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": "hello"
+              }
+            },
+            {
+              "id": "empty",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": ""
+              }
+            }
+          ]
+        },
+        "verifier_seconds": 0.27451441704761237
+      },
+      "diagnostic": {
+        "binding": "ebc406a8eff083316f5e374e1efdabdc6fa95897df422258f70404b25a46e5d9",
+        "available": true,
+        "reason": null,
+        "additional_executions": 2,
+        "case_id": "existing",
+        "untraced_observation": {
+          "status": "returned",
+          "value": "&amp;amp;"
+        },
+        "trace_result": {
+          "available": true,
+          "reason": null,
+          "observed": {
+            "status": "returned",
+            "value": "&amp;amp;"
+          },
+          "trace": {
+            "events": [
+              {
+                "file": "solution.py",
+                "function": "solve",
+                "line": 19,
+                "event": "line",
+                "locals": {
+                  "args": {
+                    "items": [
+                      "&amp;"
+                    ],
+                    "length": 1
+                  },
+                  "kwargs": {
+                    "items": [],
+                    "length": 0
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "fix_xml_all_ampersand",
+                "line": 7,
+                "event": "line",
+                "locals": {
+                  "xml_str": "&amp;"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "fix_xml_all_ampersand",
+                "line": 15,
+                "event": "line",
+                "locals": {
+                  "xml_str": "&amp;",
+                  "replace": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "replace",
+                "line": 8,
+                "event": "line",
+                "locals": {
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "replace",
+                "line": 9,
+                "event": "line",
+                "locals": {
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "entity": "amp;"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "replace",
+                "line": 11,
+                "event": "line",
+                "locals": {
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "entity": "amp;"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "replace",
+                "line": 13,
+                "event": "line",
+                "locals": {
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "entity": "amp;"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "replace",
+                "line": 13,
+                "event": "return",
+                "locals": {
+                  "match": {
+                    "omitted": "object_or_depth_limit"
+                  },
+                  "entity": "amp;"
+                },
+                "returned": "&amp;amp;"
+              },
+              {
+                "file": "solution.py",
+                "function": "fix_xml_all_ampersand",
+                "line": 15,
+                "event": "return",
+                "locals": {
+                  "xml_str": "&amp;",
+                  "replace": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                },
+                "returned": "&amp;amp;"
+              },
+              {
+                "file": "solution.py",
+                "function": "solve",
+                "line": 19,
+                "event": "return",
+                "locals": {
+                  "args": {
+                    "items": [
+                      "&amp;"
+                    ],
+                    "length": 1
+                  },
+                  "kwargs": {
+                    "items": [],
+                    "length": 0
+                  }
+                },
+                "returned": "&amp;amp;"
+              }
+            ],
+            "events_seen": 10,
+            "events_dropped": 0,
+            "capture_limit_reached": false,
+            "intact": true,
+            "line_semantics": "locals before executing the reported line",
+            "limits": {
+              "events": 32,
+              "event_bytes": 12000,
+              "captured_events": 512,
+              "locals_per_event": 8,
+              "value_depth": 2,
+              "container_items": 6,
+              "string_chars": 96
+            }
+          }
+        },
+        "diagnostic_seconds": 0.08484129200223833
+      },
+      "request_sha256": {
+        "raw": "261b8ae308a791282629491d1852728ba6530d1900f7bff605c95ab38ce312db",
+        "focused": "61b5a0a7590fa6a5c26fc26bc5f8fa36749f755633bf006be349b5639c5781f6",
+        "focused_trace": "7dadd72226e5552d2400ca0e1df386e2b05d4dbb605c2987317d0d143709feb8"
+      }
+    },
+    {
+      "attempt_id": "91cbfb266e55b579641dc86eb4a12855db10cb6fd0d36d07d258195c8b73cf9d",
+      "task_id": "development/bugsinpy-adapted/youtube-dl-020",
+      "status": "observed",
+      "observation": {
+        "binding": "1786c70b44812aa18a4ebefd86bf42bfd3f4c8a8a5b822493d0f12d51a0298e1",
+        "feedback": {
+          "passed": false,
+          "passed_cases": 5,
+          "total_cases": 6,
+          "cases": [
+            {
+              "id": "boolean-before",
+              "passed": false,
+              "observed": {
+                "status": "returned",
+                "value": []
+              }
+            },
+            {
+              "id": "plain",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": [
+                  "yes"
+                ]
+              }
+            },
+            {
+              "id": "wrong",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": []
+              }
+            },
+            {
+              "id": "entities",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": [
+                  "A & B"
+                ]
+              }
+            },
+            {
+              "id": "quote",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": [
+                  "hi"
+                ]
+              }
+            },
+            {
+              "id": "literal",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": []
+              }
+            }
+          ]
+        },
+        "verifier_seconds": 0.2771579169202596
+      },
+      "diagnostic": {
+        "binding": "1786c70b44812aa18a4ebefd86bf42bfd3f4c8a8a5b822493d0f12d51a0298e1",
+        "available": true,
+        "reason": null,
+        "additional_executions": 2,
+        "case_id": "boolean-before",
+        "untraced_observation": {
+          "status": "returned",
+          "value": []
+        },
+        "trace_result": {
+          "available": true,
+          "reason": null,
+          "observed": {
+            "status": "returned",
+            "value": []
+          },
+          "trace": {
+            "events": [
+              {
+                "file": "solution.py",
+                "function": "solve",
+                "line": 76,
+                "event": "line",
+                "locals": {
+                  "args": {
+                    "items": [
+                      "id",
+                      "a",
+                      "<div hidden id=\"a\">ok</div>"
+                    ],
+                    "length": 3
+                  },
+                  "kwargs": {
+                    "items": [],
+                    "length": 0
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "get_elements_by_attribute",
+                "line": 12,
+                "event": "line",
+                "locals": {
+                  "attribute": "id",
+                  "value": "a",
+                  "html": "<div hidden id=\"a\">ok</div>",
+                  "escape_value": true
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "get_elements_by_attribute",
+                "line": 13,
+                "event": "line",
+                "locals": {
+                  "attribute": "id",
+                  "value": "a",
+                  "html": "<div hidden id=\"a\">ok</div>",
+                  "escape_value": true
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "get_elements_by_attribute",
+                "line": 15,
+                "event": "line",
+                "locals": {
+                  "attribute": "id",
+                  "value": "a",
+                  "html": "<div hidden id=\"a\">ok</div>",
+                  "escape_value": true
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "get_elements_by_attribute",
+                "line": 16,
+                "event": "line",
+                "locals": {
+                  "attribute": "id",
+                  "value": "a",
+                  "html": "<div hidden id=\"a\">ok</div>",
+                  "escape_value": true,
+                  "retlist": {
+                    "items": [],
+                    "length": 0
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "get_elements_by_attribute",
+                "line": 24,
+                "event": "line",
+                "locals": {
+                  "attribute": "id",
+                  "value": "a",
+                  "html": "<div hidden id=\"a\">ok</div>",
+                  "escape_value": true,
+                  "retlist": {
+                    "items": [],
+                    "length": 0
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "get_elements_by_attribute",
+                "line": 16,
+                "event": "line",
+                "locals": {
+                  "attribute": "id",
+                  "value": "a",
+                  "html": "<div hidden id=\"a\">ok</div>",
+                  "escape_value": true,
+                  "retlist": {
+                    "items": [],
+                    "length": 0
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "get_elements_by_attribute",
+                "line": 24,
+                "event": "line",
+                "locals": {
+                  "attribute": "id",
+                  "value": "a",
+                  "html": "<div hidden id=\"a\">ok</div>",
+                  "escape_value": true,
+                  "retlist": {
+                    "items": [],
+                    "length": 0
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "get_elements_by_attribute",
+                "line": 16,
+                "event": "line",
+                "locals": {
+                  "attribute": "id",
+                  "value": "a",
+                  "html": "<div hidden id=\"a\">ok</div>",
+                  "escape_value": true,
+                  "retlist": {
+                    "items": [],
+                    "length": 0
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "get_elements_by_attribute",
+                "line": 32,
+                "event": "line",
+                "locals": {
+                  "attribute": "id",
+                  "value": "a",
+                  "html": "<div hidden id=\"a\">ok</div>",
+                  "escape_value": true,
+                  "retlist": {
+                    "items": [],
+                    "length": 0
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "get_elements_by_attribute",
+                "line": 32,
+                "event": "return",
+                "locals": {
+                  "attribute": "id",
+                  "value": "a",
+                  "html": "<div hidden id=\"a\">ok</div>",
+                  "escape_value": true,
+                  "retlist": {
+                    "items": [],
+                    "length": 0
+                  }
+                },
+                "returned": {
+                  "items": [],
+                  "length": 0
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "solve",
+                "line": 76,
+                "event": "return",
+                "locals": {
+                  "args": {
+                    "items": [
+                      "id",
+                      "a",
+                      "<div hidden id=\"a\">ok</div>"
+                    ],
+                    "length": 3
+                  },
+                  "kwargs": {
+                    "items": [],
+                    "length": 0
+                  }
+                },
+                "returned": {
+                  "items": [],
+                  "length": 0
+                }
+              }
+            ],
+            "events_seen": 12,
+            "events_dropped": 0,
+            "capture_limit_reached": false,
+            "intact": true,
+            "line_semantics": "locals before executing the reported line",
+            "limits": {
+              "events": 32,
+              "event_bytes": 12000,
+              "captured_events": 512,
+              "locals_per_event": 8,
+              "value_depth": 2,
+              "container_items": 6,
+              "string_chars": 96
+            }
+          }
+        },
+        "diagnostic_seconds": 0.09105162497144192
+      },
+      "request_sha256": {
+        "raw": "83cf2ac288b1a8132ce2df4e082f943fe05a58b20e1210573b960a99fb721a9d",
+        "focused": "e7e41414dac7b4640abb5fd7453b82c9b9a9f070bd57e822ecc7bf7af0a26110",
+        "focused_trace": "785354022ccee5ac1d9cf940d600b64a7fde48939cf73ee2539b58282afebf27"
+      }
+    },
+    {
+      "attempt_id": "a57eb5cfc99cad402db0e89796164bc58a5fb6f3bf72ac2b8732dc40789292df",
+      "task_id": "development/bugsinpy-adapted/youtube-dl-011",
+      "status": "observed",
+      "observation": {
+        "binding": "5269fc3c7297f2affcfb1379b684ebabef6f8fcc9e48e371b7efad49de449735",
+        "feedback": {
+          "passed": true,
+          "passed_cases": 6,
+          "total_cases": 6,
+          "cases": [
+            {
+              "id": "numeric",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": 523
+              }
+            },
+            {
+              "id": "comma",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": 123456
+              }
+            },
+            {
+              "id": "dot",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": 123456
+              }
+            },
+            {
+              "id": "none",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": null
+              }
+            },
+            {
+              "id": "negative",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": -12
+              }
+            },
+            {
+              "id": "bad",
+              "passed": true,
+              "observed": {
+                "status": "exception",
+                "exception": "ValueError"
+              }
+            }
+          ]
+        },
+        "verifier_seconds": 0.29004062502644956
+      },
+      "diagnostic": {
+        "binding": "5269fc3c7297f2affcfb1379b684ebabef6f8fcc9e48e371b7efad49de449735",
+        "available": false,
+        "reason": "no_public_failure",
+        "additional_executions": 0,
+        "diagnostic_seconds": 5.830079317092896e-07
+      },
+      "request_sha256": {
+        "raw": "1f77d67d5941a9f326546bb6dce7aeb1164d58218229dec5e82b65b3a9f62d74",
+        "focused": "4f4c7e1c480c6066fb60618eb618fcad83b8a40e6f3e8b783001a64af7284606",
+        "focused_trace": "0f235ac1fe73c95ade921abd62f46e9a8c7e6a8a333d67b3911f5e4c3dfd76d8"
+      }
+    },
+    {
+      "attempt_id": "aec861ef253b0a5fe8f5daa3c1aa35f803228e5904ffdb868960cd2507d76d02",
+      "task_id": "development/bugsinpy-adapted/youtube-dl-013",
+      "status": "observed",
+      "observation": {
+        "binding": "c97297428f8016ecbae7b7ad5a4b36eb257ab06e5f80cf61aef6025662b68103",
+        "feedback": {
+          "passed": false,
+          "passed_cases": 5,
+          "total_cases": 6,
+          "cases": [
+            {
+              "id": "rtmp-no-base",
+              "passed": false,
+              "observed": {
+                "status": "returned",
+                "value": null
+              }
+            },
+            {
+              "id": "relative",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": "https://example.org/a/b"
+              }
+            },
+            {
+              "id": "root",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": "https://example.org/b"
+              }
+            },
+            {
+              "id": "http-no-base",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": "http://example.org/x"
+              }
+            },
+            {
+              "id": "empty",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": null
+              }
+            },
+            {
+              "id": "bad-base",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": null
+              }
+            }
+          ]
+        },
+        "verifier_seconds": 0.2801152920583263
+      },
+      "diagnostic": {
+        "binding": "c97297428f8016ecbae7b7ad5a4b36eb257ab06e5f80cf61aef6025662b68103",
+        "available": true,
+        "reason": null,
+        "additional_executions": 2,
+        "case_id": "rtmp-no-base",
+        "untraced_observation": {
+          "status": "returned",
+          "value": null
+        },
+        "trace_result": {
+          "available": true,
+          "reason": null,
+          "observed": {
+            "status": "returned",
+            "value": null
+          },
+          "trace": {
+            "events": [
+              {
+                "file": "solution.py",
+                "function": "solve",
+                "line": 25,
+                "event": "line",
+                "locals": {
+                  "args": {
+                    "items": [
+                      null,
+                      "rtmp://media.example/live"
+                    ],
+                    "length": 2
+                  },
+                  "kwargs": {
+                    "items": [],
+                    "length": 0
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "urljoin",
+                "line": 8,
+                "event": "line",
+                "locals": {
+                  "base": null,
+                  "path": "rtmp://media.example/live"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "urljoin",
+                "line": 10,
+                "event": "line",
+                "locals": {
+                  "base": null,
+                  "path": "rtmp://media.example/live"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "urljoin",
+                "line": 12,
+                "event": "line",
+                "locals": {
+                  "base": null,
+                  "path": "rtmp://media.example/live"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "urljoin",
+                "line": 14,
+                "event": "line",
+                "locals": {
+                  "base": null,
+                  "path": "rtmp://media.example/live"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "urljoin",
+                "line": 16,
+                "event": "line",
+                "locals": {
+                  "base": null,
+                  "path": "rtmp://media.example/live"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "urljoin",
+                "line": 18,
+                "event": "line",
+                "locals": {
+                  "base": null,
+                  "path": "rtmp://media.example/live"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "urljoin",
+                "line": 20,
+                "event": "line",
+                "locals": {
+                  "base": null,
+                  "path": "rtmp://media.example/live"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "urljoin",
+                "line": 20,
+                "event": "return",
+                "locals": {
+                  "base": null,
+                  "path": "rtmp://media.example/live"
+                },
+                "returned": null
+              },
+              {
+                "file": "solution.py",
+                "function": "solve",
+                "line": 25,
+                "event": "return",
+                "locals": {
+                  "args": {
+                    "items": [
+                      null,
+                      "rtmp://media.example/live"
+                    ],
+                    "length": 2
+                  },
+                  "kwargs": {
+                    "items": [],
+                    "length": 0
+                  }
+                },
+                "returned": null
+              }
+            ],
+            "events_seen": 10,
+            "events_dropped": 0,
+            "capture_limit_reached": false,
+            "intact": true,
+            "line_semantics": "locals before executing the reported line",
+            "limits": {
+              "events": 32,
+              "event_bytes": 12000,
+              "captured_events": 512,
+              "locals_per_event": 8,
+              "value_depth": 2,
+              "container_items": 6,
+              "string_chars": 96
+            }
+          }
+        },
+        "diagnostic_seconds": 0.09341337508521974
+      },
+      "request_sha256": {
+        "raw": "5849e40672d532c69ec25e47a955dec7e17597f507b929b40d770c90e50c9303",
+        "focused": "507ad4a2da69665330f589cbfd1499ca3249a21e1832b3109f10026bd7c8e790",
+        "focused_trace": "07c567a57fc41cd7f6fea115a137da52f5b421fac2c041f44d41d77944f6a5b2"
+      }
+    },
+    {
+      "attempt_id": "b9406574fe6e7bbe8f345ac4c7cc8960cd96779a595a6e2a0e92387d7bf6ba48",
+      "task_id": "development/bugsinpy-adapted/youtube-dl-031",
+      "status": "observed",
+      "observation": {
+        "binding": "ddb6acd5c5b6e50a59f78bc0dfc603034ccd2e38ecbf8829208f20a59d20690c",
+        "feedback": {
+          "passed": false,
+          "passed_cases": 5,
+          "total_cases": 6,
+          "cases": [
+            {
+              "id": "minutes",
+              "passed": false,
+              "observed": {
+                "status": "returned",
+                "value": 10800.0
+              }
+            },
+            {
+              "id": "hours",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": 9000.0
+              }
+            },
+            {
+              "id": "clock",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": 61
+              }
+            },
+            {
+              "id": "units",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": 11513
+              }
+            },
+            {
+              "id": "none",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": null
+              }
+            },
+            {
+              "id": "bad",
+              "passed": true,
+              "observed": {
+                "status": "returned",
+                "value": null
+              }
+            }
+          ]
+        },
+        "verifier_seconds": 0.28351920808199793
+      },
+      "diagnostic": {
+        "binding": "ddb6acd5c5b6e50a59f78bc0dfc603034ccd2e38ecbf8829208f20a59d20690c",
+        "available": true,
+        "reason": null,
+        "additional_executions": 2,
+        "case_id": "minutes",
+        "untraced_observation": {
+          "status": "returned",
+          "value": 10800.0
+        },
+        "trace_result": {
+          "available": true,
+          "reason": null,
+          "observed": {
+            "status": "returned",
+            "value": 10800.0
+          },
+          "trace": {
+            "events": [
+              {
+                "file": "solution.py",
+                "function": "solve",
+                "line": 46,
+                "event": "line",
+                "locals": {
+                  "args": {
+                    "items": [
+                      "3 min"
+                    ],
+                    "length": 1
+                  },
+                  "kwargs": {
+                    "items": [],
+                    "length": 0
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_duration",
+                "line": 10,
+                "event": "line",
+                "locals": {
+                  "s": "3 min"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_duration",
+                "line": 13,
+                "event": "line",
+                "locals": {
+                  "s": "3 min"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_duration",
+                "line": 15,
+                "event": "line",
+                "locals": {
+                  "s": "3 min"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_duration",
+                "line": 16,
+                "event": "line",
+                "locals": {
+                  "s": "3 min"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_duration",
+                "line": 21,
+                "event": "line",
+                "locals": {
+                  "s": "3 min"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_duration",
+                "line": 15,
+                "event": "line",
+                "locals": {
+                  "s": "3 min"
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_duration",
+                "line": 22,
+                "event": "line",
+                "locals": {
+                  "s": "3 min",
+                  "m": null
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_duration",
+                "line": 23,
+                "event": "line",
+                "locals": {
+                  "s": "3 min",
+                  "m": null
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_duration",
+                "line": 25,
+                "event": "line",
+                "locals": {
+                  "s": "3 min",
+                  "m": null
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_duration",
+                "line": 23,
+                "event": "line",
+                "locals": {
+                  "s": "3 min",
+                  "m": null
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_duration",
+                "line": 26,
+                "event": "line",
+                "locals": {
+                  "s": "3 min",
+                  "m": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_duration",
+                "line": 27,
+                "event": "line",
+                "locals": {
+                  "s": "3 min",
+                  "m": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                }
+              },
+              {
+                "file": "solution.py",
+                "function": "parse_duration",
+                "line": 27,
+                "event": "return",
+                "locals": {
+                  "s": "3 min",
+                  "m": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                },
+                "returned": 10800.0
+              },
+              {
+                "file": "solution.py",
+                "function": "solve",
+                "line": 46,
+                "event": "return",
+                "locals": {
+                  "args": {
+                    "items": [
+                      "3 min"
+                    ],
+                    "length": 1
+                  },
+                  "kwargs": {
+                    "items": [],
+                    "length": 0
+                  }
+                },
+                "returned": 10800.0
+              }
+            ],
+            "events_seen": 15,
+            "events_dropped": 0,
+            "capture_limit_reached": false,
+            "intact": true,
+            "line_semantics": "locals before executing the reported line",
+            "limits": {
+              "events": 32,
+              "event_bytes": 12000,
+              "captured_events": 512,
+              "locals_per_event": 8,
+              "value_depth": 2,
+              "container_items": 6,
+              "string_chars": 96
+            }
+          }
+        },
+        "diagnostic_seconds": 0.08536741696298122
+      },
+      "request_sha256": {
+        "raw": "9c2feb09b05bb60b22ae869c409896fb03a31f4ee8f8ff5a75f601a20cc24880",
+        "focused": "5485501ebd4ffbb029c8cd558620f45e5abc2057e4a86d8050193e5ebd3ce28c",
+        "focused_trace": "667e1f680372c99fbd2149ec252c1e5a5d5c90f30edd537f176eb38030f74eae"
+      }
+    }
+  ],
+  "probe_summary": {
+    "candidates_retained": 12,
+    "traces_available": 8,
+    "no_public_failure": 4,
+    "additional_executions": 16
+  },
+  "source_sha256": {
+    "src/vao/repair/diagnostics.py": "1113b8a912f6c2da28bb6621e271c49e66da5a3c23d029fb747b167b2e4d0817",
+    "src/vao/repair/trace_worker.py": "feaa355b1bd3c83a47d758f01e95f11c7872522a5151924152eb23f34732ef99",
+    "src/vao/repair/verifier.py": "01dffb237da4f13ad85e8b2b472f679948940f9bc01ce7dd9a558994882e10f4"
+  }
+}

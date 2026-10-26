@@ -72,6 +72,12 @@ point to their [provenance](history-merge.md).
 
 ## Current Python repair calibration
 
+The user-requested [goal amendment](../experiments/python-repair/checkpoint-environment/GOAL-AMENDMENT-20261026.md)
+prioritizes the value of acquiring public execution evidence before another
+repair. The [offline diagnostic adapter](../experiments/python-repair/checkpoint-environment/DIAGNOSTIC-PREPARATION.md)
+and [case audit / replay](../experiments/python-repair/checkpoint-environment/results/diagnostic-audit-20261026/README.md)
+are implemented; no new model calls or selector benefit have been demonstrated.
+
 The [checkpoint environment](../experiments/python-repair/checkpoint-environment/README.md)
 retains the incomplete recovery pilot and both output-contract diagnostics.
 The [complete DeepInfra diagnostic](../experiments/python-repair/checkpoint-environment/results/contract-deepinfra-20261026/README.md)

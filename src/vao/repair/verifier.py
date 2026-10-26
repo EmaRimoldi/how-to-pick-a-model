@@ -33,14 +33,48 @@ class RepairVerifier:
 
     def invoke(self, files: dict, entrypoint: dict, case: dict) -> dict:
         """Run one candidate call with no expectations, suite, credentials or history."""
+        result = self._execute(files, entrypoint, case, worker="worker.py")
+        return self._observation(result)
+
+    @staticmethod
+    def _observation(result: dict) -> dict:
+        status = result.get("status")
+        if status == "returned" and set(result) == {"status", "value"}:
+            return result
+        if status in {"exception", "load_error"} and set(result) == {"status", "exception"} and isinstance(result["exception"], str):
+            return result
+        if result in ({"status": "output_limit"}, {"status": "non_json_output"},
+                      {"status": "timeout"}, {"status": "invalid_output"}):
+            return result
+        if status == "worker_exit" and set(result) == {"status", "returncode"}:
+            return result
+        return {"status": "invalid_output"}
+
+    def trace(self, files: dict, entrypoint: dict, case: dict) -> dict:
+        """Observe a bounded candidate-only trace; it never determines a pass flag."""
+        result = self._execute(files, entrypoint, case, worker="trace_worker.py")
+        if set(result) != {"observed", "trace"} or not isinstance(result["observed"], dict):
+            return {"available": False, "reason": "trace_worker_failure", "worker_result": result}
+        trace = result["trace"]
+        if (not isinstance(trace, dict) or len(canonical(trace).encode()) > 16384
+                or not isinstance(trace.get("events"), list) or len(trace["events"]) > 32
+                or type(trace.get("intact")) is not bool):
+            return {"available": False, "reason": "invalid_trace"}
+        return {"available": trace["intact"], "reason": None if trace["intact"] else "tracing_disabled",
+                "observed": self._observation(result["observed"]), "trace": trace}
+
+    def _execute(self, files: dict, entrypoint: dict, case: dict, *, worker: str) -> dict:
+        """Shared OS boundary; payload allowlists inputs and omits expected answers."""
         validate_files(files)
         with tempfile.TemporaryDirectory(prefix="repair-verifier-") as temp:
             work = Path(temp)
             for name, source in files.items():
                 (work / name).write_text(source, encoding="utf-8")
             runner = work / "__repair_worker.py"
-            shutil.copyfile(Path(__file__).with_name("worker.py"), runner)
+            shutil.copyfile(Path(__file__).with_name(worker), runner)
             payload = {"entrypoint": entrypoint, "args": case["args"], "kwargs": case.get("kwargs", {})}
+            if worker == "trace_worker.py":
+                payload["trace_files"] = sorted(files)
             env = {"PATH": "/usr/bin:/bin", "HOME": temp, "TMPDIR": temp,
                    "PYTHONHASHSEED": "0", "TZ": "UTC", "LANG": "C"}
             command = ["sandbox-exec", "-p", sandbox_profile(work), sys.executable, "-I", str(runner)]
@@ -73,14 +107,7 @@ class RepairVerifier:
                     return {"status": "invalid_output"}
                 if not isinstance(result, dict):
                     return {"status": "invalid_output"}
-                status = result.get("status")
-                if status == "returned" and set(result) == {"status", "value"}:
-                    return result
-                if status in {"exception", "load_error"} and set(result) == {"status", "exception"} and isinstance(result["exception"], str):
-                    return result
-                if result in ({"status": "output_limit"}, {"status": "non_json_output"}):
-                    return result
-                return {"status": "invalid_output"}
+                return result
 
     def check(self, files: dict, entrypoint: dict, cases: list) -> dict:
         """Judge expected values in the parent, never a candidate-reported pass flag."""

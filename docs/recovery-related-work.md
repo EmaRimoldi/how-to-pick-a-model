@@ -1,5 +1,18 @@
 # Recovery decisions: related work and claim limits
 
+## Diagnostic-acquisition amendment — 2026-10-26
+
+The closed Gemma controls motivate a narrower information-acquisition experiment,
+documented in the [goal amendment](../experiments/python-repair/checkpoint-environment/GOAL-AMENDMENT-20261026.md).
+The additional primary-source review covers Olausson et al., Maniple, in-execution
+self-debugging, trace prompting, TraceRepair, VeriHarness and S*. Maniple already
+learns bug-specific fact selection on BugsInPy, so neither selecting feedback nor
+adding traces is a novelty claim. The proposed distinction to test is prospective
+acquisition at an already failed checkpoint with the full opportunity cost, no
+reference-derived diagnostics, and untouched evaluation. Its novelty and benefit
+remain unestablished. Historical protocols and the broad-precedent verdict below
+are unchanged.
+
 ## Expanded novelty review — 2026-10-25
 
 **Verdict: the broad research premise already has direct precedents. Neither

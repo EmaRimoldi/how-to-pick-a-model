@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `518`
-- Bytes indexed: `51.2M`
+- Files indexed: `527`
+- Bytes indexed: `51.3M`
 
 ## Canonical Entrypoints
 
@@ -48,12 +48,12 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 311 | 46.6M |
+| `experiments` | 316 | 46.8M |
 | `docs` | 53 | 2.6M |
 | `uv.lock` | 1 | 937.0K |
-| `src` | 80 | 719.5K |
-| `tests` | 32 | 186.1K |
-| `scripts` | 33 | 101.9K |
+| `src` | 82 | 731.2K |
+| `tests` | 33 | 193.4K |
+| `scripts` | 34 | 104.0K |
 | `.github` | 5 | 3.3K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
@@ -63,9 +63,9 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 149 | 1.0M |
-| `.json` | 115 | 4.3M |
-| `.md` | 73 | 384.5K |
+| `.py` | 154 | 1.0M |
+| `.json` | 116 | 4.4M |
+| `.md` | 76 | 403.5K |
 | `.txt` | 67 | 349.7K |
 | `.jsonl` | 45 | 36.7M |
 | `.png` | 21 | 2.7M |
@@ -106,6 +106,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/python-repair/checkpoint-environment/results/contract-diagnostic-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/contract-gemma12b-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/contract-gemma27b-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/diagnostic-audit-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/gemma4b-calibration-20261026/README.md`
 
 ## Script Entrypoints
@@ -126,6 +127,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/prepare_feedback_routing.py`
 - `scripts/prepare_python_repair.py`
 - `scripts/prepare_repair_contract_probe.py`
+- `scripts/prepare_repair_diagnostics.py`
 - `scripts/prepare_repair_pilot.py`
 - `scripts/qualify_python_repair_pool.py`
 - `scripts/report_feedback_routing.py`

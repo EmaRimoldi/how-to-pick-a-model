@@ -1,9 +1,16 @@
 # Python repair checkpoint environment
 
-**Status: the 4B and 12B output-contract studies each completed all 36 calls,
-but neither passed the fixed calibration gate. The 12B JSON formats produce
-11/12 usable artifacts each, yet fully solve only Tornado/9. No selected format,
-trained repair selector or scaling-law claim.**
+**Status: all three 4B/12B/27B contract studies completed their 36 calls and failed
+the unchanged calibration gate. The user has redirected the immediate research
+goal toward deciding when acquiring a diagnostic is worth its cost before another
+repair. No trained selector, selected response format or scaling-law claim.**
+
+Read the [current goal amendment and literature basis](GOAL-AMENDMENT-20261026.md),
+[public-only diagnostic prototype](DIAGNOSTIC-PREPARATION.md), and
+[failure audit / offline replay](results/diagnostic-audit-20261026/README.md).
+Eight of twelve saved JSON candidates expose a public failure and yield a
+consistent bounded execution trace; four do not trigger a probe. No model has
+yet received the new diagnostic, so no repair benefit is established.
 
 Read the [complete contract findings](results/contract-deepinfra-20261026/README.md).
 The earlier recovery pilot remains incomplete after repeated provider HTTP 429
@@ -28,7 +35,7 @@ modules, a named callable and JSON inputs/outputs. The environment saves complet
 artifacts, public verification, progress histories and branch ancestry. It restores
 earlier artifacts without changing saved checkpoints.
 
-The first question is whether public progress history predicts the benefit of
+The original question was whether public progress history predicts the benefit of
 keeping a failed patch rather than restoring the original buggy code. The
 expanded [related-work review](../../../docs/recovery-related-work.md) identifies
 direct precedents; this question is a replication target, not an established
@@ -37,7 +44,11 @@ finite-expression prototype in [PR 14](https://github.com/EmaRimoldi/how-to-pick
 remains a separate, unmerged design. This implementation starts from current main;
 completed HumanEval+, MBPP+ and BigCodeBench studies are unchanged.
 
-## Active goal and completion criteria
+## Earlier selector scope, now conditional on useful acquisition
+
+The [2026-10-26 amendment](GOAL-AMENDMENT-20261026.md) is the operative goal.
+The original milestones below remain historical context and possible later
+comparisons, not a license to skip the failed capability gate or fit a selector.
 
 Build an executable Python selector that chooses **continue from the current
 patch** or **restart from the original buggy files** before generating the next
@@ -80,7 +91,7 @@ Milestones:
    and costs. Treat this as empirical scaling curves; three model sizes do not
    establish a general scaling law or isolate parameter count as the cause.
 
-The goal is active; the full milestones above are not completed. The closed
+The amended goal is active; the full milestones above were not completed. The closed
 pilot had a $0.60 cap including uncertain reserves; the funded config
 is [PILOT-AUTHORIZED.json](PILOT-AUTHORIZED.json). Closed historical budgets cannot
 fund this pilot. A further collection needs a separately reviewed protocol and authorization; the old continuation configurations cannot be reused.
