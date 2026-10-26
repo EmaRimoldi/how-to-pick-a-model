@@ -1,4 +1,4 @@
-# First pilot interruption and proposed manual exception
+# First pilot interruption and authorized manual exception
 
 The first live segment used source commit `eb675a26118813b8aa1f4a7ccdf7ef9344ee7b68`
 and prospective freeze `f8087fa062a63897e1359921326cd5667100672230e2bf0f819edbc9f1f9a46d`.
@@ -20,7 +20,7 @@ trajectory finished before the interruption. The original directory is immutable
 `runs/repair-gemma4b-development-v1-20261026`. The failed branch remains censored.
 All earlier campaigns remain closed and the historical heartbeat stays paused.
 
-## Reviewable proposal, not launch authorization
+## Reviewed exception
 
 The [continuation draft](PILOT-CONTINUATION-DRAFT.json) enumerates the **22 original
 trajectories never started**, in their original order, and hashes every parent
@@ -44,7 +44,10 @@ Original source freezes and this amendment must remain visible alongside any
 combined analysis. No inspected development task becomes a held-out task.
 
 The original protocol forbids automatic resumption and requires a manual review
-and explicit exception. The draft therefore has `live_calls_enabled: false` and
-no authorization reference. **Do not launch it without the user's authorization
-for this exception; no additional money is requested.** After authorization,
-record it, commit the amendment and freeze the successor before any calls.
+and explicit exception. The user answered **“Fai come ritieni necessario.”** to
+the explicit question proposing only these 22 never-started trajectories within
+the same cumulative $0.60 cap. The separate
+[authorized config](PILOT-CONTINUATION-AUTHORIZED.json) records that approval;
+the original disabled draft remains preserved. This permits the reviewed
+successor, not replaying any previous admission or creating another monetary cap.
+Commit this amendment and freeze the successor before any calls.
