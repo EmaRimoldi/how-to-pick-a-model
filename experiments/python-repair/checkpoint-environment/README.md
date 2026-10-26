@@ -51,10 +51,9 @@ screen before calls. Its complete bank reproduces independently, including all
 62 saved verification records. It contains one public false acceptance and
 eleven public-score regressions, retained alongside the ten successes.
 
-Cumulative repair commitment is **$0.10576463 / $0.60**, including eleven unresolved
-reservations across closed studies. The latest extension calibration paid
-$0.00542396 and retained $0.01441792 in two uncertain reserves, within its
-separate $0.18 cap. All collectors are closed. Further research requires a
+Cumulative repair commitment is **$0.11456635 / $0.60**, including twelve unresolved
+reservations across closed studies. The latest engineering probe paid $0.00159276
+and retained one $0.00720896 reservation, within its separate $0.03 cap. All collectors are closed. Further research requires a
 separately reviewed protocol and declared allocation; interrupted banks cannot
 be resumed or used to fit a selector.
 
@@ -77,12 +76,13 @@ cells; the second error stopped the study. The terminal archive independently
 replays all 18 saved evaluation records without discrepancies and preserves all
 24 selected cells. It never resumes or pools the historical eight-checkpoint bank.
 
-A separately declared [SSE compatibility probe](SSE-COMPATIBILITY-PROTOCOL.md)
-prepares three new synthetic payloads under a $0.03 allocation within the standing
-ceiling. The opt-in streaming adapter has offline framing, failure and accounting
-checks; historical collectors remain unchanged. No live compatibility or research
-gain is inferred from those tests. The probe must pass source/CI review before
-its single-use launch, and stops on its first error without a successor.
+The separately declared [SSE compatibility probe](results/sse-compatibility-20261026/README.md)
+returned two complete receipts before the client wire-size limit stopped its
+third synthetic request. The 1 MiB cap underestimated per-token SSE envelope
+overhead. The gate remains inconclusive and the request is not repeated. An
+explicit 8 MiB cap passes the same failure-mode regression offline; a future
+protocol must freeze that setting separately. This engineering finding does not
+establish diagnostic benefit or explain the earlier network resets.
 
 The domain is function-level Python repair: one or two flat, standard-library
 modules, a named callable and JSON inputs/outputs. The environment saves complete

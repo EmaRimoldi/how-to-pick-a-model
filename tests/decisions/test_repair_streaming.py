@@ -70,10 +70,10 @@ def test_settings_only_change_stream_and_leave_historical_contract_unchanged():
     assert StreamingSettings().reserve == Settings().reserve
 
 
-def client(tmp_path, monkeypatch, es=None, *, failure=None, size=4096, content_type='text/event-stream'):
+def client(tmp_path, monkeypatch, es=None, *, failure=None, size=4096, content_type='text/event-stream', max_wire_bytes=1048576):
     for d in ['requests', 'receipts']:
         (tmp_path/d).mkdir()
-    transport = StreamingOpenRouterTransport(tmp_path, SECRET, StreamingSettings(), authorized_limit_usd='.60')
+    transport = StreamingOpenRouterTransport(tmp_path, SECRET, StreamingSettings(), authorized_limit_usd='.60', max_wire_bytes=max_wire_bytes)
     transport.ready = True  # Unit fixture only; production still requires preflight.
     calls, closed = [], []
     data = wire(events() if es is None else es)
@@ -217,3 +217,31 @@ def test_wire_bound_and_invalid_utf8_are_rejected():
     with pytest.raises(streaming.StreamProtocolError,match='wire_limit'):SSEFrames(max_bytes=10).feed(b'x'*11)
     with pytest.raises(UnicodeDecodeError):SSEFrames().feed(b'\xff')
     with pytest.raises(streaming.StreamProtocolError,match='line_limit'):SSEFrames().feed(b'data: '+b'x'*65536)
+
+
+def long_wire_events():
+    # Realistic per-token envelope overhead, not 1 MiB of generated text.
+    envelope={'created':1793050000,'object':'chat.completion.chunk',
+              'system_fingerprint':'synthetic-endpoint','native_finish_reason':None}
+    es=[chunk('abcde',**envelope) for _ in range(4096)]
+    es.append(chunk('', 'length', **envelope))
+    es.append(chunk('', 'length', {**USAGE,'completion_tokens':4096,'total_tokens':4196}, **envelope))
+    return es+['[DONE]']
+
+
+@pytest.mark.parametrize('cap,complete', [(1048576,False),(8388608,True)])
+def test_4096_token_envelopes_exceed_old_cap_but_fit_explicit_future_cap(tmp_path,monkeypatch,cap,complete):
+    es=long_wire_events()
+    assert 1048576 < len(wire(es)) < 8388608
+    t,calls,_=client(tmp_path,monkeypatch,es,size=4096,max_wire_bytes=cap)
+    if complete:
+        receipt=t.complete(REQUEST,META)
+        assert receipt['finish_reason']=='length' and len(receipt['content'])==4096*5
+        assert not t.pending and t.spent==Decimal('.00008')
+    else:
+        with pytest.raises(ProviderStopped):t.complete(REQUEST,META)
+        assert t.pending and t.conservative_committed_usd==t.reserve
+    assert len(calls)==1
+    m=json.loads((tmp_path/'stream-metrics/a.json').read_text())
+    assert m['wire_limit_bytes']==cap and m['stream_complete']==complete
+    assert m['protocol_error']==(None if complete else 'wire_limit')

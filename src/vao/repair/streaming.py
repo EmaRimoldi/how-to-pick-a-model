@@ -221,10 +221,15 @@ class StreamingOpenRouterTransport(OpenRouterTransport):
 
 Uses the existing reservation/settlement lifecycle. An idle read is bounded by
 180 s; a 300 s wall limit is checked at read boundaries, not a hard deadline.
-A blocked read can overrun that wall limit by the socket timeout. No cancellation
+A blocked read can overrun that wall limit by the socket timeout.
+The 1 MiB default preserves the closed v1 probe. A future protocol must explicitly
+freeze a larger wire cap (8 MiB was checked offline for a 4096-frame payload). No cancellation
 or refund is inferred. Complete usage overages are retained even without DONE.
 """
-    def __init__(self, output, key, settings, **kwargs):
+    def __init__(self, output, key, settings, *, max_wire_bytes=1048576, **kwargs):
+        if type(max_wire_bytes) is not int or not 1048576 <= max_wire_bytes <= 16777216:
+            raise ValueError('Declare an integer wire cap between 1 and 16 MiB')
+        self.max_wire_bytes = max_wire_bytes
         if not isinstance(settings, StreamingSettings):
             raise ValueError('Explicit StreamingSettings required')
         self._stream_attempt = None
@@ -251,11 +256,12 @@ or refund is inferred. Complete usage overages are retained even without DONE.
             data=canonical(body).encode(), method='POST',
             headers={'Authorization': 'Bearer '+self._key, 'Content-Type': 'application/json',
                      'Accept': 'text/event-stream'})
-        framing = SSEFrames()
+        framing = SSEFrames(max_bytes=self.max_wire_bytes)
         stream = ChatStream(self.settings.model, self.settings.provider_name)
         start = time.monotonic()
         phase = 'awaiting_response_headers'
-        metrics = {'format': 'bounded_sse_transport_v1', 'partial_content_persisted': False,
+        metrics = {'format': 'bounded_sse_transport_v1', 'wire_limit_bytes': self.max_wire_bytes,
+                   'partial_content_persisted': False,
                    'first_byte_seconds': None, 'first_content_seconds': None,
                    'stream_complete': False, 'protocol_error': None}
         try:

@@ -164,3 +164,10 @@ and `scripts/repair_transport_probe.py` separately freeze, run once and audit
 three bounded engineering requests. Historical studies are untouched. Fault
 injection and tamper tests verify uncertainty accounting, not live reliability
 or a diagnostic-acquisition gain.
+
+The [SSE compatibility probe's terminal bundle](../experiments/python-repair/checkpoint-environment/results/sse-compatibility-20261026/README.md)
+retains two completed receipts and one uncertain response stopped by the client's
+1 MiB wire cap. Frozen-source audit reproduces exactly. A realistic 4096-frame
+offline regression supports an explicit 8 MiB cap for future protocols; the old
+probe remains inconclusive and closed. This is a client-sizing finding, not
+repair or acquisition efficacy evidence.

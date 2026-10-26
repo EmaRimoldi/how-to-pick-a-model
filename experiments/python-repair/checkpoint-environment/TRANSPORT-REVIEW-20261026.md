@@ -99,3 +99,19 @@ new benchmark tasks. This makes the engineering check bounded and reviewable;
 it does not establish that streaming resolves the observed resets. Runtime proxy
 inspection found no configured urllib proxy schemes in this process, which
 excludes neither system/network intermediaries nor changes at collection time.
+
+
+The [terminal SSE probe](results/sse-compatibility-20261026/README.md) returned two
+complete receipts; its third request reached the client's 1 MiB wire limit at
+1,048,653 bytes after 50.538 seconds. This is an identified client envelope-sizing
+defect, not a recorded connection reset. The limit was checked before a terminal
+usage frame, so the charge remains unknown/reserved and the fixed gate
+inconclusive. No partial text is scored, and no closed request is repeated.
+
+A post-terminal synthetic regression with 4096 content frames reproduces the
+1 MiB failure and completes with an explicitly configured 8 MiB cap. The adapter
+now accepts a declared cap between 1 and 16 MiB; v1 keeps its historical 1 MiB
+default. Future freezes must explicitly select the larger tested cap and retain
+all other accounting guards. This is offline sizing evidence, not proof of
+live long-response completion or a reason to reinterpret the prior resets.
+Cumulative commitment is $0.11456635, including twelve unresolved requests.
