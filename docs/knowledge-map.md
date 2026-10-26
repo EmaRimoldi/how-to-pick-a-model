@@ -95,6 +95,12 @@ analysis. `prepare_repair_interface_study.py` verifies the comment transformatio
 and exact projections offline; `report_repair_interface_study.py` retains all
 missing cells and the declared primary contrast. The shared collector requires
 a separately reviewed clean freeze and a new single-use study claim.
+Its [terminal bank](../experiments/python-repair/checkpoint-environment/results/interface-stopped-20261026/README.md)
+contains 44 usable responses, eleven per arm, with no complete repair. HTTP 429
+leaves 84 unknown cells; the frozen screen is inconclusive. Independent replay
+reproduces 88 saved evaluations. No collector is active and no successor is
+enabled. `plot_repair_interface.py` renders all four conditions from a terminal
+report, including missingness and syntax-edit counts.
 
 The [checkpoint environment](../experiments/python-repair/checkpoint-environment/README.md)
 retains the incomplete recovery pilot and both output-contract diagnostics.

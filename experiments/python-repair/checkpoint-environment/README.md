@@ -19,6 +19,11 @@ requests in a four-condition factorial design. The separate declared $0.43
 allocation remains inside the cumulative $0.60 ceiling, carrying $0.04058467.
 Exact requests, source freeze and CI review are prerequisites for the one-use
 collector; preparing the packet makes no model calls.
+The [interface control is now closed](results/interface-stopped-20261026/README.md)
+after HTTP 429: 44 responses, eleven per condition, all usable but no complete
+repair. It retains 84 unknown cells and an inconclusive gate. Independent replay
+reproduces all 88 saved evaluation records; no successor or selector is enabled.
+Cumulative repair commitment is $0.05126739 including eight unresolved calls.
 
 The [prospective information probe](INFORMATION-PROTOCOL.md) fixes 96 requests:
 eight failed checkpoints, four draws and three information conditions. Its
@@ -37,7 +42,7 @@ cannot pass. That segment also stopped with HTTP 429: 65 responses, one new
 uncertain admission and 29 requests never admitted. The full design retains 31
 unknown cells; trace-minus-focused bounds span −31.25 to +31.25 percentage
 points. Cumulative commitment is $0.04058467 including seven unresolved calls.
-No collector is active and no further successor is enabled. The report, 130
+No trace collector is active and no further successor is enabled. The report, 130
 saved evaluation records and public diagnostic projections reproduce offline.
 
 Read the [complete contract findings](results/contract-deepinfra-20261026/README.md).

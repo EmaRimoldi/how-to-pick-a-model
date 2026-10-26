@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `566`
-- Bytes indexed: `53.5M`
+- Files indexed: `575`
+- Bytes indexed: `54.9M`
 
 ## Canonical Entrypoints
 
@@ -48,12 +48,12 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 340 | 48.9M |
+| `experiments` | 348 | 50.2M |
 | `docs` | 53 | 2.6M |
 | `uv.lock` | 1 | 937.0K |
 | `src` | 88 | 800.8K |
 | `tests` | 36 | 225.1K |
-| `scripts` | 40 | 108.7K |
+| `scripts` | 41 | 114.9K |
 | `.github` | 5 | 3.3K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
@@ -63,18 +63,18 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 169 | 1.1M |
-| `.json` | 128 | 4.8M |
-| `.md` | 84 | 447.8K |
+| `.py` | 170 | 1.1M |
+| `.json` | 131 | 5.1M |
+| `.md` | 86 | 457.4K |
 | `.txt` | 67 | 349.7K |
 | `.jsonl` | 45 | 36.7M |
-| `.png` | 22 | 2.8M |
+| `.png` | 23 | 2.9M |
 | `.pdf` | 8 | 184.3K |
 | `.sh` | 8 | 15.5K |
-| `.zip` | 7 | 4.6M |
+| `.zip` | 8 | 5.4M |
 | `.sbatch` | 5 | 7.0K |
+| `.svg` | 5 | 375.4K |
 | `.tex` | 5 | 297.7K |
-| `.svg` | 4 | 281.3K |
 | `.yaml` | 3 | 2.6K |
 | `.lock` | 2 | 1.9M |
 | `.toml` | 2 | 2.8K |
@@ -110,6 +110,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/python-repair/checkpoint-environment/results/gemma4b-calibration-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/information-interrupted-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/information-stopped-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/interface-stopped-20261026/README.md`
 
 ## Script Entrypoints
 
@@ -128,6 +129,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/maintenance/check_paper_build.py`
 - `scripts/maintenance/validate_agent_readiness.py`
 - `scripts/plot_repair_information.py`
+- `scripts/plot_repair_interface.py`
 - `scripts/prepare_feedback_routing.py`
 - `scripts/prepare_python_repair.py`
 - `scripts/prepare_repair_contract_probe.py`

@@ -118,15 +118,24 @@ in many answers. Limited capacity, code preservation and ambiguous interpretatio
 of the repair instructions remain competing explanations. More trace information
 has not yet supplied successful alternatives for a selector to choose from.
 
-The next milestone is therefore an [interface control](STAGNATION-CONTROL-DESIGN.md)
-that changes two non-oracle cues independently: the provenance comment and explicit
-permission to edit internal helpers. Establish repeated full repairs, then return
-to costed diagnostic acquisition. The final goal remains a deployable acquisition
+The [interface control](STAGNATION-CONTROL-DESIGN.md) subsequently changed two
+non-oracle cues independently: the provenance comment and explicit permission to
+edit helpers. Its [closed bank](results/interface-stopped-20261026/README.md)
+contains 44 usable responses, eleven per condition, and no complete repair. An
+HTTP 429 leaves 84 cells unknown and the gate inconclusive; the primary bounds
+span −65.625 to +65.625 percentage points. Thus the observed failures have not
+been resolved by either tested cue. This is not proof that instructions never
+matter or that the model cannot repair these tasks under another setup.
+
+A separately controlled solver-compatibility positive control is the next
+calibration candidate, preserving the same task and verification contract and
+reviewing the repeated provider failures before a new launch. Establish repeated
+full repairs, then return to costed diagnostic acquisition. The final goal remains a deployable acquisition
 policy that improves on the best fixed action on untouched bugs; its benefit and
 novelty are still unproven. This development control is not that policy or its
 held-out evaluation.
 
-Accounting totals $0.04058467 including seven unresolved reserves, under the
+Accounting totals $0.05126739 including eight unresolved reserves, under the
 existing $0.60 ceiling. No collector is active; no recursive successor is enabled.
 Every new collection needs a separately declared sublimit, reviewed clean source
 freeze, exact requests, analysis and single-use launch claim. Historic uncertainties,
