@@ -1,0 +1,30 @@
+{
+  "purpose": "Test whether isolated Python honors the supplied PYTHONHASHSEED, without candidate execution.",
+  "arguments": [
+    "-I",
+    "-c",
+    "import sys,json; print(json.dumps({\"isolated\":sys.flags.isolated,\"ignore_environment\":sys.flags.ignore_environment,\"hash\":hash(\"trace-audit-fixed-text\")}))"
+  ],
+  "declared_environment": {
+    "PATH": "/usr/bin:/bin",
+    "PYTHONHASHSEED": "0"
+  },
+  "results": [
+    {
+      "isolated": 1,
+      "ignore_environment": 1,
+      "hash": -1106952233555132003
+    },
+    {
+      "isolated": 1,
+      "ignore_environment": 1,
+      "hash": 7031405047985017967
+    },
+    {
+      "isolated": 1,
+      "ignore_environment": 1,
+      "hash": 2674572429347226183
+    }
+  ],
+  "explanation": "Isolated Python ignores environment configuration. Random string hashes can therefore differ despite the declared seed. Candidate-specific hashing may have additional causes; no causal decomposition claimed."
+}

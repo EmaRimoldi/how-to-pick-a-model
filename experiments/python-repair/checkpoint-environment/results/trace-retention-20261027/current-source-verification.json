@@ -1,0 +1,38 @@
+{
+  "initial_bank": {
+    "case_comparisons": 80,
+    "replicated_observation_agreements": 240,
+    "nondeterministic_trace_cases": [
+      "thefuck-022:buggy:ordering",
+      "thefuck-022:fixed:ordering"
+    ],
+    "function_name_coverage": {
+      "more": 12,
+      "same": 68,
+      "fewer": 0
+    },
+    "archives_verified": true,
+    "runtime_and_input_hashes_verified": 15
+  },
+  "second_bank": {
+    "case_comparisons": 80,
+    "replicated_observation_agreements": 240,
+    "nondeterministic_trace_cases": [
+      "thefuck-022:buggy:ordering",
+      "thefuck-022:fixed:ordering"
+    ],
+    "function_name_coverage": {
+      "more": 12,
+      "same": 68,
+      "fewer": 0
+    },
+    "archives_verified": true,
+    "runtime_and_input_hashes_verified": 15
+  },
+  "observations_match_between_banks": true,
+  "new_candidate_executions": 0,
+  "api_calls": 0,
+  "current_sources_checked": true,
+  "source_archive_sha256": "374ba8c01ac7f1c06c261b446d92270339567c93b5f5224d4a811f2387d75164",
+  "scope": "Source/archive identities, observed outcomes, bounded traces and descriptive coverage; not repair benefit or identical stochastic traces."
+}

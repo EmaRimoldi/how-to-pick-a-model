@@ -9,8 +9,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `8`
-- Script entrypoints indexed: `56`
-- Code modules indexed: `103`
+- Script entrypoints indexed: `57`
+- Code modules indexed: `105`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `6`
@@ -200,6 +200,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/prepare_repair_pilot.py` | python | Plan repair calibration offline; live collection requires a funded freeze. |
 | `scripts/prepare_repair_qwen_information_study.py` | python | Prepare matched Qwen trace-information requests offline; no API calls. |
 | `scripts/prepare_repair_solver_study.py` | python | Prepare the fixed coding-solver compatibility control offline; no model calls. |
+| `scripts/probe_repair_trace_retention.py` | python | Offline matched trace audit on exposed sources; no providers or model results. Run on macOS from the repository root. Output is exclusive; previous reports are never overwritten. Expected answers are used only for parent-side scoring. |
 | `scripts/qualify_python_repair_pool.py` | python | Offline build, provenance audit and isolated qualification of real-bug tasks. |
 | `scripts/repair_transport_probe.py` | python | Freeze, run once, or audit the separately funded SSE compatibility probe. |
 | `scripts/report_feedback_routing.py` | python | Publish a completed feedback-only bank, audited statistics and static figures. Public CLI facade; implementation lives in vao.analysis.report_feedback_routing. |
@@ -318,6 +319,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/repair/provider.py` | Pinned OpenRouter adapter for the repair pilot; no implicit calls or retries. Constructing this adapter does not authorize a collection: the pilot launcher enforces the separately funded source freeze and a single-use campaign claim. | ProviderStopped, safe_error_details, dollars, Settings, NoRedirects, OpenRouterTransport |
 | verified orchestration runtime | `src/vao/repair/qwen_information_study.py` | Fresh two-arm public-trace development calibration after solver compatibility. | design, schedule, planned_requests, construct, validate_packet, validate_origin, main |
 | verified orchestration runtime | `src/vao/repair/records.py` | Durable, exclusive records shared by offline and provider-backed adapters. | save, append, rows |
+| verified orchestration runtime | `src/vao/repair/region_trace_worker.py` | Opt-in bounded traces balanced across executed functions, not known fault sites. Standalone sandbox worker. The historical tail-trace worker stays unchanged. Compact values and execution/scoring boundaries intentionally match that worker. | compact, priority_order, select_events, Trace, main |
+| verified orchestration runtime | `src/vao/repair/region_verifier.py` | Opt-in function-balanced diagnostics; historical verifier remains unchanged. | valid_bounds, RegionRepairVerifier |
 | verified orchestration runtime | `src/vao/repair/solver_study.py` | Prepare a coding-solver compatibility control on fixed failed checkpoints. | design, planned_requests, construct, validate_packet, validate_origin, main |
 | verified orchestration runtime | `src/vao/repair/stream_information_audit.py` | Receipt/stream consistency for the distinct scientific streaming bank. | validate_stream_evidence |
 | verified orchestration runtime | `src/vao/repair/stream_information_study.py` | Distinct matched streaming development calibration; historical banks stay closed. | design, schedule, planned_requests, construct, validate_packet, archived_requests, validate_origin, main |

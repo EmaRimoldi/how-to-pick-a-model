@@ -1,16 +1,18 @@
 # Research goal amendment: acquire evidence before another repair?
 
-**Latest verified status (2026-10-27 UTC):** the
-[three-arm calibration](results/contrastive-calibration-20261026/README.md)
-completed 72 responses. Baseline / single / paired traces achieved 6 / 9 / 9
-complete repairs out of 24 each. The paired advantage is +3, 0, 0 across draws;
-the prospective development screen fails despite a positive aggregate difference.
-All 144 saved evaluations reproduce. The collector is closed, no selector is
-trained, and cumulative commitment is $0.20640271 / $0.60 with thirteen old reserves.
-The [post hoc audit](results/contrastive-calibration-20261026/POSTHOC.md) finds
-partial repairs and unresolved preservation requirements. Next: review acquisition
-timing and coverage before separately specifying any revised intervention. The
-historical progression below is retained.
+**Latest verified status (2026-10-27 UTC):** the six-task initial calibration
+completed with 4/6 full repairs but only two natural failures; its conditional
+recovery stage is closed without calls. A new opt-in
+[trace-retention engineering probe](results/trace-retention-20261027/README.md)
+recovers previously omitted execution regions on exposed sources, with stable
+ordinary/traced observations in two repeated 80-case banks. It also exposes
+stochastic intermediate values and continued object-state omissions. No new
+model call or repair-benefit claim follows. The most recent three-arm model
+calibration still fails its repeatability screen (6/24 baseline, 9/24 single
+trace, 9/24 paired trace; paired gains +3, 0, 0). All collectors are closed,
+no selector is trained, and cumulative commitment remains $0.20937371 / $0.60,
+including thirteen old reserves. The full equal-total-resource, untouched-bug
+selector objective remains active. Historical progression is retained below.
 
 
 Status: user-directed amendment after the closed 4B/12B/27B development studies.

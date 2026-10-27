@@ -14,6 +14,13 @@ failing Scrapy/26 examples. It motivates checking diagnostic retention before
 new model calls; it does not explain previous results or establish a useful
 intervention. No new evaluation group is consumed.
 
+The opt-in [function-balanced trace probe](results/trace-retention-20261027/README.md)
+now repeats 80 case/variant comparisons across seven exposed bugs. Every traced
+observation agrees with ordinary execution, and the new sampler recovers the
+omitted method in both failing examples. Two cases retain stochastic hashes/set
+order, and complex object state remains omitted. These limits are preserved;
+the mode is not integrated into paid collection and no repair benefit is claimed.
+
 **Previous intervention result: the [three-arm contrastive calibration](results/contrastive-calibration-20261026/README.md)
 completed all 72 responses and failed its prespecified development screen.**
 Code plus public feedback produced 6/24 complete repairs, a failing trace 9/24,
@@ -44,12 +51,14 @@ alongside the
 All arms already see the public tests and expected values; runtime traces are
 the intervention, not new oracle labels.
 
-The next [coverage candidate](FAILURE-COVERAGE-DESIGN.md) is now prepared offline:
+The [coverage candidate](FAILURE-COVERAGE-DESIGN.md) was prepared offline before
+the six-task initial calibration reported above:
 six additional [development adapters](development-broader/README.md) across four
 already exposed projects pass qualification with their original fixes. All have
 multiple public failures. First/all-failure traces preserve the same core prompt
-and match ordinary execution. This is zero-call engineering evidence; model
-difficulty, repeated acquisition benefit and selector value remain untested.
+and match ordinary execution. This preparation is zero-call engineering evidence. The subsequent six-task
+initial calibration is reported above; repeated acquisition benefit and selector
+value remain untested on this pool.
 
 The [separate earlier streaming calibration](results/information-stream-stopped-20261026/README.md)
 remains interrupted and inconclusive: 1/64 responses, 63 missing outcomes, and
@@ -107,7 +116,7 @@ screen before calls. Its complete bank reproduces independently, including all
 62 saved verification records. It contains one public false acceptance and
 eleven public-score regressions, retained alongside the ten successes.
 
-Cumulative repair commitment is **$0.20640271 / $0.60**, including thirteen
+At contrastive-study completion, repair commitment was **$0.20640271 / $0.60**, including thirteen
 historical unresolved reservations. The completed [contrastive allocation](CONTRASTIVE-STUDY-AUTHORIZED.json)
 carried $0.16495655 once and added $0.04144616 in known charges, with no new
 uncertainty. All collectors are closed. Their schedules cannot be resumed,

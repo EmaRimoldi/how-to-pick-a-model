@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `808`
-- Bytes indexed: `65.2M`
+- Files indexed: `824`
+- Bytes indexed: `66.0M`
 
 ## Canonical Entrypoints
 
@@ -48,13 +48,13 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 526 | 60.2M |
+| `experiments` | 538 | 61.0M |
 | `docs` | 53 | 2.6M |
-| `src` | 110 | 1017.4K |
+| `src` | 112 | 1.0M |
 | `uv.lock` | 1 | 937.0K |
-| `tests` | 50 | 356.4K |
-| `scripts` | 60 | 153.0K |
-| `.github` | 5 | 3.3K |
+| `tests` | 51 | 364.7K |
+| `scripts` | 61 | 164.6K |
+| `.github` | 5 | 3.5K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
 | `LICENSE` | 1 | 1.0K |
@@ -63,10 +63,10 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 227 | 1.5M |
-| `.json` | 208 | 7.4M |
-| `.md` | 121 | 665.3K |
-| `.txt` | 110 | 481.9K |
+| `.py` | 232 | 1.6M |
+| `.json` | 213 | 7.8M |
+| `.md` | 122 | 674.1K |
+| `.txt` | 112 | 496.6K |
 | `.jsonl` | 45 | 36.7M |
 | `.png` | 29 | 4.0M |
 | `.zip` | 18 | 11.0M |
@@ -75,6 +75,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.sh` | 8 | 15.5K |
 | `.sbatch` | 5 | 7.0K |
 | `.tex` | 5 | 297.7K |
+| `.gz` | 3 | 408.6K |
 | `.yaml` | 3 | 2.6K |
 | `.lock` | 2 | 1.9M |
 | `.toml` | 2 | 2.8K |
@@ -83,7 +84,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.dataset` | 1 | 11.1K |
 | `.example` | 1 | 773B |
 | `.sty` | 1 | 13.2K |
-| `.yml` | 1 | 1.5K |
+| `.yml` | 1 | 1.7K |
 
 ## Experiment Readmes
 
@@ -125,6 +126,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/python-repair/checkpoint-environment/results/sse-compatibility-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/sse-wire-envelope-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/stateful-trace-feasibility-20261027/README.md`
+- `experiments/python-repair/checkpoint-environment/results/trace-retention-20261027/README.md`
 
 ## Script Entrypoints
 
@@ -166,6 +168,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/prepare_repair_pilot.py`
 - `scripts/prepare_repair_qwen_information_study.py`
 - `scripts/prepare_repair_solver_study.py`
+- `scripts/probe_repair_trace_retention.py`
 - `scripts/qualify_python_repair_pool.py`
 - `scripts/repair_transport_probe.py`
 - `scripts/report_feedback_routing.py`
