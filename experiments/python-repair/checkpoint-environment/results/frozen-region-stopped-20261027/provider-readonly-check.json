@@ -1,0 +1,49 @@
+{
+  "utc": "2026-10-27T07:06:49.874596+00:00",
+  "mode": "read_only_after_terminal",
+  "generation_calls": 0,
+  "key_rotated": false,
+  "raw_account_data_saved": false,
+  "checks": {
+    "/key": {
+      "available": true,
+      "fields_present": {
+        "limit": true,
+        "limit_remaining": true,
+        "budgets": true,
+        "effective_budget": true,
+        "is_free_tier": true
+      },
+      "key_limit_unlimited": false,
+      "remaining_covers_0_38_usd": true,
+      "budgets": [
+        {
+          "scope": "key_limit",
+          "exhausted_now": false,
+          "reset_interval": null
+        }
+      ],
+      "effective_budget": {
+        "scope": "key_limit",
+        "exhausted_now": false,
+        "reset_interval": null
+      },
+      "is_free_tier": false
+    },
+    "/credits": {
+      "available": true,
+      "account_balance_positive": true,
+      "balance_covers_0_38_usd": true
+    },
+    "/models/qwen/qwen3-coder-next/endpoints": {
+      "available": true,
+      "pinned_endpoint_present": true,
+      "status": 0,
+      "pricing": {
+        "prompt": "0.00000012",
+        "completion": "0.0000008"
+      }
+    }
+  },
+  "conclusion": "Post-error account/endpoint state cannot identify the cause of the historical HTTP429 or settle its reserved charge; no retry or resumption authorized."
+}

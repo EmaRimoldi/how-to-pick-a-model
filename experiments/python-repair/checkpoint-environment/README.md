@@ -1,12 +1,19 @@
 # Python repair checkpoint environment
 
-**Next registered study:** the [frozen-region information calibration](FROZEN-REGION-PROTOCOL.md)
-compares public feedback against the same feedback plus an exact saved runtime
-trace on eight exposed original-bug checkpoints, two draws per arm (32 requests).
-A bounded $0.38 allocation carries $0.20937371 once under the existing $0.60
-ceiling. Code, protocol and accounting are implemented; paid collection still
-requires the reviewed clean-source freeze and exact-head green CI. No new
-outcome is available and no selector is trained.
+**Latest model result: the [frozen-region calibration](results/frozen-region-stopped-20261027/README.md)
+is stopped and inconclusive.** HTTP 429 at admission 12 leaves 11 responses,
+one uncertain request and 20 never-admitted cells out of the fixed 32.
+Observed full repairs are 3/16 selected feedback cells and 4/16 selected trace
+cells, with 11 and 10 missing outcomes respectively. Primary finite-completion
+bounds are −62.5 to +68.75 points; means/bootstrap remain null and the complete-bank
+screen is inconclusive. No selector is trained and the study cannot be resumed.
+
+All 22 saved evaluations / 20 unique suites reproduce with zero discrepancies;
+actual acquired snapshots are verified without rerunning traces. New known
+spend is $0.00690084, plus a retained $0.01146880 reserve. Cumulative commitment
+is $0.22774335 / $0.60 including fourteen unresolved reserves. Current read-only
+account checks show available credit; the cause of the 429 remains unidentified.
+The [prospective protocol](FROZEN-REGION-PROTOCOL.md) and all missing cells stay unchanged.
 
 The [single-acquisition snapshots](results/acquisition-preparation-20261027/README.md)
 bind actual trace bytes to code, input, feedback and acquisition resources.
