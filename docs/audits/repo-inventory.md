@@ -65,7 +65,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | --- | --- | --- |
 | `.py` | 241 | 1.6M |
 | `.json` | 227 | 8.0M |
-| `.txt` | 134 | 665.6K |
+| `.txt` | 134 | 665.8K |
 | `.md` | 127 | 701.8K |
 | `.jsonl` | 45 | 36.7M |
 | `.png` | 30 | 4.1M |
