@@ -183,3 +183,11 @@ met all prospective engineering conditions: a complete receipt beyond 1 MiB
 at 4096 output tokens with a length finish, using the explicit 8 MiB cap.
 Frozen-source audit reproduces exactly; no new uncertainty. This permits
 scientific-calibration preparation, not a reliability or acquisition-benefit claim.
+
+The [distinct streaming information calibration](../experiments/python-repair/checkpoint-environment/STREAM-INFORMATION-PROTOCOL.md)
+uses `src/vao/repair/stream_information_study.py` for all twelve original source
+records, eight eligible failures and 64 fresh matched requests. It pins thirteen
+historical archive hashes and rejects even planned-but-unsent request reuse.
+`stream_information_audit.py` checks terminal SSE evidence and retains reported
+costs above reservations. The usual information report and independent archive
+replay handle this new study; it neither fills old banks nor trains a selector.

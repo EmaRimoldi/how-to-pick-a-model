@@ -33,6 +33,7 @@ INTERFACE_STUDY = "repair-interface-cues-v1"
 SOLVER_STUDY = "repair-solver-compatibility-v1"
 QWEN_TRACE_STUDY = "repair-qwen-public-trace-information-v1"
 EXTENSION_TRACE_STUDY = "repair-extension-public-trace-information-v1"
+STREAM_TRACE_STUDY = "repair-qwen-stream-trace-development-v1"
 EXAMPLE = {"example.py": "def identity(value):\n    return value\n"}
 INSTRUCTIONS = {
     "json_current": REPAIR_SYSTEM,
@@ -45,6 +46,11 @@ INSTRUCTIONS = {
 
 
 def study_settings(study):
+    if study == STREAM_TRACE_STUDY:
+        from .streaming import StreamingSettings
+        return StreamingSettings(model="qwen/qwen3-coder-next", endpoint="parasail/bf16", provider_name="Parasail",
+                        quantization="bf16", input_per_million="0.12", output_per_million="0.80",
+                        seed=43135), Decimal("0.47")
     if study == EXTENSION_TRACE_STUDY:
         return Settings(model="qwen/qwen3-coder-next", endpoint="parasail/bf16", provider_name="Parasail",
                         quantization="bf16", input_per_million="0.12", output_per_million="0.80",
@@ -82,7 +88,7 @@ def study_settings(study):
 
 def study_spacing(study):
     study_settings(study)  # Reject undeclared studies; historical pacing is unchanged.
-    if study in (SOLVER_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY):
+    if study in (SOLVER_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY):
         return 60
     if study == INTERFACE_STUDY:
         return 30
@@ -145,8 +151,10 @@ def task_from_record(record):
 
 def provenance(tasks, study=STUDY):
     runtime = fingerprint(tasks, Design())
-    if study in (QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY):
-        if study == EXTENSION_TRACE_STUDY:
+    if study in (QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY):
+        if study == STREAM_TRACE_STUDY:
+            from .stream_information_study import design
+        elif study == EXTENSION_TRACE_STUDY:
             from .extension_information_study import design
         else:
             from .qwen_information_study import design
@@ -234,6 +242,9 @@ def construct(tasks: list[RepairTask], verifier, *, prior_commitment="0.01011411
 
 
 def validate(plan: dict) -> dict:
+    if plan.get("study") == STREAM_TRACE_STUDY:
+        from .stream_information_study import validate_packet
+        return validate_packet(plan)
     if plan.get("study") == EXTENSION_TRACE_STUDY:
         from .extension_information_study import validate_packet
         return validate_packet(plan)

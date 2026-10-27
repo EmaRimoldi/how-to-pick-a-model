@@ -1,5 +1,15 @@
 # Python repair checkpoint environment
 
+**Next study prepared:** the [distinct streaming calibration](STREAM-INFORMATION-PROTOCOL.md)
+compares focused feedback with the same feedback plus a public trace on eight
+already exposed failures, four paired draws per arm (64 new requests). All twelve
+source candidates remain in provenance. A separate $0.47 allocation plus the
+$0.11785551 carry fits the standing $0.60 ceiling. This is development only;
+there are no results from this new bank yet. First error stops, no historical
+pooling, no selector training. Exact requests, clean source and CI must be frozen
+before launch. The completed engineering check below supports the explicit
+8 MiB wire cap, not a scientific claim.
+
 **Current result: the [independent extension trace calibration](results/information-extension-stopped-20261026/README.md)
 is interrupted and inconclusive.** It received 9/24 responses on three additional
 development bugs: four focused-feedback repairs and two trace-assisted repairs.
@@ -53,8 +63,8 @@ eleven public-score regressions, retained alongside the ten successes.
 
 Cumulative repair commitment is **$0.11785551 / $0.60**, including twelve unresolved
 reservations across closed studies. The latest one-request envelope validation
-paid $0.00328916 within its separate $0.01 cap and introduced no new uncertainty. All collectors are closed. Further research requires a
-separately reviewed protocol and declared allocation; interrupted banks cannot
+paid $0.00328916 within its separate $0.01 cap and introduced no new uncertainty. All collectors are currently closed. The new streaming protocol declares its
+separate allocation and remains subject to precollection review; interrupted banks cannot
 be resumed or used to fit a selector.
 
 The [real-bug development pool](development/README.md) adds twelve adapted BugsInPy

@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 import shutil
 
-from .contracts import STUDY, DEEPINFRA_STUDY, GEMMA12B_STUDY, GEMMA27B_STUDY, TRACE_STUDY, INTERFACE_STUDY, SOLVER_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, decode, provenance, provider_body, public_feedback, task_from_record, validate, study_settings, study_spacing
+from .contracts import STUDY, DEEPINFRA_STUDY, GEMMA12B_STUDY, GEMMA27B_STUDY, TRACE_STUDY, INTERFACE_STUDY, SOLVER_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY, decode, provenance, provider_body, public_feedback, task_from_record, validate, study_settings, study_spacing
 from .environment import RepairRun, audit_run, identity
 from .pilot import file_hashes, source_commit
 from .provider import OpenRouterTransport, ProviderStopped, Settings, dollars
@@ -44,7 +44,15 @@ def authorization(config, packet, prior):
         raise ValueError('New study cap must cover the whole design without exceeding the proposal')
     if config.get('minimum_request_interval_seconds') != study_spacing(packet['study']):
         raise ValueError('The contract study requires its declared request spacing')
-    if packet['study'] == EXTENSION_TRACE_STUDY:
+    if packet['study'] == STREAM_TRACE_STUDY:
+        if (prior.get('study') != 'repair-sse-wire-envelope-v1'
+                or prior.get('status') != 'complete_compatibility_probe'
+                or prior.get('gate') != 'larger_wire_envelope_observed'
+                or prior.get('scientific_results') is not False or prior.get('cap_exceeded') is not False
+                or prior.get('old_limit_crossed_with_complete_receipt') is not True):
+            raise ValueError('Streaming calibration requires the closed wire-envelope check')
+        carried = dollars(prior['cumulative_committed_usd'])
+    elif packet['study'] == EXTENSION_TRACE_STUDY:
         if (prior.get('study') != QWEN_TRACE_STUDY or prior.get('status') != 'incomplete_development_information_probe'
                 or prior.get('gate') != 'inconclusive_incomplete_bank' or prior.get('fit_selector') is not False):
             raise ValueError('Extension calibration must carry the closed Qwen information bank')
@@ -77,7 +85,8 @@ def authorization(config, packet, prior):
         carried = dollars(prior['accounting']['cumulative_committed_usd'])
     else:
         carried = dollars(prior['conservative_committed_usd'])
-    if prior.get('model_results') is not True or carried != dollars(packet['closed_pilot_commitment_usd']):
+    if ((packet['study'] != STREAM_TRACE_STUDY and prior.get('model_results') is not True)
+            or carried != dollars(packet['closed_pilot_commitment_usd'])):
         raise ValueError('Closed-pilot commitment is not preserved')
     cumulative = dollars(config['cumulative_limit_usd'])
     if carried + limit > cumulative or cumulative > Decimal('.60'):
@@ -87,8 +96,10 @@ def authorization(config, packet, prior):
 
 def freeze(packet, config, output: Path):
     validate(packet)
-    if packet['study'] in (QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY):
-        if packet['study'] == EXTENSION_TRACE_STUDY:
+    if packet['study'] in (QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY):
+        if packet['study'] == STREAM_TRACE_STUDY:
+            from .stream_information_study import validate_origin
+        elif packet['study'] == EXTENSION_TRACE_STUDY:
             from .extension_information_study import validate_origin
         else:
             from .qwen_information_study import validate_origin
@@ -127,8 +138,10 @@ def validate_freeze(frozen, *, current=False):
     if dollars(frozen['authorized_limit_usd']) != limit or dollars(frozen['carried_commitment_usd']) != carried:
         raise ValueError('Frozen financial projection differs')
     if current:
-        if packet['study'] in (QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY):
-            if packet['study'] == EXTENSION_TRACE_STUDY:
+        if packet['study'] in (QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY):
+            if packet['study'] == STREAM_TRACE_STUDY:
+                from .stream_information_study import validate_origin
+            elif packet['study'] == EXTENSION_TRACE_STUDY:
                 from .extension_information_study import validate_origin
             else:
                 from .qwen_information_study import validate_origin
@@ -177,7 +190,7 @@ def collect(frozen, output: Path, *, claim_root=None, continuation=None):
         actual = verifier.check(task.public['files'], task.public['entrypoint'], task.public['public_cases'])
         if public_feedback(actual) != public_feedback(record['initial_public_result']):
             raise ValueError('Initial feedback no longer reproduces')
-    if packet['study'] in (TRACE_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY):
+    if packet['study'] in (TRACE_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY):
         from .diagnostic_study import validate_diagnostics
         validate_diagnostics(packet, verifier)
     claims = claim_root or ROOT / 'runs' / 'repair-contract-admissions'
@@ -200,8 +213,14 @@ def collect(frozen, output: Path, *, claim_root=None, continuation=None):
     if packet['study'] == EXTENSION_TRACE_STUDY:
         from .independent_transport import IndependentCellTransport
         transport_type = IndependentCellTransport
-    transport = transport_type(output, key, ContractSettings(**packet['provider_settings']),
-        authorized_limit_usd=str(limit), minimum_interval_seconds=study_spacing(packet['study']))
+    settings, options = ContractSettings(**packet['provider_settings']), {}
+    if packet['study'] == STREAM_TRACE_STUDY:
+        from .streaming import StreamingOpenRouterTransport, StreamingSettings
+        transport_type = StreamingOpenRouterTransport
+        settings = StreamingSettings(**packet['provider_settings'])
+        options['max_wire_bytes'] = packet['design']['wire_limit_bytes']
+    transport = transport_type(output, key, settings,
+        authorized_limit_usd=str(limit), minimum_interval_seconds=study_spacing(packet['study']), **options)
     try:
         transport.preflight()
         generation_ids = set()
@@ -378,8 +397,15 @@ def _audit_records(output, packet, limit, carried, requests):
                 known = dollars(read(raw)['usage']['cost'])
             except (KeyError, TypeError, ValueError, ProviderStopped):
                 pass
+        if packet['study'] == STREAM_TRACE_STUDY:
+            metric = output / 'stream-metrics' / (key + '.json')
+            if metric.exists():
+                known = max(known, dollars(read(metric)['reported_cost_usd']))
         committed_by_attempt[key] = max(reserve, known)
         committed += max(reserve, known)
+    if packet['study'] == STREAM_TRACE_STUDY:
+        from .stream_information_audit import validate_stream_evidence
+        validate_stream_evidence(output, packet, admitted, settled, pending, receipts, committed, carried)
     completion = output / 'pilot-completion.json'
     if completion.exists():
         saved = read(completion)

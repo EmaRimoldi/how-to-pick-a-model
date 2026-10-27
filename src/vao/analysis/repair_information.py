@@ -7,7 +7,7 @@ from pathlib import Path
 import random
 
 from vao.repair.contract_collection import audit, read
-from vao.repair.contracts import TRACE_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY
+from vao.repair.contracts import TRACE_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY
 from vao.repair.diagnostic_study import DRAWS
 from vao.repair.diagnostics import ARMS
 from vao.repair.records import rows, save
@@ -27,9 +27,9 @@ def summarize(output):
     checked = audit(output)
     frozen = read(output / "manifest.json")["freeze"]
     packet = frozen["packet"]
-    if packet["study"] not in (TRACE_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY):
+    if packet["study"] not in (TRACE_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY):
         raise ValueError("Expected the public trace information study")
-    arms = ("focused", "focused_trace") if packet["study"] in (QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY) else ARMS
+    arms = ("focused", "focused_trace") if packet["study"] in (QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY) else ARMS
     observed = {r["attempt_id"]: r for r in rows(output / "observations.jsonl")}
     cells = []
     for planned in packet["requests"]:
@@ -140,6 +140,13 @@ def summarize(output):
         report["limitations"][2] = "Only primary contrast: focused_trace minus focused on fresh matched requests. No pooling with the closed eight-checkpoint bank."
         report["limitations"][6] = "Bootstrap intervals describe only three purposively selected bug clusters and can be unstable; they cannot justify a population claim or selector training."
         report["limitations"].append("The prospective transport policy can retain one missing call and continue independent cells; a second error stops. Every unknown remains reserved and missing; any incomplete bank has a null mean/bootstrap and inconclusive gate.")
+    if packet["study"] == STREAM_TRACE_STUDY:
+        report["limitations"][0] = "Eight already exposed failed checkpoints (seven youtube-dl, one httpie), four fresh draws per arm; development only, no held-out inference."
+        report["limitations"][2] = "Only primary contrast: focused_trace minus focused in this separate streaming bank; no pooling, historical concurrent controls or filling of old missing cells."
+        report["limitations"].extend([
+            "Previous outcomes were inspected before this protocol; the same development sources and previously specified screen are retained, with a new seed and explicit 8 MiB streaming envelope. No causal transport or scaling-law inference.",
+            "Complete SSE receipts are reconstructed and audited with saved metrics; raw wire bytes are not archived, so their byte-level replay is unavailable.",
+            "A first transport error closes the study without retry or resumption; historical uncertainties remain reserved. Incomplete banks have null mean/bootstrap and an inconclusive gate."])
     successor = read(output / 'manifest.json').get('continuation')
     if successor is not None:
         report['continuation'] = {k: successor[k] for k in ('continuation_id', 'source_commit',

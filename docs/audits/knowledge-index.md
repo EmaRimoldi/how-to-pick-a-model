@@ -10,7 +10,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `8`
 - Script entrypoints indexed: `47`
-- Code modules indexed: `89`
+- Code modules indexed: `91`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `6`
@@ -298,6 +298,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/repair/qwen_information_study.py` | Fresh two-arm public-trace development calibration after solver compatibility. | design, schedule, planned_requests, construct, validate_packet, validate_origin, main |
 | verified orchestration runtime | `src/vao/repair/records.py` | Durable, exclusive records shared by offline and provider-backed adapters. | save, append, rows |
 | verified orchestration runtime | `src/vao/repair/solver_study.py` | Prepare a coding-solver compatibility control on fixed failed checkpoints. | design, planned_requests, construct, validate_packet, validate_origin, main |
+| verified orchestration runtime | `src/vao/repair/stream_information_audit.py` | Receipt/stream consistency for the distinct scientific streaming bank. | validate_stream_evidence |
+| verified orchestration runtime | `src/vao/repair/stream_information_study.py` | Distinct matched streaming development calibration; historical banks stay closed. | design, schedule, planned_requests, construct, validate_packet, archived_requests, validate_origin, main |
 | verified orchestration runtime | `src/vao/repair/streaming.py` | Opt-in SSE transport; historical collectors keep their non-streaming adapter. This module enables no collection on import. A new protocol/freeze must opt in. Only a completed identity/usage/terminal sequence becomes a billed observation. Partial text is never treated as a result or retried. Wire bytes stay in memory; safe counts and a digest are persisted, without free-form error/partial content. | StreamProtocolError, SSEFrames, strict_json, ChatStream, StreamingSettings, StreamingOpenRouterTransport |
 | verified orchestration runtime | `src/vao/repair/trace_worker.py` | Bounded execution observations, with no expected values or reference program. Copied as a standalone worker into the same OS sandbox as ordinary verification. Only exact built-in values are inspected: never call candidate repr/str methods. The trace is diagnostic candidate data, not a trusted correctness certificate. | compact, Trace, main |
 | verified orchestration runtime | `src/vao/repair/transport_probe.py` | Separately funded, single-use SSE compatibility probe on synthetic payloads. No benchmark/repair outcome is evaluated. No closed request is replayed. | specification, wire_packet, read, sha, packet, validate, freeze, collect |
