@@ -16,7 +16,10 @@ copying do not dominate this bank. The [revised diagnostic design](CONTRASTIVE-D
 compares failing and already-passing public executions, with a single-trace
 control. Its [offline qualification](results/contrastive-preparation-20261026/README.md)
 passes on all eight triggered sources, with zero model calls. This is preparation,
-not a benefit result, new collection allocation or selector.
+not a benefit result or selector. A separate [prospective three-arm study](CONTRASTIVE-STUDY-PROTOCOL.md)
+now fixes 72 new requests, concurrent controls and a primary paired-trace versus
+feedback comparison. Its declared suballocation is $0.40 within the retained
+$0.60 cumulative ceiling; launch still requires clean source, tests and exact CI.
 
 The [separate earlier streaming calibration](results/information-stream-stopped-20261026/README.md)
 remains interrupted and inconclusive: 1/64 responses, 63 missing outcomes, and
@@ -75,9 +78,10 @@ eleven public-score regressions, retained alongside the ten successes.
 
 Cumulative repair commitment is **$0.16495655 / $0.60**, including thirteen
 historical unresolved reservations. The independent-cell bank adds $0.03910528
-known spending and no new uncertainty. All collectors are closed. Further
-collection needs a separately declared prospective design and allocation;
-closed schedules cannot be resumed, pooled or used to justify selector fitting.
+known spending and no new uncertainty. All historical collectors are closed.
+The new [contrastive allocation](CONTRASTIVE-STUDY-AUTHORIZED.json) carries this
+commitment once and reserves at most $0.39518208 for 72 requests. Closed schedules
+cannot be resumed, pooled or used to justify selector fitting.
 
 The [real-bug development pool](development/README.md) adds twelve adapted BugsInPy
 tasks with pinned source excerpts, public/evaluator cases, documented exclusions

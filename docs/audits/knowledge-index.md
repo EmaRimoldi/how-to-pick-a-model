@@ -9,8 +9,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `8`
-- Script entrypoints indexed: `49`
-- Code modules indexed: `96`
+- Script entrypoints indexed: `52`
+- Code modules indexed: `99`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `6`
@@ -178,6 +178,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/audit_repair_stagnation.py` | python | Audit saved edits after a repair information study terminates; no API calls. |
 | `scripts/audit_repair_trace_information.py` | python | Audit a complete trace calibration archive without executing candidate code. |
 | `scripts/audit_repair_trigger_coverage.py` | python | Audit only closed 27B source checkpoints, never ongoing model outcomes. |
+| `scripts/check_repair_contract_progress.py` | python | Audit live request identities and accounting without inspecting treatments. |
 | `scripts/collect_repair_contract_probe.py` | python | Run only an explicitly authorized and frozen output-contract study. |
 | `scripts/plot_repair_extension_information.py` | python | Plot the prespecified two-arm terminal report, never inspect a live collection. |
 | `scripts/plot_repair_information.py` | python | Plot the frozen information report and separate post hoc edit audit, offline. |
@@ -188,6 +189,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/prepare_feedback_routing.py` | python | Verify the pinned BigCodeBench download and reproduce reference-only eligibility. |
 | `scripts/prepare_python_repair.py` | python | Plan or explicitly run an offline Python repair demo, qualification or audit. |
 | `scripts/prepare_repair_contract_probe.py` | python | Prepare a reviewable, offline-only Gemma response-contract diagnostic. |
+| `scripts/prepare_repair_contrastive_study.py` | python | Prepare exact public-contrast requests offline; no dispatch or funding. |
 | `scripts/prepare_repair_diagnostics.py` | python | Execute a public-only offline diagnostic demo; never dispatch model requests. |
 | `scripts/prepare_repair_extension_information_study.py` | python | Prepare the independent development-extension information design offline. |
 | `scripts/prepare_repair_information_study.py` | python | Prepare a public-trace information experiment offline; never dispatch APIs. |
@@ -200,6 +202,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/report_feedback_routing.py` | python | Publish a completed feedback-only bank, audited statistics and static figures. Public CLI facade; implementation lives in vao.analysis.report_feedback_routing. |
 | `scripts/report_repair_calibration.py` | python | Audit terminal repair-pilot segments and report descriptive results offline. |
 | `scripts/report_repair_contract_probe.py` | python | Audit and describe a terminal output-contract diagnostic; no API calls. |
+| `scripts/report_repair_contrastive_study.py` | python | Report terminal public-contrast evidence; never dispatch model calls. |
 | `scripts/report_repair_information_study.py` | python | Report a terminal public-trace information study without model calls. |
 | `scripts/report_repair_interface_study.py` | python | Analyze a terminal factorial repair-interface study offline; no model calls. |
 | `scripts/report_repair_solver_study.py` | python | Audit terminal coding-solver evidence and preserve every planned cell; no API calls. |
@@ -259,6 +262,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | saved-evidence analysis | `src/vao/analysis/contract_verification.py` | Verify and independently re-execute terminal archived contract evidence; no API calls. | read, stable, reproduce, main |
 | saved-evidence analysis | `src/vao/analysis/repair_artifacts.py` | Post hoc structural-edit diagnostic for a closed repair bank; zero model calls. | same_ast, diagnose, main |
 | saved-evidence analysis | `src/vao/analysis/repair_calibration.py` | Audit terminal repair-calibration segments and report descriptive diagnostics. No model calls, training, stopping decisions or claim of held-out policy value. | read_json, lineage, group_estimate, mean, descriptive_interval, analyze, render, export_evidence |
+| saved-evidence analysis | `src/vao/analysis/repair_contrastive.py` | Prespecified complete-task comparisons for the three-arm public-contrast study. | screen, interval, summarize, render, main |
 | saved-evidence analysis | `src/vao/analysis/repair_information.py` | Frozen descriptive analysis of public trace acquisition on failed checkpoints. | interval, summarize, render, main |
 | saved-evidence analysis | `src/vao/analysis/repair_interface.py` | Prespecified terminal analysis of the four repair-interface conditions. | linear_bounds, interval, summarize, render, main |
 | saved-evidence analysis | `src/vao/analysis/repair_missingness.py` | Finite selected-cell bounds; no collection, model calls or policy fitting. A lower screen passes only when every binary completion of missing cells would pass the original efficacy criteria. It never imputes outcomes or changes a closed study's complete-bank rule. Draws are nested within predeclared bugs. | Criteria, evaluate |
@@ -287,8 +291,10 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/records.py` | Record loading helpers. | iter_run_dirs, load_step_records, load_records_from_roots |
 | verified orchestration runtime | `src/vao/repair/cli.py` | Plan, demonstrate, qualify and audit the offline Python repair environment. | source_manifest, finish, qualify, demo, main |
 | verified orchestration runtime | `src/vao/repair/contract_collection.py` | Funded contract diagnostic: exact prepared requests, durable billing, no retries. | ContractSettings, read, content_hash, authorization, freeze, validate_freeze, collect, settled_receipt |
+| verified orchestration runtime | `src/vao/repair/contract_progress.py` | Read-only operational audit; never summarizes treatment outcomes or calls APIs. | progress, main |
 | verified orchestration runtime | `src/vao/repair/contracts.py` | Offline preparation of a paired output-contract diagnostic; never dispatch APIs. The unsuccessful recovery bank remains immutable. This module compiles reviewable requests and checks decoding boundaries before another campaign is authorized. | study_settings, study_spacing, public_feedback, request, provider_body, decode, task_from_record, provenance |
 | verified orchestration runtime | `src/vao/repair/contrastive_diagnostics.py` | Offline v2 diagnostic: bounded failing/passing traces, without new test oracles. Not a collector or fitted policy. Historical acquisition/worker code is unchanged. | shape, case_input, input_distance, input_truncated, select_pair, compact_trace, expand_trace, acquire |
+| verified orchestration runtime | `src/vao/repair/contrastive_study.py` | Fresh three-arm public-contrast calibration, separately frozen and funded. | design, schedule, planned_requests, construct, validate_packet, validate_origin, validate_diagnostics, main |
 | verified orchestration runtime | `src/vao/repair/diagnostic_study.py` | Prepare a separately funded public-trace information experiment, never retry. Existing transport, receipts, source freezes and cell audits are reused. The new intervention, repeated schedule and report have their own study identity. | design, without_times, source_records, schedule, planned_requests, construct, validate_packet, validate_origin |
 | verified orchestration runtime | `src/vao/repair/diagnostics.py` | Public-only diagnostic acquisition and matched offline prompt projections. This is an engineering component, not a fitted policy or a live collector. Callers pass public task data, never a RepairTask with evaluator cases. | validate_public, binding, observe, selected_failure, acquire, project |
 | verified orchestration runtime | `src/vao/repair/environment.py` | Store verifiable repair artifacts and fork matched continue/restart requests. | canonical, identity, validate_files, validate_cases, RepairTask, RepairRun, audit_run |

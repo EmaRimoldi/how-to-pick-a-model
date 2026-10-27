@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `714`
-- Bytes indexed: `61.9M`
+- Files indexed: `723`
+- Bytes indexed: `62.0M`
 
 ## Canonical Entrypoints
 
@@ -48,12 +48,12 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 449 | 57.0M |
+| `experiments` | 451 | 57.0M |
 | `docs` | 53 | 2.6M |
-| `src` | 103 | 953.2K |
+| `src` | 106 | 985.2K |
 | `uv.lock` | 1 | 937.0K |
-| `tests` | 47 | 326.8K |
-| `scripts` | 53 | 147.4K |
+| `tests` | 48 | 341.5K |
+| `scripts` | 56 | 147.9K |
 | `.github` | 5 | 3.3K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
@@ -63,9 +63,9 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 208 | 1.4M |
-| `.json` | 178 | 6.2M |
-| `.md` | 110 | 602.7K |
+| `.py` | 215 | 1.5M |
+| `.json` | 179 | 6.2M |
+| `.md` | 111 | 612.4K |
 | `.txt` | 79 | 373.1K |
 | `.jsonl` | 45 | 36.7M |
 | `.png` | 28 | 3.9M |
@@ -133,6 +133,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/audit_repair_stagnation.py`
 - `scripts/audit_repair_trace_information.py`
 - `scripts/audit_repair_trigger_coverage.py`
+- `scripts/check_repair_contract_progress.py`
 - `scripts/cluster/bootstrap_engaging.sh`
 - `scripts/collect_repair_contract_probe.py`
 - `scripts/maintenance/build_command_manifest.py`
@@ -150,6 +151,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/prepare_feedback_routing.py`
 - `scripts/prepare_python_repair.py`
 - `scripts/prepare_repair_contract_probe.py`
+- `scripts/prepare_repair_contrastive_study.py`
 - `scripts/prepare_repair_diagnostics.py`
 - `scripts/prepare_repair_extension_information_study.py`
 - `scripts/prepare_repair_information_study.py`
@@ -162,6 +164,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/report_feedback_routing.py`
 - `scripts/report_repair_calibration.py`
 - `scripts/report_repair_contract_probe.py`
+- `scripts/report_repair_contrastive_study.py`
 - `scripts/report_repair_information_study.py`
 - `scripts/report_repair_interface_study.py`
 - `scripts/report_repair_solver_study.py`

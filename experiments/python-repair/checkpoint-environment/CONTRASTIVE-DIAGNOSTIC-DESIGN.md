@@ -1,6 +1,8 @@
 # Revised information intervention: a public failing/passing contrast
 
-Status: **offline development preparation, not a frozen funded collection**.
+Status: **offline intervention design**. A separate [prospective protocol](CONTRASTIVE-STUDY-PROTOCOL.md)
+and allocation now define the new collection; this design remains the record of
+the preceding offline development, not efficacy evidence.
 This follows the complete trace study's failed screen and its
 [post hoc audit](results/information-independent-posthoc-20261026/README.md).
 The final objective is unchanged: a prospective acquisition policy that beats

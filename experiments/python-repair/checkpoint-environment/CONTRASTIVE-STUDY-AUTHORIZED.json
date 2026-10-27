@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "status": "authorized_contract_diagnostic",
+  "study": "repair-qwen-contrastive-trace-development-v1",
+  "live_calls_enabled": true,
+  "monetary_authorization_usd": "0.40",
+  "cumulative_limit_usd": "0.60",
+  "minimum_request_interval_seconds": 60,
+  "closed_pilot_report": "experiments/python-repair/checkpoint-environment/results/information-independent-20261026/analysis.json",
+  "authorization_reference": "Standing user instructions: Non farti problemi di denaro. Continua. and Procedi, set the new goal. Agent declares a separate bounded 0.40 USD allocation within the retained 0.60 USD cumulative ceiling before new calls. This is not a newly user-typed amount, a resumption of a closed bank or unlimited spending. Recorded 2026-10-26 America/Los_Angeles.",
+  "note": "Read CONTRASTIVE-STUDY-PROTOCOL.md. New 72-request development bank: 12 original candidates, 8 public failures, three matched draws in focused, single_trace and paired_trace arms. Qwen3-Coder-Next/Parasail/BF16; 4096 output tokens, 18432 input reservation, seed 43137, 8 MiB streaming. Carry 0.16495655 USD once including 13 old uncertain reserves. Same bounded independent-cell network rule; no retry, resumption, successor, fallback or rotation. All other errors terminal. No interim treatment reads or selector training. Primary paired_trace minus focused, fixed secondary contrasts, null mean/bootstrap if incomplete and finite completion screen. Clean reviewed source, full tests, exact green CI, reproducible public projections and a single-use freeze are mandatory before launch."
+}

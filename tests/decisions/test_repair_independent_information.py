@@ -37,7 +37,7 @@ def prepare(tmp_path, monkeypatch):
     return p,cc.freeze(p,config,tmp_path/'freeze.json')
 
 
-def network(monkeypatch, packet, *, failures=None, useful=False):
+def network(monkeypatch, packet, *, failures=None, useful=False, content_for=None):
     failures=failures or {};sent=[]
     lookup={canonical(r['provider_body']):r['metadata'] for r in packet['requests']}
     def preflight(self, endpoint, body=None):
@@ -69,7 +69,8 @@ def network(monkeypatch, packet, *, failures=None, useful=False):
             sent.append(body);failure=failures.get(len(sent));meta=lookup[canonical(body)]
             if failure=='headers':raise TimeoutError('mock-key-only')
             if failure=='http':raise urllib.error.HTTPError(request.full_url,429,'mock',{},io.BytesIO(b'{}'))
-            content=canonical({'solution.py':FIXED if useful and meta['arm']=='focused_trace' and meta['task_index']<3 else BROKEN})
+            code = content_for(meta) if content_for else (FIXED if useful and meta['arm']=='focused_trace' and meta['task_index']<3 else BROKEN)
+            content=canonical({'solution.py': code})
             message={'id':f'mock-{len(sent)}','model':'qwen/qwen3-coder-next','provider':'Parasail',
                 'choices':[{'index':0,'delta':{'content':content},'finish_reason':'stop'}]}
             if failure=='identity':message['provider']='Other'

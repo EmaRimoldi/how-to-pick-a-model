@@ -5,8 +5,8 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `55`
-- Default-safe commands: `45`
+- Commands indexed: `58`
+- Default-safe commands: `48`
 - Missing required maintenance actions: `0`
 
 ## Safety Classes
@@ -16,7 +16,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `cluster-setup` | 1 |
 | `live-local` | 6 |
 | `mixed-cli` | 3 |
-| `read-only-analysis` | 28 |
+| `read-only-analysis` | 31 |
 | `safe-figure-regeneration` | 5 |
 | `safe-local` | 10 |
 | `safe-local-optional-tool` | 2 |
@@ -26,7 +26,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | Surface | Commands |
 | --- | --- |
 | `maintenance` | 6 |
-| `scripts` | 42 |
+| `scripts` | 45 |
 | `scripts/cluster` | 1 |
 | `scripts/maintenance` | 6 |
 
@@ -60,10 +60,12 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/audit_repair_stagnation.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit saved edits after a repair information study terminates; no API calls. |
 | `python scripts/audit_repair_trace_information.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit a complete trace calibration archive without executing candidate code. |
 | `python scripts/audit_repair_trigger_coverage.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit only closed 27B source checkpoints, never ongoing model outcomes. |
+| `python scripts/check_repair_contract_progress.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit live request identities and accounting without inspecting treatments. |
 | `python scripts/collect_repair_contract_probe.py` | scripts | `read-only-analysis` | yes | inspect script before running | Run only an explicitly authorized and frozen output-contract study. |
 | `python scripts/prepare_contrastive_diagnostics.py` | scripts | `read-only-analysis` | yes | inspect script before running | Offline qualification on all source tasks in a complete development archive. No API requests or evaluator execution. Output is development engineering evidence. |
 | `python scripts/prepare_feedback_routing.py` | scripts | `read-only-analysis` | yes | inspect script before running | Verify the pinned BigCodeBench download and reproduce reference-only eligibility. |
 | `python scripts/prepare_repair_contract_probe.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare a reviewable, offline-only Gemma response-contract diagnostic. |
+| `python scripts/prepare_repair_contrastive_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare exact public-contrast requests offline; no dispatch or funding. |
 | `python scripts/prepare_repair_diagnostics.py` | scripts | `read-only-analysis` | yes | inspect script before running | Execute a public-only offline diagnostic demo; never dispatch model requests. |
 | `python scripts/prepare_repair_extension_information_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare the independent development-extension information design offline. |
 | `python scripts/prepare_repair_information_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare a public-trace information experiment offline; never dispatch APIs. |
@@ -74,6 +76,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/report_feedback_routing.py` | scripts | `read-only-analysis` | yes | inspect script before running | Publish a completed feedback-only bank, audited statistics and static figures. Public CLI facade; implementation lives in vao.analysis.report_feedback_routing. |
 | `python scripts/report_repair_calibration.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit terminal repair-pilot segments and report descriptive results offline. |
 | `python scripts/report_repair_contract_probe.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit and describe a terminal output-contract diagnostic; no API calls. |
+| `python scripts/report_repair_contrastive_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Report terminal public-contrast evidence; never dispatch model calls. |
 | `python scripts/report_repair_information_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Report a terminal public-trace information study without model calls. |
 | `python scripts/report_repair_interface_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Analyze a terminal factorial repair-interface study offline; no model calls. |
 | `python scripts/report_repair_solver_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit terminal coding-solver evidence and preserve every planned cell; no API calls. |
