@@ -8,6 +8,12 @@ stage is closed without calls**. The [prospective protocol](FAILURE-COVERAGE-PRO
 is retained unchanged. New spend is $0.00297100; cumulative commitment is
 $0.20937371 / $0.60 including historical reserves. No selector is trained.
 
+A separate [stateful-source engineering probe](results/stateful-trace-feasibility-20261027/README.md)
+finds that the last-32-event trace omits the changed composition method in both
+failing Scrapy/26 examples. It motivates checking diagnostic retention before
+new model calls; it does not explain previous results or establish a useful
+intervention. No new evaluation group is consumed.
+
 **Previous intervention result: the [three-arm contrastive calibration](results/contrastive-calibration-20261026/README.md)
 completed all 72 responses and failed its prespecified development screen.**
 Code plus public feedback produced 6/24 complete repairs, a failing trace 9/24,

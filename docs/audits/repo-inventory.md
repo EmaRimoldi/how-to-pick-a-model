@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `795`
-- Bytes indexed: `65.0M`
+- Files indexed: `808`
+- Bytes indexed: `65.2M`
 
 ## Canonical Entrypoints
 
@@ -48,7 +48,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 513 | 59.9M |
+| `experiments` | 526 | 60.2M |
 | `docs` | 53 | 2.6M |
 | `src` | 110 | 1017.4K |
 | `uv.lock` | 1 | 937.0K |
@@ -63,10 +63,10 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 226 | 1.5M |
-| `.json` | 203 | 7.3M |
-| `.md` | 120 | 661.1K |
-| `.txt` | 104 | 420.3K |
+| `.py` | 227 | 1.5M |
+| `.json` | 208 | 7.4M |
+| `.md` | 121 | 665.3K |
+| `.txt` | 110 | 481.9K |
 | `.jsonl` | 45 | 36.7M |
 | `.png` | 29 | 4.0M |
 | `.zip` | 18 | 11.0M |
@@ -124,6 +124,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/python-repair/checkpoint-environment/results/solver-qwen-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/sse-compatibility-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/sse-wire-envelope-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/stateful-trace-feasibility-20261027/README.md`
 
 ## Script Entrypoints
 

@@ -1,0 +1,124 @@
+{
+  "cases": [
+    {
+      "id": "upstream-default-exclusion",
+      "args": [
+        {
+          "a": 10,
+          "x": 30
+        },
+        {
+          "a": 1,
+          "b": 2
+        },
+        [
+          [
+            "y",
+            4,
+            "project"
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          "a",
+          1,
+          0
+        ],
+        [
+          "b",
+          2,
+          0
+        ],
+        [
+          "y",
+          4,
+          20
+        ]
+      ]
+    },
+    {
+      "id": "explicit-empty-base",
+      "args": [
+        {
+          "q": 5
+        },
+        {},
+        [
+          [
+            "z",
+            9,
+            "command"
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          "z",
+          9,
+          10
+        ]
+      ]
+    },
+    {
+      "id": "no-base",
+      "args": [
+        {
+          "a": 1,
+          "b": 2
+        },
+        null,
+        [
+          [
+            "a",
+            7,
+            "project"
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          "a",
+          7,
+          20
+        ],
+        [
+          "b",
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "keep-high-priority",
+      "args": [
+        {
+          "a": 10
+        },
+        {
+          "a": 1
+        },
+        [
+          [
+            "a",
+            8,
+            "command"
+          ],
+          [
+            "a",
+            99,
+            "default"
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          "a",
+          8,
+          10
+        ]
+      ]
+    }
+  ],
+  "expected_source": "Restricted upstream contract and manual values; no reference-output generation."
+}
