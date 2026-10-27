@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `675`
-- Bytes indexed: `59.1M`
+- Files indexed: `684`
+- Bytes indexed: `59.7M`
 
 ## Canonical Entrypoints
 
@@ -48,12 +48,12 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 421 | 54.2M |
+| `experiments` | 430 | 54.8M |
 | `docs` | 53 | 2.6M |
 | `uv.lock` | 1 | 937.0K |
 | `src` | 98 | 907.7K |
 | `tests` | 43 | 299.8K |
-| `scripts` | 51 | 141.1K |
+| `scripts` | 51 | 141.4K |
 | `.github` | 5 | 3.3K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
@@ -64,15 +64,15 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | Extension | Files | Size |
 | --- | --- | --- |
 | `.py` | 197 | 1.4M |
-| `.json` | 165 | 5.7M |
-| `.md` | 102 | 552.1K |
+| `.json` | 169 | 5.8M |
+| `.md` | 104 | 562.8K |
 | `.txt` | 79 | 373.1K |
 | `.jsonl` | 45 | 36.7M |
-| `.png` | 26 | 3.5M |
-| `.zip` | 13 | 7.9M |
+| `.png` | 27 | 3.7M |
+| `.zip` | 14 | 8.1M |
+| `.svg` | 9 | 927.6K |
 | `.pdf` | 8 | 184.3K |
 | `.sh` | 8 | 15.5K |
-| `.svg` | 8 | 777.2K |
 | `.sbatch` | 5 | 7.0K |
 | `.tex` | 5 | 297.7K |
 | `.yaml` | 3 | 2.6K |
@@ -113,6 +113,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/python-repair/checkpoint-environment/results/information-interrupted-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/information-qwen-stopped-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/information-stopped-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/information-stream-stopped-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/interface-stopped-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/solver-qwen-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/sse-compatibility-20261026/README.md`

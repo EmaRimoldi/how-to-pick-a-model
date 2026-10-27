@@ -126,3 +126,24 @@ three-fixture bank remains inconclusive and its unknown is unchanged. New charge
 $0.00328916 brings cumulative commitment to $0.11785551, with twelve old uncertain
 requests and no new uncertainty. Further work returns to separately frozen
 scientific calibration; no source or budget from a closed bank is resumed.
+
+
+## Separate scientific streaming bank: timeout after partial output
+
+The [64-request matched streaming calibration](results/information-stream-stopped-20261026/README.md)
+received one complete response before its second request stopped under the frozen
+first-error rule. It recorded `TimeoutError` during `reading_stream` at 182.59655
+seconds. First bytes arrived at 1.168395 seconds; 143 chunks / 39,830 bytes /
+482 content characters were seen without finish, usage or DONE. No parser error
+or HTTP status was recorded, and the explicit 8 MiB cap was not approached.
+This observation does not identify the root cause or prove that increasing the
+timeout would work. The previous sizing correction remains valid but insufficient
+to establish end-to-end reliability.
+
+The unknown is reserved, not retried or scored. With 62 never-admitted cells,
+63/64 selected outcomes are missing and the scientific gate remains inconclusive.
+Known charge $0.00078680 plus reserve $0.00720896 brings cumulative commitment to
+$0.12585127, including thirteen uncertain requests. All collectors are closed.
+A later acquisition design needs to account for recurrent infrastructure loss
+prospectively; neither the old missing cells nor the old complete-bank gate may
+be reinterpreted after observing this result.

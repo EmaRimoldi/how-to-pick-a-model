@@ -32,6 +32,16 @@ not establish that a state-conditioned continue/restart/handoff controller works
 | Cross-benchmark artifact versus feedback information | Frozen transfer protocol | `experiments/mbpp-plus/context-value-transfer/` | 94/96 complete failures; descriptive censored bank; no established primary selector gain |
 | Fixed feedback-only escalation on new tasks | Frozen BigCodeBench protocol | `experiments/bigcodebench/feedback-only-routing/` | Complete 157-task bank; primary −2.55 pp [−7.01, +1.27]; one requested interim look disclosed; unequal admission utilization and public-test false positives |
 
+The [repair trace-acquisition studies](../experiments/python-repair/checkpoint-environment/README.md)
+remain development diagnostics. Qwen's complete 32-response solver control passed
+its compatibility screen, but the subsequent trace-information banks are incomplete.
+The latest [streaming bank](../experiments/python-repair/checkpoint-environment/results/information-stream-stopped-20261026/README.md)
+has 1/64 responses and one public false acceptance, with 63 missing outcomes;
+its primary bounds are −96.875 to +100 percentage points. It establishes neither
+trace benefit nor absence of benefit. No diagnostic-acquisition selector, model
+scaling law or equal-total-budget method claim is supported. These results do not
+replace the manuscript evidence above.
+
 ## Evidence tiers
 
 ### Tier 1: Main Evidence

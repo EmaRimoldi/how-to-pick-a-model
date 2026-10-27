@@ -191,3 +191,9 @@ historical archive hashes and rejects even planned-but-unsent request reuse.
 `stream_information_audit.py` checks terminal SSE evidence and retains reported
 costs above reservations. The usual information report and independent archive
 replay handle this new study; it neither fills old banks nor trains a selector.
+
+The [terminal separate streaming bank](../experiments/python-repair/checkpoint-environment/results/information-stream-stopped-20261026/README.md)
+retains 1/64 responses, one uncertain admission and 62 never-admitted requests.
+A read timeout after partial output stopped the study below its wire limit.
+All selected cells, null mean/bootstrap and the inconclusive gate are preserved;
+independent replay reproduces both saved evaluations and public diagnostics.

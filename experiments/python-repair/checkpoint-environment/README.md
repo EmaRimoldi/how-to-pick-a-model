@@ -1,21 +1,16 @@
 # Python repair checkpoint environment
 
-**Next study prepared:** the [distinct streaming calibration](STREAM-INFORMATION-PROTOCOL.md)
-compares focused feedback with the same feedback plus a public trace on eight
-already exposed failures, four paired draws per arm (64 new requests). All twelve
-source candidates remain in provenance. A separate $0.47 allocation plus the
-$0.11785551 carry fits the standing $0.60 ceiling. This is development only;
-there are no results from this new bank yet. First error stops, no historical
-pooling, no selector training. Exact requests, clean source and CI must be frozen
-before launch. The completed engineering check below supports the explicit
-8 MiB wire cap, not a scientific claim.
+**Current result: the [separate streaming trace calibration](results/information-stream-stopped-20261026/README.md)
+is interrupted and inconclusive.** It received 1/64 responses; the second request
+timed out during the stream, retaining its full reserve. There are 62 never-admitted
+cells and 63 missing outcomes overall. The received candidate passed public tests
+but failed the evaluator. Primary bounds are −96.875 to +100 percentage points;
+mean/bootstrap remain null. No trace benefit, absence of benefit or selector
+advantage follows. This closed study cannot resume.
 
-**Current result: the [independent extension trace calibration](results/information-extension-stopped-20261026/README.md)
-is interrupted and inconclusive.** It received 9/24 responses on three additional
-development bugs: four focused-feedback repairs and two trace-assisted repairs.
-Two requests are uncertain and thirteen were never admitted. Primary bounds
-span −75 to +50 percentage points; mean/bootstrap remain null. No trace benefit,
-absence of benefit or selector advantage follows. This study cannot resume.
+The [additional development-bug calibration](results/information-extension-stopped-20261026/README.md)
+remains separate: 9/24 responses, two uncertain requests and thirteen never
+admitted, with an unchanged inconclusive screen.
 
 The earlier [matched Qwen information bank](results/information-qwen-stopped-20261026/README.md)
 remains separate: 18/64 responses, three trace versus two focused repairs, and
@@ -47,6 +42,7 @@ shows why conditional recovery success cannot substitute for end-to-end acceptan
 | [Qwen compatibility control](results/solver-qwen-20261026/README.md) | 32 responses; 10 full repairs; three bugs solved in both draw halves | Screen passed; subsequent information bank inconclusive |
 | [Matched Qwen information](results/information-qwen-stopped-20261026/README.md) | 18/64 responses; 3 trace versus 2 focused full repairs; 46 unknown | Closed, inconclusive |
 | [Independent extension trace calibration](results/information-extension-stopped-20261026/README.md) | 9/24 responses; 2 trace versus 4 focused full repairs; 15 unknown | Closed, inconclusive |
+| [Separate streaming trace calibration](results/information-stream-stopped-20261026/README.md) | 1/64 responses; no full repair, 1 public false acceptance; 63 unknown | Closed, inconclusive |
 
 These are distinct protocols, not a pooled model-size comparison. Historical
 [capability and partial-progress findings](results/capability-comparison-20261026/README.md),
@@ -61,11 +57,11 @@ screen before calls. Its complete bank reproduces independently, including all
 62 saved verification records. It contains one public false acceptance and
 eleven public-score regressions, retained alongside the ten successes.
 
-Cumulative repair commitment is **$0.11785551 / $0.60**, including twelve unresolved
-reservations across closed studies. The latest one-request envelope validation
-paid $0.00328916 within its separate $0.01 cap and introduced no new uncertainty. All collectors are currently closed. The new streaming protocol declares its
-separate allocation and remains subject to precollection review; interrupted banks cannot
-be resumed or used to fit a selector.
+Cumulative repair commitment is **$0.12585127 / $0.60**, including thirteen
+unresolved reservations across closed studies. The streaming study adds a
+$0.00078680 known charge and $0.00720896 uncertain reserve. All collectors are
+closed. Further collection needs a separate prospective design and allocation;
+closed schedules cannot be resumed or used to fit a selector.
 
 The [real-bug development pool](development/README.md) adds twelve adapted BugsInPy
 tasks with pinned source excerpts, public/evaluator cases, documented exclusions
@@ -98,8 +94,9 @@ The distinct [wire-envelope validation](results/sse-wire-envelope-20261026/READM
 met its fixed engineering criterion: one complete receipt, 1,112,924 wire bytes,
 4,096 output tokens and a `length` finish under the explicit 8 MiB cap. It verifies
 one concrete exchange, not reliability or diagnostic benefit. The old clamp
-fixture and inconclusive gate remain unchanged. Scientific comparison can now
-be prepared under a separate reviewed protocol and allocation.
+fixture and inconclusive gate remain unchanged. The subsequent scientific streaming bank nevertheless stopped on a read timeout
+after 39,830 wire bytes, far below its 8 MiB cap. The size check did not establish
+collection reliability; no scientific inference is drawn from it.
 
 The domain is function-level Python repair: one or two flat, standard-library
 modules, a named callable and JSON inputs/outputs. The environment saves complete

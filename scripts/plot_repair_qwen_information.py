@@ -7,12 +7,13 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 
 STUDY='repair-qwen-public-trace-information-v1'
+STREAM_STUDY='repair-qwen-stream-trace-development-v1'
 NAMES={'focused':'Focused feedback','focused_trace':'Focused feedback + trace'}
 COLORS={'success':'#218267','failure':'#426688','missing':'#d5dbe3','primary':'#222b35'}
 
 
 def draw(report,output):
-    if report['study']!=STUDY or report['status'] not in {'complete_development_information_probe','incomplete_development_information_probe'}:
+    if report['study'] not in (STUDY, STREAM_STUDY) or report['status'] not in {'complete_development_information_probe','incomplete_development_information_probe'}:
         raise ValueError('Expected terminal matched Qwen information report')
     synthetic=report.get('synthetic_layout_fixture') is True
     if not synthetic and report.get('model_results') is not True:
@@ -86,13 +87,16 @@ def draw(report,output):
     for ax in (counts,delta):ax.spines[['top','right']].set_visible(False)
     title='SYNTHETIC LAYOUT CHECK — NOT EXPERIMENT RESULTS' if synthetic else 'Does a public execution trace improve repair?'
     fig.suptitle(title,x=.54,y=.96,fontsize=16,fontweight='bold')
-    fig.text(.54,.91,'8 exposed development checkpoints × 4 draws × 2 arms · Qwen3-Coder-Next / Parasail / BF16',ha='center',fontsize=10)
+    subtitle='8 exposed development checkpoints × 4 draws × 2 arms · Qwen3-Coder-Next / Parasail / BF16'
+    if report['study']==STREAM_STUDY: subtitle += ' · Separate streaming bank'
+    fig.text(.54,.91,subtitle,ha='center',fontsize=10)
     fig.text(.54,.866,primary_text,ha='center',fontsize=10)
     if complete and lo == hi:
         fig.text(.5,.025,'A degenerate descriptive bootstrap interval does not establish population equivalence.',ha='center',fontsize=9,color='#46515e')
     fig.text(.5,.075,'Unknown outcomes are not failures. Draws are nested within bugs; this is a development screen, not a policy evaluation.\n¹ Diagnostic time covers all 32 planned decisions per arm, including missing cells; API columns include prompt tokens and retained uncertain reserves.\nPrefix and verifier costs are in the report. Equal per-call limits do not establish equal-total-budget policy benefit.',ha='center',fontsize=9,color='#46515e')
     output.mkdir(parents=True,exist_ok=True)
-    for ext in ('png','svg'):fig.savefig(output/('qwen-information-summary.'+ext),dpi=170,facecolor='white')
+    stem='stream-information-summary' if report['study']==STREAM_STUDY else 'qwen-information-summary'
+    for ext in ('png','svg'):fig.savefig(output/(stem+'.'+ext),dpi=170,facecolor='white')
     plt.close(fig)
 
 
