@@ -1,18 +1,18 @@
 # Python repair checkpoint environment
 
-The next [independent-cell study](INDEPENDENT-INFORMATION-PROTOCOL.md) is prepared
-under a separate $0.47 allocation, carrying $0.12585127 and thirteen uncertainties.
-It freezes a bounded rule for proceeding to new independent cells after certain
-network errors, and a conservative missing-cell screen. It does not resume or
-relabel any closed bank and has no results yet.
+**Current result: the [independent-cell trace calibration](results/information-independent-20261026/README.md)
+completed all 64 responses and failed its prespecified benefit screen.** Focused
+feedback achieved 12/32 full repairs, versus 8/32 with the same feedback plus a
+bounded public trace. The primary difference is −12.5 percentage points; the
+descriptive 95% bug-bootstrap interval is [−31.25, +3.125] points. Trace-arm API
+spending was higher. This eight-bug exposed development bank does not establish
+population harm or an equal-total-budget policy result. No selector is trained;
+the intervention needs review before another prospective study.
 
-**Current result: the [separate streaming trace calibration](results/information-stream-stopped-20261026/README.md)
-is interrupted and inconclusive.** It received 1/64 responses; the second request
-timed out during the stream, retaining its full reserve. There are 62 never-admitted
-cells and 63 missing outcomes overall. The received candidate passed public tests
-but failed the evaluator. Primary bounds are −96.875 to +100 percentage points;
-mean/bootstrap remain null. No trace benefit, absence of benefit or selector
-advantage follows. This closed study cannot resume.
+The [separate earlier streaming calibration](results/information-stream-stopped-20261026/README.md)
+remains interrupted and inconclusive: 1/64 responses, 63 missing outcomes, and
+primary bounds −96.875 to +100 points. Its frozen gate and missing cells remain
+unchanged. The completed bank does not pool or replace that historical evidence.
 
 The [additional development-bug calibration](results/information-extension-stopped-20261026/README.md)
 remains separate: 9/24 responses, two uncertain requests and thirteen never
@@ -45,10 +45,11 @@ shows why conditional recovery success cannot substitute for end-to-end acceptan
 | [27B contract control](results/contract-gemma27b-20261026/README.md) | 36 responses; 3 full repairs on two bugs | Gate failed |
 | [Public-information probe](results/information-stopped-20261026/README.md) | 65 responses; no full repair; 31 unknown cells | Closed, inconclusive |
 | [Interface control](results/interface-stopped-20261026/README.md) | 44 responses; no full repair; 84 unknown cells | Closed, inconclusive |
-| [Qwen compatibility control](results/solver-qwen-20261026/README.md) | 32 responses; 10 full repairs; three bugs solved in both draw halves | Screen passed; subsequent information bank inconclusive |
+| [Qwen compatibility control](results/solver-qwen-20261026/README.md) | 32 responses; 10 full repairs; three bugs solved in both draw halves | Compatibility screen passed; trace benefit not established |
 | [Matched Qwen information](results/information-qwen-stopped-20261026/README.md) | 18/64 responses; 3 trace versus 2 focused full repairs; 46 unknown | Closed, inconclusive |
 | [Independent extension trace calibration](results/information-extension-stopped-20261026/README.md) | 9/24 responses; 2 trace versus 4 focused full repairs; 15 unknown | Closed, inconclusive |
 | [Separate streaming trace calibration](results/information-stream-stopped-20261026/README.md) | 1/64 responses; no full repair, 1 public false acceptance; 63 unknown | Closed, inconclusive |
+| [Independent-cell trace calibration](results/information-independent-20261026/README.md) | 64/64 responses; 8 trace versus 12 focused repairs; no missing outcomes | Complete, benefit screen failed |
 
 These are distinct protocols, not a pooled model-size comparison. Historical
 [capability and partial-progress findings](results/capability-comparison-20261026/README.md),
@@ -63,11 +64,11 @@ screen before calls. Its complete bank reproduces independently, including all
 62 saved verification records. It contains one public false acceptance and
 eleven public-score regressions, retained alongside the ten successes.
 
-Cumulative repair commitment is **$0.12585127 / $0.60**, including thirteen
-unresolved reservations across closed studies. The streaming study adds a
-$0.00078680 known charge and $0.00720896 uncertain reserve. All collectors are
-closed. Further collection needs a separate prospective design and allocation;
-closed schedules cannot be resumed or used to fit a selector.
+Cumulative repair commitment is **$0.16495655 / $0.60**, including thirteen
+historical unresolved reservations. The independent-cell bank adds $0.03910528
+known spending and no new uncertainty. All collectors are closed. Further
+collection needs a separately declared prospective design and allocation;
+closed schedules cannot be resumed, pooled or used to justify selector fitting.
 
 The [real-bug development pool](development/README.md) adds twelve adapted BugsInPy
 tasks with pinned source excerpts, public/evaluator cases, documented exclusions

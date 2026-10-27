@@ -34,13 +34,13 @@ not establish that a state-conditioned continue/restart/handoff controller works
 
 The [repair trace-acquisition studies](../experiments/python-repair/checkpoint-environment/README.md)
 remain development diagnostics. Qwen's complete 32-response solver control passed
-its compatibility screen, but the subsequent trace-information banks are incomplete.
-The latest [streaming bank](../experiments/python-repair/checkpoint-environment/results/information-stream-stopped-20261026/README.md)
-has 1/64 responses and one public false acceptance, with 63 missing outcomes;
-its primary bounds are −96.875 to +100 percentage points. It establishes neither
-trace benefit nor absence of benefit. No diagnostic-acquisition selector, model
-scaling law or equal-total-budget method claim is supported. These results do not
-replace the manuscript evidence above.
+its compatibility screen. The subsequent [complete independent-cell trace bank](../experiments/python-repair/checkpoint-environment/results/information-independent-20261026/README.md)
+has 12/32 focused-feedback versus 8/32 trace-assisted repairs: primary −12.5 pp,
+descriptive bug-bootstrap interval [−31.25, +3.125] pp. The prespecified benefit
+screen fails. Earlier interrupted banks retain their original missingness and
+gates; no pooling rescues them. No diagnostic-acquisition selector, population
+harm, model scaling law or equal-total-budget method claim follows. These results
+do not replace the manuscript evidence above.
 
 ## Evidence tiers
 

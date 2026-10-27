@@ -232,3 +232,22 @@ the immediate dependency before another scientific bank; an incomplete bank is
 not evidence for choosing a preferred diagnostic strategy. The larger goal and
 its requirements for repeatable benefit, equal total resources and untouched
 bugs remain unchanged and active.
+
+
+## Complete independent-cell calibration: benefit screen failed
+
+The [separately frozen independent-cell bank](results/information-independent-20261026/README.md)
+completed all 64 requests without a new transport error or missing outcome.
+Focused feedback produced 12/32 full repairs, versus 8/32 with a bounded public
+trace; primary difference −12.5 pp, descriptive 95% bug-bootstrap interval
+[−31.25, +3.125] pp. The prespecified screen fails in both draw halves. These
+are eight already exposed bugs, not a held-out evaluation or proof of population
+harm. No selector is trained. The next action is a labeled post hoc diagnosis
+of the information intervention, followed by a separate prospective test only
+if the diagnosis supports a concrete revision. Equal-total-budget benefit and
+untouched-bug validation remain necessary for the original active goal.
+
+This study adds $0.03910528 known spending and no uncertainty; cumulative
+commitment is $0.16495655 / $0.60 including thirteen historical reserves. All
+collectors are closed. Prior studies, gates, sources and manuscripts remain
+intact, with no pooling, retries or replacement of missing cells.

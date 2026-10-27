@@ -147,3 +147,14 @@ $0.12585127, including thirteen uncertain requests. All collectors are closed.
 A later acquisition design needs to account for recurrent infrastructure loss
 prospectively; neither the old missing cells nor the old complete-bank gate may
 be reinterpreted after observing this result.
+
+
+## Later independent-cell bank completed
+
+The [independent-cell calibration](results/information-independent-20261026/README.md)
+completed all 64 scheduled requests, with complete receipts and no new unknowns.
+Its prospective retention/cooldown rule was not exercised by a live error.
+This is evidence that this schedule completed under the pinned streaming setup;
+it does not identify historical failure causes or establish a comparative
+reliability effect. The scientific benefit screen failed separately. All prior
+uncertain reservations remain included in $0.16495655 cumulative commitment.
