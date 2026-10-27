@@ -35,9 +35,11 @@ def reproduce(source, output):
                 target = root / path
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(content)
-        from vao.repair.contracts import TRACE_STUDY, INTERFACE_STUDY, SOLVER_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY, CONTRASTIVE_TRACE_STUDY
+        from vao.repair.contracts import TRACE_STUDY, INTERFACE_STUDY, SOLVER_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY, CONTRASTIVE_TRACE_STUDY, COVERAGE_PREFIX_STUDY
         frozen = read(root / 'collection/manifest.json')['freeze']
         summarizer, renderer = summarize, render
+        if frozen['study'] == COVERAGE_PREFIX_STUDY:
+            from vao.analysis.repair_coverage_prefix import summarize as summarizer, render as renderer
         trace_study = frozen['study'] in (TRACE_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY)
         if trace_study:
             from vao.analysis.repair_information import summarize as summarizer, render as renderer

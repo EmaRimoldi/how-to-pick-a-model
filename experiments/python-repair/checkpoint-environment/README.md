@@ -1,5 +1,12 @@
 # Python repair checkpoint environment
 
+The next model study is defined in [FAILURE-COVERAGE-PROTOCOL.md](FAILURE-COVERAGE-PROTOCOL.md):
+six initial repairs on the broader development pool, then a conditional comparison
+of direct repair, first-failure trace and all-failure traces. The initial-stage
+allocation is capped at $0.04 within the existing $0.60 campaign limit. No selector
+training is authorized by this difficulty calibration. Collection starts only
+after a clean tested source freeze and exact CI verification.
+
 **Current result: the [three-arm contrastive calibration](results/contrastive-calibration-20261026/README.md)
 completed all 72 responses and failed its prespecified development screen.**
 Code plus public feedback produced 6/24 complete repairs, a failing trace 9/24,

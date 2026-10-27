@@ -9,8 +9,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `8`
-- Script entrypoints indexed: `54`
-- Code modules indexed: `101`
+- Script entrypoints indexed: `56`
+- Code modules indexed: `103`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `6`
@@ -192,6 +192,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/prepare_python_repair.py` | python | Plan or explicitly run an offline Python repair demo, qualification or audit. |
 | `scripts/prepare_repair_contract_probe.py` | python | Prepare a reviewable, offline-only Gemma response-contract diagnostic. |
 | `scripts/prepare_repair_contrastive_study.py` | python | Prepare exact public-contrast requests offline; no dispatch or funding. |
+| `scripts/prepare_repair_coverage_prefix.py` | python | Prepare initial-repair requests offline; never dispatch a model call. |
 | `scripts/prepare_repair_diagnostics.py` | python | Execute a public-only offline diagnostic demo; never dispatch model requests. |
 | `scripts/prepare_repair_extension_information_study.py` | python | Prepare the independent development-extension information design offline. |
 | `scripts/prepare_repair_information_study.py` | python | Prepare a public-trace information experiment offline; never dispatch APIs. |
@@ -205,6 +206,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/report_repair_calibration.py` | python | Audit terminal repair-pilot segments and report descriptive results offline. |
 | `scripts/report_repair_contract_probe.py` | python | Audit and describe a terminal output-contract diagnostic; no API calls. |
 | `scripts/report_repair_contrastive_study.py` | python | Report terminal public-contrast evidence; never dispatch model calls. |
+| `scripts/report_repair_coverage_prefix.py` | python | Audit and export the terminal natural-failure difficulty calibration. |
 | `scripts/report_repair_information_study.py` | python | Report a terminal public-trace information study without model calls. |
 | `scripts/report_repair_interface_study.py` | python | Analyze a terminal factorial repair-interface study offline; no model calls. |
 | `scripts/report_repair_solver_study.py` | python | Audit terminal coding-solver evidence and preserve every planned cell; no API calls. |
@@ -266,6 +268,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | saved-evidence analysis | `src/vao/analysis/repair_calibration.py` | Audit terminal repair-calibration segments and report descriptive diagnostics. No model calls, training, stopping decisions or claim of held-out policy value. | read_json, lineage, group_estimate, mean, descriptive_interval, analyze, render, export_evidence |
 | saved-evidence analysis | `src/vao/analysis/repair_contrastive.py` | Prespecified complete-task comparisons for the three-arm public-contrast study. | screen, interval, summarize, render, main |
 | saved-evidence analysis | `src/vao/analysis/repair_contrastive_plot.py` | Terminal three-arm report visualization; never reads raw collection outcomes. Accepts only terminal, source-bound reports or explicitly marked rendering fixtures. | close, prepare, plot, main |
+| saved-evidence analysis | `src/vao/analysis/repair_coverage_prefix.py` | Terminal-only difficulty report retaining all six initial attempts. | summarize, render, main |
 | saved-evidence analysis | `src/vao/analysis/repair_information.py` | Frozen descriptive analysis of public trace acquisition on failed checkpoints. | interval, summarize, render, main |
 | saved-evidence analysis | `src/vao/analysis/repair_interface.py` | Prespecified terminal analysis of the four repair-interface conditions. | linear_bounds, interval, summarize, render, main |
 | saved-evidence analysis | `src/vao/analysis/repair_missingness.py` | Finite selected-cell bounds; no collection, model calls or policy fitting. A lower screen passes only when every binary completion of missing cells would pass the original efficacy criteria. It never imputes outcomes or changes a closed study's complete-bank rule. Draws are nested within predeclared bugs. | Criteria, evaluate |
@@ -298,6 +301,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/repair/contracts.py` | Offline preparation of a paired output-contract diagnostic; never dispatch APIs. The unsuccessful recovery bank remains immutable. This module compiles reviewable requests and checks decoding boundaries before another campaign is authorized. | study_settings, study_spacing, public_feedback, request, provider_body, decode, task_from_record, provenance |
 | verified orchestration runtime | `src/vao/repair/contrastive_diagnostics.py` | Offline v2 diagnostic: bounded failing/passing traces, without new test oracles. Not a collector or fitted policy. Historical acquisition/worker code is unchanged. | shape, case_input, input_distance, input_truncated, select_pair, compact_trace, expand_trace, acquire |
 | verified orchestration runtime | `src/vao/repair/contrastive_study.py` | Fresh three-arm public-contrast calibration, separately frozen and funded. | design, schedule, planned_requests, construct, validate_packet, validate_origin, validate_diagnostics, main |
+| verified orchestration runtime | `src/vao/repair/coverage_prefix.py` | Six prospective initial repairs; natural checkpoints only, no recovery dispatch. | design, planned_requests, construct, validate_packet, validate_origin, main |
 | verified orchestration runtime | `src/vao/repair/diagnostic_study.py` | Prepare a separately funded public-trace information experiment, never retry. Existing transport, receipts, source freezes and cell audits are reused. The new intervention, repeated schedule and report have their own study identity. | design, without_times, source_records, schedule, planned_requests, construct, validate_packet, validate_origin |
 | verified orchestration runtime | `src/vao/repair/diagnostics.py` | Public-only diagnostic acquisition and matched offline prompt projections. This is an engineering component, not a fitted policy or a live collector. Callers pass public task data, never a RepairTask with evaluator cases. | validate_public, binding, observe, selected_failure, acquire, project |
 | verified orchestration runtime | `src/vao/repair/environment.py` | Store verifiable repair artifacts and fork matched continue/restart requests. | canonical, identity, validate_files, validate_cases, RepairTask, RepairRun, audit_run |

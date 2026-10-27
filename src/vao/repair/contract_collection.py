@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 import shutil
 
-from .contracts import STUDY, DEEPINFRA_STUDY, GEMMA12B_STUDY, GEMMA27B_STUDY, TRACE_STUDY, INTERFACE_STUDY, SOLVER_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY, CONTRASTIVE_TRACE_STUDY, decode, provenance, provider_body, public_feedback, task_from_record, validate, study_settings, study_spacing
+from .contracts import STUDY, DEEPINFRA_STUDY, GEMMA12B_STUDY, GEMMA27B_STUDY, TRACE_STUDY, INTERFACE_STUDY, SOLVER_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY, CONTRASTIVE_TRACE_STUDY, COVERAGE_PREFIX_STUDY, decode, provenance, provider_body, public_feedback, task_from_record, validate, study_settings, study_spacing
 from .environment import RepairRun, audit_run, identity
 from .pilot import file_hashes, source_commit
 from .provider import OpenRouterTransport, ProviderStopped, Settings, dollars
@@ -44,7 +44,13 @@ def authorization(config, packet, prior):
         raise ValueError('New study cap must cover the whole design without exceeding the proposal')
     if config.get('minimum_request_interval_seconds') != study_spacing(packet['study']):
         raise ValueError('The contract study requires its declared request spacing')
-    if packet['study'] == CONTRASTIVE_TRACE_STUDY:
+    if packet['study'] == COVERAGE_PREFIX_STUDY:
+        if (prior.get('study') != CONTRASTIVE_TRACE_STUDY or prior.get('model_results') is not True
+                or prior.get('gate') != 'no_completion_meets_development_screen'
+                or prior.get('fit_selector') is not False or prior.get('accounting', {}).get('sealed') is not True):
+            raise ValueError('Coverage prefix must carry the closed complete contrastive bank')
+        carried = dollars(prior['accounting']['cumulative_committed_usd'])
+    elif packet['study'] == CONTRASTIVE_TRACE_STUDY:
         if (prior.get('study') != INDEPENDENT_TRACE_STUDY or prior.get('status') != 'complete_development_information_probe'
                 or prior.get('gate') != 'no_completion_meets_development_screen' or prior.get('fit_selector') is not False
                 or prior.get('accounting', {}).get('sealed') is not True):
@@ -107,6 +113,9 @@ def authorization(config, packet, prior):
 
 def freeze(packet, config, output: Path):
     validate(packet)
+    if packet['study'] == COVERAGE_PREFIX_STUDY:
+        from .coverage_prefix import validate_origin
+        validate_origin(packet)
     if packet['study'] == CONTRASTIVE_TRACE_STUDY:
         from .contrastive_study import validate_origin
         validate_origin(packet)
@@ -154,6 +163,9 @@ def validate_freeze(frozen, *, current=False):
     if dollars(frozen['authorized_limit_usd']) != limit or dollars(frozen['carried_commitment_usd']) != carried:
         raise ValueError('Frozen financial projection differs')
     if current:
+        if packet['study'] == COVERAGE_PREFIX_STUDY:
+            from .coverage_prefix import validate_origin
+            validate_origin(packet)
         if packet['study'] == CONTRASTIVE_TRACE_STUDY:
             from .contrastive_study import validate_origin
             validate_origin(packet)
@@ -238,7 +250,7 @@ def collect(frozen, output: Path, *, claim_root=None, continuation=None):
         from .independent_transport import IndependentCellTransport
         transport_type = IndependentCellTransport
     settings, options = ContractSettings(**packet['provider_settings']), {}
-    if packet['study'] in (STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY, CONTRASTIVE_TRACE_STUDY):
+    if packet['study'] in (STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY, CONTRASTIVE_TRACE_STUDY, COVERAGE_PREFIX_STUDY):
         from .streaming import StreamingOpenRouterTransport, StreamingSettings
         transport_type = StreamingOpenRouterTransport
         settings = StreamingSettings(**packet['provider_settings'])
@@ -432,13 +444,13 @@ def _audit_records(output, packet, limit, carried, requests):
                 known = dollars(read(raw)['usage']['cost'])
             except (KeyError, TypeError, ValueError, ProviderStopped):
                 pass
-        if packet['study'] in (STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY, CONTRASTIVE_TRACE_STUDY):
+        if packet['study'] in (STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY, CONTRASTIVE_TRACE_STUDY, COVERAGE_PREFIX_STUDY):
             metric = output / 'stream-metrics' / (key + '.json')
             if metric.exists():
                 known = max(known, dollars(read(metric)['reported_cost_usd']))
         committed_by_attempt[key] = max(reserve, known)
         committed += max(reserve, known)
-    if packet['study'] in (STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY, CONTRASTIVE_TRACE_STUDY):
+    if packet['study'] in (STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY, CONTRASTIVE_TRACE_STUDY, COVERAGE_PREFIX_STUDY):
         from .stream_information_audit import validate_stream_evidence
         validate_stream_evidence(output, packet, admitted, settled, pending, receipts, committed, carried)
     completion = output / 'pilot-completion.json'

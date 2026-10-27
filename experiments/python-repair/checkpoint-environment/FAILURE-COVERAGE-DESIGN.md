@@ -1,7 +1,8 @@
 # Candidate revision: cover the remaining public failures
 
 Status: offline engineering preparation after the failed contrastive development
-screen. **Not a frozen model protocol, allocation, selector or positive result.**
+screen. The subsequent prospective decisions are specified in
+[FAILURE-COVERAGE-PROTOCOL.md](FAILURE-COVERAGE-PROTOCOL.md). **Not a frozen model protocol, allocation, selector or positive result.**
 The final user objective and all historical studies remain unchanged.
 
 The [terminal audit](results/contrastive-calibration-20261026/POSTHOC.md) found

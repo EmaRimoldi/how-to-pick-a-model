@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "status": "authorized_contract_diagnostic",
+  "study": "repair-qwen-coverage-prefix-development-v1",
+  "live_calls_enabled": true,
+  "monetary_authorization_usd": "0.04",
+  "cumulative_limit_usd": "0.60",
+  "minimum_request_interval_seconds": 60,
+  "closed_pilot_report": "experiments/python-repair/checkpoint-environment/results/contrastive-calibration-20261026/analysis.json",
+  "authorization_reference": "Standing user instructions: Non farti problemi di denaro. Continua. and Procedi, set the new goal. Agent declares a separate bounded 0.04 USD initial-repair allocation within the existing 0.60 USD cumulative cap, retaining 0.20640271 USD once including thirteen old uncertain reserves. This is not a newly user-typed amount or permission for unlimited spending. Recorded 2026-10-26 America/Los_Angeles.",
+  "note": "Read FAILURE-COVERAGE-PROTOCOL.md. Exactly six initial repairs; no runtime diagnostics, no retry, resumption, successor or fallback. Qwen3-Coder-Next/Parasail/BF16, seed namespace43138,4096 output,25600 input reservation. Full local checks and exact green CI plus a clean source freeze before dispatch. Stage2 remains disabled pending terminal difficulty gate, separate tested implementation and exact derived request freeze; at most0.35 USD conditional allocation under the same protocol."
+}
