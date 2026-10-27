@@ -68,6 +68,24 @@ needed to attribute a rejection; a positive balance alone does not do so.
 The retained error record has only code 429. No credential, account identifier,
 key label or raw account balance is included in the public operational check.
 
+### Read-only follow-up: known generation recovered
+
+After the owner confirmed the browser account, both account-level logs over the
+past month and the Default Workspace generation view over the past day remained
+empty. A separate authenticated `GET /api/v1/generation` lookup recovered one
+previously settled research generation: ID, Parasail provider, recorded cost and
+server time (2026-10-27 07:02:55 UTC) match the saved evidence. Its model field uses
+`qwen/qwen3-coder-next-2025-02-03`, which the contemporaneous public model catalog
+identifies as the canonical slug of `qwen/qwen3-coder-next`. The initial literal
+model-string mismatch is retained in the [sanitized check](provider-generation-check.json)
+alongside the canonical reconciliation.
+
+This verifies one existing receipt, not the entire bank or the uncertain
+admission. Empty dashboard views do not negate saved receipts, identify the 429
+cause or settle unknown costs. No settings, credentials, allocations or model
+requests changed. The documented [generation metadata endpoint](https://openrouter.ai/docs/api/api-reference/generations/get-generation)
+is read-only; the API lookup and public catalog lookup incur no model generation.
+
 ## Reproduction
 
 Source commit: `2249591ca166c4a8ff49491585ca49ecbc72ecdb`.
