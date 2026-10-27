@@ -9,8 +9,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `8`
-- Script entrypoints indexed: `58`
-- Code modules indexed: `106`
+- Script entrypoints indexed: `60`
+- Code modules indexed: `108`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `6`
@@ -200,6 +200,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/prepare_repair_interface_study.py` | python | Prepare exact factorial repair-interface requests offline; no model calls. |
 | `scripts/prepare_repair_pilot.py` | python | Plan repair calibration offline; live collection requires a funded freeze. |
 | `scripts/prepare_repair_qwen_information_study.py` | python | Prepare matched Qwen trace-information requests offline; no API calls. |
+| `scripts/prepare_repair_region_information.py` | python | Frozen original-bug diagnostic calibration; no implicit authorization. |
 | `scripts/prepare_repair_solver_study.py` | python | Prepare the fixed coding-solver compatibility control offline; no model calls. |
 | `scripts/probe_repair_trace_retention.py` | python | Offline matched trace audit on exposed sources; no providers or model results. Run on macOS from the repository root. Output is exclusive; previous reports are never overwritten. Expected answers are used only for parent-side scoring. |
 | `scripts/qualify_python_repair_pool.py` | python | Offline build, provenance audit and isolated qualification of real-bug tasks. |
@@ -211,6 +212,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/report_repair_coverage_prefix.py` | python | Audit and export the terminal natural-failure difficulty calibration. |
 | `scripts/report_repair_information_study.py` | python | Report a terminal public-trace information study without model calls. |
 | `scripts/report_repair_interface_study.py` | python | Analyze a terminal factorial repair-interface study offline; no model calls. |
+| `scripts/report_repair_region_information.py` | python | Frozen original-bug diagnostic calibration; no implicit authorization. |
 | `scripts/report_repair_solver_study.py` | python | Audit terminal coding-solver evidence and preserve every planned cell; no API calls. |
 | `scripts/run_context_value.py` | python | Plan or explicitly run a budgeted artifact/feedback and prospective-forecast study. |
 | `scripts/run_continuation_pilot.py` | python | Run the explicit-budget OpenRouter/HumanEval+ pilot; defaults to plan only. |
@@ -274,6 +276,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | saved-evidence analysis | `src/vao/analysis/repair_information.py` | Frozen descriptive analysis of public trace acquisition on failed checkpoints. | interval, summarize, render, main |
 | saved-evidence analysis | `src/vao/analysis/repair_interface.py` | Prespecified terminal analysis of the four repair-interface conditions. | linear_bounds, interval, summarize, render, main |
 | saved-evidence analysis | `src/vao/analysis/repair_missingness.py` | Finite selected-cell bounds; no collection, model calls or policy fitting. A lower screen passes only when every binary completion of missing cells would pass the original efficacy criteria. It never imputes outcomes or changes a closed study's complete-bank rule. Draws are nested within predeclared bugs. | Criteria, evaluate |
+| saved-evidence analysis | `src/vao/analysis/repair_region_information.py` | Prospective matched generation comparisons conditional on one saved public acquisition. | screen, interval, summarize, render, main |
 | saved-evidence analysis | `src/vao/analysis/repair_solver.py` | Terminal-only coding-solver compatibility report; no selector or model comparison. | interval, summarize, render, main |
 | saved-evidence analysis | `src/vao/analysis/repair_stagnation.py` | Post hoc edit audit of a terminal information archive; never execute candidates. | syntax, classify, summarize, main |
 | saved-evidence analysis | `src/vao/analysis/repair_trace_audit.py` | Post hoc terminal-bank audit; inspect inert evidence, never execute candidates. | structural_ast, syntax_id, bounded_values, trace_metrics, diagnostic_metrics, transitions, summarize, main |
@@ -321,6 +324,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/repair/provider.py` | Pinned OpenRouter adapter for the repair pilot; no implicit calls or retries. Constructing this adapter does not authorize a collection: the pilot launcher enforces the separately funded source freeze and a single-use campaign claim. | ProviderStopped, safe_error_details, dollars, Settings, NoRedirects, OpenRouterTransport |
 | verified orchestration runtime | `src/vao/repair/qwen_information_study.py` | Fresh two-arm public-trace development calibration after solver compatibility. | design, schedule, planned_requests, construct, validate_packet, validate_origin, main |
 | verified orchestration runtime | `src/vao/repair/records.py` | Durable, exclusive records shared by offline and provider-backed adapters. | save, append, rows |
+| verified orchestration runtime | `src/vao/repair/region_information_study.py` | Separately funded information-value calibration using actual frozen acquisitions. | design, source_records, schedule, planned_requests, construct, validate_diagnostics, validate_packet, validate_origin |
 | verified orchestration runtime | `src/vao/repair/region_trace_worker.py` | Opt-in bounded traces balanced across executed functions, not known fault sites. Standalone sandbox worker. The historical tail-trace worker stays unchanged. Compact values and execution/scoring boundaries intentionally match that worker. | compact, priority_order, select_events, Trace, main |
 | verified orchestration runtime | `src/vao/repair/region_verifier.py` | Opt-in function-balanced diagnostics; historical verifier remains unchanged. | valid_bounds, RegionRepairVerifier |
 | verified orchestration runtime | `src/vao/repair/solver_study.py` | Prepare a coding-solver compatibility control on fixed failed checkpoints. | design, planned_requests, construct, validate_packet, validate_origin, main |

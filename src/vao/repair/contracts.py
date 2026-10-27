@@ -37,6 +37,7 @@ STREAM_TRACE_STUDY = "repair-qwen-stream-trace-development-v1"
 INDEPENDENT_TRACE_STUDY = "repair-qwen-independent-trace-development-v1"
 CONTRASTIVE_TRACE_STUDY = "repair-qwen-contrastive-trace-development-v1"
 COVERAGE_PREFIX_STUDY = "repair-qwen-coverage-prefix-development-v1"
+SNAPSHOT_TRACE_STUDY = "repair-qwen-frozen-region-trace-development-v1"
 EXAMPLE = {"example.py": "def identity(value):\n    return value\n"}
 INSTRUCTIONS = {
     "json_current": REPAIR_SYSTEM,
@@ -49,6 +50,11 @@ INSTRUCTIONS = {
 
 
 def study_settings(study):
+    if study == SNAPSHOT_TRACE_STUDY:
+        from .streaming import StreamingSettings
+        return StreamingSettings(model="qwen/qwen3-coder-next", endpoint="parasail/bf16", provider_name="Parasail",
+                        quantization="bf16", input_per_million="0.12", output_per_million="0.80",
+                        input_token_ceiling=40960, max_tokens=8192, seed=43139), Decimal("0.38")
     if study == COVERAGE_PREFIX_STUDY:
         from .streaming import StreamingSettings
         return StreamingSettings(model="qwen/qwen3-coder-next", endpoint="parasail/bf16", provider_name="Parasail",
@@ -106,7 +112,7 @@ def study_settings(study):
 
 def study_spacing(study):
     study_settings(study)  # Reject undeclared studies; historical pacing is unchanged.
-    if study in (SOLVER_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY, CONTRASTIVE_TRACE_STUDY, COVERAGE_PREFIX_STUDY):
+    if study in (SOLVER_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY, CONTRASTIVE_TRACE_STUDY, COVERAGE_PREFIX_STUDY, SNAPSHOT_TRACE_STUDY):
         return 60
     if study == INTERFACE_STUDY:
         return 30
@@ -169,6 +175,14 @@ def task_from_record(record):
 
 def provenance(tasks, study=STUDY):
     runtime = fingerprint(tasks, Design())
+    if study == SNAPSHOT_TRACE_STUDY:
+        from .region_information_study import design
+        import hashlib
+        runtime["design"] = design()
+        for name in ("repair_region_information.py", "contract_diagnostic.py", "contract_verification.py"):
+            path = Path(__file__).parent.parent / "analysis" / name
+            runtime["sources"]["analysis/" + name] = hashlib.sha256(path.read_bytes()).hexdigest()
+        return runtime
     if study == COVERAGE_PREFIX_STUDY:
         from .coverage_prefix import design
         import hashlib
@@ -281,6 +295,9 @@ def construct(tasks: list[RepairTask], verifier, *, prior_commitment="0.01011411
 
 
 def validate(plan: dict) -> dict:
+    if plan.get("study") == SNAPSHOT_TRACE_STUDY:
+        from .region_information_study import validate_packet
+        return validate_packet(plan)
     if plan.get("study") == COVERAGE_PREFIX_STUDY:
         from .coverage_prefix import validate_packet
         return validate_packet(plan)

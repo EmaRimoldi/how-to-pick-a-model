@@ -7,7 +7,7 @@ from pathlib import Path
 
 from vao.repair.contract_collection import validate_freeze, ContractSettings, settled_receipt
 from vao.repair.provider import dollars
-from vao.repair.contracts import EXTENSION_TRACE_STUDY, INDEPENDENT_TRACE_STUDY, CONTRASTIVE_TRACE_STUDY
+from vao.repair.contracts import EXTENSION_TRACE_STUDY, INDEPENDENT_TRACE_STUDY, CONTRASTIVE_TRACE_STUDY, SNAPSHOT_TRACE_STUDY
 from vao.repair.independent_transport import validate_retention
 from vao.repair.records import rows
 
@@ -29,7 +29,7 @@ def progress(root):
     ledger = rows(root / 'ledger.jsonl')
     pending, settled, admitted, generations = {}, {}, [], set()
     retained = set()
-    independent = packet["study"] in (EXTENSION_TRACE_STUDY, INDEPENDENT_TRACE_STUDY, CONTRASTIVE_TRACE_STUDY)
+    independent = packet["study"] in (EXTENSION_TRACE_STUDY, INDEPENDENT_TRACE_STUDY, CONTRASTIVE_TRACE_STUDY, SNAPSHOT_TRACE_STUDY)
     consecutive_retained = 0
     errors = rows(root / "provider-errors.jsonl")
     for event in ledger:
@@ -58,7 +58,7 @@ def progress(root):
         elif event['event'] == 'retain_unknown':
             if not independent or key not in pending or key in retained or key != admitted[-1] or amount != pending[key]:
                 raise ValueError('Invalid prospective missing-cell disposition')
-            if packet['study'] in (INDEPENDENT_TRACE_STUDY, CONTRASTIVE_TRACE_STUDY):
+            if packet['study'] in (INDEPENDENT_TRACE_STUDY, CONTRASTIVE_TRACE_STUDY, SNAPSHOT_TRACE_STUDY):
                 from vao.repair.independent_streaming import validate_retention as validate_independent
                 validate_independent(root, event, errors, already_retained=len(retained), consecutive_retained=consecutive_retained)
             else:

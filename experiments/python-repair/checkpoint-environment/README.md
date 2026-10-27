@@ -1,16 +1,21 @@
 # Python repair checkpoint environment
 
-**Latest preparation:** [single-acquisition snapshots](results/acquisition-preparation-20261027/README.md)
-now bind actual public trace bytes to their code, input and feedback without
-re-executing traces during projection. All eight prepared tasks have available
-diagnostics and matched inert control/treatment prompts. A separate audit finds
-identical old/new event values on seven of the eight historical failed
-checkpoints, so that bank offers little retention-revision contrast.
-Two [stateful/recursive Scrapy adapters](development-stateful/README.md) qualify
-offline and join six broader development tasks for prospective study planning.
-These are original artifacts after failed public tests, not generated failed
-patches. **No new model calls, allocation or selector training** have occurred;
-all earlier studies and their gates remain closed and unchanged.
+**Next registered study:** the [frozen-region information calibration](FROZEN-REGION-PROTOCOL.md)
+compares public feedback against the same feedback plus an exact saved runtime
+trace on eight exposed original-bug checkpoints, two draws per arm (32 requests).
+A bounded $0.38 allocation carries $0.20937371 once under the existing $0.60
+ceiling. Code, protocol and accounting are implemented; paid collection still
+requires the reviewed clean-source freeze and exact-head green CI. No new
+outcome is available and no selector is trained.
+
+The [single-acquisition snapshots](results/acquisition-preparation-20261027/README.md)
+bind actual trace bytes to code, input, feedback and acquisition resources.
+The two draws condition on the same snapshot, without reacquiring stochastic
+intermediate values. Two qualified [stateful/recursive Scrapy adapters](development-stateful/README.md)
+join six broader development tasks. These are original artifacts after public
+test failures, not model-generated failed patches; any benefit must transfer to
+that latter setting before selector development. All historical studies remain
+closed, including their missing outcomes and failed screens.
 
 The [six-task natural-failure calibration](results/coverage-prefix-20261027/README.md)
 completed with **4/6 full initial repairs**, one syntax failure and one behavior
@@ -31,7 +36,7 @@ now repeats 80 case/variant comparisons across seven exposed bugs. Every traced
 observation agrees with ordinary execution, and the new sampler recovers the
 omitted method in both failing examples. Two cases retain stochastic hashes/set
 order, and complex object state remains omitted. These limits are preserved;
-the mode is not integrated into paid collection and no repair benefit is claimed.
+the new protocol tests it prospectively and no repair benefit is yet claimed.
 
 **Previous intervention result: the [three-arm contrastive calibration](results/contrastive-calibration-20261026/README.md)
 completed all 72 responses and failed its prespecified development screen.**

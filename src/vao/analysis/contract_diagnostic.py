@@ -8,7 +8,7 @@ import re
 import subprocess
 import zipfile
 
-from vao.repair.contracts import CONTRACTS, TRACE_STUDY, INTERFACE_STUDY, SOLVER_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY, CONTRASTIVE_TRACE_STUDY, COVERAGE_PREFIX_STUDY
+from vao.repair.contracts import CONTRACTS, TRACE_STUDY, INTERFACE_STUDY, SOLVER_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY, CONTRASTIVE_TRACE_STUDY, COVERAGE_PREFIX_STUDY, SNAPSHOT_TRACE_STUDY
 from vao.repair.contract_collection import ROOT, audit, read
 from vao.repair.records import rows, save
 
@@ -19,6 +19,8 @@ def summarize(output: Path):
     checked = audit(output)
     frozen = read(output / 'manifest.json')['freeze']
     packet = frozen['packet']
+    if packet['study'] == SNAPSHOT_TRACE_STUDY:
+        raise ValueError('Use the frozen-region report for this study')
     if packet['study'] == COVERAGE_PREFIX_STUDY:
         raise ValueError('Use the coverage-prefix report, not the historical contract gate')
     if packet['study'] == CONTRASTIVE_TRACE_STUDY:

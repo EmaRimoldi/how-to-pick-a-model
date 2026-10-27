@@ -5,8 +5,8 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `64`
-- Default-safe commands: `54`
+- Commands indexed: `66`
+- Default-safe commands: `56`
 - Missing required maintenance actions: `0`
 
 ## Safety Classes
@@ -16,7 +16,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `cluster-setup` | 1 |
 | `live-local` | 6 |
 | `mixed-cli` | 3 |
-| `read-only-analysis` | 36 |
+| `read-only-analysis` | 38 |
 | `safe-figure-regeneration` | 6 |
 | `safe-local` | 10 |
 | `safe-local-optional-tool` | 2 |
@@ -26,7 +26,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | Surface | Commands |
 | --- | --- |
 | `maintenance` | 6 |
-| `scripts` | 51 |
+| `scripts` | 53 |
 | `scripts/cluster` | 1 |
 | `scripts/maintenance` | 6 |
 
@@ -75,6 +75,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/prepare_repair_information_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare a public-trace information experiment offline; never dispatch APIs. |
 | `python scripts/prepare_repair_interface_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare exact factorial repair-interface requests offline; no model calls. |
 | `python scripts/prepare_repair_qwen_information_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare matched Qwen trace-information requests offline; no API calls. |
+| `python scripts/prepare_repair_region_information.py` | scripts | `read-only-analysis` | yes | inspect script before running | Frozen original-bug diagnostic calibration; no implicit authorization. |
 | `python scripts/prepare_repair_solver_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare the fixed coding-solver compatibility control offline; no model calls. |
 | `python scripts/probe_repair_trace_retention.py` | scripts | `read-only-analysis` | yes | inspect script before running | Offline matched trace audit on exposed sources; no providers or model results. Run on macOS from the repository root. Output is exclusive; previous reports are never overwritten. Expected answers are used only for parent-side scoring. |
 | `python scripts/repair_transport_probe.py` | scripts | `read-only-analysis` | yes | inspect script before running | Freeze, run once, or audit the separately funded SSE compatibility probe. |
@@ -85,6 +86,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/report_repair_coverage_prefix.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit and export the terminal natural-failure difficulty calibration. |
 | `python scripts/report_repair_information_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Report a terminal public-trace information study without model calls. |
 | `python scripts/report_repair_interface_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Analyze a terminal factorial repair-interface study offline; no model calls. |
+| `python scripts/report_repair_region_information.py` | scripts | `read-only-analysis` | yes | inspect script before running | Frozen original-bug diagnostic calibration; no implicit authorization. |
 | `python scripts/report_repair_solver_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit terminal coding-solver evidence and preserve every planned cell; no API calls. |
 | `python scripts/verify_feedback_evidence.py` | scripts | `read-only-analysis` | yes | inspect script before running | Verify published BigCodeBench evidence offline without executing candidate code. Public CLI facade; implementation lives in vao.analysis.verify_feedback_evidence. |
 | `python scripts/verify_repair_contract_evidence.py` | scripts | `read-only-analysis` | yes | inspect script before running | Verify archived contract reports and independently replay saved artifacts. |

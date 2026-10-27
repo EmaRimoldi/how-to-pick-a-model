@@ -35,9 +35,11 @@ def reproduce(source, output):
                 target = root / path
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(content)
-        from vao.repair.contracts import TRACE_STUDY, INTERFACE_STUDY, SOLVER_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY, CONTRASTIVE_TRACE_STUDY, COVERAGE_PREFIX_STUDY
+        from vao.repair.contracts import TRACE_STUDY, INTERFACE_STUDY, SOLVER_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY, CONTRASTIVE_TRACE_STUDY, COVERAGE_PREFIX_STUDY, SNAPSHOT_TRACE_STUDY
         frozen = read(root / 'collection/manifest.json')['freeze']
         summarizer, renderer = summarize, render
+        if frozen['study'] == SNAPSHOT_TRACE_STUDY:
+            from vao.analysis.repair_region_information import summarize as summarizer, render as renderer
         if frozen['study'] == COVERAGE_PREFIX_STUDY:
             from vao.analysis.repair_coverage_prefix import summarize as summarizer, render as renderer
         trace_study = frozen['study'] in (TRACE_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY)
@@ -60,6 +62,9 @@ def reproduce(source, output):
         if frozen['study'] == CONTRASTIVE_TRACE_STUDY:
             from vao.repair.contrastive_study import validate_diagnostics
             validate_diagnostics(frozen['packet'], verifier)
+        if frozen['study'] == SNAPSHOT_TRACE_STUDY:
+            from vao.repair.region_information_study import validate_diagnostics
+            validate_diagnostics(frozen['packet'])
         results, checks, discrepancies = {}, [], []
         # File-only archives omit empty directories. A stopped first request
         # legitimately has no cells; summarize() above still audits all receipts.
@@ -91,6 +96,9 @@ def reproduce(source, output):
                   'checks': checks, 'reexecuted_results': results}
         if trace_study or frozen['study'] == CONTRASTIVE_TRACE_STUDY:
             result['public_diagnostic_projections_reexecuted'] = True
+        if frozen['study'] == SNAPSHOT_TRACE_STUDY:
+            result['stored_public_diagnostics_verified'] = True
+            result['public_diagnostics_reexecuted'] = False
         with output.open('x') as stream:
             json.dump(result, stream, sort_keys=True)
             stream.write('\n')
