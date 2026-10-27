@@ -42,6 +42,12 @@ gates; no pooling rescues them. No diagnostic-acquisition selector, population
 harm, model scaling law or equal-total-budget method claim follows. These results
 do not replace the manuscript evidence above.
 
+The separate [post hoc trace audit](../experiments/python-repair/checkpoint-environment/results/information-independent-posthoc-20261026/README.md)
+preserves all 64 responses: 39 correct some initial public failure, 20 fully repair,
+and four are public false acceptances. These overlapping development counts do
+not identify a cause. The [contrastive diagnostic preparation](../experiments/python-repair/checkpoint-environment/results/contrastive-preparation-20261026/README.md)
+is engineering-only evidence; it contains no new model outcomes or policy gain.
+
 ## Evidence tiers
 
 ### Tier 1: Main Evidence

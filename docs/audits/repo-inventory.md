@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `700`
-- Bytes indexed: `61.7M`
+- Files indexed: `714`
+- Bytes indexed: `61.9M`
 
 ## Canonical Entrypoints
 
@@ -48,12 +48,12 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 441 | 56.8M |
+| `experiments` | 449 | 57.0M |
 | `docs` | 53 | 2.6M |
+| `src` | 103 | 952.2K |
 | `uv.lock` | 1 | 937.0K |
-| `src` | 101 | 932.3K |
-| `tests` | 45 | 313.5K |
-| `scripts` | 51 | 141.6K |
+| `tests` | 47 | 326.1K |
+| `scripts` | 53 | 147.4K |
 | `.github` | 5 | 3.3K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
@@ -63,13 +63,13 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 202 | 1.4M |
-| `.json` | 174 | 6.1M |
-| `.md` | 107 | 582.6K |
+| `.py` | 208 | 1.4M |
+| `.json` | 178 | 6.2M |
+| `.md` | 110 | 602.7K |
 | `.txt` | 79 | 373.1K |
 | `.jsonl` | 45 | 36.7M |
 | `.png` | 28 | 3.9M |
-| `.zip` | 15 | 9.3M |
+| `.zip` | 16 | 9.3M |
 | `.svg` | 10 | 1.1M |
 | `.pdf` | 8 | 184.3K |
 | `.sh` | 8 | 15.5K |
@@ -107,10 +107,12 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/python-repair/checkpoint-environment/results/contract-diagnostic-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/contract-gemma12b-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/contract-gemma27b-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/contrastive-preparation-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/diagnostic-audit-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/gemma4b-calibration-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/information-extension-stopped-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/information-independent-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/information-independent-posthoc-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/information-interrupted-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/information-qwen-stopped-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/information-stopped-20261026/README.md`
@@ -129,6 +131,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/analyze_recovery_validation.py`
 - `scripts/audit_repair_exposure.py`
 - `scripts/audit_repair_stagnation.py`
+- `scripts/audit_repair_trace_information.py`
 - `scripts/audit_repair_trigger_coverage.py`
 - `scripts/cluster/bootstrap_engaging.sh`
 - `scripts/collect_repair_contract_probe.py`
@@ -143,6 +146,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/plot_repair_interface.py`
 - `scripts/plot_repair_qwen_information.py`
 - `scripts/plot_repair_solver.py`
+- `scripts/prepare_contrastive_diagnostics.py`
 - `scripts/prepare_feedback_routing.py`
 - `scripts/prepare_python_repair.py`
 - `scripts/prepare_repair_contract_probe.py`

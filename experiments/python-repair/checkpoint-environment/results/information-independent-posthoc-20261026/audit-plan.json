@@ -1,0 +1,28 @@
+{
+  "recorded_utc": "2026-10-27T02:13:30.904943+00:00",
+  "kind": "post_hoc_diagnostic_audit_plan_after_failed_screen",
+  "bank": "experiments/python-repair/checkpoint-environment/results/information-independent-20261026",
+  "archive_sha256": "0c84d4fd10ce06b971b75340e7cb522c77410d278f439fcf1078680bb876377b",
+  "known_before_audit": {
+    "focused_full_repairs": 12,
+    "trace_full_repairs": 8,
+    "observations": 64,
+    "eligible_sources": 8,
+    "source_candidates": 12,
+    "gate": "failed"
+  },
+  "scope": [
+    "All8 eligible source public traces, including neutral and unfavorable cases; retain4 untriggered sources.",
+    "Trace availability, event/value bounds and truncation; whether entrypoint return/failure path is observed; public-case coverage.",
+    "All64 candidate artifacts: usable/unchanged/modified, public and evaluator classifications, preserved requirements; no exclusions.",
+    "Manual interpretation clearly separated from deterministic measurements and any proposed mechanism.",
+    "Future deployable diagnostic must derive only from public specification, current code and public input/feedback; hidden evaluation failures cannot become prompt evidence."
+  ],
+  "no_model_calls": true,
+  "no_selector_training": true,
+  "primary_analysis_unchanged": true,
+  "limitations": [
+    "Post hoc on exposed development data; cannot identify why the intervention failed or certify a revised intervention.",
+    "No pooled historical controls, no favorable subgroup gate, no retrospective protocol changes."
+  ]
+}

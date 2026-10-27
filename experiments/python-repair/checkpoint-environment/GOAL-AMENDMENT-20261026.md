@@ -251,3 +251,29 @@ This study adds $0.03910528 known spending and no uncertainty; cumulative
 commitment is $0.16495655 / $0.60 including thirteen historical reserves. All
 collectors are closed. Prior studies, gates, sources and manuscripts remain
 intact, with no pooling, retries or replacement of missing cells.
+
+
+## Post hoc diagnosis and revised acquisition preparation
+
+The [complete-bank audit](results/information-independent-posthoc-20261026/README.md)
+retains all twelve source candidates and all 64 responses. Seven of eight traces
+lose no events; six contain value omissions. Thirty-nine responses correct at
+least one initial public failure, but twenty fully repair, and four pass public
+tests while failing evaluator checks. These overlapping development observations
+separate local progress from complete repair; they do not establish a cause.
+The primary 12-versus-8 result and failed benefit screen remain unchanged.
+
+The next candidate intervention is a [bounded failing/passing public execution
+contrast](CONTRASTIVE-DIAGNOSTIC-DESIGN.md), with a same-representation single-trace
+control and focused-feedback baseline. The implementation uses no hidden oracle
+or generated expected answer. [Offline qualification](results/contrastive-preparation-20261026/README.md)
+checks both variants on all eight triggered sources and preserves four untriggered
+sources; no model calls were made. This does not demonstrate benefit or permit
+selector fitting. A separately frozen and allocated development comparison is
+required before any new collection; no paid allocation exists for it yet.
+
+The literature check adds direct precedents in contrastive tests and execution
+cost allocation. Neither constructing a contrast nor deciding whether execution
+is worth its cost is, by itself, a novelty claim. The full goal still requires
+repeatable useful acquisition, enforced total-resource policy comparisons and
+untouched grouped evaluation against the best fixed strategy.

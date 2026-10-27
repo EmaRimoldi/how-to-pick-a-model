@@ -397,3 +397,20 @@ frozen primary bounds span −68.75 to +75.00 percentage points, and the gate is
 inconclusive. It supplies no evidence for a new acquisition policy or a causal
 scaling claim. Reliable collection, equal-total-resource action headroom and
 untouched-bug evaluation remain prerequisites for the intended contribution.
+
+
+## Post hoc trace follow-up: contrast and execution opportunity cost
+
+Primary sources revisited on 2026-10-26 after the complete trace bank failed its
+benefit screen. This is targeted follow-up, not an exhaustive absence proof.
+
+| Source | Direct overlap and consequence |
+| --- | --- |
+| [ContrastRepair, §3.2](https://arxiv.org/html/2403.01971) | Pairs failing tests with similar passing tests, using existing tests or mutations. Our public execution-pair adapter is an inspired comparator, not a reproduction of its full system or a novelty claim. |
+| [To Run or Not to Run, ISSTA 2026 per author record](https://arxiv.org/html/2606.26978) | Studies execution restrictions, quotas and budget-guided use in software agents. Uneven execution value and its token/time costs already motivate selective acquisition. Prompt-level constraints and additional hard-constraint checks must be distinguished; nonsignificant differences do not establish equivalence. |
+
+The [revised diagnostic design](../experiments/python-repair/checkpoint-environment/CONTRASTIVE-DIAGNOSTIC-DESIGN.md)
+therefore requires focused feedback and single-trace controls, fully charged
+acquisition and a later common-resource comparison. No current result shows that
+the proposed contrast helps, that its benefit is predictable, or that a selector
+beats a fixed strategy on unseen bugs.

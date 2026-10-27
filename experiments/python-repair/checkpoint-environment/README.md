@@ -9,6 +9,15 @@ spending was higher. This eight-bug exposed development bank does not establish
 population harm or an equal-total-budget policy result. No selector is trained;
 the intervention needs review before another prospective study.
 
+The [post hoc audit](results/information-independent-posthoc-20261026/README.md)
+now retains all 64 responses and finds incomplete repair/preservation as well as
+bounded information in six traces; widespread event truncation and literal
+copying do not dominate this bank. The [revised diagnostic design](CONTRASTIVE-DIAGNOSTIC-DESIGN.md)
+compares failing and already-passing public executions, with a single-trace
+control. Its [offline qualification](results/contrastive-preparation-20261026/README.md)
+passes on all eight triggered sources, with zero model calls. This is preparation,
+not a benefit result, new collection allocation or selector.
+
 The [separate earlier streaming calibration](results/information-stream-stopped-20261026/README.md)
 remains interrupted and inconclusive: 1/64 responses, 63 missing outcomes, and
 primary bounds −96.875 to +100 points. Its frozen gate and missing cells remain
