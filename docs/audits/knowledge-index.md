@@ -9,8 +9,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `8`
-- Script entrypoints indexed: `53`
-- Code modules indexed: `100`
+- Script entrypoints indexed: `54`
+- Code modules indexed: `101`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `6`
@@ -187,6 +187,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/plot_repair_qwen_information.py` | python | Plot the prespecified two-arm terminal report, never inspect a live collection. |
 | `scripts/plot_repair_solver.py` | python | Render terminal solver draws; synthetic layout data requires an explicit flag. |
 | `scripts/prepare_contrastive_diagnostics.py` | python | Offline qualification on all source tasks in a complete development archive. No API requests or evaluator execution. Output is development engineering evidence. |
+| `scripts/prepare_failure_coverage_diagnostics.py` | python | Qualify bounded first/all-failure traces on a development pool; no API calls. |
 | `scripts/prepare_feedback_routing.py` | python | Verify the pinned BigCodeBench download and reproduce reference-only eligibility. |
 | `scripts/prepare_python_repair.py` | python | Plan or explicitly run an offline Python repair demo, qualification or audit. |
 | `scripts/prepare_repair_contract_probe.py` | python | Prepare a reviewable, offline-only Gemma response-contract diagnostic. |
@@ -302,6 +303,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/repair/environment.py` | Store verifiable repair artifacts and fork matched continue/restart requests. | canonical, identity, validate_files, validate_cases, RepairTask, RepairRun, audit_run |
 | verified orchestration runtime | `src/vao/repair/exposure.py` | Conservative, reproducible development-exposure guard; never certifies a holdout. | normalize, build, assess_candidate, main |
 | verified orchestration runtime | `src/vao/repair/extension_information_study.py` | Independent three-bug development calibration; no historical bank is resumed. | design, schedule, planned_requests, construct, validate_packet, source_records, validate_origin, main |
+| verified orchestration runtime | `src/vao/repair/failure_coverage_diagnostics.py` | Bounded public-failure coverage, prepared offline before any efficacy study. All arms already know every public input, expectation and observed result. This component acquires runtime evidence only, without an evaluator or reference. | select, acquire, project |
 | verified orchestration runtime | `src/vao/repair/independent_information_study.py` | New independent-cell streaming study with a prospective robust development screen. | design, schedule, planned_requests, construct, validate_packet, archived_requests, validate_origin, main |
 | verified orchestration runtime | `src/vao/repair/independent_streaming.py` | Prospective independent streaming cells; never retry or resume an old bank. | validate_retention, IndependentStreamingTransport |
 | verified orchestration runtime | `src/vao/repair/independent_transport.py` | Prospective missing-cell handling for a separately frozen independent design. Historical collectors never use this adapter. An uncertain request is never retried or settled. At most one uncertain cell may be retained while proceeding to the remaining independent scheduled cells. | validate_retention, IndependentCellTransport |

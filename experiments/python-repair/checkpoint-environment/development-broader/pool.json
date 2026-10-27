@@ -1,0 +1,2153 @@
+{
+  "schema_version": 1,
+  "status": "development_only",
+  "selection_basis": "Six previously exposed BugsInPy IDs across four already-exposed projects; selected before model calls for deterministic standard-library adaptation. Three additional candidates deferred in screening.json.",
+  "case_origin": "Hand-authored expected values from declared contracts and upstream examples, before qualification; no reference-generated labels. Both suites are development-exposed.",
+  "tasks": [
+    {
+      "id": "scrapy-002",
+      "split": "development",
+      "title": "Optional-capacity insertion-order cache",
+      "instruction": "Insert the supplied [string key, JSON value] pairs into a cache and return its [key, value] pairs in insertion order. Keys in the input are unique. None or zero capacity means unlimited; positive integer capacities keep the newest capacity entries by evicting the oldest before insertion. Empty input returns []. Repeated-key updates and negative limits are outside scope.",
+      "prefix": "# Development adapter from https://github.com/scrapy/scrapy.\n# Attribution and license: licenses/scrapy-002.txt\nimport collections\n\n",
+      "wrappers": {
+        "buggy": "def solve(limit, pairs):\n    cache = LocalCache(limit)\n    for key, value in pairs:\n        cache[key] = value\n    return [list(item) for item in cache.items()]\n",
+        "fixed": "def solve(limit, pairs):\n    cache = LocalCache(limit)\n    for key, value in pairs:\n        cache[key] = value\n    return [list(item) for item in cache.items()]\n"
+      },
+      "public_cases": [
+        {
+          "id": "unlimited-one",
+          "args": [
+            null,
+            [
+              [
+                "a",
+                1
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "a",
+              1
+            ]
+          ]
+        },
+        {
+          "id": "zero-capacity",
+          "args": [
+            0,
+            [
+              [
+                "a",
+                1
+              ],
+              [
+                "b",
+                2
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "a",
+              1
+            ],
+            [
+              "b",
+              2
+            ]
+          ]
+        },
+        {
+          "id": "eviction",
+          "args": [
+            2,
+            [
+              [
+                "a",
+                1
+              ],
+              [
+                "b",
+                2
+              ],
+              [
+                "c",
+                3
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "b",
+              2
+            ],
+            [
+              "c",
+              3
+            ]
+          ]
+        },
+        {
+          "id": "within-capacity",
+          "args": [
+            3,
+            [
+              [
+                "a",
+                1
+              ],
+              [
+                "b",
+                2
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "a",
+              1
+            ],
+            [
+              "b",
+              2
+            ]
+          ]
+        },
+        {
+          "id": "empty",
+          "args": [
+            null,
+            []
+          ],
+          "expected": []
+        },
+        {
+          "id": "one-capacity",
+          "args": [
+            1,
+            [
+              [
+                "a",
+                1
+              ],
+              [
+                "b",
+                2
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "b",
+              2
+            ]
+          ]
+        }
+      ],
+      "evaluator_cases": [
+        {
+          "id": "unlimited-many",
+          "args": [
+            null,
+            [
+              [
+                "x",
+                0
+              ],
+              [
+                "y",
+                false
+              ],
+              [
+                "z",
+                null
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "x",
+              0
+            ],
+            [
+              "y",
+              false
+            ],
+            [
+              "z",
+              null
+            ]
+          ]
+        },
+        {
+          "id": "zero-one",
+          "args": [
+            0,
+            [
+              [
+                "q",
+                []
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "q",
+              []
+            ]
+          ]
+        },
+        {
+          "id": "three-evicts",
+          "args": [
+            3,
+            [
+              [
+                "a",
+                1
+              ],
+              [
+                "b",
+                2
+              ],
+              [
+                "c",
+                3
+              ],
+              [
+                "d",
+                4
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "b",
+              2
+            ],
+            [
+              "c",
+              3
+            ],
+            [
+              "d",
+              4
+            ]
+          ]
+        },
+        {
+          "id": "one-many",
+          "args": [
+            1,
+            [
+              [
+                "u",
+                8
+              ],
+              [
+                "v",
+                9
+              ],
+              [
+                "w",
+                10
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "w",
+              10
+            ]
+          ]
+        },
+        {
+          "id": "empty-finite",
+          "args": [
+            2,
+            []
+          ],
+          "expected": []
+        },
+        {
+          "id": "zero-empty",
+          "args": [
+            0,
+            []
+          ],
+          "expected": []
+        }
+      ],
+      "provenance": {
+        "kind": "adapted_real_bug_development",
+        "benchmark": "BugsInPy",
+        "benchmark_revision": "11c5f1eea954a42132cfd06bf257766a7963e0fd",
+        "benchmark_id": "scrapy/2",
+        "scope": "Previously development-exposed ID; restricted adapter, not official project benchmark or holdout.",
+        "adaptations": [
+          "Preserve the complete LocalCache class; standard-library collections import.",
+          "Restrict to unique string keys, explicit finite/unlimited capacity and JSON values. No LRU claim or repeated-key behavior."
+        ],
+        "buggy_commit": "f02c3d1dcf3e4880388d19e961e7911be5dc54ff",
+        "fixed_commit": "439a3e59b8e858441f8d97dbc32f398db392330d",
+        "upstream_repository": "https://github.com/scrapy/scrapy",
+        "sources": {
+          "buggy": {
+            "url": "https://raw.githubusercontent.com/scrapy/scrapy/f02c3d1dcf3e4880388d19e961e7911be5dc54ff/scrapy/utils/datatypes.py",
+            "sha256": "33d1dbfc6232d84ed98bbf5a73121e3c3f163ff9ecd20238186ce5ae3fca5e15",
+            "path": "scrapy/utils/datatypes.py",
+            "excerpt": "upstream/scrapy-002/buggy.txt",
+            "excerpt_sha256": "ca570a22498b3f974fc14ba1af26a864a919bc0c38d105179798bc507935d67e",
+            "segments": [
+              {
+                "name": "LocalCache",
+                "start_line": 306,
+                "end_line": 320,
+                "sha256": "ca570a22498b3f974fc14ba1af26a864a919bc0c38d105179798bc507935d67e"
+              }
+            ]
+          },
+          "fixed": {
+            "url": "https://raw.githubusercontent.com/scrapy/scrapy/439a3e59b8e858441f8d97dbc32f398db392330d/scrapy/utils/datatypes.py",
+            "sha256": "c8cf1ea104a1cfbad125a73c984a951caf77288cee137f653909c1ca7c2c0362",
+            "path": "scrapy/utils/datatypes.py",
+            "excerpt": "upstream/scrapy-002/fixed.txt",
+            "excerpt_sha256": "7dc7217b7bae4b08a5b7977226cd29d74de77fa21377ee26229209ccb4654f94",
+            "segments": [
+              {
+                "name": "LocalCache",
+                "start_line": 306,
+                "end_line": 321,
+                "sha256": "7dc7217b7bae4b08a5b7977226cd29d74de77fa21377ee26229209ccb4654f94"
+              }
+            ]
+          },
+          "tests": {
+            "url": "https://raw.githubusercontent.com/scrapy/scrapy/439a3e59b8e858441f8d97dbc32f398db392330d/tests/test_utils_datatypes.py",
+            "sha256": "1133b74fc62881c1cb6685cc5a43f0f4854f139522127111bf63d838503c6e35",
+            "path": "tests/test_utils_datatypes.py",
+            "excerpt": "upstream/scrapy-002/tests.txt",
+            "excerpt_sha256": "34b77e297b0e4b9dc2b5f0d2ab2357764ffe58418d18ea920fbc6615b0a32248",
+            "segments": [
+              {
+                "name": "LocalCacheTest",
+                "start_line": 246,
+                "end_line": 268,
+                "sha256": "34b77e297b0e4b9dc2b5f0d2ab2357764ffe58418d18ea920fbc6615b0a32248"
+              }
+            ]
+          },
+          "license": {
+            "url": "https://raw.githubusercontent.com/scrapy/scrapy/439a3e59b8e858441f8d97dbc32f398db392330d/LICENSE",
+            "sha256": "fd331af3ccb8776bbe7f317821e5e0b91c2ab7c73464e77425d52204f7b5d980",
+            "path": "LICENSE",
+            "local_path": "licenses/scrapy-002.txt"
+          }
+        }
+      }
+    },
+    {
+      "id": "scrapy-036",
+      "split": "development",
+      "title": "Factory dispatch and invalid construction",
+      "instruction": "Dispatch construction for the supplied inert Probe factories. methods lists available settings/crawler factories; otherwise use direct construction. If settings and crawler_settings are both None raise ValueError. When settings is None adopt crawler_settings. Prefer a crawler factory when a crawler exists, then a settings factory, then direct construction. Factories normally return {via, source, args, kwargs}; source is the settings actually supplied to that factory, or None for direct. returns overrides a factory result by its name (crawler/settings/direct). Raise TypeError if and only if the selected factory returns None; preserve other false-like results. Forward args/kwargs unchanged. No actual Scrapy crawler is run.",
+      "prefix": "# Development adapter from https://github.com/scrapy/scrapy.\n# Attribution and license: licenses/scrapy-036.txt\nfrom types import SimpleNamespace\n\n",
+      "wrappers": {
+        "buggy": "def solve(methods, settings, crawler_settings, returns, args, kwargs):\n    def result(method, source, arguments, keywords):\n        if method in returns:\n            return returns[method]\n        return {\"via\": method, \"source\": source, \"args\": list(arguments), \"kwargs\": keywords}\n    class Probe:\n        def __new__(cls, *arguments, **keywords):\n            return result(\"direct\", None, arguments, keywords)\n    if \"settings\" in methods:\n        Probe.from_settings = classmethod(lambda cls, source, *a, **k: result(\"settings\", source, a, k))\n    if \"crawler\" in methods:\n        Probe.from_crawler = classmethod(lambda cls, source, *a, **k: result(\"crawler\", source.settings, a, k))\n    crawler = None if crawler_settings is None else SimpleNamespace(settings=crawler_settings)\n    return create_instance(Probe, settings, crawler, *args, **kwargs)\n",
+        "fixed": "def solve(methods, settings, crawler_settings, returns, args, kwargs):\n    def result(method, source, arguments, keywords):\n        if method in returns:\n            return returns[method]\n        return {\"via\": method, \"source\": source, \"args\": list(arguments), \"kwargs\": keywords}\n    class Probe:\n        def __new__(cls, *arguments, **keywords):\n            return result(\"direct\", None, arguments, keywords)\n    if \"settings\" in methods:\n        Probe.from_settings = classmethod(lambda cls, source, *a, **k: result(\"settings\", source, a, k))\n    if \"crawler\" in methods:\n        Probe.from_crawler = classmethod(lambda cls, source, *a, **k: result(\"crawler\", source.settings, a, k))\n    crawler = None if crawler_settings is None else SimpleNamespace(settings=crawler_settings)\n    return create_instance(Probe, settings, crawler, *args, **kwargs)\n"
+      },
+      "public_cases": [
+        {
+          "id": "settings-none",
+          "args": [
+            [
+              "settings"
+            ],
+            {},
+            null,
+            {
+              "settings": null
+            },
+            [],
+            {}
+          ],
+          "raises": "TypeError"
+        },
+        {
+          "id": "crawler-none",
+          "args": [
+            [
+              "crawler"
+            ],
+            null,
+            {},
+            {
+              "crawler": null
+            },
+            [],
+            {}
+          ],
+          "raises": "TypeError"
+        },
+        {
+          "id": "direct-none",
+          "args": [
+            [],
+            {},
+            null,
+            {
+              "direct": null
+            },
+            [],
+            {}
+          ],
+          "raises": "TypeError"
+        },
+        {
+          "id": "no-config",
+          "args": [
+            [],
+            null,
+            null,
+            {},
+            [],
+            {}
+          ],
+          "raises": "ValueError"
+        },
+        {
+          "id": "crawler-priority",
+          "args": [
+            [
+              "settings",
+              "crawler"
+            ],
+            {
+              "x": 1
+            },
+            {
+              "y": 2
+            },
+            {},
+            [
+              7
+            ],
+            {
+              "k": "v"
+            }
+          ],
+          "expected": {
+            "via": "crawler",
+            "source": {
+              "y": 2
+            },
+            "args": [
+              7
+            ],
+            "kwargs": {
+              "k": "v"
+            }
+          }
+        },
+        {
+          "id": "adopt-settings",
+          "args": [
+            [
+              "settings"
+            ],
+            null,
+            {
+              "p": 3
+            },
+            {},
+            [],
+            {}
+          ],
+          "expected": {
+            "via": "settings",
+            "source": {
+              "p": 3
+            },
+            "args": [],
+            "kwargs": {}
+          }
+        }
+      ],
+      "evaluator_cases": [
+        {
+          "id": "settings-null-with-args",
+          "args": [
+            [
+              "settings"
+            ],
+            {
+              "q": 2
+            },
+            null,
+            {
+              "settings": null
+            },
+            [
+              1
+            ],
+            {}
+          ],
+          "raises": "TypeError"
+        },
+        {
+          "id": "direct-null-with-args",
+          "args": [
+            [],
+            {
+              "q": 3
+            },
+            null,
+            {
+              "direct": null
+            },
+            [
+              2
+            ],
+            {}
+          ],
+          "raises": "TypeError"
+        },
+        {
+          "id": "zero-valid",
+          "args": [
+            [],
+            {},
+            null,
+            {
+              "direct": 0
+            },
+            [],
+            {}
+          ],
+          "expected": 0
+        },
+        {
+          "id": "false-valid",
+          "args": [
+            [
+              "settings"
+            ],
+            {},
+            null,
+            {
+              "settings": false
+            },
+            [],
+            {}
+          ],
+          "expected": false
+        },
+        {
+          "id": "without-crawler",
+          "args": [
+            [
+              "crawler",
+              "settings"
+            ],
+            {
+              "a": 4
+            },
+            null,
+            {},
+            [
+              1,
+              2
+            ],
+            {
+              "z": 5
+            }
+          ],
+          "expected": {
+            "via": "settings",
+            "source": {
+              "a": 4
+            },
+            "args": [
+              1,
+              2
+            ],
+            "kwargs": {
+              "z": 5
+            }
+          }
+        },
+        {
+          "id": "direct-forwarding",
+          "args": [
+            [],
+            {
+              "s": 1
+            },
+            {
+              "c": 2
+            },
+            {},
+            [
+              "x"
+            ],
+            {
+              "n": null
+            }
+          ],
+          "expected": {
+            "via": "direct",
+            "source": null,
+            "args": [
+              "x"
+            ],
+            "kwargs": {
+              "n": null
+            }
+          }
+        }
+      ],
+      "provenance": {
+        "kind": "adapted_real_bug_development",
+        "benchmark": "BugsInPy",
+        "benchmark_revision": "11c5f1eea954a42132cfd06bf257766a7963e0fd",
+        "benchmark_id": "scrapy/36",
+        "scope": "Previously development-exposed ID; restricted adapter, not official project benchmark or holdout.",
+        "adaptations": [
+          "Preserve the complete create_instance function.",
+          "Factories are explicit inert classes returning JSON or None; crawler stub only supplies its settings attribute. No crawler lifecycle or external framework setup."
+        ],
+        "buggy_commit": "cb8140a42a27ede87b0880372024f2f1804618b8",
+        "fixed_commit": "cf9be5344a89dd8e14f8241ec69de9c984ec1e05",
+        "upstream_repository": "https://github.com/scrapy/scrapy",
+        "sources": {
+          "buggy": {
+            "url": "https://raw.githubusercontent.com/scrapy/scrapy/cb8140a42a27ede87b0880372024f2f1804618b8/scrapy/utils/misc.py",
+            "sha256": "e94007890724410612354a4a81709e6dec233d75f2cff38f213928f1ac652f7c",
+            "path": "scrapy/utils/misc.py",
+            "excerpt": "upstream/scrapy-036/buggy.txt",
+            "excerpt_sha256": "487b78d7dfa8e29db05c8502a0608a6cd6e35bdeab151a637d3effcdb2497e26",
+            "segments": [
+              {
+                "name": "create_instance",
+                "start_line": 128,
+                "end_line": 150,
+                "sha256": "487b78d7dfa8e29db05c8502a0608a6cd6e35bdeab151a637d3effcdb2497e26"
+              }
+            ]
+          },
+          "fixed": {
+            "url": "https://raw.githubusercontent.com/scrapy/scrapy/cf9be5344a89dd8e14f8241ec69de9c984ec1e05/scrapy/utils/misc.py",
+            "sha256": "17670866c0c5fa63a84f02da602ecbc4d995b5d4bfdf29fd412b75ccb8d0fd38",
+            "path": "scrapy/utils/misc.py",
+            "excerpt": "upstream/scrapy-036/fixed.txt",
+            "excerpt_sha256": "9c596e53adb7061a5e01f66f52be2d9e9117f9ed6db7e74eed5805fc7790e657",
+            "segments": [
+              {
+                "name": "create_instance",
+                "start_line": 128,
+                "end_line": 159,
+                "sha256": "9c596e53adb7061a5e01f66f52be2d9e9117f9ed6db7e74eed5805fc7790e657"
+              }
+            ]
+          },
+          "tests": {
+            "url": "https://raw.githubusercontent.com/scrapy/scrapy/cf9be5344a89dd8e14f8241ec69de9c984ec1e05/tests/test_utils_misc/__init__.py",
+            "sha256": "549533b910cc2b763231bb3c058b5dc409f3e503695aff98db516123e901b1de",
+            "path": "tests/test_utils_misc/__init__.py",
+            "excerpt": "upstream/scrapy-036/tests.txt",
+            "excerpt_sha256": "4859fe0c5cc351ed3c2819aa40a9c678d21870fa2be5252af81a818e45a68120",
+            "segments": [
+              {
+                "name": "UtilsMiscTestCase.test_create_instance",
+                "start_line": 80,
+                "end_line": 140,
+                "sha256": "4859fe0c5cc351ed3c2819aa40a9c678d21870fa2be5252af81a818e45a68120"
+              }
+            ]
+          },
+          "license": {
+            "url": "https://raw.githubusercontent.com/scrapy/scrapy/cf9be5344a89dd8e14f8241ec69de9c984ec1e05/LICENSE",
+            "sha256": "fd331af3ccb8776bbe7f317821e5e0b91c2ab7c73464e77425d52204f7b5d980",
+            "path": "LICENSE",
+            "local_path": "licenses/scrapy-036.txt"
+          }
+        }
+      }
+    },
+    {
+      "id": "luigi-010",
+      "split": "development",
+      "title": "Pending tasks belong to the requesting worker",
+      "instruction": "Given a worker ID and unique task rows [id, status, worker_ids], return sorted IDs assigned to that worker with status PENDING or RUNNING. Ignore DONE/FAILED tasks and tasks owned only by other workers; a shared task belongs to every listed worker. This must hold whether there are many completed tasks, few worker tasks, or no tasks. State adapters expose exactly the pending/running union and its size. No live scheduler is run.",
+      "prefix": "# Development adapter from https://github.com/spotify/luigi.\n# Attribution and license: licenses/luigi-010.txt\nfrom types import SimpleNamespace\nsix = SimpleNamespace(moves=SimpleNamespace(filter=filter))\nPENDING, RUNNING = \"PENDING\", \"RUNNING\"\n\nclass Worker:\n",
+      "wrappers": {
+        "buggy": "def solve(worker_id, rows):\n    tasks = [SimpleNamespace(id=identifier, status=status, workers=workers) for identifier, status, workers in rows]\n    worker = Worker()\n    worker.id = worker_id\n    worker.tasks = [task for task in tasks if worker_id in task.workers]\n    pending = [task for task in tasks if task.status in (PENDING, RUNNING)]\n    state = SimpleNamespace(num_pending_tasks=lambda: len(pending), get_pending_tasks=lambda: iter(pending))\n    return sorted(task.id for task in worker.get_pending_tasks(state))\n",
+        "fixed": "def solve(worker_id, rows):\n    tasks = [SimpleNamespace(id=identifier, status=status, workers=workers) for identifier, status, workers in rows]\n    worker = Worker()\n    worker.id = worker_id\n    worker.tasks = [task for task in tasks if worker_id in task.workers]\n    pending = [task for task in tasks if task.status in (PENDING, RUNNING)]\n    state = SimpleNamespace(num_pending_tasks=lambda: len(pending), get_pending_tasks=lambda: iter(pending))\n    return sorted(task.id for task in worker.get_pending_tasks(state))\n"
+      },
+      "public_cases": [
+        {
+          "id": "many-done",
+          "args": [
+            "a",
+            [
+              [
+                "p",
+                "PENDING",
+                [
+                  "a"
+                ]
+              ],
+              [
+                "other",
+                "PENDING",
+                [
+                  "b"
+                ]
+              ],
+              [
+                "d1",
+                "DONE",
+                [
+                  "a"
+                ]
+              ],
+              [
+                "d2",
+                "DONE",
+                [
+                  "a"
+                ]
+              ]
+            ]
+          ],
+          "expected": [
+            "p"
+          ]
+        },
+        {
+          "id": "all-other",
+          "args": [
+            "a",
+            [
+              [
+                "other",
+                "RUNNING",
+                [
+                  "b"
+                ]
+              ],
+              [
+                "done",
+                "DONE",
+                [
+                  "a"
+                ]
+              ]
+            ]
+          ],
+          "expected": []
+        },
+        {
+          "id": "small-worker",
+          "args": [
+            "a",
+            [
+              [
+                "own",
+                "PENDING",
+                [
+                  "a"
+                ]
+              ],
+              [
+                "x",
+                "PENDING",
+                [
+                  "b"
+                ]
+              ],
+              [
+                "y",
+                "RUNNING",
+                [
+                  "b"
+                ]
+              ]
+            ]
+          ],
+          "expected": [
+            "own"
+          ]
+        },
+        {
+          "id": "running",
+          "args": [
+            "a",
+            [
+              [
+                "r",
+                "RUNNING",
+                [
+                  "a"
+                ]
+              ]
+            ]
+          ],
+          "expected": [
+            "r"
+          ]
+        },
+        {
+          "id": "shared",
+          "args": [
+            "a",
+            [
+              [
+                "s",
+                "PENDING",
+                [
+                  "a",
+                  "b"
+                ]
+              ]
+            ]
+          ],
+          "expected": [
+            "s"
+          ]
+        },
+        {
+          "id": "empty",
+          "args": [
+            "a",
+            []
+          ],
+          "expected": []
+        }
+      ],
+      "evaluator_cases": [
+        {
+          "id": "done-worker",
+          "args": [
+            "q",
+            [
+              [
+                "x",
+                "PENDING",
+                [
+                  "z"
+                ]
+              ],
+              [
+                "y",
+                "RUNNING",
+                [
+                  "z"
+                ]
+              ],
+              [
+                "d",
+                "DONE",
+                [
+                  "q"
+                ]
+              ],
+              [
+                "e",
+                "DONE",
+                [
+                  "q"
+                ]
+              ]
+            ]
+          ],
+          "expected": []
+        },
+        {
+          "id": "mixed-owners",
+          "args": [
+            "q",
+            [
+              [
+                "b",
+                "RUNNING",
+                [
+                  "q"
+                ]
+              ],
+              [
+                "a",
+                "PENDING",
+                [
+                  "q"
+                ]
+              ],
+              [
+                "c",
+                "PENDING",
+                [
+                  "z"
+                ]
+              ],
+              [
+                "d",
+                "DONE",
+                [
+                  "q"
+                ]
+              ],
+              [
+                "e",
+                "FAILED",
+                [
+                  "q"
+                ]
+              ]
+            ]
+          ],
+          "expected": [
+            "a",
+            "b"
+          ]
+        },
+        {
+          "id": "unassigned",
+          "args": [
+            "q",
+            [
+              [
+                "a",
+                "PENDING",
+                []
+              ],
+              [
+                "b",
+                "DONE",
+                [
+                  "q"
+                ]
+              ]
+            ]
+          ],
+          "expected": []
+        },
+        {
+          "id": "shared-running",
+          "args": [
+            "b",
+            [
+              [
+                "x",
+                "RUNNING",
+                [
+                  "a",
+                  "b"
+                ]
+              ],
+              [
+                "y",
+                "PENDING",
+                [
+                  "a"
+                ]
+              ]
+            ]
+          ],
+          "expected": [
+            "x"
+          ]
+        },
+        {
+          "id": "no-own",
+          "args": [
+            "none",
+            [
+              [
+                "a",
+                "PENDING",
+                [
+                  "x"
+                ]
+              ],
+              [
+                "b",
+                "RUNNING",
+                [
+                  "y"
+                ]
+              ]
+            ]
+          ],
+          "expected": []
+        },
+        {
+          "id": "finished-only",
+          "args": [
+            "a",
+            [
+              [
+                "d",
+                "DONE",
+                [
+                  "a"
+                ]
+              ],
+              [
+                "e",
+                "FAILED",
+                [
+                  "a"
+                ]
+              ]
+            ]
+          ],
+          "expected": []
+        }
+      ],
+      "provenance": {
+        "kind": "adapted_real_bug_development",
+        "benchmark": "BugsInPy",
+        "benchmark_revision": "11c5f1eea954a42132cfd06bf257766a7963e0fd",
+        "benchmark_id": "luigi/10",
+        "scope": "Previously development-exposed ID; restricted adapter, not official project benchmark or holdout.",
+        "adaptations": [
+          "Preserve the complete Worker.get_pending_tasks method under a minimal class shell; no Worker clock or scheduling lifecycle.",
+          "Replace six.moves.filter by the Python built-in, with inert task attribute containers. State adapter matches the original pending/running union and count; sorted output removes set-order ambiguity."
+        ],
+        "buggy_commit": "f538d1b3d473d542a19d508e5f7e0809b1dfe5ef",
+        "fixed_commit": "3c55acd2cd5cf9c6c760bec5bb3159e0bc48a614",
+        "upstream_repository": "https://github.com/spotify/luigi",
+        "sources": {
+          "buggy": {
+            "url": "https://raw.githubusercontent.com/spotify/luigi/f538d1b3d473d542a19d508e5f7e0809b1dfe5ef/luigi/scheduler.py",
+            "sha256": "882ff0bbf4f8fcec86e53b7d390b7c91826c096e35dbaae0383ce8ebdd02dbec",
+            "path": "luigi/scheduler.py",
+            "excerpt": "upstream/luigi-010/buggy.txt",
+            "excerpt_sha256": "dfd724c8b650f306c22bad7b31684a8fd223a285348801a10a8ee5dd8cd23733",
+            "segments": [
+              {
+                "name": "Worker.get_pending_tasks",
+                "start_line": 295,
+                "end_line": 305,
+                "sha256": "dfd724c8b650f306c22bad7b31684a8fd223a285348801a10a8ee5dd8cd23733"
+              }
+            ]
+          },
+          "fixed": {
+            "url": "https://raw.githubusercontent.com/spotify/luigi/3c55acd2cd5cf9c6c760bec5bb3159e0bc48a614/luigi/scheduler.py",
+            "sha256": "22a9776816cce18a5c28aa300643655eef1855f7a87abf7310b62fa97c866818",
+            "path": "luigi/scheduler.py",
+            "excerpt": "upstream/luigi-010/fixed.txt",
+            "excerpt_sha256": "500573bd7e0d394581c200f4c5060581eedef11e5a380c95c13ceec6235b6f4f",
+            "segments": [
+              {
+                "name": "Worker.get_pending_tasks",
+                "start_line": 295,
+                "end_line": 305,
+                "sha256": "500573bd7e0d394581c200f4c5060581eedef11e5a380c95c13ceec6235b6f4f"
+              }
+            ]
+          },
+          "tests": {
+            "url": "https://raw.githubusercontent.com/spotify/luigi/3c55acd2cd5cf9c6c760bec5bb3159e0bc48a614/test/scheduler_test.py",
+            "sha256": "b3e15b4b3d8e5e7a9d25ac45d0a14237e6733fd2e2b626101b12018204955933",
+            "path": "test/scheduler_test.py",
+            "excerpt": "upstream/luigi-010/tests.txt",
+            "excerpt_sha256": "e48cdca93ac9095877f4a45967c6e1926a61b4a6c3771a770644fad9abb1e9c6",
+            "segments": [
+              {
+                "name": "SchedulerWorkerTest",
+                "start_line": 228,
+                "end_line": 244,
+                "sha256": "e48cdca93ac9095877f4a45967c6e1926a61b4a6c3771a770644fad9abb1e9c6"
+              }
+            ]
+          },
+          "support": {
+            "url": "https://raw.githubusercontent.com/spotify/luigi/3c55acd2cd5cf9c6c760bec5bb3159e0bc48a614/luigi/scheduler.py",
+            "sha256": "22a9776816cce18a5c28aa300643655eef1855f7a87abf7310b62fa97c866818",
+            "path": "luigi/scheduler.py",
+            "excerpt": "upstream/luigi-010/support.txt",
+            "excerpt_sha256": "bad0857e525b13f9799df2c8592550c7f5024264f18dbbf4f6e71ca129616a51",
+            "segments": [
+              {
+                "name": "SimpleTaskState.get_pending_tasks",
+                "start_line": 395,
+                "end_line": 397,
+                "sha256": "5aabcba0e27e110b12a030215e93cd1fedda1cf7b004ab15e687b775c2d1792a"
+              },
+              {
+                "name": "SimpleTaskState.num_pending_tasks",
+                "start_line": 406,
+                "end_line": 410,
+                "sha256": "ce5c32d8b70b8b6187c554224fd3dfc1f7fba097b016e32b8e7fa347ddf8986b"
+              }
+            ]
+          },
+          "license": {
+            "url": "https://raw.githubusercontent.com/spotify/luigi/3c55acd2cd5cf9c6c760bec5bb3159e0bc48a614/LICENSE",
+            "sha256": "c8d34301651ed562ca9ee51c469f57f790bec8fda57c697af66f7b16dc3e0d4c",
+            "path": "LICENSE",
+            "local_path": "licenses/luigi-010.txt"
+          }
+        }
+      }
+    },
+    {
+      "id": "tornado-005",
+      "split": "development",
+      "title": "Periodic deadline arithmetic with backward clock movement",
+      "instruction": "Advance a periodic timer for each supplied current time and return the deadlines. period_ms is positive; initial_deadline and current_times are seconds. If the previous deadline is at or before now, advance by the smallest positive whole number of periods that makes it strictly later than now. If now is earlier than the deadline, still advance the deadline by one period. Process the sequence in order, preserving the phase when skipping overrun cycles. Empty current_times returns []. This deterministic arithmetic task does not sleep, call a callback, or read a clock. Return floating-point seconds; the adapter normalizes numeric deadlines to float.",
+      "prefix": "# Development adapter from https://github.com/tornadoweb/tornado.\n# Attribution and license: licenses/tornado-005.txt\nimport math\n\nclass PeriodicCallback:\n",
+      "wrappers": {
+        "buggy": "def solve(period_ms, initial_deadline, current_times):\n    timer = PeriodicCallback()\n    timer.callback_time = period_ms\n    timer._next_timeout = initial_deadline\n    output = []\n    for now in current_times:\n        timer._update_next(now)\n        output.append(float(timer._next_timeout))\n    return output\n",
+        "fixed": "def solve(period_ms, initial_deadline, current_times):\n    timer = PeriodicCallback()\n    timer.callback_time = period_ms\n    timer._next_timeout = initial_deadline\n    output = []\n    for now in current_times:\n        timer._update_next(now)\n        output.append(float(timer._next_timeout))\n    return output\n"
+      },
+      "public_cases": [
+        {
+          "id": "backward",
+          "args": [
+            10000,
+            1000,
+            [
+              999,
+              998,
+              997
+            ]
+          ],
+          "expected": [
+            1010.0,
+            1020.0,
+            1030.0
+          ]
+        },
+        {
+          "id": "small-backward",
+          "args": [
+            1000,
+            10,
+            [
+              10,
+              10.5,
+              11.5
+            ]
+          ],
+          "expected": [
+            11.0,
+            12.0,
+            13.0
+          ]
+        },
+        {
+          "id": "normal",
+          "args": [
+            10000,
+            1000,
+            [
+              1000,
+              1010,
+              1020
+            ]
+          ],
+          "expected": [
+            1010.0,
+            1020.0,
+            1030.0
+          ]
+        },
+        {
+          "id": "overrun",
+          "args": [
+            10000,
+            1000,
+            [
+              1025,
+              1040
+            ]
+          ],
+          "expected": [
+            1030.0,
+            1050.0
+          ]
+        },
+        {
+          "id": "fractional",
+          "args": [
+            500,
+            0,
+            [
+              0,
+              0.5,
+              1
+            ]
+          ],
+          "expected": [
+            0.5,
+            1.0,
+            1.5
+          ]
+        },
+        {
+          "id": "empty",
+          "args": [
+            1000,
+            0,
+            []
+          ],
+          "expected": []
+        }
+      ],
+      "evaluator_cases": [
+        {
+          "id": "large-backward",
+          "args": [
+            2000,
+            100,
+            [
+              0,
+              50,
+              100
+            ]
+          ],
+          "expected": [
+            102.0,
+            104.0,
+            106.0
+          ]
+        },
+        {
+          "id": "quarter-period",
+          "args": [
+            250,
+            1,
+            [
+              0.5,
+              1.3,
+              1.49
+            ]
+          ],
+          "expected": [
+            1.25,
+            1.5,
+            1.75
+          ]
+        },
+        {
+          "id": "boundary",
+          "args": [
+            1000,
+            0,
+            [
+              1,
+              2,
+              3
+            ]
+          ],
+          "expected": [
+            2.0,
+            3.0,
+            4.0
+          ]
+        },
+        {
+          "id": "multiple-overruns",
+          "args": [
+            2000,
+            0,
+            [
+              5,
+              9,
+              9
+            ]
+          ],
+          "expected": [
+            6.0,
+            10.0,
+            12.0
+          ]
+        },
+        {
+          "id": "negative-times",
+          "args": [
+            1000,
+            -5,
+            [
+              -5,
+              -3.5,
+              -4
+            ]
+          ],
+          "expected": [
+            -4.0,
+            -3.0,
+            -2.0
+          ]
+        },
+        {
+          "id": "empty-positive",
+          "args": [
+            2000,
+            12,
+            []
+          ],
+          "expected": []
+        }
+      ],
+      "provenance": {
+        "kind": "adapted_real_bug_development",
+        "benchmark": "BugsInPy",
+        "benchmark_revision": "11c5f1eea954a42132cfd06bf257766a7963e0fd",
+        "benchmark_id": "tornado/5",
+        "scope": "Previously development-exposed ID; restricted adapter, not official project benchmark or holdout.",
+        "adaptations": [
+          "Preserve only the complete PeriodicCallback._update_next method, including its original comments.",
+          "Minimal class shell and explicit state replace the event loop and clocks; stdlib math only. This covers deadline arithmetic, not end-to-end timer delivery.",
+          "The JSON wrapper converts deadlines to float identically in buggy and fixed variants. Manually specified numeric expected values are encoded as floats; the historical verifier itself is unchanged."
+        ],
+        "buggy_commit": "2d4053daa56c609d642b214399e046671d4a593e",
+        "fixed_commit": "886643965b5cb782503d8d7b374b7a794ec2077b",
+        "upstream_repository": "https://github.com/tornadoweb/tornado",
+        "sources": {
+          "buggy": {
+            "url": "https://raw.githubusercontent.com/tornadoweb/tornado/2d4053daa56c609d642b214399e046671d4a593e/tornado/ioloop.py",
+            "sha256": "872021eea85a25a3d3b45d2b4758bbfcfda0cc580ead1bfa22ad084f71e17f46",
+            "path": "tornado/ioloop.py",
+            "excerpt": "upstream/tornado-005/buggy.txt",
+            "excerpt_sha256": "7c5fd8eb18beba0743f10c63dd3211674d7eabd3dd092a1f83475834333d733a",
+            "segments": [
+              {
+                "name": "PeriodicCallback._update_next",
+                "start_line": 1219,
+                "end_line": 1223,
+                "sha256": "7c5fd8eb18beba0743f10c63dd3211674d7eabd3dd092a1f83475834333d733a"
+              }
+            ]
+          },
+          "fixed": {
+            "url": "https://raw.githubusercontent.com/tornadoweb/tornado/886643965b5cb782503d8d7b374b7a794ec2077b/tornado/ioloop.py",
+            "sha256": "e10f07ff239ad843226fc807954fce47893f698058f71c437b91a3f215574d75",
+            "path": "tornado/ioloop.py",
+            "excerpt": "upstream/tornado-005/fixed.txt",
+            "excerpt_sha256": "894cd738cdb658157946e726d978770941e5d9f78532af6254fcdaa9a855265c",
+            "segments": [
+              {
+                "name": "PeriodicCallback._update_next",
+                "start_line": 1219,
+                "end_line": 1243,
+                "sha256": "894cd738cdb658157946e726d978770941e5d9f78532af6254fcdaa9a855265c"
+              }
+            ]
+          },
+          "tests": {
+            "url": "https://raw.githubusercontent.com/tornadoweb/tornado/886643965b5cb782503d8d7b374b7a794ec2077b/tornado/test/ioloop_test.py",
+            "sha256": "ed18d9df5aaaac8794a1a6755739a1202d05bd7cc073de12fb9abca7e2c61b14",
+            "path": "tornado/test/ioloop_test.py",
+            "excerpt": "upstream/tornado-005/tests.txt",
+            "excerpt_sha256": "abde000d2d6c81109f391596f0f4cdf77c23fa12fc52d99d17a7830ae9d60ceb",
+            "segments": [
+              {
+                "name": "TestPeriodicCallbackMath",
+                "start_line": 792,
+                "end_line": 846,
+                "sha256": "abde000d2d6c81109f391596f0f4cdf77c23fa12fc52d99d17a7830ae9d60ceb"
+              }
+            ]
+          },
+          "license": {
+            "url": "https://raw.githubusercontent.com/tornadoweb/tornado/886643965b5cb782503d8d7b374b7a794ec2077b/LICENSE",
+            "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+            "path": "LICENSE",
+            "local_path": "licenses/tornado-005.txt"
+          }
+        }
+      }
+    },
+    {
+      "id": "thefuck-022",
+      "split": "development",
+      "title": "Empty lazy command sequence and preserved ordering",
+      "instruction": "Observe a lazy command sequence using actions list, len, truthy or first, returning one result per action. commands contains unique script strings with distinct integer priorities. The first input command stays first; once realized, remaining commands are sorted by ascending priority. Empty sequences have list [], length 0 and false truthiness; first on empty raises IndexError. Repeated observations are stable. All side effects are None, and no command is executed. Duplicate scripts, equal priorities and side effects are outside scope.",
+      "prefix": "# Development adapter from https://github.com/nvbn/thefuck.\n# Attribution and license: licenses/thefuck-022.txt\ndef debug(*args, **kwargs):\n    pass\ndef format_stack():\n    return []\n\n",
+      "wrappers": {
+        "buggy": "def solve(commands, actions):\n    seq = SortedCorrectedCommandsSequence(iter(CorrectedCommand(script, None, priority) for script, priority in commands), {})\n    output = []\n    for action in actions:\n        if action == \"list\":\n            output.append([[c.script, c.priority] for c in seq])\n        elif action == \"len\":\n            output.append(len(seq))\n        elif action == \"truthy\":\n            output.append(bool(seq))\n        elif action == \"first\":\n            c = seq[0]\n            output.append([c.script, c.priority])\n        else:\n            raise ValueError(\"unknown observation\")\n    return output\n",
+        "fixed": "def solve(commands, actions):\n    seq = SortedCorrectedCommandsSequence(iter(CorrectedCommand(script, None, priority) for script, priority in commands), {})\n    output = []\n    for action in actions:\n        if action == \"list\":\n            output.append([[c.script, c.priority] for c in seq])\n        elif action == \"len\":\n            output.append(len(seq))\n        elif action == \"truthy\":\n            output.append(bool(seq))\n        elif action == \"first\":\n            c = seq[0]\n            output.append([c.script, c.priority])\n        else:\n            raise ValueError(\"unknown observation\")\n    return output\n"
+      },
+      "public_cases": [
+        {
+          "id": "empty-length",
+          "args": [
+            [],
+            [
+              "len"
+            ]
+          ],
+          "expected": [
+            0
+          ]
+        },
+        {
+          "id": "empty-list",
+          "args": [
+            [],
+            [
+              "list"
+            ]
+          ],
+          "expected": [
+            []
+          ]
+        },
+        {
+          "id": "empty-truth",
+          "args": [
+            [],
+            [
+              "truthy"
+            ]
+          ],
+          "expected": [
+            false
+          ]
+        },
+        {
+          "id": "single",
+          "args": [
+            [
+              [
+                "echo x",
+                10
+              ]
+            ],
+            [
+              "first",
+              "len",
+              "list"
+            ]
+          ],
+          "expected": [
+            [
+              "echo x",
+              10
+            ],
+            1,
+            [
+              [
+                "echo x",
+                10
+              ]
+            ]
+          ]
+        },
+        {
+          "id": "ordering",
+          "args": [
+            [
+              [
+                "head",
+                100
+              ],
+              [
+                "late",
+                30
+              ],
+              [
+                "early",
+                10
+              ]
+            ],
+            [
+              "list",
+              "len"
+            ]
+          ],
+          "expected": [
+            [
+              [
+                "head",
+                100
+              ],
+              [
+                "early",
+                10
+              ],
+              [
+                "late",
+                30
+              ]
+            ],
+            3
+          ]
+        },
+        {
+          "id": "lazy-first",
+          "args": [
+            [
+              [
+                "first",
+                90
+              ],
+              [
+                "rest",
+                5
+              ]
+            ],
+            [
+              "first",
+              "truthy"
+            ]
+          ],
+          "expected": [
+            [
+              "first",
+              90
+            ],
+            true
+          ]
+        }
+      ],
+      "evaluator_cases": [
+        {
+          "id": "empty-sequence",
+          "args": [
+            [],
+            [
+              "truthy",
+              "len",
+              "list"
+            ]
+          ],
+          "expected": [
+            false,
+            0,
+            []
+          ]
+        },
+        {
+          "id": "empty-repeat",
+          "args": [
+            [],
+            [
+              "list",
+              "list"
+            ]
+          ],
+          "expected": [
+            [],
+            []
+          ]
+        },
+        {
+          "id": "empty-first",
+          "args": [
+            [],
+            [
+              "first"
+            ]
+          ],
+          "raises": "IndexError"
+        },
+        {
+          "id": "list-then-first",
+          "args": [
+            [
+              [
+                "x",
+                3
+              ],
+              [
+                "z",
+                8
+              ],
+              [
+                "y",
+                1
+              ]
+            ],
+            [
+              "list",
+              "first"
+            ]
+          ],
+          "expected": [
+            [
+              [
+                "x",
+                3
+              ],
+              [
+                "y",
+                1
+              ],
+              [
+                "z",
+                8
+              ]
+            ],
+            [
+              "x",
+              3
+            ]
+          ]
+        },
+        {
+          "id": "repeat-length",
+          "args": [
+            [
+              [
+                "q",
+                0
+              ]
+            ],
+            [
+              "len",
+              "len",
+              "truthy"
+            ]
+          ],
+          "expected": [
+            1,
+            1,
+            true
+          ]
+        },
+        {
+          "id": "sort-tail",
+          "args": [
+            [
+              [
+                "z",
+                0
+              ],
+              [
+                "b",
+                2
+              ],
+              [
+                "a",
+                1
+              ]
+            ],
+            [
+              "len",
+              "list"
+            ]
+          ],
+          "expected": [
+            3,
+            [
+              [
+                "z",
+                0
+              ],
+              [
+                "a",
+                1
+              ],
+              [
+                "b",
+                2
+              ]
+            ]
+          ]
+        }
+      ],
+      "provenance": {
+        "kind": "adapted_real_bug_development",
+        "benchmark": "BugsInPy",
+        "benchmark_revision": "11c5f1eea954a42132cfd06bf257766a7963e0fd",
+        "benchmark_id": "thefuck/22",
+        "scope": "Previously development-exposed ID; restricted adapter, not official project benchmark or holdout.",
+        "adaptations": [
+          "Preserve complete CorrectedCommand and SortedCorrectedCommandsSequence classes; logging/stack formatting are explicit no-op diagnostics.",
+          "All commands are inert strings with None side effects. Restrict unique scripts and distinct priorities because unrelated duplicate/tie behavior is outside this empty-sequence bug. No shell execution."
+        ],
+        "buggy_commit": "faa7ee603057fa98c25507d30180c055d10d13d4",
+        "fixed_commit": "e2e8b6fc865452b4cfc1bed70e5b9b49807258ae",
+        "upstream_repository": "https://github.com/nvbn/thefuck",
+        "sources": {
+          "buggy": {
+            "url": "https://raw.githubusercontent.com/nvbn/thefuck/faa7ee603057fa98c25507d30180c055d10d13d4/thefuck/types.py",
+            "sha256": "1546a45638fadd7e44901090cea88b069a77dd19c06f0b6be4c3f0a5f23e25c6",
+            "path": "thefuck/types.py",
+            "excerpt": "upstream/thefuck-022/buggy.txt",
+            "excerpt_sha256": "3c098f33ed1febc171c109a0d3e2834fea154fdd89eaea06482c09bc60520d45",
+            "segments": [
+              {
+                "name": "CorrectedCommand",
+                "start_line": 11,
+                "end_line": 30,
+                "sha256": "9432729aaf4fca360ae36453d0a6bc346dd6f9cc67c8fece9158d3a28174f79b"
+              },
+              {
+                "name": "SortedCorrectedCommandsSequence",
+                "start_line": 53,
+                "end_line": 107,
+                "sha256": "440f9e42fbdb77873fa2e98c1c932b44fbd888e76f7b2851dbabbf9a0849f069"
+              }
+            ]
+          },
+          "fixed": {
+            "url": "https://raw.githubusercontent.com/nvbn/thefuck/e2e8b6fc865452b4cfc1bed70e5b9b49807258ae/thefuck/types.py",
+            "sha256": "22326913e59184e41d66ec6f3dff0951e53c648afa93c776fe2b0f6b9c99ff43",
+            "path": "thefuck/types.py",
+            "excerpt": "upstream/thefuck-022/fixed.txt",
+            "excerpt_sha256": "71ef5a6cf363fcb9e5d1b0986b9667e71703f54df844487ed61a4818f2f1af5c",
+            "segments": [
+              {
+                "name": "CorrectedCommand",
+                "start_line": 11,
+                "end_line": 30,
+                "sha256": "9432729aaf4fca360ae36453d0a6bc346dd6f9cc67c8fece9158d3a28174f79b"
+              },
+              {
+                "name": "SortedCorrectedCommandsSequence",
+                "start_line": 53,
+                "end_line": 108,
+                "sha256": "4bb7d2c6895f8cc7e0339f1eba714121a34b54150c0425c5074432f6163fdfa3"
+              }
+            ]
+          },
+          "tests": {
+            "url": "https://raw.githubusercontent.com/nvbn/thefuck/e2e8b6fc865452b4cfc1bed70e5b9b49807258ae/tests/test_types.py",
+            "sha256": "b34f2b9729d6722ef4491d035401c1ed5e3ca60db0cbcd22fd677a597d818b1c",
+            "path": "tests/test_types.py",
+            "excerpt": "upstream/thefuck-022/tests.txt",
+            "excerpt_sha256": "37920b8835198982ea5ffe85b31f649f207b990bb9d39a1abbae6cc7f8768cd5",
+            "segments": [
+              {
+                "name": "TestSortedCorrectedCommandsSequence",
+                "start_line": 21,
+                "end_line": 49,
+                "sha256": "37920b8835198982ea5ffe85b31f649f207b990bb9d39a1abbae6cc7f8768cd5"
+              }
+            ]
+          },
+          "license": {
+            "url": "https://raw.githubusercontent.com/nvbn/thefuck/e2e8b6fc865452b4cfc1bed70e5b9b49807258ae/LICENSE.md",
+            "sha256": "84da771f8c614fe890db097f0090404691f6c750776972ee63e68e10c7f43196",
+            "path": "LICENSE.md",
+            "local_path": "licenses/thefuck-022.txt"
+          }
+        }
+      }
+    },
+    {
+      "id": "thefuck-029",
+      "split": "development",
+      "title": "Default settings merge without overwriting configured values",
+      "instruction": "Return original settings, merged settings and attribute lookup values. Merge defaults only for keys absent from existing; existing values including False, zero, empty strings and None win. Do not mutate existing settings. Unset attribute lookups return None. Inputs use ordinary string keys that do not shadow dict methods; nested JSON values are preserved as values, not recursively merged.",
+      "prefix": "# Development adapter from https://github.com/nvbn/thefuck.\n# Attribution and license: licenses/thefuck-029.txt\n",
+      "wrappers": {
+        "buggy": "def solve(existing, defaults, lookups):\n    settings = Settings(existing)\n    merged = settings.update(**defaults)\n    return {\"original\": dict(settings), \"merged\": dict(merged), \"lookups\": [getattr(merged, key) for key in lookups]}\n",
+        "fixed": "def solve(existing, defaults, lookups):\n    settings = Settings(existing)\n    merged = settings.update(**defaults)\n    return {\"original\": dict(settings), \"merged\": dict(merged), \"lookups\": [getattr(merged, key) for key in lookups]}\n"
+      },
+      "public_cases": [
+        {
+          "id": "existing-wins",
+          "args": [
+            {
+              "key": "old"
+            },
+            {
+              "key": "new",
+              "other": 1
+            },
+            [
+              "key",
+              "other"
+            ]
+          ],
+          "expected": {
+            "original": {
+              "key": "old"
+            },
+            "merged": {
+              "key": "old",
+              "other": 1
+            },
+            "lookups": [
+              "old",
+              1
+            ]
+          }
+        },
+        {
+          "id": "false-wins",
+          "args": [
+            {
+              "enabled": false
+            },
+            {
+              "enabled": true
+            },
+            [
+              "enabled"
+            ]
+          ],
+          "expected": {
+            "original": {
+              "enabled": false
+            },
+            "merged": {
+              "enabled": false
+            },
+            "lookups": [
+              false
+            ]
+          }
+        },
+        {
+          "id": "empty-existing",
+          "args": [
+            {},
+            {
+              "n": 2
+            },
+            [
+              "n"
+            ]
+          ],
+          "expected": {
+            "original": {},
+            "merged": {
+              "n": 2
+            },
+            "lookups": [
+              2
+            ]
+          }
+        },
+        {
+          "id": "no-default",
+          "args": [
+            {
+              "x": 1
+            },
+            {},
+            [
+              "x",
+              "absent"
+            ]
+          ],
+          "expected": {
+            "original": {
+              "x": 1
+            },
+            "merged": {
+              "x": 1
+            },
+            "lookups": [
+              1,
+              null
+            ]
+          }
+        },
+        {
+          "id": "null-value",
+          "args": [
+            {
+              "v": null
+            },
+            {
+              "v": 8
+            },
+            [
+              "v"
+            ]
+          ],
+          "expected": {
+            "original": {
+              "v": null
+            },
+            "merged": {
+              "v": null
+            },
+            "lookups": [
+              null
+            ]
+          }
+        },
+        {
+          "id": "zero-value",
+          "args": [
+            {
+              "n": 0
+            },
+            {
+              "n": 4,
+              "p": 5
+            },
+            [
+              "n",
+              "p"
+            ]
+          ],
+          "expected": {
+            "original": {
+              "n": 0
+            },
+            "merged": {
+              "n": 0,
+              "p": 5
+            },
+            "lookups": [
+              0,
+              5
+            ]
+          }
+        }
+      ],
+      "evaluator_cases": [
+        {
+          "id": "empty-string",
+          "args": [
+            {
+              "text": ""
+            },
+            {
+              "text": "filled",
+              "k": 7
+            },
+            [
+              "text",
+              "k"
+            ]
+          ],
+          "expected": {
+            "original": {
+              "text": ""
+            },
+            "merged": {
+              "text": "",
+              "k": 7
+            },
+            "lookups": [
+              "",
+              7
+            ]
+          }
+        },
+        {
+          "id": "nested-existing",
+          "args": [
+            {
+              "cfg": {
+                "a": 1
+              }
+            },
+            {
+              "cfg": {
+                "b": 2
+              }
+            },
+            [
+              "cfg"
+            ]
+          ],
+          "expected": {
+            "original": {
+              "cfg": {
+                "a": 1
+              }
+            },
+            "merged": {
+              "cfg": {
+                "a": 1
+              }
+            },
+            "lookups": [
+              {
+                "a": 1
+              }
+            ]
+          }
+        },
+        {
+          "id": "both-empty",
+          "args": [
+            {},
+            {},
+            [
+              "missing"
+            ]
+          ],
+          "expected": {
+            "original": {},
+            "merged": {},
+            "lookups": [
+              null
+            ]
+          }
+        },
+        {
+          "id": "new-list",
+          "args": [
+            {
+              "mode": "x"
+            },
+            {
+              "nums": [
+                1,
+                2
+              ]
+            },
+            [
+              "nums",
+              "mode"
+            ]
+          ],
+          "expected": {
+            "original": {
+              "mode": "x"
+            },
+            "merged": {
+              "mode": "x",
+              "nums": [
+                1,
+                2
+              ]
+            },
+            "lookups": [
+              [
+                1,
+                2
+              ],
+              "x"
+            ]
+          }
+        },
+        {
+          "id": "two-collisions",
+          "args": [
+            {
+              "a": 1,
+              "b": 2
+            },
+            {
+              "a": 9,
+              "b": 8,
+              "c": 3
+            },
+            [
+              "c",
+              "a",
+              "b"
+            ]
+          ],
+          "expected": {
+            "original": {
+              "a": 1,
+              "b": 2
+            },
+            "merged": {
+              "a": 1,
+              "b": 2,
+              "c": 3
+            },
+            "lookups": [
+              3,
+              1,
+              2
+            ]
+          }
+        },
+        {
+          "id": "list-existing",
+          "args": [
+            {
+              "vals": []
+            },
+            {
+              "vals": [
+                1
+              ]
+            },
+            [
+              "vals"
+            ]
+          ],
+          "expected": {
+            "original": {
+              "vals": []
+            },
+            "merged": {
+              "vals": []
+            },
+            "lookups": [
+              []
+            ]
+          }
+        }
+      ],
+      "provenance": {
+        "kind": "adapted_real_bug_development",
+        "benchmark": "BugsInPy",
+        "benchmark_revision": "11c5f1eea954a42132cfd06bf257766a7963e0fd",
+        "benchmark_id": "thefuck/29",
+        "scope": "Previously development-exposed ID; restricted adapter, not official project benchmark or holdout.",
+        "adaptations": [
+          "Preserve complete Settings class, with a JSON observation wrapper exposing both original and returned mappings.",
+          "Ordinary non-method-shadowing string keys and nonrecursive merge; no global application configuration."
+        ],
+        "buggy_commit": "4a2f869c6d6ef03d8d7ada1121cc6631d7ef979e",
+        "fixed_commit": "88831c424f569e6a55fc98883d3eeecc7d425b18",
+        "upstream_repository": "https://github.com/nvbn/thefuck",
+        "sources": {
+          "buggy": {
+            "url": "https://raw.githubusercontent.com/nvbn/thefuck/4a2f869c6d6ef03d8d7ada1121cc6631d7ef979e/thefuck/types.py",
+            "sha256": "b6eeeb7a9272c048a6969911634755013dde9aedd2080321dba652707a4df7f6",
+            "path": "thefuck/types.py",
+            "excerpt": "upstream/thefuck-029/buggy.txt",
+            "excerpt_sha256": "4c36d9045c1223bea07599f4625b6e89ba56dd7f73e3aa258236c52c6c1c7b44",
+            "segments": [
+              {
+                "name": "Settings",
+                "start_line": 20,
+                "end_line": 29,
+                "sha256": "4c36d9045c1223bea07599f4625b6e89ba56dd7f73e3aa258236c52c6c1c7b44"
+              }
+            ]
+          },
+          "fixed": {
+            "url": "https://raw.githubusercontent.com/nvbn/thefuck/88831c424f569e6a55fc98883d3eeecc7d425b18/thefuck/types.py",
+            "sha256": "b49394c296c400909559fbe86d42fe3b7e94d58b8cdcf854d4078e5c39894cde",
+            "path": "thefuck/types.py",
+            "excerpt": "upstream/thefuck-029/fixed.txt",
+            "excerpt_sha256": "a631c249035c10d77cc9ad61010d87ae243da48b27c75da9b774f0feb31f2e05",
+            "segments": [
+              {
+                "name": "Settings",
+                "start_line": 20,
+                "end_line": 31,
+                "sha256": "a631c249035c10d77cc9ad61010d87ae243da48b27c75da9b774f0feb31f2e05"
+              }
+            ]
+          },
+          "tests": {
+            "url": "https://raw.githubusercontent.com/nvbn/thefuck/88831c424f569e6a55fc98883d3eeecc7d425b18/tests/test_types.py",
+            "sha256": "8c4d92a4f83a17092d4113fa52c1da9362ae876aa308ade234ffd295bb718a2a",
+            "path": "tests/test_types.py",
+            "excerpt": "upstream/thefuck-029/tests.txt",
+            "excerpt_sha256": "8bd915329619c3c947322c58a0e096be52192ceabf86be019f4e431352169a26",
+            "segments": [
+              {
+                "name": "test_update_settings",
+                "start_line": 12,
+                "end_line": 17,
+                "sha256": "8bd915329619c3c947322c58a0e096be52192ceabf86be019f4e431352169a26"
+              }
+            ]
+          },
+          "license": {
+            "url": "https://raw.githubusercontent.com/nvbn/thefuck/88831c424f569e6a55fc98883d3eeecc7d425b18/LICENSE.md",
+            "sha256": "84da771f8c614fe890db097f0090404691f6c750776972ee63e68e10c7f43196",
+            "path": "LICENSE.md",
+            "local_path": "licenses/thefuck-029.txt"
+          }
+        }
+      }
+    }
+  ]
+}

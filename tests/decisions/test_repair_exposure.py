@@ -14,6 +14,10 @@ def test_published_exposure_registry_matches_authoritative_sources():
     assert len(registry["known_exposed_projects"]) == 10
     for bug in ("black/1", "tqdm/1", "PySnooper/1", "cookiecutter/3", "luigi/3", "thefuck/20"):
         assert assess_candidate(registry, bug, project_disjoint=False) == "reject_known_development_bug"
+    for bug in ("scrapy/2", "scrapy/36", "luigi/10", "tornado/5", "thefuck/22", "thefuck/29"):
+        assert any(e['source'].endswith('/development-broader/pool.json')
+            and e['level'] == 'published_development_adapter'
+            for e in registry['exposure_evidence'][bug])
 
 
 def test_aliases_cannot_evade_bug_or_project_exclusion():

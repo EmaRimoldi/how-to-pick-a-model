@@ -5,8 +5,8 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `59`
-- Default-safe commands: `49`
+- Commands indexed: `60`
+- Default-safe commands: `50`
 - Missing required maintenance actions: `0`
 
 ## Safety Classes
@@ -16,7 +16,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `cluster-setup` | 1 |
 | `live-local` | 6 |
 | `mixed-cli` | 3 |
-| `read-only-analysis` | 31 |
+| `read-only-analysis` | 32 |
 | `safe-figure-regeneration` | 6 |
 | `safe-local` | 10 |
 | `safe-local-optional-tool` | 2 |
@@ -26,7 +26,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | Surface | Commands |
 | --- | --- |
 | `maintenance` | 6 |
-| `scripts` | 46 |
+| `scripts` | 47 |
 | `scripts/cluster` | 1 |
 | `scripts/maintenance` | 6 |
 
@@ -64,6 +64,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/check_repair_contract_progress.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit live request identities and accounting without inspecting treatments. |
 | `python scripts/collect_repair_contract_probe.py` | scripts | `read-only-analysis` | yes | inspect script before running | Run only an explicitly authorized and frozen output-contract study. |
 | `python scripts/prepare_contrastive_diagnostics.py` | scripts | `read-only-analysis` | yes | inspect script before running | Offline qualification on all source tasks in a complete development archive. No API requests or evaluator execution. Output is development engineering evidence. |
+| `python scripts/prepare_failure_coverage_diagnostics.py` | scripts | `read-only-analysis` | yes | inspect script before running | Qualify bounded first/all-failure traces on a development pool; no API calls. |
 | `python scripts/prepare_feedback_routing.py` | scripts | `read-only-analysis` | yes | inspect script before running | Verify the pinned BigCodeBench download and reproduce reference-only eligibility. |
 | `python scripts/prepare_repair_contract_probe.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare a reviewable, offline-only Gemma response-contract diagnostic. |
 | `python scripts/prepare_repair_contrastive_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare exact public-contrast requests offline; no dispatch or funding. |

@@ -1,0 +1,10 @@
+class Settings(dict):
+
+    def __getattr__(self, item):
+        return self.get(item)
+
+    def update(self, **kwargs):
+        """Returns new settings with new values from `kwargs`."""
+        conf = dict(self)
+        conf.update(kwargs)
+        return Settings(conf)

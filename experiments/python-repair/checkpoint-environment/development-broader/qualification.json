@@ -1,0 +1,2418 @@
+{
+  "schema_version": 1,
+  "status": "offline_development_qualification",
+  "created_utc": "2026-10-27T04:55:13.107069+00:00",
+  "pool_sha256": "a391412193749cf6b3c20472cdb703f27fc97c222edcea4b6a77165bfa8e006b",
+  "runtime": {
+    "python": "3.13.12 | packaged by conda-forge | (main, Feb  5 2026, 06:11:05) [Clang 19.1.7 ]",
+    "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+    "sha256": {
+      "fixture/evaluator.json": "76ca5c1151af9e6a8a817cf02304d96439beb88862cadd0d5447d866c884e0de",
+      "fixture/reference.json": "4012039d2ad4bb4eaee0078a407741ab67c132d6962fcab1ac65daedf572416a",
+      "fixture/task.json": "9062996802abc9324c7c31b7c7a91ad94cf708f5d82b56df8f282b734f7f4f9b",
+      "runtime/__init__.py": "54b577b505955fe21dc1b841a71c75aaf63f57d2bd1e8bf3bece36d30dd1518e",
+      "runtime/cli.py": "5556f65f077aa0aa9e6f726fa2db55f13448df14828b16fb5e16f14dd556d3bc",
+      "runtime/contract_collection.py": "9b741389b81a90d0c19d0f56c6b0fc2db8eb10ea40c50b01db565c94032bb543",
+      "runtime/contract_progress.py": "06aecca95f8cd9830f79ba5deafaf71d109da4f5ea07047a5e7a37b43ba63459",
+      "runtime/contracts.py": "564dca4d5f8092c7abca00acbe99aefb7c7f6caf3dd78968ac2ad46ff21e17e8",
+      "runtime/contrastive_diagnostics.py": "3e1ddd9a0ba82b7b6b80d3faee7f6fd97569edb9cc688b62320f4111e4626cd3",
+      "runtime/contrastive_study.py": "490d121b92ce2aa78f8af0da807fef6a3678a27e274c7a32301c66ad80926df2",
+      "runtime/diagnostic_study.py": "2be9ba6ddad2498731a2235d6358a0fdafa079b1620328cc010223cbb2092c2f",
+      "runtime/diagnostics.py": "1113b8a912f6c2da28bb6621e271c49e66da5a3c23d029fb747b167b2e4d0817",
+      "runtime/environment.py": "2aab361949bd6eb3c7b9e9a89820512119c0e747c2d62519e667706c9295cdba",
+      "runtime/exposure.py": "b32ab8caaf71afb1259ab6a61f121d3246a21e3aea72611277ec806424f85752",
+      "runtime/extension_information_study.py": "3d954bf3c39ceabf1541df59ccfcbfd5a753a9b269dbcba9bfc52905a7f8dae1",
+      "runtime/failure_coverage_diagnostics.py": "e77908954ccb75349fc6a4396f43c4a476d0f5da277c6380beecdd9b55e03fe0",
+      "runtime/independent_information_study.py": "9afdae3c4e0b5e62938716e2591203d253c4a9bf8b12bafb071b3ffc9c10e45c",
+      "runtime/independent_streaming.py": "0849840712e9ebe93870d329c0e6326921ded9cd1e6e39cb71c62b2c5cc0664f",
+      "runtime/independent_transport.py": "9040b9de46ac976770aa71c00ea19f8c2d8fe9cce538b1ef64335b38eaa10d44",
+      "runtime/information_continuation.py": "c5318f23b27d249f4829f934b8693d444fdd6a0c517760cd538dbf9b47cb4710",
+      "runtime/interface_study.py": "93713d32e7275d3363b42c236688746767841d15246d3010ebb4d11f49b060a4",
+      "runtime/pilot.py": "fa75a3ff61c5b23e32e941723f7a7bb7bfa728eef6ef32311a5af41ce407e960",
+      "runtime/pool.py": "85d0296abcf538ff09341b8ab2ceb3299772a2068de1a06cc22ed882c141a8ce",
+      "runtime/provider.py": "84828ba103a8bee26a96409472d6822e000d8889d56ed483d5453f158578e409",
+      "runtime/qwen_information_study.py": "a896d2244ed6770b7c7dfd2436dc4e1cbfb9d02175d7994dbf3cf63b4d605c43",
+      "runtime/records.py": "642c4b99de9da461f28901788fd16c398696cdc13a64ac2ba0965262493c2181",
+      "runtime/solver_study.py": "0d33025b1fb0951174583a46f8b6950bc421699b3046849d4d53853923bfdfc8",
+      "runtime/stream_information_audit.py": "fb341c6876c159e51842e0a169ebee2e32e034a83374dbd9971294f20f21ca2a",
+      "runtime/stream_information_study.py": "0a8d532b487a61cadb58f51dd92d71c291ef5aff4017deb721e0b5a699d63853",
+      "runtime/streaming.py": "cc86649d0776d22fab1f225a515afb713f00ff0938f70b49a89fd417a4bada04",
+      "runtime/trace_worker.py": "feaa355b1bd3c83a47d758f01e95f11c7872522a5151924152eb23f34732ef99",
+      "runtime/transport_probe.py": "59f5140598e0ca8f9a8b3143ecfc0182139e2b13b3a5b9eba8a2035573fc5b09",
+      "runtime/verification.py": "301f2af2cfbffa509a9dacfd2f920b7e7ef8bcaab68c8d56a050a3c054dcf0b4",
+      "runtime/verifier.py": "01dffb237da4f13ad85e8b2b472f679948940f9bc01ce7dd9a558994882e10f4",
+      "runtime/worker.py": "c604e16a51fc44898fcfebf6e74c1bc01636e9f29c6486e78bcb93d2b8bfa858"
+    }
+  },
+  "selected": 6,
+  "qualified": 6,
+  "tasks": [
+    {
+      "id": "scrapy-002",
+      "task_hash": "6247c9490c23cc0fa16e27870d95300d2bda3aab226f9ec22371895e871eeffe",
+      "engineering_qualified": true,
+      "checks": {
+        "initial": {
+          "public": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          }
+        },
+        "reference": {
+          "public": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          }
+        }
+      },
+      "outcomes": {
+        "reference": {
+          "public": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "unlimited-one",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    [
+                      "a",
+                      1
+                    ]
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "zero-capacity",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    [
+                      "a",
+                      1
+                    ],
+                    [
+                      "b",
+                      2
+                    ]
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "eviction",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    [
+                      "b",
+                      2
+                    ],
+                    [
+                      "c",
+                      3
+                    ]
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "within-capacity",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    [
+                      "a",
+                      1
+                    ],
+                    [
+                      "b",
+                      2
+                    ]
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "empty",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              },
+              {
+                "id": "one-capacity",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    [
+                      "b",
+                      2
+                    ]
+                  ]
+                },
+                "passed": true
+              }
+            ]
+          },
+          "evaluator": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "unlimited-many",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    [
+                      "x",
+                      0
+                    ],
+                    [
+                      "y",
+                      false
+                    ],
+                    [
+                      "z",
+                      null
+                    ]
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "zero-one",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    [
+                      "q",
+                      []
+                    ]
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "three-evicts",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    [
+                      "b",
+                      2
+                    ],
+                    [
+                      "c",
+                      3
+                    ],
+                    [
+                      "d",
+                      4
+                    ]
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "one-many",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    [
+                      "w",
+                      10
+                    ]
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "empty-finite",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              },
+              {
+                "id": "zero-empty",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              }
+            ]
+          }
+        },
+        "initial": {
+          "evaluator": {
+            "passed_cases": 4,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "unlimited-many",
+                "observed": {
+                  "exception": "TypeError",
+                  "status": "exception"
+                },
+                "passed": false
+              },
+              {
+                "id": "zero-one",
+                "observed": {
+                  "exception": "KeyError",
+                  "status": "exception"
+                },
+                "passed": false
+              },
+              {
+                "id": "three-evicts",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    [
+                      "b",
+                      2
+                    ],
+                    [
+                      "c",
+                      3
+                    ],
+                    [
+                      "d",
+                      4
+                    ]
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "one-many",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    [
+                      "w",
+                      10
+                    ]
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "empty-finite",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              },
+              {
+                "id": "zero-empty",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              }
+            ]
+          },
+          "public": {
+            "passed_cases": 4,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "unlimited-one",
+                "observed": {
+                  "exception": "TypeError",
+                  "status": "exception"
+                },
+                "passed": false
+              },
+              {
+                "id": "zero-capacity",
+                "observed": {
+                  "exception": "KeyError",
+                  "status": "exception"
+                },
+                "passed": false
+              },
+              {
+                "id": "eviction",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    [
+                      "b",
+                      2
+                    ],
+                    [
+                      "c",
+                      3
+                    ]
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "within-capacity",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    [
+                      "a",
+                      1
+                    ],
+                    [
+                      "b",
+                      2
+                    ]
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "empty",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              },
+              {
+                "id": "one-capacity",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    [
+                      "b",
+                      2
+                    ]
+                  ]
+                },
+                "passed": true
+              }
+            ]
+          }
+        }
+      },
+      "completion_sha256": "fac8674b234b38b5e714bea2b08d632bbec563622f597b54f0199512f4905f6a",
+      "audit": {
+        "status": "verified",
+        "objects": 11,
+        "events": 9,
+        "event_head": "3d528cd025b552aac17f251d14610aaa3358aff17e9586380cc3e01ff75105b6"
+      }
+    },
+    {
+      "id": "scrapy-036",
+      "task_hash": "cb9c920ebd1d9085203de26628655921c9baf1abf3dac50af4af1b14deaf1481",
+      "engineering_qualified": true,
+      "checks": {
+        "initial": {
+          "public": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          }
+        },
+        "reference": {
+          "public": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          }
+        }
+      },
+      "outcomes": {
+        "reference": {
+          "public": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "settings-none",
+                "observed": {
+                  "exception": "TypeError",
+                  "status": "exception"
+                },
+                "passed": true
+              },
+              {
+                "id": "crawler-none",
+                "observed": {
+                  "exception": "TypeError",
+                  "status": "exception"
+                },
+                "passed": true
+              },
+              {
+                "id": "direct-none",
+                "observed": {
+                  "exception": "TypeError",
+                  "status": "exception"
+                },
+                "passed": true
+              },
+              {
+                "id": "no-config",
+                "observed": {
+                  "exception": "ValueError",
+                  "status": "exception"
+                },
+                "passed": true
+              },
+              {
+                "id": "crawler-priority",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "args": [
+                      7
+                    ],
+                    "kwargs": {
+                      "k": "v"
+                    },
+                    "source": {
+                      "y": 2
+                    },
+                    "via": "crawler"
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "adopt-settings",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "args": [],
+                    "kwargs": {},
+                    "source": {
+                      "p": 3
+                    },
+                    "via": "settings"
+                  }
+                },
+                "passed": true
+              }
+            ]
+          },
+          "evaluator": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "settings-null-with-args",
+                "observed": {
+                  "exception": "TypeError",
+                  "status": "exception"
+                },
+                "passed": true
+              },
+              {
+                "id": "direct-null-with-args",
+                "observed": {
+                  "exception": "TypeError",
+                  "status": "exception"
+                },
+                "passed": true
+              },
+              {
+                "id": "zero-valid",
+                "observed": {
+                  "status": "returned",
+                  "value": 0
+                },
+                "passed": true
+              },
+              {
+                "id": "false-valid",
+                "observed": {
+                  "status": "returned",
+                  "value": false
+                },
+                "passed": true
+              },
+              {
+                "id": "without-crawler",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "args": [
+                      1,
+                      2
+                    ],
+                    "kwargs": {
+                      "z": 5
+                    },
+                    "source": {
+                      "a": 4
+                    },
+                    "via": "settings"
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "direct-forwarding",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "args": [
+                      "x"
+                    ],
+                    "kwargs": {
+                      "n": null
+                    },
+                    "source": null,
+                    "via": "direct"
+                  }
+                },
+                "passed": true
+              }
+            ]
+          }
+        },
+        "initial": {
+          "evaluator": {
+            "passed_cases": 4,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "settings-null-with-args",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": false
+              },
+              {
+                "id": "direct-null-with-args",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": false
+              },
+              {
+                "id": "zero-valid",
+                "observed": {
+                  "status": "returned",
+                  "value": 0
+                },
+                "passed": true
+              },
+              {
+                "id": "false-valid",
+                "observed": {
+                  "status": "returned",
+                  "value": false
+                },
+                "passed": true
+              },
+              {
+                "id": "without-crawler",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "args": [
+                      1,
+                      2
+                    ],
+                    "kwargs": {
+                      "z": 5
+                    },
+                    "source": {
+                      "a": 4
+                    },
+                    "via": "settings"
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "direct-forwarding",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "args": [
+                      "x"
+                    ],
+                    "kwargs": {
+                      "n": null
+                    },
+                    "source": null,
+                    "via": "direct"
+                  }
+                },
+                "passed": true
+              }
+            ]
+          },
+          "public": {
+            "passed_cases": 3,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "settings-none",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": false
+              },
+              {
+                "id": "crawler-none",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": false
+              },
+              {
+                "id": "direct-none",
+                "observed": {
+                  "status": "returned",
+                  "value": null
+                },
+                "passed": false
+              },
+              {
+                "id": "no-config",
+                "observed": {
+                  "exception": "ValueError",
+                  "status": "exception"
+                },
+                "passed": true
+              },
+              {
+                "id": "crawler-priority",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "args": [
+                      7
+                    ],
+                    "kwargs": {
+                      "k": "v"
+                    },
+                    "source": {
+                      "y": 2
+                    },
+                    "via": "crawler"
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "adopt-settings",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "args": [],
+                    "kwargs": {},
+                    "source": {
+                      "p": 3
+                    },
+                    "via": "settings"
+                  }
+                },
+                "passed": true
+              }
+            ]
+          }
+        }
+      },
+      "completion_sha256": "0a95cf3a19fb89becc259d37c47ca1ac1f95b3b8d62c4a945215b231d11a6e8b",
+      "audit": {
+        "status": "verified",
+        "objects": 11,
+        "events": 9,
+        "event_head": "ade2215254bcd65879df7275e1ff76cccb329f6a4ae29dfd2135eaa4b89e4927"
+      }
+    },
+    {
+      "id": "luigi-010",
+      "task_hash": "dded07cec83efa8d836d5a6a11d7cfe7b4b1ab4a6b61f0c1a0e83f4ee3411f20",
+      "engineering_qualified": true,
+      "checks": {
+        "initial": {
+          "public": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          }
+        },
+        "reference": {
+          "public": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          }
+        }
+      },
+      "outcomes": {
+        "reference": {
+          "evaluator": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "done-worker",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              },
+              {
+                "id": "mixed-owners",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "a",
+                    "b"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "unassigned",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              },
+              {
+                "id": "shared-running",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "x"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "no-own",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              },
+              {
+                "id": "finished-only",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              }
+            ]
+          },
+          "public": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "many-done",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "p"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "all-other",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              },
+              {
+                "id": "small-worker",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "own"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "running",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "r"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "shared",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "s"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "empty",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              }
+            ]
+          }
+        },
+        "initial": {
+          "public": {
+            "passed_cases": 4,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "many-done",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "other",
+                    "p"
+                  ]
+                },
+                "passed": false
+              },
+              {
+                "id": "all-other",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "other"
+                  ]
+                },
+                "passed": false
+              },
+              {
+                "id": "small-worker",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "own"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "running",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "r"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "shared",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "s"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "empty",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              }
+            ]
+          },
+          "evaluator": {
+            "passed_cases": 3,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "done-worker",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "x",
+                    "y"
+                  ]
+                },
+                "passed": false
+              },
+              {
+                "id": "mixed-owners",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "a",
+                    "b",
+                    "c"
+                  ]
+                },
+                "passed": false
+              },
+              {
+                "id": "unassigned",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "a"
+                  ]
+                },
+                "passed": false
+              },
+              {
+                "id": "shared-running",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    "x"
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "no-own",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              },
+              {
+                "id": "finished-only",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              }
+            ]
+          }
+        }
+      },
+      "completion_sha256": "251d265ed07f1a3bbc4772c70e3717ad1b1a3a1d02a2d43c03241d94d0cc8f61",
+      "audit": {
+        "status": "verified",
+        "objects": 11,
+        "events": 9,
+        "event_head": "e9e0042060334cfdd274287ddf96cedb059446d178162ce651f9462861e43922"
+      }
+    },
+    {
+      "id": "tornado-005",
+      "task_hash": "0438fd784f3331a1096e782d5e3f110f5f2f2976914cde59c0eccdf83c590e04",
+      "engineering_qualified": true,
+      "checks": {
+        "initial": {
+          "public": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          }
+        },
+        "reference": {
+          "public": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          }
+        }
+      },
+      "outcomes": {
+        "initial": {
+          "public": {
+            "passed_cases": 4,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "backward",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    1000.0,
+                    1000.0,
+                    1000.0
+                  ]
+                },
+                "passed": false
+              },
+              {
+                "id": "small-backward",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    11.0,
+                    11.0,
+                    12.0
+                  ]
+                },
+                "passed": false
+              },
+              {
+                "id": "normal",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    1010.0,
+                    1020.0,
+                    1030.0
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "overrun",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    1030.0,
+                    1050.0
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "fractional",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    0.5,
+                    1.0,
+                    1.5
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "empty",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              }
+            ]
+          },
+          "evaluator": {
+            "passed_cases": 2,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "large-backward",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    100.0,
+                    100.0,
+                    102.0
+                  ]
+                },
+                "passed": false
+              },
+              {
+                "id": "quarter-period",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    1.0,
+                    1.5,
+                    1.5
+                  ]
+                },
+                "passed": false
+              },
+              {
+                "id": "boundary",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    2.0,
+                    3.0,
+                    4.0
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "multiple-overruns",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    6.0,
+                    10.0,
+                    10.0
+                  ]
+                },
+                "passed": false
+              },
+              {
+                "id": "negative-times",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    -4.0,
+                    -3.0,
+                    -3.0
+                  ]
+                },
+                "passed": false
+              },
+              {
+                "id": "empty-positive",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              }
+            ]
+          }
+        },
+        "reference": {
+          "evaluator": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "large-backward",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    102.0,
+                    104.0,
+                    106.0
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "quarter-period",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    1.25,
+                    1.5,
+                    1.75
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "boundary",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    2.0,
+                    3.0,
+                    4.0
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "multiple-overruns",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    6.0,
+                    10.0,
+                    12.0
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "negative-times",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    -4.0,
+                    -3.0,
+                    -2.0
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "empty-positive",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              }
+            ]
+          },
+          "public": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "backward",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    1010.0,
+                    1020.0,
+                    1030.0
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "small-backward",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    11.0,
+                    12.0,
+                    13.0
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "normal",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    1010.0,
+                    1020.0,
+                    1030.0
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "overrun",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    1030.0,
+                    1050.0
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "fractional",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    0.5,
+                    1.0,
+                    1.5
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "empty",
+                "observed": {
+                  "status": "returned",
+                  "value": []
+                },
+                "passed": true
+              }
+            ]
+          }
+        }
+      },
+      "completion_sha256": "16ad4c2ecb800bc3de66ed9d43ad3ffcc7c3bafc92dc6ab55b6c6cc8050efcee",
+      "audit": {
+        "status": "verified",
+        "objects": 11,
+        "events": 9,
+        "event_head": "92fc5c71febc2e0dbaa27cca0fd9484165e479f70cb20368559aea33eb8eaa98"
+      }
+    },
+    {
+      "id": "thefuck-022",
+      "task_hash": "025e651679cf94964040f47415b8159c22a4f7027dd8f3c9744eadfa429ddd31",
+      "engineering_qualified": true,
+      "checks": {
+        "initial": {
+          "public": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          }
+        },
+        "reference": {
+          "public": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          }
+        }
+      },
+      "outcomes": {
+        "reference": {
+          "public": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "empty-length",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    0
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "empty-list",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    []
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "empty-truth",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    false
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "single",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    [
+                      "echo x",
+                      10
+                    ],
+                    1,
+                    [
+                      [
+                        "echo x",
+                        10
+                      ]
+                    ]
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "ordering",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    [
+                      [
+                        "head",
+                        100
+                      ],
+                      [
+                        "early",
+                        10
+                      ],
+                      [
+                        "late",
+                        30
+                      ]
+                    ],
+                    3
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "lazy-first",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    [
+                      "first",
+                      90
+                    ],
+                    true
+                  ]
+                },
+                "passed": true
+              }
+            ]
+          },
+          "evaluator": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "empty-sequence",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    false,
+                    0,
+                    []
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "empty-repeat",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    [],
+                    []
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "empty-first",
+                "observed": {
+                  "exception": "IndexError",
+                  "status": "exception"
+                },
+                "passed": true
+              },
+              {
+                "id": "list-then-first",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    [
+                      [
+                        "x",
+                        3
+                      ],
+                      [
+                        "y",
+                        1
+                      ],
+                      [
+                        "z",
+                        8
+                      ]
+                    ],
+                    [
+                      "x",
+                      3
+                    ]
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "repeat-length",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    1,
+                    1,
+                    true
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "sort-tail",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    3,
+                    [
+                      [
+                        "z",
+                        0
+                      ],
+                      [
+                        "a",
+                        1
+                      ],
+                      [
+                        "b",
+                        2
+                      ]
+                    ]
+                  ]
+                },
+                "passed": true
+              }
+            ]
+          }
+        },
+        "initial": {
+          "public": {
+            "passed_cases": 4,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "empty-length",
+                "observed": {
+                  "exception": "IndexError",
+                  "status": "exception"
+                },
+                "passed": false
+              },
+              {
+                "id": "empty-list",
+                "observed": {
+                  "exception": "IndexError",
+                  "status": "exception"
+                },
+                "passed": false
+              },
+              {
+                "id": "empty-truth",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    false
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "single",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    [
+                      "echo x",
+                      10
+                    ],
+                    1,
+                    [
+                      [
+                        "echo x",
+                        10
+                      ]
+                    ]
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "ordering",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    [
+                      [
+                        "head",
+                        100
+                      ],
+                      [
+                        "early",
+                        10
+                      ],
+                      [
+                        "late",
+                        30
+                      ]
+                    ],
+                    3
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "lazy-first",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    [
+                      "first",
+                      90
+                    ],
+                    true
+                  ]
+                },
+                "passed": true
+              }
+            ]
+          },
+          "evaluator": {
+            "passed_cases": 4,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "empty-sequence",
+                "observed": {
+                  "exception": "IndexError",
+                  "status": "exception"
+                },
+                "passed": false
+              },
+              {
+                "id": "empty-repeat",
+                "observed": {
+                  "exception": "IndexError",
+                  "status": "exception"
+                },
+                "passed": false
+              },
+              {
+                "id": "empty-first",
+                "observed": {
+                  "exception": "IndexError",
+                  "status": "exception"
+                },
+                "passed": true
+              },
+              {
+                "id": "list-then-first",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    [
+                      [
+                        "x",
+                        3
+                      ],
+                      [
+                        "y",
+                        1
+                      ],
+                      [
+                        "z",
+                        8
+                      ]
+                    ],
+                    [
+                      "x",
+                      3
+                    ]
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "repeat-length",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    1,
+                    1,
+                    true
+                  ]
+                },
+                "passed": true
+              },
+              {
+                "id": "sort-tail",
+                "observed": {
+                  "status": "returned",
+                  "value": [
+                    3,
+                    [
+                      [
+                        "z",
+                        0
+                      ],
+                      [
+                        "a",
+                        1
+                      ],
+                      [
+                        "b",
+                        2
+                      ]
+                    ]
+                  ]
+                },
+                "passed": true
+              }
+            ]
+          }
+        }
+      },
+      "completion_sha256": "b9c8f2acea44f8a7a3579858864737f6b5ee6feaecc65a511a9c26676764d113",
+      "audit": {
+        "status": "verified",
+        "objects": 11,
+        "events": 9,
+        "event_head": "3a141633bc3be74a3776eec01dbdf7707ea3922d128cdaaf9fd6f3f5105e8173"
+      }
+    },
+    {
+      "id": "thefuck-029",
+      "task_hash": "540cadbd307461288b0b7f6a1f9ba5ab65fd4b2535f4db1878b27e16ad2c9104",
+      "engineering_qualified": true,
+      "checks": {
+        "initial": {
+          "public": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              false,
+              false
+            ],
+            "repeatable": true
+          }
+        },
+        "reference": {
+          "public": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          },
+          "evaluator": {
+            "passed": [
+              true,
+              true
+            ],
+            "repeatable": true
+          }
+        }
+      },
+      "outcomes": {
+        "reference": {
+          "public": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "existing-wins",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "lookups": [
+                      "old",
+                      1
+                    ],
+                    "merged": {
+                      "key": "old",
+                      "other": 1
+                    },
+                    "original": {
+                      "key": "old"
+                    }
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "false-wins",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "lookups": [
+                      false
+                    ],
+                    "merged": {
+                      "enabled": false
+                    },
+                    "original": {
+                      "enabled": false
+                    }
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "empty-existing",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "lookups": [
+                      2
+                    ],
+                    "merged": {
+                      "n": 2
+                    },
+                    "original": {}
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "no-default",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "lookups": [
+                      1,
+                      null
+                    ],
+                    "merged": {
+                      "x": 1
+                    },
+                    "original": {
+                      "x": 1
+                    }
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "null-value",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "lookups": [
+                      null
+                    ],
+                    "merged": {
+                      "v": null
+                    },
+                    "original": {
+                      "v": null
+                    }
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "zero-value",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "lookups": [
+                      0,
+                      5
+                    ],
+                    "merged": {
+                      "n": 0,
+                      "p": 5
+                    },
+                    "original": {
+                      "n": 0
+                    }
+                  }
+                },
+                "passed": true
+              }
+            ]
+          },
+          "evaluator": {
+            "passed_cases": 6,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "empty-string",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "lookups": [
+                      "",
+                      7
+                    ],
+                    "merged": {
+                      "k": 7,
+                      "text": ""
+                    },
+                    "original": {
+                      "text": ""
+                    }
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "nested-existing",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "lookups": [
+                      {
+                        "a": 1
+                      }
+                    ],
+                    "merged": {
+                      "cfg": {
+                        "a": 1
+                      }
+                    },
+                    "original": {
+                      "cfg": {
+                        "a": 1
+                      }
+                    }
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "both-empty",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "lookups": [
+                      null
+                    ],
+                    "merged": {},
+                    "original": {}
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "new-list",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "lookups": [
+                      [
+                        1,
+                        2
+                      ],
+                      "x"
+                    ],
+                    "merged": {
+                      "mode": "x",
+                      "nums": [
+                        1,
+                        2
+                      ]
+                    },
+                    "original": {
+                      "mode": "x"
+                    }
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "two-collisions",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "lookups": [
+                      3,
+                      1,
+                      2
+                    ],
+                    "merged": {
+                      "a": 1,
+                      "b": 2,
+                      "c": 3
+                    },
+                    "original": {
+                      "a": 1,
+                      "b": 2
+                    }
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "list-existing",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "lookups": [
+                      []
+                    ],
+                    "merged": {
+                      "vals": []
+                    },
+                    "original": {
+                      "vals": []
+                    }
+                  }
+                },
+                "passed": true
+              }
+            ]
+          }
+        },
+        "initial": {
+          "evaluator": {
+            "passed_cases": 2,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "empty-string",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "lookups": [
+                      "filled",
+                      7
+                    ],
+                    "merged": {
+                      "k": 7,
+                      "text": "filled"
+                    },
+                    "original": {
+                      "text": ""
+                    }
+                  }
+                },
+                "passed": false
+              },
+              {
+                "id": "nested-existing",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "lookups": [
+                      {
+                        "b": 2
+                      }
+                    ],
+                    "merged": {
+                      "cfg": {
+                        "b": 2
+                      }
+                    },
+                    "original": {
+                      "cfg": {
+                        "a": 1
+                      }
+                    }
+                  }
+                },
+                "passed": false
+              },
+              {
+                "id": "both-empty",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "lookups": [
+                      null
+                    ],
+                    "merged": {},
+                    "original": {}
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "new-list",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "lookups": [
+                      [
+                        1,
+                        2
+                      ],
+                      "x"
+                    ],
+                    "merged": {
+                      "mode": "x",
+                      "nums": [
+                        1,
+                        2
+                      ]
+                    },
+                    "original": {
+                      "mode": "x"
+                    }
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "two-collisions",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "lookups": [
+                      3,
+                      9,
+                      8
+                    ],
+                    "merged": {
+                      "a": 9,
+                      "b": 8,
+                      "c": 3
+                    },
+                    "original": {
+                      "a": 1,
+                      "b": 2
+                    }
+                  }
+                },
+                "passed": false
+              },
+              {
+                "id": "list-existing",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "lookups": [
+                      [
+                        1
+                      ]
+                    ],
+                    "merged": {
+                      "vals": [
+                        1
+                      ]
+                    },
+                    "original": {
+                      "vals": []
+                    }
+                  }
+                },
+                "passed": false
+              }
+            ]
+          },
+          "public": {
+            "passed_cases": 2,
+            "total_cases": 6,
+            "cases": [
+              {
+                "id": "existing-wins",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "lookups": [
+                      "new",
+                      1
+                    ],
+                    "merged": {
+                      "key": "new",
+                      "other": 1
+                    },
+                    "original": {
+                      "key": "old"
+                    }
+                  }
+                },
+                "passed": false
+              },
+              {
+                "id": "false-wins",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "lookups": [
+                      true
+                    ],
+                    "merged": {
+                      "enabled": true
+                    },
+                    "original": {
+                      "enabled": false
+                    }
+                  }
+                },
+                "passed": false
+              },
+              {
+                "id": "empty-existing",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "lookups": [
+                      2
+                    ],
+                    "merged": {
+                      "n": 2
+                    },
+                    "original": {}
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "no-default",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "lookups": [
+                      1,
+                      null
+                    ],
+                    "merged": {
+                      "x": 1
+                    },
+                    "original": {
+                      "x": 1
+                    }
+                  }
+                },
+                "passed": true
+              },
+              {
+                "id": "null-value",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "lookups": [
+                      8
+                    ],
+                    "merged": {
+                      "v": 8
+                    },
+                    "original": {
+                      "v": null
+                    }
+                  }
+                },
+                "passed": false
+              },
+              {
+                "id": "zero-value",
+                "observed": {
+                  "status": "returned",
+                  "value": {
+                    "lookups": [
+                      4,
+                      5
+                    ],
+                    "merged": {
+                      "n": 4,
+                      "p": 5
+                    },
+                    "original": {
+                      "n": 0
+                    }
+                  }
+                },
+                "passed": false
+              }
+            ]
+          }
+        }
+      },
+      "completion_sha256": "e8928ea1829ea153b86b81822b2b253286bbd49adefa2443b9165bb13ce87b7a",
+      "audit": {
+        "status": "verified",
+        "objects": 11,
+        "events": 9,
+        "event_head": "095614dcc22b327fd1e1f14ff57dc87e1e16e97ad6e70a8f774c12a908370b33"
+      }
+    }
+  ],
+  "api_calls": 0,
+  "api_spend_usd": "0",
+  "model_results": false,
+  "evaluation_ready": false,
+  "limitations": [
+    "Adapted function-level bugs, not official BugsInPy scores.",
+    "Both finite suites are published development data; not exhaustive correctness.",
+    "No model difficulty, recoverability, generalization or action-value evidence."
+  ]
+}

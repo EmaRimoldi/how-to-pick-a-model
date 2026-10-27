@@ -1,0 +1,10 @@
+    def get_pending_tasks(self):
+        return itertools.chain.from_iterable(six.itervalues(self._status_tasks[status])
+                                             for status in [PENDING, RUNNING])
+
+
+    def num_pending_tasks(self):
+        """
+        Return how many tasks are PENDING + RUNNING. O(1).
+        """
+        return len(self._status_tasks[PENDING]) + len(self._status_tasks[RUNNING])

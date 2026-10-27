@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `738`
-- Bytes indexed: `64.0M`
+- Files indexed: `780`
+- Bytes indexed: `64.7M`
 
 ## Canonical Entrypoints
 
@@ -48,12 +48,12 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 464 | 59.0M |
+| `experiments` | 503 | 59.6M |
 | `docs` | 53 | 2.6M |
-| `src` | 107 | 996.8K |
+| `src` | 108 | 1001.2K |
 | `uv.lock` | 1 | 937.0K |
-| `tests` | 48 | 343.1K |
-| `scripts` | 57 | 148.0K |
+| `tests` | 49 | 348.4K |
+| `scripts` | 58 | 152.7K |
 | `.github` | 5 | 3.3K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
@@ -63,10 +63,10 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 217 | 1.5M |
-| `.json` | 186 | 6.7M |
-| `.md` | 115 | 636.7K |
-| `.txt` | 79 | 373.1K |
+| `.py` | 220 | 1.5M |
+| `.json` | 198 | 7.2M |
+| `.md` | 117 | 649.2K |
+| `.txt` | 104 | 420.3K |
 | `.jsonl` | 45 | 36.7M |
 | `.png` | 29 | 4.0M |
 | `.zip` | 17 | 10.7M |
@@ -100,6 +100,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/mbpp-plus/context-value-transfer/README.md`
 - `experiments/mbpp-plus/context-value-transfer/results/replication-20261022/README.md`
 - `experiments/python-repair/checkpoint-environment/README.md`
+- `experiments/python-repair/checkpoint-environment/development-broader/README.md`
 - `experiments/python-repair/checkpoint-environment/development-extension/README.md`
 - `experiments/python-repair/checkpoint-environment/development/README.md`
 - `experiments/python-repair/checkpoint-environment/results/capability-comparison-20261026/README.md`
@@ -150,6 +151,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/plot_repair_qwen_information.py`
 - `scripts/plot_repair_solver.py`
 - `scripts/prepare_contrastive_diagnostics.py`
+- `scripts/prepare_failure_coverage_diagnostics.py`
 - `scripts/prepare_feedback_routing.py`
 - `scripts/prepare_python_repair.py`
 - `scripts/prepare_repair_contract_probe.py`

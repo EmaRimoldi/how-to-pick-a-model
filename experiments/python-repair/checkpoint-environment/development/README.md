@@ -122,6 +122,13 @@ function/patch families still require review before a future evaluation freeze.
 No holdout is selected by these commands. To update source records, regenerate
 the registry with `--write` and review the resulting diff.
 
+The separately qualified [broader six-task pool](../development-broader/README.md)
+now records published adapters for six IDs already in this registry. It adds
+cache, factory, worker-allocation, deadline, command-sequence and settings
+behavior without consuming another project group for development. Known totals
+remain 174 IDs and ten projects; this does not certify the remaining candidates
+as untouched.
+
 ## What this establishes
 
 The fixtures can expose their historical defects and recognize the supplied

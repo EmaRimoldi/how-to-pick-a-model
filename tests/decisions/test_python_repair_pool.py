@@ -13,7 +13,8 @@ from vao.repair.environment import RepairTask
 POOL = Path(__file__).resolve().parents[2] / "experiments/python-repair/checkpoint-environment/development"
 
 
-@pytest.mark.parametrize("pool,count", [(POOL, 12), (POOL.parent / "development-extension", 3)])
+@pytest.mark.parametrize("pool,count", [(POOL, 12), (POOL.parent / "development-extension", 3),
+    (POOL.parent / "development-broader", 6)])
 def test_real_pool_rebuild_is_deterministic_and_executable_source_is_only_data(tmp_path, pool, count):
     first = build_pool(pool, tmp_path / "first")
     second = build_pool(pool, tmp_path / "second")

@@ -30,6 +30,13 @@ alongside the
 All arms already see the public tests and expected values; runtime traces are
 the intervention, not new oracle labels.
 
+The next [coverage candidate](FAILURE-COVERAGE-DESIGN.md) is now prepared offline:
+six additional [development adapters](development-broader/README.md) across four
+already exposed projects pass qualification with their original fixes. All have
+multiple public failures. First/all-failure traces preserve the same core prompt
+and match ordinary execution. This is zero-call engineering evidence; model
+difficulty, repeated acquisition benefit and selector value remain untested.
+
 The [separate earlier streaming calibration](results/information-stream-stopped-20261026/README.md)
 remains interrupted and inconclusive: 1/64 responses, 63 missing outcomes, and
 primary bounds −96.875 to +100 points. Its frozen gate and missing cells remain
