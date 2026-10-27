@@ -1,0 +1,112 @@
+{
+  "report_sha256": "b88f5992857e439fcbed83c768bf28a4c8e30614a292fca9e13a2a937977e2e8",
+  "plot_source_sha256": "64f9e4da72fa7f67a75c9cd423288a31a30402a39970967a2c02dd4c0de9789f",
+  "image_sha256": "59abcc4433b3b68746c6539a9c98bcb381ee0ba91f1ef8de5a027e11c31853d0",
+  "figure_data": {
+    "complete": true,
+    "arms": [
+      {
+        "arm": "focused",
+        "committed_usd": "0.01192604",
+        "counterfactual_prefix_usd": "0.00329760",
+        "diagnostic_executions_per_deployment_sum": 0,
+        "diagnostic_seconds_per_deployment_sum": 0,
+        "false_positives": 2,
+        "known_usd": "0.01192604",
+        "missing": 0,
+        "observed": 24,
+        "planned": 24,
+        "public_passes": 8,
+        "regressions": 5,
+        "response_evaluator_verification_seconds_sum": 8.604445249889977,
+        "response_public_verification_seconds_sum": 9.139517666888423,
+        "source_public_verification_seconds_per_deployment_sum": 8.119529249612242,
+        "success_bounds": [
+          0.25,
+          0.25
+        ],
+        "successes": 6,
+        "unusable_responses": 0
+      },
+      {
+        "arm": "single_trace",
+        "committed_usd": "0.01475424",
+        "counterfactual_prefix_usd": "0.00329760",
+        "diagnostic_executions_per_deployment_sum": 48,
+        "diagnostic_seconds_per_deployment_sum": 3.1460983771830797,
+        "false_positives": 3,
+        "known_usd": "0.01475424",
+        "missing": 0,
+        "observed": 24,
+        "planned": 24,
+        "public_passes": 12,
+        "regressions": 2,
+        "response_evaluator_verification_seconds_sum": 8.454780457308516,
+        "response_public_verification_seconds_sum": 8.941912501235493,
+        "source_public_verification_seconds_per_deployment_sum": 8.119529249612242,
+        "success_bounds": [
+          0.375,
+          0.375
+        ],
+        "successes": 9,
+        "unusable_responses": 0
+      },
+      {
+        "arm": "paired_trace",
+        "committed_usd": "0.01476588",
+        "counterfactual_prefix_usd": "0.00329760",
+        "diagnostic_executions_per_deployment_sum": 96,
+        "diagnostic_seconds_per_deployment_sum": 5.761234005563892,
+        "false_positives": 2,
+        "known_usd": "0.01476588",
+        "missing": 0,
+        "observed": 24,
+        "planned": 24,
+        "public_passes": 11,
+        "regressions": 3,
+        "response_evaluator_verification_seconds_sum": 8.48221195791848,
+        "response_public_verification_seconds_sum": 9.105785539373755,
+        "source_public_verification_seconds_per_deployment_sum": 8.119529249612242,
+        "success_bounds": [
+          0.375,
+          0.375
+        ],
+        "successes": 9,
+        "unusable_responses": 0
+      }
+    ],
+    "contrasts": [
+      {
+        "label": "Paired \u2212 baseline (primary)",
+        "mean": 0.125,
+        "bounds": [
+          0.041666666666666664,
+          0.25
+        ],
+        "primary": true
+      },
+      {
+        "label": "Paired \u2212 single",
+        "mean": 0.0,
+        "bounds": [
+          -0.16666666666666666,
+          0.20833333333333331
+        ],
+        "primary": false
+      },
+      {
+        "label": "Single \u2212 baseline",
+        "mean": 0.125,
+        "bounds": [
+          -0.041666666666666664,
+          0.29166666666666663
+        ],
+        "primary": false
+      }
+    ],
+    "interval_semantics": "descriptive 95% bug bootstrap",
+    "fixture": false,
+    "cap_exceeded": false
+  },
+  "synthetic_render_fixture": false
+}

@@ -1,5 +1,22 @@
 # Recovery decisions: related work and claim limits
 
+## Information timing and sequential selection — 2026-10-27 UTC
+
+The [primary-source follow-up](../experiments/python-repair/checkpoint-environment/INFORMATION-ACCESS-REVIEW.md)
+adds VeruSteer (learned repair-target choice), Experimental Settings in LLM-Based
+Program Repair (explicit information contracts), EviACT (staged execution checks)
+and LEARN2FIX (costly trusted-oracle queries). These are related precedents, not
+our replications or proof of a novelty gap. Already visible public expected values
+cannot be counted as newly acquired information. A future diagnostic query must
+have a credible deployment access model and compete with fixed strategies that
+can run all permitted tests, with their real costs included.
+
+The [completed three-arm trace study](../experiments/python-repair/checkpoint-environment/results/contrastive-calibration-20261026/README.md)
+failed its development repeatability screen. Neither its positive aggregate
+contrast nor this literature review permits selector training or establishes
+held-out policy value.
+
+
 ## Diagnostic-acquisition amendment — 2026-10-26
 
 The closed Gemma controls motivate a narrower information-acquisition experiment,

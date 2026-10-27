@@ -1,5 +1,18 @@
 # Research goal amendment: acquire evidence before another repair?
 
+**Latest verified status (2026-10-27 UTC):** the
+[three-arm calibration](results/contrastive-calibration-20261026/README.md)
+completed 72 responses. Baseline / single / paired traces achieved 6 / 9 / 9
+complete repairs out of 24 each. The paired advantage is +3, 0, 0 across draws;
+the prospective development screen fails despite a positive aggregate difference.
+All 144 saved evaluations reproduce. The collector is closed, no selector is
+trained, and cumulative commitment is $0.20640271 / $0.60 with thirteen old reserves.
+The [post hoc audit](results/contrastive-calibration-20261026/POSTHOC.md) finds
+partial repairs and unresolved preservation requirements. Next: review acquisition
+timing and coverage before separately specifying any revised intervention. The
+historical progression below is retained.
+
+
 Status: user-directed amendment after the closed 4B/12B/27B development studies.
 The user asked to redefine the goal from the observed failures and the literature,
 then proceed. This supersedes the immediate continue/restart-selector milestone;

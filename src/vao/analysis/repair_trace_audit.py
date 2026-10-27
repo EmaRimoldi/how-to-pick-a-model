@@ -85,6 +85,25 @@ def trace_metrics(task):
     }
 
 
+def diagnostic_metrics(task):
+    """Keep the historical single-trace schema; inspect both contrastive records."""
+    if 'diagnostic' in task:
+        return {'trace': trace_metrics(task)}
+    diagnostics = task['diagnostics']
+    if not task['eligible']:
+        if any(d['available'] or d['records'] for d in diagnostics.values()):
+            raise ValueError('Untriggered source unexpectedly has runtime records')
+        return {'trace': {'available': False}, 'passing_trace': {'available': False}}
+    single = diagnostics['single_trace']['records']
+    paired = diagnostics['paired_trace']['records']
+    if len(single) != 1 or len(paired) != 2 or single[0] != paired[0]:
+        raise ValueError('Contrastive arms must share the same failure trace')
+    if [r['role'] for r in paired] != ['failure', 'passing']:
+        raise ValueError('Contrastive record roles differ')
+    return {key: trace_metrics({'public': task['public'], 'diagnostic': record})
+        for key, record in zip(('trace', 'passing_trace'), paired)}
+
+
 def transitions(baseline, current):
     """Missing evaluation is not a failed test or a measured regression."""
     if current is None:
@@ -159,7 +178,7 @@ def summarize(source):
         tasks = [{'task_index': i, 'task': t['public']['task_id'], 'eligible': t['eligible'],
             'eligibility_reason': t['eligibility_reason'], 'source_full_pass': t['source_full_pass'],
             'source_public_failed_cases': [c['id'] for c in t['source_public_result']['cases'] if not c['passed']],
-            'trace': trace_metrics(t)} for i, t in enumerate(packet['tasks'])]
+            **diagnostic_metrics(t)} for i, t in enumerate(packet['tasks'])]
     def group(scoped):
         return {'observed': len(scoped), 'valid': sum(c['artifact_valid'] for c in scoped),
             'edit_categories': dict(sorted(Counter(c['edit_category'] for c in scoped).items())),

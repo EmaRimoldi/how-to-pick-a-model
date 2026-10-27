@@ -6,7 +6,7 @@ import ast
 
 import pytest
 
-from vao.analysis.repair_trace_audit import bounded_values, structural_ast, summarize, syntax_id, trace_metrics, transitions
+from vao.analysis.repair_trace_audit import bounded_values, diagnostic_metrics, structural_ast, summarize, syntax_id, trace_metrics, transitions
 
 
 def test_markers_count_occurrences_without_inventing_hidden_types():
@@ -76,3 +76,31 @@ def test_terminal_archive_preserves_every_arm_source_and_response(tmp_path):
     (tmp_path / 'evidence.zip').write_bytes((source / 'evidence.zip').read_bytes() + b'tamper')
     with pytest.raises(ValueError, match='Archive hash'):
         summarize(tmp_path)
+
+
+def test_contrastive_archive_retains_both_traces_and_untriggered_sources():
+    source = Path(__file__).resolve().parents[2] / 'experiments/python-repair/checkpoint-environment/results/contrastive-calibration-20261026'
+    result = summarize(source)
+    assert result == json.loads((source / 'posthoc-audit.json').read_text())
+    assert len(result['cells']) == 72
+    assert len(result['tasks']) == 12
+    assert sum(t['eligible'] for t in result['tasks']) == 8
+    assert {a: g['observed'] for a, g in result['arms'].items()} == {
+        'focused': 24, 'single_trace': 24, 'paired_trace': 24}
+    for task in result['tasks']:
+        if task['eligible']:
+            assert task['trace']['available'] and task['passing_trace']['available']
+            assert task['trace']['case_id'] in task['source_public_failed_cases']
+            assert task['passing_trace']['case_id'] not in task['source_public_failed_cases']
+        else:
+            assert task['trace'] == task['passing_trace'] == {'available': False}
+
+
+def test_untriggered_contrastive_metadata_is_not_an_acquired_trace():
+    task = {'eligible': False, 'diagnostics': {
+        'single_trace': {'available': False, 'records': [], 'reason': 'no_public_failure'},
+        'paired_trace': {'available': False, 'records': [], 'reason': 'no_public_failure'}}}
+    assert diagnostic_metrics(task) == {'trace': {'available': False}, 'passing_trace': {'available': False}}
+    task['diagnostics']['paired_trace']['records'] = [{'unexpected': 'record'}]
+    with pytest.raises(ValueError, match='runtime records'):
+        diagnostic_metrics(task)

@@ -9,8 +9,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `8`
-- Script entrypoints indexed: `52`
-- Code modules indexed: `99`
+- Script entrypoints indexed: `53`
+- Code modules indexed: `100`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `6`
@@ -180,6 +180,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/audit_repair_trigger_coverage.py` | python | Audit only closed 27B source checkpoints, never ongoing model outcomes. |
 | `scripts/check_repair_contract_progress.py` | python | Audit live request identities and accounting without inspecting treatments. |
 | `scripts/collect_repair_contract_probe.py` | python | Run only an explicitly authorized and frozen output-contract study. |
+| `scripts/plot_repair_contrastive_study.py` | python | Plot audited terminal contrastive-trace results, without model calls. |
 | `scripts/plot_repair_extension_information.py` | python | Plot the prespecified two-arm terminal report, never inspect a live collection. |
 | `scripts/plot_repair_information.py` | python | Plot the frozen information report and separate post hoc edit audit, offline. |
 | `scripts/plot_repair_interface.py` | python | Plot all four terminal repair-interface conditions; never read a live collection. |
@@ -263,12 +264,13 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | saved-evidence analysis | `src/vao/analysis/repair_artifacts.py` | Post hoc structural-edit diagnostic for a closed repair bank; zero model calls. | same_ast, diagnose, main |
 | saved-evidence analysis | `src/vao/analysis/repair_calibration.py` | Audit terminal repair-calibration segments and report descriptive diagnostics. No model calls, training, stopping decisions or claim of held-out policy value. | read_json, lineage, group_estimate, mean, descriptive_interval, analyze, render, export_evidence |
 | saved-evidence analysis | `src/vao/analysis/repair_contrastive.py` | Prespecified complete-task comparisons for the three-arm public-contrast study. | screen, interval, summarize, render, main |
+| saved-evidence analysis | `src/vao/analysis/repair_contrastive_plot.py` | Terminal three-arm report visualization; never reads raw collection outcomes. Accepts only terminal, source-bound reports or explicitly marked rendering fixtures. | close, prepare, plot, main |
 | saved-evidence analysis | `src/vao/analysis/repair_information.py` | Frozen descriptive analysis of public trace acquisition on failed checkpoints. | interval, summarize, render, main |
 | saved-evidence analysis | `src/vao/analysis/repair_interface.py` | Prespecified terminal analysis of the four repair-interface conditions. | linear_bounds, interval, summarize, render, main |
 | saved-evidence analysis | `src/vao/analysis/repair_missingness.py` | Finite selected-cell bounds; no collection, model calls or policy fitting. A lower screen passes only when every binary completion of missing cells would pass the original efficacy criteria. It never imputes outcomes or changes a closed study's complete-bank rule. Draws are nested within predeclared bugs. | Criteria, evaluate |
 | saved-evidence analysis | `src/vao/analysis/repair_solver.py` | Terminal-only coding-solver compatibility report; no selector or model comparison. | interval, summarize, render, main |
 | saved-evidence analysis | `src/vao/analysis/repair_stagnation.py` | Post hoc edit audit of a terminal information archive; never execute candidates. | syntax, classify, summarize, main |
-| saved-evidence analysis | `src/vao/analysis/repair_trace_audit.py` | Post hoc terminal-bank audit; inspect inert evidence, never execute candidates. | structural_ast, syntax_id, bounded_values, trace_metrics, transitions, summarize, main |
+| saved-evidence analysis | `src/vao/analysis/repair_trace_audit.py` | Post hoc terminal-bank audit; inspect inert evidence, never execute candidates. | structural_ast, syntax_id, bounded_values, trace_metrics, diagnostic_metrics, transitions, summarize, main |
 | saved-evidence analysis | `src/vao/analysis/report_feedback_routing.py` | Publish a completed feedback-only bank, audited statistics and static figures. | report_text, accounting_diagnostics, diagnostic_text, plot, diagnostic_plot, publish, main |
 | saved-evidence analysis | `src/vao/analysis/verify_feedback_evidence.py` | Verify published BigCodeBench evidence offline without executing candidate code. | equivalent, checked_path, checksum_audit, verify_interim, source_audit, verify, main |
 | verified orchestration runtime | `src/vao/decisions/bigcode.py` | Pinned, standard-library BigCodeBench subset and sandbox reference audit. | sha, stdlib_task, shingles, similarity, BigCodeVerifier, audit_tasks |

@@ -5,8 +5,8 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `58`
-- Default-safe commands: `48`
+- Commands indexed: `59`
+- Default-safe commands: `49`
 - Missing required maintenance actions: `0`
 
 ## Safety Classes
@@ -17,7 +17,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `live-local` | 6 |
 | `mixed-cli` | 3 |
 | `read-only-analysis` | 31 |
-| `safe-figure-regeneration` | 5 |
+| `safe-figure-regeneration` | 6 |
 | `safe-local` | 10 |
 | `safe-local-optional-tool` | 2 |
 
@@ -26,7 +26,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | Surface | Commands |
 | --- | --- |
 | `maintenance` | 6 |
-| `scripts` | 45 |
+| `scripts` | 46 |
 | `scripts/cluster` | 1 |
 | `scripts/maintenance` | 6 |
 
@@ -46,6 +46,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/maintenance/validate_agent_readiness.py` | scripts/maintenance | `safe-local` | yes | python | Validate that the repository is ready for LLM-agent navigation. |
 | `python scripts/maintenance/workflow.py paper-build` | maintenance | `safe-local-optional-tool` | yes | pdflatex, bibtex | Compile retained manuscripts out of tree with pdflatex and bibtex. |
 | `python scripts/maintenance/check_paper_build.py` | scripts/maintenance | `safe-local-optional-tool` | yes | pdflatex, bibtex | Compile active paper TeX sources into an out-of-tree build directory. |
+| `python scripts/plot_repair_contrastive_study.py` | scripts | `safe-figure-regeneration` | yes | checked-in evidence | Plot audited terminal contrastive-trace results, without model calls. |
 | `python scripts/plot_repair_extension_information.py` | scripts | `safe-figure-regeneration` | yes | checked-in evidence | Plot the prespecified two-arm terminal report, never inspect a live collection. |
 | `python scripts/plot_repair_information.py` | scripts | `safe-figure-regeneration` | yes | checked-in evidence | Plot the frozen information report and separate post hoc edit audit, offline. |
 | `python scripts/plot_repair_interface.py` | scripts | `safe-figure-regeneration` | yes | checked-in evidence | Plot all four terminal repair-interface conditions; never read a live collection. |

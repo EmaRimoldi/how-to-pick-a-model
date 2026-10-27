@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `723`
-- Bytes indexed: `62.0M`
+- Files indexed: `738`
+- Bytes indexed: `64.0M`
 
 ## Canonical Entrypoints
 
@@ -48,12 +48,12 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 451 | 57.0M |
+| `experiments` | 464 | 59.0M |
 | `docs` | 53 | 2.6M |
-| `src` | 106 | 985.2K |
+| `src` | 107 | 996.8K |
 | `uv.lock` | 1 | 937.0K |
-| `tests` | 48 | 341.5K |
-| `scripts` | 56 | 147.9K |
+| `tests` | 48 | 343.1K |
+| `scripts` | 57 | 148.0K |
 | `.github` | 5 | 3.3K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
@@ -63,13 +63,13 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 215 | 1.5M |
-| `.json` | 179 | 6.2M |
-| `.md` | 111 | 612.4K |
+| `.py` | 217 | 1.5M |
+| `.json` | 186 | 6.7M |
+| `.md` | 115 | 636.7K |
 | `.txt` | 79 | 373.1K |
 | `.jsonl` | 45 | 36.7M |
-| `.png` | 28 | 3.9M |
-| `.zip` | 16 | 9.3M |
+| `.png` | 29 | 4.0M |
+| `.zip` | 17 | 10.7M |
 | `.svg` | 10 | 1.1M |
 | `.pdf` | 8 | 184.3K |
 | `.sh` | 8 | 15.5K |
@@ -107,6 +107,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/python-repair/checkpoint-environment/results/contract-diagnostic-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/contract-gemma12b-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/contract-gemma27b-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/contrastive-calibration-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/contrastive-preparation-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/diagnostic-audit-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/gemma4b-calibration-20261026/README.md`
@@ -142,6 +143,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/maintenance/build_repo_inventory.py`
 - `scripts/maintenance/check_paper_build.py`
 - `scripts/maintenance/validate_agent_readiness.py`
+- `scripts/plot_repair_contrastive_study.py`
 - `scripts/plot_repair_extension_information.py`
 - `scripts/plot_repair_information.py`
 - `scripts/plot_repair_interface.py`

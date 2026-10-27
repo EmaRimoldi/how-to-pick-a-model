@@ -1,25 +1,34 @@
 # Python repair checkpoint environment
 
-**Current result: the [independent-cell trace calibration](results/information-independent-20261026/README.md)
-completed all 64 responses and failed its prespecified benefit screen.** Focused
-feedback achieved 12/32 full repairs, versus 8/32 with the same feedback plus a
-bounded public trace. The primary difference is −12.5 percentage points; the
-descriptive 95% bug-bootstrap interval is [−31.25, +3.125] points. Trace-arm API
-spending was higher. This eight-bug exposed development bank does not establish
-population harm or an equal-total-budget policy result. No selector is trained;
-the intervention needs review before another prospective study.
+**Current result: the [three-arm contrastive calibration](results/contrastive-calibration-20261026/README.md)
+completed all 72 responses and failed its prespecified development screen.**
+Code plus public feedback produced 6/24 complete repairs, a failing trace 9/24,
+and failing/passing traces 9/24. The primary paired-trace difference is +12.5
+percentage points, with descriptive 95% bug-bootstrap interval [+4.167, +25.0].
+Its net advantage across draw indices is +3, 0, 0: the prospective repeatability
+criterion is not met. This exposed eight-bug bank does not establish a held-out
+or equal-total-resource policy benefit. No selector is trained.
 
-The [post hoc audit](results/information-independent-posthoc-20261026/README.md)
-now retains all 64 responses and finds incomplete repair/preservation as well as
-bounded information in six traces; widespread event truncation and literal
-copying do not dominate this bank. The [revised diagnostic design](CONTRASTIVE-DIAGNOSTIC-DESIGN.md)
-compares failing and already-passing public executions, with a single-trace
-control. Its [offline qualification](results/contrastive-preparation-20261026/README.md)
-passes on all eight triggered sources, with zero model calls. This is preparation,
-not a benefit result or selector. A separate [prospective three-arm study](CONTRASTIVE-STUDY-PROTOCOL.md)
-now fixes 72 new requests, concurrent controls and a primary paired-trace versus
-feedback comparison. Its declared suballocation is $0.40 within the retained
-$0.60 cumulative ceiling; launch still requires clean source, tests and exact CI.
+[Independent replay](results/contrastive-calibration-20261026/reverification.json)
+matched all 144 saved evaluations / 140 unique suites and both diagnostic
+projections with zero discrepancies. The verified report preserves all twelve
+original source candidates, public false acceptances, regressions and costs.
+New API spending is $0.04144616; cumulative commitment is $0.20640271 / $0.60,
+including thirteen unchanged historical uncertain reserves. The collector is
+closed; no retry or resumption is permitted.
+
+The [preceding complete trace bank](results/information-independent-20261026/README.md)
+remains separate: 12/32 baseline versus 8/32 trace repairs, and a failed benefit
+screen. Its [post hoc audit](results/information-independent-posthoc-20261026/README.md)
+motivated the [contrastive revision](CONTRASTIVE-DIAGNOSTIC-DESIGN.md), whose
+prospective result is now reported above. A favorable descriptive interval does
+not replace either fixed screen. The [post hoc failure audit](results/contrastive-calibration-20261026/POSTHOC.md)
+finds 46 partial public improvements but only 24 complete repairs. It informs
+review of acquisition timing and coverage before any separately frozen revision,
+alongside the
+[information-access and related-work review](INFORMATION-ACCESS-REVIEW.md).
+All arms already see the public tests and expected values; runtime traces are
+the intervention, not new oracle labels.
 
 The [separate earlier streaming calibration](results/information-stream-stopped-20261026/README.md)
 remains interrupted and inconclusive: 1/64 responses, 63 missing outcomes, and
@@ -62,6 +71,7 @@ shows why conditional recovery success cannot substitute for end-to-end acceptan
 | [Independent extension trace calibration](results/information-extension-stopped-20261026/README.md) | 9/24 responses; 2 trace versus 4 focused full repairs; 15 unknown | Closed, inconclusive |
 | [Separate streaming trace calibration](results/information-stream-stopped-20261026/README.md) | 1/64 responses; no full repair, 1 public false acceptance; 63 unknown | Closed, inconclusive |
 | [Independent-cell trace calibration](results/information-independent-20261026/README.md) | 64/64 responses; 8 trace versus 12 focused repairs; no missing outcomes | Complete, benefit screen failed |
+| [Contrastive trace calibration](results/contrastive-calibration-20261026/README.md) | 72/72 responses; 6 baseline, 9 single-trace, 9 paired-trace repairs; no missing outcomes | Complete, repeatability screen failed |
 
 These are distinct protocols, not a pooled model-size comparison. Historical
 [capability and partial-progress findings](results/capability-comparison-20261026/README.md),
@@ -76,12 +86,11 @@ screen before calls. Its complete bank reproduces independently, including all
 62 saved verification records. It contains one public false acceptance and
 eleven public-score regressions, retained alongside the ten successes.
 
-Cumulative repair commitment is **$0.16495655 / $0.60**, including thirteen
-historical unresolved reservations. The independent-cell bank adds $0.03910528
-known spending and no new uncertainty. All historical collectors are closed.
-The new [contrastive allocation](CONTRASTIVE-STUDY-AUTHORIZED.json) carries this
-commitment once and reserves at most $0.39518208 for 72 requests. Closed schedules
-cannot be resumed, pooled or used to justify selector fitting.
+Cumulative repair commitment is **$0.20640271 / $0.60**, including thirteen
+historical unresolved reservations. The completed [contrastive allocation](CONTRASTIVE-STUDY-AUTHORIZED.json)
+carried $0.16495655 once and added $0.04144616 in known charges, with no new
+uncertainty. All collectors are closed. Their schedules cannot be resumed,
+pooled or used to justify selector fitting.
 
 The [real-bug development pool](development/README.md) adds twelve adapted BugsInPy
 tasks with pinned source excerpts, public/evaluator cases, documented exclusions
