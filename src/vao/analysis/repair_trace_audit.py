@@ -1,15 +1,36 @@
 """Post hoc terminal-bank audit; inspect inert evidence, never execute candidates."""
 
 import argparse
+import ast
 from collections import Counter
 import hashlib
 import json
 from pathlib import Path
 import zipfile
 
-from vao.analysis.repair_stagnation import classify, syntax
+from vao.analysis.repair_stagnation import classify
 from vao.repair.environment import identity
 from vao.repair.records import save
+
+
+def structural_ast(node):
+    """Versioned structural identity; ignore locations and absent generic parameters.
+
+    Python 3.12 added empty type_params fields to existing function/class syntax.
+    Do not let that metadata change identities of the same nongeneric program.
+    Nonempty parameters remain significant. Literals are typed, including bytes,
+    complex and Ellipsis; no candidate expression is executed.
+    """
+    if isinstance(node, ast.AST):
+        return {'node': type(node).__name__, 'fields': {name: structural_ast(value)
+            for name, value in ast.iter_fields(node) if not (name == 'type_params' and value == [])}}
+    if isinstance(node, list):
+        return [structural_ast(value) for value in node]
+    return {'literal_type': type(node).__name__, 'representation': repr(node)}
+
+
+def syntax_id(files):
+    return identity({name: structural_ast(ast.parse(source)) for name, source in files.items()})
 
 
 def bounded_values(value):
@@ -121,7 +142,7 @@ def summarize(source):
             category = classify(projected['files'], artifact['files'], projected['entrypoint']) if artifact else 'no_artifact'
             ast_id = None
             if artifact and category != 'unparseable':
-                ast_id = identity(syntax(artifact['files'], projected['entrypoint']))
+                ast_id = syntax_id(artifact['files'])
             change = transitions(task['source_public_result'], public)
             full = bool(public and evaluator and public['passed'] and evaluator['passed'])
             if full != row['full_pass'] or bool(artifact) != row['decoded']['artifact_valid']:
@@ -157,6 +178,7 @@ def summarize(source):
         task['arms'] = {arm: group([c for c in cells if c['task_index'] == task['task_index'] and c['arm'] == arm]) for arm in arms}
     traces = [t['trace'] for t in tasks if t['eligible']]
     return {'kind': 'post_hoc_trace_and_preservation_audit', 'api_calls': 0,
+        'ast_identity_schema': 'typed-ast-fields-without-empty-type-params-v1',
         'archive_sha256': manifest['archive_sha256'], 'source_candidates': len(tasks),
         'eligible_sources': len(traces), 'summary': group(cells),
         'arms': {arm: group([c for c in cells if c['arm'] == arm]) for arm in arms},

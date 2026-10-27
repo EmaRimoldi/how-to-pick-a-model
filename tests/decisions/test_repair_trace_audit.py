@@ -2,10 +2,11 @@
 from copy import deepcopy
 from pathlib import Path
 import json
+import ast
 
 import pytest
 
-from vao.analysis.repair_trace_audit import bounded_values, summarize, trace_metrics, transitions
+from vao.analysis.repair_trace_audit import bounded_values, structural_ast, summarize, syntax_id, trace_metrics, transitions
 
 
 def test_markers_count_occurrences_without_inventing_hidden_types():
@@ -14,6 +15,19 @@ def test_markers_count_occurrences_without_inventing_hidden_types():
         'c': {'items': [1, 2], 'length': 2}}
     assert dict(bounded_values(data)) == {'omitted:object_or_depth_limit': 2,
         'shortened_string': 1, 'shortened_container': 1}
+
+
+def test_structural_identity_normalizes_empty_generic_metadata_but_not_syntax():
+    legacy = ast.parse('def f(x): return x').body[0]
+    legacy._fields = tuple(name for name in legacy._fields if name != 'type_params')
+    modern = deepcopy(legacy)
+    modern._fields = (*modern._fields, 'type_params')
+    modern.type_params = []
+    assert structural_ast(legacy) == structural_ast(modern)
+    modern.type_params = [ast.Name(id='T', ctx=ast.Load())]
+    assert structural_ast(legacy) != structural_ast(modern)
+    assert syntax_id({'a.py': 'x=1'}) != syntax_id({'a.py': 'x=True'})
+    assert syntax_id({'a.py': 'x=1'}) == syntax_id({'a.py': '# comment\nx = 1\n'})
 
 
 def test_missing_evaluation_is_not_a_regression_and_case_order_is_irrelevant():

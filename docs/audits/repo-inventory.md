@@ -50,9 +50,9 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | --- | --- | --- |
 | `experiments` | 449 | 57.0M |
 | `docs` | 53 | 2.6M |
-| `src` | 103 | 952.2K |
+| `src` | 103 | 953.2K |
 | `uv.lock` | 1 | 937.0K |
-| `tests` | 47 | 326.1K |
+| `tests` | 47 | 326.8K |
 | `scripts` | 53 | 147.4K |
 | `.github` | 5 | 3.3K |
 | `.gitignore` | 1 | 1.4K |
