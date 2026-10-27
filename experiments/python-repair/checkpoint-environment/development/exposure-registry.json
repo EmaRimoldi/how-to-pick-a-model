@@ -7,6 +7,7 @@
     "experiments/python-repair/checkpoint-environment/development/pool.json": "37f1900eaf52ab8ba85c7927a1bf5c19e31e13a1dea8c5e2c9f7872267fd7608",
     "experiments/python-repair/checkpoint-environment/development-extension/pool.json": "4563c180054877014eae90283fb50c00f968950a8c6c8f39e7eb95e118f5a4ad",
     "experiments/python-repair/checkpoint-environment/development-broader/pool.json": "a391412193749cf6b3c20472cdb703f27fc97c222edcea4b6a77165bfa8e006b",
+    "experiments/python-repair/checkpoint-environment/development-stateful/pool.json": "57b32161e31a9b7872d31fb3f3c7f47ad918a53cdbeefd9ad0a01cfcf48ed613",
     "experiments/python-repair/checkpoint-environment/development/exposure-notes.json": "67da43361bf8bd400abb7c7161bfc82fff3b874faae69c554df919937addb551"
   },
   "known_exposed_ids": [
@@ -599,6 +600,10 @@
       {
         "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
         "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development-stateful/pool.json",
+        "level": "published_development_adapter"
       }
     ],
     "scrapy/27": [
@@ -699,6 +704,10 @@
       {
         "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
         "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development-stateful/pool.json",
+        "level": "published_development_adapter"
       }
     ],
     "scrapy/5": [

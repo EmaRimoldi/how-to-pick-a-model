@@ -1,0 +1,2018 @@
+{
+  "kind": "two_complete_offline_qualifications_no_model_calls",
+  "records": [
+    {
+      "schema_version": 1,
+      "status": "offline_development_qualification",
+      "created_utc": "2026-10-27T06:11:43.322912+00:00",
+      "pool_sha256": "57b32161e31a9b7872d31fb3f3c7f47ad918a53cdbeefd9ad0a01cfcf48ed613",
+      "runtime": {
+        "python": "3.13.12 | packaged by conda-forge | (main, Feb  5 2026, 06:11:05) [Clang 19.1.7 ]",
+        "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+        "sha256": {
+          "fixture/evaluator.json": "530ef9df9f02cb05c73c834a3c84829f95f1cfad6c9df152ed396fa861b87f3a",
+          "fixture/reference.json": "82958ebef15a8b2f5edc0bdf9bd52ebd8156516a166e2560be15524529aa08f6",
+          "fixture/task.json": "367836b9d00fd935b2ab2a096c0c7d37f9ef4137f7fc0813398b1524a45e417f",
+          "runtime/__init__.py": "54b577b505955fe21dc1b841a71c75aaf63f57d2bd1e8bf3bece36d30dd1518e",
+          "runtime/acquisition_snapshot.py": "426e6e4bd9183684ae72527a5880d92b3546297b15bd600e1733fe78d0a4cbf8",
+          "runtime/cli.py": "5556f65f077aa0aa9e6f726fa2db55f13448df14828b16fb5e16f14dd556d3bc",
+          "runtime/contract_collection.py": "329560810c5332884b8ae11d14841ec0114f283a32b8266496b3da90f4ff339e",
+          "runtime/contract_progress.py": "06aecca95f8cd9830f79ba5deafaf71d109da4f5ea07047a5e7a37b43ba63459",
+          "runtime/contracts.py": "cb37f445b1132e1af69082c481e3b3d7d5a785e378bb8b20362a771a1c77657c",
+          "runtime/contrastive_diagnostics.py": "3e1ddd9a0ba82b7b6b80d3faee7f6fd97569edb9cc688b62320f4111e4626cd3",
+          "runtime/contrastive_study.py": "490d121b92ce2aa78f8af0da807fef6a3678a27e274c7a32301c66ad80926df2",
+          "runtime/coverage_prefix.py": "2579a858077c7675d633efd3bd08f02ac4eca8ae6a517b53ec494b966bcc1f13",
+          "runtime/diagnostic_study.py": "2be9ba6ddad2498731a2235d6358a0fdafa079b1620328cc010223cbb2092c2f",
+          "runtime/diagnostics.py": "1113b8a912f6c2da28bb6621e271c49e66da5a3c23d029fb747b167b2e4d0817",
+          "runtime/environment.py": "2aab361949bd6eb3c7b9e9a89820512119c0e747c2d62519e667706c9295cdba",
+          "runtime/exposure.py": "693c4acd5543fc8fb8c7e408a794b35a3e0c6f694da72a423c95f505a5611484",
+          "runtime/extension_information_study.py": "3d954bf3c39ceabf1541df59ccfcbfd5a753a9b269dbcba9bfc52905a7f8dae1",
+          "runtime/failure_coverage_diagnostics.py": "e77908954ccb75349fc6a4396f43c4a476d0f5da277c6380beecdd9b55e03fe0",
+          "runtime/independent_information_study.py": "9afdae3c4e0b5e62938716e2591203d253c4a9bf8b12bafb071b3ffc9c10e45c",
+          "runtime/independent_streaming.py": "0849840712e9ebe93870d329c0e6326921ded9cd1e6e39cb71c62b2c5cc0664f",
+          "runtime/independent_transport.py": "9040b9de46ac976770aa71c00ea19f8c2d8fe9cce538b1ef64335b38eaa10d44",
+          "runtime/information_continuation.py": "c5318f23b27d249f4829f934b8693d444fdd6a0c517760cd538dbf9b47cb4710",
+          "runtime/interface_study.py": "93713d32e7275d3363b42c236688746767841d15246d3010ebb4d11f49b060a4",
+          "runtime/pilot.py": "fa75a3ff61c5b23e32e941723f7a7bb7bfa728eef6ef32311a5af41ce407e960",
+          "runtime/pool.py": "85d0296abcf538ff09341b8ab2ceb3299772a2068de1a06cc22ed882c141a8ce",
+          "runtime/provider.py": "84828ba103a8bee26a96409472d6822e000d8889d56ed483d5453f158578e409",
+          "runtime/qwen_information_study.py": "a896d2244ed6770b7c7dfd2436dc4e1cbfb9d02175d7994dbf3cf63b4d605c43",
+          "runtime/records.py": "642c4b99de9da461f28901788fd16c398696cdc13a64ac2ba0965262493c2181",
+          "runtime/region_trace_worker.py": "55eff7a826e4a1e1d848fdb241dc11f385bf6075d673886c413e139604df4489",
+          "runtime/region_verifier.py": "340bf530fda2c3a77b75f2002851e6d30462399e7d1ca38c19e7ea8ffc7f14a8",
+          "runtime/solver_study.py": "0d33025b1fb0951174583a46f8b6950bc421699b3046849d4d53853923bfdfc8",
+          "runtime/stream_information_audit.py": "fb341c6876c159e51842e0a169ebee2e32e034a83374dbd9971294f20f21ca2a",
+          "runtime/stream_information_study.py": "0a8d532b487a61cadb58f51dd92d71c291ef5aff4017deb721e0b5a699d63853",
+          "runtime/streaming.py": "cc86649d0776d22fab1f225a515afb713f00ff0938f70b49a89fd417a4bada04",
+          "runtime/trace_worker.py": "feaa355b1bd3c83a47d758f01e95f11c7872522a5151924152eb23f34732ef99",
+          "runtime/transport_probe.py": "59f5140598e0ca8f9a8b3143ecfc0182139e2b13b3a5b9eba8a2035573fc5b09",
+          "runtime/verification.py": "301f2af2cfbffa509a9dacfd2f920b7e7ef8bcaab68c8d56a050a3c054dcf0b4",
+          "runtime/verifier.py": "01dffb237da4f13ad85e8b2b472f679948940f9bc01ce7dd9a558994882e10f4",
+          "runtime/worker.py": "c604e16a51fc44898fcfebf6e74c1bc01636e9f29c6486e78bcb93d2b8bfa858"
+        }
+      },
+      "selected": 2,
+      "qualified": 2,
+      "tasks": [
+        {
+          "id": "scrapy-026",
+          "task_hash": "34c952fcd940708a5bc5e77d0633d5c7d43b369a7273dea44a99055898690012",
+          "engineering_qualified": true,
+          "checks": {
+            "initial": {
+              "public": {
+                "passed": [
+                  false,
+                  false
+                ],
+                "repeatable": true
+              },
+              "evaluator": {
+                "passed": [
+                  false,
+                  false
+                ],
+                "repeatable": true
+              }
+            },
+            "reference": {
+              "public": {
+                "passed": [
+                  true,
+                  true
+                ],
+                "repeatable": true
+              },
+              "evaluator": {
+                "passed": [
+                  true,
+                  true
+                ],
+                "repeatable": true
+              }
+            }
+          },
+          "outcomes": {
+            "initial": {
+              "public": {
+                "passed_cases": 3,
+                "total_cases": 6,
+                "cases": [
+                  {
+                    "id": "upstream-default-exclusion",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "a",
+                          10,
+                          0
+                        ],
+                        [
+                          "b",
+                          2,
+                          0
+                        ],
+                        [
+                          "x",
+                          30,
+                          0
+                        ],
+                        [
+                          "y",
+                          4,
+                          20
+                        ]
+                      ]
+                    },
+                    "passed": false
+                  },
+                  {
+                    "id": "explicit-empty-base",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "q",
+                          5,
+                          0
+                        ],
+                        [
+                          "z",
+                          9,
+                          10
+                        ]
+                      ]
+                    },
+                    "passed": false
+                  },
+                  {
+                    "id": "no-base",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "a",
+                          7,
+                          20
+                        ],
+                        [
+                          "b",
+                          2,
+                          0
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "keep-high-priority",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "a",
+                          8,
+                          10
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "defaults-only",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "keep",
+                          2,
+                          0
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "typed-values",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "drop",
+                          5,
+                          0
+                        ],
+                        [
+                          "keep",
+                          null,
+                          0
+                        ],
+                        [
+                          "new",
+                          false,
+                          30
+                        ]
+                      ]
+                    },
+                    "passed": false
+                  }
+                ]
+              },
+              "evaluator": {
+                "passed_cases": 3,
+                "total_cases": 6,
+                "cases": [
+                  {
+                    "id": "base-only",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "d",
+                          7,
+                          0
+                        ],
+                        [
+                          "u",
+                          8,
+                          0
+                        ]
+                      ]
+                    },
+                    "passed": false
+                  },
+                  {
+                    "id": "default-update-excluded",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "q",
+                          9,
+                          0
+                        ]
+                      ]
+                    },
+                    "passed": false
+                  },
+                  {
+                    "id": "reject-lower-update",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "q",
+                          9,
+                          20
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "equal-priority-latest",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "a",
+                          4,
+                          10
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "explicit-types",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "b",
+                          null,
+                          40
+                        ],
+                        [
+                          "c",
+                          true,
+                          30
+                        ],
+                        [
+                          "z",
+                          8,
+                          0
+                        ]
+                      ]
+                    },
+                    "passed": false
+                  },
+                  {
+                    "id": "empty-settings",
+                    "observed": {
+                      "status": "returned",
+                      "value": []
+                    },
+                    "passed": true
+                  }
+                ]
+              }
+            },
+            "reference": {
+              "public": {
+                "passed_cases": 6,
+                "total_cases": 6,
+                "cases": [
+                  {
+                    "id": "upstream-default-exclusion",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "a",
+                          1,
+                          0
+                        ],
+                        [
+                          "b",
+                          2,
+                          0
+                        ],
+                        [
+                          "y",
+                          4,
+                          20
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "explicit-empty-base",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "z",
+                          9,
+                          10
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "no-base",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "a",
+                          7,
+                          20
+                        ],
+                        [
+                          "b",
+                          2,
+                          0
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "keep-high-priority",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "a",
+                          8,
+                          10
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "defaults-only",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "keep",
+                          2,
+                          0
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "typed-values",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "keep",
+                          null,
+                          0
+                        ],
+                        [
+                          "new",
+                          false,
+                          30
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  }
+                ]
+              },
+              "evaluator": {
+                "passed_cases": 6,
+                "total_cases": 6,
+                "cases": [
+                  {
+                    "id": "base-only",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "d",
+                          0,
+                          0
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "default-update-excluded",
+                    "observed": {
+                      "status": "returned",
+                      "value": []
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "reject-lower-update",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "q",
+                          9,
+                          20
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "equal-priority-latest",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "a",
+                          4,
+                          10
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "explicit-types",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "b",
+                          null,
+                          40
+                        ],
+                        [
+                          "c",
+                          true,
+                          30
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "empty-settings",
+                    "observed": {
+                      "status": "returned",
+                      "value": []
+                    },
+                    "passed": true
+                  }
+                ]
+              }
+            }
+          },
+          "completion_sha256": "15053eb48e1b17695b12dfe7a73048367b1511c8d874e77ec73e2ab60329b6d3",
+          "audit": {
+            "status": "verified",
+            "objects": 11,
+            "events": 9,
+            "event_head": "87d6a5ba5593ad4b5e55b691592bb1011820bb98f5696d4203b627d3cb3a41f3"
+          }
+        },
+        {
+          "id": "scrapy-040",
+          "task_hash": "830fef400e1b76885bdd137508d791e82bae6587e3fd1e511ebdbf72de44a9a8",
+          "engineering_qualified": true,
+          "checks": {
+            "initial": {
+              "public": {
+                "passed": [
+                  false,
+                  false
+                ],
+                "repeatable": true
+              },
+              "evaluator": {
+                "passed": [
+                  false,
+                  false
+                ],
+                "repeatable": true
+              }
+            },
+            "reference": {
+              "public": {
+                "passed": [
+                  true,
+                  true
+                ],
+                "repeatable": true
+              },
+              "evaluator": {
+                "passed": [
+                  true,
+                  true
+                ],
+                "repeatable": true
+              }
+            }
+          },
+          "outcomes": {
+            "initial": {
+              "public": {
+                "passed_cases": 3,
+                "total_cases": 6,
+                "cases": [
+                  {
+                    "id": "numbers",
+                    "observed": {
+                      "exception": "TypeError",
+                      "status": "exception"
+                    },
+                    "passed": false
+                  },
+                  {
+                    "id": "binary-mixed",
+                    "observed": {
+                      "exception": "TypeError",
+                      "status": "exception"
+                    },
+                    "passed": false
+                  },
+                  {
+                    "id": "nested-values",
+                    "observed": {
+                      "exception": "TypeError",
+                      "status": "exception"
+                    },
+                    "passed": false
+                  },
+                  {
+                    "id": "text-control",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            "title",
+                            "hello"
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "binary-control",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            {
+                              "bytes_hex": "7469746c65"
+                            },
+                            {
+                              "bytes_hex": "636166c3a9"
+                            }
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "missing-selected-field",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            "missing",
+                            null
+                          ],
+                          [
+                            "title",
+                            "T"
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  }
+                ]
+              },
+              "evaluator": {
+                "passed_cases": 2,
+                "total_cases": 6,
+                "cases": [
+                  {
+                    "id": "other-numbers",
+                    "observed": {
+                      "exception": "TypeError",
+                      "status": "exception"
+                    },
+                    "passed": false
+                  },
+                  {
+                    "id": "binary-flags",
+                    "observed": {
+                      "exception": "TypeError",
+                      "status": "exception"
+                    },
+                    "passed": false
+                  },
+                  {
+                    "id": "nested-list",
+                    "observed": {
+                      "exception": "TypeError",
+                      "status": "exception"
+                    },
+                    "passed": false
+                  },
+                  {
+                    "id": "field-filter",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            "title",
+                            "keep"
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "empty-item",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": []
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "binary-nesting",
+                    "observed": {
+                      "exception": "TypeError",
+                      "status": "exception"
+                    },
+                    "passed": false
+                  }
+                ]
+              }
+            },
+            "reference": {
+              "public": {
+                "passed_cases": 6,
+                "total_cases": 6,
+                "cases": [
+                  {
+                    "id": "numbers",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            "count",
+                            2
+                          ],
+                          [
+                            "ratio",
+                            1.5
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "binary-mixed",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            {
+                              "bytes_hex": "6e616d65"
+                            },
+                            {
+                              "bytes_hex": "c3a9"
+                            }
+                          ],
+                          [
+                            {
+                              "bytes_hex": "76616c7565"
+                            },
+                            3
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "nested-values",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            "nested",
+                            {
+                              "dict": [
+                                [
+                                  "nothing",
+                                  null
+                                ],
+                                [
+                                  "ok",
+                                  true
+                                ]
+                              ]
+                            }
+                          ],
+                          [
+                            "seq",
+                            [
+                              0,
+                              "hi",
+                              false
+                            ]
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "text-control",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            "title",
+                            "hello"
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "binary-control",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            {
+                              "bytes_hex": "7469746c65"
+                            },
+                            {
+                              "bytes_hex": "636166c3a9"
+                            }
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "missing-selected-field",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            "missing",
+                            null
+                          ],
+                          [
+                            "title",
+                            "T"
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  }
+                ]
+              },
+              "evaluator": {
+                "passed_cases": 6,
+                "total_cases": 6,
+                "cases": [
+                  {
+                    "id": "other-numbers",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            "count",
+                            -8
+                          ],
+                          [
+                            "ratio",
+                            2.25
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "binary-flags",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            {
+                              "bytes_hex": "666c616773"
+                            },
+                            [
+                              true,
+                              false,
+                              null
+                            ]
+                          ],
+                          [
+                            {
+                              "bytes_hex": "74657874"
+                            },
+                            {
+                              "bytes_hex": "cebc"
+                            }
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "nested-list",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            "outer",
+                            [
+                              {
+                                "dict": [
+                                  [
+                                    "n",
+                                    7
+                                  ]
+                                ]
+                              },
+                              []
+                            ]
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "field-filter",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            "title",
+                            "keep"
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "empty-item",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": []
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "binary-nesting",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            {
+                              "bytes_hex": "626c6f62"
+                            },
+                            {
+                              "dict": [
+                                [
+                                  {
+                                    "bytes_hex": "636f756e74"
+                                  },
+                                  4
+                                ],
+                                [
+                                  {
+                                    "bytes_hex": "6c6162656c"
+                                  },
+                                  {
+                                    "bytes_hex": "e99baa"
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  }
+                ]
+              }
+            }
+          },
+          "completion_sha256": "8fae1041173301df33f43b9ce377956e1c92ee15db5f41a63952fa8f07c2997e",
+          "audit": {
+            "status": "verified",
+            "objects": 11,
+            "events": 9,
+            "event_head": "4a807a34e25f76a2190b8d5180213b6db8587a20b32d864de670e94b2b37eb65"
+          }
+        }
+      ],
+      "api_calls": 0,
+      "api_spend_usd": "0",
+      "model_results": false,
+      "evaluation_ready": false,
+      "limitations": [
+        "Adapted function-level bugs, not official BugsInPy scores.",
+        "Both finite suites are published development data; not exhaustive correctness.",
+        "No model difficulty, recoverability, generalization or action-value evidence."
+      ]
+    },
+    {
+      "schema_version": 1,
+      "status": "offline_development_qualification",
+      "created_utc": "2026-10-27T06:22:32.780375+00:00",
+      "pool_sha256": "57b32161e31a9b7872d31fb3f3c7f47ad918a53cdbeefd9ad0a01cfcf48ed613",
+      "runtime": {
+        "python": "3.13.12 | packaged by conda-forge | (main, Feb  5 2026, 06:11:05) [Clang 19.1.7 ]",
+        "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+        "sha256": {
+          "fixture/evaluator.json": "530ef9df9f02cb05c73c834a3c84829f95f1cfad6c9df152ed396fa861b87f3a",
+          "fixture/reference.json": "82958ebef15a8b2f5edc0bdf9bd52ebd8156516a166e2560be15524529aa08f6",
+          "fixture/task.json": "367836b9d00fd935b2ab2a096c0c7d37f9ef4137f7fc0813398b1524a45e417f",
+          "runtime/__init__.py": "54b577b505955fe21dc1b841a71c75aaf63f57d2bd1e8bf3bece36d30dd1518e",
+          "runtime/acquisition_snapshot.py": "426e6e4bd9183684ae72527a5880d92b3546297b15bd600e1733fe78d0a4cbf8",
+          "runtime/cli.py": "5556f65f077aa0aa9e6f726fa2db55f13448df14828b16fb5e16f14dd556d3bc",
+          "runtime/contract_collection.py": "329560810c5332884b8ae11d14841ec0114f283a32b8266496b3da90f4ff339e",
+          "runtime/contract_progress.py": "06aecca95f8cd9830f79ba5deafaf71d109da4f5ea07047a5e7a37b43ba63459",
+          "runtime/contracts.py": "cb37f445b1132e1af69082c481e3b3d7d5a785e378bb8b20362a771a1c77657c",
+          "runtime/contrastive_diagnostics.py": "3e1ddd9a0ba82b7b6b80d3faee7f6fd97569edb9cc688b62320f4111e4626cd3",
+          "runtime/contrastive_study.py": "490d121b92ce2aa78f8af0da807fef6a3678a27e274c7a32301c66ad80926df2",
+          "runtime/coverage_prefix.py": "2579a858077c7675d633efd3bd08f02ac4eca8ae6a517b53ec494b966bcc1f13",
+          "runtime/diagnostic_study.py": "2be9ba6ddad2498731a2235d6358a0fdafa079b1620328cc010223cbb2092c2f",
+          "runtime/diagnostics.py": "1113b8a912f6c2da28bb6621e271c49e66da5a3c23d029fb747b167b2e4d0817",
+          "runtime/environment.py": "2aab361949bd6eb3c7b9e9a89820512119c0e747c2d62519e667706c9295cdba",
+          "runtime/exposure.py": "e3f1d1ee4b685c1be50ee1d4d964af61135db3ecd0e1b996c022976a81df806b",
+          "runtime/extension_information_study.py": "3d954bf3c39ceabf1541df59ccfcbfd5a753a9b269dbcba9bfc52905a7f8dae1",
+          "runtime/failure_coverage_diagnostics.py": "e77908954ccb75349fc6a4396f43c4a476d0f5da277c6380beecdd9b55e03fe0",
+          "runtime/independent_information_study.py": "9afdae3c4e0b5e62938716e2591203d253c4a9bf8b12bafb071b3ffc9c10e45c",
+          "runtime/independent_streaming.py": "0849840712e9ebe93870d329c0e6326921ded9cd1e6e39cb71c62b2c5cc0664f",
+          "runtime/independent_transport.py": "9040b9de46ac976770aa71c00ea19f8c2d8fe9cce538b1ef64335b38eaa10d44",
+          "runtime/information_continuation.py": "c5318f23b27d249f4829f934b8693d444fdd6a0c517760cd538dbf9b47cb4710",
+          "runtime/interface_study.py": "93713d32e7275d3363b42c236688746767841d15246d3010ebb4d11f49b060a4",
+          "runtime/pilot.py": "fa75a3ff61c5b23e32e941723f7a7bb7bfa728eef6ef32311a5af41ce407e960",
+          "runtime/pool.py": "85d0296abcf538ff09341b8ab2ceb3299772a2068de1a06cc22ed882c141a8ce",
+          "runtime/provider.py": "84828ba103a8bee26a96409472d6822e000d8889d56ed483d5453f158578e409",
+          "runtime/qwen_information_study.py": "a896d2244ed6770b7c7dfd2436dc4e1cbfb9d02175d7994dbf3cf63b4d605c43",
+          "runtime/records.py": "642c4b99de9da461f28901788fd16c398696cdc13a64ac2ba0965262493c2181",
+          "runtime/region_trace_worker.py": "55eff7a826e4a1e1d848fdb241dc11f385bf6075d673886c413e139604df4489",
+          "runtime/region_verifier.py": "340bf530fda2c3a77b75f2002851e6d30462399e7d1ca38c19e7ea8ffc7f14a8",
+          "runtime/solver_study.py": "0d33025b1fb0951174583a46f8b6950bc421699b3046849d4d53853923bfdfc8",
+          "runtime/stream_information_audit.py": "fb341c6876c159e51842e0a169ebee2e32e034a83374dbd9971294f20f21ca2a",
+          "runtime/stream_information_study.py": "0a8d532b487a61cadb58f51dd92d71c291ef5aff4017deb721e0b5a699d63853",
+          "runtime/streaming.py": "cc86649d0776d22fab1f225a515afb713f00ff0938f70b49a89fd417a4bada04",
+          "runtime/trace_worker.py": "feaa355b1bd3c83a47d758f01e95f11c7872522a5151924152eb23f34732ef99",
+          "runtime/transport_probe.py": "59f5140598e0ca8f9a8b3143ecfc0182139e2b13b3a5b9eba8a2035573fc5b09",
+          "runtime/verification.py": "301f2af2cfbffa509a9dacfd2f920b7e7ef8bcaab68c8d56a050a3c054dcf0b4",
+          "runtime/verifier.py": "01dffb237da4f13ad85e8b2b472f679948940f9bc01ce7dd9a558994882e10f4",
+          "runtime/worker.py": "c604e16a51fc44898fcfebf6e74c1bc01636e9f29c6486e78bcb93d2b8bfa858"
+        }
+      },
+      "selected": 2,
+      "qualified": 2,
+      "tasks": [
+        {
+          "id": "scrapy-026",
+          "task_hash": "34c952fcd940708a5bc5e77d0633d5c7d43b369a7273dea44a99055898690012",
+          "engineering_qualified": true,
+          "checks": {
+            "initial": {
+              "public": {
+                "passed": [
+                  false,
+                  false
+                ],
+                "repeatable": true
+              },
+              "evaluator": {
+                "passed": [
+                  false,
+                  false
+                ],
+                "repeatable": true
+              }
+            },
+            "reference": {
+              "public": {
+                "passed": [
+                  true,
+                  true
+                ],
+                "repeatable": true
+              },
+              "evaluator": {
+                "passed": [
+                  true,
+                  true
+                ],
+                "repeatable": true
+              }
+            }
+          },
+          "outcomes": {
+            "initial": {
+              "evaluator": {
+                "passed_cases": 3,
+                "total_cases": 6,
+                "cases": [
+                  {
+                    "id": "base-only",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "d",
+                          7,
+                          0
+                        ],
+                        [
+                          "u",
+                          8,
+                          0
+                        ]
+                      ]
+                    },
+                    "passed": false
+                  },
+                  {
+                    "id": "default-update-excluded",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "q",
+                          9,
+                          0
+                        ]
+                      ]
+                    },
+                    "passed": false
+                  },
+                  {
+                    "id": "reject-lower-update",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "q",
+                          9,
+                          20
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "equal-priority-latest",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "a",
+                          4,
+                          10
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "explicit-types",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "b",
+                          null,
+                          40
+                        ],
+                        [
+                          "c",
+                          true,
+                          30
+                        ],
+                        [
+                          "z",
+                          8,
+                          0
+                        ]
+                      ]
+                    },
+                    "passed": false
+                  },
+                  {
+                    "id": "empty-settings",
+                    "observed": {
+                      "status": "returned",
+                      "value": []
+                    },
+                    "passed": true
+                  }
+                ]
+              },
+              "public": {
+                "passed_cases": 3,
+                "total_cases": 6,
+                "cases": [
+                  {
+                    "id": "upstream-default-exclusion",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "a",
+                          10,
+                          0
+                        ],
+                        [
+                          "b",
+                          2,
+                          0
+                        ],
+                        [
+                          "x",
+                          30,
+                          0
+                        ],
+                        [
+                          "y",
+                          4,
+                          20
+                        ]
+                      ]
+                    },
+                    "passed": false
+                  },
+                  {
+                    "id": "explicit-empty-base",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "q",
+                          5,
+                          0
+                        ],
+                        [
+                          "z",
+                          9,
+                          10
+                        ]
+                      ]
+                    },
+                    "passed": false
+                  },
+                  {
+                    "id": "no-base",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "a",
+                          7,
+                          20
+                        ],
+                        [
+                          "b",
+                          2,
+                          0
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "keep-high-priority",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "a",
+                          8,
+                          10
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "defaults-only",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "keep",
+                          2,
+                          0
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "typed-values",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "drop",
+                          5,
+                          0
+                        ],
+                        [
+                          "keep",
+                          null,
+                          0
+                        ],
+                        [
+                          "new",
+                          false,
+                          30
+                        ]
+                      ]
+                    },
+                    "passed": false
+                  }
+                ]
+              }
+            },
+            "reference": {
+              "public": {
+                "passed_cases": 6,
+                "total_cases": 6,
+                "cases": [
+                  {
+                    "id": "upstream-default-exclusion",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "a",
+                          1,
+                          0
+                        ],
+                        [
+                          "b",
+                          2,
+                          0
+                        ],
+                        [
+                          "y",
+                          4,
+                          20
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "explicit-empty-base",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "z",
+                          9,
+                          10
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "no-base",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "a",
+                          7,
+                          20
+                        ],
+                        [
+                          "b",
+                          2,
+                          0
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "keep-high-priority",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "a",
+                          8,
+                          10
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "defaults-only",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "keep",
+                          2,
+                          0
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "typed-values",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "keep",
+                          null,
+                          0
+                        ],
+                        [
+                          "new",
+                          false,
+                          30
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  }
+                ]
+              },
+              "evaluator": {
+                "passed_cases": 6,
+                "total_cases": 6,
+                "cases": [
+                  {
+                    "id": "base-only",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "d",
+                          0,
+                          0
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "default-update-excluded",
+                    "observed": {
+                      "status": "returned",
+                      "value": []
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "reject-lower-update",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "q",
+                          9,
+                          20
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "equal-priority-latest",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "a",
+                          4,
+                          10
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "explicit-types",
+                    "observed": {
+                      "status": "returned",
+                      "value": [
+                        [
+                          "b",
+                          null,
+                          40
+                        ],
+                        [
+                          "c",
+                          true,
+                          30
+                        ]
+                      ]
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "empty-settings",
+                    "observed": {
+                      "status": "returned",
+                      "value": []
+                    },
+                    "passed": true
+                  }
+                ]
+              }
+            }
+          },
+          "completion_sha256": "00dc8447d7e9315e90a81efad91c3d68806bfacebbdbce109bd44dc58df862b1",
+          "audit": {
+            "status": "verified",
+            "objects": 11,
+            "events": 9,
+            "event_head": "46ecb0b37786e22737cfd0572c1c4bf2696d481e6df8c727e2f1e31921974586"
+          }
+        },
+        {
+          "id": "scrapy-040",
+          "task_hash": "830fef400e1b76885bdd137508d791e82bae6587e3fd1e511ebdbf72de44a9a8",
+          "engineering_qualified": true,
+          "checks": {
+            "initial": {
+              "public": {
+                "passed": [
+                  false,
+                  false
+                ],
+                "repeatable": true
+              },
+              "evaluator": {
+                "passed": [
+                  false,
+                  false
+                ],
+                "repeatable": true
+              }
+            },
+            "reference": {
+              "public": {
+                "passed": [
+                  true,
+                  true
+                ],
+                "repeatable": true
+              },
+              "evaluator": {
+                "passed": [
+                  true,
+                  true
+                ],
+                "repeatable": true
+              }
+            }
+          },
+          "outcomes": {
+            "initial": {
+              "public": {
+                "passed_cases": 3,
+                "total_cases": 6,
+                "cases": [
+                  {
+                    "id": "numbers",
+                    "observed": {
+                      "exception": "TypeError",
+                      "status": "exception"
+                    },
+                    "passed": false
+                  },
+                  {
+                    "id": "binary-mixed",
+                    "observed": {
+                      "exception": "TypeError",
+                      "status": "exception"
+                    },
+                    "passed": false
+                  },
+                  {
+                    "id": "nested-values",
+                    "observed": {
+                      "exception": "TypeError",
+                      "status": "exception"
+                    },
+                    "passed": false
+                  },
+                  {
+                    "id": "text-control",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            "title",
+                            "hello"
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "binary-control",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            {
+                              "bytes_hex": "7469746c65"
+                            },
+                            {
+                              "bytes_hex": "636166c3a9"
+                            }
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "missing-selected-field",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            "missing",
+                            null
+                          ],
+                          [
+                            "title",
+                            "T"
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  }
+                ]
+              },
+              "evaluator": {
+                "passed_cases": 2,
+                "total_cases": 6,
+                "cases": [
+                  {
+                    "id": "other-numbers",
+                    "observed": {
+                      "exception": "TypeError",
+                      "status": "exception"
+                    },
+                    "passed": false
+                  },
+                  {
+                    "id": "binary-flags",
+                    "observed": {
+                      "exception": "TypeError",
+                      "status": "exception"
+                    },
+                    "passed": false
+                  },
+                  {
+                    "id": "nested-list",
+                    "observed": {
+                      "exception": "TypeError",
+                      "status": "exception"
+                    },
+                    "passed": false
+                  },
+                  {
+                    "id": "field-filter",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            "title",
+                            "keep"
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "empty-item",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": []
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "binary-nesting",
+                    "observed": {
+                      "exception": "TypeError",
+                      "status": "exception"
+                    },
+                    "passed": false
+                  }
+                ]
+              }
+            },
+            "reference": {
+              "evaluator": {
+                "passed_cases": 6,
+                "total_cases": 6,
+                "cases": [
+                  {
+                    "id": "other-numbers",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            "count",
+                            -8
+                          ],
+                          [
+                            "ratio",
+                            2.25
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "binary-flags",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            {
+                              "bytes_hex": "666c616773"
+                            },
+                            [
+                              true,
+                              false,
+                              null
+                            ]
+                          ],
+                          [
+                            {
+                              "bytes_hex": "74657874"
+                            },
+                            {
+                              "bytes_hex": "cebc"
+                            }
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "nested-list",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            "outer",
+                            [
+                              {
+                                "dict": [
+                                  [
+                                    "n",
+                                    7
+                                  ]
+                                ]
+                              },
+                              []
+                            ]
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "field-filter",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            "title",
+                            "keep"
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "empty-item",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": []
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "binary-nesting",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            {
+                              "bytes_hex": "626c6f62"
+                            },
+                            {
+                              "dict": [
+                                [
+                                  {
+                                    "bytes_hex": "636f756e74"
+                                  },
+                                  4
+                                ],
+                                [
+                                  {
+                                    "bytes_hex": "6c6162656c"
+                                  },
+                                  {
+                                    "bytes_hex": "e99baa"
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  }
+                ]
+              },
+              "public": {
+                "passed_cases": 6,
+                "total_cases": 6,
+                "cases": [
+                  {
+                    "id": "numbers",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            "count",
+                            2
+                          ],
+                          [
+                            "ratio",
+                            1.5
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "binary-mixed",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            {
+                              "bytes_hex": "6e616d65"
+                            },
+                            {
+                              "bytes_hex": "c3a9"
+                            }
+                          ],
+                          [
+                            {
+                              "bytes_hex": "76616c7565"
+                            },
+                            3
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "nested-values",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            "nested",
+                            {
+                              "dict": [
+                                [
+                                  "nothing",
+                                  null
+                                ],
+                                [
+                                  "ok",
+                                  true
+                                ]
+                              ]
+                            }
+                          ],
+                          [
+                            "seq",
+                            [
+                              0,
+                              "hi",
+                              false
+                            ]
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "text-control",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            "title",
+                            "hello"
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "binary-control",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            {
+                              "bytes_hex": "7469746c65"
+                            },
+                            {
+                              "bytes_hex": "636166c3a9"
+                            }
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  },
+                  {
+                    "id": "missing-selected-field",
+                    "observed": {
+                      "status": "returned",
+                      "value": {
+                        "dict": [
+                          [
+                            "missing",
+                            null
+                          ],
+                          [
+                            "title",
+                            "T"
+                          ]
+                        ]
+                      }
+                    },
+                    "passed": true
+                  }
+                ]
+              }
+            }
+          },
+          "completion_sha256": "2b51f2f9e78b4f3511db2fd675a57916303eff2d42b6fbafd035361502a7b456",
+          "audit": {
+            "status": "verified",
+            "objects": 11,
+            "events": 9,
+            "event_head": "8387b7ab96566ba0ee4dd552e06c198fafe25258454a88255b562f538ee1afde"
+          }
+        }
+      ],
+      "api_calls": 0,
+      "api_spend_usd": "0",
+      "model_results": false,
+      "evaluation_ready": false,
+      "limitations": [
+        "Adapted function-level bugs, not official BugsInPy scores.",
+        "Both finite suites are published development data; not exhaustive correctness.",
+        "No model difficulty, recoverability, generalization or action-value evidence."
+      ]
+    }
+  ],
+  "observations_identical": true
+}

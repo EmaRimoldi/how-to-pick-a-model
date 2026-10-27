@@ -1,5 +1,17 @@
 # Python repair checkpoint environment
 
+**Latest preparation:** [single-acquisition snapshots](results/acquisition-preparation-20261027/README.md)
+now bind actual public trace bytes to their code, input and feedback without
+re-executing traces during projection. All eight prepared tasks have available
+diagnostics and matched inert control/treatment prompts. A separate audit finds
+identical old/new event values on seven of the eight historical failed
+checkpoints, so that bank offers little retention-revision contrast.
+Two [stateful/recursive Scrapy adapters](development-stateful/README.md) qualify
+offline and join six broader development tasks for prospective study planning.
+These are original artifacts after failed public tests, not generated failed
+patches. **No new model calls, allocation or selector training** have occurred;
+all earlier studies and their gates remain closed and unchanged.
+
 The [six-task natural-failure calibration](results/coverage-prefix-20261027/README.md)
 completed with **4/6 full initial repairs**, one syntax failure and one behavior
 regression. All twelve saved evaluations reproduce. Only two natural failed

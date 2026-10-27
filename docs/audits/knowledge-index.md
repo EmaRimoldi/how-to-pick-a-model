@@ -9,8 +9,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `8`
-- Script entrypoints indexed: `57`
-- Code modules indexed: `105`
+- Script entrypoints indexed: `58`
+- Code modules indexed: `106`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `6`
@@ -190,6 +190,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/prepare_failure_coverage_diagnostics.py` | python | Qualify bounded first/all-failure traces on a development pool; no API calls. |
 | `scripts/prepare_feedback_routing.py` | python | Verify the pinned BigCodeBench download and reproduce reference-only eligibility. |
 | `scripts/prepare_python_repair.py` | python | Plan or explicitly run an offline Python repair demo, qualification or audit. |
+| `scripts/prepare_repair_acquisition_snapshots.py` | python | Freeze public diagnostic observations and inert matched prompts, without APIs. |
 | `scripts/prepare_repair_contract_probe.py` | python | Prepare a reviewable, offline-only Gemma response-contract diagnostic. |
 | `scripts/prepare_repair_contrastive_study.py` | python | Prepare exact public-contrast requests offline; no dispatch or funding. |
 | `scripts/prepare_repair_coverage_prefix.py` | python | Prepare initial-repair requests offline; never dispatch a model call. |
@@ -296,6 +297,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/logging_utils.py` | Small logging helpers for protocol JSON artifacts. | now_iso, sha256_text, sha256_file, to_jsonable, write_json, append_jsonl, read_jsonl |
 | verified orchestration runtime | `src/vao/patches.py` | Patch application utilities for model-produced source edits. | PatchApplyError, apply_unified_diff |
 | verified orchestration runtime | `src/vao/records.py` | Record loading helpers. | iter_run_dirs, load_step_records, load_records_from_roots |
+| verified orchestration runtime | `src/vao/repair/acquisition_snapshot.py` | One acquired public diagnostic, durably bound to its input and actual bytes. Offline only. Loading/projecting never reacquires a trace. This prevents runtime randomness from silently changing a reviewed request, without claiming that a fresh execution would return identical intermediate values. | runtime, context, finite_seconds, validate, acquire_once, load, projected |
 | verified orchestration runtime | `src/vao/repair/cli.py` | Plan, demonstrate, qualify and audit the offline Python repair environment. | source_manifest, finish, qualify, demo, main |
 | verified orchestration runtime | `src/vao/repair/contract_collection.py` | Funded contract diagnostic: exact prepared requests, durable billing, no retries. | ContractSettings, read, content_hash, authorization, freeze, validate_freeze, collect, settled_receipt |
 | verified orchestration runtime | `src/vao/repair/contract_progress.py` | Read-only operational audit; never summarizes treatment outcomes or calls APIs. | progress, main |

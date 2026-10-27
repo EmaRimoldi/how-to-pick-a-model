@@ -1,18 +1,18 @@
 # Research goal amendment: acquire evidence before another repair?
 
-**Latest verified status (2026-10-27 UTC):** the six-task initial calibration
-completed with 4/6 full repairs but only two natural failures; its conditional
-recovery stage is closed without calls. A new opt-in
-[trace-retention engineering probe](results/trace-retention-20261027/README.md)
-recovers previously omitted execution regions on exposed sources, with stable
-ordinary/traced observations in two repeated 80-case banks. It also exposes
-stochastic intermediate values and continued object-state omissions. No new
-model call or repair-benefit claim follows. The most recent three-arm model
-calibration still fails its repeatability screen (6/24 baseline, 9/24 single
-trace, 9/24 paired trace; paired gains +3, 0, 0). All collectors are closed,
-no selector is trained, and cumulative commitment remains $0.20937371 / $0.60,
-including thirteen old reserves. The full equal-total-resource, untouched-bug
-selector objective remains active. Historical progression is retained below.
+**Latest verified status (2026-10-27 UTC):** public diagnostic acquisitions can
+now be sealed and projected without re-execution, preserving actual stochastic
+values and local costs. [Eight development snapshots and matched prompts](results/acquisition-preparation-20261027/README.md)
+are prepared offline, including two newly qualified but previously exposed
+Scrapy adapters. An audit shows the retention revision leaves event values
+unchanged on seven of the eight historical failed checkpoints. No new model
+request or monetary allocation is enabled. The proposed next information-value
+study concerns original buggy artifacts after failed public tests; it cannot
+substitute for conditional recovery of generated failures or untouched policy
+validation. All prior gates stay fixed, the six-task recovery stage stays closed,
+and the most recent three-arm intervention still fails its repeatability screen.
+No selector is trained. Cumulative commitment remains $0.20937371 / $0.60,
+including thirteen old reserves. Historical progression is retained below.
 
 
 Status: user-directed amendment after the closed 4B/12B/27B development studies.

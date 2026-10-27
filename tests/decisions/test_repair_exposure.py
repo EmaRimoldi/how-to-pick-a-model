@@ -19,6 +19,11 @@ def test_published_exposure_registry_matches_authoritative_sources():
             and e['level'] == 'published_development_adapter'
             for e in registry['exposure_evidence'][bug])
 
+    for bug in ("scrapy/26", "scrapy/40"):
+        assert any(e['source'].endswith('/development-stateful/pool.json')
+            and e['level'] == 'published_development_adapter'
+            for e in registry['exposure_evidence'][bug])
+
 
 def test_aliases_cannot_evade_bug_or_project_exclusion():
     registry = build()
