@@ -35,7 +35,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 56 | 6 | 9 | 40 | 3 | 0 | 0 | 0 | 5 |
 | `experiments/mbpp-plus/context-value-transfer/` | collection finished; censored descriptive bank | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 72 | 6 | 2 | 59 | 4 | 3 | 0 | 0 | 6 |
 | `experiments/bigcodebench/feedback-only-routing/` | complete; primary gate not passed | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 42 | 2 | 5 | 32 | 4 | 0 | 0 | 0 | 2 |
-| `experiments/python-repair/checkpoint-environment/` | recovery pilot incomplete; 4B/12B/27B contract banks complete, gates failed | Tier 2: Supporting Or Diagnostic Evidence | `partial-evidence` | 302 | 0 | 126 | 147 | 17 | 4 | 0 | 0 | 34 |
+| `experiments/python-repair/checkpoint-environment/` | recovery pilot incomplete; 4B/12B/27B contract banks complete, gates failed | Tier 2: Supporting Or Diagnostic Evidence | `partial-evidence` | 310 | 0 | 126 | 155 | 17 | 5 | 0 | 0 | 35 |
 
 ## Key Files
 
@@ -155,6 +155,6 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 - `experiments/python-repair/checkpoint-environment/results/contract-gemma27b-20261026/analysis.json`
 - `experiments/python-repair/checkpoint-environment/results/contrastive-calibration-20261026/analysis.json`
 - `experiments/python-repair/checkpoint-environment/results/contrastive-calibration-20261026/figure/summary.png`
+- `experiments/python-repair/checkpoint-environment/results/coverage-prefix-20261027/analysis.json`
 - `experiments/python-repair/checkpoint-environment/results/diagnostic-audit-20261026/analysis.json`
 - `experiments/python-repair/checkpoint-environment/results/gemma4b-calibration-20261026/analysis.json`
-- `experiments/python-repair/checkpoint-environment/results/information-extension-stopped-20261026/analysis.json`
