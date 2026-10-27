@@ -7,7 +7,7 @@ from pathlib import Path
 import random
 
 from vao.repair.contract_collection import audit, read
-from vao.repair.contracts import TRACE_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY
+from vao.repair.contracts import TRACE_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY
 from vao.repair.diagnostic_study import DRAWS
 from vao.repair.diagnostics import ARMS
 from vao.repair.records import rows, save
@@ -27,9 +27,9 @@ def summarize(output):
     checked = audit(output)
     frozen = read(output / "manifest.json")["freeze"]
     packet = frozen["packet"]
-    if packet["study"] not in (TRACE_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY):
+    if packet["study"] not in (TRACE_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY):
         raise ValueError("Expected the public trace information study")
-    arms = ("focused", "focused_trace") if packet["study"] in (QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY) else ARMS
+    arms = ("focused", "focused_trace") if packet["study"] in (QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY) else ARMS
     observed = {r["attempt_id"]: r for r in rows(output / "observations.jsonl")}
     cells = []
     for planned in packet["requests"]:
@@ -140,13 +140,32 @@ def summarize(output):
         report["limitations"][2] = "Only primary contrast: focused_trace minus focused on fresh matched requests. No pooling with the closed eight-checkpoint bank."
         report["limitations"][6] = "Bootstrap intervals describe only three purposively selected bug clusters and can be unstable; they cannot justify a population claim or selector training."
         report["limitations"].append("The prospective transport policy can retain one missing call and continue independent cells; a second error stops. Every unknown remains reserved and missing; any incomplete bank has a null mean/bootstrap and inconclusive gate.")
-    if packet["study"] == STREAM_TRACE_STUDY:
+    if packet["study"] in (STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY):
         report["limitations"][0] = "Eight already exposed failed checkpoints (seven youtube-dl, one httpie), four fresh draws per arm; development only, no held-out inference."
         report["limitations"][2] = "Only primary contrast: focused_trace minus focused in this separate streaming bank; no pooling, historical concurrent controls or filling of old missing cells."
         report["limitations"].extend([
             "Previous outcomes were inspected before this protocol; the same development sources and previously specified screen are retained, with a new seed and explicit 8 MiB streaming envelope. No causal transport or scaling-law inference.",
             "Complete SSE receipts are reconstructed and audited with saved metrics; raw wire bytes are not archived, so their byte-level replay is unavailable.",
             "A first transport error closes the study without retry or resumption; historical uncertainties remain reserved. Incomplete banks have null mean/bootstrap and an inconclusive gate."])
+    if packet['study'] == INDEPENDENT_TRACE_STUDY:
+        from .repair_missingness import evaluate
+        selected = [t['task_index'] for t in tasks if t['eligible']]
+        assignments = {(c['task_index'], c['draw'], 'trace' if c['arm'] == 'focused_trace' else 'focused'): c['full_pass'] for c in cells}
+        robust = evaluate(assignments, bugs=selected)
+        robust['bounds'] = [float(v) for v in robust['bounds']]
+        robust['mean'] = float(robust['mean']) if robust['mean'] is not None else None
+        report['missingness_screen'] = robust
+        report['gate_components'] = {'least_favorable':robust['lower'], 'most_favorable':robust['upper']}
+        if checked['cap_exceeded']:
+            report['gate'] = 'inconclusive_accounting_cap_exceeded'
+        elif robust['all_completions_pass']:
+            report['gate'] = 'candidate_for_independent_acquisition_calibration'
+        elif robust['no_completion_passes']:
+            report['gate'] = 'no_completion_meets_development_screen'
+        else:
+            report['gate'] = 'inconclusive_selected_cell_bounds'
+        report['limitations'][-1] = ('Prospective independent-cell rule retains at most seven no-receipt network errors; the eighth total or third consecutive error stops, as do all other errors. Missing cells stay unknown and reserved. No retries or resumption.')
+        report['limitations'].append('The new development screen passes only if every binary completion of missing outcomes satisfies all efficacy thresholds. Upper-bound failure rejects only this finite screen, not a population benefit. Incomplete mean/bootstrap stay null; historical complete-bank gates are unchanged.')
     successor = read(output / 'manifest.json').get('continuation')
     if successor is not None:
         report['continuation'] = {k: successor[k] for k in ('continuation_id', 'source_commit',

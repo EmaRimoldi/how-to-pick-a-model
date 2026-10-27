@@ -1,5 +1,11 @@
 # Python repair checkpoint environment
 
+The next [independent-cell study](INDEPENDENT-INFORMATION-PROTOCOL.md) is prepared
+under a separate $0.47 allocation, carrying $0.12585127 and thirteen uncertainties.
+It freezes a bounded rule for proceeding to new independent cells after certain
+network errors, and a conservative missing-cell screen. It does not resume or
+relabel any closed bank and has no results yet.
+
 **Current result: the [separate streaming trace calibration](results/information-stream-stopped-20261026/README.md)
 is interrupted and inconclusive.** It received 1/64 responses; the second request
 timed out during the stream, retaining its full reserve. There are 62 never-admitted

@@ -197,3 +197,11 @@ retains 1/64 responses, one uncertain admission and 62 never-admitted requests.
 A read timeout after partial output stopped the study below its wire limit.
 All selected cells, null mean/bootstrap and the inconclusive gate are preserved;
 independent replay reproduces both saved evaluations and public diagnostics.
+
+The [prospective independent-cell protocol](../experiments/python-repair/checkpoint-environment/INDEPENDENT-INFORMATION-PROTOCOL.md)
+adds `repair/independent_information_study.py`, `repair/independent_streaming.py`
+and `analysis/repair_missingness.py`. New request identities and a declared
+bounded error policy preserve uncertain reserves without retries. Its finite
+screen requires every completion of missing cells to meet the efficacy thresholds;
+old complete-bank gates stay unchanged. It is development calibration, not a
+validated selector or a claim from the prior sparse banks.

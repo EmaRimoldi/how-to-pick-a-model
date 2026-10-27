@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 import shutil
 
-from .contracts import STUDY, DEEPINFRA_STUDY, GEMMA12B_STUDY, GEMMA27B_STUDY, TRACE_STUDY, INTERFACE_STUDY, SOLVER_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY, decode, provenance, provider_body, public_feedback, task_from_record, validate, study_settings, study_spacing
+from .contracts import STUDY, DEEPINFRA_STUDY, GEMMA12B_STUDY, GEMMA27B_STUDY, TRACE_STUDY, INTERFACE_STUDY, SOLVER_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY, decode, provenance, provider_body, public_feedback, task_from_record, validate, study_settings, study_spacing
 from .environment import RepairRun, audit_run, identity
 from .pilot import file_hashes, source_commit
 from .provider import OpenRouterTransport, ProviderStopped, Settings, dollars
@@ -44,7 +44,12 @@ def authorization(config, packet, prior):
         raise ValueError('New study cap must cover the whole design without exceeding the proposal')
     if config.get('minimum_request_interval_seconds') != study_spacing(packet['study']):
         raise ValueError('The contract study requires its declared request spacing')
-    if packet['study'] == STREAM_TRACE_STUDY:
+    if packet['study'] == INDEPENDENT_TRACE_STUDY:
+        if (prior.get('study') != STREAM_TRACE_STUDY or prior.get('status') != 'incomplete_development_information_probe'
+                or prior.get('gate') != 'inconclusive_incomplete_bank' or prior.get('fit_selector') is not False):
+            raise ValueError('Independent calibration must carry the closed streaming bank')
+        carried = dollars(prior['accounting']['cumulative_committed_usd'])
+    elif packet['study'] == STREAM_TRACE_STUDY:
         if (prior.get('study') != 'repair-sse-wire-envelope-v1'
                 or prior.get('status') != 'complete_compatibility_probe'
                 or prior.get('gate') != 'larger_wire_envelope_observed'
@@ -96,8 +101,10 @@ def authorization(config, packet, prior):
 
 def freeze(packet, config, output: Path):
     validate(packet)
-    if packet['study'] in (QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY):
-        if packet['study'] == STREAM_TRACE_STUDY:
+    if packet['study'] in (QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY):
+        if packet['study'] == INDEPENDENT_TRACE_STUDY:
+            from .independent_information_study import validate_origin
+        elif packet['study'] == STREAM_TRACE_STUDY:
             from .stream_information_study import validate_origin
         elif packet['study'] == EXTENSION_TRACE_STUDY:
             from .extension_information_study import validate_origin
@@ -138,8 +145,10 @@ def validate_freeze(frozen, *, current=False):
     if dollars(frozen['authorized_limit_usd']) != limit or dollars(frozen['carried_commitment_usd']) != carried:
         raise ValueError('Frozen financial projection differs')
     if current:
-        if packet['study'] in (QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY):
-            if packet['study'] == STREAM_TRACE_STUDY:
+        if packet['study'] in (QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY):
+            if packet['study'] == INDEPENDENT_TRACE_STUDY:
+                from .independent_information_study import validate_origin
+            elif packet['study'] == STREAM_TRACE_STUDY:
                 from .stream_information_study import validate_origin
             elif packet['study'] == EXTENSION_TRACE_STUDY:
                 from .extension_information_study import validate_origin
@@ -190,7 +199,7 @@ def collect(frozen, output: Path, *, claim_root=None, continuation=None):
         actual = verifier.check(task.public['files'], task.public['entrypoint'], task.public['public_cases'])
         if public_feedback(actual) != public_feedback(record['initial_public_result']):
             raise ValueError('Initial feedback no longer reproduces')
-    if packet['study'] in (TRACE_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY):
+    if packet['study'] in (TRACE_STUDY, QWEN_TRACE_STUDY, EXTENSION_TRACE_STUDY, STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY):
         from .diagnostic_study import validate_diagnostics
         validate_diagnostics(packet, verifier)
     claims = claim_root or ROOT / 'runs' / 'repair-contract-admissions'
@@ -214,11 +223,14 @@ def collect(frozen, output: Path, *, claim_root=None, continuation=None):
         from .independent_transport import IndependentCellTransport
         transport_type = IndependentCellTransport
     settings, options = ContractSettings(**packet['provider_settings']), {}
-    if packet['study'] == STREAM_TRACE_STUDY:
+    if packet['study'] in (STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY):
         from .streaming import StreamingOpenRouterTransport, StreamingSettings
         transport_type = StreamingOpenRouterTransport
         settings = StreamingSettings(**packet['provider_settings'])
         options['max_wire_bytes'] = packet['design']['wire_limit_bytes']
+        if packet['study'] == INDEPENDENT_TRACE_STUDY:
+            from .independent_streaming import IndependentStreamingTransport
+            transport_type = IndependentStreamingTransport
     transport = transport_type(output, key, settings,
         authorized_limit_usd=str(limit), minimum_interval_seconds=study_spacing(packet['study']), **options)
     try:
@@ -231,7 +243,7 @@ def collect(frozen, output: Path, *, claim_root=None, continuation=None):
             try:
                 receipt = transport.complete(planned['request'], meta)
             except ProviderStopped:
-                if (packet['study'] == EXTENSION_TRACE_STUDY
+                if (packet['study'] in (EXTENSION_TRACE_STUDY, INDEPENDENT_TRACE_STUDY)
                         and transport.retain_missing_before_next(attempt)):
                     continue
                 raise
@@ -317,7 +329,8 @@ def _audit_records(output, packet, limit, carried, requests):
     planned = {r['metadata']['attempt_id']: r for r in requests}
     pending, settled, admitted = {}, {}, []
     retained = set()
-    independent = packet["study"] == EXTENSION_TRACE_STUDY
+    independent = packet["study"] in (EXTENSION_TRACE_STUDY, INDEPENDENT_TRACE_STUDY)
+    consecutive_retained = 0
     errors = rows(output / "provider-errors.jsonl")
     for event in rows(output / 'ledger.jsonl'):
         key, amount = event['attempt_id'], dollars(event['usd'])
@@ -336,12 +349,19 @@ def _audit_records(output, packet, limit, carried, requests):
             if key not in pending or key in retained or amount > pending[key]:
                 raise ValueError('Invalid settlement')
             pending.pop(key); settled[key] = amount
+            consecutive_retained = 0
         elif event['event'] == 'retain_unknown':
             if not independent or key not in pending or key in retained or key != admitted[-1] or amount != pending[key]:
                 raise ValueError('Undeclared missing-cell disposition')
-            from .independent_transport import validate_retention
-            validate_retention(output, event, errors, already_retained=len(retained))
+            if packet['study'] == INDEPENDENT_TRACE_STUDY:
+                from .independent_streaming import validate_retention
+                validate_retention(output, event, errors, already_retained=len(retained),
+                                   consecutive_retained=consecutive_retained)
+            else:
+                from .independent_transport import validate_retention
+                validate_retention(output, event, errors, already_retained=len(retained))
             retained.add(key)
+            consecutive_retained += 1
         else:
             raise ValueError('Unknown ledger event')
     if admitted != list(planned)[:len(admitted)]:
@@ -397,13 +417,13 @@ def _audit_records(output, packet, limit, carried, requests):
                 known = dollars(read(raw)['usage']['cost'])
             except (KeyError, TypeError, ValueError, ProviderStopped):
                 pass
-        if packet['study'] == STREAM_TRACE_STUDY:
+        if packet['study'] in (STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY):
             metric = output / 'stream-metrics' / (key + '.json')
             if metric.exists():
                 known = max(known, dollars(read(metric)['reported_cost_usd']))
         committed_by_attempt[key] = max(reserve, known)
         committed += max(reserve, known)
-    if packet['study'] == STREAM_TRACE_STUDY:
+    if packet['study'] in (STREAM_TRACE_STUDY, INDEPENDENT_TRACE_STUDY):
         from .stream_information_audit import validate_stream_evidence
         validate_stream_evidence(output, packet, admitted, settled, pending, receipts, committed, carried)
     completion = output / 'pilot-completion.json'
