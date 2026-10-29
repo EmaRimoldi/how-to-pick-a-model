@@ -89,22 +89,43 @@ def test_event_cap_is_explicit_not_sampled_full_coverage():
     assert result["limit_reached"] and result["line_events"] == EVENT_LIMIT + 1
 
 
-def test_published_replay_and_archive_integrity(tmp_path):
+@pytest.mark.parametrize("bank", ["public", "generated"])
+def test_published_replay_and_archive_integrity(tmp_path, bank):
     import runpy
     import shutil
     from pathlib import Path
     root = Path(__file__).resolve().parents[2]
     replay = runpy.run_path(str(root / "scripts/audit_repair_spectra.py"))["replay"]
-    source = root / "experiments/python-repair/checkpoint-environment/results/public-spectra-20261029"
+    source = root / f"experiments/python-repair/checkpoint-environment/results/{bank}-spectra-20261029"
     report = replay(source)
     assert report["artifacts"] == report["available"] == 8
     assert report["distinguishes_failing_executed_lines"] == 7
     assert report["additional_executions"] == 96
+    if bank == "generated":
+        assert report["source_candidates"] == len(report["candidate_inventory"]) == 12
+        assert report["no_public_trigger"] == 4
     target = tmp_path / "copy"
     shutil.copytree(source, target)
     (target / "analysis.json").write_text("{}")
     with pytest.raises(ValueError, match="archive changed"):
         replay(target)
+
+
+def test_generated_source_keeps_twelve_and_uses_only_public_failure_trigger():
+    import runpy
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    module = runpy.run_path(str(root / "scripts/audit_repair_spectra.py"))
+    rows = module["source_inputs"]("generated")
+    assert [r["id"] for r in rows] == list(module["GENERATED_SLUGS"])
+    failed = [r for r in rows if not r["stored"]["feedback"]["passed"]]
+    assert [r["id"] for r in failed] == list(module["GENERATED_FAILURES"])
+    assert len(rows) == 12 and len(failed) == 8
+    assert len({r["source_attempt_id"] for r in rows}) == 12
+    for row in rows:
+        assert set(row) == {"id", "public", "source_attempt_id", "source_artifact", "source_public_result", "stored"}
+        assert row["public"]["provenance"] == {"kind": "previously_exposed_model_generated_candidate"}
+        assert row["stored"]["binding"] == binding(row["public"], row["public"]["files"])
 
 
 @NATIVE

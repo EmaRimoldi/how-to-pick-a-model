@@ -175,7 +175,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/analyze_recovery_transfer.py` | python | Audit recorded MBPP+ recovery evidence and reproduce the frozen statistical comparisons. Public CLI facade; implementation lives in vao.analysis.analyze_recovery_transfer. |
 | `scripts/analyze_recovery_validation.py` | python | Audit frozen held-out recovery data and replay its finite budgeted policy bank. Public CLI facade; implementation lives in vao.analysis.analyze_recovery_validation. |
 | `scripts/audit_repair_exposure.py` | python | Rebuild/check the minimum documented development-exposure registry, offline. |
-| `scripts/audit_repair_spectra.py` | python | Offline public-spectrum feasibility on the eight already-exposed original bugs. collect executes only local sandboxed cases; replay executes no candidate code. Neither command imports a model client or prepares a provider request. |
+| `scripts/audit_repair_spectra.py` | python | Offline public-spectrum feasibility on frozen exposed development artifacts. collect executes only local sandboxed cases; replay executes no candidate code. Neither command imports a model client or prepares a provider request. |
 | `scripts/audit_repair_stagnation.py` | python | Audit saved edits after a repair information study terminates; no API calls. |
 | `scripts/audit_repair_trace_information.py` | python | Audit a complete trace calibration archive without executing candidate code. |
 | `scripts/audit_repair_trigger_coverage.py` | python | Audit only closed 27B source checkpoints, never ongoing model outcomes. |

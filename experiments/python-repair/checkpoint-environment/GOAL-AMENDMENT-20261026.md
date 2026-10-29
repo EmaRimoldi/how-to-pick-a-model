@@ -19,6 +19,13 @@ required experiment on model-generated failed checkpoints, the repeatability
 screen or untouched policy evaluation. No selector is trained; all historical
 gates and closed collections are preserved. Historical progression is retained below.
 
+A subsequent [generated-failure feasibility audit](results/generated-spectra-20261029/REPORT.md)
+now covers all eight public failures among twelve retained historical Gemma 27B
+JSON outputs. Seven yield non-flat line scores; one stays tied. All 48 public
+observations agree, with no private outcome used and no new model calls. This
+extends feasibility to actual failed attempts, not efficacy: seven bugs belong
+to one project, and the matched repair experiment remains necessary.
+
 
 Status: user-directed amendment after the closed 4B/12B/27B development studies.
 The user asked to redefine the goal from the observed failures and the literature,

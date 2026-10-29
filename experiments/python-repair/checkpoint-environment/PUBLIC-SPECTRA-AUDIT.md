@@ -106,3 +106,45 @@ not execute candidate code. Frozen inert runtime sources are included. For a
 separate local execution replicate on supported macOS, use `collect --output`
 with a **new empty destination**; timing and platform-dependent execution are
 not guaranteed identical. No command in this audit contacts a model provider.
+
+## Extension to actual generated failures (2026-10-29)
+
+The [second audit](results/generated-spectra-20261029/REPORT.md) uses the frozen
+Gemma 3 27B `json_current` output bank, which also supplied the earlier diagnostic
+experiments. All twelve source candidates remain in provenance. The historical
+public-only trigger selects eight failed artifacts; four pass the public suite
+and receive no diagnostic acquisition. **A public pass is not a full-repair
+label.** Private evaluator outcomes were not used for selection or scoring.
+
+The loader verifies the complete original archive, projects only public task,
+generated artifact and public observation fields, and omits fixed-source
+provenance and private outcomes. The selected IDs and all twelve eligibility
+records were frozen before executing the unchanged coverage worker. This is
+post hoc development feasibility on already-exposed cases, not fresh evidence
+of repair benefit or an alteration of the closed source bank.
+
+All 48 selected public cases reproduce across saved, ordinary and covered
+execution. Seven failed checkpoints produce multiple positive scores; the seven
+failing-executed lines of `youtube-dl-020` remain tied. Top-score groups on the
+other seven contain 1–9 lines. A separate direct-formula calculation agrees on
+all **130** covered-line scores. Acquisition used 96 executions plus one
+preflight, about 7.39 seconds on this machine, and no model calls.
+
+This removes the restriction that feasibility was tested only on original code:
+the representation can also be produced at actual model-failure checkpoints.
+It does **not** show that the selected lines are faulty, that repairs improve,
+or that the diagnostic pays for itself. Seven selected bugs are from youtube-dl
+and one from HTTPie; six have only one public failing case. Such a narrow,
+previously exposed development population cannot support a generalization claim.
+Do not compare the two audits causally: their bugs and source states differ.
+The next necessary evidence is the separately specified matched model experiment,
+not more coverage engineering or selector fitting.
+
+```bash
+uv run python scripts/audit_repair_spectra.py replay \
+  --output experiments/python-repair/checkpoint-environment/results/generated-spectra-20261029
+```
+
+Both archives remain independently replayable. A fresh local execution replicate
+of the generated source uses `collect --bank generated --output <new-directory>`;
+it still makes no provider requests.

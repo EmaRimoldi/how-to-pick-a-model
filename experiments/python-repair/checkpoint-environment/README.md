@@ -22,6 +22,12 @@ lines, while one has a complete tie. This establishes neither correct fault
 localization nor better repair. There were no new model calls, allocations,
 held-out exposures or changes to the closed studies.
 
+An [extension to generated failed checkpoints](results/generated-spectra-20261029/REPORT.md)
+retains all twelve historical Gemma 27B JSON candidates and acquires coverage only
+for their eight public failures. All 48 observations agree; seven rankings are
+non-flat and one is tied. This checks feasibility at the intended kind of failure
+state, still without measuring repair value or consuming any new model calls.
+
 The [single-acquisition snapshots](results/acquisition-preparation-20261027/README.md)
 bind actual trace bytes to code, input, feedback and acquisition resources.
 The two draws condition on the same snapshot, without reacquiring stochastic
