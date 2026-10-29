@@ -15,6 +15,13 @@ is $0.22774335 / $0.60 including fourteen unresolved reserves. Current read-only
 account checks show available credit; the cause of the 429 remains unidentified.
 The [prospective protocol](FROZEN-REGION-PROTOCOL.md) and all missing cells stay unchanged.
 
+A new [offline spectrum audit](PUBLIC-SPECTRA-AUDIT.md) asks whether public test
+coverage can give a more targeted diagnostic. All 48 case observations agree;
+seven of the eight original bugs have non-flat scores among failing-executed
+lines, while one has a complete tie. This establishes neither correct fault
+localization nor better repair. There were no new model calls, allocations,
+held-out exposures or changes to the closed studies.
+
 The [single-acquisition snapshots](results/acquisition-preparation-20261027/README.md)
 bind actual trace bytes to code, input, feedback and acquisition resources.
 The two draws condition on the same snapshot, without reacquiring stochastic

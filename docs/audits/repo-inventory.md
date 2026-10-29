@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `880`
-- Bytes indexed: `67.3M`
+- Files indexed: `889`
+- Bytes indexed: `67.4M`
 
 ## Canonical Entrypoints
 
@@ -48,12 +48,12 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 586 | 62.1M |
+| `experiments` | 591 | 62.3M |
 | `docs` | 53 | 2.6M |
-| `src` | 115 | 1.0M |
+| `src` | 117 | 1.1M |
 | `uv.lock` | 1 | 937.0K |
-| `tests` | 53 | 382.3K |
-| `scripts` | 64 | 170.6K |
+| `tests` | 54 | 388.7K |
+| `scripts` | 65 | 179.6K |
 | `.github` | 5 | 3.7K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
@@ -63,13 +63,13 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 241 | 1.6M |
-| `.json` | 228 | 8.0M |
+| `.py` | 245 | 1.7M |
+| `.json` | 230 | 8.1M |
 | `.txt` | 134 | 665.8K |
-| `.md` | 127 | 703.0K |
+| `.md` | 129 | 711.3K |
 | `.jsonl` | 45 | 36.7M |
 | `.png` | 30 | 4.1M |
-| `.zip` | 20 | 11.5M |
+| `.zip` | 21 | 11.6M |
 | `.svg` | 11 | 1.1M |
 | `.pdf` | 8 | 184.3K |
 | `.sh` | 8 | 15.5K |
@@ -139,6 +139,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/analyze_recovery_transfer.py`
 - `scripts/analyze_recovery_validation.py`
 - `scripts/audit_repair_exposure.py`
+- `scripts/audit_repair_spectra.py`
 - `scripts/audit_repair_stagnation.py`
 - `scripts/audit_repair_trace_information.py`
 - `scripts/audit_repair_trigger_coverage.py`

@@ -1,18 +1,23 @@
 # Research goal amendment: acquire evidence before another repair?
 
-**Latest verified status (2026-10-27 UTC):** public diagnostic acquisitions can
-now be sealed and projected without re-execution, preserving actual stochastic
-values and local costs. [Eight development snapshots and matched prompts](results/acquisition-preparation-20261027/README.md)
-are prepared offline, including two newly qualified but previously exposed
-Scrapy adapters. An audit shows the retention revision leaves event values
-unchanged on seven of the eight historical failed checkpoints. No new model
-request or monetary allocation is enabled. The proposed next information-value
-study concerns original buggy artifacts after failed public tests; it cannot
-substitute for conditional recovery of generated failures or untouched policy
-validation. All prior gates stay fixed, the six-task recovery stage stays closed,
-and the most recent three-arm intervention still fails its repeatability screen.
-No selector is trained. Cumulative commitment remains $0.20937371 / $0.60,
-including thirteen old reserves. Historical progression is retained below.
+**Latest verified status (2026-10-29 UTC):** the user resumed the unchanged goal.
+The [frozen-region model study](results/frozen-region-stopped-20261027/README.md)
+remains closed after HTTP 429 with 11/32 responses and an inconclusive gate.
+The API can retrieve one known paid receipt, while the dashboard showed no
+requests; the cause of the 429 and fourteen uncertain reserves remain unresolved.
+Support submission is user-managed. Cumulative commitment remains
+$0.22774335 / $0.60; no new allocation or model request was made.
+
+An [offline public-coverage audit](PUBLIC-SPECTRA-AUDIT.md) now provides a concrete
+alternative diagnostic to investigate. On the eight previously exposed original
+bugs, public-test coverage yields different suspiciousness scores among
+failing-executed lines in seven cases and a complete tie in one. This is
+feasibility, not localization accuracy or improved repair. All 48 public
+observations agree across stored, fresh ordinary and covered execution. The
+diagnostic used no reference fix or private evaluator. It does not replace the
+required experiment on model-generated failed checkpoints, the repeatability
+screen or untouched policy evaluation. No selector is trained; all historical
+gates and closed collections are preserved. Historical progression is retained below.
 
 
 Status: user-directed amendment after the closed 4B/12B/27B development studies.

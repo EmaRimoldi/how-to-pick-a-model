@@ -9,8 +9,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `8`
-- Script entrypoints indexed: `60`
-- Code modules indexed: `108`
+- Script entrypoints indexed: `61`
+- Code modules indexed: `110`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `6`
@@ -175,6 +175,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/analyze_recovery_transfer.py` | python | Audit recorded MBPP+ recovery evidence and reproduce the frozen statistical comparisons. Public CLI facade; implementation lives in vao.analysis.analyze_recovery_transfer. |
 | `scripts/analyze_recovery_validation.py` | python | Audit frozen held-out recovery data and replay its finite budgeted policy bank. Public CLI facade; implementation lives in vao.analysis.analyze_recovery_validation. |
 | `scripts/audit_repair_exposure.py` | python | Rebuild/check the minimum documented development-exposure registry, offline. |
+| `scripts/audit_repair_spectra.py` | python | Offline public-spectrum feasibility on the eight already-exposed original bugs. collect executes only local sandboxed cases; replay executes no candidate code. Neither command imports a model client or prepares a provider request. |
 | `scripts/audit_repair_stagnation.py` | python | Audit saved edits after a repair information study terminates; no API calls. |
 | `scripts/audit_repair_trace_information.py` | python | Audit a complete trace calibration archive without executing candidate code. |
 | `scripts/audit_repair_trigger_coverage.py` | python | Audit only closed 27B source checkpoints, never ongoing model outcomes. |
@@ -308,6 +309,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/repair/contrastive_diagnostics.py` | Offline v2 diagnostic: bounded failing/passing traces, without new test oracles. Not a collector or fitted policy. Historical acquisition/worker code is unchanged. | shape, case_input, input_distance, input_truncated, select_pair, compact_trace, expand_trace, acquire |
 | verified orchestration runtime | `src/vao/repair/contrastive_study.py` | Fresh three-arm public-contrast calibration, separately frozen and funded. | design, schedule, planned_requests, construct, validate_packet, validate_origin, validate_diagnostics, main |
 | verified orchestration runtime | `src/vao/repair/coverage_prefix.py` | Six prospective initial repairs; natural checkpoints only, no recovery dispatch. | design, planned_requests, construct, validate_packet, validate_origin, main |
+| verified orchestration runtime | `src/vao/repair/coverage_worker.py` | Standalone bounded line coverage during a candidate call, without test labels. This worker does not reuse sampled trace events: dropped events cannot establish coverage. Candidate imports precede measurement, as in the existing trace worker. Only single-threaded entrypoint execution is supported by this diagnostic. | Coverage, main |
 | verified orchestration runtime | `src/vao/repair/diagnostic_study.py` | Prepare a separately funded public-trace information experiment, never retry. Existing transport, receipts, source freezes and cell audits are reused. The new intervention, repeated schedule and report have their own study identity. | design, without_times, source_records, schedule, planned_requests, construct, validate_packet, validate_origin |
 | verified orchestration runtime | `src/vao/repair/diagnostics.py` | Public-only diagnostic acquisition and matched offline prompt projections. This is an engineering component, not a fitted policy or a live collector. Callers pass public task data, never a RepairTask with evaluator cases. | validate_public, binding, observe, selected_failure, acquire, project |
 | verified orchestration runtime | `src/vao/repair/environment.py` | Store verifiable repair artifacts and fork matched continue/restart requests. | canonical, identity, validate_files, validate_cases, RepairTask, RepairRun, audit_run |
@@ -328,6 +330,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/repair/region_trace_worker.py` | Opt-in bounded traces balanced across executed functions, not known fault sites. Standalone sandbox worker. The historical tail-trace worker stays unchanged. Compact values and execution/scoring boundaries intentionally match that worker. | compact, priority_order, select_events, Trace, main |
 | verified orchestration runtime | `src/vao/repair/region_verifier.py` | Opt-in function-balanced diagnostics; historical verifier remains unchanged. | valid_bounds, RegionRepairVerifier |
 | verified orchestration runtime | `src/vao/repair/solver_study.py` | Prepare a coding-solver compatibility control on fixed failed checkpoints. | design, planned_requests, construct, validate_packet, validate_origin, main |
+| verified orchestration runtime | `src/vao/repair/spectra.py` | Public-test spectrum feasibility; no reference patch, model or fitted selector. | valid_coverage, CoverageVerifier, score, acquire_spectrum, analyze_spectrum |
 | verified orchestration runtime | `src/vao/repair/stream_information_audit.py` | Receipt/stream consistency for the distinct scientific streaming bank. | validate_stream_evidence |
 | verified orchestration runtime | `src/vao/repair/stream_information_study.py` | Distinct matched streaming development calibration; historical banks stay closed. | design, schedule, planned_requests, construct, validate_packet, archived_requests, validate_origin, main |
 | verified orchestration runtime | `src/vao/repair/streaming.py` | Opt-in SSE transport; historical collectors keep their non-streaming adapter. This module enables no collection on import. A new protocol/freeze must opt in. Only a completed identity/usage/terminal sequence becomes a billed observation. Partial text is never treated as a result or retried. Wire bytes stay in memory; safe counts and a digest are persisted, without free-form error/partial content. | StreamProtocolError, SSEFrames, strict_json, ChatStream, StreamingSettings, StreamingOpenRouterTransport |
