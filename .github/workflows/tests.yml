@@ -49,3 +49,6 @@ jobs:
       - name: Verify public-only ablation projections and prospective source-screen provenance
         run: >-
           uv run python experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/reproduce.py
+      - name: Audit new bounded components and all qualification observations
+        run: >-
+          uv run python experiments/python-repair/checkpoint-environment/development-ablation-components/reproduce.py

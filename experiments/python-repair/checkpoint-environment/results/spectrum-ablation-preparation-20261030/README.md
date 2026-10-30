@@ -1,4 +1,17 @@
-# Three-arm ablation preparation: code ready, new cohort not yet qualified
+# Three-arm ablation preparation: bounded components qualified, full cohort pending
+
+**Source qualification update:** all 34 patches have now been reviewed in order.
+The [feasibility review](feasibility-review.json) retains every ID and its required
+context. [Five bounded components](../../development-ablation-components/README.md)
+pass original/fixed qualification across two repeated suites (256 case executions).
+Three cover only part of their upstream patch; overlapping functions leave at
+most three provisional component families across two projects. The other 29 IDs
+need a broader environment. This does **not** freeze the new model cohort or make
+the planned experiment adequately powered. No new model calls occurred.
+
+The metadata-only preparation below and its derived `source-screen.json` are
+retained as the initial snapshot; their zero-qualified count predates the separate
+component qualification. Its evidence and current status are linked above.
 
 The user activated the new selector goal on 2026-10-30. This preparation implements
 the next controlled comparison and begins a prospectively ordered new-source
@@ -59,8 +72,8 @@ verified against their pinned Git blob hashes. All 34 patch headers and metadata
 are in [source-screen.json](source-screen.json); all bytes are retained in
 `source-screen.zip`. No upstream setup/test script was executed. No candidate
 has yet passed adapter, dependency, specification or verifier qualification.
-The first four patches were also read in detail (cookiecutter/2, black/13,
-cookiecutter/4, tqdm/2); no task was selected from those readings. They involve
+At that initial snapshot, the first four patches had also been read in detail
+(cookiecutter/2, black/13, cookiecutter/4, tqdm/2); no task was selected then. They involve
 filesystem hook discovery/execution, tokenizer state, exception propagation and
 display-width handling respectively, so a one-function adapter cannot be assumed
 to preserve the complete upstream fix.
@@ -109,14 +122,14 @@ price verification and declared authorized resources must precede dispatch.
 
 ## Next work and route to the goal
 
-Qualify the complete 34-candidate queue in its recorded order. Keep every
-exclusion with a technical reason, audit shared upstream functions, obtain
-licenses and pinned source/test bytes, and verify original bug/fix behavior in
-isolation. Do not replace hard or uninformative cases based on model outcomes.
-If faithful adapters or independent groups are insufficient, broaden the
-environment/source strategy under a separately recorded prospective selection
-plan while protecting independent evaluation groups. Preserve the current
-scope limitation instead of manufacturing simple substitutes for real bugs.
+The complete 34-candidate patch review now identifies five bounded components
+and 29 cases needing wider context. Their reasons and provisional family overlaps
+are retained. All five bounded components have pinned licenses/source/test bytes
+and repeatable original/fixed behavior. This is insufficient independent source
+diversity: next broaden the environment/source strategy under a separately recorded
+prospective plan while protecting independent evaluation groups. Begin with real
+tokenizer/driver interfaces for deferred parser cases. Do not replace hard or
+uninformative cases based on model outcomes or manufacture simpler substitutes.
 
 Then freeze a numerical cohort/draw design, estimand, missing-data rule,
 minimum useful effect and uncertainty procedure **before any model result**.

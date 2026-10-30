@@ -1,0 +1,16 @@
+{
+  "kind": "offline_engineering_qualification_not_model_protocol",
+  "candidate_order": [
+    "tqdm/2",
+    "tqdm/4",
+    "black/17",
+    "tqdm/8",
+    "tqdm/9"
+  ],
+  "pool_sha256": "040bff5bac9e3b66babf0a08c6f8abff84114080e9d1897743429c6d4c5b0dd6",
+  "upstream_archive_sha256": "fd55fea840ffc2ac0377ad3192a9691b610f94c92dcaf5fd73e2514062755d7e",
+  "source_review_sha256": "823abab066a67001e2faa70dd1342690d8b05c0d3985fbd79a6fc6b5e84daf62",
+  "rule": "Run initial and upstream reference twice on each disjoint suite in native sandbox; retain every failure. No threshold or case edits after observing results without a documented engineering amendment.",
+  "api_model_calls": 0,
+  "fixed_model_cohort": false
+}

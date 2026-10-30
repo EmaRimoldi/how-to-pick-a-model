@@ -28,6 +28,11 @@ def test_published_exposure_registry_matches_authoritative_sources():
             and e['level'] == 'published_development_adapter'
             for e in registry['exposure_evidence'][bug])
 
+    for bug in ("tqdm/2", "tqdm/4", "black/17", "tqdm/8", "tqdm/9"):
+        assert any(e['source'].endswith('/development-ablation-components/pool.json')
+            and e['level'] == 'published_development_adapter'
+            for e in registry['exposure_evidence'][bug])
+
 
 def test_aliases_cannot_evade_bug_or_project_exclusion():
     registry = build()

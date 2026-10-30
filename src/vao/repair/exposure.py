@@ -15,6 +15,7 @@ SOURCES = {
     "extension": BASE + "/development-extension/pool.json",
     "broader": BASE + "/development-broader/pool.json",
     "stateful": BASE + "/development-stateful/pool.json",
+    "ablation_components": BASE + "/development-ablation-components/pool.json",
     "notes": BASE + "/development/exposure-notes.json",
     "ablation": BASE + "/results/spectrum-ablation-preparation-20261030/source-screen.json",
 }
@@ -46,7 +47,7 @@ def build(root: Path = ROOT) -> dict:
         add(row["id"], "screening", "patch_header_inspection")
     for row in data["screening"]["detailed_exclusions"]:
         add(row["id"], "screening", "documented_detailed_exclusion")
-    for source in ("pool", "extension", "broader", "stateful"):
+    for source in ("pool", "extension", "broader", "stateful", "ablation_components"):
         for row in data[source]["tasks"]:
             if row["split"] != "development":
                 raise ValueError("Inspected source pool cannot be relabelled as evaluation")

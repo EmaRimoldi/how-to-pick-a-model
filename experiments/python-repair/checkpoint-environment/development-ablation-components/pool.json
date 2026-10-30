@@ -1,0 +1,1122 @@
+{
+  "schema_version": 1,
+  "status": "development_only",
+  "tasks": [
+    {
+      "id": "tqdm-2",
+      "split": "development",
+      "prefix": "import re\n_unicode = str\n\n",
+      "wrappers": {
+        "buggy": "def solve(data, length):\n    return disp_trim(data, length)\n",
+        "fixed": "def solve(data, length):\n    return disp_trim(data, length)\n"
+      },
+      "instruction": "Repair ANSI-aware display trimming. solve(data, length) returns the input trimmed to at most length visible columns (length is a nonnegative integer). Preserve complete ANSI controls and avoid duplicate reset codes when already present. If trimming leaves active ANSI codes, append one reset. Plain strings require no ANSI reset. Width follows the supplied helper: East Asian W/F characters have width two, other characters width one. Preserve already-fitting content. Inputs contain complete simple ANSI escape sequences and printable characters.",
+      "public_cases": [
+        {
+          "id": "plain-truncation",
+          "args": [
+            "abcdef",
+            3
+          ],
+          "expected": "abc"
+        },
+        {
+          "id": "already-reset",
+          "args": [
+            "\u001b[31mabc\u001b[0m",
+            3
+          ],
+          "expected": "\u001b[31mabc\u001b[0m"
+        },
+        {
+          "id": "colored-truncation",
+          "args": [
+            "\u001b[31mabc",
+            2
+          ],
+          "expected": "\u001b[31mab\u001b[0m"
+        },
+        {
+          "id": "wide-character",
+          "args": [
+            "界x",
+            2
+          ],
+          "expected": "界"
+        },
+        {
+          "id": "empty",
+          "args": [
+            "",
+            0
+          ],
+          "expected": ""
+        },
+        {
+          "id": "reset-with-spare-width",
+          "args": [
+            "\u001b[1mA\u001b[0m",
+            10
+          ],
+          "expected": "\u001b[1mA\u001b[0m"
+        }
+      ],
+      "evaluator_cases": [
+        {
+          "id": "reset-only",
+          "args": [
+            "\u001b[0m",
+            0
+          ],
+          "expected": "\u001b[0m"
+        },
+        {
+          "id": "zero-width-plain",
+          "args": [
+            "12345",
+            0
+          ],
+          "expected": ""
+        },
+        {
+          "id": "two-wide",
+          "args": [
+            "界界x",
+            4
+          ],
+          "expected": "界界"
+        },
+        {
+          "id": "partial-wide",
+          "args": [
+            "界界x",
+            3
+          ],
+          "expected": "界"
+        },
+        {
+          "id": "empty-positive-width",
+          "args": [
+            "",
+            3
+          ],
+          "expected": ""
+        },
+        {
+          "id": "green-reset",
+          "args": [
+            "\u001b[32mZ\u001b[0m",
+            20
+          ],
+          "expected": "\u001b[32mZ\u001b[0m"
+        }
+      ],
+      "provenance": {
+        "kind": "bugsinpy_adapted",
+        "benchmark_id": "tqdm/2",
+        "benchmark_revision": "11c5f1eea954a42132cfd06bf257766a7963e0fd",
+        "sources": {
+          "buggy": {
+            "url": "https://raw.githubusercontent.com/tqdm/tqdm/bef86db56654d271838b145ad77f7040a73a7b4d/tqdm/utils.py",
+            "commit": "bef86db56654d271838b145ad77f7040a73a7b4d",
+            "path": "tqdm/utils.py",
+            "sha256": "2a3b6d42adaf3548a830de37fc03dca4bf3f7c3deb6a14ca910a145051d6ac57",
+            "bytes": 10664,
+            "archive_member": "tqdm/2/buggy.txt",
+            "excerpt": "upstream/tqdm-2/buggy.txt",
+            "excerpt_sha256": "e798013febc9f2ab90a07f1d14f702899079ab52d6d670b8e00bddb6ca18c7c8",
+            "segments": [
+              {
+                "start_line": 12,
+                "end_line": 12,
+                "sha256": "014ab998bf5bc2b704e0be3ba9e598b07d358567d9ac15872a4e4ac05536ce5d"
+              },
+              {
+                "start_line": 337,
+                "end_line": 345,
+                "sha256": "dcf359473f6320ef95b9296d3b6af3bf847d81df9dfb1ea74d1a73ae39e0d8a5"
+              },
+              {
+                "start_line": 348,
+                "end_line": 353,
+                "sha256": "31e73b109ed96bba09a76e355896d744bd9275c75fdc7a97815bc8c8d87ab42b"
+              },
+              {
+                "start_line": 356,
+                "end_line": 367,
+                "sha256": "33ea29e4c2584484252ca26c316a53c10a719f4cfece679826c8336ed126052a"
+              }
+            ]
+          },
+          "fixed": {
+            "url": "https://raw.githubusercontent.com/tqdm/tqdm/127af5caf19e7d29c346f5ca8a9c7ef3004b664b/tqdm/utils.py",
+            "commit": "127af5caf19e7d29c346f5ca8a9c7ef3004b664b",
+            "path": "tqdm/utils.py",
+            "sha256": "478960e000a63fbf793544a3458a6b74314f3c1ce2cb95f4579610e0cf70ec68",
+            "bytes": 10778,
+            "archive_member": "tqdm/2/fixed.txt",
+            "excerpt": "upstream/tqdm-2/fixed.txt",
+            "excerpt_sha256": "c00a85cbba55025a9231ce42b8b0f5902d3767eb060f4cb04e81b6c6c6a20d7b",
+            "segments": [
+              {
+                "start_line": 12,
+                "end_line": 12,
+                "sha256": "014ab998bf5bc2b704e0be3ba9e598b07d358567d9ac15872a4e4ac05536ce5d"
+              },
+              {
+                "start_line": 337,
+                "end_line": 345,
+                "sha256": "dcf359473f6320ef95b9296d3b6af3bf847d81df9dfb1ea74d1a73ae39e0d8a5"
+              },
+              {
+                "start_line": 348,
+                "end_line": 353,
+                "sha256": "31e73b109ed96bba09a76e355896d744bd9275c75fdc7a97815bc8c8d87ab42b"
+              },
+              {
+                "start_line": 356,
+                "end_line": 369,
+                "sha256": "c21c9e5e17494b60f462ace827d9bc9307f2ec6eb6f9b889002d0c1380518bc9"
+              }
+            ]
+          },
+          "tests": {
+            "url": "https://raw.githubusercontent.com/tqdm/tqdm/127af5caf19e7d29c346f5ca8a9c7ef3004b664b/tqdm/tests/tests_tqdm.py",
+            "commit": "127af5caf19e7d29c346f5ca8a9c7ef3004b664b",
+            "path": "tqdm/tests/tests_tqdm.py",
+            "sha256": "d2b488b92e200f692017f01f7217dd0b373ce0256e4a870a836e18bd3d67531e",
+            "bytes": 64193,
+            "archive_member": "tqdm/2/tests.txt"
+          },
+          "license": {
+            "url": "https://raw.githubusercontent.com/tqdm/tqdm/127af5caf19e7d29c346f5ca8a9c7ef3004b664b/LICENCE",
+            "commit": "127af5caf19e7d29c346f5ca8a9c7ef3004b664b",
+            "path": "LICENCE",
+            "sha256": "1bbf12d09d437844527b3cdaba01d379dac651b5cbb5ebb0d764274684d2680b",
+            "bytes": 2003,
+            "archive_member": "tqdm/2/license.txt",
+            "local_path": "upstream/tqdm-2/LICENSE.txt"
+          }
+        },
+        "scope": "Complete disp_trim, disp_len and Unicode width block only; excludes the separate std.format_meter patch component and terminal I/O.",
+        "adaptation": "Verbatim complete function bodies; identical prefix and JSON wrapper for buggy/fixed. Python3 aliases chr/str and standard-library imports replace unused project imports. Static methods retain decorators/indentation in a minimal tqdm class; no behavioral stubs.",
+        "case_origin": "Hand-specified development cases including upstream regression examples and disjoint preservation/boundary cases; not the complete upstream test suite.",
+        "exposure": "Inspected development component; all tests and reference published, never independent holdout."
+      }
+    },
+    {
+      "id": "tqdm-4",
+      "split": "development",
+      "prefix": "import re\n_unich = chr\nRE_ANSI = re.compile(r\"\\x1b\\[[;\\d]*[A-Za-z]\")\n\nclass tqdm:\n",
+      "wrappers": {
+        "buggy": "def solve(parameters):\n    return tqdm.format_meter(**parameters)\n",
+        "fixed": "def solve(parameters):\n    return tqdm.format_meter(**parameters)\n"
+      },
+      "instruction": "Repair the original progress-meter formatting. solve(parameters) forwards keyword arguments to format_meter. Preserve all existing formatting options. A numeric unit_scale other than 0 or 1 scales the iteration count and explicit rate, and scales the total only if a total exists. An absent, zero or overrun total means display progress statistics without a percentage or ETA. True/1 selects SI formatting. Inputs use valid format strings, nonnegative counts/time, positive numeric scales and finite optional rates.",
+      "public_cases": [
+        {
+          "id": "scaled-unknown",
+          "args": [
+            {
+              "n": 10,
+              "total": null,
+              "elapsed": 2,
+              "unit_scale": 2
+            }
+          ],
+          "expected": "20it [00:02, 10.00it/s]"
+        },
+        {
+          "id": "scaled-empty",
+          "args": [
+            {
+              "n": 0,
+              "total": null,
+              "elapsed": 0,
+              "unit_scale": 3
+            }
+          ],
+          "expected": "0it [00:00, ?it/s]"
+        },
+        {
+          "id": "scaled-overrun",
+          "args": [
+            {
+              "n": 2,
+              "total": 1,
+              "elapsed": 2,
+              "unit_scale": 3
+            }
+          ],
+          "expected": "6it [00:02,  3.00it/s]"
+        },
+        {
+          "id": "scaled-known",
+          "args": [
+            {
+              "n": 1,
+              "total": 4,
+              "elapsed": 1,
+              "unit_scale": 2,
+              "ncols": 0
+            }
+          ],
+          "expected": " 25% 2/8 [00:01<00:03,  2.00it/s]"
+        },
+        {
+          "id": "unscaled-unknown",
+          "args": [
+            {
+              "n": 3,
+              "total": null,
+              "elapsed": 1
+            }
+          ],
+          "expected": "3it [00:01,  3.00it/s]"
+        },
+        {
+          "id": "si-unknown",
+          "args": [
+            {
+              "n": 1000,
+              "total": null,
+              "elapsed": 1,
+              "unit_scale": true
+            }
+          ],
+          "expected": "1.00kit [00:01, 1.00kit/s]"
+        }
+      ],
+      "evaluator_cases": [
+        {
+          "id": "manual-rate-scaled",
+          "args": [
+            {
+              "n": 4,
+              "total": null,
+              "elapsed": 2,
+              "unit_scale": 2,
+              "rate": 3
+            }
+          ],
+          "expected": "8it [00:02,  6.00it/s]"
+        },
+        {
+          "id": "zero-total",
+          "args": [
+            {
+              "n": 2,
+              "total": 0,
+              "elapsed": 2,
+              "unit_scale": 2
+            }
+          ],
+          "expected": "4it [00:02,  2.00it/s]"
+        },
+        {
+          "id": "fractional-scale",
+          "args": [
+            {
+              "n": 2,
+              "total": null,
+              "elapsed": 1,
+              "unit_scale": 0.5
+            }
+          ],
+          "expected": "1.0it [00:01,  1.00it/s]"
+        },
+        {
+          "id": "prefix-and-unit",
+          "args": [
+            {
+              "n": 5,
+              "total": null,
+              "elapsed": 3,
+              "unit_scale": 3,
+              "prefix": "files",
+              "unit": "B"
+            }
+          ],
+          "expected": "files: 15B [00:03,  5.00B/s]"
+        },
+        {
+          "id": "other-known",
+          "args": [
+            {
+              "n": 2,
+              "total": 8,
+              "elapsed": 2,
+              "unit_scale": 3,
+              "ncols": 0
+            }
+          ],
+          "expected": " 25% 6/24 [00:02<00:06,  3.00it/s]"
+        },
+        {
+          "id": "preserve-zero-rate",
+          "args": [
+            {
+              "n": 0,
+              "total": null,
+              "elapsed": 2
+            }
+          ],
+          "expected": "0it [00:02, ?it/s]"
+        }
+      ],
+      "provenance": {
+        "kind": "bugsinpy_adapted",
+        "benchmark_id": "tqdm/4",
+        "benchmark_revision": "11c5f1eea954a42132cfd06bf257766a7963e0fd",
+        "sources": {
+          "buggy": {
+            "url": "https://raw.githubusercontent.com/tqdm/tqdm/03b347646492131d889871939b40457d29147216/tqdm/_tqdm.py",
+            "commit": "03b347646492131d889871939b40457d29147216",
+            "path": "tqdm/_tqdm.py",
+            "sha256": "62fff8cc0cbb11126dc7ef734e8fba4e67d1b9272d449b8203aaddaccd354a58",
+            "bytes": 49523,
+            "archive_member": "tqdm/4/buggy.txt",
+            "excerpt": "upstream/tqdm-4/buggy.txt",
+            "excerpt_sha256": "8bba5103f562c09008f7cb015b4057f1c6f98b21da5301a450be0e539c11e977",
+            "segments": [
+              {
+                "start_line": 139,
+                "end_line": 167,
+                "sha256": "78304594bc0488dc75c8f855ecc7b23cd200168ce51db63b16d52558e19bf273"
+              },
+              {
+                "start_line": 169,
+                "end_line": 189,
+                "sha256": "f466fd357117a506a09495c777c8bad541e457fdde1d605978a524fe898a0b38"
+              },
+              {
+                "start_line": 252,
+                "end_line": 451,
+                "sha256": "40494bba58556cbc8014eba63c1b478501f84e327df232e7c6781a561e7d1195"
+              }
+            ]
+          },
+          "fixed": {
+            "url": "https://raw.githubusercontent.com/tqdm/tqdm/964dee631d0ed30e2f799b42fc58ba5e73795a08/tqdm/_tqdm.py",
+            "commit": "964dee631d0ed30e2f799b42fc58ba5e73795a08",
+            "path": "tqdm/_tqdm.py",
+            "sha256": "d9534a4b6ed568ab50ebbc989ea8575ff621b8defe1b5dfd102f5a7f42f998df",
+            "bytes": 49549,
+            "archive_member": "tqdm/4/fixed.txt",
+            "excerpt": "upstream/tqdm-4/fixed.txt",
+            "excerpt_sha256": "4191a609dd8f2aed5d502b300a055bb67bbb30e4e8087929fa3d725990d56220",
+            "segments": [
+              {
+                "start_line": 139,
+                "end_line": 167,
+                "sha256": "78304594bc0488dc75c8f855ecc7b23cd200168ce51db63b16d52558e19bf273"
+              },
+              {
+                "start_line": 169,
+                "end_line": 189,
+                "sha256": "f466fd357117a506a09495c777c8bad541e457fdde1d605978a524fe898a0b38"
+              },
+              {
+                "start_line": 252,
+                "end_line": 452,
+                "sha256": "529aeecf28b2e6bb2c5b268996e21430f83fb1afdb0851f8a49c00be73bf55e1"
+              }
+            ]
+          },
+          "tests": {
+            "url": "https://raw.githubusercontent.com/tqdm/tqdm/964dee631d0ed30e2f799b42fc58ba5e73795a08/tqdm/tests/tests_tqdm.py",
+            "commit": "964dee631d0ed30e2f799b42fc58ba5e73795a08",
+            "path": "tqdm/tests/tests_tqdm.py",
+            "sha256": "9d0914f40b0fbbb69e37e2a949a1e3b962de3e1919d7be2a414b5bedc2b9839e",
+            "bytes": 57092,
+            "archive_member": "tqdm/4/tests.txt"
+          },
+          "license": {
+            "url": "https://raw.githubusercontent.com/tqdm/tqdm/964dee631d0ed30e2f799b42fc58ba5e73795a08/LICENCE",
+            "commit": "964dee631d0ed30e2f799b42fc58ba5e73795a08",
+            "path": "LICENCE",
+            "sha256": "1bbf12d09d437844527b3cdaba01d379dac651b5cbb5ebb0d764274684d2680b",
+            "bytes": 2003,
+            "archive_member": "tqdm/4/license.txt",
+            "local_path": "upstream/tqdm-4/LICENSE.txt"
+          },
+          "helpers": {
+            "url": "https://raw.githubusercontent.com/tqdm/tqdm/964dee631d0ed30e2f799b42fc58ba5e73795a08/tqdm/_utils.py",
+            "commit": "964dee631d0ed30e2f799b42fc58ba5e73795a08",
+            "path": "tqdm/_utils.py",
+            "sha256": "dfbd3a7af48856638dbe45d795dd32d5bac279b9edca03c96f7fa28a034e753b",
+            "bytes": 6886,
+            "archive_member": "tqdm/4/helpers.txt"
+          }
+        },
+        "scope": "Complete static format_meter, format_interval and format_sizeof with verbatim bodies; omits progress-object lifecycle and terminal I/O, which these calls do not use.",
+        "adaptation": "Verbatim complete function bodies; identical prefix and JSON wrapper for buggy/fixed. Python3 aliases chr/str and standard-library imports replace unused project imports. Static methods retain decorators/indentation in a minimal tqdm class; no behavioral stubs.",
+        "case_origin": "Hand-specified development cases including upstream regression examples and disjoint preservation/boundary cases; not the complete upstream test suite.",
+        "exposure": "Inspected development component; all tests and reference published, never independent holdout."
+      }
+    },
+    {
+      "id": "black-17",
+      "split": "development",
+      "prefix": "import io\nimport tokenize\nfrom typing import Tuple\nFileContent = Encoding = NewLine = str\n\n",
+      "wrappers": {
+        "buggy": "def solve(hex_bytes):\n    return decode_bytes(bytes.fromhex(hex_bytes))\n",
+        "fixed": "def solve(hex_bytes):\n    return decode_bytes(bytes.fromhex(hex_bytes))\n"
+      },
+      "instruction": "Repair source-byte decoding. solve(hex_bytes) takes the hexadecimal encoding of Python source bytes and returns [decoded_text, encoding, newline]. Detect the encoding using the standard Python source-encoding rules, including BOM and encoding comments; decode with universal newline normalization. Report CRLF only if the first detected source line ends in CRLF, otherwise LF. Empty input and a UTF-8 BOM without source decode to empty text and use LF. Preserve ordinary encoded source behavior.",
+      "public_cases": [
+        {
+          "id": "empty",
+          "args": [
+            ""
+          ],
+          "expected": [
+            "",
+            "utf-8",
+            "\n"
+          ]
+        },
+        {
+          "id": "lf-source",
+          "args": [
+            "78203d20310a"
+          ],
+          "expected": [
+            "x = 1\n",
+            "utf-8",
+            "\n"
+          ]
+        },
+        {
+          "id": "crlf-source",
+          "args": [
+            "78203d20310d0a"
+          ],
+          "expected": [
+            "x = 1\n",
+            "utf-8",
+            "\r\n"
+          ]
+        },
+        {
+          "id": "bare-newline",
+          "args": [
+            "0a"
+          ],
+          "expected": [
+            "\n",
+            "utf-8",
+            "\n"
+          ]
+        },
+        {
+          "id": "utf8-non-ascii",
+          "args": [
+            "2320636166c3a90a"
+          ],
+          "expected": [
+            "# café\n",
+            "utf-8",
+            "\n"
+          ]
+        },
+        {
+          "id": "bom-source",
+          "args": [
+            "efbbbf78203d20320a"
+          ],
+          "expected": [
+            "x = 2\n",
+            "utf-8-sig",
+            "\n"
+          ]
+        }
+      ],
+      "evaluator_cases": [
+        {
+          "id": "bom-only",
+          "args": [
+            "efbbbf"
+          ],
+          "expected": [
+            "",
+            "utf-8-sig",
+            "\n"
+          ]
+        },
+        {
+          "id": "mixed-newlines",
+          "args": [
+            "610d0a620a630d"
+          ],
+          "expected": [
+            "a\nb\nc\n",
+            "utf-8",
+            "\r\n"
+          ]
+        },
+        {
+          "id": "no-final-newline",
+          "args": [
+            "793d35"
+          ],
+          "expected": [
+            "y=5",
+            "utf-8",
+            "\n"
+          ]
+        },
+        {
+          "id": "cr-only",
+          "args": [
+            "610d620d"
+          ],
+          "expected": [
+            "a\nb\n",
+            "utf-8",
+            "\n"
+          ]
+        },
+        {
+          "id": "latin1-cookie",
+          "args": [
+            "2320636f64696e673a206c6174696e2d310a2320636166e90a"
+          ],
+          "expected": [
+            "# coding: latin-1\n# café\n",
+            "iso-8859-1",
+            "\n"
+          ]
+        },
+        {
+          "id": "bom-crlf",
+          "args": [
+            "efbbbf7a0d0a"
+          ],
+          "expected": [
+            "z\n",
+            "utf-8-sig",
+            "\r\n"
+          ]
+        }
+      ],
+      "provenance": {
+        "kind": "bugsinpy_adapted",
+        "benchmark_id": "black/17",
+        "benchmark_revision": "11c5f1eea954a42132cfd06bf257766a7963e0fd",
+        "sources": {
+          "buggy": {
+            "url": "https://raw.githubusercontent.com/psf/black/bbc09a4f013f2a584f143f3f5e3f76f6082367d4/black.py",
+            "commit": "bbc09a4f013f2a584f143f3f5e3f76f6082367d4",
+            "path": "black.py",
+            "sha256": "5b70bf29db38f7c7f1dc3bd452cc0e812f59fbd09df70981a12ea215891b7c21",
+            "bytes": 110562,
+            "archive_member": "black/17/buggy.txt",
+            "excerpt": "upstream/black-17/buggy.txt",
+            "excerpt_sha256": "63bf7bbe5ea7ceb3c2542c2186c207a529f0b9e0ffdb94a13fc9693689ad6795",
+            "segments": [
+              {
+                "start_line": 602,
+                "end_line": 613,
+                "sha256": "63bf7bbe5ea7ceb3c2542c2186c207a529f0b9e0ffdb94a13fc9693689ad6795"
+              }
+            ]
+          },
+          "fixed": {
+            "url": "https://raw.githubusercontent.com/psf/black/7fc6ce990669464f5172b63fafa3724f5f308be3/black.py",
+            "commit": "7fc6ce990669464f5172b63fafa3724f5f308be3",
+            "path": "black.py",
+            "sha256": "1e1b10bf5a3751b9a6cf3c94577e84b6a726ef2f3f670e6f655d04f256e45155",
+            "bytes": 110616,
+            "archive_member": "black/17/fixed.txt",
+            "excerpt": "upstream/black-17/fixed.txt",
+            "excerpt_sha256": "f8cb7eadcf563d09feb7f871432db8017a14a07b305216f938c9ace88f253088",
+            "segments": [
+              {
+                "start_line": 602,
+                "end_line": 616,
+                "sha256": "f8cb7eadcf563d09feb7f871432db8017a14a07b305216f938c9ace88f253088"
+              }
+            ]
+          },
+          "tests": {
+            "url": "https://raw.githubusercontent.com/psf/black/7fc6ce990669464f5172b63fafa3724f5f308be3/tests/test_black.py",
+            "commit": "7fc6ce990669464f5172b63fafa3724f5f308be3",
+            "path": "tests/test_black.py",
+            "sha256": "01914e8cdbcac87d02880e2e816d5cf960463c95ef8a751d60fafb6885b5007d",
+            "bytes": 48847,
+            "archive_member": "black/17/tests.txt"
+          },
+          "license": {
+            "url": "https://raw.githubusercontent.com/psf/black/7fc6ce990669464f5172b63fafa3724f5f308be3/LICENSE",
+            "commit": "7fc6ce990669464f5172b63fafa3724f5f308be3",
+            "path": "LICENSE",
+            "sha256": "9c0428f0c3b4779850cf5bd96e11aaa8afc72d4a86d4a36223d7aba2e58d6e00",
+            "bytes": 1080,
+            "archive_member": "black/17/license.txt",
+            "local_path": "upstream/black-17/LICENSE.txt"
+          }
+        },
+        "scope": "Complete decode_bytes only; excludes the separate lib2to3_parse empty-source change and file formatting pipeline.",
+        "adaptation": "Verbatim complete function bodies; identical prefix and JSON wrapper for buggy/fixed. Python3 aliases chr/str and standard-library imports replace unused project imports. Static methods retain decorators/indentation in a minimal tqdm class; no behavioral stubs.",
+        "case_origin": "Hand-specified development cases including upstream regression examples and disjoint preservation/boundary cases; not the complete upstream test suite.",
+        "exposure": "Inspected development component; all tests and reference published, never independent holdout."
+      }
+    },
+    {
+      "id": "tqdm-8",
+      "split": "development",
+      "prefix": "_unich = chr\n\nclass tqdm:\n",
+      "wrappers": {
+        "buggy": "def solve(parameters):\n    return tqdm.format_meter(**parameters)\n",
+        "fixed": "def solve(parameters):\n    return tqdm.format_meter(**parameters)\n"
+      },
+      "instruction": "Repair progress-meter formatting while preserving default output and numeric formatting. solve(parameters) forwards keywords to format_meter. A custom bar_format containing {bar} must interpolate its own left and right fragments, including supplied desc and numeric fields, then fill the remaining width with the progress bar. Without ncols the bar itself is ten characters; with ncols leave at least one bar character. Formats without {bar} are interpolated directly. Inputs use valid placeholders and nonnegative counts and elapsed times.",
+      "public_cases": [
+        {
+          "id": "upstream-short",
+          "args": [
+            {
+              "n": 20,
+              "total": 100,
+              "elapsed": 12,
+              "ncols": 13,
+              "rate": 8.1,
+              "bar_format": "{l_bar}{bar}|{n_fmt}/{total_fmt}"
+            }
+          ],
+          "expected": " 20%|▏|20/100"
+        },
+        {
+          "id": "upstream-wider",
+          "args": [
+            {
+              "n": 20,
+              "total": 100,
+              "elapsed": 12,
+              "ncols": 14,
+              "rate": 8.1,
+              "bar_format": "{l_bar}{bar}|{n_fmt}/{total_fmt}"
+            }
+          ],
+          "expected": " 20%|▍ |20/100"
+        },
+        {
+          "id": "custom-prefix",
+          "args": [
+            {
+              "n": 1,
+              "total": 4,
+              "elapsed": 1,
+              "ascii": true,
+              "prefix": "run",
+              "bar_format": "{desc}[{bar}] {n}/{total}"
+            }
+          ],
+          "expected": "run[##5       ] 1/4"
+        },
+        {
+          "id": "without-bar",
+          "args": [
+            {
+              "n": 1,
+              "total": 4,
+              "elapsed": 1,
+              "bar_format": "{n}/{total}"
+            }
+          ],
+          "expected": "1/4"
+        },
+        {
+          "id": "default-empty",
+          "args": [
+            {
+              "n": 0,
+              "total": 10,
+              "elapsed": 1,
+              "ascii": true
+            }
+          ],
+          "expected": "  0%|          | 0/10 [00:01<?, ?it/s]"
+        },
+        {
+          "id": "complete-custom",
+          "args": [
+            {
+              "n": 4,
+              "total": 4,
+              "elapsed": 1,
+              "ascii": true,
+              "prefix": "done",
+              "bar_format": "{desc}:{bar}"
+            }
+          ],
+          "expected": "done:##########"
+        }
+      ],
+      "evaluator_cases": [
+        {
+          "id": "half-bar",
+          "args": [
+            {
+              "n": 2,
+              "total": 4,
+              "elapsed": 1,
+              "ascii": true,
+              "bar_format": "A{bar}B"
+            }
+          ],
+          "expected": "A#####     B"
+        },
+        {
+          "id": "empty-custom",
+          "args": [
+            {
+              "n": 0,
+              "total": 4,
+              "elapsed": 1,
+              "ascii": true,
+              "bar_format": "X{bar}Y"
+            }
+          ],
+          "expected": "X          Y"
+        },
+        {
+          "id": "full-custom",
+          "args": [
+            {
+              "n": 4,
+              "total": 4,
+              "elapsed": 1,
+              "ascii": true,
+              "bar_format": "{bar}!"
+            }
+          ],
+          "expected": "##########!"
+        },
+        {
+          "id": "unicode-custom",
+          "args": [
+            {
+              "n": 1,
+              "total": 2,
+              "elapsed": 1,
+              "bar_format": "{bar}"
+            }
+          ],
+          "expected": "█████     "
+        },
+        {
+          "id": "no-bar-format",
+          "args": [
+            {
+              "n": 2,
+              "total": 3,
+              "elapsed": 1,
+              "prefix": "batch",
+              "bar_format": "task={desc}, rate={rate_noinv_fmt}"
+            }
+          ],
+          "expected": "task=batch, rate= 2.00it/s"
+        },
+        {
+          "id": "unknown-total",
+          "args": [
+            {
+              "n": 3,
+              "total": null,
+              "elapsed": 1
+            }
+          ],
+          "expected": "3it [00:01,  3.00it/s]"
+        }
+      ],
+      "provenance": {
+        "kind": "bugsinpy_adapted",
+        "benchmark_id": "tqdm/8",
+        "benchmark_revision": "11c5f1eea954a42132cfd06bf257766a7963e0fd",
+        "sources": {
+          "buggy": {
+            "url": "https://raw.githubusercontent.com/tqdm/tqdm/08b8ad1ff3bd003ef8309faaa0cc108ffa40317d/tqdm/_tqdm.py",
+            "commit": "08b8ad1ff3bd003ef8309faaa0cc108ffa40317d",
+            "path": "tqdm/_tqdm.py",
+            "sha256": "b82ba00fe2ea6fc314f9419296d0c7998596663437a3e3e0a0e2ffdab3f1a91b",
+            "bytes": 31687,
+            "archive_member": "tqdm/8/buggy.txt",
+            "excerpt": "upstream/tqdm-8/buggy.txt",
+            "excerpt_sha256": "11a331161591a070fcd6526b2d49a7054c7c34783acc87fc8898b0b5df7dfbe8",
+            "segments": [
+              {
+                "start_line": 31,
+                "end_line": 57,
+                "sha256": "ad5c23e04c4a528c585265a5e0f34fc2ec2f05d904f6bcbd8aafb3af24a93b31"
+              },
+              {
+                "start_line": 59,
+                "end_line": 78,
+                "sha256": "ed9f03a7061e910d604967828e190cb7ed567dc0344289384c58dfee8d0293a8"
+              },
+              {
+                "start_line": 103,
+                "end_line": 265,
+                "sha256": "0b2ab301ebe2ed90f4687f331f79e3a103a4a327a7a757a63b7dac129a7e6c02"
+              }
+            ]
+          },
+          "fixed": {
+            "url": "https://raw.githubusercontent.com/tqdm/tqdm/cae9d139c6df5614be3bf6e25ccbd600ee3286dc/tqdm/_tqdm.py",
+            "commit": "cae9d139c6df5614be3bf6e25ccbd600ee3286dc",
+            "path": "tqdm/_tqdm.py",
+            "sha256": "2c1c3ee7ba3e82be33a18ed93ef92d8cc9c46904fade2b1a44d8326acaf8a594",
+            "bytes": 31697,
+            "archive_member": "tqdm/8/fixed.txt",
+            "excerpt": "upstream/tqdm-8/fixed.txt",
+            "excerpt_sha256": "0b1094a49a32662d0e7584b97c3468a519f97275d786624396c8b13e17df8d98",
+            "segments": [
+              {
+                "start_line": 31,
+                "end_line": 57,
+                "sha256": "ad5c23e04c4a528c585265a5e0f34fc2ec2f05d904f6bcbd8aafb3af24a93b31"
+              },
+              {
+                "start_line": 59,
+                "end_line": 78,
+                "sha256": "ed9f03a7061e910d604967828e190cb7ed567dc0344289384c58dfee8d0293a8"
+              },
+              {
+                "start_line": 103,
+                "end_line": 265,
+                "sha256": "28af755ebffef449430d9eb0e2c0dc25a54cd70f984ed930f018ccf33a5cc228"
+              }
+            ]
+          },
+          "tests": {
+            "url": "https://raw.githubusercontent.com/tqdm/tqdm/cae9d139c6df5614be3bf6e25ccbd600ee3286dc/tqdm/tests/tests_tqdm.py",
+            "commit": "cae9d139c6df5614be3bf6e25ccbd600ee3286dc",
+            "path": "tqdm/tests/tests_tqdm.py",
+            "sha256": "f92ff31cfc8f5f1428c460b887e33a44030f752070bdee43670424c03ead3f62",
+            "bytes": 41058,
+            "archive_member": "tqdm/8/tests.txt"
+          },
+          "license": {
+            "url": "https://raw.githubusercontent.com/tqdm/tqdm/cae9d139c6df5614be3bf6e25ccbd600ee3286dc/LICENCE",
+            "commit": "cae9d139c6df5614be3bf6e25ccbd600ee3286dc",
+            "path": "LICENCE",
+            "sha256": "232ce6a698ba6f06e305ceb51ece90b3601c29674e8d3f646e5593d41cb07e32",
+            "bytes": 1866,
+            "archive_member": "tqdm/8/license.txt",
+            "local_path": "upstream/tqdm-8/LICENSE.txt"
+          }
+        },
+        "scope": "Complete static format_meter, format_interval and format_sizeof; omits progress-object lifecycle and terminal I/O.",
+        "adaptation": "Verbatim complete function bodies; identical prefix and JSON wrapper for buggy/fixed. Python3 aliases chr/str and standard-library imports replace unused project imports. Static methods retain decorators/indentation in a minimal tqdm class; no behavioral stubs.",
+        "case_origin": "Hand-specified development cases including upstream regression examples and disjoint preservation/boundary cases; not the complete upstream test suite.",
+        "exposure": "Inspected development component; all tests and reference published, never independent holdout."
+      }
+    },
+    {
+      "id": "tqdm-9",
+      "split": "development",
+      "prefix": "",
+      "wrappers": {
+        "buggy": "def solve(num, suffix):\n    return format_sizeof(num, suffix)\n",
+        "fixed": "def solve(num, suffix):\n    return format_sizeof(num, suffix)\n"
+      },
+      "instruction": "Repair SI-prefix number formatting. solve(num, suffix) returns a compact number followed by an SI prefix and the literal suffix. Prefixes are empty, K, M, G, T, P, E, Z, Y with factors of 1000. Choose precision so rounding near an order boundary does not produce an extra digit (e.g. 9999 becomes 10.0K, 999999 becomes 1.00M). Preserve sign, zero, suffix and ordinary magnitudes. Inputs are finite numbers; use the existing Python numeric formatting convention.",
+      "public_cases": [
+        {
+          "id": "upstream-10k",
+          "args": [
+            9999,
+            ""
+          ],
+          "expected": "10.0K"
+        },
+        {
+          "id": "upstream-100k",
+          "args": [
+            99999,
+            ""
+          ],
+          "expected": "100K"
+        },
+        {
+          "id": "upstream-million",
+          "args": [
+            999999,
+            ""
+          ],
+          "expected": "1.00M"
+        },
+        {
+          "id": "one",
+          "args": [
+            1,
+            ""
+          ],
+          "expected": "1.00"
+        },
+        {
+          "id": "zero",
+          "args": [
+            0,
+            ""
+          ],
+          "expected": "0.00"
+        },
+        {
+          "id": "suffix",
+          "args": [
+            1000,
+            "B"
+          ],
+          "expected": "1.00KB"
+        },
+        {
+          "id": "below-transition",
+          "args": [
+            9994,
+            ""
+          ],
+          "expected": "9.99K"
+        },
+        {
+          "id": "negative",
+          "args": [
+            -999999,
+            ""
+          ],
+          "expected": "-1.00M"
+        }
+      ],
+      "evaluator_cases": [
+        {
+          "id": "units-round",
+          "args": [
+            9.999,
+            ""
+          ],
+          "expected": "10.0"
+        },
+        {
+          "id": "tens-round",
+          "args": [
+            99.999,
+            ""
+          ],
+          "expected": "100"
+        },
+        {
+          "id": "thousands-round",
+          "args": [
+            999.999,
+            ""
+          ],
+          "expected": "1.00K"
+        },
+        {
+          "id": "giga-round",
+          "args": [
+            999999999,
+            ""
+          ],
+          "expected": "1.00G"
+        },
+        {
+          "id": "negative-tens",
+          "args": [
+            -99.999,
+            "B"
+          ],
+          "expected": "-100B"
+        },
+        {
+          "id": "mega-suffix",
+          "args": [
+            1000000.0,
+            "Hz"
+          ],
+          "expected": "1.00MHz"
+        },
+        {
+          "id": "plain-tens",
+          "args": [
+            12,
+            ""
+          ],
+          "expected": "12.0"
+        },
+        {
+          "id": "plain-hundreds",
+          "args": [
+            123,
+            ""
+          ],
+          "expected": "123"
+        }
+      ],
+      "provenance": {
+        "kind": "bugsinpy_adapted",
+        "benchmark_id": "tqdm/9",
+        "benchmark_revision": "11c5f1eea954a42132cfd06bf257766a7963e0fd",
+        "sources": {
+          "buggy": {
+            "url": "https://raw.githubusercontent.com/tqdm/tqdm/9da1d5d116aec7a23d8f6dc22d5e23ecb1c40a7c/tqdm/_tqdm.py",
+            "commit": "9da1d5d116aec7a23d8f6dc22d5e23ecb1c40a7c",
+            "path": "tqdm/_tqdm.py",
+            "sha256": "c435b57819b3ca0755723816cb2c5501fe3f38240c0c7a4ce6b9fba4e8bf5a4f",
+            "bytes": 23186,
+            "archive_member": "tqdm/9/buggy.txt",
+            "excerpt": "upstream/tqdm-9/buggy.txt",
+            "excerpt_sha256": "b1e156247a8a637e6cbf382322906254033327497e29cd09d6d1217429e8b850",
+            "segments": [
+              {
+                "start_line": 24,
+                "end_line": 48,
+                "sha256": "b1e156247a8a637e6cbf382322906254033327497e29cd09d6d1217429e8b850"
+              }
+            ]
+          },
+          "fixed": {
+            "url": "https://raw.githubusercontent.com/tqdm/tqdm/d877c1dfb4739852105f7b967a8fceb869ac5042/tqdm/_tqdm.py",
+            "commit": "d877c1dfb4739852105f7b967a8fceb869ac5042",
+            "path": "tqdm/_tqdm.py",
+            "sha256": "194365f0de9b94363d1eadc108aacab9b6549d627df694d367a04ff01afd89e2",
+            "bytes": 23224,
+            "archive_member": "tqdm/9/fixed.txt",
+            "excerpt": "upstream/tqdm-9/fixed.txt",
+            "excerpt_sha256": "402e8e32e18ac6adf6bf04f3347d4d3f0951ee5fb58f79103d6ead9856be4282",
+            "segments": [
+              {
+                "start_line": 24,
+                "end_line": 48,
+                "sha256": "402e8e32e18ac6adf6bf04f3347d4d3f0951ee5fb58f79103d6ead9856be4282"
+              }
+            ]
+          },
+          "tests": {
+            "url": "https://raw.githubusercontent.com/tqdm/tqdm/d877c1dfb4739852105f7b967a8fceb869ac5042/tqdm/tests/tests_tqdm.py",
+            "commit": "d877c1dfb4739852105f7b967a8fceb869ac5042",
+            "path": "tqdm/tests/tests_tqdm.py",
+            "sha256": "ab9da9a5e0b30fe8bac87c373ccfe91398d20b790afe3543eaf635b791d91c14",
+            "bytes": 7302,
+            "archive_member": "tqdm/9/tests.txt"
+          },
+          "license": {
+            "url": "https://raw.githubusercontent.com/tqdm/tqdm/d877c1dfb4739852105f7b967a8fceb869ac5042/LICENSE",
+            "commit": "d877c1dfb4739852105f7b967a8fceb869ac5042",
+            "path": "LICENSE",
+            "sha256": "8a81e6927adb948c4036e479f7a5996f6dcf1f75b58c48737e2e66461ec25e11",
+            "bytes": 1075,
+            "archive_member": "tqdm/9/license.txt",
+            "local_path": "upstream/tqdm-9/LICENSE.txt"
+          }
+        },
+        "scope": "Complete format_sizeof only; excludes the separate __len__ change and progress-object lifecycle.",
+        "adaptation": "Verbatim complete function bodies; identical prefix and JSON wrapper for buggy/fixed. Python3 aliases chr/str and standard-library imports replace unused project imports. Static methods retain decorators/indentation in a minimal tqdm class; no behavioral stubs.",
+        "case_origin": "Hand-specified development cases including upstream regression examples and disjoint preservation/boundary cases; not the complete upstream test suite.",
+        "exposure": "Inspected development component; all tests and reference published, never independent holdout."
+      }
+    }
+  ]
+}

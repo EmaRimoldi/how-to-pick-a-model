@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `926`
-- Bytes indexed: `69.6M`
+- Files indexed: `951`
+- Bytes indexed: `70.2M`
 
 ## Canonical Entrypoints
 
@@ -48,13 +48,13 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 621 | 64.4M |
+| `experiments` | 646 | 65.0M |
 | `docs` | 53 | 2.6M |
 | `src` | 119 | 1.1M |
 | `uv.lock` | 1 | 937.0K |
-| `tests` | 57 | 408.9K |
+| `tests` | 57 | 409.2K |
 | `scripts` | 67 | 188.9K |
-| `.github` | 5 | 4.4K |
+| `.github` | 5 | 4.6K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
 | `LICENSE` | 1 | 1.0K |
@@ -63,13 +63,13 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 255 | 1.8M |
-| `.json` | 243 | 8.8M |
-| `.md` | 138 | 909.2K |
-| `.txt` | 134 | 665.8K |
+| `.py` | 256 | 1.8M |
+| `.json` | 248 | 8.9M |
+| `.txt` | 150 | 727.5K |
+| `.md` | 139 | 916.5K |
 | `.jsonl` | 45 | 36.7M |
 | `.png` | 31 | 4.2M |
-| `.zip` | 25 | 12.7M |
+| `.zip` | 27 | 13.1M |
 | `.svg` | 11 | 1.1M |
 | `.pdf` | 8 | 184.3K |
 | `.sh` | 8 | 15.5K |
@@ -84,7 +84,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.dataset` | 1 | 11.1K |
 | `.example` | 1 | 773B |
 | `.sty` | 1 | 13.2K |
-| `.yml` | 1 | 2.6K |
+| `.yml` | 1 | 2.8K |
 
 ## Experiment Readmes
 
@@ -101,6 +101,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/mbpp-plus/context-value-transfer/README.md`
 - `experiments/mbpp-plus/context-value-transfer/results/replication-20261022/README.md`
 - `experiments/python-repair/checkpoint-environment/README.md`
+- `experiments/python-repair/checkpoint-environment/development-ablation-components/README.md`
 - `experiments/python-repair/checkpoint-environment/development-broader/README.md`
 - `experiments/python-repair/checkpoint-environment/development-extension/README.md`
 - `experiments/python-repair/checkpoint-environment/development-stateful/README.md`

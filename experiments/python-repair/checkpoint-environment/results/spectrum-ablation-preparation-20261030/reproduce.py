@@ -133,7 +133,7 @@ def main():
     if json.loads((HERE / 'projections.json').read_text()) != module.prepare():
         raise ValueError('Inert triplet qualification differs')
     print(json.dumps({'candidate_ids_screened': len(data['source-screen.json']['inspections']),
-        'qualified_new_tasks': 0, 'historical_engineering_checkpoints': 8,
+        'qualified_tasks_at_initial_metadata_screen': 0, 'historical_engineering_checkpoints': 8,
         'inert_projections_verified': 24, 'api_model_calls': 0,
         'full_candidate_design_fits_current_ceiling': data['planning.json']['full_candidate_design_fits_current_ceiling']}, indent=2))
 

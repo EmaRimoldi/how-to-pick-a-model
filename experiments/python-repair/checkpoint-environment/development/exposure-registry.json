@@ -8,6 +8,7 @@
     "experiments/python-repair/checkpoint-environment/development-extension/pool.json": "4563c180054877014eae90283fb50c00f968950a8c6c8f39e7eb95e118f5a4ad",
     "experiments/python-repair/checkpoint-environment/development-broader/pool.json": "a391412193749cf6b3c20472cdb703f27fc97c222edcea4b6a77165bfa8e006b",
     "experiments/python-repair/checkpoint-environment/development-stateful/pool.json": "57b32161e31a9b7872d31fb3f3c7f47ad918a53cdbeefd9ad0a01cfcf48ed613",
+    "experiments/python-repair/checkpoint-environment/development-ablation-components/pool.json": "040bff5bac9e3b66babf0a08c6f8abff84114080e9d1897743429c6d4c5b0dd6",
     "experiments/python-repair/checkpoint-environment/development/exposure-notes.json": "67da43361bf8bd400abb7c7161bfc82fff3b874faae69c554df919937addb551",
     "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json": "dcb97804ea2b04e8948b88a04b8513a3d9a1052f2ecb567f2f26bfcbb7885138"
   },
@@ -296,6 +297,10 @@
       }
     ],
     "black/17": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development-ablation-components/pool.json",
+        "level": "published_development_adapter"
+      },
       {
         "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
         "level": "patch_inspection"
@@ -1251,6 +1256,10 @@
     ],
     "tqdm/2": [
       {
+        "source": "experiments/python-repair/checkpoint-environment/development-ablation-components/pool.json",
+        "level": "published_development_adapter"
+      },
+      {
         "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
         "level": "patch_inspection"
       }
@@ -1262,6 +1271,10 @@
       }
     ],
     "tqdm/4": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development-ablation-components/pool.json",
+        "level": "published_development_adapter"
+      },
       {
         "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
         "level": "patch_inspection"
@@ -1287,11 +1300,19 @@
     ],
     "tqdm/8": [
       {
+        "source": "experiments/python-repair/checkpoint-environment/development-ablation-components/pool.json",
+        "level": "published_development_adapter"
+      },
+      {
         "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
         "level": "patch_inspection"
       }
     ],
     "tqdm/9": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development-ablation-components/pool.json",
+        "level": "published_development_adapter"
+      },
       {
         "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
         "level": "patch_inspection"

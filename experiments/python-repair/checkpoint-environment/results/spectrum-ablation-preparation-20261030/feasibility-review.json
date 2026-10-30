@@ -1,0 +1,289 @@
+{
+  "schema_version": 1,
+  "kind": "pre_execution_source_feasibility_review",
+  "source_plan_sha256": "adf35bb61d57485779bcf1d74781b721702fd44f5354f23f3fc94318d184f7ea",
+  "source_screen_sha256": "dcb97804ea2b04e8948b88a04b8513a3d9a1052f2ecb567f2f26bfcbb7885138",
+  "all_patches_read": true,
+  "api_model_calls": 0,
+  "candidate_executions_at_review": 0,
+  "decisions": [
+    {
+      "order": 0,
+      "id": "cookiecutter/2",
+      "route": "filesystem_process",
+      "provisional_function_family": "cookiecutter-hooks",
+      "reason": "Hook discovery and execution requires real directory contents and subprocess behavior; retain the complete multi-hook behavior.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 1,
+      "id": "black/13",
+      "route": "package_parser",
+      "provisional_function_family": "black-tokenizer",
+      "reason": "The async-for token fix requires the original tokenizer state machine and token package; do not substitute invented token streams.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 2,
+      "id": "cookiecutter/4",
+      "route": "filesystem_process",
+      "provisional_function_family": "cookiecutter-hooks",
+      "reason": "Cross-module hook exceptions, subprocess failure and project-directory cleanup must be exercised together.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 3,
+      "id": "tqdm/2",
+      "route": "bounded_component_candidate",
+      "provisional_function_family": "tqdm-display",
+      "reason": "Inspect complete disp_trim and display-width helpers. This covers only ANSI trimming, not the accompanying format_meter change; keep partial-fix scope explicit.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 4,
+      "id": "black/18",
+      "route": "filesystem_process",
+      "provisional_function_family": "black-file-encoding",
+      "reason": "New prepare_input helper has no buggy counterpart; preserve file/stdin encoding and newline behavior instead of inventing a buggy helper.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 5,
+      "id": "tqdm/7",
+      "route": "package_cli",
+      "provisional_function_family": "tqdm-cli",
+      "reason": "Regex change acts inside actual CLI splitting and argument conversion. A naked regex task would omit its calling semantics.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 6,
+      "id": "tqdm/4",
+      "route": "bounded_component_candidate",
+      "provisional_function_family": "tqdm-format-meter",
+      "reason": "Inspect full format_meter and actual helpers; preserve unspecified-total behavior and numeric unit scaling.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 7,
+      "id": "black/7",
+      "route": "package_parser",
+      "provisional_function_family": "black-parentheses",
+      "reason": "Tuple-unpacking and prefix preservation need original Node/Leaf and normalization machinery.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 8,
+      "id": "pysnooper/2",
+      "route": "tracing_runtime",
+      "provisional_function_family": "pysnooper-tracing",
+      "reason": "Large bundled tracer, encoding, disable and repr patch needs original runtime context; coverage tracing may interfere with the tracer.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 9,
+      "id": "black/11",
+      "route": "package_parser",
+      "provisional_function_family": "black-line-splitting",
+      "reason": "Special type-comment handling affects real Line/Leaf splitting. The new helper alone has no original buggy implementation.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 10,
+      "id": "black/9",
+      "route": "package_parser",
+      "provisional_function_family": "black-grammars",
+      "reason": "Must exercise actual Python2 grammar acceptance, not a fake list of grammar labels.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 11,
+      "id": "black/23",
+      "route": "package_parser",
+      "provisional_function_family": "black-grammars",
+      "reason": "Multiple grammar parsing, error propagation and whitespace formatting require parser package and integration fixtures.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 12,
+      "id": "black/10",
+      "route": "package_parser",
+      "provisional_function_family": "black-tokenizer",
+      "reason": "Tab prefix column fix requires real Driver, parser and tokenizer state.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 13,
+      "id": "black/8",
+      "route": "package_parser",
+      "provisional_function_family": "black-line-splitting",
+      "reason": "Import trailing-comma placement must retain original Line/Leaf and comment semantics.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 14,
+      "id": "black/4",
+      "route": "package_parser",
+      "provisional_function_family": "black-empty-lines",
+      "reason": "Stateful EmptyLineTracker depends on actual Line metadata; fabricated flags are not full formatter qualification.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 15,
+      "id": "black/3",
+      "route": "filesystem_process",
+      "provisional_function_family": "black-cli-config",
+      "reason": "Click config-path validation requires actual CLI and filesystem behavior.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 16,
+      "id": "black/17",
+      "route": "bounded_component_candidate",
+      "provisional_function_family": "black-file-encoding",
+      "reason": "Inspect complete decode_bytes on original bytes. Only the decode component is bounded here; lib2to3_parse empty-input change remains outside that component.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 17,
+      "id": "black/16",
+      "route": "filesystem_process",
+      "provisional_function_family": "black-source-discovery",
+      "reason": "Outside-root symlink handling requires real directory topology and Report behavior.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 18,
+      "id": "black/22",
+      "route": "package_parser",
+      "provisional_function_family": "black-line-splitting",
+      "reason": "Broad line/comment representation and splitting rewrite needs original parser, tracker and formatter integration.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 19,
+      "id": "tqdm/8",
+      "route": "bounded_component_candidate",
+      "provisional_function_family": "tqdm-format-meter",
+      "reason": "Inspect full format_meter and helpers, including user-defined left/right bar formatting.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 20,
+      "id": "black/6",
+      "route": "package_parser",
+      "provisional_function_family": "black-tokenizer",
+      "reason": "Python-version-dependent async keywords span grammar selection, Driver and tokenizer; retain real package semantics.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 21,
+      "id": "black/20",
+      "route": "filesystem_process",
+      "provisional_function_family": "black-file-diff",
+      "reason": "Diff path labels are produced by format_file_in_place; original I/O and formatter context are necessary.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 22,
+      "id": "black/19",
+      "route": "package_parser",
+      "provisional_function_family": "black-empty-lines",
+      "reason": "Decorator/comment spacing requires actual Line state and EmptyLineTracker; group with black/4.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 23,
+      "id": "tqdm/3",
+      "route": "package_lifecycle",
+      "provisional_function_family": "tqdm-lifecycle",
+      "reason": "Truth-value bug depends on absent __bool__, existing __len__ and real iterable/total initialization. Do not invent a buggy replacement method.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 24,
+      "id": "black/12",
+      "route": "package_parser",
+      "provisional_function_family": "black-bracket-tracker",
+      "reason": "Nested comprehension/lambda depths require original bracket and Leaf tracking.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 25,
+      "id": "tqdm/6",
+      "route": "package_lifecycle",
+      "provisional_function_family": "tqdm-lifecycle",
+      "reason": "Missing total attribute occurs in partially initialized/disabled object lifecycle; isolated fabricated objects can change the failure.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 26,
+      "id": "black/2",
+      "route": "package_parser",
+      "provisional_function_family": "black-fmt-control",
+      "reason": "fmt:on nested-node traversal requires genuine parse tree, comments and source columns.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 27,
+      "id": "black/21",
+      "route": "filesystem_process",
+      "provisional_function_family": "black-file-encoding",
+      "reason": "Locale-dependent dump encoding needs a controlled non-UTF8 file environment, not the current default UTF8 runtime.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 28,
+      "id": "tqdm/5",
+      "route": "package_lifecycle",
+      "provisional_function_family": "tqdm-lifecycle",
+      "reason": "Disabled progress initialization, inferred total and instance removal depend on real lifecycle; group with tqdm/3 and /6.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 29,
+      "id": "black/15",
+      "route": "package_parser",
+      "provisional_function_family": "black-fmt-control",
+      "reason": "Broad fmt:on/off rewrite spans visitors, line generation, comments and parse-tree conversion.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 30,
+      "id": "black/5",
+      "route": "package_parser",
+      "provisional_function_family": "black-line-splitting",
+      "reason": "Typed-argument commas and split lines require actual parser/formatter context; group with black/8.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 31,
+      "id": "black/14",
+      "route": "package_parser",
+      "provisional_function_family": "black-future-imports",
+      "reason": "Aliased __future__ imports require real parse-tree types, including Python2 grammar; no synthetic tree proxy.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 32,
+      "id": "tqdm/9",
+      "route": "bounded_component_candidate",
+      "provisional_function_family": "tqdm-size-format",
+      "reason": "Inspect complete format_sizeof with original rounding boundaries. Only SI formatting is covered; bundled __len__ change is outside that component.",
+      "qualification": "not_yet_executed"
+    },
+    {
+      "order": 33,
+      "id": "pysnooper/3",
+      "route": "filesystem_process",
+      "provisional_function_family": "pysnooper-output",
+      "reason": "Writer closure must open and append to a real path, retaining original pycompat/stream dispatch.",
+      "qualification": "not_yet_executed"
+    }
+  ],
+  "limits": [
+    "Routes are technical scope assessments, not permanent exclusions from the scientific population.",
+    "Five bounded components are engineering qualification candidates, not five independent full upstream bugs or the final model cohort.",
+    "Family labels are provisional; shared project and functions must be audited against historical pools before inferential grouping.",
+    "Package/filesystem candidates require a wider environment; do not fabricate substitutes or silently discard them."
+  ]
+}
