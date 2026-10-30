@@ -1,13 +1,31 @@
 # Research goal amendment: acquire evidence before another repair?
 
-**Latest step (2026-10-30 UTC):** the user requested proceeding after one minimal
+**Latest verified result (2026-10-30 UTC):** the [public-spectrum screen](results/spectrum-screen-20261030/README.md)
+is complete: 7/24 full repairs with diagnostics versus 2/24 with feedback alone.
+Its prespecified repeatability screen fails because the net draw differences are
+0, +2, +3, rather than strictly positive in every draw. All 48 selected cells and
+twelve source candidates are retained; all 92 executed public/evaluator suites
+reproduce independently. One invalid output per arm remains a failure. No
+missing model outcome or new uncertain charge occurred. Known study cost is
+$0.02687800 and cumulative commitment is $0.25463059 / $0.60 including fourteen
+historical reserves. The local evaluator correction and extra unmeasured local
+work remain explicit protocol deviations; no model request was repeated.
+
+The full selector objective is unchanged and unachieved. The aggregate signal
+motivates a separately labeled post hoc failure audit, not selector fitting,
+successful-case-only selection, relaxed thresholds or repetitions of the same
+bank until it passes. A future intervention and independent validation would
+need their own prospective protocol and declared resources. No new collection
+is authorized by the terminal report.
+
+**Preparation history (2026-10-30 UTC):** the user requested proceeding after one minimal
 availability check succeeded on the same research key/model/provider. The
 [new separate spectrum screen](SPECTRUM-PROTOCOL.md) compares complete public
 coverage rankings against concurrent feedback-only controls at eight generated
 failed checkpoints, three draws per arm. It declares a $0.36 allocation inside
 the existing $0.60 cap, carrying $0.22775259 including fourteen prior reserves.
-This is an information-value development screen, not selector training or an
-equal-total-resource policy claim. No new repair results are available yet.
+This was an information-value development screen, not selector training or an
+equal-total-resource policy claim. No repair results were available at preparation.
 The earlier dashboard discrepancy is explained by distinct accounts; the
 historical 429 cause and uncertain charges remain unresolved.
 

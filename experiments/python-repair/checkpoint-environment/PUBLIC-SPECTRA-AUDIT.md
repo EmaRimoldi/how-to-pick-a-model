@@ -148,3 +148,13 @@ uv run python scripts/audit_repair_spectra.py replay \
 Both archives remain independently replayable. A fresh local execution replicate
 of the generated source uses `collect --bank generated --output <new-directory>`;
 it still makes no provider requests.
+
+## Subsequent model evidence (2026-10-30 UTC)
+
+The [separate matched screen](results/spectrum-screen-20261030/README.md) is now
+complete: 7/24 full repairs with spectra against 2/24 with concurrent feedback-only
+controls. Its net differences by draw are 0, +2, +3, so the prespecified requirement
+of positive gain in every draw is not met. This adds a small development signal
+to the feasibility evidence, but does not validate a selector, fault-location
+accuracy or an equal-total-resource advantage. The original audits and failed
+screen are retained independently, including the implementation correction.

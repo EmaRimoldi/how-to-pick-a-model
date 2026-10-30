@@ -1,16 +1,24 @@
 # Python repair checkpoint environment
 
-**Next separate study: [public-spectrum development screen](SPECTRUM-PROTOCOL.md).**
-Compare feedback against the same feedback plus complete public-coverage rankings
-on eight historical generated failures, three draws per arm (48 requests).
-The reviewed allocation is $0.36 within the unchanged $0.60 cumulative cap;
-carry is $0.22775259 including fourteen prior reserves. A separately requested
-minimal availability check on the same research key/model/provider succeeded
-for $0.00000924; this neither explains the earlier 429 nor proves batch stability.
-The previous empty dashboard was for a different account. No new repair result
-or selector benefit is claimed by this preparation. All earlier studies stay closed.
+**Latest result: the [public-spectrum screen](results/spectrum-screen-20261030/README.md)
+completed all 48 responses and did not meet its prespecified repeatability criterion.**
+Full repairs are **7/24 with public-coverage diagnostics versus 2/24 with feedback
+alone**. The differences across draws are **0, +2, +3**; the rule required a
+positive advantage in every draw. Three bugs meet the repeated-success condition,
+but the full screen still fails. No selector is trained or new model study enabled.
 
-**Latest model result: the [frozen-region calibration](results/frozen-region-stopped-20261027/README.md)
+All 92 public/evaluator suites for the 46 valid artifacts reproduce independently;
+the two invalid outputs remain failures. There are no missing cells or new
+uncertain charges. Cost: **$0.02687800**; cumulative commitment **$0.25463059 / $0.60**,
+including fourteen historical reserves. The diagnostic arm has fewer observed
+false acceptances (0 versus 3), but both arms have seven outputs regressing public
+cases. This narrow, exposed development sample does not establish generalization
+or advantage under equal total resources. The [protocol](SPECTRUM-PROTOCOL.md) and
+[implementation correction](SPECTRUM-IMPLEMENTATION-CORRECTION.md) preserve the
+local accessor defect, one retained paid response and only 47 never-sent follow-ups.
+No 429 occurred in this collection; the cause of the historical errors remains unknown.
+
+**Previous model result: the [frozen-region calibration](results/frozen-region-stopped-20261027/README.md)
 is stopped and inconclusive.** HTTP 429 at admission 12 leaves 11 responses,
 one uncertain request and 20 never-admitted cells out of the fixed 32.
 Observed full repairs are 3/16 selected feedback cells and 4/16 selected trace

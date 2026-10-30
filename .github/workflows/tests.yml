@@ -40,3 +40,6 @@ jobs:
       - name: Audit frozen public diagnostic snapshots and matched prompts
         run: >-
           uv run python experiments/python-repair/checkpoint-environment/results/acquisition-preparation-20261027/reproduce.py
+      - name: Reproduce the complete spectrum screen and its failed criterion
+        run: >-
+          uv run python experiments/python-repair/checkpoint-environment/results/spectrum-screen-20261030/reproduce.py
