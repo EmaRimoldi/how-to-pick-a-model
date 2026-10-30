@@ -118,6 +118,8 @@ class RepairRun:
     def __init__(self, root: Path, task: RepairTask, verifier, *, mode: str = "offline_engineering"):
         if mode not in {"offline_engineering", "scripted_pilot", "model_pilot"}:
             raise ValueError("Unknown run mode")
+        if task.public['schema_version'] != 1 and mode != 'offline_engineering':
+            raise ValueError('Package tasks currently support offline qualification only')
         self.mode = mode
         self.root, self.task, self.verifier = root, task, verifier
         root.mkdir(parents=True, exist_ok=False)
@@ -220,6 +222,8 @@ class RepairRun:
 
     def fork(self, checkpoint: str, action: str, remaining_budget_usd: str) -> str:
         """Clone a failed decision state; only the starting artifact differs by action."""
+        if self.task.public['schema_version'] != 1:
+            raise ValueError('Package tasks require separately frozen collection/branch semantics')
         if action not in {"continue", "restart"}:
             raise ValueError("Only continue/restart are implemented")
         budget = Decimal(remaining_budget_usd)
@@ -237,6 +241,8 @@ class RepairRun:
 
     def request(self, branch: str) -> dict:
         """Project an allowlisted solver request, excluding history, oracle and labels."""
+        if self.task.public['schema_version'] != 1:
+            raise ValueError('Use package_spectra for inert package projections')
         b = self.get(branch)
         if b.get("kind") != "branch":
             raise ValueError("Expected a branch object")
@@ -257,6 +263,8 @@ class RepairRun:
 
     def materialize(self, artifact: str, name: str) -> Path:
         """Restore an artifact to a fresh workspace without touching its parent."""
+        if self.task.public['schema_version'] != 1:
+            raise ValueError('Package workspaces are materialized by the isolated package verifier')
         self._writable()
         if not re.fullmatch(r"[A-Za-z0-9_-]+", name):
             raise ValueError("Invalid workspace name")

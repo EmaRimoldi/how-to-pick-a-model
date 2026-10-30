@@ -16,6 +16,7 @@ SOURCES = {
     "broader": BASE + "/development-broader/pool.json",
     "stateful": BASE + "/development-stateful/pool.json",
     "ablation_components": BASE + "/development-ablation-components/pool.json",
+    "package_black13": BASE + "/development-package-black13/task.json",
     "notes": BASE + "/development/exposure-notes.json",
     "ablation": BASE + "/results/spectrum-ablation-preparation-20261030/source-screen.json",
 }
@@ -60,6 +61,8 @@ def build(root: Path = ROOT) -> dict:
         if row['level'] != 'patch_inspection':
             raise ValueError('Unknown ablation source-screen exposure type')
         add(row['id'], 'ablation', row['level'])
+    add(data['package_black13']['provenance']['benchmark_id'], 'package_black13',
+        'published_original_package_component')
     return {
         "schema_version": 1,
         "kind": "minimum_documented_development_exposure_not_holdout_selection",

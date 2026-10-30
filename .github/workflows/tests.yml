@@ -52,3 +52,6 @@ jobs:
       - name: Audit new bounded components and all qualification observations
         run: >-
           uv run python experiments/python-repair/checkpoint-environment/development-ablation-components/reproduce.py
+      - name: Audit the original tokenizer package and its controlled diagnostic inputs
+        run: >-
+          uv run python experiments/python-repair/checkpoint-environment/development-package-black13/reproduce.py

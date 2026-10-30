@@ -80,8 +80,13 @@ def analyze_spectrum(public, acquisition):
     """
     files = public["files"]
     validate_public(public, files)
-    cases, rows = public["public_cases"], acquisition["cases"]
-    if (acquisition["binding"] != binding(public, files)
+    return analyze_bound_spectrum(files, public['public_cases'], acquisition, binding(public, files))
+
+
+def analyze_bound_spectrum(files, cases, acquisition, expected_binding):
+    """Shared score arithmetic after the caller validates its workspace schema."""
+    rows = acquisition['cases']
+    if (acquisition["binding"] != expected_binding
             or [r["id"] for r in rows] != [c["id"] for c in cases]):
         raise ValueError("Acquisition does not match the complete public state")
     issues, labels, spectra = [], [], []

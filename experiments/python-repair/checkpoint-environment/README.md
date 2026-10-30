@@ -11,6 +11,14 @@ The full model cohort, numerical sample design and resource authorization remain
 unfrozen. No new model calls or selector training occurred. The final independent-policy
 goal is active.
 
+**Package-context milestone:** [Black/13's original tokenizer](development-package-black13/README.md)
+now qualifies with its real package hierarchy and immutable dependencies. Original
+code passes 6/8 public and 4/8 evaluator cases; the upstream fix passes 8/8 in both,
+twice. All 64 qualification and 16 diagnostic case executions independently replay.
+Matched F/N/S inputs retain identical complete context and exclude private metadata.
+This sixth component adds no project diversity and is not an efficacy result;
+larger output contracts, broader sources and a prospective budget/design remain necessary.
+
 **Latest offline milestone:** the [complete post hoc spectrum audit](results/spectrum-posthoc-20261030/README.md)
 links all 48 responses to exact code changes and public/evaluator outcomes.
 Seven responses contain a generated unmatched Python brace; semantic parsing

@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `951`
-- Bytes indexed: `70.2M`
+- Files indexed: `968`
+- Bytes indexed: `70.9M`
 
 ## Canonical Entrypoints
 
@@ -48,13 +48,13 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 646 | 65.0M |
+| `experiments` | 658 | 65.7M |
 | `docs` | 53 | 2.6M |
-| `src` | 119 | 1.1M |
+| `src` | 122 | 1.1M |
 | `uv.lock` | 1 | 937.0K |
-| `tests` | 57 | 409.2K |
-| `scripts` | 67 | 188.9K |
-| `.github` | 5 | 4.6K |
+| `tests` | 58 | 419.7K |
+| `scripts` | 68 | 195.0K |
+| `.github` | 5 | 4.8K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
 | `LICENSE` | 1 | 1.0K |
@@ -63,13 +63,13 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 256 | 1.8M |
-| `.json` | 248 | 8.9M |
-| `.txt` | 150 | 727.5K |
-| `.md` | 139 | 916.5K |
+| `.py` | 262 | 1.8M |
+| `.json` | 254 | 9.2M |
+| `.txt` | 152 | 735.8K |
+| `.md` | 140 | 924.0K |
 | `.jsonl` | 45 | 36.7M |
 | `.png` | 31 | 4.2M |
-| `.zip` | 27 | 13.1M |
+| `.zip` | 29 | 13.4M |
 | `.svg` | 11 | 1.1M |
 | `.pdf` | 8 | 184.3K |
 | `.sh` | 8 | 15.5K |
@@ -84,7 +84,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.dataset` | 1 | 11.1K |
 | `.example` | 1 | 773B |
 | `.sty` | 1 | 13.2K |
-| `.yml` | 1 | 2.8K |
+| `.yml` | 1 | 3.0K |
 
 ## Experiment Readmes
 
@@ -104,6 +104,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/python-repair/checkpoint-environment/development-ablation-components/README.md`
 - `experiments/python-repair/checkpoint-environment/development-broader/README.md`
 - `experiments/python-repair/checkpoint-environment/development-extension/README.md`
+- `experiments/python-repair/checkpoint-environment/development-package-black13/README.md`
 - `experiments/python-repair/checkpoint-environment/development-stateful/README.md`
 - `experiments/python-repair/checkpoint-environment/development/README.md`
 - `experiments/python-repair/checkpoint-environment/results/acquisition-preparation-20261027/README.md`
@@ -181,6 +182,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/prepare_spectrum_ablation.py`
 - `scripts/probe_repair_trace_retention.py`
 - `scripts/qualify_python_repair_pool.py`
+- `scripts/qualify_repair_package.py`
 - `scripts/repair_spectrum_study.py`
 - `scripts/repair_transport_probe.py`
 - `scripts/report_feedback_routing.py`

@@ -9,6 +9,13 @@ most three provisional component families across two projects. The other 29 IDs
 need a broader environment. This does **not** freeze the new model cohort or make
 the planned experiment adequately powered. No new model calls occurred.
 
+A subsequent [original-package qualification](../../development-package-black13/README.md)
+adds the complete Black/13 tokenizer module and its real immutable package context.
+Its 64 bug/fix case executions and 16 ordinary/coverage executions independently
+replay, and its three controlled inputs reproduce. It adds a component, not a new
+project or an efficacy observation. The initial feasibility review and metadata
+snapshots below remain immutable records of the earlier stage.
+
 The metadata-only preparation below and its derived `source-screen.json` are
 retained as the initial snapshot; their zero-qualified count predates the separate
 component qualification. Its evidence and current status are linked above.

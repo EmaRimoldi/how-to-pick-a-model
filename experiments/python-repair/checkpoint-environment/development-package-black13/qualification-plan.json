@@ -1,0 +1,24 @@
+{
+  "kind": "offline_package_qualification_not_model_protocol",
+  "candidate": "black/13",
+  "task_hash": "b012c1de616becca27cee47331b9a7fa4d3a185f9d85b81743e5c22550267c1c",
+  "frozen_files_sha256": {
+    "evaluator.json": "72110ff7710b2485afb3ace8d99ed968bb2aeb5ccf650b7f95224653aa1a7df2",
+    "upstream-sources.zip": "266cb38642410e9ea881a00d463838105ede865ace42880908c8daa0ff7d2253",
+    "task.json": "123e4f550f85f80889924d65b54c4746fd4585d6e944385645649646802a8822",
+    "reference.json": "ef0202f8e9fbea56179cb783667b18dc3ff929fdfd520d46c5f9b45509b03c58",
+    "LICENSE.txt": "9c0428f0c3b4779850cf5bd96e11aaa8afc72d4a86d4a36223d7aba2e58d6e00"
+  },
+  "rule": "For initial/reference run every public/evaluator input twice; require repeatable initial failure and complete reference passes in each suite. Record all outcomes. Then acquire ordinary/covered public observations on initial only, preserving any mismatch; build F/N/S only if public failure exists. No cases or criterion silently revised after first execution.",
+  "expected_qualification_case_executions": 64,
+  "expected_additional_diagnostic_case_executions": 16,
+  "public_cases": 8,
+  "evaluator_cases": 8,
+  "model_calls": 0,
+  "model_cohort_frozen": false,
+  "limits": [
+    "No broader bug population or efficacy evidence.",
+    "Full-module replacement requires a separately checked output contract/token allowance before future model calls; historical 4096 output-token cap is not assumed adequate.",
+    "This qualification is for the lexer component; token positions and ignored formatting tokens are not scored by the wrapper."
+  ]
+}

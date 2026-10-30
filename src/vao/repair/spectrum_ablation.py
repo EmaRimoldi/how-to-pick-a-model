@@ -28,10 +28,13 @@ def current_feedback(public, stored):
     validate_public(public, public['files'])
     if stored['binding'] != binding(public, public['files']):
         raise ValueError('Feedback does not bind the current public state')
-    data = stored['feedback']
+    return validate_feedback(public['public_cases'], stored['feedback'])
+
+
+def validate_feedback(cases, data):
+    """Validate the shared observation contract without workspace assumptions."""
     if set(data) != {'passed', 'passed_cases', 'total_cases', 'cases'}:
         raise ValueError('Only complete public feedback is accepted')
-    cases = public['public_cases']
     rows = data['cases']
     if [r['id'] for r in rows] != [c['id'] for c in cases]:
         raise ValueError('Public case identities/order differ')

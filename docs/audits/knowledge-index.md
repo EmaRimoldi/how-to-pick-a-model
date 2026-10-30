@@ -9,8 +9,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `8`
-- Script entrypoints indexed: `63`
-- Code modules indexed: `112`
+- Script entrypoints indexed: `64`
+- Code modules indexed: `115`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `6`
@@ -206,6 +206,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/prepare_spectrum_ablation.py` | python | Qualify inert F/N/S projections on exposed checkpoints; never collect models. |
 | `scripts/probe_repair_trace_retention.py` | python | Offline matched trace audit on exposed sources; no providers or model results. Run on macOS from the repository root. Output is exclusive; previous reports are never overwritten. Expected answers are used only for parent-side scoring. |
 | `scripts/qualify_python_repair_pool.py` | python | Offline build, provenance audit and isolated qualification of real-bug tasks. |
+| `scripts/qualify_repair_package.py` | python | Qualify an original Python package component offline, retaining every outcome. |
 | `scripts/repair_spectrum_study.py` | python | Prepare, freeze, collect once, audit or replay the public-spectrum screen. |
 | `scripts/repair_transport_probe.py` | python | Freeze, run once, or audit the separately funded SSE compatibility probe. |
 | `scripts/report_feedback_routing.py` | python | Publish a completed feedback-only bank, audited statistics and static figures. Public CLI facade; implementation lives in vao.analysis.report_feedback_routing. |
@@ -323,6 +324,9 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/repair/independent_transport.py` | Prospective missing-cell handling for a separately frozen independent design. Historical collectors never use this adapter. An uncertain request is never retried or settled. At most one uncertain cell may be retained while proceeding to the remaining independent scheduled cells. | validate_retention, IndependentCellTransport |
 | verified orchestration runtime | `src/vao/repair/information_continuation.py` | One reviewed exception for only the original trace probe's unsent requests. The original zero-response segment is immutable. There is no recursive resume, retry, replacement cell, changed prompt, new seed or additional budget. | reference_files, parent_evidence, validate_config, freeze, validate_continuation, audit_continuation, main |
 | verified orchestration runtime | `src/vao/repair/interface_study.py` | Prepare four matched interface conditions after the closed trace study. | design, remove_claim, project, schedule, planned_requests, construct, validate_packet, validate_origin |
+| verified orchestration runtime | `src/vao/repair/package_environment.py` | Versioned Python-package tasks, separate from the frozen flat-module interface. Dependencies and the JSON adapter are visible, immutable source. All source is read-only during one isolated call; submitted repairs replace editable files only. This backend does not install dependencies or enable model collection. | validate_workspace, validate_public, PackageTask, PackageVerifier |
+| verified orchestration runtime | `src/vao/repair/package_spectra.py` | Public-only package coverage and inert F/N/S inputs; no model dispatch. | binding, current_feedback, validate_verifier_context, observe, acquire, analyze, project, triplet |
+| verified orchestration runtime | `src/vao/repair/package_worker.py` | Isolated package call; optional bounded coverage includes immutable support. | main |
 | verified orchestration runtime | `src/vao/repair/pilot.py` | Plan matched repair collection; live mode requires a funded source freeze. The default is offline planning. Scripted demonstrations never provide model evidence. Existing output directories and admitted calls cannot be resumed. | Design, fingerprint, schedule_for, check_continuation, ScriptedTransport, evaluate_response, public_choice, collect |
 | verified orchestration runtime | `src/vao/repair/pool.py` | Build and qualify a published development pool without executing upstream setup. | sha256, local_file, read_pool, audit_sources, write_json, build_pool, qualify_pool, main |
 | verified orchestration runtime | `src/vao/repair/provider.py` | Pinned OpenRouter adapter for the repair pilot; no implicit calls or retries. Constructing this adapter does not authorize a collection: the pilot launcher enforces the separately funded source freeze and a single-use campaign claim. | ProviderStopped, safe_error_details, dollars, Settings, NoRedirects, OpenRouterTransport |
@@ -332,8 +336,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/repair/region_trace_worker.py` | Opt-in bounded traces balanced across executed functions, not known fault sites. Standalone sandbox worker. The historical tail-trace worker stays unchanged. Compact values and execution/scoring boundaries intentionally match that worker. | compact, priority_order, select_events, Trace, main |
 | verified orchestration runtime | `src/vao/repair/region_verifier.py` | Opt-in function-balanced diagnostics; historical verifier remains unchanged. | valid_bounds, RegionRepairVerifier |
 | verified orchestration runtime | `src/vao/repair/solver_study.py` | Prepare a coding-solver compatibility control on fixed failed checkpoints. | design, planned_requests, construct, validate_packet, validate_origin, main |
-| verified orchestration runtime | `src/vao/repair/spectra.py` | Public-test spectrum feasibility; no reference patch, model or fitted selector. | valid_coverage, CoverageVerifier, score, acquire_spectrum, analyze_spectrum |
-| verified orchestration runtime | `src/vao/repair/spectrum_ablation.py` | Inert public-only F/N/S projections for a prospective information ablation. No task selection, model client, scorer/evaluator channel or live launch exists here. Validate current public feedback, recompute coverage scores from public observations and erase all outcome associations in the neutral excerpt arm. | current_feedback, excerpt_table, project, triplet |
+| verified orchestration runtime | `src/vao/repair/spectra.py` | Public-test spectrum feasibility; no reference patch, model or fitted selector. | valid_coverage, CoverageVerifier, score, acquire_spectrum, analyze_spectrum, analyze_bound_spectrum |
+| verified orchestration runtime | `src/vao/repair/spectrum_ablation.py` | Inert public-only F/N/S projections for a prospective information ablation. No task selection, model client, scorer/evaluator channel or live launch exists here. Validate current public feedback, recompute coverage scores from public observations and erase all outcome associations in the neutral excerpt arm. | current_feedback, validate_feedback, excerpt_table, project, triplet |
 | verified orchestration runtime | `src/vao/repair/spectrum_study.py` | Prospective public-spectrum development screen; explicit single-use collection. | read, digest, archive, sources, project, planned, build_plan, validate_plan |
 | verified orchestration runtime | `src/vao/repair/stream_information_audit.py` | Receipt/stream consistency for the distinct scientific streaming bank. | validate_stream_evidence |
 | verified orchestration runtime | `src/vao/repair/stream_information_study.py` | Distinct matched streaming development calibration; historical banks stay closed. | design, schedule, planned_requests, construct, validate_packet, archived_requests, validate_origin, main |
