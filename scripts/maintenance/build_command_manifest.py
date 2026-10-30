@@ -134,6 +134,8 @@ def classify_script(rel: str, text: str) -> tuple[str, str]:
         return MIXED_CLI, "plan/audit-sources read inert local data; build writes fresh bundles; qualify requires macOS sandbox-exec and fresh output; no network/provider calls"
     if name == "audit_repair_spectra.py":
         return MIXED_CLI, "replay reads saved evidence; collect executes public cases in macOS sandbox-exec and writes fresh output; no provider calls"
+    if name == "repair_stdin_pilot.py":
+        return MIXED_CLI, "progress/audit read saved data; verify executes candidate code in the frozen native sandbox; live requires declared funding, clean source/runtime freeze, private key, budget lock and single-use study claim"
     if name.startswith(("build_", "validate_")):
         return SAFE_LOCAL, "python"
     if name == "check_paper_build.py":

@@ -141,6 +141,8 @@ def test_command_manifest_classifies_safety_boundaries() -> None:
     assert commands[f"{MAINTENANCE_COMMAND} paper-build"]["default_safe"]
     assert "uv run agent-workflow" not in commands
     assert "make paper-figures-autoresearch" not in commands
+    stdin = commands['python scripts/repair_stdin_pilot.py']
+    assert stdin['safety_class'] == 'mixed-cli' and not stdin['default_safe']
 
     live_commands = [
         command for command in manifest["commands"]

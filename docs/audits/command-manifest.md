@@ -5,7 +5,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `72`
+- Commands indexed: `73`
 - Default-safe commands: `61`
 - Missing required maintenance actions: `0`
 
@@ -15,7 +15,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | --- | --- |
 | `cluster-setup` | 1 |
 | `live-local` | 6 |
-| `mixed-cli` | 4 |
+| `mixed-cli` | 5 |
 | `read-only-analysis` | 43 |
 | `safe-figure-regeneration` | 6 |
 | `safe-local` | 10 |
@@ -26,7 +26,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | Surface | Commands |
 | --- | --- |
 | `maintenance` | 6 |
-| `scripts` | 59 |
+| `scripts` | 60 |
 | `scripts/cluster` | 1 |
 | `scripts/maintenance` | 6 |
 
@@ -99,6 +99,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/prepare_python_repair.py` | scripts | `mixed-cli` | no | plan/audit are read-only; demo/qualify require macOS sandbox-exec and a fresh output directory; no provider calls | Plan or explicitly run an offline Python repair demo, qualification or audit. |
 | `python scripts/prepare_repair_pilot.py` | scripts | `mixed-cli` | no | plan/audit/compare are offline; demo requires macOS isolation; live requires new funding, clean source freeze, private key, single-use campaign claim and fresh output | Plan repair calibration offline; live collection requires a funded freeze. |
 | `python scripts/qualify_python_repair_pool.py` | scripts | `mixed-cli` | no | plan/audit-sources read inert local data; build writes fresh bundles; qualify requires macOS sandbox-exec and fresh output; no network/provider calls | Offline build, provenance audit and isolated qualification of real-bug tasks. |
+| `python scripts/repair_stdin_pilot.py` | scripts | `mixed-cli` | no | progress/audit read saved data; verify executes candidate code in the frozen native sandbox; live requires declared funding, clean source/runtime freeze, private key, budget lock and single-use study claim | Explicit commands for the frozen stdin pilot; no default collection. |
 | `scripts/cluster/bootstrap_engaging.sh` | scripts/cluster | `cluster-setup` | no | cluster shell environment | Bootstrap the cluster Python environment for HumanEval+ routing runs. |
 | `python scripts/run_context_value.py` | scripts | `live-local` | no | model access, isolated worktree, output root | Plan or explicitly run a budgeted artifact/feedback and prospective-forecast study. |
 | `python scripts/run_continuation_pilot.py` | scripts | `live-local` | no | model access, isolated worktree, output root | Run the explicit-budget OpenRouter/HumanEval+ pilot; defaults to plan only. |

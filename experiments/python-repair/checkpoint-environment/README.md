@@ -10,8 +10,12 @@ are preserved. No model repair or diagnostic benefit has been measured on this
 pool. A [numerical pilot design](STDIN-PILOT-PROTOCOL.md) now fixes the proposed
 eleven initial attempts and up to 99 matched recovery calls, primary S−N criteria
 and a $0.32 suballocation inside the existing ceiling. The design and analysis
-are tested, but the collector and funded source freeze remain incomplete; no
-new model call is enabled. Independent replication remains necessary.
+are tested. The [launch contract](STDIN-PILOT-LAUNCH.md) now adds a single-use
+collector, durable per-execution records, a separate terminal private verifier,
+receipt/projection audits and explicit resource accounting. The $0.32 suballocation
+is declared under the standing cumulative authorization; a clean source/runtime
+freeze and passing CI are still required before launch. Independent replication
+remains necessary; a passed pilot never enables selector training automatically.
 
 **New qualification milestone:** all 36 prospectively selected FixEval pairs have
 now run twice against their original tests. [25 pairs across 11 of 12 groups](results/fixeval-source-qualification-20261030/README.md)
