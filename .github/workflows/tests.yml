@@ -64,3 +64,8 @@ jobs:
       - name: Rescore all whole-program qualification cases and preserve exclusions
         run: >-
           uv run python experiments/python-repair/checkpoint-environment/results/fixeval-source-qualification-20261030/reproduce.py
+      - name: Reproduce public whole-program F/N/S projections and instrumentation comparison
+        run: >-
+          uv run python experiments/python-repair/checkpoint-environment/results/stdin-ablation-preparation-20261030/reproduce.py
+      - name: Verify prospective stdin pilot roster, call order, capacity and budget arithmetic
+        run: uv run python scripts/prepare_stdin_pilot.py --check

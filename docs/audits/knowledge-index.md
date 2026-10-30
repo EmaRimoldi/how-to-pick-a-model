@@ -9,8 +9,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `8`
-- Script entrypoints indexed: `64`
-- Code modules indexed: `117`
+- Script entrypoints indexed: `66`
+- Code modules indexed: `122`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `6`
@@ -204,6 +204,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/prepare_repair_region_information.py` | python | Frozen original-bug diagnostic calibration; no implicit authorization. |
 | `scripts/prepare_repair_solver_study.py` | python | Prepare the fixed coding-solver compatibility control offline; no model calls. |
 | `scripts/prepare_spectrum_ablation.py` | python | Qualify inert F/N/S projections on exposed checkpoints; never collect models. |
+| `scripts/prepare_stdin_ablation.py` | python | Freeze and execute offline public diagnostic preparation on qualified sources. No provider client, model request or paid authorization exists in this command. The freeze fixes all eleven source-qualified groups and retains all twelve original group decisions; flat/unavailable spectra cannot change the selection. |
+| `scripts/prepare_stdin_pilot.py` | python | Generate or check the numerical stdin pilot design, without any model call. |
 | `scripts/probe_repair_trace_retention.py` | python | Offline matched trace audit on exposed sources; no providers or model results. Run on macOS from the repository root. Output is exclusive; previous reports are never overwritten. Expected answers are used only for parent-side scoring. |
 | `scripts/qualify_python_repair_pool.py` | python | Offline build, provenance audit and isolated qualification of real-bug tasks. |
 | `scripts/qualify_repair_package.py` | python | Qualify an original Python package component offline, retaining every outcome. |
@@ -324,6 +326,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/repair/independent_transport.py` | Prospective missing-cell handling for a separately frozen independent design. Historical collectors never use this adapter. An uncertain request is never retried or settled. At most one uncertain cell may be retained while proceeding to the remaining independent scheduled cells. | validate_retention, IndependentCellTransport |
 | verified orchestration runtime | `src/vao/repair/information_continuation.py` | One reviewed exception for only the original trace probe's unsent requests. The original zero-response segment is immutable. There is no recursive resume, retry, replacement cell, changed prompt, new seed or additional budget. | reference_files, parent_evidence, validate_config, freeze, validate_continuation, audit_continuation, main |
 | verified orchestration runtime | `src/vao/repair/interface_study.py` | Prepare four matched interface conditions after the closed trace study. | design, remove_claim, project, schedule, planned_requests, construct, validate_packet, validate_origin |
+| verified orchestration runtime | `src/vao/repair/monitoring_coverage.py` | Presence-only main-program coverage using CPython's per-location disable flag. | MonitoringCoverage |
 | verified orchestration runtime | `src/vao/repair/package_environment.py` | Versioned Python-package tasks, separate from the frozen flat-module interface. Dependencies and the JSON adapter are visible, immutable source. All source is read-only during one isolated call; submitted repairs replace editable files only. This backend does not install dependencies or enable model collection. | validate_workspace, validate_public, PackageTask, PackageVerifier |
 | verified orchestration runtime | `src/vao/repair/package_spectra.py` | Public-only package coverage and inert F/N/S inputs; no model dispatch. | binding, current_feedback, validate_verifier_context, observe, acquire, analyze, project, triplet |
 | verified orchestration runtime | `src/vao/repair/package_worker.py` | Isolated package call; optional bounded coverage includes immutable support. | main |
@@ -339,6 +342,10 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/repair/spectra.py` | Public-test spectrum feasibility; no reference patch, model or fitted selector. | valid_coverage, CoverageVerifier, score, acquire_spectrum, analyze_spectrum, analyze_bound_spectrum |
 | verified orchestration runtime | `src/vao/repair/spectrum_ablation.py` | Inert public-only F/N/S projections for a prospective information ablation. No task selection, model client, scorer/evaluator channel or live launch exists here. Validate current public feedback, recompute coverage scores from public observations and erase all outcome associations in the neutral excerpt arm. | current_feedback, validate_feedback, excerpt_table, project, triplet |
 | verified orchestration runtime | `src/vao/repair/spectrum_study.py` | Prospective public-spectrum development screen; explicit single-use collection. | read, digest, archive, sources, project, planned, build_plan, validate_plan |
+| verified orchestration runtime | `src/vao/repair/stdin_ablation.py` | Public-only whole-program feedback, acquisition and inert F/N/S requests. | validate_public, binding, observation, execution, normalized_stderr, observable_key, score, resources |
+| verified orchestration runtime | `src/vao/repair/stdin_monitoring.py` | Opt-in CPython monitoring backend; the frozen legacy stdin executor stays intact. The native execution boundary is deliberately retained verbatim for the new coverage worker; ordinary execution delegates to the original backend. | valid_monitoring_coverage, MonitoringStdinVerifier |
+| verified orchestration runtime | `src/vao/repair/stdin_monitoring_worker.py` | Run an unchanged stdin/stdout program inside the parent-created OS sandbox. | main |
+| verified orchestration runtime | `src/vao/repair/stdin_pilot.py` | Prospective stdin pilot planning and finite-panel analysis; no provider calls. Normalized outcomes are produced only after receipt/projection/native-test audit. This module neither collects responses nor promotes itself into a funded freeze. | parse_artifact, plan, validate_panel, bounds, analyze |
 | verified orchestration runtime | `src/vao/repair/stdin_verifier.py` | Isolated whole-program execution preserving exact stdin and stdout bytes. This engineering backend does not define a dataset comparator, suite split, qualification rule or paid collection. Expectations stay in the parent. | valid_stdin_coverage, compare_stdout, StdinVerifier |
 | verified orchestration runtime | `src/vao/repair/stdin_worker.py` | Run an unchanged stdin/stdout program inside the parent-created OS sandbox. | main |
 | verified orchestration runtime | `src/vao/repair/stream_information_audit.py` | Receipt/stream consistency for the distinct scientific streaming bank. | validate_stream_evidence |

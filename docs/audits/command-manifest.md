@@ -5,8 +5,8 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `70`
-- Default-safe commands: `59`
+- Commands indexed: `72`
+- Default-safe commands: `61`
 - Missing required maintenance actions: `0`
 
 ## Safety Classes
@@ -16,7 +16,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `cluster-setup` | 1 |
 | `live-local` | 6 |
 | `mixed-cli` | 4 |
-| `read-only-analysis` | 41 |
+| `read-only-analysis` | 43 |
 | `safe-figure-regeneration` | 6 |
 | `safe-local` | 10 |
 | `safe-local-optional-tool` | 2 |
@@ -26,7 +26,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | Surface | Commands |
 | --- | --- |
 | `maintenance` | 6 |
-| `scripts` | 57 |
+| `scripts` | 59 |
 | `scripts/cluster` | 1 |
 | `scripts/maintenance` | 6 |
 
@@ -78,6 +78,8 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/prepare_repair_region_information.py` | scripts | `read-only-analysis` | yes | inspect script before running | Frozen original-bug diagnostic calibration; no implicit authorization. |
 | `python scripts/prepare_repair_solver_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare the fixed coding-solver compatibility control offline; no model calls. |
 | `python scripts/prepare_spectrum_ablation.py` | scripts | `read-only-analysis` | yes | inspect script before running | Qualify inert F/N/S projections on exposed checkpoints; never collect models. |
+| `python scripts/prepare_stdin_ablation.py` | scripts | `read-only-analysis` | yes | inspect script before running | Freeze and execute offline public diagnostic preparation on qualified sources. No provider client, model request or paid authorization exists in this command. The freeze fixes all eleven source-qualified groups and retains all twelve original group decisions; flat/unavailable spectra cannot change the selection. |
+| `python scripts/prepare_stdin_pilot.py` | scripts | `read-only-analysis` | yes | inspect script before running | Generate or check the numerical stdin pilot design, without any model call. |
 | `python scripts/probe_repair_trace_retention.py` | scripts | `read-only-analysis` | yes | inspect script before running | Offline matched trace audit on exposed sources; no providers or model results. Run on macOS from the repository root. Output is exclusive; previous reports are never overwritten. Expected answers are used only for parent-side scoring. |
 | `python scripts/qualify_repair_package.py` | scripts | `read-only-analysis` | yes | inspect script before running | Qualify an original Python package component offline, retaining every outcome. |
 | `python scripts/repair_spectrum_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare, freeze, collect once, audit or replay the public-spectrum screen. |

@@ -38,3 +38,19 @@ Synthetic tests verify binary stdin preservation, real main/exit semantics,
 ordinary/covered agreement, source/private-file/network denial, fresh scratch state,
 timeouts, output limits, tracing disabled by a program and parent-side scoring.
 No real dataset program has been qualified by these engineering tests.
+
+## Opt-in monitoring coverage
+
+`MonitoringStdinVerifier` retains ordinary execution through the unchanged backend
+and uses CPython 3.12+ `sys.monitoring` for covered executions. It emits the distinct
+`stdin-monitoring-line-coverage-v1` schema. Returning `DISABLE` after a LINE callback
+records presence without paying for every repeated loop visit; callback counts
+therefore have a different meaning from legacy trace-event counts. Location and
+callback limits, missing-report handling and ordinary/covered agreement checks
+still apply. No thread/process coverage or adversarial tamper resistance is claimed.
+
+The [complete comparison on eleven qualified programs](results/stdin-ablation-preparation-20261030/README.md)
+preserves both banks and verifies 82 ordinary outcomes, 82 monitoring/ordinary
+pairs, 60 legacy-complete line sets and all F/N/S projections. One diagnostic
+remains unavailable; empty and flat results are retained. This validates an
+environmental mechanism, not diagnostic value for model repair.

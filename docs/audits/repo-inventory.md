@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `1002`
-- Bytes indexed: `77.5M`
+- Files indexed: `1021`
+- Bytes indexed: `78.4M`
 
 ## Canonical Entrypoints
 
@@ -48,13 +48,13 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 689 | 72.2M |
+| `experiments` | 698 | 73.0M |
 | `docs` | 53 | 2.6M |
-| `src` | 124 | 1.1M |
+| `src` | 129 | 1.2M |
 | `uv.lock` | 1 | 937.0K |
-| `tests` | 59 | 423.2K |
-| `scripts` | 68 | 195.0K |
-| `.github` | 5 | 5.4K |
+| `tests` | 62 | 440.6K |
+| `scripts` | 70 | 211.8K |
+| `.github` | 5 | 5.8K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
 | `LICENSE` | 1 | 1.0K |
@@ -63,12 +63,12 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 269 | 1.9M |
-| `.json` | 262 | 9.4M |
-| `.txt` | 159 | 765.9K |
-| `.md` | 145 | 953.4K |
+| `.py` | 280 | 1.9M |
+| `.json` | 266 | 9.5M |
+| `.txt` | 160 | 766.3K |
+| `.md` | 147 | 971.3K |
 | `.jsonl` | 45 | 36.7M |
-| `.zip` | 33 | 19.4M |
+| `.zip` | 34 | 20.1M |
 | `.png` | 31 | 4.2M |
 | `.svg` | 11 | 1.1M |
 | `.pdf` | 8 | 184.3K |
@@ -84,7 +84,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.dataset` | 1 | 11.1K |
 | `.example` | 1 | 773B |
 | `.sty` | 1 | 13.2K |
-| `.yml` | 1 | 3.6K |
+| `.yml` | 1 | 4.0K |
 
 ## Experiment Readmes
 
@@ -136,6 +136,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/python-repair/checkpoint-environment/results/sse-compatibility-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/sse-wire-envelope-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/stateful-trace-feasibility-20261027/README.md`
+- `experiments/python-repair/checkpoint-environment/results/stdin-ablation-preparation-20261030/README.md`
 - `experiments/python-repair/checkpoint-environment/results/token-capacity-20261030/README.md`
 - `experiments/python-repair/checkpoint-environment/results/trace-retention-20261027/README.md`
 
@@ -183,6 +184,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/prepare_repair_region_information.py`
 - `scripts/prepare_repair_solver_study.py`
 - `scripts/prepare_spectrum_ablation.py`
+- `scripts/prepare_stdin_ablation.py`
+- `scripts/prepare_stdin_pilot.py`
 - `scripts/probe_repair_trace_retention.py`
 - `scripts/qualify_python_repair_pool.py`
 - `scripts/qualify_repair_package.py`

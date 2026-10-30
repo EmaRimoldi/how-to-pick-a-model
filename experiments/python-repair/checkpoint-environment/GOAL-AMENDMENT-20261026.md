@@ -5,14 +5,19 @@ now confirms the prospective selector objective is `active`. The next milestone
 is the [new-source three-arm ablation preparation](results/spectrum-ablation-preparation-20261030/README.md):
 feedback, neutral covered-source excerpts, and the same excerpts with truthful
 test-association scores. Public-only projections and boundary tests are implemented;
-34 prospectively queued new development candidate IDs have pinned metadata/patch
-provenance, but no qualified adapters or model outcomes yet. Sample-size sensitivity
-does not support treating that small queue as a powered confirmatory study.
-The final cohort, numerical criteria and authorized resource envelope must be
-fixed before collection. The existing $0.60 ceiling and historical reserves remain.
-No new API call, collector or selector training has started. The next task is
-faithful source/environment and function-family qualification, followed by a
-sample design sufficient for the scientific claim, not a smaller substitute goal.
+the original 34-candidate repository queue now has six qualified components but
+only two exposed projects. A distinct FixEval queue qualifies 25 human submission
+pairs across eleven of twelve prospectively selected problem groups. The
+[whole-program F/N/S preparation](results/stdin-ablation-preparation-20261030/README.md)
+retains all eleven groups and reproduces 66 requests from two offline engineering
+banks, including flat, empty and unavailable diagnostics. No model outcomes exist
+on this pool. It is development data, not a powered confirmatory or policy test.
+The final model cohort, numerical criteria and declared allocation must be
+fixed before collection. The existing $0.60 ceiling and fourteen uncertain
+historical reserves remain; cumulative commitment is $0.25463059. No new model
+call, collector or selector training has started. Next is a prospective
+generated-failure pilot, followed by independent replication if the intervention
+works; the full independent-policy goal has not been reduced to this pilot.
 
 **Operative milestone (2026-10-30, user: “OK! Procedi, set the goal.”):**
 complete an offline, reproducible audit of all 48 spectrum responses, distinguish

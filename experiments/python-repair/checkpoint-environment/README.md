@@ -1,5 +1,18 @@
 # Python repair checkpoint environment
 
+**Whole-program diagnostic preparation:** [all eleven qualified development groups](results/stdin-ablation-preparation-20261030/README.md)
+now have reproducible public-only F/N/S requests. A separate instrumentation
+comparison improves complete coverage from 7/11 to 10/11 without changing the
+82 ordinary outcomes or the 60 previously complete line sets. Four diagnostics
+differentiate lines, five are flat, one is empty and one unavailable; all remain
+selected. Both complete engineering banks and all twelve source-group decisions
+are preserved. No model repair or diagnostic benefit has been measured on this
+pool. A [numerical pilot design](STDIN-PILOT-PROTOCOL.md) now fixes the proposed
+eleven initial attempts and up to 99 matched recovery calls, primary S−N criteria
+and a $0.32 suballocation inside the existing ceiling. The design and analysis
+are tested, but the collector and funded source freeze remain incomplete; no
+new model call is enabled. Independent replication remains necessary.
+
 **New qualification milestone:** all 36 prospectively selected FixEval pairs have
 now run twice against their original tests. [25 pairs across 11 of 12 groups](results/fixeval-source-qualification-20261030/README.md)
 meet the fixed offline rule; all 2,076 observations rescore without discrepancies.

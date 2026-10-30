@@ -1,0 +1,295 @@
+{
+  "kind": "offline_preparation_not_model_efficacy",
+  "new_model_calls": 0,
+  "banks": {
+    "legacy": {
+      "tasks": 11,
+      "original_groups_retained": 12,
+      "candidate_executions": 246,
+      "preflight_executions": 2,
+      "wall_seconds": 50.41784791700047,
+      "preflight_seconds": 0.1624610830003803,
+      "complete_diagnostics": 7,
+      "categories": {
+        "differentiated": 3,
+        "flat": 3,
+        "empty": 1,
+        "unavailable": 4
+      },
+      "groups": [
+        {
+          "problem_id": "p02621",
+          "category": "flat",
+          "invalid_or_mismatched_cases": [],
+          "metrics": {
+            "covered_lines": 2,
+            "public_failures": 5,
+            "distinct_scores": 1,
+            "positive_distinct_scores": 1
+          }
+        },
+        {
+          "problem_id": "p03307",
+          "category": "unavailable",
+          "invalid_or_mismatched_cases": [
+            "case_003",
+            "case_005",
+            "case_006"
+          ],
+          "metrics": null
+        },
+        {
+          "problem_id": "p02633",
+          "category": "flat",
+          "invalid_or_mismatched_cases": [],
+          "metrics": {
+            "covered_lines": 2,
+            "public_failures": 3,
+            "distinct_scores": 1,
+            "positive_distinct_scores": 1
+          }
+        },
+        {
+          "problem_id": "p03126",
+          "category": "differentiated",
+          "invalid_or_mismatched_cases": [],
+          "metrics": {
+            "covered_lines": 10,
+            "public_failures": 1,
+            "distinct_scores": 2,
+            "positive_distinct_scores": 2
+          }
+        },
+        {
+          "problem_id": "p02570",
+          "category": "flat",
+          "invalid_or_mismatched_cases": [],
+          "metrics": {
+            "covered_lines": 6,
+            "public_failures": 6,
+            "distinct_scores": 1,
+            "positive_distinct_scores": 1
+          }
+        },
+        {
+          "problem_id": "p02700",
+          "category": "differentiated",
+          "invalid_or_mismatched_cases": [],
+          "metrics": {
+            "covered_lines": 6,
+            "public_failures": 3,
+            "distinct_scores": 3,
+            "positive_distinct_scores": 3
+          }
+        },
+        {
+          "problem_id": "p03032",
+          "category": "unavailable",
+          "invalid_or_mismatched_cases": [
+            "case_005",
+            "case_006",
+            "case_010"
+          ],
+          "metrics": null
+        },
+        {
+          "problem_id": "p03329",
+          "category": "unavailable",
+          "invalid_or_mismatched_cases": [
+            "case_001",
+            "case_002",
+            "case_003",
+            "case_005",
+            "case_006",
+            "case_007",
+            "case_010"
+          ],
+          "metrics": null
+        },
+        {
+          "problem_id": "p02987",
+          "category": "differentiated",
+          "invalid_or_mismatched_cases": [],
+          "metrics": {
+            "covered_lines": 14,
+            "public_failures": 6,
+            "distinct_scores": 5,
+            "positive_distinct_scores": 5
+          }
+        },
+        {
+          "problem_id": "p03806",
+          "category": "unavailable",
+          "invalid_or_mismatched_cases": [
+            "case_001",
+            "case_003",
+            "case_004",
+            "case_005",
+            "case_006",
+            "case_007",
+            "case_008",
+            "case_009",
+            "case_010"
+          ],
+          "metrics": null
+        },
+        {
+          "problem_id": "p03207",
+          "category": "empty",
+          "invalid_or_mismatched_cases": [],
+          "metrics": {
+            "covered_lines": 0,
+            "public_failures": 5,
+            "distinct_scores": 0,
+            "positive_distinct_scores": 0
+          }
+        }
+      ]
+    },
+    "monitoring": {
+      "tasks": 11,
+      "original_groups_retained": 12,
+      "candidate_executions": 246,
+      "preflight_executions": 2,
+      "wall_seconds": 40.15930799999842,
+      "preflight_seconds": 0.16262504200130934,
+      "complete_diagnostics": 10,
+      "categories": {
+        "differentiated": 4,
+        "flat": 5,
+        "empty": 1,
+        "unavailable": 1
+      },
+      "groups": [
+        {
+          "problem_id": "p02621",
+          "category": "flat",
+          "invalid_or_mismatched_cases": [],
+          "metrics": {
+            "covered_lines": 2,
+            "public_failures": 5,
+            "distinct_scores": 1,
+            "positive_distinct_scores": 1
+          }
+        },
+        {
+          "problem_id": "p03307",
+          "category": "unavailable",
+          "invalid_or_mismatched_cases": [
+            "case_003",
+            "case_006"
+          ],
+          "metrics": null
+        },
+        {
+          "problem_id": "p02633",
+          "category": "flat",
+          "invalid_or_mismatched_cases": [],
+          "metrics": {
+            "covered_lines": 2,
+            "public_failures": 3,
+            "distinct_scores": 1,
+            "positive_distinct_scores": 1
+          }
+        },
+        {
+          "problem_id": "p03126",
+          "category": "differentiated",
+          "invalid_or_mismatched_cases": [],
+          "metrics": {
+            "covered_lines": 10,
+            "public_failures": 1,
+            "distinct_scores": 2,
+            "positive_distinct_scores": 2
+          }
+        },
+        {
+          "problem_id": "p02570",
+          "category": "flat",
+          "invalid_or_mismatched_cases": [],
+          "metrics": {
+            "covered_lines": 6,
+            "public_failures": 6,
+            "distinct_scores": 1,
+            "positive_distinct_scores": 1
+          }
+        },
+        {
+          "problem_id": "p02700",
+          "category": "differentiated",
+          "invalid_or_mismatched_cases": [],
+          "metrics": {
+            "covered_lines": 6,
+            "public_failures": 3,
+            "distinct_scores": 3,
+            "positive_distinct_scores": 3
+          }
+        },
+        {
+          "problem_id": "p03032",
+          "category": "flat",
+          "invalid_or_mismatched_cases": [],
+          "metrics": {
+            "covered_lines": 15,
+            "public_failures": 6,
+            "distinct_scores": 1,
+            "positive_distinct_scores": 1
+          }
+        },
+        {
+          "problem_id": "p03329",
+          "category": "flat",
+          "invalid_or_mismatched_cases": [],
+          "metrics": {
+            "covered_lines": 11,
+            "public_failures": 6,
+            "distinct_scores": 1,
+            "positive_distinct_scores": 1
+          }
+        },
+        {
+          "problem_id": "p02987",
+          "category": "differentiated",
+          "invalid_or_mismatched_cases": [],
+          "metrics": {
+            "covered_lines": 14,
+            "public_failures": 6,
+            "distinct_scores": 5,
+            "positive_distinct_scores": 5
+          }
+        },
+        {
+          "problem_id": "p03806",
+          "category": "differentiated",
+          "invalid_or_mismatched_cases": [],
+          "metrics": {
+            "covered_lines": 39,
+            "public_failures": 2,
+            "distinct_scores": 6,
+            "positive_distinct_scores": 5
+          }
+        },
+        {
+          "problem_id": "p03207",
+          "category": "empty",
+          "invalid_or_mismatched_cases": [],
+          "metrics": {
+            "covered_lines": 0,
+            "public_failures": 5,
+            "distinct_scores": 0,
+            "positive_distinct_scores": 0
+          }
+        }
+      ]
+    }
+  },
+  "comparison": {
+    "public_states": 11,
+    "ordinary_pairs": 82,
+    "ordinary_mismatches": [],
+    "covered_vs_ordinary_pairs": 82,
+    "covered_vs_ordinary_mismatches": [],
+    "complete_legacy_coverage_pairs": 60,
+    "line_set_mismatches": []
+  }
+}
