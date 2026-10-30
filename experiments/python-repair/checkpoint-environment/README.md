@@ -7,6 +7,9 @@ or tests. Another 68 eligible groups remain unopened, but are not yet a certifie
 holdout. The 579 metadata-feasible problems still require source and test
 qualification; competitive-programming repairs are a distinct population from
 repository bugs. No new model calls or recovery benefit is claimed.
+The new [stdin/stdout backend](STDIN-ENVIRONMENT.md) preserves whole-program bytes,
+scores in the parent and passes synthetic native-isolation tests. It does not yet
+qualify a dataset case or authorize model collection.
 
 **Active preparation:** the [three-arm ablation](results/spectrum-ablation-preparation-20261030/README.md)
 now has a tested public-only builder for feedback, neutral source excerpts and

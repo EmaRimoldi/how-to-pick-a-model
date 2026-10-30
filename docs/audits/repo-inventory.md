@@ -6,7 +6,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `989`
+- Files indexed: `993`
 - Bytes indexed: `76.8M`
 
 ## Canonical Entrypoints
@@ -48,11 +48,11 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 679 | 71.5M |
+| `experiments` | 680 | 71.5M |
 | `docs` | 53 | 2.6M |
-| `src` | 122 | 1.1M |
+| `src` | 124 | 1.1M |
 | `uv.lock` | 1 | 937.0K |
-| `tests` | 58 | 419.7K |
+| `tests` | 59 | 423.2K |
 | `scripts` | 68 | 195.0K |
 | `.github` | 5 | 5.2K |
 | `.gitignore` | 1 | 1.4K |
@@ -63,10 +63,10 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 264 | 1.8M |
+| `.py` | 267 | 1.8M |
 | `.json` | 260 | 9.3M |
 | `.txt` | 156 | 761.4K |
-| `.md` | 143 | 942.3K |
+| `.md` | 144 | 945.2K |
 | `.jsonl` | 45 | 36.7M |
 | `.zip` | 32 | 18.8M |
 | `.png` | 31 | 4.2M |
