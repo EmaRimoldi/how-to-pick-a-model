@@ -1,0 +1,35 @@
+{
+  "recorded_utc": "2026-10-30T07:21:31.074079+00:00",
+  "kind": "post_hoc_complete_bank_failure_audit",
+  "source": "experiments/python-repair/checkpoint-environment/results/spectrum-screen-20261030",
+  "archive_sha256": "e855df951a5400104de294b083d6779f1e5ca014dac1a7cb854829d187a9650d",
+  "known_before_detailed_audit": {
+    "cells": 48,
+    "source_candidates": 12,
+    "triggered_sources": 8,
+    "feedback_full_repairs": 2,
+    "spectrum_full_repairs": 7,
+    "draw_net_differences": [
+      0,
+      2,
+      3
+    ],
+    "five_bugs_never_repaired": true,
+    "gate": "failed"
+  },
+  "scope": [
+    "Retain all 48 cells, eight triggered checkpoints and all twelve original candidates; no outcome-based exclusions.",
+    "Deterministic code diffs, exact changed old lines, all public/evaluator outcomes, gains and regressions from saved results; no model execution or API calls.",
+    "Inspect all generated artifacts and paired wins/losses, including invalid outputs, public acceptance gaps and five never-repaired bugs.",
+    "Separate artifact/test facts, analyst semantic interpretation and untested mechanism hypotheses; line overlap cannot establish model attention or cause.",
+    "Propose one falsifiable diagnostic ablation and independent validation design; do not conduct a new collection or train a selector."
+  ],
+  "no_model_calls": true,
+  "primary_analysis_unchanged": true,
+  "private_outcome_boundary": "Evaluator cases may explain retrospective failures only; never become public acquisition input or an unseen validation claim.",
+  "limits": [
+    "Post hoc, aggregate-known, exposed development cases concentrated in two projects.",
+    "Mechanisms cannot be causally identified from existing two-arm observations.",
+    "No relaxed gate, repeated bank, pooled historical controls, or exclusion of ambiguous cases."
+  ]
+}

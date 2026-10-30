@@ -1,5 +1,24 @@
 # Research goal amendment: acquire evidence before another repair?
 
+**Operative milestone (2026-10-30, user: “OK! Procedi, set the goal.”):**
+complete an offline, reproducible audit of all 48 spectrum responses, distinguish
+observed code/test changes from mechanism hypotheses, and propose one falsifiable
+ablation before any further collection. The [completed post hoc audit](results/spectrum-posthoc-20261030/README.md)
+retains all cases, identifies seven generated Python load failures alongside
+persistent semantic errors, and preserves the failed repeatability criterion.
+It includes all diffs and test witnesses; no model calls or new holdout exposure
+occurred. The [next proposed experiment](results/spectrum-posthoc-20261030/NEXT-EXPERIMENT.md)
+isolates truthful test associations from repeated source excerpts with an explicit
+neutral control and feedback baseline. It still needs a numerical prospective
+sample/resource freeze; it is not a collection authorization.
+
+The final goal remains **a prospective diagnostic-acquisition selector that
+outperforms the best fixed policy on untouched bug/project groups under equal
+total resources, including all failures and selection/acquisition costs**.
+The managed app goal still reports `blocked`; it rejected replacement while
+unfinished. The user's instruction authorizes this work, recorded here and in
+the research state; the scientific objective has not been falsely marked achieved.
+
 **Latest verified result (2026-10-30 UTC):** the [public-spectrum screen](results/spectrum-screen-20261030/README.md)
 is complete: 7/24 full repairs with diagnostics versus 2/24 with feedback alone.
 Its prespecified repeatability screen fails because the net draw differences are

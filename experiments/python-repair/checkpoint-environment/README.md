@@ -1,5 +1,13 @@
 # Python repair checkpoint environment
 
+**Latest offline milestone:** the [complete post hoc spectrum audit](results/spectrum-posthoc-20261030/README.md)
+links all 48 responses to exact code changes and public/evaluator outcomes.
+Seven responses contain a generated unmatched Python brace; semantic parsing
+errors and acceptance gaps also remain. The original scores and failed criterion
+are unchanged. A [controlled next ablation](results/spectrum-posthoc-20261030/NEXT-EXPERIMENT.md)
+would separate truthful test-association information from repeated source excerpts.
+This is a design proposal, with no new model calls or selector training.
+
 **Latest result: the [public-spectrum screen](results/spectrum-screen-20261030/README.md)
 completed all 48 responses and did not meet its prespecified repeatability criterion.**
 Full repairs are **7/24 with public-coverage diagnostics versus 2/24 with feedback

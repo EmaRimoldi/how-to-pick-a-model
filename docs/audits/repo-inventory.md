@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `908`
-- Bytes indexed: `68.7M`
+- Files indexed: `915`
+- Bytes indexed: `69.3M`
 
 ## Canonical Entrypoints
 
@@ -48,13 +48,13 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 607 | 63.4M |
+| `experiments` | 613 | 64.0M |
 | `docs` | 53 | 2.6M |
 | `src` | 118 | 1.1M |
 | `uv.lock` | 1 | 937.0K |
-| `tests` | 55 | 400.2K |
+| `tests` | 56 | 402.5K |
 | `scripts` | 66 | 185.4K |
-| `.github` | 5 | 3.9K |
+| `.github` | 5 | 4.1K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
 | `LICENSE` | 1 | 1.0K |
@@ -63,9 +63,9 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 249 | 1.7M |
-| `.json` | 237 | 8.2M |
-| `.md` | 134 | 735.5K |
+| `.py` | 251 | 1.7M |
+| `.json` | 239 | 8.6M |
+| `.md` | 137 | 899.1K |
 | `.txt` | 134 | 665.8K |
 | `.jsonl` | 45 | 36.7M |
 | `.png` | 31 | 4.2M |
@@ -84,7 +84,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.dataset` | 1 | 11.1K |
 | `.example` | 1 | 773B |
 | `.sty` | 1 | 13.2K |
-| `.yml` | 1 | 2.1K |
+| `.yml` | 1 | 2.3K |
 
 ## Experiment Readmes
 
@@ -126,6 +126,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/python-repair/checkpoint-environment/results/information-stream-stopped-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/interface-stopped-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/solver-qwen-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/spectrum-posthoc-20261030/README.md`
 - `experiments/python-repair/checkpoint-environment/results/spectrum-screen-20261030/README.md`
 - `experiments/python-repair/checkpoint-environment/results/sse-compatibility-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/sse-wire-envelope-20261026/README.md`

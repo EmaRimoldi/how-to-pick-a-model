@@ -43,3 +43,6 @@ jobs:
       - name: Reproduce the complete spectrum screen and its failed criterion
         run: >-
           uv run python experiments/python-repair/checkpoint-environment/results/spectrum-screen-20261030/reproduce.py
+      - name: Reproduce every cell of the retrospective spectrum audit
+        run: >-
+          uv run python experiments/python-repair/checkpoint-environment/results/spectrum-posthoc-20261030/reproduce.py
