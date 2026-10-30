@@ -1,5 +1,12 @@
 # Python repair checkpoint environment
 
+**Active preparation:** the [three-arm ablation](results/spectrum-ablation-preparation-20261030/README.md)
+now has a tested public-only builder for feedback, neutral source excerpts and
+the same excerpts with scores. A prospective queue retains 34 new development
+candidate IDs and all pinned metadata/patch bytes; adapters, numerical sample
+design and resource authorization are not yet frozen. No new model calls or
+selector training occurred. The final independent-policy goal is active.
+
 **Latest offline milestone:** the [complete post hoc spectrum audit](results/spectrum-posthoc-20261030/README.md)
 links all 48 responses to exact code changes and public/evaluator outcomes.
 Seven responses contain a generated unmatched Python brace; semantic parsing

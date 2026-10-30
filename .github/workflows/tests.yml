@@ -46,3 +46,6 @@ jobs:
       - name: Reproduce every cell of the retrospective spectrum audit
         run: >-
           uv run python experiments/python-repair/checkpoint-environment/results/spectrum-posthoc-20261030/reproduce.py
+      - name: Verify public-only ablation projections and prospective source-screen provenance
+        run: >-
+          uv run python experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/reproduce.py

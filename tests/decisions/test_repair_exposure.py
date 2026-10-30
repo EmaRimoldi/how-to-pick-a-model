@@ -10,10 +10,14 @@ from vao.repair.exposure import ROOT, REGISTRY, assess_candidate, build, normali
 def test_published_exposure_registry_matches_authoritative_sources():
     registry = build()
     assert json.loads((ROOT / REGISTRY).read_text()) == registry
-    assert registry["known_exposed_bug_count"] == 174
+    assert registry["known_exposed_bug_count"] == 208
     assert len(registry["known_exposed_projects"]) == 10
     for bug in ("black/1", "tqdm/1", "PySnooper/1", "cookiecutter/3", "luigi/3", "thefuck/20"):
         assert assess_candidate(registry, bug, project_disjoint=False) == "reject_known_development_bug"
+    for bug in ('BLACK/013', 'cookiecutter/2', 'PySnooper/002', 'tqdm/9'):
+        assert assess_candidate(registry, bug, project_disjoint=False) == 'reject_known_development_bug'
+        assert any(e['source'].endswith('/spectrum-ablation-preparation-20261030/source-screen.json')
+                   for e in registry['exposure_evidence'][normalize(bug)])
     for bug in ("scrapy/2", "scrapy/36", "luigi/10", "tornado/5", "thefuck/22", "thefuck/29"):
         assert any(e['source'].endswith('/development-broader/pool.json')
             and e['level'] == 'published_development_adapter'

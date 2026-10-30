@@ -104,10 +104,13 @@ inspection). Not selected does not mean tested and failed. Dependency-heavy,
 filesystem-specific, platform-dependent and overlapping function variants were
 left out; the original patches are not silently rewritten to fit the harness.
 
-The consolidated [exposure registry](exposure-registry.json) includes 174 known
-bug IDs across ten projects, including metadata-only inspections from the
+The consolidated [exposure registry](exposure-registry.json) now includes **208** known
+bug IDs across ten projects. The original 174 include metadata-only inspections from the
 [supplemental note](exposure-notes.json) and the separate
-[three-task extension](../development-extension/README.md). It is rebuilt from
+[three-task extension](../development-extension/README.md). The subsequent
+[prospective ablation source screen](../results/spectrum-ablation-preparation-20261030/README.md)
+adds all 34 newly inspected candidates within four already-exposed projects;
+none is yet a qualified adapter or an untouched evaluation case. It is rebuilt from
 tracked source records and checks normalized ID aliases. It can reject known
 exposure; it cannot certify that an absent ID is untouched or uncontaminated.
 
@@ -126,7 +129,8 @@ The separately qualified [broader six-task pool](../development-broader/README.m
 now records published adapters for six IDs already in this registry. It adds
 cache, factory, worker-allocation, deadline, command-sequence and settings
 behavior without consuming another project group for development. Known totals
-remain 174 IDs and ten projects; this does not certify the remaining candidates
+at that earlier milestone were 174 IDs and ten projects; the later source screen
+raises the current count to 208. Neither count certifies the remaining candidates
 as untouched.
 
 ## What this establishes

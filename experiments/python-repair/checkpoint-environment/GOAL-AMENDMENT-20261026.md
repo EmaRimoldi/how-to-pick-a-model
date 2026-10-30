@@ -1,5 +1,19 @@
 # Research goal amendment: acquire evidence before another repair?
 
+**Active goal resumed and replaced by the user (2026-10-30):** the goal manager
+now confirms the prospective selector objective is `active`. The next milestone
+is the [new-source three-arm ablation preparation](results/spectrum-ablation-preparation-20261030/README.md):
+feedback, neutral covered-source excerpts, and the same excerpts with truthful
+test-association scores. Public-only projections and boundary tests are implemented;
+34 prospectively queued new development candidate IDs have pinned metadata/patch
+provenance, but no qualified adapters or model outcomes yet. Sample-size sensitivity
+does not support treating that small queue as a powered confirmatory study.
+The final cohort, numerical criteria and authorized resource envelope must be
+fixed before collection. The existing $0.60 ceiling and historical reserves remain.
+No new API call, collector or selector training has started. The next task is
+faithful source/environment and function-family qualification, followed by a
+sample design sufficient for the scientific claim, not a smaller substitute goal.
+
 **Operative milestone (2026-10-30, user: “OK! Procedi, set the goal.”):**
 complete an offline, reproducible audit of all 48 spectrum responses, distinguish
 observed code/test changes from mechanism hypotheses, and propose one falsifiable
@@ -15,9 +29,10 @@ sample/resource freeze; it is not a collection authorization.
 The final goal remains **a prospective diagnostic-acquisition selector that
 outperforms the best fixed policy on untouched bug/project groups under equal
 total resources, including all failures and selection/acquisition costs**.
-The managed app goal still reports `blocked`; it rejected replacement while
-unfinished. The user's instruction authorizes this work, recorded here and in
-the research state; the scientific objective has not been falsely marked achieved.
+At that audit milestone the managed app goal reported `blocked` and rejected
+replacement while unfinished. The user's instruction authorized that work,
+recorded here and in the research state; the scientific objective was not falsely
+marked achieved. The subsequent user-set active objective is recorded above.
 
 **Latest verified result (2026-10-30 UTC):** the [public-spectrum screen](results/spectrum-screen-20261030/README.md)
 is complete: 7/24 full repairs with diagnostics versus 2/24 with feedback alone.

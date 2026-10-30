@@ -5,8 +5,8 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `68`
-- Default-safe commands: `57`
+- Commands indexed: `69`
+- Default-safe commands: `58`
 - Missing required maintenance actions: `0`
 
 ## Safety Classes
@@ -16,7 +16,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `cluster-setup` | 1 |
 | `live-local` | 6 |
 | `mixed-cli` | 4 |
-| `read-only-analysis` | 39 |
+| `read-only-analysis` | 40 |
 | `safe-figure-regeneration` | 6 |
 | `safe-local` | 10 |
 | `safe-local-optional-tool` | 2 |
@@ -26,7 +26,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | Surface | Commands |
 | --- | --- |
 | `maintenance` | 6 |
-| `scripts` | 55 |
+| `scripts` | 56 |
 | `scripts/cluster` | 1 |
 | `scripts/maintenance` | 6 |
 
@@ -77,6 +77,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/prepare_repair_qwen_information_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare matched Qwen trace-information requests offline; no API calls. |
 | `python scripts/prepare_repair_region_information.py` | scripts | `read-only-analysis` | yes | inspect script before running | Frozen original-bug diagnostic calibration; no implicit authorization. |
 | `python scripts/prepare_repair_solver_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare the fixed coding-solver compatibility control offline; no model calls. |
+| `python scripts/prepare_spectrum_ablation.py` | scripts | `read-only-analysis` | yes | inspect script before running | Qualify inert F/N/S projections on exposed checkpoints; never collect models. |
 | `python scripts/probe_repair_trace_retention.py` | scripts | `read-only-analysis` | yes | inspect script before running | Offline matched trace audit on exposed sources; no providers or model results. Run on macOS from the repository root. Output is exclusive; previous reports are never overwritten. Expected answers are used only for parent-side scoring. |
 | `python scripts/repair_spectrum_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare, freeze, collect once, audit or replay the public-spectrum screen. |
 | `python scripts/repair_transport_probe.py` | scripts | `read-only-analysis` | yes | inspect script before running | Freeze, run once, or audit the separately funded SSE compatibility probe. |

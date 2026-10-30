@@ -16,6 +16,7 @@ SOURCES = {
     "broader": BASE + "/development-broader/pool.json",
     "stateful": BASE + "/development-stateful/pool.json",
     "notes": BASE + "/development/exposure-notes.json",
+    "ablation": BASE + "/results/spectrum-ablation-preparation-20261030/source-screen.json",
 }
 REGISTRY = BASE + "/development/exposure-registry.json"
 
@@ -54,6 +55,10 @@ def build(root: Path = ROOT) -> dict:
         if row["level"] not in {"metadata_inspection", "patch_inspection"}:
             raise ValueError("Unknown supplemental exposure type")
         add(row["id"], "notes", row["level"])
+    for row in data["ablation"]["inspections"]:
+        if row['level'] != 'patch_inspection':
+            raise ValueError('Unknown ablation source-screen exposure type')
+        add(row['id'], 'ablation', row['level'])
     return {
         "schema_version": 1,
         "kind": "minimum_documented_development_exposure_not_holdout_selection",

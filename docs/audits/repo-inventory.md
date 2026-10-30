@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `915`
-- Bytes indexed: `69.3M`
+- Files indexed: `926`
+- Bytes indexed: `69.6M`
 
 ## Canonical Entrypoints
 
@@ -48,13 +48,13 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 613 | 64.0M |
+| `experiments` | 621 | 64.4M |
 | `docs` | 53 | 2.6M |
-| `src` | 118 | 1.1M |
+| `src` | 119 | 1.1M |
 | `uv.lock` | 1 | 937.0K |
-| `tests` | 56 | 402.5K |
-| `scripts` | 66 | 185.4K |
-| `.github` | 5 | 4.1K |
+| `tests` | 57 | 408.9K |
+| `scripts` | 67 | 188.9K |
+| `.github` | 5 | 4.4K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
 | `LICENSE` | 1 | 1.0K |
@@ -63,13 +63,13 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 251 | 1.7M |
-| `.json` | 239 | 8.6M |
-| `.md` | 137 | 899.1K |
+| `.py` | 255 | 1.8M |
+| `.json` | 243 | 8.8M |
+| `.md` | 138 | 909.2K |
 | `.txt` | 134 | 665.8K |
 | `.jsonl` | 45 | 36.7M |
 | `.png` | 31 | 4.2M |
-| `.zip` | 23 | 12.6M |
+| `.zip` | 25 | 12.7M |
 | `.svg` | 11 | 1.1M |
 | `.pdf` | 8 | 184.3K |
 | `.sh` | 8 | 15.5K |
@@ -84,7 +84,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.dataset` | 1 | 11.1K |
 | `.example` | 1 | 773B |
 | `.sty` | 1 | 13.2K |
-| `.yml` | 1 | 2.3K |
+| `.yml` | 1 | 2.6K |
 
 ## Experiment Readmes
 
@@ -126,6 +126,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/python-repair/checkpoint-environment/results/information-stream-stopped-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/interface-stopped-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/solver-qwen-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/README.md`
 - `experiments/python-repair/checkpoint-environment/results/spectrum-posthoc-20261030/README.md`
 - `experiments/python-repair/checkpoint-environment/results/spectrum-screen-20261030/README.md`
 - `experiments/python-repair/checkpoint-environment/results/sse-compatibility-20261026/README.md`
@@ -176,6 +177,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/prepare_repair_qwen_information_study.py`
 - `scripts/prepare_repair_region_information.py`
 - `scripts/prepare_repair_solver_study.py`
+- `scripts/prepare_spectrum_ablation.py`
 - `scripts/probe_repair_trace_retention.py`
 - `scripts/qualify_python_repair_pool.py`
 - `scripts/repair_spectrum_study.py`
