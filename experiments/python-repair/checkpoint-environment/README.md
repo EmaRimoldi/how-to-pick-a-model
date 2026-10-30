@@ -1,5 +1,14 @@
 # Python repair checkpoint environment
 
+**Latest model attempt: [the stdin pilot is stopped and inconclusive](results/stdin-pilot-20261030/README.md).**
+Gemma 3 4B / Parasail returned HTTP 429 on the first admitted request, after
+read-only preflight confirmed sufficient credit. Zero responses settled; all eleven
+initial outcomes remain missing and recovery was never reached. No request was
+repeated. The $0.00282624 uncertain reservation is retained, bringing cumulative
+commitment to $0.25745683 / $0.60 and fifteen historical/current uncertain reserves.
+There is no new repair or diagnostic finding. Complete inert evidence preserves
+the source/configuration freeze, actual request, accounting and all missing slots.
+
 **Whole-program diagnostic preparation:** [all eleven qualified development groups](results/stdin-ablation-preparation-20261030/README.md)
 now have reproducible public-only F/N/S requests. A separate instrumentation
 comparison improves complete coverage from 7/11 to 10/11 without changing the

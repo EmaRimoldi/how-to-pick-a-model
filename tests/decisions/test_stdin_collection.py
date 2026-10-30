@@ -262,8 +262,10 @@ def test_zero_generated_failures_preserves_complete_initial_flow_without_recover
     assert 'no materializable generated failures' in results.render(report)
 
 
-def test_publish_and_reproduce_inert_complete_evidence(setup, monkeypatch):
+@pytest.mark.parametrize('interrupt_at', [None, 1])
+def test_publish_and_reproduce_inert_complete_or_empty_evidence(setup, monkeypatch, interrupt_at):
     root, frozen, calls, _ = setup
+    setup[3]['interrupt_at'] = interrupt_at
     code = root/'example.py'; code.write_text('pass\n')
     runtime = {'files': {'example.py': study.digest(code)}}
     frozen['runtime'] = runtime
@@ -276,8 +278,10 @@ def test_publish_and_reproduce_inert_complete_evidence(setup, monkeypatch):
     output = root/'published'
     results.publish(model, verification, output)
     before = len(calls)
-    assert results.reproduce(output) == {'gate': 'advance_to_replication_planning', 'admitted': 92,
-                                         'settled': 92, 'new_model_calls': 0, 'candidate_executions': 0}
+    assert results.reproduce(output) == {'gate': 'advance_to_replication_planning' if interrupt_at is None else 'inconclusive',
+                                         'admitted': 92 if interrupt_at is None else 1,
+                                         'settled': 92 if interrupt_at is None else 0,
+                                         'new_model_calls': 0, 'candidate_executions': 0}
     assert len(calls) == before
     assert (output/'results.png').stat().st_size > 1000
     with pytest.raises(ValueError, match='overwrite'):

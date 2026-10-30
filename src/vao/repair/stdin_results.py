@@ -414,6 +414,11 @@ def reproduce(artifact):
             raise ValueError('Frozen implementation bytes differ')
     with tempfile.TemporaryDirectory(prefix='inert-stdin-evidence-') as temporary:
         root = Path(temporary)
+        # ZIP member inventories contain files, so restore the empty structural
+        # directories of an early-interrupted bank without inventing observations.
+        for folder in ('requests', 'receipts', 'cells', 'original-feedback', 'acquisitions', 'dispositions', 'dispatch', 'stream-metrics'):
+            (root/'collection'/folder).mkdir(parents=True, exist_ok=True)
+        (root/'verification'/'cells').mkdir(parents=True, exist_ok=True)
         for n,b in blobs.items():
             if n.startswith(('collection/', 'verification/')):
                 p = root/n; p.parent.mkdir(parents=True, exist_ok=True); p.write_bytes(b)

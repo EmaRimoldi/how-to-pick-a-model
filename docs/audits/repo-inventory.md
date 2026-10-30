@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `1027`
-- Bytes indexed: `78.5M`
+- Files indexed: `1034`
+- Bytes indexed: `80.3M`
 
 ## Canonical Entrypoints
 
@@ -48,13 +48,13 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 700 | 73.0M |
+| `experiments` | 707 | 74.9M |
 | `docs` | 53 | 2.6M |
 | `src` | 131 | 1.2M |
 | `uv.lock` | 1 | 937.0K |
-| `tests` | 63 | 457.0K |
+| `tests` | 63 | 457.3K |
 | `scripts` | 71 | 214.3K |
-| `.github` | 5 | 5.8K |
+| `.github` | 5 | 6.0K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
 | `LICENSE` | 1 | 1.0K |
@@ -63,13 +63,13 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 284 | 2.0M |
-| `.json` | 267 | 9.5M |
+| `.py` | 285 | 2.0M |
+| `.json` | 269 | 9.5M |
 | `.txt` | 160 | 766.3K |
-| `.md` | 148 | 977.9K |
+| `.md` | 150 | 984.7K |
 | `.jsonl` | 45 | 36.7M |
-| `.zip` | 34 | 20.1M |
-| `.png` | 31 | 4.2M |
+| `.zip` | 35 | 21.8M |
+| `.png` | 32 | 4.2M |
 | `.svg` | 11 | 1.1M |
 | `.pdf` | 8 | 184.3K |
 | `.sh` | 8 | 15.5K |
@@ -84,7 +84,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.dataset` | 1 | 11.1K |
 | `.example` | 1 | 773B |
 | `.sty` | 1 | 13.2K |
-| `.yml` | 1 | 4.0K |
+| `.yml` | 1 | 4.2K |
 
 ## Experiment Readmes
 
@@ -137,6 +137,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/python-repair/checkpoint-environment/results/sse-wire-envelope-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/stateful-trace-feasibility-20261027/README.md`
 - `experiments/python-repair/checkpoint-environment/results/stdin-ablation-preparation-20261030/README.md`
+- `experiments/python-repair/checkpoint-environment/results/stdin-pilot-20261030/README.md`
 - `experiments/python-repair/checkpoint-environment/results/token-capacity-20261030/README.md`
 - `experiments/python-repair/checkpoint-environment/results/trace-retention-20261027/README.md`
 

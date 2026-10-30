@@ -10,14 +10,22 @@ only two exposed projects. A distinct FixEval queue qualifies 25 human submissio
 pairs across eleven of twelve prospectively selected problem groups. The
 [whole-program F/N/S preparation](results/stdin-ablation-preparation-20261030/README.md)
 retains all eleven groups and reproduces 66 requests from two offline engineering
-banks, including flat, empty and unavailable diagnostics. No model outcomes exist
-on this pool. It is development data, not a powered confirmatory or policy test.
-The final model cohort, numerical criteria and declared allocation must be
-fixed before collection. The existing $0.60 ceiling and fourteen uncertain
-historical reserves remain; cumulative commitment is $0.25463059. No new model
-call, collector or selector training has started. Next is a prospective
-generated-failure pilot, followed by independent replication if the intervention
-works; the full independent-policy goal has not been reduced to this pilot.
+banks, including flat, empty and unavailable diagnostics. It is development data,
+not a powered confirmatory or policy test. The numerical cohort, criteria,
+analysis, $0.32 suballocation and exact source/runtime were frozen before the
+[generated-failure pilot](results/stdin-pilot-20261030/README.md). That pilot
+stopped at its first request with HTTP 429: one admission, zero settled responses,
+all eleven initial outcomes missing, and no recovery call reached. The read-only
+preflight confirmed credit; it did not establish generation availability or the
+cause of the rate limit. No request was repeated and no successor was started.
+The new $0.00282624 reservation remains unresolved. Cumulative commitment is
+$0.25745683 / $0.60, including fifteen uncertain reserves. Inert evidence and
+terminal verification preserve the complete selected panel; the gate remains
+inconclusive and no diagnostic or repair benefit is estimated. The collector is
+closed. Further generation requires resolution of the operational obstacle and
+a separately reviewed prospective scope, not automatic resumption. Independent
+replication and equal-total-resource policy evaluation remain future milestones;
+the full goal has not been reduced to this pilot and no selector is trained.
 
 **Operative milestone (2026-10-30, user: “OK! Procedi, set the goal.”):**
 complete an offline, reproducible audit of all 48 spectrum responses, distinguish
