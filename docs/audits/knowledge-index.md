@@ -9,8 +9,8 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
 - Experiment bundles indexed: `8`
-- Script entrypoints indexed: `61`
-- Code modules indexed: `110`
+- Script entrypoints indexed: `62`
+- Code modules indexed: `111`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `6`
@@ -205,6 +205,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/prepare_repair_solver_study.py` | python | Prepare the fixed coding-solver compatibility control offline; no model calls. |
 | `scripts/probe_repair_trace_retention.py` | python | Offline matched trace audit on exposed sources; no providers or model results. Run on macOS from the repository root. Output is exclusive; previous reports are never overwritten. Expected answers are used only for parent-side scoring. |
 | `scripts/qualify_python_repair_pool.py` | python | Offline build, provenance audit and isolated qualification of real-bug tasks. |
+| `scripts/repair_spectrum_study.py` | python | Prepare, freeze, collect once, audit or replay the public-spectrum screen. |
 | `scripts/repair_transport_probe.py` | python | Freeze, run once, or audit the separately funded SSE compatibility probe. |
 | `scripts/report_feedback_routing.py` | python | Publish a completed feedback-only bank, audited statistics and static figures. Public CLI facade; implementation lives in vao.analysis.report_feedback_routing. |
 | `scripts/report_repair_calibration.py` | python | Audit terminal repair-pilot segments and report descriptive results offline. |
@@ -331,6 +332,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/repair/region_verifier.py` | Opt-in function-balanced diagnostics; historical verifier remains unchanged. | valid_bounds, RegionRepairVerifier |
 | verified orchestration runtime | `src/vao/repair/solver_study.py` | Prepare a coding-solver compatibility control on fixed failed checkpoints. | design, planned_requests, construct, validate_packet, validate_origin, main |
 | verified orchestration runtime | `src/vao/repair/spectra.py` | Public-test spectrum feasibility; no reference patch, model or fitted selector. | valid_coverage, CoverageVerifier, score, acquire_spectrum, analyze_spectrum |
+| verified orchestration runtime | `src/vao/repair/spectrum_study.py` | Prospective public-spectrum development screen; explicit single-use collection. | read, digest, archive, sources, project, planned, build_plan, validate_plan |
 | verified orchestration runtime | `src/vao/repair/stream_information_audit.py` | Receipt/stream consistency for the distinct scientific streaming bank. | validate_stream_evidence |
 | verified orchestration runtime | `src/vao/repair/stream_information_study.py` | Distinct matched streaming development calibration; historical banks stay closed. | design, schedule, planned_requests, construct, validate_packet, archived_requests, validate_origin, main |
 | verified orchestration runtime | `src/vao/repair/streaming.py` | Opt-in SSE transport; historical collectors keep their non-streaming adapter. This module enables no collection on import. A new protocol/freeze must opt in. Only a completed identity/usage/terminal sequence becomes a billed observation. Partial text is never treated as a result or retried. Wire bytes stay in memory; safe counts and a digest are persisted, without free-form error/partial content. | StreamProtocolError, SSEFrames, strict_json, ChatStream, StreamingSettings, StreamingOpenRouterTransport |

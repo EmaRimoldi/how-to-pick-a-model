@@ -1,5 +1,15 @@
 # Python repair checkpoint environment
 
+**Next separate study: [public-spectrum development screen](SPECTRUM-PROTOCOL.md).**
+Compare feedback against the same feedback plus complete public-coverage rankings
+on eight historical generated failures, three draws per arm (48 requests).
+The reviewed allocation is $0.36 within the unchanged $0.60 cumulative cap;
+carry is $0.22775259 including fourteen prior reserves. A separately requested
+minimal availability check on the same research key/model/provider succeeded
+for $0.00000924; this neither explains the earlier 429 nor proves batch stability.
+The previous empty dashboard was for a different account. No new repair result
+or selector benefit is claimed by this preparation. All earlier studies stay closed.
+
 **Latest model result: the [frozen-region calibration](results/frozen-region-stopped-20261027/README.md)
 is stopped and inconclusive.** HTTP 429 at admission 12 leaves 11 responses,
 one uncertain request and 20 never-admitted cells out of the fixed 32.
@@ -11,7 +21,7 @@ screen is inconclusive. No selector is trained and the study cannot be resumed.
 All 22 saved evaluations / 20 unique suites reproduce with zero discrepancies;
 actual acquired snapshots are verified without rerunning traces. New known
 spend is $0.00690084, plus a retained $0.01146880 reserve. Cumulative commitment
-is $0.22774335 / $0.60 including fourteen unresolved reserves. Current read-only
+at that study's close was $0.22774335 / $0.60 including fourteen unresolved reserves. Read-only
 account checks show available credit; the cause of the 429 remains unidentified.
 The [prospective protocol](FROZEN-REGION-PROTOCOL.md) and all missing cells stay unchanged.
 

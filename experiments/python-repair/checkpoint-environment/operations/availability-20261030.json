@@ -1,0 +1,27 @@
+{
+  "checked_utc": "2026-10-30T05:37:38.862008+00:00",
+  "cumulative_committed_usd": "0.22775259",
+  "endpoint": "parasail/bf16",
+  "exception_type": null,
+  "generation_requests_admitted": 1,
+  "historical_uncertain_requests_preserved": 14,
+  "http_status": 200,
+  "known_cost_usd": "0.00000924",
+  "limitation": "One minimal synthetic request cannot establish batch stability or explain the historical 429. Closed research studies remain closed.",
+  "model": "qwen/qwen3-coder-next",
+  "new_committed_usd": "0.00000924",
+  "new_uncertain_requests": 0,
+  "provider": "Parasail",
+  "repeat_or_resume_allowed": false,
+  "responses_settled": 1,
+  "safe_error_details": null,
+  "scientific_data": false,
+  "status": "success",
+  "purpose": "Single user-requested operational availability test, not a scientific observation or historical retry.",
+  "receipt_audit": {
+    "complete_stream": true,
+    "expected_json_response": true,
+    "prompt_tokens": 37,
+    "completion_tokens": 6
+  }
+}

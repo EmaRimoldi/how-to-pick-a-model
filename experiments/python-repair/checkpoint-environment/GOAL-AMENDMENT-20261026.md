@@ -1,6 +1,17 @@
 # Research goal amendment: acquire evidence before another repair?
 
-**Latest verified status (2026-10-29 UTC):** the user resumed the unchanged goal.
+**Latest step (2026-10-30 UTC):** the user requested proceeding after one minimal
+availability check succeeded on the same research key/model/provider. The
+[new separate spectrum screen](SPECTRUM-PROTOCOL.md) compares complete public
+coverage rankings against concurrent feedback-only controls at eight generated
+failed checkpoints, three draws per arm. It declares a $0.36 allocation inside
+the existing $0.60 cap, carrying $0.22775259 including fourteen prior reserves.
+This is an information-value development screen, not selector training or an
+equal-total-resource policy claim. No new repair results are available yet.
+The earlier dashboard discrepancy is explained by distinct accounts; the
+historical 429 cause and uncertain charges remain unresolved.
+
+**Previous verified status (2026-10-29 UTC):** the user resumed the unchanged goal.
 The [frozen-region model study](results/frozen-region-stopped-20261027/README.md)
 remains closed after HTTP 429 with 11/32 responses and an inconclusive gate.
 The API can retrieve one known paid receipt, while the dashboard showed no
