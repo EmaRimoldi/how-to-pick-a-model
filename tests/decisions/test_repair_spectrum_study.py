@@ -115,6 +115,73 @@ def test_saved_verifier_scores_cannot_be_fabricated():
         study.check_saved_suite(result,cases)
 
 
+def test_complete_evaluation_uses_real_task_public_and_private_apis(plan):
+    record=plan['records'][0]
+    calls=[]
+    class Verifier:
+        def check(self,files,entrypoint,cases):
+            calls.append(cases)
+            return {'suite_ids':[c['id'] for c in cases]}
+    receipt={'content':json.dumps(record['public']['files']),'finish_reason':'stop'}
+    cell=study.evaluate(record,receipt,Verifier())
+    assert cell['decoded']['artifact_valid']
+    assert calls==[record['public']['public_cases'],record['evaluator']['cases']]
+    assert cell['evaluator']=={'suite_ids':[c['id'] for c in record['evaluator']['cases']]}
+
+
+def test_correction_imports_settled_response_once_and_dispatches_only_next(tmp_path,monkeypatch,plan):
+    monkeypatch.setattr(study,'ROOT',tmp_path)
+    (tmp_path/'runs').mkdir()
+    amount=Decimal('.0004826')
+    (tmp_path/'runs/ACTIVE_RESEARCH_STATE.json').write_text(json.dumps({'current_repair_budget':{
+        'cumulative_committed_usd':str(study.CARRY+amount),'total_unresolved_reservations':14,'active_collectors':0}}))
+    monkeypatch.setenv('OPENROUTER_API_KEY','synthetic-test-credential')
+    monkeypatch.setattr(study,'validate_freeze',lambda *args,**kwargs:None)
+    monkeypatch.setattr(study,'runtime',lambda:{})
+    first,second=plan['requests'][:2]
+    first_id,second_id=first['metadata']['attempt_id'],second['metadata']['attempt_id']
+    correction={'imported_known_usd':str(amount),'imported_attempts':[first_id]}
+    monkeypatch.setattr(study,'validate_parent',lambda *args:correction)
+    parent=tmp_path/'parent'
+    parent.mkdir()
+    for directory in ['requests','receipts','stream-metrics']:(parent/directory).mkdir()
+    (parent/'ledger.jsonl').write_text('immutable-parent-ledger\n')
+    (parent/'receipts'/(first_id+'.json')).write_text(json.dumps({'generation_id':'already-paid'}))
+    class Verifier:
+        def preflight(self):return {}
+        def check(self,*args):return plan['records'][0]['stored']['feedback']
+    class Transport:
+        calls=[]
+        spent=Decimal(0)
+        pending={}
+        def __init__(self,out,*args,**kwargs):(out/'stream-metrics').mkdir()
+        def preflight(self):assert not self.seen
+        @property
+        def conservative_committed_usd(self):return self.spent+sum(self.pending.values())
+        def complete(self,request,meta):
+            assert self.spent==amount
+            assert self.seen=={first_id}
+            self.calls.append(meta['attempt_id'])
+            self.pending={meta['attempt_id']:study.SETTINGS.reserve}
+            raise ProviderStopped('stop synthetic second call')
+    monkeypatch.setattr(study,'RepairVerifier',Verifier)
+    monkeypatch.setattr(study,'StreamingOpenRouterTransport',Transport)
+    monkeypatch.setattr(study,'evaluate',lambda *args:{'decoded':{},'public':{},'evaluator':{}})
+    f={'freeze_id':'new','runtime':{},'implementation_correction':correction,
+       'plan':{'records':plan['records'],'requests':[first,second]}}
+    # Initial-feedback verification is tested elsewhere; allow every supplied suite.
+    monkeypatch.setattr(study,'public_feedback',lambda result:result)
+    Verifier.check=lambda self,files,entrypoint,cases:next(r['stored']['feedback'] for r in plan['records'] if r['public']['files']==files)
+    out=tmp_path/'corrected'
+    assert study.collect(f,out,parent=parent)['status']=='interrupted'
+    assert Transport.calls==[second_id]
+    assert (out/'parent/ledger.jsonl').read_bytes()==(parent/'ledger.jsonl').read_bytes()
+    assert (out/'ledger.jsonl').read_bytes()==(parent/'ledger.jsonl').read_bytes()
+    assert [r['attempt_id'] for r in study.rows(out/'observations.jsonl')]==[first_id]
+    stopped=study.read(out/'interruption.json')
+    assert Decimal(stopped['study_committed_usd'])==amount+study.SETTINGS.reserve
+
+
 def test_first_transport_failure_stops_and_cannot_resume(tmp_path,monkeypatch):
     monkeypatch.setattr(study,'ROOT',tmp_path)
     (tmp_path/'runs').mkdir()

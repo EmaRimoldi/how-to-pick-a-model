@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path
 import random
+import shutil
 import zipfile
 
 from .contracts import decode, public_feedback
@@ -27,6 +28,7 @@ ROOT = Path(__file__).resolve().parents[3]
 BASE = Path('experiments/python-repair/checkpoint-environment')
 PROTOCOL = BASE / 'SPECTRUM-PROTOCOL.md'
 CONFIG = BASE / 'SPECTRUM-AUTHORIZED.json'
+AMENDMENT = BASE / 'SPECTRUM-IMPLEMENTATION-CORRECTION.md'
 SPECTRA = BASE / 'results/generated-spectra-20261029/evidence.zip'
 SPECTRA_SHA = '91ce9853e359486f7ba40b01e248fb3491d24337fd4c4ceba938e5927744e400'
 SOURCE = BASE / 'results/contract-gemma27b-20261026/evidence.zip'
@@ -177,7 +179,7 @@ def no_overlap(plan):
 
 def runtime():
     paths = list((ROOT/'src/vao/repair').glob('*.py')) + [ROOT/'src/vao/decisions/verification.py',
-        ROOT/PROTOCOL,ROOT/CONFIG,ROOT/'scripts/repair_spectrum_study.py',ROOT/'pyproject.toml',ROOT/'uv.lock']
+        ROOT/PROTOCOL,ROOT/CONFIG,ROOT/AMENDMENT,ROOT/'scripts/repair_spectrum_study.py',ROOT/'pyproject.toml',ROOT/'uv.lock']
     return {str(p.relative_to(ROOT)):digest(p) for p in sorted(paths)}
 
 
@@ -193,12 +195,14 @@ def validate_config(config):
         raise ValueError('Authorization differs from declared screen')
 
 
-def freeze(plan, output):
+def freeze(plan, output, parent=None):
     validate_plan(plan)
     config = read(ROOT/CONFIG)
     validate_config(config)
     f = {'study':STUDY,'plan':plan,'config':config,'overlap_check':no_overlap(plan),
          'source_commit':source_commit(),'runtime':runtime(),'created_utc':datetime.now(timezone.utc).isoformat()}
+    if parent is not None:
+        f['implementation_correction']=validate_parent(parent,plan)
     f['freeze_id'] = identity(f)
     save(output,f)
     return {'freeze_id':f['freeze_id'],'source_commit':f['source_commit'],'requests':48,**f['overlap_check']}
@@ -220,23 +224,52 @@ def evaluate(record, receipt, verifier):
     result = {'decoded':decoded,'public':None,'evaluator':None}
     if decoded['artifact_valid']:
         result['public'] = verifier.check(decoded['files'],task.public['entrypoint'],task.public['public_cases'])
-        result['evaluator'] = verifier.check(decoded['files'],task.public['entrypoint'],task.evaluator['cases'])
+        result['evaluator'] = verifier.check(decoded['files'],task.public['entrypoint'],task.cases('evaluator'))
     return result
 
 
-def collect(frozen, output):
+def validate_parent(parent, plan):
+    """One narrowly bounded correction, never a transport-error continuation."""
+    old=read(parent/'manifest.json')['freeze']
+    validate_freeze(old)
+    terminal=read(parent/'interruption.json')
+    if (old['source_commit']!='b96190330a98598ffec353c95988a8a411f5206f'
+            or old['freeze_id']!='5dd799d3ffa02a6559b19723d6cd922628ccd0f667950eb9fe17c41efd000657'
+            or old['plan']!=plan or 'implementation_correction' in old
+            or terminal['exception_type']!='AttributeError' or (parent/'completion.json').exists()
+            or rows(parent/'provider-errors.jsonl') or rows(parent/'observations.jsonl')
+            or list((parent/'cells').glob('*.json'))):
+        raise ValueError('Only the identified post-receipt evaluator defect qualifies')
+    bill=accounting(parent,plan)
+    if (bill['admitted']!=1 or bill['settled']!=1 or bill['pending'] or bill['cap_exceeded']
+            or dollars(bill['known_usd'])!=Decimal('.0004826')
+            or any(dollars(terminal[k])!=dollars(bill[k]) for k in ('known_usd','study_committed_usd','cumulative_committed_usd'))):
+        raise ValueError('Parent must contain one fully settled receipt and no uncertainty')
+    return {'parent_freeze_id':old['freeze_id'],'parent_source_commit':old['source_commit'],
+        'files':{p.relative_to(parent).as_posix():digest(p) for p in sorted(parent.rglob('*')) if p.is_file()},
+        'imported_attempts':bill['admitted_attempts'],'imported_known_usd':bill['known_usd'],
+        'never_sent_attempts':[r['metadata']['attempt_id'] for r in plan['requests'][1:]],
+        'new_allocation_usd':'0','authorization_reference':'Standing user request to proceed; documented agent-declared implementation correction only. No paid request is replayed; see SPECTRUM-IMPLEMENTATION-CORRECTION.md.'}
+
+
+def collect(frozen, output, parent=None):
     validate_freeze(frozen,current=True)
     key = os.environ.get('OPENROUTER_API_KEY')
     if not key:
         raise ValueError('Private credential required')
     state = read(ROOT/'runs/ACTIVE_RESEARCH_STATE.json')['current_repair_budget']
-    if dollars(state['cumulative_committed_usd'])!=CARRY or state['total_unresolved_reservations']!=14 or state['active_collectors']:
+    correction=validate_parent(parent,frozen['plan']) if parent is not None else None
+    if frozen.get('implementation_correction')!=correction:
+        raise ValueError('Correction must be frozen against exactly one immutable parent')
+    imported=dollars(correction['imported_known_usd']) if correction else Decimal(0)
+    if dollars(state['cumulative_committed_usd'])!=CARRY+imported or state['total_unresolved_reservations']!=14 or state['active_collectors']:
         raise ValueError('Cumulative accounting or active collector changed')
     if output.exists():
         raise ValueError('Output cannot be resumed')
     claims = ROOT/'runs/repair-spectrum-admissions'
     claims.mkdir(exist_ok=True)
-    save(claims/(STUDY+'.json'),{'freeze_id':frozen['freeze_id'],'output':str(output.resolve()),'resume_allowed':False})
+    claim_name=STUDY+('-implementation-correction-1' if correction else '')
+    save(claims/(claim_name+'.json'),{'freeze_id':frozen['freeze_id'],'output':str(output.resolve()),'resume_allowed':False})
     output.mkdir()
     for name in ('requests','receipts','cells'):
         (output/name).mkdir()
@@ -244,6 +277,19 @@ def collect(frozen, output):
     t = StreamingOpenRouterTransport(output,key,SETTINGS,authorized_limit_usd=str(CAP),
         minimum_interval_seconds=60,max_wire_bytes=8388608)
     try:
+        if correction:
+            # Copy the complete immutable parent before any new provider operation.
+            # Its original manifest/interruption remain under parent/. The active
+            # ledger imports each old reserve/settlement exactly once.
+            shutil.copytree(parent,output/'parent')
+            for name in ('requests','receipts','stream-metrics'):
+                shutil.copytree(parent/name,output/name,dirs_exist_ok=True)
+            shutil.copyfile(parent/'ledger.jsonl',output/'ledger.jsonl')
+            t.spent=imported
+            t.seen=set(correction['imported_attempts'])
+            # Preflight requires seen to be empty; keep imported identities outside
+            # that gate, then restore them before the first new admission.
+            t.seen.clear()
         verifier = RepairVerifier()
         save(output/'sandbox-preflight.json',verifier.preflight())
         for r in frozen['plan']['records']:
@@ -253,7 +299,17 @@ def collect(frozen, output):
                 raise ValueError('Frozen checkpoint feedback does not reproduce')
         t.preflight()
         seen = set()
-        for request in frozen['plan']['requests']:
+        start=0
+        if correction:
+            t.seen=set(correction['imported_attempts'])
+            old=frozen['plan']['requests'][0];meta=old['metadata'];attempt=meta['attempt_id']
+            receipt=read(output/'receipts'/(attempt+'.json'))
+            seen.add(receipt['generation_id'])
+            cell=evaluate(frozen['plan']['records'][meta['task_index']],receipt,verifier)
+            save(output/'cells'/(attempt+'.json'),{'metadata':meta,**cell})
+            append(output/'observations.jsonl',{'attempt_id':attempt,'cell_sha256':digest(output/'cells'/(attempt+'.json'))})
+            start=1
+        for request in frozen['plan']['requests'][start:]:
             if runtime()!=frozen['runtime']:
                 raise ValueError('Frozen runtime changed')
             meta = request['metadata'];attempt = meta['attempt_id']
@@ -365,6 +421,17 @@ def audit(output, replay=False):
         raise ValueError('Exactly one terminal file required before outcome analysis')
     frozen=read(output/'manifest.json')['freeze'];validate_freeze(frozen)
     plan=frozen['plan'];bill=accounting(output,plan)
+    if 'implementation_correction' in frozen:
+        correction=validate_parent(output/'parent',plan)
+        if correction!=frozen['implementation_correction']:
+            raise ValueError('Imported parent differs from correction freeze')
+        old_lines=(output/'parent/ledger.jsonl').read_bytes()
+        if not (output/'ledger.jsonl').read_bytes().startswith(old_lines):
+            raise ValueError('Parent ledger not imported exactly once')
+        for name in ('requests','receipts','stream-metrics'):
+            for path in (output/'parent'/name).glob('*'):
+                if path.is_file() and path.read_bytes()!=(output/name/path.name).read_bytes():
+                    raise ValueError('An imported request, receipt or metric changed')
     terminal=read(output/('completion.json' if complete else 'interruption.json'))
     if any(dollars(terminal[k])!=dollars(bill[k]) for k in ('known_usd','study_committed_usd','cumulative_committed_usd')):
         raise ValueError('Terminal accounting differs')
@@ -419,6 +486,7 @@ def audit(output, replay=False):
     return {'study':STUDY,**summarize(outcomes),'accounting':bill,'cells':details,
         'candidate_inventory':plan['candidate_inventory'],'source_commit':frozen['source_commit'],
         'independent_replay':replay,'historical_reserves_preserved':14,
+        'implementation_correction':frozen.get('implementation_correction'),
         'limitation':'Exposed clustered development cases, fixed one-attempt arms. No equal-total-resource policy or generalization claim.'}
 
 
@@ -448,6 +516,8 @@ def render(report):
         '- A successful screen only supports independent replication and an equal-total-resource policy experiment. No selector is trained.',
         '- Earlier studies and their unknown charges remain closed; current availability does not explain the historical 429.', '',
         'See [protocol](../../SPECTRUM-PROTOCOL.md) for the prespecified screen and [analysis](analysis.json) for every cell.', '']
+    if report.get('implementation_correction'):
+        lines += ['One paid response preceded a local evaluator API defect. The response was retained and scored offline after correcting the accessor; only the 47 originally frozen, never-sent requests followed. Prompts, ordering, models, seeds, criteria and budget did not change. The immutable parent and exact exception are included in evidence and the [implementation correction](../../SPECTRUM-IMPLEMENTATION-CORRECTION.md).', '']
     return '\n'.join(lines)
 
 
@@ -493,15 +563,16 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('action',choices=['prepare','freeze','live','progress','audit','replay','publish'])
     p.add_argument('--input',type=Path);p.add_argument('--output',type=Path)
+    p.add_argument('--parent',type=Path,help='Only the explicitly frozen local evaluator correction; never a transport retry')
     args=p.parse_args()
     if args.action=='prepare':
         plan=build_plan();validate_plan(plan);check=no_overlap(plan);save(args.output,plan)
         result={'plan_id':plan['plan_id'],'requests':48,'cap_usd':str(CAP),
                 'maximum_reservations_usd':plan['maximum_reservations_usd'],**check}
     elif args.action=='freeze':
-        result=freeze(read(args.input),args.output)
+        result=freeze(read(args.input),args.output,parent=args.parent)
     elif args.action=='live':
-        result=collect(read(args.input),args.output)
+        result=collect(read(args.input),args.output,parent=args.parent)
     elif args.action=='progress':
         plan=read(args.input/'manifest.json')['freeze']['plan']
         result=accounting(args.input,plan)
