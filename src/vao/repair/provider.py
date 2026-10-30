@@ -6,6 +6,7 @@ enforces the separately funded source freeze and a single-use campaign claim.
 
 from dataclasses import asdict, dataclass
 from decimal import Decimal, InvalidOperation
+from email.utils import format_datetime, parsedate_to_datetime
 import http.client
 import json
 from pathlib import Path
@@ -39,30 +40,93 @@ def safe_error_details(payload, headers=None):
     values are intentionally discarded instead of redacted heuristically.
     These details cannot settle a charge or authorize a retry.
     """
-    result = {}
+    result = {'metadata_status': 'unavailable'}
     error = payload.get('error') if isinstance(payload, dict) else None
     if isinstance(error, dict):
         if type(error.get('code')) is int and 100 <= error['code'] <= 599:
             result['code'] = error['code']
         metadata = error.get('metadata')
+        result['metadata_status'] = ('absent' if 'metadata' not in error else
+                                     'object' if isinstance(metadata, dict) else 'non_object')
         if isinstance(metadata, dict):
             allowed = {
                 'error_type': {'rate_limit_exceeded', 'insufficient_quota', 'server',
                                'model_not_available', 'provider_overloaded', 'timeout'},
                 'provider_code': {'rate_limited', 'rate_limit_exceeded', 'insufficient_quota'},
+                'provider_name': {'Parasail', 'DeepInfra'},
                 'limit_source': {'openrouter_guardrail_budget', 'openrouter_workspace_budget',
-                                 'openrouter_key_limit', 'openrouter_in_flight_budget'},
+                                 'openrouter_key_limit', 'openrouter_in_flight_budget', 'openrouter_credits'},
+                'reason': {'in_flight_budget_exhausted', 'weight_exceeds_budget'},
             }
             for name, vocabulary in allowed.items():
                 value = metadata.get(name)
                 if isinstance(value, str) and value in vocabulary:
                     result[name] = value
-    # Only numeric rate counters/delays; omit dates, identifiers and free text.
+            code = metadata.get('provider_code')
+            if type(code) is int and 100 <= code <= 599:
+                result['provider_code'] = code
+            # Names are a fixed vocabulary, never arbitrary metadata keys/values.
+            result['omitted_metadata_fields'] = [name for name in allowed
+                if name in metadata and name not in result]
+            result['other_metadata_present'] = any(name not in allowed for name in metadata)
+    # Only numeric rate counters; dates are accepted solely in Retry-After below.
     for name in ('Retry-After', 'X-RateLimit-Limit-Requests', 'X-RateLimit-Remaining-Requests',
                  'X-RateLimit-Limit-Tokens', 'X-RateLimit-Remaining-Tokens'):
-        value = (headers or {}).get(name)
+        value = (headers or {}).get(name, (headers or {}).get(name.lower()))
         if isinstance(value, str) and re.fullmatch(r'[0-9]{1,12}', value):
             result.setdefault('rate_headers', {})[name.lower()] = int(value)
+    value = (headers or {}).get('Retry-After', (headers or {}).get('retry-after'))
+    retry_after = safe_retry_after(value)
+    result['retry_after_status'] = ('absent' if value is None else
+                                    'retained' if retry_after is not None else 'omitted')
+    if retry_after is not None:
+        result['retry_after'] = retry_after
+    return result
+
+
+def safe_retry_after(value):
+    """Retain bounded delta-seconds or an exact HTTP date, never free text.
+
+    This is diagnostic data only. Neither transport schedules a retry from it.
+    """
+    if not isinstance(value, str):
+        return None
+    if re.fullmatch(r'[0-9]{1,12}', value):
+        return value
+    if not re.fullmatch(r'(Mon|Tue|Wed|Thu|Fri|Sat|Sun), [0-9]{2} '
+                        r'(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) '
+                        r'[0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} GMT', value):
+        return None
+    try:
+        parsed = parsedate_to_datetime(value)
+        return value if format_datetime(parsed, usegmt=True) == value else None
+    except (TypeError, ValueError, OverflowError):
+        return None
+
+
+def read_http_error_details(exc):
+    """Read at most 8193 error bytes and retain only safe diagnostics.
+
+    Reading/decoding failures do not hide the original HTTP status. Unknown and
+    omitted information is explicit; no absence is inferred from a parse failure.
+    """
+    payload, body_status = None, 'read_failed'
+    try:
+        raw = exc.read(8193)
+        body_status = 'oversized'
+        if len(raw) <= 8192:
+            body_status = 'invalid_json'
+            payload = json.loads(raw)
+            body_status = 'json'
+    except (OSError, ValueError, RecursionError, http.client.HTTPException):
+        pass
+    finally:
+        try:
+            exc.close()
+        except (OSError, http.client.HTTPException):
+            pass
+    result = safe_error_details(payload, exc.headers)
+    result['body_status'] = body_status
     return result
 
 
@@ -183,22 +247,10 @@ class OpenRouterTransport:
                 phase = "decoding_response"
                 return json.loads(raw)
         except urllib.error.HTTPError as exc:
-            retry_after = (exc.headers or {}).get("Retry-After")
-            if (not isinstance(retry_after, str) or len(retry_after) > 120
-                    or self._key in retry_after or "sk-" in retry_after):
-                retry_after = None
-            payload = None
-            try:
-                data = exc.read(8193)
-                if len(data) <= 8192:
-                    payload = json.loads(data)
-            except (OSError, ValueError, RecursionError):
-                pass  # Reading diagnostic text must not mask the HTTP failure.
-            finally:
-                exc.close()
+            details = read_http_error_details(exc)
             raise ProviderStopped(f"HTTP {exc.code}; no retry; admission remains reserved",
-                                  http_status=exc.code, transport_kind="http_error", retry_after=retry_after,
-                                  error_details=safe_error_details(payload, exc.headers),
+                                  http_status=exc.code, transport_kind="http_error", retry_after=details.get('retry_after'),
+                                  error_details=details,
                                   transport_phase=phase,
                                   exchange_elapsed_seconds=round(time.monotonic() - start, 6)) from None
         except (OSError, ValueError, http.client.HTTPException) as exc:

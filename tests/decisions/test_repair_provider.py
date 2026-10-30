@@ -288,12 +288,14 @@ def test_distinct_calls_are_paced_without_retrying(tmp_path, monkeypatch, solver
     assert len(transport.seen) == 2 and len(rows(tmp_path / "ledger.jsonl")) == 4
 
 
-@pytest.mark.parametrize('body_kind', ['structured', 'malformed', 'oversized'])
+@pytest.mark.parametrize('streamed', [False, True])
+@pytest.mark.parametrize('body_kind', ['structured', 'malformed', 'oversized', 'nested', 'read_failed'])
 def test_http_failure_diagnostics_are_bounded_allowlisted_and_never_retry(
-        tmp_path, monkeypatch, solver_request, meta, body_kind):
+        tmp_path, monkeypatch, solver_request, meta, body_kind, streamed):
     import io
     import urllib.error
     from vao.repair import provider
+    from vao.repair.streaming import StreamingOpenRouterTransport, StreamingSettings
 
     secret = 'fixture-bearer-canary'
     body = {'error': {'code': 429, 'message': secret,
@@ -302,17 +304,30 @@ def test_http_failure_diagnostics_are_bounded_allowlisted_and_never_retry(
     raw = canonical(body).encode()
     if body_kind == 'malformed': raw = b'not json: ' + secret.encode()
     if body_kind == 'oversized': raw = b' ' * 8200 + raw
+    if body_kind == 'nested': raw = b'[' * 1500 + b'0' + b']' * 1500
+    # CPython/pytest recursion limits differ; inject the decoder failure rather
+    # than relying on a particular nesting threshold in the running interpreter.
+    original_loads = provider.json.loads
+    def load(data, *args, **kwargs):
+        if body_kind == 'nested' and data == raw:
+            raise RecursionError(secret)
+        return original_loads(data, *args, **kwargs)
+    monkeypatch.setattr(provider.json, 'loads', load)
     calls = []
+    class BrokenBody(io.BytesIO):
+        def read(self, *_): raise ConnectionResetError(secret)
+    response_body = BrokenBody(raw) if body_kind == 'read_failed' else io.BytesIO(raw)
     class Opener:
         def open(self, request, timeout):
             calls.append(request.full_url)
             raise urllib.error.HTTPError(request.full_url, 429, secret,
                 {'Retry-After': '60', 'X-RateLimit-Remaining-Requests': '0',
-                 'X-RateLimit-Limit-Requests': secret, 'X-Request-Id': secret}, io.BytesIO(raw))
+                 'X-RateLimit-Limit-Requests': secret, 'X-Request-Id': secret}, response_body)
     monkeypatch.setattr(provider.urllib.request, 'build_opener', lambda *_: Opener())
     (tmp_path / 'requests').mkdir()
     (tmp_path / 'receipts').mkdir()
-    transport = OpenRouterTransport(tmp_path, secret, Settings(), authorized_limit_usd='.60')
+    transport = (StreamingOpenRouterTransport(tmp_path, secret, StreamingSettings(), authorized_limit_usd='.60')
+                 if streamed else OpenRouterTransport(tmp_path, secret, Settings(), authorized_limit_usd='.60'))
     transport.ready = True  # Exercise the real HTTP path without a network preflight.
     with pytest.raises(ProviderStopped): transport.complete(solver_request, meta)
     with pytest.raises(ProviderStopped): transport.complete(solver_request, {**meta, 'attempt_id': 'b'})
@@ -321,9 +336,75 @@ def test_http_failure_diagnostics_are_bounded_allowlisted_and_never_retry(
     assert details['rate_headers'] == {'retry-after': 60, 'x-ratelimit-remaining-requests': 0}
     if body_kind == 'structured':
         assert details['code'] == 429 and details['error_type'] == 'rate_limit_exceeded'
+        assert details['metadata_status'] == 'object' and details['other_metadata_present']
+        assert details['omitted_metadata_fields'] == ['provider_code', 'limit_source']
     else:
-        assert set(details) == {'rate_headers'}
+        assert details['metadata_status'] == 'unavailable' and 'code' not in details
+    assert details['body_status'] == {'structured': 'json', 'malformed': 'invalid_json',
+        'oversized': 'oversized', 'nested': 'invalid_json', 'read_failed': 'read_failed'}[body_kind]
+    assert error['retry_after'] == '60' and details['retry_after_status'] == 'retained'
     assert error['http_status'] == 429 and error['reservation_retained']
     assert len(calls) == 1 and transport.pending == {'a': Settings().reserve}
+    assert response_body.closed and 'provider_code' not in details
     saved = ''.join(p.read_text() for p in tmp_path.rglob('*.json*'))
-    assert secret not in saved and 'account_id' not in saved and 'provider_code' not in saved
+    assert secret not in saved and 'account_id' not in saved
+
+
+@pytest.mark.parametrize('streamed', [False, True])
+@pytest.mark.parametrize('delay,expected', [
+    ('120', '120'), ('Fri, 30 Oct 2026 13:40:00 GMT', 'Fri, 30 Oct 2026 13:40:00 GMT'),
+    ('fixture-private-header-canary', None), ('120; fixture-private-header-canary', None),
+    ('Fri, 32 Oct 2026 13:40:00 GMT', None), (None, None),
+])
+def test_provider_attribution_and_retry_delay_are_diagnostics_not_retry_authority(
+        tmp_path, monkeypatch, solver_request, meta, streamed, delay, expected):
+    import io
+    import urllib.error
+    from vao.repair import provider
+    from vao.repair.streaming import StreamingOpenRouterTransport, StreamingSettings
+
+    calls = []
+    secret = 'fixture-private-header-canary'
+    payload = {'error': {'code': 429, 'message': secret, 'metadata': {
+        'provider_name': 'Parasail', 'provider_code': 429, 'error_type': 'rate_limit_exceeded',
+        'raw': secret, 'unknown-private-key': secret}}}
+    headers = {} if delay is None else {'retry-after': delay}
+    class Opener:
+        def open(self, request, timeout):
+            calls.append(request.full_url)
+            raise urllib.error.HTTPError(request.full_url, 429, secret, headers,
+                                         io.BytesIO(canonical(payload).encode()))
+    monkeypatch.setattr(provider.urllib.request, 'build_opener', lambda *_: Opener())
+    for folder in ['requests', 'receipts']:
+        (tmp_path/folder).mkdir()
+    transport = (StreamingOpenRouterTransport(tmp_path, secret, StreamingSettings(), authorized_limit_usd='.60')
+                 if streamed else OpenRouterTransport(tmp_path, secret, Settings(), authorized_limit_usd='.60'))
+    transport.ready = True
+    with pytest.raises(ProviderStopped): transport.complete(solver_request, meta)
+    with pytest.raises(ProviderStopped): transport.complete(solver_request, {**meta, 'attempt_id': 'b'})
+    error = rows(tmp_path/'provider-errors.jsonl')[0]
+    assert error['retry_after'] == expected
+    details = error['error_details']
+    assert details['retry_after_status'] == ('absent' if delay is None else 'retained' if expected else 'omitted')
+    assert details['provider_name'] == 'Parasail' and details['provider_code'] == 429
+    assert details['omitted_metadata_fields'] == [] and details['other_metadata_present']
+    assert len(calls) == 1 and transport.pending == {'a': Settings().reserve}
+    assert [r['event'] for r in rows(tmp_path/'ledger.jsonl')] == ['reserve']
+    assert not list((tmp_path/'receipts').iterdir())
+    saved = ''.join(p.read_text() for p in tmp_path.rglob('*.json*'))
+    assert secret not in saved and 'unknown-private-key' not in saved
+
+
+def test_absent_metadata_is_distinct_from_filtered_or_malformed_metadata():
+    from vao.repair.provider import safe_error_details
+    assert safe_error_details({'error': {'code': 429}})['metadata_status'] == 'absent'
+    assert safe_error_details({'error': {'metadata': None}})['metadata_status'] == 'non_object'
+    filtered = safe_error_details({'error': {'metadata': {
+        'provider_name': 'PRIVATE-NAME', 'provider_code': True,
+        'limit_source': 'PRIVATE-SOURCE', 'reason': 'PRIVATE-REASON'}}})
+    assert filtered['metadata_status'] == 'object'
+    assert set(filtered['omitted_metadata_fields']) == {'provider_name', 'provider_code', 'limit_source', 'reason'}
+    assert 'PRIVATE-' not in json.dumps(filtered)
+    budget = safe_error_details({'error': {'code': 402, 'metadata': {
+        'limit_source': 'openrouter_credits', 'reason': 'weight_exceeds_budget'}}})
+    assert budget['limit_source'] == 'openrouter_credits' and budget['reason'] == 'weight_exceeds_budget'

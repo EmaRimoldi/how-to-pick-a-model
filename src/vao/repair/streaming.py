@@ -17,7 +17,7 @@ import urllib.error
 import urllib.request
 
 from .environment import canonical
-from .provider import NoRedirects, OpenRouterTransport, ProviderStopped, Settings, dollars, safe_error_details
+from .provider import NoRedirects, OpenRouterTransport, ProviderStopped, Settings, dollars, read_http_error_details
 from .records import save
 
 
@@ -290,17 +290,9 @@ or refund is inferred. Complete usage overages are retained even without DONE.
                 metrics['stream_complete'] = True
                 return result
         except urllib.error.HTTPError as exc:
-            payload = None
-            try:
-                raw = exc.read(8193)
-                if len(raw) <= 8192:
-                    payload = json.loads(raw)
-            except (OSError, ValueError, http.client.HTTPException):
-                pass
-            finally:
-                exc.close()
+            details = read_http_error_details(exc)
             raise ProviderStopped(f'HTTP {exc.code}; no retry', http_status=exc.code,
-                transport_kind='http_error', error_details=safe_error_details(payload, exc.headers),
+                transport_kind='http_error', error_details=details, retry_after=details.get('retry_after'),
                 transport_phase=phase, exchange_elapsed_seconds=round(time.monotonic()-start, 6)) from None
         except StreamProtocolError as exc:
             metrics['protocol_error'] = exc.code

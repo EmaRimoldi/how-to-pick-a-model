@@ -1,5 +1,45 @@
 # Transport review after the interrupted Qwen information study
 
+## Post-terminal HTTP diagnostics correction (2026-10-30)
+
+The [closed stdin pilot](results/stdin-pilot-20261030/README.md) preserves one
+HTTP 429 admission and zero responses. Its error log retains only code 429;
+it cannot distinguish absent provider metadata from values discarded by the
+privacy allowlist. The old streaming path also did not populate the top-level
+`retry_after` field, and its numeric-only allowlist omitted HTTP-date delays.
+These are identified observability limits, **not an identified cause of 429**.
+No historical metadata can be recovered from those filtered records.
+
+The post-terminal client now records whether the bounded error body was decoded,
+malformed, oversized or unreadable; whether metadata is absent, malformed or an
+object; and which fixed diagnostic field names had values omitted. It retains
+only recognized provider names (Parasail/DeepInfra), typed error/limit reasons,
+bounded numeric provider codes, numeric rate counters and strictly validated
+Retry-After seconds or HTTP dates. Unknown values and arbitrary metadata keys,
+raw messages, prompts, account identifiers and credentials remain excluded.
+Both transports use the same bounded reader and preserve the original HTTP
+status even if reading or decoding the error body fails.
+
+[OpenRouter's error reference](https://openrouter.ai/docs/api_reference/errors-and-debugging)
+documents typed error metadata and optional retry delays. Its
+[limits reference](https://openrouter.ai/docs/api_reference/limits) distinguishes
+credit, configured budget and request limits, including structured in-flight
+budget reasons. Checked 2026-10-30. These fields are recorded as observations;
+the client does not infer a cause from an absent field or act on a delay.
+
+Offline HTTP-error injection exercises both transports, including malformed and
+oversized bodies, decoding/read failures, known provider attribution, rejected
+private text and valid/invalid delays. Every fixture admits only one request,
+keeps its full reservation, produces no settled receipt, closes the error body
+and rejects a second admission. No live call, retry, key rotation or successor
+was made. No request body, model, pacing, accounting or scientific decision rule
+changes. The frozen pilot archive and its inconclusive analysis remain intact.
+Future use requires a new source freeze; this correction does not enable the
+closed collector or establish service availability. The cumulative commitment
+remains $0.25745683 / $0.60, including fifteen uncertain reserves.
+
+## Historical review
+
 The closed [information bank](results/information-qwen-stopped-20261026/README.md)
 retains 18 responses, one uncertain request and 45 never-admitted requests.
 Its primary result remains inconclusive. This review changes neither its protocol

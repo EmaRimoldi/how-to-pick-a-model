@@ -9,6 +9,12 @@ commitment to $0.25745683 / $0.60 and fifteen historical/current uncertain reser
 There is no new repair or diagnostic finding. Complete inert evidence preserves
 the source/configuration freeze, actual request, accounting and all missing slots.
 
+The [post-terminal transport review](TRANSPORT-REVIEW-20261026.md) corrects a
+logging limit: future errors distinguish absent metadata from filtered values and
+preserve recognized provider codes and validated retry delays. Both transports
+pass offline error-injection checks with one admission and its full reserve.
+The historical 429 cause remains unknown; no new live call or resumption occurred.
+
 **Whole-program diagnostic preparation:** [all eleven qualified development groups](results/stdin-ablation-preparation-20261030/README.md)
 now have reproducible public-only F/N/S requests. A separate instrumentation
 comparison improves complete coverage from 7/11 to 10/11 without changing the
