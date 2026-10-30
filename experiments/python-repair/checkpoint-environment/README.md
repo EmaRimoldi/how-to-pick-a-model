@@ -1,5 +1,14 @@
 # Python repair checkpoint environment
 
+**New qualification milestone:** all 36 prospectively selected FixEval pairs have
+now run twice against their original tests. [25 pairs across 11 of 12 groups](results/fixeval-source-qualification-20261030/README.md)
+meet the fixed offline rule; all 2,076 observations rescore without discrepancies.
+All exclusions remain, including one obsolete-library reference and an entire
+problem without an evaluator failure. A prose/runtime version mismatch is disclosed:
+the exact pre-execution binary freeze and actual runs used CPython 3.13.12.
+These human submissions validate the environment; model recovery and diagnostics
+have not been tested on this pool.
+
 **New source milestone:** the [FixEval metadata audit](results/fixeval-source-access-20261030/README.md)
 replays 13.9 million submission records and fixes a development inspection queue
 of 12 problem groups / 36 human failed/accepted pairs before opening their code
@@ -8,8 +17,9 @@ holdout. The 579 metadata-feasible problems still require source and test
 qualification; competitive-programming repairs are a distinct population from
 repository bugs. No new model calls or recovery benefit is claimed.
 The new [stdin/stdout backend](STDIN-ENVIRONMENT.md) preserves whole-program bytes,
-scores in the parent and passes synthetic native-isolation tests. It does not yet
-qualify a dataset case or authorize model collection.
+scores in the parent and passes synthetic native-isolation tests. Qualification
+above uses it under an explicit task/suite freeze; no model collection is authorized
+by this engineering result alone.
 
 **Active preparation:** the [three-arm ablation](results/spectrum-ablation-preparation-20261030/README.md)
 now has a tested public-only builder for feedback, neutral source excerpts and

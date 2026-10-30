@@ -61,3 +61,6 @@ jobs:
       - name: Verify source metadata, ZIP directories and prospective development groups
         run: >-
           uv run python experiments/python-repair/checkpoint-environment/results/fixeval-source-access-20261030/reproduce.py
+      - name: Rescore all whole-program qualification cases and preserve exclusions
+        run: >-
+          uv run python experiments/python-repair/checkpoint-environment/results/fixeval-source-qualification-20261030/reproduce.py

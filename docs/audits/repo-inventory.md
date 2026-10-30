@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `993`
-- Bytes indexed: `76.8M`
+- Files indexed: `1002`
+- Bytes indexed: `77.5M`
 
 ## Canonical Entrypoints
 
@@ -48,13 +48,13 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 680 | 71.5M |
+| `experiments` | 689 | 72.2M |
 | `docs` | 53 | 2.6M |
 | `src` | 124 | 1.1M |
 | `uv.lock` | 1 | 937.0K |
 | `tests` | 59 | 423.2K |
 | `scripts` | 68 | 195.0K |
-| `.github` | 5 | 5.2K |
+| `.github` | 5 | 5.4K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
 | `LICENSE` | 1 | 1.0K |
@@ -63,12 +63,12 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 267 | 1.8M |
-| `.json` | 260 | 9.3M |
-| `.txt` | 156 | 761.4K |
-| `.md` | 144 | 945.2K |
+| `.py` | 269 | 1.9M |
+| `.json` | 262 | 9.4M |
+| `.txt` | 159 | 765.9K |
+| `.md` | 145 | 953.4K |
 | `.jsonl` | 45 | 36.7M |
-| `.zip` | 32 | 18.8M |
+| `.zip` | 33 | 19.4M |
 | `.png` | 31 | 4.2M |
 | `.svg` | 11 | 1.1M |
 | `.pdf` | 8 | 184.3K |
@@ -84,7 +84,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.dataset` | 1 | 11.1K |
 | `.example` | 1 | 773B |
 | `.sty` | 1 | 13.2K |
-| `.yml` | 1 | 3.4K |
+| `.yml` | 1 | 3.6K |
 
 ## Experiment Readmes
 
@@ -118,6 +118,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/python-repair/checkpoint-environment/results/coverage-prefix-20261027/README.md`
 - `experiments/python-repair/checkpoint-environment/results/diagnostic-audit-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/fixeval-source-access-20261030/README.md`
+- `experiments/python-repair/checkpoint-environment/results/fixeval-source-qualification-20261030/README.md`
 - `experiments/python-repair/checkpoint-environment/results/frozen-region-stopped-20261027/README.md`
 - `experiments/python-repair/checkpoint-environment/results/gemma4b-calibration-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/information-extension-stopped-20261026/README.md`
