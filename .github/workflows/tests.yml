@@ -58,3 +58,6 @@ jobs:
       - name: Re-tokenize full repair artifacts and matched prompts offline
         run: >-
           uv run experiments/python-repair/checkpoint-environment/results/token-capacity-20261030/reproduce.py
+      - name: Verify source metadata, ZIP directories and prospective development groups
+        run: >-
+          uv run python experiments/python-repair/checkpoint-environment/results/fixeval-source-access-20261030/reproduce.py

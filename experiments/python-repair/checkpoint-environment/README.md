@@ -1,5 +1,13 @@
 # Python repair checkpoint environment
 
+**New source milestone:** the [FixEval metadata audit](results/fixeval-source-access-20261030/README.md)
+replays 13.9 million submission records and fixes a development inspection queue
+of 12 problem groups / 36 human failed/accepted pairs before opening their code
+or tests. Another 68 eligible groups remain unopened, but are not yet a certified
+holdout. The 579 metadata-feasible problems still require source and test
+qualification; competitive-programming repairs are a distinct population from
+repository bugs. No new model calls or recovery benefit is claimed.
+
 **Active preparation:** the [three-arm ablation](results/spectrum-ablation-preparation-20261030/README.md)
 now has a tested public-only builder for feedback, neutral source excerpts and
 the same excerpts with scores. A prospective queue retains 34 new development

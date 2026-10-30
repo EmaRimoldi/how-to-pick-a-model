@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `977`
-- Bytes indexed: `72.9M`
+- Files indexed: `989`
+- Bytes indexed: `76.8M`
 
 ## Canonical Entrypoints
 
@@ -48,13 +48,13 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 667 | 67.6M |
+| `experiments` | 679 | 71.5M |
 | `docs` | 53 | 2.6M |
 | `src` | 122 | 1.1M |
 | `uv.lock` | 1 | 937.0K |
 | `tests` | 58 | 419.7K |
 | `scripts` | 68 | 195.0K |
-| `.github` | 5 | 5.0K |
+| `.github` | 5 | 5.2K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
 | `LICENSE` | 1 | 1.0K |
@@ -63,19 +63,19 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 263 | 1.8M |
-| `.json` | 257 | 9.3M |
-| `.txt` | 153 | 746.9K |
-| `.md` | 142 | 934.2K |
+| `.py` | 264 | 1.8M |
+| `.json` | 260 | 9.3M |
+| `.txt` | 156 | 761.4K |
+| `.md` | 143 | 942.3K |
 | `.jsonl` | 45 | 36.7M |
+| `.zip` | 32 | 18.8M |
 | `.png` | 31 | 4.2M |
-| `.zip` | 31 | 15.3M |
 | `.svg` | 11 | 1.1M |
 | `.pdf` | 8 | 184.3K |
 | `.sh` | 8 | 15.5K |
+| `.gz` | 7 | 817.0K |
 | `.sbatch` | 5 | 7.0K |
 | `.tex` | 5 | 297.7K |
-| `.gz` | 4 | 434.1K |
 | `.yaml` | 3 | 2.6K |
 | `.lock` | 2 | 1.9M |
 | `.toml` | 2 | 2.8K |
@@ -84,7 +84,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.dataset` | 1 | 11.1K |
 | `.example` | 1 | 773B |
 | `.sty` | 1 | 13.2K |
-| `.yml` | 1 | 3.2K |
+| `.yml` | 1 | 3.4K |
 
 ## Experiment Readmes
 
@@ -117,6 +117,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/python-repair/checkpoint-environment/results/contrastive-preparation-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/coverage-prefix-20261027/README.md`
 - `experiments/python-repair/checkpoint-environment/results/diagnostic-audit-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/fixeval-source-access-20261030/README.md`
 - `experiments/python-repair/checkpoint-environment/results/frozen-region-stopped-20261027/README.md`
 - `experiments/python-repair/checkpoint-environment/results/gemma4b-calibration-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/information-extension-stopped-20261026/README.md`
