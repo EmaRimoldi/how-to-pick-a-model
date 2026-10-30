@@ -5,7 +5,7 @@ Completed [feedback-only fixed-policy evaluation](bigcodebench/feedback-only-rou
 outcomes. Immediate escalation versus retry 9B is −2.55 pp [−7.01, +1.27],
 95% paired interval; the primary gate fails. No new selector is trained.
 
-Seven maintained bundles support the sequential-decision question in
+Seven evidence bundles and one offline development environment support the sequential-decision question in
 `docs/decision-protocol.md`. Each is grouped by benchmark and research question. A bundle owns its configs, launchers, inputs, processed
 results, figures, and run metadata whenever those artifacts are available.
 
@@ -18,6 +18,12 @@ results, figures, and run metadata whenever those artifacts are available.
 | HumanEval+ | [`context-value/`](humaneval-plus/context-value/) | discovery + producer-transfer evaluation | Discovery: 30 tasks/132 calls. Transfer: 83 development + 60 evaluation tasks, 1,353 responses, frozen policies, forecasts, controls and cost audit |
 | MBPP+ | [`context-value-transfer/`](mbpp-plus/context-value-transfer/) | collection finished; censored descriptive bank | 94/96 complete failures, 2,878 recovery responses, two censored solver cells, 288 API forecasts, fixed comparisons and full accounting |
 | BigCodeBench standard-library subset | [`feedback-only-routing/`](bigcodebench/feedback-only-routing/) | complete; primary gate not passed | 157 task clusters, 628/628 policy outcomes, 1,492 responses, no missing outcomes; fixed comparisons, receipts, source freeze, verifier repeat and disclosed single requested interim look |
+| Python function repair | [`checkpoint-environment/`](python-repair/checkpoint-environment/) | recovery pilot incomplete; 4B/12B/27B contract banks complete, gates failed | Prior recovery evidence retained; complete 36-call banks at all three sizes fail calibration. 27B improves partial test scores but solves only two distinct bugs across formats; FP8/BF16 confounded. No trained selector or held-out claim |
+
+The [current Python research amendment](python-repair/checkpoint-environment/GOAL-AMENDMENT-20261026.md)
+tests whether acquiring public execution evidence before another repair is worth
+its cost. The bounded diagnostic adapter has an offline replay on twelve saved
+artifacts; no new model outcome or acquisition-policy benefit is claimed.
 
 ## Families
 
@@ -25,6 +31,7 @@ results, figures, and run metadata whenever those artifacts are available.
 - [`humaneval-plus/`](humaneval-plus/)
 - [`mbpp-plus/context-value-transfer/`](mbpp-plus/context-value-transfer/)
 - [`bigcodebench/feedback-only-routing/`](bigcodebench/feedback-only-routing/)
+- [`python-repair/checkpoint-environment/`](python-repair/checkpoint-environment/)
 
 The former `stateful-query-engine` implementation had no run, result, figure,
 or report evidence. It was retired from the working tree and remains available

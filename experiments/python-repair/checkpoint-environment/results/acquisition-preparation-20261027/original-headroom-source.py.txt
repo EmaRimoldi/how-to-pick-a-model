@@ -1,0 +1,29 @@
+"""Offline comparison on all original checkpoints; no model requests or tuning."""
+import hashlib,json
+from pathlib import Path
+from vao.repair.diagnostic_study import source_records,ARCHIVE_SHA
+from vao.repair.diagnostics import observe,acquire
+from vao.repair.environment import canonical
+from vao.repair.region_verifier import RegionRepairVerifier
+from vao.repair.verifier import RepairVerifier
+
+out=Path('runs/region-original-checkpoint-headroom-20261027');out.mkdir(exist_ok=False)
+ordinary=RepairVerifier();new=RegionRepairVerifier();preflight=ordinary.preflight();rows=[]
+for original in source_records():
+ p=original['public'];state=observe(p,p['files'],ordinary)
+ assert state['feedback']==original['source_public_result']
+ old_diag=acquire(p,p['files'],state,ordinary)
+ new_diag=acquire(p,p['files'],state,new)
+ old_events=old_diag.get('trace_result',{}).get('trace',{}).get('events',[])
+ new_events=new_diag.get('trace_result',{}).get('trace',{}).get('events',[])
+ normalized=[{k:v for k,v in e.items() if k not in ('sequence','function_line')} for e in new_events]
+ row={'task':p['task_id'],'source_attempt':original['source_attempt_id'],'public':p,'observation':state,
+      'eligible':not state['feedback']['passed'],'tail':old_diag,'balanced':new_diag,
+      'comparison':{'same_event_values':old_events==normalized,'old_events':len(old_events),'new_events':len(new_events),
+                    'old_functions':sorted({e['function'] for e in old_events}),'new_functions':sorted({e['function'] for e in new_events})}}
+ rows.append(row)
+ print(json.dumps({'task':row['task'],'eligible':row['eligible'],**row['comparison']}),flush=True)
+report={'kind':'offline_original_checkpoint_retention_headroom','source_archive_sha256':ARCHIVE_SHA,
+        'api_calls':0,'preflight':preflight,'all_original_candidates_retained':len(rows),'rows':rows}
+(out/'report.json').write_text(json.dumps(report,indent=2)+'\n')
+print('eligible',sum(r['eligible'] for r in rows),'different',sum(r['eligible'] and not r['comparison']['same_event_values'] for r in rows))

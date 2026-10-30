@@ -1,0 +1,11 @@
+{
+  "analysis_sha256": "78585315e23f94723a629c99f4365a8b028fb78cec816660d31d2ecabe66edb7",
+  "script": "scripts/plot_repair_qwen_information.py",
+  "script_sha256": "d557694265466169de94b396df95766b0e7a2af87195b88507fdf08288f941f5",
+  "images": {
+    "stream-information-summary.png": "89efe7282fe921576fe2322286ae4ef1f6f9621fa324674abd4bf7d31780d520",
+    "stream-information-summary.svg": "6cc84d32f6ffcd213310bf0c20775052ebb8ea80bfa54260e821e5e78937cca6"
+  },
+  "visual_review": "Rendered PNG inspected: eight eligible bug rows are shown; all twelve source candidates remain in analysis.json. One observed non-repair, 63 unknown cells, primary bounds and separate cost table match the report. No cropped labels, overlaps, point estimate or confidence interval.",
+  "model_calls": 0
+}

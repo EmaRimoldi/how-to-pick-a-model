@@ -1,0 +1,51 @@
+{
+  "kind": "post_terminal_development_feasibility_only",
+  "bug": "scrapy/26",
+  "already_development_exposed": true,
+  "benchmark_revision": "11c5f1eea954a42132cfd06bf257766a7963e0fd",
+  "model_calls": 0,
+  "files": {
+    "buggy": {
+      "url": "https://raw.githubusercontent.com/scrapy/scrapy/f249b309ab779b5ab518f54f309d7a4ac6661ec7/scrapy/settings/__init__.py",
+      "commit": "f249b309ab779b5ab518f54f309d7a4ac6661ec7",
+      "path": "scrapy/settings/__init__.py",
+      "sha256": "94e35c065ef8d5653d00ce61719383ef26ae93626234e9758c88491601b1a061",
+      "bytes": 17117
+    },
+    "fixed": {
+      "url": "https://raw.githubusercontent.com/scrapy/scrapy/03f1720afb4a437314659a306286f440df664a0b/scrapy/settings/__init__.py",
+      "commit": "03f1720afb4a437314659a306286f440df664a0b",
+      "path": "scrapy/settings/__init__.py",
+      "sha256": "034ca353fe63931c673ebd70d8534fe72fad9439870e9ba6030fd2643363930f",
+      "bytes": 17521
+    },
+    "tests": {
+      "url": "https://raw.githubusercontent.com/scrapy/scrapy/03f1720afb4a437314659a306286f440df664a0b/tests/test_settings/__init__.py",
+      "commit": "03f1720afb4a437314659a306286f440df664a0b",
+      "path": "tests/test_settings/__init__.py",
+      "sha256": "e8a4e8a8751d5ac9ee5aab7c623f6a049c9b44f636b224f48a5ab6ab1d96dc2a",
+      "bytes": 17815
+    },
+    "default_settings": {
+      "url": "https://raw.githubusercontent.com/scrapy/scrapy/03f1720afb4a437314659a306286f440df664a0b/scrapy/settings/default_settings.py",
+      "commit": "03f1720afb4a437314659a306286f440df664a0b",
+      "path": "scrapy/settings/default_settings.py",
+      "sha256": "1ad74f3d60f559ab85a17d31a8c729295c2a9dfe19f05abbd33f3dc53ba454e6",
+      "bytes": 7706
+    },
+    "license": {
+      "url": "https://raw.githubusercontent.com/scrapy/scrapy/03f1720afb4a437314659a306286f440df664a0b/LICENSE",
+      "commit": "03f1720afb4a437314659a306286f440df664a0b",
+      "path": "LICENSE",
+      "sha256": "1238a5c6812856a2696ad0530edad2495ec030489c3e63c1f890f9541672ad97",
+      "bytes": 1521
+    },
+    "exceptions": {
+      "url": "https://raw.githubusercontent.com/scrapy/scrapy/03f1720afb4a437314659a306286f440df664a0b/scrapy/exceptions.py",
+      "commit": "03f1720afb4a437314659a306286f440df664a0b",
+      "path": "scrapy/exceptions.py",
+      "sha256": "962b158e8436e28c770a4ebe2a8c12ee1c52283bc21ddc13c54f69c35457ebb1",
+      "bytes": 1396
+    }
+  }
+}

@@ -1,0 +1,364 @@
+{
+  "cases": [
+    {
+      "id": "filtered-generator",
+      "args": [
+        "x = (a async for a in xs if a)\n"
+      ],
+      "expected": [
+        [
+          "NAME",
+          "x"
+        ],
+        [
+          "OP",
+          "="
+        ],
+        [
+          "OP",
+          "("
+        ],
+        [
+          "NAME",
+          "a"
+        ],
+        [
+          "ASYNC",
+          "async"
+        ],
+        [
+          "NAME",
+          "for"
+        ],
+        [
+          "NAME",
+          "a"
+        ],
+        [
+          "NAME",
+          "in"
+        ],
+        [
+          "NAME",
+          "xs"
+        ],
+        [
+          "NAME",
+          "if"
+        ],
+        [
+          "NAME",
+          "a"
+        ],
+        [
+          "OP",
+          ")"
+        ]
+      ]
+    },
+    {
+      "id": "mixed-loops",
+      "args": [
+        "result = [a async for a in xs for b in ys]\n"
+      ],
+      "expected": [
+        [
+          "NAME",
+          "result"
+        ],
+        [
+          "OP",
+          "="
+        ],
+        [
+          "OP",
+          "["
+        ],
+        [
+          "NAME",
+          "a"
+        ],
+        [
+          "ASYNC",
+          "async"
+        ],
+        [
+          "NAME",
+          "for"
+        ],
+        [
+          "NAME",
+          "a"
+        ],
+        [
+          "NAME",
+          "in"
+        ],
+        [
+          "NAME",
+          "xs"
+        ],
+        [
+          "NAME",
+          "for"
+        ],
+        [
+          "NAME",
+          "b"
+        ],
+        [
+          "NAME",
+          "in"
+        ],
+        [
+          "NAME",
+          "ys"
+        ],
+        [
+          "OP",
+          "]"
+        ]
+      ]
+    },
+    {
+      "id": "for-is-not-def",
+      "args": [
+        "async for item in stream:\n    await = 4\n"
+      ],
+      "expected": [
+        [
+          "ASYNC",
+          "async"
+        ],
+        [
+          "NAME",
+          "for"
+        ],
+        [
+          "NAME",
+          "item"
+        ],
+        [
+          "NAME",
+          "in"
+        ],
+        [
+          "NAME",
+          "stream"
+        ],
+        [
+          "OP",
+          ":"
+        ],
+        [
+          "NAME",
+          "await"
+        ],
+        [
+          "OP",
+          "="
+        ],
+        [
+          "NUMBER",
+          "4"
+        ]
+      ]
+    },
+    {
+      "id": "dedent-resets",
+      "args": [
+        "async def f():\n    await g()\nawait = 9\n"
+      ],
+      "expected": [
+        [
+          "ASYNC",
+          "async"
+        ],
+        [
+          "NAME",
+          "def"
+        ],
+        [
+          "NAME",
+          "f"
+        ],
+        [
+          "OP",
+          "("
+        ],
+        [
+          "OP",
+          ")"
+        ],
+        [
+          "OP",
+          ":"
+        ],
+        [
+          "AWAIT",
+          "await"
+        ],
+        [
+          "NAME",
+          "g"
+        ],
+        [
+          "OP",
+          "("
+        ],
+        [
+          "OP",
+          ")"
+        ],
+        [
+          "NAME",
+          "await"
+        ],
+        [
+          "OP",
+          "="
+        ],
+        [
+          "NUMBER",
+          "9"
+        ]
+      ]
+    },
+    {
+      "id": "name-prefix",
+      "args": [
+        "asynchronous = 2\n"
+      ],
+      "expected": [
+        [
+          "NAME",
+          "asynchronous"
+        ],
+        [
+          "OP",
+          "="
+        ],
+        [
+          "NUMBER",
+          "2"
+        ]
+      ]
+    },
+    {
+      "id": "await-literal",
+      "args": [
+        "y = \"await\"\n"
+      ],
+      "expected": [
+        [
+          "NAME",
+          "y"
+        ],
+        [
+          "OP",
+          "="
+        ],
+        [
+          "STRING",
+          "\"await\""
+        ]
+      ]
+    },
+    {
+      "id": "async-then-ordinary",
+      "args": [
+        "async for x in data:\n    pass\nfor y in data:\n    pass\n"
+      ],
+      "expected": [
+        [
+          "ASYNC",
+          "async"
+        ],
+        [
+          "NAME",
+          "for"
+        ],
+        [
+          "NAME",
+          "x"
+        ],
+        [
+          "NAME",
+          "in"
+        ],
+        [
+          "NAME",
+          "data"
+        ],
+        [
+          "OP",
+          ":"
+        ],
+        [
+          "NAME",
+          "pass"
+        ],
+        [
+          "NAME",
+          "for"
+        ],
+        [
+          "NAME",
+          "y"
+        ],
+        [
+          "NAME",
+          "in"
+        ],
+        [
+          "NAME",
+          "data"
+        ],
+        [
+          "OP",
+          ":"
+        ],
+        [
+          "NAME",
+          "pass"
+        ]
+      ]
+    },
+    {
+      "id": "return-identifier",
+      "args": [
+        "def f():\n    return async\n"
+      ],
+      "expected": [
+        [
+          "NAME",
+          "def"
+        ],
+        [
+          "NAME",
+          "f"
+        ],
+        [
+          "OP",
+          "("
+        ],
+        [
+          "OP",
+          ")"
+        ],
+        [
+          "OP",
+          ":"
+        ],
+        [
+          "NAME",
+          "return"
+        ],
+        [
+          "NAME",
+          "async"
+        ]
+      ]
+    }
+  ]
+}

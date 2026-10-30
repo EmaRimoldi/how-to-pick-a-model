@@ -1,0 +1,1780 @@
+{
+  "schema_version": 1,
+  "kind": "numerical_design_not_live_freeze",
+  "provider_call_enabled": false,
+  "source_evidence_sha256": "cd2870d124859a135e78eda0cc6cf16f4ffffac2fc710d9c95ab27ccb2b0ae17",
+  "roster": [
+    {
+      "problem_id": "p02621",
+      "pair_index": 0,
+      "original_public_binding": "f212fb1e0207301d069cfc1f2ec0163bf7afb5c05c15e38eebb6b64b045e79f0"
+    },
+    {
+      "problem_id": "p03307",
+      "pair_index": 0,
+      "original_public_binding": "f6d081384c0115a3c8fa87bb59b9634a2725e0ce043bd1449bb2561f8102dacc"
+    },
+    {
+      "problem_id": "p02633",
+      "pair_index": 0,
+      "original_public_binding": "fede9f370003679ecd035718ef668926dd95e255e9df828dd03f68b0a4c9f69f"
+    },
+    {
+      "problem_id": "p03126",
+      "pair_index": 0,
+      "original_public_binding": "62735c5152e7bf5fe8345850ebc1c77dbd17fa021084e15df931ad065f33b720"
+    },
+    {
+      "problem_id": "p02570",
+      "pair_index": 0,
+      "original_public_binding": "6fc3e56f8eee4287e9c039f207c6cba41b7da0c2b78c1f25616ae123e8475c02"
+    },
+    {
+      "problem_id": "p02700",
+      "pair_index": 0,
+      "original_public_binding": "79c94934318d7649e202d9dd4a8f4fccedec4cb0352514404453a43fd3938666"
+    },
+    {
+      "problem_id": "p03032",
+      "pair_index": 1,
+      "original_public_binding": "70550ac6d135eea34f2dee862eb9463409ab9cf3612cad1b71a0532d4df70c28"
+    },
+    {
+      "problem_id": "p03329",
+      "pair_index": 0,
+      "original_public_binding": "b7f4addc918717e90d34c82d6fbc09f085bc347ea501a70c70d7f627e5f735b9"
+    },
+    {
+      "problem_id": "p02987",
+      "pair_index": 0,
+      "original_public_binding": "c1c405caa2c0a36572f406537df0aecdf62693395944c79214c120cf87b8e911"
+    },
+    {
+      "problem_id": "p03806",
+      "pair_index": 1,
+      "original_public_binding": "31c298b84cb590ccc9b3752cfd2261ef26ef7456d8945636e21810ce07bcec55"
+    },
+    {
+      "problem_id": "p03207",
+      "pair_index": 1,
+      "original_public_binding": "096564c78b581956eb2ae1132ecda2a28b890f06252e1d4d75f147f40ff0ec42"
+    }
+  ],
+  "all_original_group_decisions": [
+    {
+      "problem_id": "p02621",
+      "group_id": "p02621",
+      "selected_pair_index": 0
+    },
+    {
+      "problem_id": "p03307",
+      "group_id": "p03307",
+      "selected_pair_index": 0
+    },
+    {
+      "problem_id": "p02633",
+      "group_id": "p02633",
+      "selected_pair_index": 0
+    },
+    {
+      "problem_id": "p03126",
+      "group_id": "p03125",
+      "selected_pair_index": 0
+    },
+    {
+      "problem_id": "p02570",
+      "group_id": "p02570",
+      "selected_pair_index": 0
+    },
+    {
+      "problem_id": "p02700",
+      "group_id": "p02699",
+      "selected_pair_index": 0
+    },
+    {
+      "problem_id": "p03032",
+      "group_id": "p03029",
+      "selected_pair_index": 1
+    },
+    {
+      "problem_id": "p03296",
+      "group_id": "p03296",
+      "selected_pair_index": null
+    },
+    {
+      "problem_id": "p03329",
+      "group_id": "p03327",
+      "selected_pair_index": 0
+    },
+    {
+      "problem_id": "p02987",
+      "group_id": "p02987",
+      "selected_pair_index": 0
+    },
+    {
+      "problem_id": "p03806",
+      "group_id": "p03803",
+      "selected_pair_index": 1
+    },
+    {
+      "problem_id": "p03207",
+      "group_id": "p03206",
+      "selected_pair_index": 1
+    }
+  ],
+  "slots": [
+    {
+      "id": "c74239c5035e086b26b81337f394d105feb48a9d6bde44db4861a14ee2849015",
+      "problem_id": "p02621",
+      "phase": "initial",
+      "arm": "feedback",
+      "draw": null,
+      "seed": 1195522501
+    },
+    {
+      "id": "7f4430f6e3c3fd250c3eca4d8d445f27763cad89016e79c58c5a2cfd4c265701",
+      "problem_id": "p03307",
+      "phase": "initial",
+      "arm": "feedback",
+      "draw": null,
+      "seed": 2135175414
+    },
+    {
+      "id": "4a82afa1e0829a2d5d18707fb6fa645fe8148a0c60a39b81ea322d8b14220767",
+      "problem_id": "p02633",
+      "phase": "initial",
+      "arm": "feedback",
+      "draw": null,
+      "seed": 1250078625
+    },
+    {
+      "id": "207f6e14d930f097bd921a45dee59ced69373cd2913d74be1fbc4ce802418416",
+      "problem_id": "p03126",
+      "phase": "initial",
+      "arm": "feedback",
+      "draw": null,
+      "seed": 545222164
+    },
+    {
+      "id": "cea2fe6a3bd694a7175e7df7ff1413ad7f8708556b579c24d36bfd73357a9074",
+      "problem_id": "p02570",
+      "phase": "initial",
+      "arm": "feedback",
+      "draw": null,
+      "seed": 1319304810
+    },
+    {
+      "id": "269d3d031e84d6585e777ce0a731835f1d73caad611cf4f551e92102277c5104",
+      "problem_id": "p02700",
+      "phase": "initial",
+      "arm": "feedback",
+      "draw": null,
+      "seed": 647838979
+    },
+    {
+      "id": "024cefe1f8c9dcbb54cff4d850c555bb088c5a41186d0c4e7c4fc95216e1a7d0",
+      "problem_id": "p03032",
+      "phase": "initial",
+      "arm": "feedback",
+      "draw": null,
+      "seed": 38596577
+    },
+    {
+      "id": "853413a44ae7d74ddb8223ca410a6252645e92d1623ac8ec8d6759511e294348",
+      "problem_id": "p03329",
+      "phase": "initial",
+      "arm": "feedback",
+      "draw": null,
+      "seed": 87298980
+    },
+    {
+      "id": "61ef3964bf9be9ffc026d7c601f5a431593c9248b813481ace2cef4b2fd255e5",
+      "problem_id": "p02987",
+      "phase": "initial",
+      "arm": "feedback",
+      "draw": null,
+      "seed": 1643067748
+    },
+    {
+      "id": "42b485e30664c3a3c057c49878fce9d3d5854936f5bdc8fb207893acfad88fda",
+      "problem_id": "p03806",
+      "phase": "initial",
+      "arm": "feedback",
+      "draw": null,
+      "seed": 1119127011
+    },
+    {
+      "id": "279cf3a41bb62ffbfe458d061a8631fdf9e3480c960a611d7c681ec92e5f2f10",
+      "problem_id": "p03207",
+      "phase": "initial",
+      "arm": "feedback",
+      "draw": null,
+      "seed": 664597412
+    },
+    {
+      "id": "c02f2378894d5140b071143a92c6292b05deb62492b0f42cc2f5e72812458e35",
+      "problem_id": "p02621",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 0,
+      "seed": 1720398601
+    },
+    {
+      "id": "113385d9eeee497b59facc534cccd7b5774aaaf54927af66a6a6863aeb866f03",
+      "problem_id": "p02621",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 0,
+      "seed": 1720398601
+    },
+    {
+      "id": "a0429e2a0dc7f40ad8d9351056f19f067121ead07dc0f2717fc05d7f42b9f523",
+      "problem_id": "p02621",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 0,
+      "seed": 1720398601
+    },
+    {
+      "id": "25673828adc9f0ee46b59cfb8256ba714ecaecd51c7428bb0bfcd84b4eedb77c",
+      "problem_id": "p03307",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 0,
+      "seed": 1093734001
+    },
+    {
+      "id": "ac67f10ae17df318adcb13c2f5c87fd2226ebd462eb275200d7ca9ba8309700d",
+      "problem_id": "p03307",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 0,
+      "seed": 1093734001
+    },
+    {
+      "id": "030f3521a47fc7ca1e9b8fc84fcd9e66be61341a95836d75af04b1a0c55b25dc",
+      "problem_id": "p03307",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 0,
+      "seed": 1093734001
+    },
+    {
+      "id": "d740d116a56e72910f532b8d8d3dd9eeefa4d6a2558d00704bffeb5835e22984",
+      "problem_id": "p02633",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 0,
+      "seed": 1187747008
+    },
+    {
+      "id": "118057fd76db4aeeca72b1a844ae21cda3e44ea959cac798bf4d3e8ff0a0747f",
+      "problem_id": "p02633",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 0,
+      "seed": 1187747008
+    },
+    {
+      "id": "b7b1507d6be8c3035b3b33404c04f1530897c1489d1bfde17bcc92ac8fd95ffb",
+      "problem_id": "p02633",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 0,
+      "seed": 1187747008
+    },
+    {
+      "id": "4c04ef2f27a8e0cc85bc5170bdde49afb1b876198f9dd5e34ec507eabfbf3671",
+      "problem_id": "p03126",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 0,
+      "seed": 1789072752
+    },
+    {
+      "id": "449e5a52f5df1a4918c7e4e7bbc88c90333cd2abff3fd7ba68d5b1b8d0cab9fb",
+      "problem_id": "p03126",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 0,
+      "seed": 1789072752
+    },
+    {
+      "id": "501a3018682c33d080c4dde378e78cf4da90069fc3b89b37b01e78211ecb98e4",
+      "problem_id": "p03126",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 0,
+      "seed": 1789072752
+    },
+    {
+      "id": "1e7f77e674aff7533b81c7afebe24797754fcf47c477d0ecda86c0e8156202cc",
+      "problem_id": "p02570",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 0,
+      "seed": 1965788717
+    },
+    {
+      "id": "309989e465af898d08673931e59b26decb372c8edeb023227b4a09377218f810",
+      "problem_id": "p02570",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 0,
+      "seed": 1965788717
+    },
+    {
+      "id": "175ec7e1fcff45228a79ead12f6c15fd5606c7265a8d0142ed137ac833098fe7",
+      "problem_id": "p02570",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 0,
+      "seed": 1965788717
+    },
+    {
+      "id": "7f1b402c678b26a1f6c83b17d15d38a8d4dfdea17f1f80aff110a37f815b3e3b",
+      "problem_id": "p02700",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 0,
+      "seed": 1152027041
+    },
+    {
+      "id": "7e6ac792bf01906f49ad7dda7d006cfc88bcc499e02577ffad0b6b20bd197a0a",
+      "problem_id": "p02700",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 0,
+      "seed": 1152027041
+    },
+    {
+      "id": "fddc6202251885b5c57dcd7d9b82cfbcc0a2c5105864497f506d2b3232d82879",
+      "problem_id": "p02700",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 0,
+      "seed": 1152027041
+    },
+    {
+      "id": "532881c75a3beee311afe7ad9f9ca74d2a7ccb496566d417c317ca05aab447b0",
+      "problem_id": "p03032",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 0,
+      "seed": 214175790
+    },
+    {
+      "id": "3a248488f244836de4b68419f46e44791fc4c56460230c029067a21897b38819",
+      "problem_id": "p03032",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 0,
+      "seed": 214175790
+    },
+    {
+      "id": "31cab2638f6dc3c72069738063136cd02a43d2d902486b76a56dcb023969868f",
+      "problem_id": "p03032",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 0,
+      "seed": 214175790
+    },
+    {
+      "id": "f259d4f6b7e1b86de83e301174fe6eb37d44db5ff237e0252bd4e950d6baaef9",
+      "problem_id": "p03329",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 0,
+      "seed": 278934887
+    },
+    {
+      "id": "2d4087ea9920ca44867943e14eebe7e9df1136d561694aa4046257cf27fdac96",
+      "problem_id": "p03329",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 0,
+      "seed": 278934887
+    },
+    {
+      "id": "835b265155183e22adaff3d65612c427f71370fbf789889972fa384687ef5b9e",
+      "problem_id": "p03329",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 0,
+      "seed": 278934887
+    },
+    {
+      "id": "b6af22aa28af4738d37b740967ec5c512ccdb43b9ba0850b366741403ac63579",
+      "problem_id": "p02987",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 0,
+      "seed": 1815526091
+    },
+    {
+      "id": "bf1e2ca68548bea945667f73a6f489a9fb193759d6ceb2e1fdd37b5b3bef1ad3",
+      "problem_id": "p02987",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 0,
+      "seed": 1815526091
+    },
+    {
+      "id": "091ea397341fd33003425b46a95dd59b7de06c7fb51bc42f3abaae0485137f8d",
+      "problem_id": "p02987",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 0,
+      "seed": 1815526091
+    },
+    {
+      "id": "0919d6e649924736e4dd27da665e6890b86d539d9b2f4a6826fe7f34dc1d7c42",
+      "problem_id": "p03806",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 0,
+      "seed": 219277592
+    },
+    {
+      "id": "e8851c3f8673ee4e5a5a47ce73057f7f7ed7c109139b1b222b80fbad5265f4d3",
+      "problem_id": "p03806",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 0,
+      "seed": 219277592
+    },
+    {
+      "id": "26d3e50d24e44bacd41cc10964d53c5d4099590e1ae6eb52badb6933ac9c40e4",
+      "problem_id": "p03806",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 0,
+      "seed": 219277592
+    },
+    {
+      "id": "7e919c1239cf486d0b58dc49bd08a34815e3b06f8b59e25498bf64b3adc8b49d",
+      "problem_id": "p03207",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 0,
+      "seed": 270883275
+    },
+    {
+      "id": "5d90c4ccc3d9ae17364209873cc6106f947f58f8d4a5448618388ba1f6887f94",
+      "problem_id": "p03207",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 0,
+      "seed": 270883275
+    },
+    {
+      "id": "17d2763997a2492416eebb1b93d23ecd3c0d62bc21f7fd87245d632adad34dff",
+      "problem_id": "p03207",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 0,
+      "seed": 270883275
+    },
+    {
+      "id": "2b4375408d9805cb59483f7ff581089d2950611caf314e3bdb18d428a149519f",
+      "problem_id": "p02621",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 1,
+      "seed": 1184320404
+    },
+    {
+      "id": "b86bc222cc709647beac72909f8829b8b9bfad8309329ba9c870f06abb528469",
+      "problem_id": "p02621",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 1,
+      "seed": 1184320404
+    },
+    {
+      "id": "95a83c93385579862f8986fded5b6555516365a76f71419d77c50023d865927d",
+      "problem_id": "p02621",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 1,
+      "seed": 1184320404
+    },
+    {
+      "id": "cb48307677d6a970bd1e3ad443b7034ccafcf7bb14535336ff79fdbe2a0885d7",
+      "problem_id": "p03307",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 1,
+      "seed": 204022187
+    },
+    {
+      "id": "086aa8f484d105867d2f5f26ba8648beba90dea3a881c2fb324d83be7647425d",
+      "problem_id": "p03307",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 1,
+      "seed": 204022187
+    },
+    {
+      "id": "f2442dcedc829b6bf62cdbb7482a89d1ad80c339a021f1c18d8fbfcdaff107e2",
+      "problem_id": "p03307",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 1,
+      "seed": 204022187
+    },
+    {
+      "id": "e72af9244c7e41d037c9c65e3e805b6216a3c54e12f3aa5268a74583ad449ad2",
+      "problem_id": "p02633",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 1,
+      "seed": 1059795425
+    },
+    {
+      "id": "b7fc026e4986182e443620231f17764a2bb15b04cd3b2f70e2a834adb2a1d0c5",
+      "problem_id": "p02633",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 1,
+      "seed": 1059795425
+    },
+    {
+      "id": "ab5f08a32b92fb60f8c9a85f3010e7db89b786780f5fc32c042398dbe9f9c840",
+      "problem_id": "p02633",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 1,
+      "seed": 1059795425
+    },
+    {
+      "id": "02cd1b84d066d3b456dd58c1804399c3d1f910e0b50a66769ed581a1e6f39303",
+      "problem_id": "p03126",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 1,
+      "seed": 818675314
+    },
+    {
+      "id": "502009993171791637e9b1023445930ed370ca7ad03841c33feca14fb9fd36f6",
+      "problem_id": "p03126",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 1,
+      "seed": 818675314
+    },
+    {
+      "id": "17eded46415340eda67143cc23e6e4614b475e7c893d249823b8bbe1bd66f449",
+      "problem_id": "p03126",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 1,
+      "seed": 818675314
+    },
+    {
+      "id": "dd7307114e3dea53d10aa0e95b1dfcab599928230add6741f81549811023f316",
+      "problem_id": "p02570",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 1,
+      "seed": 532337740
+    },
+    {
+      "id": "a7e61344fe80087cb632cf4ea737cb0d0777028bdd8d1e6c3c4161d351a59340",
+      "problem_id": "p02570",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 1,
+      "seed": 532337740
+    },
+    {
+      "id": "6236ef9509ab6f3b5548be2150b1106c1730da9f565a55a23bf3f74908ba0c6c",
+      "problem_id": "p02570",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 1,
+      "seed": 532337740
+    },
+    {
+      "id": "f232bf9d312ab4b2606905a828df9411d4a4731670e9b3fbf5d4db95db87ef4e",
+      "problem_id": "p02700",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 1,
+      "seed": 1403905120
+    },
+    {
+      "id": "12ec19251f5e45852179ba67593811f13fc217f715d09f9e25d82e53bb2478b5",
+      "problem_id": "p02700",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 1,
+      "seed": 1403905120
+    },
+    {
+      "id": "5526b9611bc9ef8e664afca1aad771f1907586b985a72a44ce144fe578e7a7cc",
+      "problem_id": "p02700",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 1,
+      "seed": 1403905120
+    },
+    {
+      "id": "3cffd112e0ac293299a65ea7eebda07e7965bb3b15d0585c452a8c5a52df3f6b",
+      "problem_id": "p03032",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 1,
+      "seed": 685703327
+    },
+    {
+      "id": "a622556fe367a1b16dcfc23e96612e086b58d907c934b63ce137865fae7ecb75",
+      "problem_id": "p03032",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 1,
+      "seed": 685703327
+    },
+    {
+      "id": "ce09c54eace44aa1304f893972a33275a16e6fc1087d2923ee76512d740ccd04",
+      "problem_id": "p03032",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 1,
+      "seed": 685703327
+    },
+    {
+      "id": "f2bbaa27466f37fb4ad9fd217d128c52962f58a353b293164e94944b9116fa95",
+      "problem_id": "p03329",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 1,
+      "seed": 1931632754
+    },
+    {
+      "id": "a4efb9aca3cf91f762f8ee949206f5958c2f9c046614ae56322fff89ca5f48b4",
+      "problem_id": "p03329",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 1,
+      "seed": 1931632754
+    },
+    {
+      "id": "5be6bed4cf490f15277935165437d510998dc3f1ccc03b86e6b18b00c4e563e3",
+      "problem_id": "p03329",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 1,
+      "seed": 1931632754
+    },
+    {
+      "id": "29e78524628cdf69b7580ee1df1b57df2420189b86cc49e75b7bb18ceb575a37",
+      "problem_id": "p02987",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 1,
+      "seed": 1043825592
+    },
+    {
+      "id": "c7eebe049e5b1743815df3f9a7ff4e03004bfff587675187979912e7c1029b11",
+      "problem_id": "p02987",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 1,
+      "seed": 1043825592
+    },
+    {
+      "id": "e4bfc864278cbd442dc759fdef22b8afb26ec65c40f937d6a963360c3617fdcd",
+      "problem_id": "p02987",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 1,
+      "seed": 1043825592
+    },
+    {
+      "id": "a77e0d492b0759af0a444d10bf0f8ca4e791ae262d1032d2a2a260d0077b8489",
+      "problem_id": "p03806",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 1,
+      "seed": 37447424
+    },
+    {
+      "id": "349c837cf06f9aca17323d46528235fd1f99757e74d3cc544918b864afc7aaad",
+      "problem_id": "p03806",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 1,
+      "seed": 37447424
+    },
+    {
+      "id": "da5dd69c69cfa869d79993dac90d73a39882188e77dae034076316c73d6f4ae6",
+      "problem_id": "p03806",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 1,
+      "seed": 37447424
+    },
+    {
+      "id": "cea976996959fd44996dd22ef23c21a0e9f09b825f9175fa53af38bf4dad63ef",
+      "problem_id": "p03207",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 1,
+      "seed": 511125540
+    },
+    {
+      "id": "a158dd3078c49b51361f910453942e38129769008993d8dcaeca3722d469b901",
+      "problem_id": "p03207",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 1,
+      "seed": 511125540
+    },
+    {
+      "id": "89085e201bc8845a8ac62658704dad9e61cfea8ffb5c22d824075c219d2d8b8f",
+      "problem_id": "p03207",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 1,
+      "seed": 511125540
+    },
+    {
+      "id": "2809e25be636ee2128db6f520fbde41134193ea3ec05bd8d2b32a6c7b48d77ad",
+      "problem_id": "p02621",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 2,
+      "seed": 1114386917
+    },
+    {
+      "id": "b9b0a2347e63a1a6aaf98a8e3c76c5c83614eefbcffba5ddf2e8d7bae407c264",
+      "problem_id": "p02621",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 2,
+      "seed": 1114386917
+    },
+    {
+      "id": "9714986a5803e64ac72af4e2b4426d1079b54ab0addb5741c3f4820c862037d9",
+      "problem_id": "p02621",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 2,
+      "seed": 1114386917
+    },
+    {
+      "id": "e3e1609979fd42ace4744907f433b1346c0a3b887edda3a1085f6039929fb020",
+      "problem_id": "p03307",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 2,
+      "seed": 1217000381
+    },
+    {
+      "id": "75f15555e665c4bee3f0cc1d017b7c54a159b2ccb777c4fb272592ae4bcc9143",
+      "problem_id": "p03307",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 2,
+      "seed": 1217000381
+    },
+    {
+      "id": "6fe951eda592fae4fde414e577dfba810dfde24dd70e0c2f26b15b6ab34d5cea",
+      "problem_id": "p03307",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 2,
+      "seed": 1217000381
+    },
+    {
+      "id": "468bf87ade9e9773729616d6db1e971ff7c80da52a60073531139286380eca9b",
+      "problem_id": "p02633",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 2,
+      "seed": 1840801603
+    },
+    {
+      "id": "abae1fec5ca71cab1849cdff0b10c9d799fd307ad2872b3d6ceeb07d6e0b1856",
+      "problem_id": "p02633",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 2,
+      "seed": 1840801603
+    },
+    {
+      "id": "4f670c32d68115c5fd8aa8deec0fd49a1defa29cdac9d2fea8b51d68abfb3ec7",
+      "problem_id": "p02633",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 2,
+      "seed": 1840801603
+    },
+    {
+      "id": "fb3add2dfa797f1c6a052f2600275a9e77e4fb9621871807c10395fa1678d162",
+      "problem_id": "p03126",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 2,
+      "seed": 74592247
+    },
+    {
+      "id": "43536ed50bf8ed2299709bb14e6eb663b4eaacfd02915b20a717f6478a7fad91",
+      "problem_id": "p03126",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 2,
+      "seed": 74592247
+    },
+    {
+      "id": "70418734990b65605e34b4e1c537183c217cfa2fbef59692e413a91f4ca94232",
+      "problem_id": "p03126",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 2,
+      "seed": 74592247
+    },
+    {
+      "id": "b5017a8a0d110d60aafadb0a9b1f1aef6f62cba1e04a048e68d905279cbb5359",
+      "problem_id": "p02570",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 2,
+      "seed": 921246573
+    },
+    {
+      "id": "dce266bfeeeabd48a63dfb59f236830c21d1176f31c81891641335c164d535bb",
+      "problem_id": "p02570",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 2,
+      "seed": 921246573
+    },
+    {
+      "id": "56992b370afe27dde677372a94ead0c70a1d980429cdbe26cd14a3577a116c35",
+      "problem_id": "p02570",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 2,
+      "seed": 921246573
+    },
+    {
+      "id": "c4984f24561d856c2373e000ead27d03f842a90b2c340501057fc26be8b28bbd",
+      "problem_id": "p02700",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 2,
+      "seed": 2070099184
+    },
+    {
+      "id": "d0600aac7475704f1092f997fe388bf7daf4695754ef85d7b29b90771b34b7e6",
+      "problem_id": "p02700",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 2,
+      "seed": 2070099184
+    },
+    {
+      "id": "40f36087699a48928ae9e7d244926d09c14c4bea5419939b71d35dd4a2fe8b59",
+      "problem_id": "p02700",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 2,
+      "seed": 2070099184
+    },
+    {
+      "id": "0d4e35d8f4f0805b2e1a65619cc3b167e7c15696683425466e790b8f895c5268",
+      "problem_id": "p03032",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 2,
+      "seed": 804440881
+    },
+    {
+      "id": "7533f1ad438f9c11e44062142715c60cb2d8dc633cb3e3cf3c5489f80c2b2a67",
+      "problem_id": "p03032",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 2,
+      "seed": 804440881
+    },
+    {
+      "id": "5dfd132595758482f6d1717e706ce7f700a61ff9f16b03b57579c4ce60951af8",
+      "problem_id": "p03032",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 2,
+      "seed": 804440881
+    },
+    {
+      "id": "f043ec2049600ab209bb368ac7cac2ed2346ee90b9cc30e54493eebc1ebfd506",
+      "problem_id": "p03329",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 2,
+      "seed": 376571928
+    },
+    {
+      "id": "2f6056f14ec370c629f5622a84ff576c77f3160bc61a39c2a069ff12c6357736",
+      "problem_id": "p03329",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 2,
+      "seed": 376571928
+    },
+    {
+      "id": "6a658e3ea5bf67438ae0a82e18cb8b0d15cef15932991e6ef0688a8d4603e92b",
+      "problem_id": "p03329",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 2,
+      "seed": 376571928
+    },
+    {
+      "id": "0aa1d2fee1363c9f55d9bfad52ff0c63976dd1499f7b505bd46a4d787ad510a2",
+      "problem_id": "p02987",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 2,
+      "seed": 1126917956
+    },
+    {
+      "id": "a35822feb2a90dbbf0b4718c54ae515737dab50a7e94d470c5dd55f09846a7a1",
+      "problem_id": "p02987",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 2,
+      "seed": 1126917956
+    },
+    {
+      "id": "5feb6e936da2937624e7912feba2b3fb24ba1eef4a268badc46bb0de5405d8e6",
+      "problem_id": "p02987",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 2,
+      "seed": 1126917956
+    },
+    {
+      "id": "6541f96a0c0e13550a658c44cf44fb387fba07fb44d97bde83ea6db4e16985f0",
+      "problem_id": "p03806",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 2,
+      "seed": 946715548
+    },
+    {
+      "id": "50057bb5c6e4999c24e6e9948c16bd83b02e50590a42a183e692c8a65a23bc71",
+      "problem_id": "p03806",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 2,
+      "seed": 946715548
+    },
+    {
+      "id": "57a818832c09edcd28b71bd9a0a06c2e8b6b85359d247b35af321bd8c9a5d7d6",
+      "problem_id": "p03806",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 2,
+      "seed": 946715548
+    },
+    {
+      "id": "a6065074c749a3c76ff72be3654ed6e81893af2bb63c4f355e4068356abc1641",
+      "problem_id": "p03207",
+      "phase": "recovery",
+      "arm": "feedback",
+      "draw": 2,
+      "seed": 262392927
+    },
+    {
+      "id": "68afd9b148f5042f45035c41974933569b777b298f872a25480463fa8658ac0a",
+      "problem_id": "p03207",
+      "phase": "recovery",
+      "arm": "neutral",
+      "draw": 2,
+      "seed": 262392927
+    },
+    {
+      "id": "b591dedce938c46c5ddb93e959d5b5cf68986e86f081888e028c518eb08e9f05",
+      "problem_id": "p03207",
+      "phase": "recovery",
+      "arm": "scored",
+      "draw": 2,
+      "seed": 262392927
+    }
+  ],
+  "solver": {
+    "model": "google/gemma-3-4b-it",
+    "endpoint": "parasail/bf16",
+    "quantization": "bf16",
+    "temperature": 0.7,
+    "seed": 20261030,
+    "input_reservation": 65536,
+    "output_limit": 4096,
+    "fallbacks": false,
+    "minimum_admission_spacing_seconds": 60
+  },
+  "budget": {
+    "prior_committed_usd": "0.25463059",
+    "unresolved_historical_reserves": 14,
+    "per_call_reservation_usd": "0.00282624",
+    "maximum_calls": 110,
+    "maximum_all_reservations_usd": "0.31088640",
+    "proposed_allocation_usd": "0.32",
+    "cumulative_cap_usd": "0.60",
+    "new_explicit_human_allocation": false
+  },
+  "criteria": {
+    "minimum_generated_failures": 6,
+    "minimum_repeated_scored_repairs": 3,
+    "repeated_repair_draws": 2,
+    "minimum_primary_gain": [
+      1,
+      10
+    ],
+    "primary": [
+      "scored",
+      "neutral"
+    ],
+    "safety": [
+      "scored",
+      "feedback"
+    ],
+    "positive_primary_each_draw": true,
+    "nonnegative_safety_each_draw": true,
+    "complete_audited_bank_required": true
+  },
+  "protocol_sha256": "a7b246ae96e5cb4ca96fb8868e25d3e5acbea18dcfa54f579e8c1c2a39499180",
+  "recorded_provider_metadata": {
+    "sha256": "0b5fd60eccdd337d97e332af4b2e39fbcb2b80d46035116487d281d494a16993",
+    "url": "https://openrouter.ai/api/v1/models/google/gemma-3-4b-it/endpoints",
+    "observed_utc": "2026-10-30T11:55:29.860702+00:00",
+    "availability_probe": false,
+    "must_recheck_before_live_freeze": true
+  },
+  "capacity_observations": {
+    "original_human_state_prompts": [
+      {
+        "problem_id": "p02621",
+        "arm": "feedback",
+        "utf8_content_bytes": 2732,
+        "byte_plus_framing_reservation": 6828,
+        "messages_sha256": "b16a3633371dcbb10bce8d6ea0bcbd25fc7f9627248c79a99d59a2422f2f4c7d"
+      },
+      {
+        "problem_id": "p02621",
+        "arm": "neutral",
+        "utf8_content_bytes": 3105,
+        "byte_plus_framing_reservation": 7201,
+        "messages_sha256": "1473caf4fd54cb3f9597e808a2c1c61692d530239769e332cd5992bdd9d0dc8b"
+      },
+      {
+        "problem_id": "p02621",
+        "arm": "scored",
+        "utf8_content_bytes": 3035,
+        "byte_plus_framing_reservation": 7131,
+        "messages_sha256": "ec434c69b5284797f7986b83f2e878c03b17edff2d28c2c5cd48115c003cf9de"
+      },
+      {
+        "problem_id": "p03307",
+        "arm": "feedback",
+        "utf8_content_bytes": 3242,
+        "byte_plus_framing_reservation": 7338,
+        "messages_sha256": "89ef2d3deccbdeb84b54a1a4edfda30ccdb9ab86044a9611c08f60e60536fbfb"
+      },
+      {
+        "problem_id": "p03307",
+        "arm": "neutral",
+        "utf8_content_bytes": 3344,
+        "byte_plus_framing_reservation": 7440,
+        "messages_sha256": "308c4bee120be91073909e2eec26e5f916f1794975322376c63b0e4010539308"
+      },
+      {
+        "problem_id": "p03307",
+        "arm": "scored",
+        "utf8_content_bytes": 3344,
+        "byte_plus_framing_reservation": 7440,
+        "messages_sha256": "308c4bee120be91073909e2eec26e5f916f1794975322376c63b0e4010539308"
+      },
+      {
+        "problem_id": "p02633",
+        "arm": "feedback",
+        "utf8_content_bytes": 3176,
+        "byte_plus_framing_reservation": 7272,
+        "messages_sha256": "56e2e09892c9a55e753bb7f2570cd677a8b1d7fbe97486d5d6f3bb3eec26a831"
+      },
+      {
+        "problem_id": "p02633",
+        "arm": "neutral",
+        "utf8_content_bytes": 3544,
+        "byte_plus_framing_reservation": 7640,
+        "messages_sha256": "879e6efcb93242200793705df419448fc61c4ec10508f7ffa96d04252034a9d7"
+      },
+      {
+        "problem_id": "p02633",
+        "arm": "scored",
+        "utf8_content_bytes": 3474,
+        "byte_plus_framing_reservation": 7570,
+        "messages_sha256": "7c4fe5f1d361a3bafae7e0d9725cecfc9f2375b534d6e001a78b7138bf7294ec"
+      },
+      {
+        "problem_id": "p03126",
+        "arm": "feedback",
+        "utf8_content_bytes": 7772,
+        "byte_plus_framing_reservation": 11868,
+        "messages_sha256": "f350385674fb4131dae1d8192d0f6b99f5114f5c2040d116ae4f2c5c42840d26"
+      },
+      {
+        "problem_id": "p03126",
+        "arm": "neutral",
+        "utf8_content_bytes": 9451,
+        "byte_plus_framing_reservation": 13547,
+        "messages_sha256": "bc921790d88a9109e6ac2d908ec4728a9a0a7dabda0c83df7a0f3edd595b7cbe"
+      },
+      {
+        "problem_id": "p03126",
+        "arm": "scored",
+        "utf8_content_bytes": 9101,
+        "byte_plus_framing_reservation": 13197,
+        "messages_sha256": "b2302f093811269e3ed662b8d3fbeb345ef9fc072ae7cb3664ddac2e124afdcb"
+      },
+      {
+        "problem_id": "p02570",
+        "arm": "feedback",
+        "utf8_content_bytes": 4352,
+        "byte_plus_framing_reservation": 8448,
+        "messages_sha256": "9520cce5ee834fb0aa0845cf30b80fba149cff889a5e2683b4ff66d108e113f5"
+      },
+      {
+        "problem_id": "p02570",
+        "arm": "neutral",
+        "utf8_content_bytes": 5372,
+        "byte_plus_framing_reservation": 9468,
+        "messages_sha256": "8b3dca97dfc2a9ad36faf55a39415d906cff591c3c95d0fb9bfc9bb355de4567"
+      },
+      {
+        "problem_id": "p02570",
+        "arm": "scored",
+        "utf8_content_bytes": 5162,
+        "byte_plus_framing_reservation": 9258,
+        "messages_sha256": "341dc7c35837ae78a9e0a1fce97dced84751c4dc782eef6deef35980b7419591"
+      },
+      {
+        "problem_id": "p02700",
+        "arm": "feedback",
+        "utf8_content_bytes": 3856,
+        "byte_plus_framing_reservation": 7952,
+        "messages_sha256": "5bcb233be16d1f44644cf1a58b322c5c7ef4d131b87a2ae86c811e35c6ed0dcf"
+      },
+      {
+        "problem_id": "p02700",
+        "arm": "neutral",
+        "utf8_content_bytes": 4843,
+        "byte_plus_framing_reservation": 8939,
+        "messages_sha256": "f1ae718f49bd04f922bc6579749d321fe1555494cb6b474113d63a4e367a2a9e"
+      },
+      {
+        "problem_id": "p02700",
+        "arm": "scored",
+        "utf8_content_bytes": 4633,
+        "byte_plus_framing_reservation": 8729,
+        "messages_sha256": "79001250e85b13e4685d4574d8ed79314bb9f4b7dd378d463d199fdf7e9a952c"
+      },
+      {
+        "problem_id": "p03032",
+        "arm": "feedback",
+        "utf8_content_bytes": 9014,
+        "byte_plus_framing_reservation": 13110,
+        "messages_sha256": "2335a0ef885c369d3236f19677fcafbcde8efa9006d02f7f972e1e550bbd17c4"
+      },
+      {
+        "problem_id": "p03032",
+        "arm": "neutral",
+        "utf8_content_bytes": 11519,
+        "byte_plus_framing_reservation": 15615,
+        "messages_sha256": "9a674c3c09e6b596a2004c221de92ae21d187291d333e0963f8de6c558004f57"
+      },
+      {
+        "problem_id": "p03032",
+        "arm": "scored",
+        "utf8_content_bytes": 10994,
+        "byte_plus_framing_reservation": 15090,
+        "messages_sha256": "1d39c62b0b5a7427990a8e459ce90400271f52eeef753a7e9639e64a1dd5f638"
+      },
+      {
+        "problem_id": "p03329",
+        "arm": "feedback",
+        "utf8_content_bytes": 4863,
+        "byte_plus_framing_reservation": 8959,
+        "messages_sha256": "7965a49d573b9966c7f6a9e7cd5e74c78dc923f92097e7f7b58cf388ce851b2d"
+      },
+      {
+        "problem_id": "p03329",
+        "arm": "neutral",
+        "utf8_content_bytes": 6699,
+        "byte_plus_framing_reservation": 10795,
+        "messages_sha256": "7baba710dc879af6f9e205924b8d65274601d281eaf2be69f46a6ab7739d4b0a"
+      },
+      {
+        "problem_id": "p03329",
+        "arm": "scored",
+        "utf8_content_bytes": 6314,
+        "byte_plus_framing_reservation": 10410,
+        "messages_sha256": "3741665357ae66f6b23b7f1f112aca2ed449e07184d0196d5c63a70e1cad0e18"
+      },
+      {
+        "problem_id": "p02987",
+        "arm": "feedback",
+        "utf8_content_bytes": 3594,
+        "byte_plus_framing_reservation": 7690,
+        "messages_sha256": "1a934f0ff96ccd210e4ba236464a3d2c477272a77b83dfd89276466bd93e62c2"
+      },
+      {
+        "problem_id": "p02987",
+        "arm": "neutral",
+        "utf8_content_bytes": 5877,
+        "byte_plus_framing_reservation": 9973,
+        "messages_sha256": "4e350ce08eca75285e80c8fef28c0736cd6a9c80f37fdad313cfbebc8b0835e6"
+      },
+      {
+        "problem_id": "p02987",
+        "arm": "scored",
+        "utf8_content_bytes": 5387,
+        "byte_plus_framing_reservation": 9483,
+        "messages_sha256": "37e4516c80976eb0dc9ad9a5c1764ef72db5a06f5bf92aab43cfd058365623ef"
+      },
+      {
+        "problem_id": "p03806",
+        "arm": "feedback",
+        "utf8_content_bytes": 8965,
+        "byte_plus_framing_reservation": 13061,
+        "messages_sha256": "422520aed06d7abccfcdbead03b7a85e0da37e77876a73260d53a667f5da375e"
+      },
+      {
+        "problem_id": "p03806",
+        "arm": "neutral",
+        "utf8_content_bytes": 15340,
+        "byte_plus_framing_reservation": 19436,
+        "messages_sha256": "0733ff9cc1322ffaf89c96927c6c5a951e7e314c83d7b96e49febdb209ac307f"
+      },
+      {
+        "problem_id": "p03806",
+        "arm": "scored",
+        "utf8_content_bytes": 13975,
+        "byte_plus_framing_reservation": 18071,
+        "messages_sha256": "ddcccd73a4f472c266f7d6cf0682c066d9564569d22a624c05e725882bc5bacf"
+      },
+      {
+        "problem_id": "p03207",
+        "arm": "feedback",
+        "utf8_content_bytes": 6127,
+        "byte_plus_framing_reservation": 10223,
+        "messages_sha256": "926961b996fdbd77a3ba437d51fcc6000685473b253c7745f793a265a5845c10"
+      },
+      {
+        "problem_id": "p03207",
+        "arm": "neutral",
+        "utf8_content_bytes": 6193,
+        "byte_plus_framing_reservation": 10289,
+        "messages_sha256": "facd445ecf7a8c69a4d4605a1dca129e71d65cb16cfb75d5ca21d1ef35a7ec97"
+      },
+      {
+        "problem_id": "p03207",
+        "arm": "scored",
+        "utf8_content_bytes": 6193,
+        "byte_plus_framing_reservation": 10289,
+        "messages_sha256": "facd445ecf7a8c69a4d4605a1dca129e71d65cb16cfb75d5ca21d1ef35a7ec97"
+      }
+    ],
+    "source_json_sizes": [
+      {
+        "problem_id": "p02621",
+        "pair_index": 0,
+        "role": "buggy",
+        "json_utf8_bytes": 48
+      },
+      {
+        "problem_id": "p02621",
+        "pair_index": 0,
+        "role": "reference",
+        "json_utf8_bytes": 54
+      },
+      {
+        "problem_id": "p02621",
+        "pair_index": 1,
+        "role": "buggy",
+        "json_utf8_bytes": 62
+      },
+      {
+        "problem_id": "p02621",
+        "pair_index": 1,
+        "role": "reference",
+        "json_utf8_bytes": 69
+      },
+      {
+        "problem_id": "p02621",
+        "pair_index": 2,
+        "role": "buggy",
+        "json_utf8_bytes": 47
+      },
+      {
+        "problem_id": "p02621",
+        "pair_index": 2,
+        "role": "reference",
+        "json_utf8_bytes": 47
+      },
+      {
+        "problem_id": "p03307",
+        "pair_index": 0,
+        "role": "buggy",
+        "json_utf8_bytes": 134
+      },
+      {
+        "problem_id": "p03307",
+        "pair_index": 0,
+        "role": "reference",
+        "json_utf8_bytes": 91
+      },
+      {
+        "problem_id": "p03307",
+        "pair_index": 1,
+        "role": "buggy",
+        "json_utf8_bytes": 63
+      },
+      {
+        "problem_id": "p03307",
+        "pair_index": 1,
+        "role": "reference",
+        "json_utf8_bytes": 68
+      },
+      {
+        "problem_id": "p03307",
+        "pair_index": 2,
+        "role": "buggy",
+        "json_utf8_bytes": 126
+      },
+      {
+        "problem_id": "p03307",
+        "pair_index": 2,
+        "role": "reference",
+        "json_utf8_bytes": 131
+      },
+      {
+        "problem_id": "p02633",
+        "pair_index": 0,
+        "role": "buggy",
+        "json_utf8_bytes": 43
+      },
+      {
+        "problem_id": "p02633",
+        "pair_index": 0,
+        "role": "reference",
+        "json_utf8_bytes": 75
+      },
+      {
+        "problem_id": "p02633",
+        "pair_index": 1,
+        "role": "buggy",
+        "json_utf8_bytes": 157
+      },
+      {
+        "problem_id": "p02633",
+        "pair_index": 1,
+        "role": "reference",
+        "json_utf8_bytes": 174
+      },
+      {
+        "problem_id": "p02633",
+        "pair_index": 2,
+        "role": "buggy",
+        "json_utf8_bytes": 293
+      },
+      {
+        "problem_id": "p02633",
+        "pair_index": 2,
+        "role": "reference",
+        "json_utf8_bytes": 380
+      },
+      {
+        "problem_id": "p03126",
+        "pair_index": 0,
+        "role": "buggy",
+        "json_utf8_bytes": 268
+      },
+      {
+        "problem_id": "p03126",
+        "pair_index": 0,
+        "role": "reference",
+        "json_utf8_bytes": 255
+      },
+      {
+        "problem_id": "p03126",
+        "pair_index": 1,
+        "role": "buggy",
+        "json_utf8_bytes": 370
+      },
+      {
+        "problem_id": "p03126",
+        "pair_index": 1,
+        "role": "reference",
+        "json_utf8_bytes": 371
+      },
+      {
+        "problem_id": "p03126",
+        "pair_index": 2,
+        "role": "buggy",
+        "json_utf8_bytes": 275
+      },
+      {
+        "problem_id": "p03126",
+        "pair_index": 2,
+        "role": "reference",
+        "json_utf8_bytes": 279
+      },
+      {
+        "problem_id": "p02570",
+        "pair_index": 0,
+        "role": "buggy",
+        "json_utf8_bytes": 198
+      },
+      {
+        "problem_id": "p02570",
+        "pair_index": 0,
+        "role": "reference",
+        "json_utf8_bytes": 198
+      },
+      {
+        "problem_id": "p02570",
+        "pair_index": 1,
+        "role": "buggy",
+        "json_utf8_bytes": 142
+      },
+      {
+        "problem_id": "p02570",
+        "pair_index": 1,
+        "role": "reference",
+        "json_utf8_bytes": 141
+      },
+      {
+        "problem_id": "p02570",
+        "pair_index": 2,
+        "role": "buggy",
+        "json_utf8_bytes": 130
+      },
+      {
+        "problem_id": "p02570",
+        "pair_index": 2,
+        "role": "reference",
+        "json_utf8_bytes": 125
+      },
+      {
+        "problem_id": "p02700",
+        "pair_index": 0,
+        "role": "buggy",
+        "json_utf8_bytes": 125
+      },
+      {
+        "problem_id": "p02700",
+        "pair_index": 0,
+        "role": "reference",
+        "json_utf8_bytes": 183
+      },
+      {
+        "problem_id": "p02700",
+        "pair_index": 1,
+        "role": "buggy",
+        "json_utf8_bytes": 202
+      },
+      {
+        "problem_id": "p02700",
+        "pair_index": 1,
+        "role": "reference",
+        "json_utf8_bytes": 201
+      },
+      {
+        "problem_id": "p02700",
+        "pair_index": 2,
+        "role": "buggy",
+        "json_utf8_bytes": 356
+      },
+      {
+        "problem_id": "p02700",
+        "pair_index": 2,
+        "role": "reference",
+        "json_utf8_bytes": 356
+      },
+      {
+        "problem_id": "p03032",
+        "pair_index": 0,
+        "role": "buggy",
+        "json_utf8_bytes": 432
+      },
+      {
+        "problem_id": "p03032",
+        "pair_index": 0,
+        "role": "reference",
+        "json_utf8_bytes": 434
+      },
+      {
+        "problem_id": "p03032",
+        "pair_index": 1,
+        "role": "buggy",
+        "json_utf8_bytes": 495
+      },
+      {
+        "problem_id": "p03032",
+        "pair_index": 1,
+        "role": "reference",
+        "json_utf8_bytes": 495
+      },
+      {
+        "problem_id": "p03032",
+        "pair_index": 2,
+        "role": "buggy",
+        "json_utf8_bytes": 985
+      },
+      {
+        "problem_id": "p03032",
+        "pair_index": 2,
+        "role": "reference",
+        "json_utf8_bytes": 980
+      },
+      {
+        "problem_id": "p03296",
+        "pair_index": 0,
+        "role": "buggy",
+        "json_utf8_bytes": 371
+      },
+      {
+        "problem_id": "p03296",
+        "pair_index": 0,
+        "role": "reference",
+        "json_utf8_bytes": 402
+      },
+      {
+        "problem_id": "p03296",
+        "pair_index": 1,
+        "role": "buggy",
+        "json_utf8_bytes": 243
+      },
+      {
+        "problem_id": "p03296",
+        "pair_index": 1,
+        "role": "reference",
+        "json_utf8_bytes": 257
+      },
+      {
+        "problem_id": "p03296",
+        "pair_index": 2,
+        "role": "buggy",
+        "json_utf8_bytes": 178
+      },
+      {
+        "problem_id": "p03296",
+        "pair_index": 2,
+        "role": "reference",
+        "json_utf8_bytes": 176
+      },
+      {
+        "problem_id": "p03329",
+        "pair_index": 0,
+        "role": "buggy",
+        "json_utf8_bytes": 326
+      },
+      {
+        "problem_id": "p03329",
+        "pair_index": 0,
+        "role": "reference",
+        "json_utf8_bytes": 318
+      },
+      {
+        "problem_id": "p03329",
+        "pair_index": 1,
+        "role": "buggy",
+        "json_utf8_bytes": 341
+      },
+      {
+        "problem_id": "p03329",
+        "pair_index": 1,
+        "role": "reference",
+        "json_utf8_bytes": 341
+      },
+      {
+        "problem_id": "p03329",
+        "pair_index": 2,
+        "role": "buggy",
+        "json_utf8_bytes": 615
+      },
+      {
+        "problem_id": "p03329",
+        "pair_index": 2,
+        "role": "reference",
+        "json_utf8_bytes": 486
+      },
+      {
+        "problem_id": "p02987",
+        "pair_index": 0,
+        "role": "buggy",
+        "json_utf8_bytes": 417
+      },
+      {
+        "problem_id": "p02987",
+        "pair_index": 0,
+        "role": "reference",
+        "json_utf8_bytes": 419
+      },
+      {
+        "problem_id": "p02987",
+        "pair_index": 1,
+        "role": "buggy",
+        "json_utf8_bytes": 129
+      },
+      {
+        "problem_id": "p02987",
+        "pair_index": 1,
+        "role": "reference",
+        "json_utf8_bytes": 139
+      },
+      {
+        "problem_id": "p02987",
+        "pair_index": 2,
+        "role": "buggy",
+        "json_utf8_bytes": 366
+      },
+      {
+        "problem_id": "p02987",
+        "pair_index": 2,
+        "role": "reference",
+        "json_utf8_bytes": 442
+      },
+      {
+        "problem_id": "p03806",
+        "pair_index": 0,
+        "role": "buggy",
+        "json_utf8_bytes": 680
+      },
+      {
+        "problem_id": "p03806",
+        "pair_index": 0,
+        "role": "reference",
+        "json_utf8_bytes": 718
+      },
+      {
+        "problem_id": "p03806",
+        "pair_index": 1,
+        "role": "buggy",
+        "json_utf8_bytes": 1026
+      },
+      {
+        "problem_id": "p03806",
+        "pair_index": 1,
+        "role": "reference",
+        "json_utf8_bytes": 1032
+      },
+      {
+        "problem_id": "p03806",
+        "pair_index": 2,
+        "role": "buggy",
+        "json_utf8_bytes": 1018
+      },
+      {
+        "problem_id": "p03806",
+        "pair_index": 2,
+        "role": "reference",
+        "json_utf8_bytes": 1016
+      },
+      {
+        "problem_id": "p03207",
+        "pair_index": 0,
+        "role": "buggy",
+        "json_utf8_bytes": 302
+      },
+      {
+        "problem_id": "p03207",
+        "pair_index": 0,
+        "role": "reference",
+        "json_utf8_bytes": 321
+      },
+      {
+        "problem_id": "p03207",
+        "pair_index": 1,
+        "role": "buggy",
+        "json_utf8_bytes": 134
+      },
+      {
+        "problem_id": "p03207",
+        "pair_index": 1,
+        "role": "reference",
+        "json_utf8_bytes": 144
+      },
+      {
+        "problem_id": "p03207",
+        "pair_index": 2,
+        "role": "buggy",
+        "json_utf8_bytes": 193
+      },
+      {
+        "problem_id": "p03207",
+        "pair_index": 2,
+        "role": "reference",
+        "json_utf8_bytes": 211
+      }
+    ],
+    "maximum_observed_prompt_reservation": 19436,
+    "maximum_known_source_json_utf8_bytes": 1032,
+    "gemma_tokenizer_measured": false,
+    "generated_checkpoint_capacity_guaranteed": false,
+    "all_observed_human_prompts_fit_proposed_admission": true
+  },
+  "resolution_not_power_analysis": [
+    {
+      "eligible_groups": 6,
+      "one_draw_one_checkpoint_rate_step": 0.16666666666666666,
+      "aggregate_one_cell_rate_step": 0.05555555555555555,
+      "one_checkpoint_all_draws_rate_step": 0.16666666666666666,
+      "minimum_total_net_repairs_for_ten_points": 2
+    },
+    {
+      "eligible_groups": 7,
+      "one_draw_one_checkpoint_rate_step": 0.14285714285714285,
+      "aggregate_one_cell_rate_step": 0.047619047619047616,
+      "one_checkpoint_all_draws_rate_step": 0.14285714285714285,
+      "minimum_total_net_repairs_for_ten_points": 3
+    },
+    {
+      "eligible_groups": 8,
+      "one_draw_one_checkpoint_rate_step": 0.125,
+      "aggregate_one_cell_rate_step": 0.041666666666666664,
+      "one_checkpoint_all_draws_rate_step": 0.125,
+      "minimum_total_net_repairs_for_ten_points": 3
+    },
+    {
+      "eligible_groups": 9,
+      "one_draw_one_checkpoint_rate_step": 0.1111111111111111,
+      "aggregate_one_cell_rate_step": 0.037037037037037035,
+      "one_checkpoint_all_draws_rate_step": 0.1111111111111111,
+      "minimum_total_net_repairs_for_ten_points": 3
+    },
+    {
+      "eligible_groups": 10,
+      "one_draw_one_checkpoint_rate_step": 0.1,
+      "aggregate_one_cell_rate_step": 0.03333333333333333,
+      "one_checkpoint_all_draws_rate_step": 0.1,
+      "minimum_total_net_repairs_for_ten_points": 3
+    },
+    {
+      "eligible_groups": 11,
+      "one_draw_one_checkpoint_rate_step": 0.09090909090909091,
+      "aggregate_one_cell_rate_step": 0.030303030303030304,
+      "one_checkpoint_all_draws_rate_step": 0.09090909090909091,
+      "minimum_total_net_repairs_for_ten_points": 4
+    }
+  ],
+  "launch_requirements_still_open": [
+    "Tested whole-program collector binding dynamic generated checkpoints and public-only requests.",
+    "Complete receipts, charge reservations and independent raw-response/test/projection audit.",
+    "Source commit, exact runtime, provider metadata and single-use declared allocation freeze.",
+    "No live call is authorized by this numerical-design artifact alone."
+  ]
+}

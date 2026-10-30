@@ -1,0 +1,97 @@
+{
+  "checked_utc": "2026-10-26T15:10:41.665547+00:00",
+  "generation_calls": 0,
+  "selected_model": "qwen/qwen3-coder-next",
+  "selected_endpoint": {
+    "name": "Parasail | qwen/qwen3-coder-next-2025-02-03",
+    "model_id": "qwen/qwen3-coder-next",
+    "model_name": "Qwen: Qwen3 Coder Next",
+    "context_length": 262144,
+    "pricing": {
+      "prompt": "0.00000012",
+      "completion": "0.0000008",
+      "input_cache_read": "0.00000007",
+      "discount": 0
+    },
+    "provider_name": "Parasail",
+    "tag": "parasail/bf16",
+    "service_tier": null,
+    "quantization": "bf16",
+    "max_completion_tokens": 235929,
+    "max_prompt_tokens": null,
+    "supported_parameters": [
+      "max_tokens",
+      "temperature",
+      "top_p",
+      "frequency_penalty",
+      "presence_penalty",
+      "repetition_penalty",
+      "seed",
+      "stop",
+      "top_k",
+      "logit_bias",
+      "response_format",
+      "structured_outputs",
+      "tools",
+      "tool_choice",
+      "logprobs",
+      "top_logprobs"
+    ],
+    "supports_tool_choice": {
+      "none": true,
+      "auto": true,
+      "required": true,
+      "function": true
+    },
+    "status": 0,
+    "uptime_last_30m": 100,
+    "uptime_last_5m": 100,
+    "uptime_last_1d": 100,
+    "supports_implicit_caching": true,
+    "native_tools": {},
+    "supports_voice_cloning": false,
+    "supports_multiple_audio_references": false,
+    "supports_image_reference": false,
+    "supports_diarization": false,
+    "latency_last_30m": null,
+    "throughput_last_30m": null
+  },
+  "primary_sources": [
+    "https://openrouter.ai/api/v1/models/qwen/qwen3-coder-next/endpoints",
+    "https://huggingface.co/Qwen/Qwen3-Coder-Next",
+    "https://openrouter.ai/pricing"
+  ],
+  "selection_rule": "Coding-oriented, advertises seed and JSON response_format, explicit supported precision, whole design fits existing cumulative ceiling; compare inspected endpoint reservation costs, not unverified model quality.",
+  "checked_alternatives": [
+    {
+      "model": "qwen/qwen3-coder-30b-a3b-instruct",
+      "endpoint": "siliconflow/fp8",
+      "input_per_million": "0.07",
+      "output_per_million": "0.28",
+      "reason_not_selected": "Does not advertise seed support; Amazon alternative also lacks JSON response_format."
+    },
+    {
+      "model": "qwen/qwen3-coder",
+      "endpoint": "deepinfra/turbo",
+      "input_per_million": "0.30",
+      "output_per_million": "1.00",
+      "reason_not_selected": "Higher reservation and FP4; no advantage established for this control. Google endpoint has unknown precision."
+    },
+    {
+      "model": "qwen/qwen-2.5-coder-32b-instruct",
+      "endpoint": "cloudflare",
+      "input_per_million": "0.66",
+      "output_per_million": "1.00",
+      "reason_not_selected": "Higher reservation and unknown precision."
+    },
+    {
+      "model": "deepseek/deepseek-v3.2",
+      "reason_not_selected": "Different reasoning setup and general model; coding-specific candidate selected for practical compatibility control, not a ranking claim."
+    }
+  ],
+  "limitations": [
+    "Public availability and last-30-minute uptime do not guarantee a future request will succeed.",
+    "Earlier 429 cause remains unidentified. Changing endpoint is not proof of a reset or a causal operational fix.",
+    "No generation health check, key rotation or retry. No exhaustive cheapest-model claim."
+  ]
+}

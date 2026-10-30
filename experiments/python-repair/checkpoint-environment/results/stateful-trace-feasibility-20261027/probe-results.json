@@ -1,0 +1,5124 @@
+{
+  "kind": "engineering_only_one_already_exposed_candidate",
+  "benchmark_bug": "scrapy/26",
+  "api_calls": 0,
+  "model_results": false,
+  "preflight": {
+    "filesystem_denied": true,
+    "network_denied": true,
+    "credentials_absent": true,
+    "backend": "macos-sandbox-exec",
+    "python": "3.13.12"
+  },
+  "variants": {
+    "buggy": {
+      "result": {
+        "passed": false,
+        "passed_cases": 2,
+        "total_cases": 4,
+        "cases": [
+          {
+            "id": "upstream-default-exclusion",
+            "passed": false,
+            "observed": {
+              "status": "returned",
+              "value": [
+                [
+                  "a",
+                  10,
+                  0
+                ],
+                [
+                  "b",
+                  2,
+                  0
+                ],
+                [
+                  "x",
+                  30,
+                  0
+                ],
+                [
+                  "y",
+                  4,
+                  20
+                ]
+              ]
+            }
+          },
+          {
+            "id": "explicit-empty-base",
+            "passed": false,
+            "observed": {
+              "status": "returned",
+              "value": [
+                [
+                  "q",
+                  5,
+                  0
+                ],
+                [
+                  "z",
+                  9,
+                  10
+                ]
+              ]
+            }
+          },
+          {
+            "id": "no-base",
+            "passed": true,
+            "observed": {
+              "status": "returned",
+              "value": [
+                [
+                  "a",
+                  7,
+                  20
+                ],
+                [
+                  "b",
+                  2,
+                  0
+                ]
+              ]
+            }
+          },
+          {
+            "id": "keep-high-priority",
+            "passed": true,
+            "observed": {
+              "status": "returned",
+              "value": [
+                [
+                  "a",
+                  8,
+                  10
+                ]
+              ]
+            }
+          }
+        ],
+        "verifier_seconds": 0.31833916704636067
+      },
+      "source_sha256": "624185ff036e6351bb94fea72c4937b087857929f5aed7dd460c0b39596d6f24",
+      "source_bytes": 15415,
+      "traces": [
+        {
+          "case": "upstream-default-exclusion",
+          "matches_ordinary": true,
+          "available": true,
+          "events_seen": 408,
+          "events_dropped": 376,
+          "capture_limit_reached": false,
+          "retained_target_events": 0,
+          "retained_functions": [
+            "__contains__",
+            "__getitem__",
+            "getpriority",
+            "solve"
+          ],
+          "trace": {
+            "available": true,
+            "reason": null,
+            "observed": {
+              "status": "returned",
+              "value": [
+                [
+                  "a",
+                  10,
+                  0
+                ],
+                [
+                  "b",
+                  2,
+                  0
+                ],
+                [
+                  "x",
+                  30,
+                  0
+                ],
+                [
+                  "y",
+                  4,
+                  20
+                ]
+              ]
+            },
+            "trace": {
+              "events": [
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 442,
+                  "event": "line",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "a",
+                          10
+                        ],
+                        [
+                          "x",
+                          30
+                        ]
+                      ],
+                      "length": 2
+                    },
+                    "base": {
+                      "items": [
+                        [
+                          "a",
+                          1
+                        ],
+                        [
+                          "b",
+                          2
+                        ]
+                      ],
+                      "length": 2
+                    },
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "y",
+                            4,
+                            "project"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 1
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "b",
+                    "value": 4,
+                    "priority": "project"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 98,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "x"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 99,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "x",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "x"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "x"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 100,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "x",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "x",
+                    "value": 30
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "x",
+                    "value": 30
+                  },
+                  "returned": 30
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 222,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "x"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 223,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "x",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "x"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "x"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 224,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "x",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 225,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "x",
+                    "prio": 0
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 225,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "x",
+                    "prio": 0
+                  },
+                  "returned": 0
+                },
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 442,
+                  "event": "line",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "a",
+                          10
+                        ],
+                        [
+                          "x",
+                          30
+                        ]
+                      ],
+                      "length": 2
+                    },
+                    "base": {
+                      "items": [
+                        [
+                          "a",
+                          1
+                        ],
+                        [
+                          "b",
+                          2
+                        ]
+                      ],
+                      "length": 2
+                    },
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "y",
+                            4,
+                            "project"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 1
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "x",
+                    "value": 4,
+                    "priority": "project"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 98,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "y"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 99,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "y",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "y"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "y"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 100,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "y",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "y",
+                    "value": 4
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "y",
+                    "value": 4
+                  },
+                  "returned": 4
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 222,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "y"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 223,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "y",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "y"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "y"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 224,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "y",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 225,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "y",
+                    "prio": 20
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 225,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "y",
+                    "prio": 20
+                  },
+                  "returned": 20
+                },
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 442,
+                  "event": "line",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "a",
+                          10
+                        ],
+                        [
+                          "x",
+                          30
+                        ]
+                      ],
+                      "length": 2
+                    },
+                    "base": {
+                      "items": [
+                        [
+                          "a",
+                          1
+                        ],
+                        [
+                          "b",
+                          2
+                        ]
+                      ],
+                      "length": 2
+                    },
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "y",
+                            4,
+                            "project"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 1
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "y",
+                    "value": 4,
+                    "priority": "project"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 442,
+                  "event": "return",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "a",
+                          10
+                        ],
+                        [
+                          "x",
+                          30
+                        ]
+                      ],
+                      "length": 2
+                    },
+                    "base": {
+                      "items": [
+                        [
+                          "a",
+                          1
+                        ],
+                        [
+                          "b",
+                          2
+                        ]
+                      ],
+                      "length": 2
+                    },
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "y",
+                            4,
+                            "project"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 1
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "y",
+                    "value": 4,
+                    "priority": "project"
+                  },
+                  "returned": {
+                    "items": [
+                      {
+                        "items": [
+                          "a",
+                          10,
+                          0
+                        ],
+                        "length": 3
+                      },
+                      {
+                        "items": [
+                          "b",
+                          2,
+                          0
+                        ],
+                        "length": 3
+                      },
+                      {
+                        "items": [
+                          "x",
+                          30,
+                          0
+                        ],
+                        "length": 3
+                      },
+                      {
+                        "items": [
+                          "y",
+                          4,
+                          20
+                        ],
+                        "length": 3
+                      }
+                    ],
+                    "length": 4
+                  }
+                }
+              ],
+              "events_seen": 408,
+              "events_dropped": 376,
+              "capture_limit_reached": false,
+              "intact": true,
+              "line_semantics": "locals before executing the reported line",
+              "limits": {
+                "events": 32,
+                "event_bytes": 12000,
+                "captured_events": 512,
+                "locals_per_event": 8,
+                "value_depth": 2,
+                "container_items": 6,
+                "string_chars": 96
+              }
+            }
+          }
+        },
+        {
+          "case": "explicit-empty-base",
+          "matches_ordinary": true,
+          "available": true,
+          "events_seen": 279,
+          "events_dropped": 247,
+          "capture_limit_reached": false,
+          "retained_target_events": 0,
+          "retained_functions": [
+            "__contains__",
+            "__getitem__",
+            "__len__",
+            "getpriority",
+            "solve"
+          ],
+          "trace": {
+            "available": true,
+            "reason": null,
+            "observed": {
+              "status": "returned",
+              "value": [
+                [
+                  "q",
+                  5,
+                  0
+                ],
+                [
+                  "z",
+                  9,
+                  10
+                ]
+              ]
+            },
+            "trace": {
+              "events": [
+                {
+                  "file": "solution.py",
+                  "function": "__len__",
+                  "line": 378,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    }
+                  },
+                  "returned": 2
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 98,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "q"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 99,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "q",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "q"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "q"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 100,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "q",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "q",
+                    "value": 5
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "q",
+                    "value": 5
+                  },
+                  "returned": 5
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 222,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "q"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 223,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "q",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "q"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "q"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 224,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "q",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 225,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "q",
+                    "prio": 0
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 225,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "q",
+                    "prio": 0
+                  },
+                  "returned": 0
+                },
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 442,
+                  "event": "line",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "q",
+                          5
+                        ]
+                      ],
+                      "length": 1
+                    },
+                    "base": {
+                      "items": [],
+                      "length": 0
+                    },
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "z",
+                            9,
+                            "command"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 1
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "q",
+                    "value": 9,
+                    "priority": "command"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 98,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "z"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 99,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "z",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "z"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "z"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 100,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "z",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "z",
+                    "value": 9
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "z",
+                    "value": 9
+                  },
+                  "returned": 9
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 222,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "z"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 223,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "z",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "z"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "z"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 224,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "z",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 225,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "z",
+                    "prio": 10
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 225,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "z",
+                    "prio": 10
+                  },
+                  "returned": 10
+                },
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 442,
+                  "event": "line",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "q",
+                          5
+                        ]
+                      ],
+                      "length": 1
+                    },
+                    "base": {
+                      "items": [],
+                      "length": 0
+                    },
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "z",
+                            9,
+                            "command"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 1
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "z",
+                    "value": 9,
+                    "priority": "command"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 442,
+                  "event": "return",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "q",
+                          5
+                        ]
+                      ],
+                      "length": 1
+                    },
+                    "base": {
+                      "items": [],
+                      "length": 0
+                    },
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "z",
+                            9,
+                            "command"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 1
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "z",
+                    "value": 9,
+                    "priority": "command"
+                  },
+                  "returned": {
+                    "items": [
+                      {
+                        "items": [
+                          "q",
+                          5,
+                          0
+                        ],
+                        "length": 3
+                      },
+                      {
+                        "items": [
+                          "z",
+                          9,
+                          10
+                        ],
+                        "length": 3
+                      }
+                    ],
+                    "length": 2
+                  }
+                }
+              ],
+              "events_seen": 279,
+              "events_dropped": 247,
+              "capture_limit_reached": false,
+              "intact": true,
+              "line_semantics": "locals before executing the reported line",
+              "limits": {
+                "events": 32,
+                "event_bytes": 12000,
+                "captured_events": 512,
+                "locals_per_event": 8,
+                "value_depth": 2,
+                "container_items": 6,
+                "string_chars": 96
+              }
+            }
+          }
+        },
+        {
+          "case": "no-base",
+          "matches_ordinary": true,
+          "available": true,
+          "events_seen": 185,
+          "events_dropped": 153,
+          "capture_limit_reached": false,
+          "retained_target_events": 0,
+          "retained_functions": [
+            "__contains__",
+            "__getitem__",
+            "__len__",
+            "getpriority",
+            "solve"
+          ],
+          "trace": {
+            "available": true,
+            "reason": null,
+            "observed": {
+              "status": "returned",
+              "value": [
+                [
+                  "a",
+                  7,
+                  20
+                ],
+                [
+                  "b",
+                  2,
+                  0
+                ]
+              ]
+            },
+            "trace": {
+              "events": [
+                {
+                  "file": "solution.py",
+                  "function": "__len__",
+                  "line": 378,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    }
+                  },
+                  "returned": 2
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 98,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "a"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 99,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "a",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 100,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "a",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "a",
+                    "value": 7
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "a",
+                    "value": 7
+                  },
+                  "returned": 7
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 222,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 223,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 224,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 225,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a",
+                    "prio": 20
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 225,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a",
+                    "prio": 20
+                  },
+                  "returned": 20
+                },
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 442,
+                  "event": "line",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "a",
+                          1
+                        ],
+                        [
+                          "b",
+                          2
+                        ]
+                      ],
+                      "length": 2
+                    },
+                    "base": null,
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "a",
+                            7,
+                            "project"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 1
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "a",
+                    "value": 7,
+                    "priority": "project"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 98,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "b"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 99,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "b",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 100,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "b",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "b",
+                    "value": 2
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "b",
+                    "value": 2
+                  },
+                  "returned": 2
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 222,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 223,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 224,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 225,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b",
+                    "prio": 0
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 225,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b",
+                    "prio": 0
+                  },
+                  "returned": 0
+                },
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 442,
+                  "event": "line",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "a",
+                          1
+                        ],
+                        [
+                          "b",
+                          2
+                        ]
+                      ],
+                      "length": 2
+                    },
+                    "base": null,
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "a",
+                            7,
+                            "project"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 1
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "b",
+                    "value": 7,
+                    "priority": "project"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 442,
+                  "event": "return",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "a",
+                          1
+                        ],
+                        [
+                          "b",
+                          2
+                        ]
+                      ],
+                      "length": 2
+                    },
+                    "base": null,
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "a",
+                            7,
+                            "project"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 1
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "a",
+                    "value": 7,
+                    "priority": "project"
+                  },
+                  "returned": {
+                    "items": [
+                      {
+                        "items": [
+                          "a",
+                          7,
+                          20
+                        ],
+                        "length": 3
+                      },
+                      {
+                        "items": [
+                          "b",
+                          2,
+                          0
+                        ],
+                        "length": 3
+                      }
+                    ],
+                    "length": 2
+                  }
+                }
+              ],
+              "events_seen": 185,
+              "events_dropped": 153,
+              "capture_limit_reached": false,
+              "intact": true,
+              "line_semantics": "locals before executing the reported line",
+              "limits": {
+                "events": 32,
+                "event_bytes": 12000,
+                "captured_events": 512,
+                "locals_per_event": 8,
+                "value_depth": 2,
+                "container_items": 6,
+                "string_chars": 96
+              }
+            }
+          }
+        },
+        {
+          "case": "keep-high-priority",
+          "matches_ordinary": true,
+          "available": true,
+          "events_seen": 267,
+          "events_dropped": 235,
+          "capture_limit_reached": false,
+          "retained_target_events": 2,
+          "retained_functions": [
+            "__contains__",
+            "__getitem__",
+            "__iter__",
+            "__len__",
+            "_getcomposite",
+            "getpriority",
+            "set",
+            "solve",
+            "update"
+          ],
+          "trace": {
+            "available": true,
+            "reason": null,
+            "observed": {
+              "status": "returned",
+              "value": [
+                [
+                  "a",
+                  8,
+                  10
+                ]
+              ]
+            },
+            "trace": {
+              "events": [
+                {
+                  "file": "solution.py",
+                  "function": "set",
+                  "line": 268,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a",
+                    "value": 8,
+                    "priority": 10
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "set",
+                  "line": 54,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "value": 8,
+                    "priority": 10
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "set",
+                  "line": 59,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "value": 8,
+                    "priority": 10
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "set",
+                  "line": 60,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "value": 8,
+                    "priority": 10
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "set",
+                  "line": 61,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "value": 8,
+                    "priority": 10
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "set",
+                  "line": 61,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "value": 8,
+                    "priority": 10
+                  },
+                  "returned": null
+                },
+                {
+                  "file": "solution.py",
+                  "function": "set",
+                  "line": 268,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a",
+                    "value": 8,
+                    "priority": 10
+                  },
+                  "returned": null
+                },
+                {
+                  "file": "solution.py",
+                  "function": "update",
+                  "line": 322,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "values": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "priority": "project",
+                    "name": "a",
+                    "value": 8
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "update",
+                  "line": 322,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "values": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "priority": "project",
+                    "name": "a",
+                    "value": 8
+                  },
+                  "returned": null
+                },
+                {
+                  "file": "solution.py",
+                  "function": "_getcomposite",
+                  "line": 210,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "COMPONENT",
+                    "basename": "COMPONENT_BASE",
+                    "compsett": {
+                      "omitted": "object_or_depth_limit"
+                    }
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "_getcomposite",
+                  "line": 210,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "COMPONENT",
+                    "basename": "COMPONENT_BASE",
+                    "compsett": {
+                      "omitted": "object_or_depth_limit"
+                    }
+                  },
+                  "returned": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 442,
+                  "event": "line",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "a",
+                          10
+                        ]
+                      ],
+                      "length": 1
+                    },
+                    "base": {
+                      "items": [
+                        [
+                          "a",
+                          1
+                        ]
+                      ],
+                      "length": 1
+                    },
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "a",
+                            8,
+                            "command"
+                          ],
+                          "length": 3
+                        },
+                        {
+                          "items": [
+                            "a",
+                            99,
+                            "default"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 2
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "a",
+                    "value": 99,
+                    "priority": "default"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__iter__",
+                  "line": 375,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    }
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__iter__",
+                  "line": 375,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    }
+                  },
+                  "returned": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__len__",
+                  "line": 378,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    }
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__len__",
+                  "line": 378,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    }
+                  },
+                  "returned": 1
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 98,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "a"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 99,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "a",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 100,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "a",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "a",
+                    "value": 8
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "a",
+                    "value": 8
+                  },
+                  "returned": 8
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 222,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 223,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 224,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 225,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a",
+                    "prio": 10
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 225,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a",
+                    "prio": 10
+                  },
+                  "returned": 10
+                },
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 442,
+                  "event": "line",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "a",
+                          10
+                        ]
+                      ],
+                      "length": 1
+                    },
+                    "base": {
+                      "items": [
+                        [
+                          "a",
+                          1
+                        ]
+                      ],
+                      "length": 1
+                    },
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "a",
+                            8,
+                            "command"
+                          ],
+                          "length": 3
+                        },
+                        {
+                          "items": [
+                            "a",
+                            99,
+                            "default"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 2
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "a",
+                    "value": 99,
+                    "priority": "default"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 442,
+                  "event": "return",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "a",
+                          10
+                        ]
+                      ],
+                      "length": 1
+                    },
+                    "base": {
+                      "items": [
+                        [
+                          "a",
+                          1
+                        ]
+                      ],
+                      "length": 1
+                    },
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "a",
+                            8,
+                            "command"
+                          ],
+                          "length": 3
+                        },
+                        {
+                          "items": [
+                            "a",
+                            99,
+                            "default"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 2
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "a",
+                    "value": 99,
+                    "priority": "default"
+                  },
+                  "returned": {
+                    "items": [
+                      {
+                        "items": [
+                          "a",
+                          8,
+                          10
+                        ],
+                        "length": 3
+                      }
+                    ],
+                    "length": 1
+                  }
+                }
+              ],
+              "events_seen": 267,
+              "events_dropped": 235,
+              "capture_limit_reached": false,
+              "intact": true,
+              "line_semantics": "locals before executing the reported line",
+              "limits": {
+                "events": 32,
+                "event_bytes": 12000,
+                "captured_events": 512,
+                "locals_per_event": 8,
+                "value_depth": 2,
+                "container_items": 6,
+                "string_chars": 96
+              }
+            }
+          }
+        }
+      ]
+    },
+    "fixed": {
+      "result": {
+        "passed": true,
+        "passed_cases": 4,
+        "total_cases": 4,
+        "cases": [
+          {
+            "id": "upstream-default-exclusion",
+            "passed": true,
+            "observed": {
+              "status": "returned",
+              "value": [
+                [
+                  "a",
+                  1,
+                  0
+                ],
+                [
+                  "b",
+                  2,
+                  0
+                ],
+                [
+                  "y",
+                  4,
+                  20
+                ]
+              ]
+            }
+          },
+          {
+            "id": "explicit-empty-base",
+            "passed": true,
+            "observed": {
+              "status": "returned",
+              "value": [
+                [
+                  "z",
+                  9,
+                  10
+                ]
+              ]
+            }
+          },
+          {
+            "id": "no-base",
+            "passed": true,
+            "observed": {
+              "status": "returned",
+              "value": [
+                [
+                  "a",
+                  7,
+                  20
+                ],
+                [
+                  "b",
+                  2,
+                  0
+                ]
+              ]
+            }
+          },
+          {
+            "id": "keep-high-priority",
+            "passed": true,
+            "observed": {
+              "status": "returned",
+              "value": [
+                [
+                  "a",
+                  8,
+                  10
+                ]
+              ]
+            }
+          }
+        ],
+        "verifier_seconds": 0.3140970839885995
+      },
+      "source_sha256": "b243b09011952ae40cd59dee0425a0e99763169cd60253cbf11902f5a1126adb",
+      "source_bytes": 15819,
+      "traces": [
+        {
+          "case": "upstream-default-exclusion",
+          "matches_ordinary": true,
+          "available": true,
+          "events_seen": 376,
+          "events_dropped": 344,
+          "capture_limit_reached": false,
+          "retained_target_events": 0,
+          "retained_functions": [
+            "__contains__",
+            "__getitem__",
+            "getpriority",
+            "solve"
+          ],
+          "trace": {
+            "available": true,
+            "reason": null,
+            "observed": {
+              "status": "returned",
+              "value": [
+                [
+                  "a",
+                  1,
+                  0
+                ],
+                [
+                  "b",
+                  2,
+                  0
+                ],
+                [
+                  "y",
+                  4,
+                  20
+                ]
+              ]
+            },
+            "trace": {
+              "events": [
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 448,
+                  "event": "line",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "a",
+                          10
+                        ],
+                        [
+                          "x",
+                          30
+                        ]
+                      ],
+                      "length": 2
+                    },
+                    "base": {
+                      "items": [
+                        [
+                          "a",
+                          1
+                        ],
+                        [
+                          "b",
+                          2
+                        ]
+                      ],
+                      "length": 2
+                    },
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "y",
+                            4,
+                            "project"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 1
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "a",
+                    "value": 4,
+                    "priority": "project"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 98,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "b"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 99,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "b",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 100,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "b",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "b",
+                    "value": 2
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "b",
+                    "value": 2
+                  },
+                  "returned": 2
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 228,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 229,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 230,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 231,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b",
+                    "prio": 0
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 231,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b",
+                    "prio": 0
+                  },
+                  "returned": 0
+                },
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 448,
+                  "event": "line",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "a",
+                          10
+                        ],
+                        [
+                          "x",
+                          30
+                        ]
+                      ],
+                      "length": 2
+                    },
+                    "base": {
+                      "items": [
+                        [
+                          "a",
+                          1
+                        ],
+                        [
+                          "b",
+                          2
+                        ]
+                      ],
+                      "length": 2
+                    },
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "y",
+                            4,
+                            "project"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 1
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "b",
+                    "value": 4,
+                    "priority": "project"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 98,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "y"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 99,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "y",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "y"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "y"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 100,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "y",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "y",
+                    "value": 4
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "y",
+                    "value": 4
+                  },
+                  "returned": 4
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 228,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "y"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 229,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "y",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "y"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "y"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 230,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "y",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 231,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "y",
+                    "prio": 20
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 231,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "y",
+                    "prio": 20
+                  },
+                  "returned": 20
+                },
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 448,
+                  "event": "line",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "a",
+                          10
+                        ],
+                        [
+                          "x",
+                          30
+                        ]
+                      ],
+                      "length": 2
+                    },
+                    "base": {
+                      "items": [
+                        [
+                          "a",
+                          1
+                        ],
+                        [
+                          "b",
+                          2
+                        ]
+                      ],
+                      "length": 2
+                    },
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "y",
+                            4,
+                            "project"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 1
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "y",
+                    "value": 4,
+                    "priority": "project"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 448,
+                  "event": "return",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "a",
+                          10
+                        ],
+                        [
+                          "x",
+                          30
+                        ]
+                      ],
+                      "length": 2
+                    },
+                    "base": {
+                      "items": [
+                        [
+                          "a",
+                          1
+                        ],
+                        [
+                          "b",
+                          2
+                        ]
+                      ],
+                      "length": 2
+                    },
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "y",
+                            4,
+                            "project"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 1
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "y",
+                    "value": 4,
+                    "priority": "project"
+                  },
+                  "returned": {
+                    "items": [
+                      {
+                        "items": [
+                          "a",
+                          1,
+                          0
+                        ],
+                        "length": 3
+                      },
+                      {
+                        "items": [
+                          "b",
+                          2,
+                          0
+                        ],
+                        "length": 3
+                      },
+                      {
+                        "items": [
+                          "y",
+                          4,
+                          20
+                        ],
+                        "length": 3
+                      }
+                    ],
+                    "length": 3
+                  }
+                }
+              ],
+              "events_seen": 376,
+              "events_dropped": 344,
+              "capture_limit_reached": false,
+              "intact": true,
+              "line_semantics": "locals before executing the reported line",
+              "limits": {
+                "events": 32,
+                "event_bytes": 12000,
+                "captured_events": 512,
+                "locals_per_event": 8,
+                "value_depth": 2,
+                "container_items": 6,
+                "string_chars": 96
+              }
+            }
+          }
+        },
+        {
+          "case": "explicit-empty-base",
+          "matches_ordinary": true,
+          "available": true,
+          "events_seen": 260,
+          "events_dropped": 228,
+          "capture_limit_reached": false,
+          "retained_target_events": 3,
+          "retained_functions": [
+            "__contains__",
+            "__getitem__",
+            "__init__",
+            "__iter__",
+            "__len__",
+            "_getcomposite",
+            "getpriority",
+            "set",
+            "solve"
+          ],
+          "trace": {
+            "available": true,
+            "reason": null,
+            "observed": {
+              "status": "returned",
+              "value": [
+                [
+                  "z",
+                  9,
+                  10
+                ]
+              ]
+            },
+            "trace": {
+              "events": [
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "z"
+                  },
+                  "returned": false
+                },
+                {
+                  "file": "solution.py",
+                  "function": "set",
+                  "line": 269,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "z",
+                    "value": 9,
+                    "priority": 10
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "set",
+                  "line": 272,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "z",
+                    "value": 9,
+                    "priority": 10
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__init__",
+                  "line": 46,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "value": 9,
+                    "priority": 10
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__init__",
+                  "line": 47,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "value": 9,
+                    "priority": 10
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__init__",
+                  "line": 50,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "value": 9,
+                    "priority": 10
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__init__",
+                  "line": 50,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "value": 9,
+                    "priority": 10
+                  },
+                  "returned": null
+                },
+                {
+                  "file": "solution.py",
+                  "function": "set",
+                  "line": 272,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "z",
+                    "value": 9,
+                    "priority": 10
+                  },
+                  "returned": null
+                },
+                {
+                  "file": "solution.py",
+                  "function": "_getcomposite",
+                  "line": 213,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "COMPONENT",
+                    "basename": "COMPONENT_BASE",
+                    "compsett": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "k": "z",
+                    "prio": 10
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "_getcomposite",
+                  "line": 217,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "COMPONENT",
+                    "basename": "COMPONENT_BASE",
+                    "compsett": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "k": "z",
+                    "prio": 10
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "_getcomposite",
+                  "line": 217,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "COMPONENT",
+                    "basename": "COMPONENT_BASE",
+                    "compsett": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "k": "z",
+                    "prio": 10
+                  },
+                  "returned": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 448,
+                  "event": "line",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "q",
+                          5
+                        ]
+                      ],
+                      "length": 1
+                    },
+                    "base": {
+                      "items": [],
+                      "length": 0
+                    },
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "z",
+                            9,
+                            "command"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 1
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "z",
+                    "value": 9,
+                    "priority": "command"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__iter__",
+                  "line": 381,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    }
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__iter__",
+                  "line": 381,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    }
+                  },
+                  "returned": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__len__",
+                  "line": 384,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    }
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__len__",
+                  "line": 384,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    }
+                  },
+                  "returned": 1
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 98,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "z"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 99,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "z",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "z"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "z"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 100,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "z",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "z",
+                    "value": 9
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "z",
+                    "value": 9
+                  },
+                  "returned": 9
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 228,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "z"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 229,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "z",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "z"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "z"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 230,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "z",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 231,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "z",
+                    "prio": 10
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 231,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "z",
+                    "prio": 10
+                  },
+                  "returned": 10
+                },
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 448,
+                  "event": "line",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "q",
+                          5
+                        ]
+                      ],
+                      "length": 1
+                    },
+                    "base": {
+                      "items": [],
+                      "length": 0
+                    },
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "z",
+                            9,
+                            "command"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 1
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "z",
+                    "value": 9,
+                    "priority": "command"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 448,
+                  "event": "return",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "q",
+                          5
+                        ]
+                      ],
+                      "length": 1
+                    },
+                    "base": {
+                      "items": [],
+                      "length": 0
+                    },
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "z",
+                            9,
+                            "command"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 1
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "z",
+                    "value": 9,
+                    "priority": "command"
+                  },
+                  "returned": {
+                    "items": [
+                      {
+                        "items": [
+                          "z",
+                          9,
+                          10
+                        ],
+                        "length": 3
+                      }
+                    ],
+                    "length": 1
+                  }
+                }
+              ],
+              "events_seen": 260,
+              "events_dropped": 228,
+              "capture_limit_reached": false,
+              "intact": true,
+              "line_semantics": "locals before executing the reported line",
+              "limits": {
+                "events": 32,
+                "event_bytes": 12000,
+                "captured_events": 512,
+                "locals_per_event": 8,
+                "value_depth": 2,
+                "container_items": 6,
+                "string_chars": 96
+              }
+            }
+          }
+        },
+        {
+          "case": "no-base",
+          "matches_ordinary": true,
+          "available": true,
+          "events_seen": 185,
+          "events_dropped": 153,
+          "capture_limit_reached": false,
+          "retained_target_events": 0,
+          "retained_functions": [
+            "__contains__",
+            "__getitem__",
+            "__len__",
+            "getpriority",
+            "solve"
+          ],
+          "trace": {
+            "available": true,
+            "reason": null,
+            "observed": {
+              "status": "returned",
+              "value": [
+                [
+                  "a",
+                  7,
+                  20
+                ],
+                [
+                  "b",
+                  2,
+                  0
+                ]
+              ]
+            },
+            "trace": {
+              "events": [
+                {
+                  "file": "solution.py",
+                  "function": "__len__",
+                  "line": 384,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    }
+                  },
+                  "returned": 2
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 98,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "a"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 99,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "a",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 100,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "a",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "a",
+                    "value": 7
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "a",
+                    "value": 7
+                  },
+                  "returned": 7
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 228,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 229,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 230,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 231,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a",
+                    "prio": 20
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 231,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a",
+                    "prio": 20
+                  },
+                  "returned": 20
+                },
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 448,
+                  "event": "line",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "a",
+                          1
+                        ],
+                        [
+                          "b",
+                          2
+                        ]
+                      ],
+                      "length": 2
+                    },
+                    "base": null,
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "a",
+                            7,
+                            "project"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 1
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "a",
+                    "value": 7,
+                    "priority": "project"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 98,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "b"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 99,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "b",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 100,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "b",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "b",
+                    "value": 2
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "b",
+                    "value": 2
+                  },
+                  "returned": 2
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 228,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 229,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 230,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 231,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b",
+                    "prio": 0
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 231,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "b",
+                    "prio": 0
+                  },
+                  "returned": 0
+                },
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 448,
+                  "event": "line",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "a",
+                          1
+                        ],
+                        [
+                          "b",
+                          2
+                        ]
+                      ],
+                      "length": 2
+                    },
+                    "base": null,
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "a",
+                            7,
+                            "project"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 1
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "b",
+                    "value": 7,
+                    "priority": "project"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 448,
+                  "event": "return",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "a",
+                          1
+                        ],
+                        [
+                          "b",
+                          2
+                        ]
+                      ],
+                      "length": 2
+                    },
+                    "base": null,
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "a",
+                            7,
+                            "project"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 1
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "a",
+                    "value": 7,
+                    "priority": "project"
+                  },
+                  "returned": {
+                    "items": [
+                      {
+                        "items": [
+                          "a",
+                          7,
+                          20
+                        ],
+                        "length": 3
+                      },
+                      {
+                        "items": [
+                          "b",
+                          2,
+                          0
+                        ],
+                        "length": 3
+                      }
+                    ],
+                    "length": 2
+                  }
+                }
+              ],
+              "events_seen": 185,
+              "events_dropped": 153,
+              "capture_limit_reached": false,
+              "intact": true,
+              "line_semantics": "locals before executing the reported line",
+              "limits": {
+                "events": 32,
+                "event_bytes": 12000,
+                "captured_events": 512,
+                "locals_per_event": 8,
+                "value_depth": 2,
+                "container_items": 6,
+                "string_chars": 96
+              }
+            }
+          }
+        },
+        {
+          "case": "keep-high-priority",
+          "matches_ordinary": true,
+          "available": true,
+          "events_seen": 276,
+          "events_dropped": 244,
+          "capture_limit_reached": false,
+          "retained_target_events": 3,
+          "retained_functions": [
+            "__contains__",
+            "__getitem__",
+            "__iter__",
+            "__len__",
+            "_getcomposite",
+            "getpriority",
+            "set",
+            "solve"
+          ],
+          "trace": {
+            "available": true,
+            "reason": null,
+            "observed": {
+              "status": "returned",
+              "value": [
+                [
+                  "a",
+                  8,
+                  10
+                ]
+              ]
+            },
+            "trace": {
+              "events": [
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "set",
+                  "line": 274,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a",
+                    "value": 8,
+                    "priority": 10
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "set",
+                  "line": 54,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "value": 8,
+                    "priority": 10
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "set",
+                  "line": 59,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "value": 8,
+                    "priority": 10
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "set",
+                  "line": 60,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "value": 8,
+                    "priority": 10
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "set",
+                  "line": 61,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "value": 8,
+                    "priority": 10
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "set",
+                  "line": 61,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "value": 8,
+                    "priority": 10
+                  },
+                  "returned": null
+                },
+                {
+                  "file": "solution.py",
+                  "function": "set",
+                  "line": 274,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a",
+                    "value": 8,
+                    "priority": 10
+                  },
+                  "returned": null
+                },
+                {
+                  "file": "solution.py",
+                  "function": "_getcomposite",
+                  "line": 213,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "COMPONENT",
+                    "basename": "COMPONENT_BASE",
+                    "compsett": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "k": "a",
+                    "prio": 10
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "_getcomposite",
+                  "line": 217,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "COMPONENT",
+                    "basename": "COMPONENT_BASE",
+                    "compsett": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "k": "a",
+                    "prio": 10
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "_getcomposite",
+                  "line": 217,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "COMPONENT",
+                    "basename": "COMPONENT_BASE",
+                    "compsett": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "k": "a",
+                    "prio": 10
+                  },
+                  "returned": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 448,
+                  "event": "line",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "a",
+                          10
+                        ]
+                      ],
+                      "length": 1
+                    },
+                    "base": {
+                      "items": [
+                        [
+                          "a",
+                          1
+                        ]
+                      ],
+                      "length": 1
+                    },
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "a",
+                            8,
+                            "command"
+                          ],
+                          "length": 3
+                        },
+                        {
+                          "items": [
+                            "a",
+                            99,
+                            "default"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 2
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "a",
+                    "value": 99,
+                    "priority": "default"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__iter__",
+                  "line": 381,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    }
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__iter__",
+                  "line": 381,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    }
+                  },
+                  "returned": {
+                    "omitted": "object_or_depth_limit"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__len__",
+                  "line": 384,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    }
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__len__",
+                  "line": 384,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    }
+                  },
+                  "returned": 1
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 98,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "a"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 99,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "a",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 100,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "a",
+                    "value": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "a",
+                    "value": 8
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__getitem__",
+                  "line": 101,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "opt_name": "a",
+                    "value": 8
+                  },
+                  "returned": 8
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 228,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 229,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "__contains__",
+                  "line": 104,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a"
+                  },
+                  "returned": true
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 230,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a",
+                    "prio": null
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 231,
+                  "event": "line",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a",
+                    "prio": 10
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "getpriority",
+                  "line": 231,
+                  "event": "return",
+                  "locals": {
+                    "self": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "name": "a",
+                    "prio": 10
+                  },
+                  "returned": 10
+                },
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 448,
+                  "event": "line",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "a",
+                          10
+                        ]
+                      ],
+                      "length": 1
+                    },
+                    "base": {
+                      "items": [
+                        [
+                          "a",
+                          1
+                        ]
+                      ],
+                      "length": 1
+                    },
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "a",
+                            8,
+                            "command"
+                          ],
+                          "length": 3
+                        },
+                        {
+                          "items": [
+                            "a",
+                            99,
+                            "default"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 2
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "a",
+                    "value": 99,
+                    "priority": "default"
+                  }
+                },
+                {
+                  "file": "solution.py",
+                  "function": "solve",
+                  "line": 448,
+                  "event": "return",
+                  "locals": {
+                    "defaults": {
+                      "items": [
+                        [
+                          "a",
+                          10
+                        ]
+                      ],
+                      "length": 1
+                    },
+                    "base": {
+                      "items": [
+                        [
+                          "a",
+                          1
+                        ]
+                      ],
+                      "length": 1
+                    },
+                    "updates": {
+                      "items": [
+                        {
+                          "items": [
+                            "a",
+                            8,
+                            "command"
+                          ],
+                          "length": 3
+                        },
+                        {
+                          "items": [
+                            "a",
+                            99,
+                            "default"
+                          ],
+                          "length": 3
+                        }
+                      ],
+                      "length": 2
+                    },
+                    "component": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "settings": {
+                      "omitted": "object_or_depth_limit"
+                    },
+                    "key": "a",
+                    "value": 99,
+                    "priority": "default"
+                  },
+                  "returned": {
+                    "items": [
+                      {
+                        "items": [
+                          "a",
+                          8,
+                          10
+                        ],
+                        "length": 3
+                      }
+                    ],
+                    "length": 1
+                  }
+                }
+              ],
+              "events_seen": 276,
+              "events_dropped": 244,
+              "capture_limit_reached": false,
+              "intact": true,
+              "line_semantics": "locals before executing the reported line",
+              "limits": {
+                "events": 32,
+                "event_bytes": 12000,
+                "captured_events": 512,
+                "locals_per_event": 8,
+                "value_depth": 2,
+                "container_items": 6,
+                "string_chars": 96
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "limits": [
+    "Four engineering examples, not public/evaluator model task suites.",
+    "Complete named upstream definitions preserved; import compatibility and solve wrapper are explicit.",
+    "Only strings/JSON values and the selected priority APIs are exercised; no crawler lifecycle or dynamic module loading.",
+    "Trace coverage is measured, not assumed. No new acquisition protocol or paid calls."
+  ]
+}

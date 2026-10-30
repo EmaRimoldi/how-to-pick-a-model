@@ -1,0 +1,34 @@
+{
+  "study": "repair-sse-wire-envelope-v1",
+  "status": "complete_compatibility_probe",
+  "planned": 1,
+  "admitted": 1,
+  "received": 1,
+  "uncertain": 0,
+  "never_admitted": 0,
+  "known_usd": "0.00328916",
+  "study_committed_usd": "0.00328916",
+  "cumulative_committed_usd": "0.11785551",
+  "cap_exceeded": false,
+  "received_records": [
+    {
+      "fixture": 0,
+      "finish_reason": "length",
+      "content_characters": 4106,
+      "cost_usd": "0.00328916",
+      "elapsed_seconds": 56.756198042072356,
+      "sse_chunks": 4030,
+      "wire_bytes": 1112924,
+      "completion_tokens": 4096,
+      "wire_limit_bytes": 8388608
+    }
+  ],
+  "gate": "larger_wire_envelope_observed",
+  "scientific_results": false,
+  "limitations": [
+    "One new synthetic request; no repair score, causal transport comparison or reliability estimate.",
+    "The declared check requires crossing 1 MiB and reaching 4096 output tokens with a length terminal receipt.",
+    "The old three-fixture probe stays inconclusive; its unknown is never repeated or filled."
+  ],
+  "old_limit_crossed_with_complete_receipt": true
+}

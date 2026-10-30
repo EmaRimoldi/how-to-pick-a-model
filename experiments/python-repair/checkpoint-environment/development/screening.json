@@ -1,0 +1,1888 @@
+{
+  "benchmark_revision": "11c5f1eea954a42132cfd06bf257766a7963e0fd",
+  "scope": "Patch headers inspected for six projects, not an exhaustive benchmark feasibility audit. Not-selected does not imply a reproduced failure. All inspected IDs are development-exposed.",
+  "screened": [
+    {
+      "id": "youtube-dl/1",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "d03c6dedb5710f8c101cc4ce2978e56a92ad1be18670efdd825bfead7e624b2c",
+      "headers": [
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -2574,8 +2574,8 @@ def _match_one(filter_part, dct):"
+      ]
+    },
+    {
+      "id": "youtube-dl/2",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "7a83a140ebbdb954f74eec2c5c04894a769fc78d13262a9173fe0f181e332f62",
+      "headers": [
+        "diff --git a/youtube_dl/extractor/common.py b/youtube_dl/extractor/common.py",
+        "@@ -2007,16 +2007,14 @@ class InfoExtractor(object):"
+      ]
+    },
+    {
+      "id": "youtube-dl/3",
+      "stage": "patch_header_screen",
+      "disposition": "selected_for_adaptation",
+      "patch_sha256": "6f2bdb68b66d17fb21d3a17fb0553eec70f75984efe069b9eaa79c7ff23f518f",
+      "headers": [
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -596,7 +596,7 @@ def unescapeHTML(s):"
+      ]
+    },
+    {
+      "id": "youtube-dl/4",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "29ed6ba59d8267ca399e6fd1bd68cb8e806c1fa0bb2d22d702b323e4c1722f98",
+      "headers": [
+        "diff --git a/youtube_dl/jsinterp.py b/youtube_dl/jsinterp.py",
+        "@@ -198,12 +198,12 @@ class JSInterpreter(object):"
+      ]
+    },
+    {
+      "id": "youtube-dl/5",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "24dea5ec968a5c3fad11a6c870db1492b378f50979a6c33185272d50db900e36",
+      "headers": [
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -1101,7 +1101,7 @@ def unified_timestamp(date_str, day_first=True):",
+        "@@ -1109,13 +1109,13 @@ def unified_timestamp(date_str, day_first=True):"
+      ]
+    },
+    {
+      "id": "youtube-dl/6",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "374c6e8a39d665eb21c56094700cbe3cabc135e8db817c4de6ee288abda2d97c",
+      "headers": [
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -1976,7 +1976,7 @@ def match_filter_func(filter_str):",
+        "@@ -2020,10 +2020,15 @@ def dfxp2srt(dfxp_data):"
+      ]
+    },
+    {
+      "id": "youtube-dl/7",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "27866b1bdf269c241a9805dcfbfe3d49089dd0f6aa535f60ff8d85b689e447a7",
+      "headers": [
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -1701,8 +1701,8 @@ def js_to_json(code):"
+      ]
+    },
+    {
+      "id": "youtube-dl/8",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "4a2cc2b2dafd7aafa3caf6e566db4de1c09a2737c0c774b54f4560bf97c61109",
+      "headers": [
+        "diff --git a/youtube_dl/YoutubeDL.py b/youtube_dl/YoutubeDL.py",
+        "@@ -958,8 +958,7 @@ class YoutubeDL(object):"
+      ]
+    },
+    {
+      "id": "youtube-dl/9",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "c4fc5d0911c927c11780510975267379c3f8c9f68d6425208f7524636d123fdd",
+      "headers": [
+        "diff --git a/youtube_dl/YoutubeDL.py b/youtube_dl/YoutubeDL.py",
+        "@@ -931,7 +931,7 @@ class YoutubeDL(object):",
+        "@@ -941,18 +941,23 @@ class YoutubeDL(object):",
+        "@@ -963,12 +968,12 @@ class YoutubeDL(object):"
+      ]
+    },
+    {
+      "id": "youtube-dl/10",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "33cff7ed3b0f82b20f3e350ffff4ab398c0d6e1a400d342d3a2dc77d0d626ecc",
+      "headers": [
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -1560,8 +1560,8 @@ def js_to_json(code):"
+      ]
+    },
+    {
+      "id": "youtube-dl/11",
+      "stage": "patch_header_screen",
+      "disposition": "selected_for_adaptation",
+      "patch_sha256": "eb68d62cd495aed98a150921d469cb1ff1ebff4b97cef7ff7519c428ccfd548b",
+      "headers": [
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -3519,8 +3519,8 @@ def str_or_none(v, default=None):"
+      ]
+    },
+    {
+      "id": "youtube-dl/12",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "e84391c373301bc498b1ca00fc2f8e5f342aa68a961f963bf6cb227cc1d433ba",
+      "headers": [
+        "diff --git a/youtube_dl/YoutubeDL.py b/youtube_dl/YoutubeDL.py",
+        "@@ -1078,7 +1078,7 @@ class YoutubeDL(object):"
+      ]
+    },
+    {
+      "id": "youtube-dl/13",
+      "stage": "patch_header_screen",
+      "disposition": "selected_for_adaptation",
+      "patch_sha256": "21c54c2e9dda10eebd20a22bca9578622ca7bbd3fc2d413bb6885ec937d77bff",
+      "headers": [
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -1868,7 +1868,7 @@ def urljoin(base, path):"
+      ]
+    },
+    {
+      "id": "youtube-dl/14",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "0faf945777ba119fbe1844016baedffd58c567aca2e55c6ae4ceda06fa9cd9e7",
+      "headers": [
+        "diff --git a/youtube_dl/extractor/youtube.py b/youtube_dl/extractor/youtube.py",
+        "@@ -1652,8 +1652,63 @@ class YoutubeIE(YoutubeBaseInfoExtractor):",
+        "@@ -1687,6 +1742,10 @@ class YoutubeIE(YoutubeBaseInfoExtractor):",
+        "@@ -2324,7 +2383,7 @@ class YoutubeIE(YoutubeBaseInfoExtractor):"
+      ]
+    },
+    {
+      "id": "youtube-dl/15",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "e342bb03bd8620f78c9833d3a3f17706247498e0fc87d696905a49f24128d4b0",
+      "headers": [
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -2267,7 +2267,7 @@ def js_to_json(code):"
+      ]
+    },
+    {
+      "id": "youtube-dl/16",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "23343ec86e2a055f41e791e62a355ed7fcdb9a24954f5c20e0113e6538532cfb",
+      "headers": [
+        "diff --git a/youtube_dl/postprocessor/ffmpeg.py b/youtube_dl/postprocessor/ffmpeg.py",
+        "@@ -585,7 +585,7 @@ class FFmpegSubtitlesConvertorPP(FFmpegPostProcessor):",
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -2572,14 +2572,18 @@ def srt_subtitles_timecode(seconds):",
+        "@@ -2674,7 +2678,7 @@ def dfxp2srt(dfxp_data):"
+      ]
+    },
+    {
+      "id": "youtube-dl/17",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "9d63f605c4e219d8b54944dc1054a8da301c709e758d252a2d5b6cce37874171",
+      "headers": [
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -2733,6 +2733,8 @@ def cli_option(params, command_option, param):"
+      ]
+    },
+    {
+      "id": "youtube-dl/18",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "5258deb0a23d5835a01f9fe5b2e5962229eb587ed5a5da3914eb82d7998c438b",
+      "headers": [
+        "diff --git a/youtube_dl/YoutubeDL.py b/youtube_dl/YoutubeDL.py",
+        "@@ -860,7 +860,7 @@ class YoutubeDL(object):"
+      ]
+    },
+    {
+      "id": "youtube-dl/19",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "8aab6a34bd3d2810606bb4d5160c8279035c9d07f05f103255cd211d4e48abe8",
+      "headers": [
+        "diff --git a/youtube_dl/YoutubeDL.py b/youtube_dl/YoutubeDL.py",
+        "@@ -20,6 +20,7 @@ import re",
+        "@@ -674,7 +675,19 @@ class YoutubeDL(object):"
+      ]
+    },
+    {
+      "id": "youtube-dl/20",
+      "stage": "patch_header_screen",
+      "disposition": "selected_for_adaptation",
+      "patch_sha256": "c2fe10f54c6437dc8f96532452d73204e6108d0037f063045422207080615f31",
+      "headers": [
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -365,9 +365,9 @@ def get_elements_by_attribute(attribute, value, html, escape_value=True):"
+      ]
+    },
+    {
+      "id": "youtube-dl/21",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "3929dd0587859d339f1e14a55a797d058f3296cc1867000dfd48c7f3854414bc",
+      "headers": [
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -1748,11 +1748,16 @@ def base_url(url):"
+      ]
+    },
+    {
+      "id": "youtube-dl/22",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "8ede388673ef07e9c505b17a7780a30651231fa14c19b044c6b8f79c5139c4ed",
+      "headers": [
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -2383,6 +2383,7 @@ def _match_one(filter_part, dct):",
+        "@@ -2391,7 +2392,8 @@ def _match_one(filter_part, dct):",
+        "@@ -2401,7 +2403,10 @@ def _match_one(filter_part, dct):"
+      ]
+    },
+    {
+      "id": "youtube-dl/23",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "df6285e0b4316f5998e35c304196beb432d8676cd3e8a87b4858c4d1a8d62720",
+      "headers": [
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -2107,7 +2107,7 @@ def js_to_json(code):",
+        "@@ -2134,7 +2134,7 @@ def js_to_json(code):"
+      ]
+    },
+    {
+      "id": "youtube-dl/24",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "cdfc46c4a1ec362210149b0eee62db0702a7e25cdf50f5503fb62c427e085973",
+      "headers": [
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -2345,11 +2345,18 @@ def _match_one(filter_part, dct):",
+        "@@ -2361,7 +2368,6 @@ def _match_one(filter_part, dct):"
+      ]
+    },
+    {
+      "id": "youtube-dl/25",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "55c03cef87db49283896f8754c14bced8efcfa137e45d8efd152cd8c92fbe076",
+      "headers": [
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -2038,14 +2038,14 @@ def js_to_json(code):"
+      ]
+    },
+    {
+      "id": "youtube-dl/26",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "8a066be9c615dbcbe22e83355b603ece50d94b9d79997028dca063e6d37f1249",
+      "headers": [
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -1970,7 +1970,7 @@ def js_to_json(code):"
+      ]
+    },
+    {
+      "id": "youtube-dl/27",
+      "stage": "patch_header_screen",
+      "disposition": "selected_for_adaptation",
+      "patch_sha256": "0ff98d9f1f6aaf39f96a8d5c7fc8873ec2c4988867bfcc6106520e58851fc263",
+      "headers": [
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -1982,9 +1982,9 @@ def parse_dfxp_time_expr(time_expr):"
+      ]
+    },
+    {
+      "id": "youtube-dl/28",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "b41870e14f716b9f1bd887c19dfd4cdb4b0aeebf02d882fb04b230d84a404a6c",
+      "headers": [
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -396,7 +396,11 @@ def _htmlentity_transform(entity):"
+      ]
+    },
+    {
+      "id": "youtube-dl/29",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "44b9239fc49e1807ef68e2543a55ddf3f99ecce1ace11c98ca4028a2ea97259e",
+      "headers": [
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -911,7 +911,8 @@ def unified_strdate(date_str, day_first=True):"
+      ]
+    },
+    {
+      "id": "youtube-dl/30",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "242a7180b5a8eced20b51d97aa406b504705373a9dbe8cca6fd701f0ba7472a0",
+      "headers": [
+        "diff --git a/youtube_dl/YoutubeDL.py b/youtube_dl/YoutubeDL.py",
+        "@@ -1005,6 +1005,9 @@ class YoutubeDL(object):"
+      ]
+    },
+    {
+      "id": "youtube-dl/31",
+      "stage": "patch_header_screen",
+      "disposition": "selected_for_adaptation",
+      "patch_sha256": "16f5b41010857a8f5259a11b45ab093e7b1c857eec960c93886ab421435dadf7",
+      "headers": [
+        "diff --git a/youtube_dl/extractor/minhateca.py b/youtube_dl/extractor/minhateca.py",
+        "@@ -8,6 +8,7 @@ from ..compat import (",
+        "@@ -52,8 +53,8 @@ class MinhatecaIE(InfoExtractor):",
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -1206,18 +1206,29 @@ def parse_duration(s):"
+      ]
+    },
+    {
+      "id": "youtube-dl/32",
+      "stage": "patch_header_screen",
+      "disposition": "selected_for_adaptation",
+      "patch_sha256": "8f5e4ab591494840d5adfebd31981892ab1cd2cd6e59cf040b1894d7cb18c878",
+      "headers": [
+        "diff --git a/youtube_dl/extractor/npo.py b/youtube_dl/extractor/npo.py",
+        "@@ -7,6 +7,7 @@ from ..utils import (",
+        "@@ -63,7 +64,7 @@ class NPOIE(InfoExtractor):",
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -1331,7 +1331,8 @@ def parse_age_limit(s):"
+      ]
+    },
+    {
+      "id": "youtube-dl/33",
+      "stage": "patch_header_screen",
+      "disposition": "selected_for_adaptation",
+      "patch_sha256": "cb2a859dba8367362b364d90ce51737e9c683ad8160c74bc3a140911aedcd396",
+      "headers": [
+        "diff --git a/youtube_dl/extractor/drtv.py b/youtube_dl/extractor/drtv.py",
+        "@@ -1,7 +1,5 @@",
+        "@@ -25,8 +23,7 @@ class DRTVIE(SubtitlesInfoExtractor):",
+        "@@ -35,7 +32,7 @@ class DRTVIE(SubtitlesInfoExtractor):",
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -925,7 +925,7 @@ def parse_iso8601(date_str, delimiter='T'):",
+        "@@ -938,7 +938,7 @@ def parse_iso8601(date_str, delimiter='T'):"
+      ]
+    },
+    {
+      "id": "youtube-dl/34",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "d6b61c8be172074af759867b4ce60fdac169024f9bb3be6b19ea4310b0653980",
+      "headers": [
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -673,6 +673,8 @@ class ExtractorError(Exception):",
+        "@@ -1598,7 +1600,9 @@ def js_to_json(code):"
+      ]
+    },
+    {
+      "id": "youtube-dl/35",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "bd223a43e6b5d8e8054d12909410bed88148b61f0207e87f3d6f85c10f9ab642",
+      "headers": [
+        "diff --git a/youtube_dl/extractor/arte.py b/youtube_dl/extractor/arte.py",
+        "@@ -86,11 +86,15 @@ class ArteTVPlus7IE(InfoExtractor):",
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -890,6 +890,7 @@ def unified_strdate(date_str):"
+      ]
+    },
+    {
+      "id": "youtube-dl/36",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "c6ee6c59c636440f3f54f46487bafb5962b1b52d510449992121227c0e8fafcb",
+      "headers": [
+        "diff --git a/youtube_dl/extractor/facebook.py b/youtube_dl/extractor/facebook.py",
+        "@@ -20,7 +20,7 @@ from ..utils import ("
+      ]
+    },
+    {
+      "id": "youtube-dl/37",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "423e2f86cb92637c9b6c52369d1d80edc90240ba1b776994e13e79b17d7d5402",
+      "headers": [
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -2,6 +2,7 @@",
+        "@@ -1263,9 +1264,11 @@ class PagedList(object):"
+      ]
+    },
+    {
+      "id": "youtube-dl/38",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "4ba46acf958ec6f5445d5f8c33b1e8a84ad5ebf86f2c3d3c43e42391d1e15589",
+      "headers": [
+        "diff --git a/youtube_dl/extractor/facebook.py b/youtube_dl/extractor/facebook.py",
+        "@@ -11,6 +11,7 @@ from ..utils import (",
+        "@@ -51,8 +52,8 @@ class FacebookIE(InfoExtractor):",
+        "@@ -70,23 +71,25 @@ class FacebookIE(InfoExtractor):",
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -1263,3 +1263,7 @@ def read_batch_urls(batch_fd):"
+      ]
+    },
+    {
+      "id": "youtube-dl/39",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "3339ca6be96f9ef33d4fbb4d363d90c95b3534f8c4caf80abac31bf6eb4d6331",
+      "headers": [
+        "diff --git a/youtube_dl/extractor/facebook.py b/youtube_dl/extractor/facebook.py",
+        "@@ -12,8 +12,8 @@ from ..utils import (",
+        "@@ -37,6 +37,14 @@ class FacebookIE(InfoExtractor):",
+        "@@ -131,8 +139,7 @@ class FacebookIE(InfoExtractor):",
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -1571,3 +1571,13 @@ except AttributeError:"
+      ]
+    },
+    {
+      "id": "youtube-dl/40",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "ac4e8bf7c9cc99223468d7ea0d1eacf239b4146a7225d64248609bc3e1c0c9b1",
+      "headers": [
+        "diff --git a/youtube_dl/downloader/f4m.py b/youtube_dl/downloader/f4m.py",
+        "@@ -4,13 +4,14 @@ import base64",
+        "@@ -27,13 +28,13 @@ class FlvReader(io.BytesIO):",
+        "@@ -196,7 +197,7 @@ def write_flv_header(stream, metadata):",
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -17,6 +17,7 @@ import platform",
+        "@@ -1220,3 +1221,20 @@ def uppercase_escape(s):"
+      ]
+    },
+    {
+      "id": "youtube-dl/41",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "e5ef95e73c428102b7ffb9603f7ac8d1d256e426035ea3ffa800742c615c75d0",
+      "headers": [
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -756,9 +756,9 @@ def unified_strdate(date_str):"
+      ]
+    },
+    {
+      "id": "youtube-dl/42",
+      "stage": "patch_header_screen",
+      "disposition": "selected_for_adaptation",
+      "patch_sha256": "2e5f6d0fe467cba12243658049dbea92153abccec9e96b9750b4bca4ab230b0b",
+      "headers": [
+        "diff --git a/youtube_dl/extractor/clipsyndicate.py b/youtube_dl/extractor/clipsyndicate.py",
+        "@@ -3,7 +3,7 @@ import re",
+        "@@ -33,7 +33,7 @@ class ClipsyndicateIE(InfoExtractor):",
+        "diff --git a/youtube_dl/extractor/metacritic.py b/youtube_dl/extractor/metacritic.py",
+        "@@ -4,7 +4,7 @@ import re",
+        "@@ -27,7 +27,7 @@ class MetacriticIE(InfoExtractor):",
+        "diff --git a/youtube_dl/extractor/mtv.py b/youtube_dl/extractor/mtv.py",
+        "@@ -5,6 +5,7 @@ from .common import InfoExtractor",
+        "@@ -83,12 +84,9 @@ class MTVServicesInfoExtractor(InfoExtractor):",
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -1092,9 +1092,12 @@ def month_by_name(name):"
+      ]
+    },
+    {
+      "id": "youtube-dl/43",
+      "stage": "patch_header_screen",
+      "disposition": "selected_for_adaptation",
+      "patch_sha256": "e506feb8768c55531257ca0ae2d7990df1ac9dd9697f96660c352b2e821483aa",
+      "headers": [
+        "diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py",
+        "@@ -1087,7 +1087,7 @@ def remove_start(s, start):"
+      ]
+    },
+    {
+      "id": "httpie/1",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "957fbb04345ecbad2a2819dfd697260c3966cf3fa4fb8cf5f3a276c6fc4ee9a0",
+      "headers": [
+        "diff --git a/httpie/downloads.py b/httpie/downloads.py",
+        "@@ -7,6 +7,7 @@ from __future__ import division",
+        "@@ -135,12 +136,43 @@ def filename_from_url(url, content_type):"
+      ]
+    },
+    {
+      "id": "httpie/2",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "ebe755a7e667727a8bd387b2961558ba1ccf7f977a78db61bc44098bdad3e5b3",
+      "headers": [
+        "diff --git a/httpie/client.py b/httpie/client.py",
+        "@@ -40,6 +40,7 @@ def get_response(args, config_dir):",
+        "diff --git a/httpie/core.py b/httpie/core.py",
+        "@@ -192,7 +192,6 @@ def main(args=sys.argv[1:], env=Environment(), error=None):"
+      ]
+    },
+    {
+      "id": "httpie/3",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "977b997e37be9dfbec1ad9669e4b99e1ff17e4b131fcf79f0195c712133a14e1",
+      "headers": [
+        "diff --git a/httpie/sessions.py b/httpie/sessions.py",
+        "@@ -101,6 +101,10 @@ class Session(BaseConfigDict):"
+      ]
+    },
+    {
+      "id": "httpie/4",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "bab732020de22930e9d87be963253b5bd53f2d67f4069f1a07bbe859e0c5c7ff",
+      "headers": [
+        "diff --git a/httpie/models.py b/httpie/models.py",
+        "@@ -102,8 +102,7 @@ class HTTPRequest(HTTPMessage):"
+      ]
+    },
+    {
+      "id": "httpie/5",
+      "stage": "patch_header_screen",
+      "disposition": "selected_for_adaptation",
+      "patch_sha256": "b7f419e7993e92164969b7a99689f01dfa279ce2d1615e25fce0bb21486f472d",
+      "headers": [
+        "diff --git a/httpie/cli.py b/httpie/cli.py",
+        "@@ -36,14 +36,24 @@ class KeyValueType(object):"
+      ]
+    },
+    {
+      "id": "luigi/1",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "fb09aea7a25e1241b1a2ed1632bc0fa1e13c3feb62efba5a09e0c9b31e85ac68",
+      "headers": [
+        "diff --git a/luigi/server.py b/luigi/server.py",
+        "@@ -279,9 +279,10 @@ class MetricsHandler(tornado.web.RequestHandler):"
+      ]
+    },
+    {
+      "id": "luigi/2",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "265f7938999bd3de4e0e377e02e02232058d3413395b646ae7a2ce72c1854550",
+      "headers": [
+        "diff --git a/luigi/contrib/beam_dataflow.py b/luigi/contrib/beam_dataflow.py",
+        "@@ -219,6 +219,7 @@ class BeamDataflowJobTask(MixinNaiveBulkComplete, luigi.Task):",
+        "@@ -471,9 +472,13 @@ class BeamDataflowJobTask(MixinNaiveBulkComplete, luigi.Task):"
+      ]
+    },
+    {
+      "id": "luigi/3",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "12f25c7510abfa0a6893f2b8f59ac778450df38896a574e983b7cb2fd693af18",
+      "headers": [
+        "diff --git a/luigi/parameter.py b/luigi/parameter.py",
+        "@@ -1114,8 +1114,8 @@ class TupleParameter(ListParameter):"
+      ]
+    },
+    {
+      "id": "luigi/4",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "9d5c8159268ace29069842ffe4a4c24b0f9f94c373fb9580baf6bc8cecfd0ed2",
+      "headers": [
+        "diff --git a/luigi/contrib/redshift.py b/luigi/contrib/redshift.py",
+        "@@ -353,7 +353,7 @@ class S3CopyToTable(rdbms.CopyToTable, _CredentialsMixin):"
+      ]
+    },
+    {
+      "id": "luigi/5",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "2de16cc62dcb5daef6c1ff7f4f38f289457e2235b7eabcf59b48aa8ead8f39e0",
+      "headers": [
+        "diff --git a/luigi/util.py b/luigi/util.py",
+        "@@ -274,18 +274,19 @@ class inherits(object):",
+        "@@ -300,14 +301,12 @@ class requires(object):"
+      ]
+    },
+    {
+      "id": "luigi/6",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "af51b3f32f81fbbc735f19fd7e42b9e37dde7d59e3a43e548b4953abb23ad22d",
+      "headers": [
+        "diff --git a/luigi/parameter.py b/luigi/parameter.py",
+        "@@ -821,11 +821,21 @@ def _recursively_freeze(value):",
+        "@@ -858,16 +868,6 @@ class DictParameter(Parameter):",
+        "@@ -888,7 +888,7 @@ class DictParameter(Parameter):",
+        "@@ -923,7 +923,7 @@ class ListParameter(Parameter):",
+        "@@ -937,7 +937,7 @@ class ListParameter(Parameter):",
+        "@@ -947,10 +947,10 @@ class ListParameter(Parameter):",
+        "@@ -978,7 +978,6 @@ class TupleParameter(Parameter):",
+        "@@ -999,20 +998,11 @@ class TupleParameter(Parameter):"
+      ]
+    },
+    {
+      "id": "luigi/7",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "58242c8f841b31677fd51a4dad8d00f45c73774091b421ee7601d51c979fa4f0",
+      "headers": [
+        "diff --git a/luigi/scheduler.py b/luigi/scheduler.py",
+        "@@ -823,8 +823,8 @@ class Scheduler(object):"
+      ]
+    },
+    {
+      "id": "luigi/8",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "3309f4fb18b65639045e832153f9c01b657fc4f4d169f3a21a2f643cdc4d456c",
+      "headers": [
+        "diff --git a/luigi/contrib/redshift.py b/luigi/contrib/redshift.py",
+        "@@ -332,11 +332,11 @@ class S3CopyToTable(rdbms.CopyToTable):"
+      ]
+    },
+    {
+      "id": "luigi/9",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "2be240230abc4e174407d8ab8bb669e16e9ac11b15ce955465def74cb01cf215",
+      "headers": [
+        "diff --git a/luigi/execution_summary.py b/luigi/execution_summary.py",
+        "@@ -43,12 +43,13 @@ def _partition_tasks(worker):",
+        "@@ -87,7 +88,7 @@ def _depth_first_search(set_tasks, current_task, visited):",
+        "@@ -261,6 +262,7 @@ def _get_comments(group_tasks):",
+        "@@ -377,11 +379,15 @@ def _summary_format(set_tasks, worker):",
+        "diff --git a/test/retcodes_test.py b/test/retcodes_test.py",
+        "@@ -170,3 +170,22 @@ class RetcodesTest(LuigiTestCase):"
+      ]
+    },
+    {
+      "id": "luigi/10",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "4ada344765f086b0d1fd93fdc604d9f96a65e2dd1bff6fa8339405d362e27b5e",
+      "headers": [
+        "diff --git a/luigi/scheduler.py b/luigi/scheduler.py",
+        "@@ -302,7 +302,7 @@ class Worker(object):"
+      ]
+    },
+    {
+      "id": "luigi/11",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "1261c0c3587832f3b47279e316ce5335147b9789afeab0ad7a1bc499700a1f0d",
+      "headers": [
+        "diff --git a/luigi/scheduler.py b/luigi/scheduler.py",
+        "@@ -894,7 +894,8 @@ class Scheduler(object):"
+      ]
+    },
+    {
+      "id": "luigi/12",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "1a37f481eadf640ec230477c15d6b37793b66afea37a1825c64d49176a880d4e",
+      "headers": [
+        "diff --git a/luigi/contrib/hdfs/clients.py b/luigi/contrib/hdfs/clients.py",
+        "@@ -19,33 +19,42 @@"
+      ]
+    },
+    {
+      "id": "luigi/13",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "58f1abc12d3cb4bc217e7190469f79ee7e674f1e2952eecd06e81fceb22a2555",
+      "headers": [
+        "diff --git a/luigi/file.py b/luigi/file.py",
+        "@@ -88,7 +88,7 @@ class LocalFileSystem(FileSystem):"
+      ]
+    },
+    {
+      "id": "luigi/14",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "a2f36874895bdc98201c0087838320b9087ecbea383d44a351b41e5daf68767d",
+      "headers": [
+        "diff --git a/luigi/scheduler.py b/luigi/scheduler.py",
+        "@@ -90,9 +90,9 @@ class scheduler(Config):",
+        "@@ -199,8 +199,7 @@ class Task(object):",
+        "@@ -210,10 +209,6 @@ class Task(object):",
+        "@@ -383,7 +378,7 @@ class SimpleTaskState(object):"
+      ]
+    },
+    {
+      "id": "luigi/15",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "3367b98b57822efa579a46b1fad488f382ddbdd3b73955274a5834425cf59d1e",
+      "headers": [
+        "diff --git a/luigi/scheduler.py b/luigi/scheduler.py",
+        "@@ -482,8 +482,8 @@ class SimpleTaskState(object):"
+      ]
+    },
+    {
+      "id": "luigi/16",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "e4f6cd215ca208de71bc316fb40c2de9d42751f5ce84122deb98e83c9cba8235",
+      "headers": [
+        "diff --git a/luigi/scheduler.py b/luigi/scheduler.py",
+        "@@ -567,7 +567,8 @@ class CentralPlannerScheduler(Scheduler):"
+      ]
+    },
+    {
+      "id": "luigi/17",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "47153ece8c9b38dd0820f0707f36f8dd4ec7e254139902859dc6813f269decdf",
+      "headers": [
+        "diff --git a/luigi/interface.py b/luigi/interface.py",
+        "@@ -131,7 +131,7 @@ class core(task.Config):"
+      ]
+    },
+    {
+      "id": "luigi/18",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "62b6a1007cd361a3d909daf2819689f9b0881e1d81521beb200c6a9ad78c964d",
+      "headers": [
+        "diff --git a/luigi/scheduler.py b/luigi/scheduler.py",
+        "@@ -402,7 +402,7 @@ class SimpleTaskState(object):"
+      ]
+    },
+    {
+      "id": "luigi/19",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "723f33581afa13eab7a30dfae99e79191b5ede06777d7c6745f8fd496cf048fd",
+      "headers": [
+        "diff --git a/luigi/scheduler.py b/luigi/scheduler.py",
+        "@@ -405,7 +405,7 @@ class SimpleTaskState(object):"
+      ]
+    },
+    {
+      "id": "luigi/20",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "941ba0b6a189ee07162251f964673157d40eeb7a9477f4a4e21165761efcb501",
+      "headers": [
+        "diff --git a/luigi/task.py b/luigi/task.py",
+        "@@ -306,8 +306,7 @@ class Task(object):"
+      ]
+    },
+    {
+      "id": "luigi/21",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "08044b5cb3546d9b38b64254b146d60efb5b3d537306e589289211b0462867db",
+      "headers": [
+        "diff --git a/luigi/interface.py b/luigi/interface.py",
+        "@@ -337,6 +337,9 @@ def run(cmdline_args=None, main_task_cls=None,"
+      ]
+    },
+    {
+      "id": "luigi/22",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "ef882aad00a11797d655549b913e0659903d805e8f8ecb46c678f257ddd58a5b",
+      "headers": [
+        "diff --git a/luigi/scheduler.py b/luigi/scheduler.py",
+        "@@ -224,7 +224,7 @@ class Worker(object):"
+      ]
+    },
+    {
+      "id": "luigi/23",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "1435bc908cf73f74e8e6f9bd673385213c868a24d601372aeae69479e825e826",
+      "headers": [
+        "diff --git a/luigi/interface.py b/luigi/interface.py",
+        "@@ -109,7 +109,7 @@ class core(task.Config):",
+        "diff --git a/luigi/scheduler.py b/luigi/scheduler.py",
+        "@@ -101,6 +101,8 @@ class scheduler(Config):",
+        "@@ -227,7 +229,7 @@ class Worker(object):",
+        "@@ -710,6 +712,9 @@ class CentralPlannerScheduler(Scheduler):"
+      ]
+    },
+    {
+      "id": "luigi/24",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "227cb7e6553e055be3ed88143f4a209c8234ae3322328bd5268d624c9cd5c2b8",
+      "headers": [
+        "diff --git a/luigi/contrib/spark.py b/luigi/contrib/spark.py",
+        "@@ -269,7 +269,7 @@ class SparkSubmitTask(luigi.Task):"
+      ]
+    },
+    {
+      "id": "luigi/25",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "2e9262dbaab20f98cbf71298ebe88161b0140b9762e6a14e15a6f43b1530c095",
+      "headers": [
+        "diff --git a/luigi/contrib/redshift.py b/luigi/contrib/redshift.py",
+        "@@ -163,7 +163,7 @@ class S3CopyToTable(rdbms.CopyToTable):"
+      ]
+    },
+    {
+      "id": "luigi/26",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "17efd5b5558c4aa145c67b3889084f8010162b3c96ce415c0e563fde1b349223",
+      "headers": [
+        "diff --git a/luigi/contrib/hadoop_jar.py b/luigi/contrib/hadoop_jar.py",
+        "@@ -83,7 +83,9 @@ class HadoopJarJobRunner(luigi.contrib.hadoop.JobRunner):"
+      ]
+    },
+    {
+      "id": "luigi/27",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "81cb4e0461223303da2a9e4bd15640c4c7c918c27fe0e00d63aaff411070e1f2",
+      "headers": [
+        "diff --git a/luigi/parameter.py b/luigi/parameter.py",
+        "@@ -279,7 +279,7 @@ class Parameter(object):",
+        "@@ -289,8 +289,8 @@ class Parameter(object):",
+        "@@ -333,8 +333,9 @@ class Parameter(object):",
+        "@@ -356,7 +357,7 @@ class Parameter(object):",
+        "@@ -364,7 +365,7 @@ class Parameter(object):"
+      ]
+    },
+    {
+      "id": "luigi/28",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "4d3ba4d916a0e99483729786718c54afffe578fa19d3850030c4b4ac681f883e",
+      "headers": [
+        "diff --git a/luigi/contrib/hive.py b/luigi/contrib/hive.py",
+        "@@ -138,7 +138,7 @@ class HiveCommandClient(HiveClient):"
+      ]
+    },
+    {
+      "id": "luigi/29",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "2d381d67c42cbaf4530b997630c186766cdd00387e3897c86b2589d8ab2fb006",
+      "headers": [
+        "diff --git a/luigi/task_register.py b/luigi/task_register.py",
+        "@@ -135,8 +135,6 @@ class Register(abc.ABCMeta):",
+        "diff --git a/test/cmdline_test.py b/test/cmdline_test.py",
+        "@@ -53,16 +53,6 @@ class AmbiguousClass(luigi.Task):",
+        "@@ -115,12 +105,6 @@ class CmdlineTest(unittest.TestCase):"
+      ]
+    },
+    {
+      "id": "luigi/30",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "b9319a33fcdff9fbd4006dd819110b4281727b95a5d6c065f77a83540fa3dc49",
+      "headers": [
+        "diff --git a/luigi/worker.py b/luigi/worker.py",
+        "@@ -185,25 +185,23 @@ class TaskProcess(AbstractTaskProcess):"
+      ]
+    },
+    {
+      "id": "luigi/31",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "5998d2bcb0914a9456073ea8047fc4c37bd37bc0400c98debf23ccbb7b6afb42",
+      "headers": [
+        "diff --git a/luigi/scheduler.py b/luigi/scheduler.py",
+        "@@ -653,7 +653,7 @@ class CentralPlannerScheduler(Scheduler):"
+      ]
+    },
+    {
+      "id": "luigi/32",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "798769b7c103c029bf3f5f870a40f88cab6a15ab742eb1431300f505fb421949",
+      "headers": [
+        "diff --git a/luigi/task_register.py b/luigi/task_register.py",
+        "@@ -25,6 +25,8 @@ except ImportError:"
+      ]
+    },
+    {
+      "id": "luigi/33",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "b0dd3f9f894721d2ac467dba454129f65bfc2548d306ea057ca10ede5ac49993",
+      "headers": [
+        "diff --git a/luigi/task.py b/luigi/task.py",
+        "@@ -331,7 +331,7 @@ class Task(object):"
+      ]
+    },
+    {
+      "id": "thefuck/1",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "a67f642f10c4b196e8706f8b8aaa4cc9bd3c1cf7b1703ef5f5c5ac8d9d24b65a",
+      "headers": [
+        "diff --git a/thefuck/rules/pip_unknown_command.py b/thefuck/rules/pip_unknown_command.py",
+        "@@ -12,8 +12,8 @@ def match(command):"
+      ]
+    },
+    {
+      "id": "thefuck/2",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "64f68e44c407e637941b5cd28f7547e5d39a0ecaffdd746e7a44d872e29ec2a9",
+      "headers": [
+        "diff --git a/thefuck/utils.py b/thefuck/utils.py",
+        "@@ -118,7 +118,7 @@ def get_all_executables():"
+      ]
+    },
+    {
+      "id": "thefuck/3",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "d715fcb6a9d06ef822e48463cd2caec8244887dcfd49a6c2c3aeed98daf9c933",
+      "headers": [
+        "diff --git a/thefuck/shells/fish.py b/thefuck/shells/fish.py",
+        "@@ -105,9 +105,9 @@ class Fish(Generic):"
+      ]
+    },
+    {
+      "id": "thefuck/4",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "a86ffd266b84b39c9cd69cb22b673abaa89b8a757f4b87a9899ee79baf48195b",
+      "headers": [
+        "diff --git a/thefuck/shells/fish.py b/thefuck/shells/fish.py",
+        "@@ -20,9 +20,17 @@ def _get_functions(overridden):"
+      ]
+    },
+    {
+      "id": "thefuck/5",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "7b6efb94b3e861dbc5883bf77cc00b632f8f3750db3089a8cff510f740e8f628",
+      "headers": [
+        "diff --git a/thefuck/rules/git_push.py b/thefuck/rules/git_push.py",
+        "@@ -6,7 +6,7 @@ from thefuck.specific.git import git_support"
+      ]
+    },
+    {
+      "id": "thefuck/6",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "33e8432902fd143963d8349226ba74c552f83d447a60e034ab2cea797a94fac3",
+      "headers": [
+        "diff --git a/thefuck/rules/git_branch_exists.py b/thefuck/rules/git_branch_exists.py",
+        "@@ -7,14 +7,15 @@ from thefuck.utils import eager"
+      ]
+    },
+    {
+      "id": "thefuck/7",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "3260972ff665e2db4af8598c8b7800ae1574fb9efccfebc21be0564e47250027",
+      "headers": [
+        "diff --git a/thefuck/rules/php_s.py b/thefuck/rules/php_s.py",
+        "@@ -3,11 +3,8 @@ from thefuck.utils import replace_argument, for_app"
+      ]
+    },
+    {
+      "id": "thefuck/8",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "2ddff390608c5794765010f9275247bdfcdef86323c7298b1301b1ed4aa4a472",
+      "headers": [
+        "diff --git a/thefuck/rules/dnf_no_such_command.py b/thefuck/rules/dnf_no_such_command.py",
+        "@@ -15,10 +15,7 @@ def match(command):",
+        "@@ -26,7 +23,7 @@ def _get_operations():"
+      ]
+    },
+    {
+      "id": "thefuck/9",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "e895ebe3edeccf0fee8592c6e4286f8cf40896126b3aece039b80a96303480b3",
+      "headers": [
+        "diff --git a/thefuck/rules/git_push.py b/thefuck/rules/git_push.py",
+        "@@ -24,7 +24,11 @@ def get_new_command(command):"
+      ]
+    },
+    {
+      "id": "thefuck/10",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "b5bb50704e1c1b790b8a6dfc7a7549612abc472bea351db5696e6ded9f82ca92",
+      "headers": [
+        "diff --git a/thefuck/rules/man.py b/thefuck/rules/man.py",
+        "@@ -12,16 +12,22 @@ def get_new_command(command):"
+      ]
+    },
+    {
+      "id": "thefuck/11",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "ca6ac9f27302e69f127351110d042a5f317e11eb64f412d2ce44cef124140f10",
+      "headers": [
+        "diff --git a/thefuck/rules/git_push.py b/thefuck/rules/git_push.py",
+        "@@ -10,5 +10,21 @@ def match(command):"
+      ]
+    },
+    {
+      "id": "thefuck/12",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "eab52716de531889ff5457079b029e7c7ca842c1f539d24fa52710ed83a4b316",
+      "headers": [
+        "diff --git a/thefuck/rules/no_command.py b/thefuck/rules/no_command.py",
+        "@@ -1,12 +1,12 @@"
+      ]
+    },
+    {
+      "id": "thefuck/13",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "b9ba6e11bbfac4e24cd1a56681874257ccb8cc8d74ed84f3905b819fe907dc9b",
+      "headers": [
+        "diff --git a/thefuck/rules/git_branch_exists.py b/thefuck/rules/git_branch_exists.py",
+        "@@ -6,8 +6,7 @@ from thefuck.utils import eager",
+        "@@ -17,7 +16,9 @@ def get_new_command(command):"
+      ]
+    },
+    {
+      "id": "thefuck/14",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "9e41d09108a3eddefde306a778aebe681220c8e4030da7fe9964b33cf7570c5b",
+      "headers": [
+        "diff --git a/thefuck/shells/fish.py b/thefuck/shells/fish.py",
+        "@@ -7,11 +7,10 @@ from .generic import Generic"
+      ]
+    },
+    {
+      "id": "thefuck/15",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "e41927597f87f985500ff03ff42c4852c5c9d1e49671bd243ac0f66932832e8e",
+      "headers": [
+        "diff --git a/thefuck/rules/git_add.py b/thefuck/rules/git_add.py",
+        "@@ -5,15 +5,14 @@ from thefuck.specific.git import git_support"
+      ]
+    },
+    {
+      "id": "thefuck/16",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "0a46ec7316daae8fe3053c738125fdc3a744fbe820b1324189f307550147e16d",
+      "headers": [
+        "diff --git a/thefuck/shells/bash.py b/thefuck/shells/bash.py",
+        "@@ -6,9 +6,11 @@ from .generic import Generic",
+        "diff --git a/thefuck/shells/fish.py b/thefuck/shells/fish.py",
+        "@@ -14,6 +14,7 @@ class Fish(Generic):",
+        "diff --git a/thefuck/shells/zsh.py b/thefuck/shells/zsh.py",
+        "@@ -7,10 +7,11 @@ from .generic import Generic",
+        "diff --git a/thefuck/types.py b/thefuck/types.py",
+        "@@ -282,5 +282,5 @@ class CorrectedCommand(object):"
+      ]
+    },
+    {
+      "id": "thefuck/17",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "5d700230b09308f523510fbe3617e43f7b3f59489431218578a38dbf5057bc38",
+      "headers": [
+        "diff --git a/thefuck/shells/bash.py b/thefuck/shells/bash.py",
+        "@@ -1,7 +1,6 @@",
+        "@@ -9,7 +8,7 @@ class Bash(Generic):",
+        "@@ -24,13 +23,10 @@ class Bash(Generic):",
+        "diff --git a/thefuck/shells/zsh.py b/thefuck/shells/zsh.py",
+        "@@ -26,7 +26,7 @@ class Zsh(Generic):"
+      ]
+    },
+    {
+      "id": "thefuck/18",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "98f98bc5358755af2615a6f7a61a275bc4f7bf382c444a09ffb3aafbfaf90c67",
+      "headers": [
+        "diff --git a/thefuck/rules/sudo.py b/thefuck/rules/sudo.py",
+        "@@ -21,6 +21,9 @@ patterns = ['permission denied',"
+      ]
+    },
+    {
+      "id": "thefuck/19",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "8f348917c4c7588b2ecefa35271bb8e42328a457a5a0f331f10b0026391f4cf3",
+      "headers": [
+        "diff --git a/thefuck/rules/git_push_force.py b/thefuck/rules/git_push_force.py",
+        "@@ -12,7 +12,7 @@ def match(command):"
+      ]
+    },
+    {
+      "id": "thefuck/20",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "293d03c3a48684620bbf9aae8d2115e7e0cdb9c26f32c9f1877a2cb0ac4f5dfd",
+      "headers": [
+        "diff --git a/thefuck/rules/dirty_unzip.py b/thefuck/rules/dirty_unzip.py",
+        "@@ -1,6 +1,7 @@",
+        "@@ -13,7 +14,7 @@ def _zip_file(command):",
+        "@@ -28,7 +29,7 @@ def match(command):"
+      ]
+    },
+    {
+      "id": "thefuck/21",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "6a31653ea60100053bdaa63a7474d11bd41f438bfad7b936633189094f2de6d0",
+      "headers": [
+        "diff --git a/thefuck/rules/git_fix_stash.py b/thefuck/rules/git_fix_stash.py",
+        "@@ -5,8 +5,12 @@ from thefuck.specific.git import git_support"
+      ]
+    },
+    {
+      "id": "thefuck/22",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "d04d020b96c198cddac88866aef88289d48a0dd1fb2536bffc0dff1c9182fabc",
+      "headers": [
+        "diff --git a/thefuck/types.py b/thefuck/types.py",
+        "@@ -81,9 +81,10 @@ class SortedCorrectedCommandsSequence(object):"
+      ]
+    },
+    {
+      "id": "thefuck/23",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "c1e68582f772234de0fd0f8635290f41fe74ab43b71e4c31f96d7aae1553aa1f",
+      "headers": [
+        "diff --git a/thefuck/utils.py b/thefuck/utils.py",
+        "@@ -2,6 +2,7 @@ from difflib import get_close_matches",
+        "@@ -176,11 +177,13 @@ def cache(*depends_on):"
+      ]
+    },
+    {
+      "id": "thefuck/24",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "ea6cfffdf818777355880354a326e8eb91e1b136d8334f83b6e8293e52d7f23b",
+      "headers": [
+        "diff --git a/thefuck/types.py b/thefuck/types.py",
+        "@@ -4,12 +4,31 @@ from .logs import debug",
+        "@@ -54,19 +73,17 @@ class SortedCorrectedCommandsSequence(object):"
+      ]
+    },
+    {
+      "id": "thefuck/25",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "5057d50d6a5f755b92bf485ac901b6b3eb807a64eade2ca8fd8da88c9a15ab08",
+      "headers": [
+        "diff --git a/thefuck/rules/mkdir_p.py b/thefuck/rules/mkdir_p.py",
+        "@@ -10,4 +10,4 @@ def match(command, settings):"
+      ]
+    },
+    {
+      "id": "thefuck/26",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "4d06aba3977acb4a6c074d74a7096012e70f2eef32191dc04fb2498cb5990562",
+      "headers": [
+        "diff --git a/thefuck/rules/vagrant_up.py b/thefuck/rules/vagrant_up.py",
+        "@@ -7,7 +7,12 @@ def match(command, settings):"
+      ]
+    },
+    {
+      "id": "thefuck/27",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "aceb6f84b029d13d7b80b544ca90b6d2e403b906bf1de23e5f270a378c5627c5",
+      "headers": [
+        "diff --git a/thefuck/rules/open.py b/thefuck/rules/open.py",
+        "@@ -23,4 +23,4 @@ def match(command, settings):"
+      ]
+    },
+    {
+      "id": "thefuck/28",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "886cbe9058138146ff818217c440850035fb9ce6ce143f47fcba42abafd13dae",
+      "headers": [
+        "diff --git a/thefuck/rules/fix_file.py b/thefuck/rules/fix_file.py",
+        "@@ -1,9 +1,10 @@",
+        "@@ -20,13 +21,13 @@ patterns = (",
+        "@@ -56,12 +57,21 @@ def match(command, settings):"
+      ]
+    },
+    {
+      "id": "thefuck/29",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "b5329413e2dace63b9b45f774dca75ea0a844b2a8a52a125c34958f86355bc0a",
+      "headers": [
+        "diff --git a/thefuck/types.py b/thefuck/types.py",
+        "@@ -23,7 +23,9 @@ class Settings(dict):"
+      ]
+    },
+    {
+      "id": "thefuck/30",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "f20e41ec8aa6588bb42f5cc6a7f474b15b14cb1d7d4061c61054d55acecc56f9",
+      "headers": [
+        "diff --git a/thefuck/rules/fix_file.py b/thefuck/rules/fix_file.py",
+        "@@ -50,7 +50,12 @@ def _search(stderr):"
+      ]
+    },
+    {
+      "id": "thefuck/31",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "5265aaeac66f12ff8a3e4631a5da8a24074b65398063f4f35ebf5bdc1621785b",
+      "headers": [
+        "diff --git a/thefuck/rules/git_diff_staged.py b/thefuck/rules/git_diff_staged.py",
+        "@@ -10,4 +10,4 @@ def match(command, settings):"
+      ]
+    },
+    {
+      "id": "thefuck/32",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "f32d21c20f69cb899cd174be007753558470060dafeb1a9917fd974a09d941a5",
+      "headers": [
+        "diff --git a/thefuck/rules/ls_lah.py b/thefuck/rules/ls_lah.py",
+        "@@ -1,5 +1,7 @@"
+      ]
+    },
+    {
+      "id": "scrapy/1",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "b88279ca3d18201391f70ebe629ad388e3e8a32133a4191d878eaa65e9209740",
+      "headers": [
+        "diff --git a/scrapy/spidermiddlewares/offsite.py b/scrapy/spidermiddlewares/offsite.py",
+        "@@ -54,12 +54,16 @@ class OffsiteMiddleware(object):"
+      ]
+    },
+    {
+      "id": "scrapy/2",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "8aaf760773a47e42f77d90a6824f791d9206e3c5ae6d4d74d6cbf661cc70ba7b",
+      "headers": [
+        "diff --git a/scrapy/utils/datatypes.py b/scrapy/utils/datatypes.py",
+        "@@ -315,8 +315,9 @@ class LocalCache(collections.OrderedDict):"
+      ]
+    },
+    {
+      "id": "scrapy/3",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "0176cf6437822a350f09280f99bd805e9e1299d02310fd2b864e78b6e3583c1e",
+      "headers": [
+        "diff --git a/scrapy/downloadermiddlewares/redirect.py b/scrapy/downloadermiddlewares/redirect.py",
+        "@@ -1,5 +1,5 @@",
+        "@@ -70,7 +70,10 @@ class RedirectMiddleware(BaseRedirectMiddleware):"
+      ]
+    },
+    {
+      "id": "scrapy/4",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "a0eb7346c12c660402c8eae9061fc00b1f9b4d217eb24b2fea40d62900b34e75",
+      "headers": [
+        "diff --git a/scrapy/contracts/__init__.py b/scrapy/contracts/__init__.py",
+        "@@ -84,7 +84,7 @@ class ContractsManager(object):"
+      ]
+    },
+    {
+      "id": "scrapy/5",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "f0c39e0d9c4b8e8ce3ab6b1d0c37e0c6f1280f6093632bf71bdbb3c9cb637098",
+      "headers": [
+        "diff --git a/scrapy/http/response/__init__.py b/scrapy/http/response/__init__.py",
+        "@@ -120,6 +120,8 @@ class Response(object_ref):"
+      ]
+    },
+    {
+      "id": "scrapy/6",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "94f9dc4c8a7177888cad92696606e4707f024609c6f3c6cd76df0ac81d8de556",
+      "headers": [
+        "diff --git a/scrapy/pipelines/images.py b/scrapy/pipelines/images.py",
+        "@@ -132,6 +132,11 @@ class ImagesPipeline(FilesPipeline):"
+      ]
+    },
+    {
+      "id": "scrapy/7",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "4254149a1a5d634f48a0b0a0a50e4c4f47f23d9089d623e084710757eb1fc0c8",
+      "headers": [
+        "diff --git a/scrapy/http/request/form.py b/scrapy/http/request/form.py",
+        "@@ -5,10 +5,13 @@ This module implements the FormRequest class which is a more convenient class",
+        "@@ -51,7 +54,10 @@ class FormRequest(Request):"
+      ]
+    },
+    {
+      "id": "scrapy/8",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "10afcdb70b4cbea7f7fdf7b85a33ee0871ee2e16c08e765a029edee4b884bba5",
+      "headers": [
+        "diff --git a/scrapy/item.py b/scrapy/item.py",
+        "@@ -25,6 +25,7 @@ class Field(dict):",
+        "@@ -39,6 +40,8 @@ class ItemMeta(ABCMeta):"
+      ]
+    },
+    {
+      "id": "scrapy/9",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "f8ff93f92d5797b6684b0c90be9973d6688c71207193dc4b6fe842b745ba6eaf",
+      "headers": [
+        "diff --git a/scrapy/mail.py b/scrapy/mail.py",
+        "@@ -21,6 +21,8 @@ else:",
+        "@@ -48,6 +50,10 @@ class MailSender(object):"
+      ]
+    },
+    {
+      "id": "scrapy/10",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "44457f377a33896693e553899f1f5e9e822dd4f444e4d21b7058a53412afa064",
+      "headers": [
+        "diff --git a/scrapy/downloadermiddlewares/redirect.py b/scrapy/downloadermiddlewares/redirect.py",
+        "@@ -1,9 +1,10 @@",
+        "@@ -65,8 +66,7 @@ class RedirectMiddleware(BaseRedirectMiddleware):"
+      ]
+    },
+    {
+      "id": "scrapy/11",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "a1a61786fcbafca53e1031c1931fe59917a9d6bf792c3095c58b4b0f16d02ac6",
+      "headers": [
+        "diff --git a/scrapy/utils/gz.py b/scrapy/utils/gz.py",
+        "@@ -43,7 +43,7 @@ def gunzip(data):"
+      ]
+    },
+    {
+      "id": "scrapy/12",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "fb122abd31447546cd7f9cc71179ca6d6723a553ac4ec433acfb90b4b48c3f4e",
+      "headers": [
+        "diff --git a/scrapy/selector/unified.py b/scrapy/selector/unified.py",
+        "@@ -46,6 +46,10 @@ class Selector(_ParselSelector, object_ref):"
+      ]
+    },
+    {
+      "id": "scrapy/13",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "35c02ee5e3586ff51fb7f4cc21e6f5c8a80aa21d3bf21966ca8e7ff901df91cb",
+      "headers": [
+        "diff --git a/scrapy/pipelines/images.py b/scrapy/pipelines/images.py",
+        "@@ -42,7 +42,7 @@ class ImagesPipeline(FilesPipeline):"
+      ]
+    },
+    {
+      "id": "scrapy/14",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "30eae0937f135d5cff44b5266707aa7524ec9c95d1776edbc7149d06ae3a01e5",
+      "headers": [
+        "diff --git a/scrapy/utils/gz.py b/scrapy/utils/gz.py",
+        "@@ -7,7 +7,7 @@ except ImportError:",
+        "@@ -50,8 +50,9 @@ def gunzip(data):"
+      ]
+    },
+    {
+      "id": "scrapy/15",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "67e6a0d6741518e6511cea8659dabe8bba697b0509f098970af0da1b099d06c9",
+      "headers": [
+        "diff --git a/scrapy/utils/url.py b/scrapy/utils/url.py",
+        "@@ -41,9 +41,16 @@ def url_has_any_extension(url, extensions):"
+      ]
+    },
+    {
+      "id": "scrapy/16",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "f9326775a56f472df6b0ab06cd0a719a6dcf900d5a24d3e8dce78e0473febf1e",
+      "headers": [
+        "diff --git a/scrapy/utils/url.py b/scrapy/utils/url.py",
+        "@@ -7,15 +7,18 @@ to the w3lib.url module. Always import those from there instead.",
+        "@@ -37,42 +40,114 @@ def url_has_any_extension(url, extensions):",
+        "@@ -81,7 +156,60 @@ def parse_url(url, encoding=None):"
+      ]
+    },
+    {
+      "id": "scrapy/17",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "543799d6af4982ef38de453d028ed1ca8a18bc828bd7f72e8a4362226fc93cd0",
+      "headers": [
+        "diff --git a/scrapy/utils/response.py b/scrapy/utils/response.py",
+        "@@ -47,14 +47,8 @@ def get_meta_refresh(response):"
+      ]
+    },
+    {
+      "id": "scrapy/18",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "8ece0d56315f83e0172b818616304245d022906a1b83148cf81a1a6f0491ef35",
+      "headers": [
+        "diff --git a/scrapy/responsetypes.py b/scrapy/responsetypes.py",
+        "@@ -59,7 +59,8 @@ class ResponseTypes(object):"
+      ]
+    },
+    {
+      "id": "scrapy/19",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "4f3b7346ebaf5343c9e10756558a470976c055fe0d73b338578133c938df58ca",
+      "headers": [
+        "diff --git a/scrapy/http/cookies.py b/scrapy/http/cookies.py",
+        "@@ -137,13 +137,29 @@ class WrappedRequest(object):"
+      ]
+    },
+    {
+      "id": "scrapy/20",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "5d89ef846212fcc3f515dc46f82d59f41fbecbd1212f5e7b04d0c2a986fe4831",
+      "headers": [
+        "diff --git a/scrapy/spiders/sitemap.py b/scrapy/spiders/sitemap.py",
+        "@@ -32,7 +32,7 @@ class SitemapSpider(Spider):"
+      ]
+    },
+    {
+      "id": "scrapy/21",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "b7e0e2089d4dec30cc8cad7405eb7c6a5e8ba19804988f56d16481cb84d5139c",
+      "headers": [
+        "diff --git a/scrapy/downloadermiddlewares/robotstxt.py b/scrapy/downloadermiddlewares/robotstxt.py",
+        "@@ -101,4 +101,6 @@ class RobotsTxtMiddleware(object):"
+      ]
+    },
+    {
+      "id": "scrapy/22",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "56466779605a11149578293013f44eda4757451667032e076ba862a2439f292c",
+      "headers": [
+        "diff --git a/scrapy/exporters.py b/scrapy/exporters.py",
+        "@@ -144,8 +144,10 @@ class XmlItemExporter(BaseItemExporter):"
+      ]
+    },
+    {
+      "id": "scrapy/23",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "e611fb61d90c2b1740299147e958b94136eb6062af5299e0486ca4356cd5fc5f",
+      "headers": [
+        "diff --git a/scrapy/downloadermiddlewares/httpproxy.py b/scrapy/downloadermiddlewares/httpproxy.py",
+        "@@ -9,7 +9,7 @@ from six.moves.urllib.parse import urlunparse",
+        "@@ -26,7 +26,7 @@ class HttpProxyMiddleware(object):",
+        "@@ -52,4 +52,4 @@ class HttpProxyMiddleware(object):",
+        "diff --git a/tests/test_downloadermiddleware_retry.py b/tests/test_downloadermiddleware_retry.py",
+        "@@ -21,20 +21,20 @@ class RetryTest(unittest.TestCase):",
+        "@@ -56,7 +56,7 @@ class RetryTest(unittest.TestCase):"
+      ]
+    },
+    {
+      "id": "scrapy/24",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "5a687a767affe7846c8196f9bd84590caa5ef0ed35cc1d677cd420273c3f01bc",
+      "headers": [
+        "diff --git a/scrapy/core/downloader/handlers/http11.py b/scrapy/core/downloader/handlers/http11.py",
+        "@@ -78,7 +78,7 @@ class TunnelingTCP4ClientEndpoint(TCP4ClientEndpoint):",
+        "@@ -92,11 +92,15 @@ class TunnelingTCP4ClientEndpoint(TCP4ClientEndpoint):"
+      ]
+    },
+    {
+      "id": "scrapy/25",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "281b122df2ac0b7de177b2955c4d00f43af3bae57e2fb4482597ebd95b33468a",
+      "headers": [
+        "diff --git a/scrapy/http/request/form.py b/scrapy/http/request/form.py",
+        "@@ -11,6 +11,7 @@ from parsel.selector import create_root_node",
+        "@@ -44,7 +45,7 @@ class FormRequest(Request):",
+        "@@ -58,7 +59,7 @@ def _urlencode(seq, enc):"
+      ]
+    },
+    {
+      "id": "scrapy/26",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "133e82bf4609f64e292e1ce14b1e864f36012066d0482bb02d1f1bbe43d87edb",
+      "headers": [
+        "diff --git a/scrapy/settings/__init__.py b/scrapy/settings/__init__.py",
+        "@@ -116,9 +116,9 @@ class BaseSettings(MutableMapping):",
+        "@@ -203,11 +203,17 @@ class BaseSettings(MutableMapping):"
+      ]
+    },
+    {
+      "id": "scrapy/27",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "3c4481bc9f00b80cb5ddd56a82aac037ef7d3174f8b84e8cff29bfd022c93d70",
+      "headers": [
+        "diff --git a/scrapy/downloadermiddlewares/redirect.py b/scrapy/downloadermiddlewares/redirect.py",
+        "@@ -55,7 +55,9 @@ class RedirectMiddleware(BaseRedirectMiddleware):"
+      ]
+    },
+    {
+      "id": "scrapy/28",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "5e75d4d22a74dbeb6fa3e61e713ead5498932d783ed4e014e2adda03c9b9f137",
+      "headers": [
+        "diff --git a/scrapy/dupefilters.py b/scrapy/dupefilters.py",
+        "@@ -36,6 +36,7 @@ class RFPDupeFilter(BaseDupeFilter):"
+      ]
+    },
+    {
+      "id": "scrapy/29",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "b34b345ed2dc1223c1f6772e1e1ed09ad3250133ba613857ec69725f3e128159",
+      "headers": [
+        "diff --git a/scrapy/utils/request.py b/scrapy/utils/request.py",
+        "@@ -79,7 +79,7 @@ def request_httprepr(request):"
+      ]
+    },
+    {
+      "id": "scrapy/30",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "a1c3977e851398e126a74bb156ebfb0cedbcc92b8a4394a3bf5ce592d86eea86",
+      "headers": [
+        "diff --git a/scrapy/cmdline.py b/scrapy/cmdline.py",
+        "@@ -18,10 +18,10 @@ def _iter_command_classes(module_name):",
+        "diff --git a/scrapy/utils/testproc.py b/scrapy/utils/testproc.py",
+        "@@ -35,8 +35,8 @@ class TestProcessProtocol(protocol.ProcessProtocol):",
+        "diff --git a/tests/test_cmdline/__init__.py b/tests/test_cmdline/__init__.py",
+        "@@ -11,10 +11,11 @@ class CmdlineTest(unittest.TestCase):"
+      ]
+    },
+    {
+      "id": "scrapy/31",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "2689fa8fc194e3a88fbe5e13d81e0f612c479a600b61d25a752e8988169efbee",
+      "headers": [
+        "diff --git a/scrapy/http/cookies.py b/scrapy/http/cookies.py",
+        "@@ -149,11 +149,13 @@ class WrappedRequest(object):",
+        "@@ -171,6 +173,7 @@ class WrappedResponse(object):"
+      ]
+    },
+    {
+      "id": "scrapy/32",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "f2f9808bf5d96a086f224f25e01f7558ff022a142c74b68a1860341930cd919d",
+      "headers": [
+        "diff --git a/scrapy/crawler.py b/scrapy/crawler.py",
+        "@@ -209,8 +209,8 @@ class CrawlerProcess(CrawlerRunner):"
+      ]
+    },
+    {
+      "id": "scrapy/33",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "891cef3f016c4cc959ac03705ed32add5838fabc7877b3b4d0bc7704c01041e7",
+      "headers": [
+        "diff --git a/scrapy/core/engine.py b/scrapy/core/engine.py",
+        "@@ -16,7 +16,7 @@ from scrapy.exceptions import DontCloseSpider",
+        "@@ -135,13 +135,16 @@ class ExecutionEngine(object):",
+        "@@ -153,7 +156,8 @@ class ExecutionEngine(object):",
+        "@@ -268,7 +272,11 @@ class ExecutionEngine(object):",
+        "diff --git a/scrapy/core/scraper.py b/scrapy/core/scraper.py",
+        "@@ -10,7 +10,7 @@ from twisted.internet import defer",
+        "@@ -107,7 +107,8 @@ class Scraper(object):",
+        "@@ -153,7 +154,8 @@ class Scraper(object):",
+        "@@ -202,7 +204,8 @@ class Scraper(object):",
+        "@@ -227,7 +230,8 @@ class Scraper(object):",
+        "diff --git a/scrapy/downloadermiddlewares/robotstxt.py b/scrapy/downloadermiddlewares/robotstxt.py",
+        "@@ -11,6 +11,7 @@ from six.moves.urllib import robotparser",
+        "@@ -59,7 +60,8 @@ class RobotsTxtMiddleware(object):",
+        "diff --git a/scrapy/extensions/feedexport.py b/scrapy/extensions/feedexport.py",
+        "@@ -22,6 +22,7 @@ from scrapy.utils.ftp import ftp_makedirs_cwd",
+        "@@ -184,7 +185,8 @@ class FeedExporter(object):",
+        "diff --git a/scrapy/log.py b/scrapy/log.py",
+        "@@ -1,51 +1,166 @@",
+        "diff --git a/scrapy/pipelines/files.py b/scrapy/pipelines/files.py",
+        "@@ -25,6 +25,7 @@ from scrapy.pipelines.media import MediaPipeline",
+        "@@ -212,7 +213,8 @@ class FilesPipeline(MediaPipeline):",
+        "diff --git a/scrapy/pipelines/media.py b/scrapy/pipelines/media.py",
+        "@@ -8,6 +8,7 @@ from twisted.python.failure import Failure",
+        "@@ -70,7 +71,7 @@ class MediaPipeline(object):",
+        "@@ -127,6 +128,7 @@ class MediaPipeline(object):",
+        "diff --git a/scrapy/utils/signal.py b/scrapy/utils/signal.py",
+        "@@ -8,6 +8,7 @@ from twisted.python.failure import Failure",
+        "@@ -47,7 +48,8 @@ def send_catch_log_deferred(signal=Any, sender=Anonymous, *arguments, **named):"
+      ]
+    },
+    {
+      "id": "scrapy/34",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "46ebd6ae0efbe0ad09cda652036c6d0e666d835137469592c95fa1ef8e922b72",
+      "headers": [
+        "diff --git a/scrapy/item.py b/scrapy/item.py",
+        "@@ -6,6 +6,7 @@ See documentation in docs/topics/item.rst",
+        "@@ -27,7 +28,7 @@ class ItemMeta(ABCMeta):"
+      ]
+    },
+    {
+      "id": "scrapy/35",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "c27c5c4e58f0ec6fd1646a3f8ad7e26354cf48e9f34992a18386effde46576a3",
+      "headers": [
+        "diff --git a/scrapy/crawler.py b/scrapy/crawler.py",
+        "@@ -192,8 +192,8 @@ def _get_spider_loader(settings):"
+      ]
+    },
+    {
+      "id": "scrapy/36",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "5e72beac01175526d2677d14b3665a52e9ea1d6139d355b797dafe07dc598a08",
+      "headers": [
+        "diff --git a/scrapy/utils/misc.py b/scrapy/utils/misc.py",
+        "@@ -137,17 +137,26 @@ def create_instance(objcls, settings, crawler, *args, **kwargs):"
+      ]
+    },
+    {
+      "id": "scrapy/37",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "6294db7053d0147de2dfc8d9f0ffee00cd1b84ce94746a92a25f8101963bd26c",
+      "headers": [
+        "diff --git a/scrapy/http/request/__init__.py b/scrapy/http/request/__init__.py",
+        "@@ -66,7 +66,7 @@ class Request(object_ref):"
+      ]
+    },
+    {
+      "id": "scrapy/38",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "c10ad6fe80493a450c97ee2028fa86ec8598b369d909188f3d057a6b98e2aa08",
+      "headers": [
+        "diff --git a/scrapy/http/request/form.py b/scrapy/http/request/form.py",
+        "@@ -170,9 +170,8 @@ def _get_clickable(clickdata, form):"
+      ]
+    },
+    {
+      "id": "scrapy/39",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "dc2f972a641056490b8cee1bc808f18360a280920d6a6725b6fa82c30fcd0d6b",
+      "headers": [
+        "diff --git a/scrapy/spiders/__init__.py b/scrapy/spiders/__init__.py",
+        "@@ -66,11 +66,14 @@ class Spider(object_ref):"
+      ]
+    },
+    {
+      "id": "scrapy/40",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "221c804c83c3b9a4c7d9b6976911f937591952793c34aa3c72760b267e143445",
+      "headers": [
+        "diff --git a/scrapy/exporters.py b/scrapy/exporters.py",
+        "@@ -273,10 +273,10 @@ class PythonItemExporter(BaseItemExporter):"
+      ]
+    },
+    {
+      "id": "tornado/1",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "7488c814d5d1855da7fac12c1d59e8be97ea5403a5c1997d176578ebbf10b475",
+      "headers": [
+        "diff --git a/tornado/websocket.py b/tornado/websocket.py",
+        "@@ -558,8 +558,8 @@ class WebSocketHandler(tornado.web.RequestHandler):",
+        "@@ -714,6 +714,10 @@ class WebSocketProtocol(abc.ABC):",
+        "@@ -1345,6 +1349,9 @@ class WebSocketProtocol13(WebSocketProtocol):"
+      ]
+    },
+    {
+      "id": "tornado/2",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "aa9823628a654dcd6513fb6fa3ade5fc89361f580abf6f284e01d590b402ed4f",
+      "headers": [
+        "diff --git a/tornado/http1connection.py b/tornado/http1connection.py",
+        "@@ -390,7 +390,10 @@ class HTTP1Connection(httputil.HTTPConnection):"
+      ]
+    },
+    {
+      "id": "tornado/3",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "00205003c93bfcd59fc2ac9f7e9fa410835f788c6a85ab61543720349035d5bb",
+      "headers": [
+        "diff --git a/tornado/httpclient.py b/tornado/httpclient.py",
+        "@@ -233,9 +233,14 @@ class AsyncHTTPClient(Configurable):"
+      ]
+    },
+    {
+      "id": "tornado/4",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "b9ffa91b85f160499921a16b465cf7d28d5f30332b64e086d2183b352908bfdf",
+      "headers": [
+        "diff --git a/tornado/web.py b/tornado/web.py",
+        "@@ -2600,16 +2600,24 @@ class StaticFileHandler(RequestHandler):"
+      ]
+    },
+    {
+      "id": "tornado/5",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "82f918614406df349fc9761bf4b2053cfbf9579773c13ab0377a8dc4693fec0d",
+      "headers": [
+        "diff --git a/tornado/ioloop.py b/tornado/ioloop.py",
+        "@@ -1217,7 +1217,27 @@ class PeriodicCallback(object):"
+      ]
+    },
+    {
+      "id": "tornado/6",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "61bd028257a44394f29429b354142183f59b3df90b12de53131907ca83e769ca",
+      "headers": [
+        "diff --git a/tornado/ioloop.py b/tornado/ioloop.py",
+        "@@ -47,7 +47,6 @@ import threading",
+        "@@ -185,7 +184,7 @@ class IOLoop(Configurable):",
+        "diff --git a/tornado/platform/asyncio.py b/tornado/platform/asyncio.py",
+        "@@ -38,6 +38,20 @@ class BaseAsyncIOLoop(IOLoop):",
+        "@@ -49,6 +63,7 @@ class BaseAsyncIOLoop(IOLoop):"
+      ]
+    },
+    {
+      "id": "tornado/7",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "f787a2c924d9ac0893949c836f7b664637267e70466d19c95c15b6c0b03bbecc",
+      "headers": [
+        "diff --git a/tornado/ioloop.py b/tornado/ioloop.py",
+        "@@ -44,7 +44,7 @@ import time",
+        "@@ -655,8 +655,12 @@ class IOLoop(Configurable):"
+      ]
+    },
+    {
+      "id": "tornado/8",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "aa1f22b22c06cc8bc2f150dc67adcd55dce846bcecbdaceb15626a776ee96b3e",
+      "headers": [
+        "diff --git a/tornado/websocket.py b/tornado/websocket.py",
+        "@@ -616,6 +616,14 @@ class WebSocketProtocol13(WebSocketProtocol):"
+      ]
+    },
+    {
+      "id": "tornado/9",
+      "stage": "patch_header_screen",
+      "disposition": "selected_for_adaptation",
+      "patch_sha256": "fcd2f981563a8f174266064f81c711602f48113bdbb636b3ad490d5e74133936",
+      "headers": [
+        "diff --git a/tornado/httputil.py b/tornado/httputil.py",
+        "@@ -603,6 +603,8 @@ def url_concat(url, args):"
+      ]
+    },
+    {
+      "id": "tornado/10",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "e9432fcb28f07464bc813cc9c263abc38cb6f55a6e0b1fbb768afae12d50d333",
+      "headers": [
+        "diff --git a/tornado/web.py b/tornado/web.py",
+        "@@ -993,6 +993,9 @@ class RequestHandler(object):",
+        "diff --git a/tornado/websocket.py b/tornado/websocket.py",
+        "@@ -434,6 +434,16 @@ class WebSocketHandler(tornado.web.RequestHandler):"
+      ]
+    },
+    {
+      "id": "tornado/11",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "5266eb28f2f7bddb2e7541fe01296417073ca68badf95c148d513eea62ad8cc7",
+      "headers": [
+        "diff --git a/tornado/http1connection.py b/tornado/http1connection.py",
+        "@@ -565,7 +565,7 @@ class HTTP1Connection(httputil.HTTPConnection):"
+      ]
+    },
+    {
+      "id": "tornado/12",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "7cd3eb4b944419793b59a61f05c80a70fca7ba39d6ef27ab827fc6a7b36abade",
+      "headers": [
+        "diff --git a/tornado/auth.py b/tornado/auth.py",
+        "@@ -75,7 +75,7 @@ import hmac",
+        "@@ -985,7 +985,7 @@ class FacebookGraphMixin(OAuth2Mixin):",
+        "@@ -1062,8 +1062,13 @@ class FacebookGraphMixin(OAuth2Mixin):"
+      ]
+    },
+    {
+      "id": "tornado/13",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "3241c1d53958d0db3f0a7f9100852ef77c8c3c2a9fafcccdb01a3ba0cada7ef6",
+      "headers": [
+        "diff --git a/tornado/http1connection.py b/tornado/http1connection.py",
+        "@@ -481,7 +481,9 @@ class HTTP1Connection(httputil.HTTPConnection):",
+        "diff --git a/tornado/test/runtests.py b/tornado/test/runtests.py",
+        "@@ -29,6 +29,7 @@ TEST_MODULES = ["
+      ]
+    },
+    {
+      "id": "tornado/14",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "9d5e4a277b61c7f5f6f2a5fc59c7a21e8ce6236d7f236c9e230c022027498120",
+      "headers": [
+        "diff --git a/tornado/ioloop.py b/tornado/ioloop.py",
+        "@@ -249,7 +249,7 @@ class IOLoop(Configurable):"
+      ]
+    },
+    {
+      "id": "tornado/15",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "6d8f058d0bf0da25b7373f6117a796275e505df73f9df4e735f54eb99e93281e",
+      "headers": [
+        "diff --git a/setup.py b/setup.py",
+        "@@ -147,6 +147,7 @@ setup(",
+        "diff --git a/tornado/web.py b/tornado/web.py",
+        "@@ -2376,9 +2376,13 @@ class StaticFileHandler(RequestHandler):"
+      ]
+    },
+    {
+      "id": "tornado/16",
+      "stage": "patch_header_screen",
+      "disposition": "not_selected_this_development_pool",
+      "patch_sha256": "35a52586cffce48d15ff8ededa21ff267981f703b25621385b2df3c7dd87c86b",
+      "headers": [
+        "diff --git a/tornado/gen.py b/tornado/gen.py",
+        "@@ -336,6 +336,8 @@ class WaitIterator(object):",
+        "@@ -356,6 +358,12 @@ class WaitIterator(object):"
+      ]
+    }
+  ],
+  "detailed_exclusions": [
+    {
+      "id": "youtube-dl/21",
+      "reason": "The change repairs bytes inputs, outside the JSON string contract; urljoin already represented by bug 13."
+    },
+    {
+      "id": "youtube-dl/28",
+      "reason": "HTML entity helper overlaps bug 3; avoid counting another version of the same repair family as independent."
+    },
+    {
+      "id": "httpie/1",
+      "reason": "Filesystem filename limits and existence checks need an environmental adapter; reject for current pure-function scope."
+    },
+    {
+      "id": "scrapy/15",
+      "reason": "Depends on Scrapy/w3lib URL encoding helpers and surrounding normalization; defer rather than replace helpers with unverified equivalents."
+    },
+    {
+      "id": "cookiecutter/1",
+      "reason": "Previously inspected: UTF-8 file-opening fix depends on system default encoding; not a portable failure on this UTF-8 host."
+    },
+    {
+      "id": "cookiecutter/3",
+      "reason": "Previously inspected: click prompt display behavior is outside JSON function repair."
+    }
+  ]
+}

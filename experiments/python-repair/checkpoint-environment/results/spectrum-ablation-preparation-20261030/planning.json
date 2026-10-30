@@ -1,0 +1,225 @@
+{
+  "kind": "sensitivity_planning_not_sample_size_freeze",
+  "design": "One initial generation plus at most three arms x three repair draws per candidate.",
+  "approximation": "Normal approximation: n = ceil((z_0.975 + z_0.80)^2 * (q-delta^2) * (1+2*rho) / (3*delta^2)).",
+  "assumptions": [
+    "Hypothetical paired Bernoulli discordance q, common marginal effect delta and exchangeable within-bug correlation rho.",
+    "Independent bug units; no allowance for project/function clustering, random trigger yield, verifier errors or multiplicity.",
+    "Not fitted to previous arm outcomes. Neither 80% power nor nominal coverage is established for this future population.",
+    "No numeric effect threshold, inference procedure or final cohort is frozen by this sensitivity table."
+  ],
+  "planning_rows": [
+    {
+      "effect": 0.05,
+      "discordance": 0.2,
+      "within_bug_correlation": 0,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 207
+    },
+    {
+      "effect": 0.05,
+      "discordance": 0.2,
+      "within_bug_correlation": 0.5,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 414
+    },
+    {
+      "effect": 0.05,
+      "discordance": 0.2,
+      "within_bug_correlation": 1,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 621
+    },
+    {
+      "effect": 0.05,
+      "discordance": 0.4,
+      "within_bug_correlation": 0,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 416
+    },
+    {
+      "effect": 0.05,
+      "discordance": 0.4,
+      "within_bug_correlation": 0.5,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 832
+    },
+    {
+      "effect": 0.05,
+      "discordance": 0.4,
+      "within_bug_correlation": 1,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 1248
+    },
+    {
+      "effect": 0.05,
+      "discordance": 0.8,
+      "within_bug_correlation": 0,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 835
+    },
+    {
+      "effect": 0.05,
+      "discordance": 0.8,
+      "within_bug_correlation": 0.5,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 1670
+    },
+    {
+      "effect": 0.05,
+      "discordance": 0.8,
+      "within_bug_correlation": 1,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 2504
+    },
+    {
+      "effect": 0.1,
+      "discordance": 0.2,
+      "within_bug_correlation": 0,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 50
+    },
+    {
+      "effect": 0.1,
+      "discordance": 0.2,
+      "within_bug_correlation": 0.5,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 100
+    },
+    {
+      "effect": 0.1,
+      "discordance": 0.2,
+      "within_bug_correlation": 1,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 150
+    },
+    {
+      "effect": 0.1,
+      "discordance": 0.4,
+      "within_bug_correlation": 0,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 103
+    },
+    {
+      "effect": 0.1,
+      "discordance": 0.4,
+      "within_bug_correlation": 0.5,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 205
+    },
+    {
+      "effect": 0.1,
+      "discordance": 0.4,
+      "within_bug_correlation": 1,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 307
+    },
+    {
+      "effect": 0.1,
+      "discordance": 0.8,
+      "within_bug_correlation": 0,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 207
+    },
+    {
+      "effect": 0.1,
+      "discordance": 0.8,
+      "within_bug_correlation": 0.5,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 414
+    },
+    {
+      "effect": 0.1,
+      "discordance": 0.8,
+      "within_bug_correlation": 1,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 621
+    },
+    {
+      "effect": 0.15,
+      "discordance": 0.2,
+      "within_bug_correlation": 0,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 21
+    },
+    {
+      "effect": 0.15,
+      "discordance": 0.2,
+      "within_bug_correlation": 0.5,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 42
+    },
+    {
+      "effect": 0.15,
+      "discordance": 0.2,
+      "within_bug_correlation": 1,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 62
+    },
+    {
+      "effect": 0.15,
+      "discordance": 0.4,
+      "within_bug_correlation": 0,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 44
+    },
+    {
+      "effect": 0.15,
+      "discordance": 0.4,
+      "within_bug_correlation": 0.5,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 88
+    },
+    {
+      "effect": 0.15,
+      "discordance": 0.4,
+      "within_bug_correlation": 1,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 132
+    },
+    {
+      "effect": 0.15,
+      "discordance": 0.8,
+      "within_bug_correlation": 0,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 91
+    },
+    {
+      "effect": 0.15,
+      "discordance": 0.8,
+      "within_bug_correlation": 0.5,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 181
+    },
+    {
+      "effect": 0.15,
+      "discordance": 0.8,
+      "within_bug_correlation": 1,
+      "draws_per_arm": 3,
+      "approximate_independent_bugs": 272
+    }
+  ],
+  "current_catalog_candidates": 34,
+  "candidate_project_counts": {
+    "black": 22,
+    "cookiecutter": 2,
+    "pysnooper": 2,
+    "tqdm": 8
+  },
+  "remaining_unopened_project_ids_in_catalog": 293,
+  "maximum_calls_if_all_qualify_and_trigger": 340,
+  "historical_price_assumption_not_live_quote": {
+    "input_per_million": ".12",
+    "output_per_million": ".80",
+    "input_reservation": 32768,
+    "output_limit": 4096
+  },
+  "maximum_reservation_per_call_usd": "0.00720896",
+  "maximum_reservation_for_candidate_design_usd": "2.45104640",
+  "current_cumulative_commitment_usd": "0.25463059",
+  "current_cumulative_cap_usd": "0.60",
+  "remaining_authorized_usd": "0.34536941",
+  "full_candidate_design_fits_current_ceiling": false,
+  "live_collection_enabled": false,
+  "api_model_calls": 0
+}

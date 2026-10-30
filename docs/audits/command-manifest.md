@@ -5,8 +5,8 @@ This manifest classifies repository command entrypoints by safety so agents can 
 
 ## Summary
 
-- Commands indexed: `27`
-- Default-safe commands: `20`
+- Commands indexed: `73`
+- Default-safe commands: `61`
 - Missing required maintenance actions: `0`
 
 ## Safety Classes
@@ -15,7 +15,9 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | --- | --- |
 | `cluster-setup` | 1 |
 | `live-local` | 6 |
-| `read-only-analysis` | 8 |
+| `mixed-cli` | 5 |
+| `read-only-analysis` | 43 |
+| `safe-figure-regeneration` | 6 |
 | `safe-local` | 10 |
 | `safe-local-optional-tool` | 2 |
 
@@ -24,7 +26,7 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | Surface | Commands |
 | --- | --- |
 | `maintenance` | 6 |
-| `scripts` | 14 |
+| `scripts` | 60 |
 | `scripts/cluster` | 1 |
 | `scripts/maintenance` | 6 |
 
@@ -44,14 +46,60 @@ This manifest classifies repository command entrypoints by safety so agents can 
 | `python scripts/maintenance/validate_agent_readiness.py` | scripts/maintenance | `safe-local` | yes | python | Validate that the repository is ready for LLM-agent navigation. |
 | `python scripts/maintenance/workflow.py paper-build` | maintenance | `safe-local-optional-tool` | yes | pdflatex, bibtex | Compile retained manuscripts out of tree with pdflatex and bibtex. |
 | `python scripts/maintenance/check_paper_build.py` | scripts/maintenance | `safe-local-optional-tool` | yes | pdflatex, bibtex | Compile active paper TeX sources into an out-of-tree build directory. |
+| `python scripts/plot_repair_contrastive_study.py` | scripts | `safe-figure-regeneration` | yes | checked-in evidence | Plot audited terminal contrastive-trace results, without model calls. |
+| `python scripts/plot_repair_extension_information.py` | scripts | `safe-figure-regeneration` | yes | checked-in evidence | Plot the prespecified two-arm terminal report, never inspect a live collection. |
+| `python scripts/plot_repair_information.py` | scripts | `safe-figure-regeneration` | yes | checked-in evidence | Plot the frozen information report and separate post hoc edit audit, offline. |
+| `python scripts/plot_repair_interface.py` | scripts | `safe-figure-regeneration` | yes | checked-in evidence | Plot all four terminal repair-interface conditions; never read a live collection. |
+| `python scripts/plot_repair_qwen_information.py` | scripts | `safe-figure-regeneration` | yes | checked-in evidence | Plot the prespecified two-arm terminal report, never inspect a live collection. |
+| `python scripts/plot_repair_solver.py` | scripts | `safe-figure-regeneration` | yes | checked-in evidence | Render terminal solver draws; synthetic layout data requires an explicit flag. |
 | `python scripts/analyze_context_value.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit prospective context-value records and compare matched outcomes by task cluster. Public CLI facade; implementation lives in vao.analysis.analyze_context_value. |
 | `python scripts/analyze_continuation_pilot.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit saved pilot receipts/outcomes and render an exploratory cost/success plot. Public CLI facade; implementation lives in vao.analysis.analyze_continuation_pilot. |
 | `python scripts/analyze_feedback_routing.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit and analyze fixed feedback-only trajectories without making model calls. Public CLI facade; implementation lives in vao.analysis.analyze_feedback_routing. |
 | `python scripts/analyze_recovery_transfer.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit recorded MBPP+ recovery evidence and reproduce the frozen statistical comparisons. Public CLI facade; implementation lives in vao.analysis.analyze_recovery_transfer. |
 | `python scripts/analyze_recovery_validation.py` | scripts | `read-only-analysis` | yes | checked-in evidence or existing runs | Audit frozen held-out recovery data and replay its finite budgeted policy bank. Public CLI facade; implementation lives in vao.analysis.analyze_recovery_validation. |
+| `python scripts/audit_repair_exposure.py` | scripts | `read-only-analysis` | yes | inspect script before running | Rebuild/check the minimum documented development-exposure registry, offline. |
+| `python scripts/audit_repair_stagnation.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit saved edits after a repair information study terminates; no API calls. |
+| `python scripts/audit_repair_trace_information.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit a complete trace calibration archive without executing candidate code. |
+| `python scripts/audit_repair_trigger_coverage.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit only closed 27B source checkpoints, never ongoing model outcomes. |
+| `python scripts/check_repair_contract_progress.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit live request identities and accounting without inspecting treatments. |
+| `python scripts/collect_repair_contract_probe.py` | scripts | `read-only-analysis` | yes | inspect script before running | Run only an explicitly authorized and frozen output-contract study. |
+| `python scripts/prepare_contrastive_diagnostics.py` | scripts | `read-only-analysis` | yes | inspect script before running | Offline qualification on all source tasks in a complete development archive. No API requests or evaluator execution. Output is development engineering evidence. |
+| `python scripts/prepare_failure_coverage_diagnostics.py` | scripts | `read-only-analysis` | yes | inspect script before running | Qualify bounded first/all-failure traces on a development pool; no API calls. |
 | `python scripts/prepare_feedback_routing.py` | scripts | `read-only-analysis` | yes | inspect script before running | Verify the pinned BigCodeBench download and reproduce reference-only eligibility. |
+| `python scripts/prepare_repair_acquisition_snapshots.py` | scripts | `read-only-analysis` | yes | inspect script before running | Freeze public diagnostic observations and inert matched prompts, without APIs. |
+| `python scripts/prepare_repair_contract_probe.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare a reviewable, offline-only Gemma response-contract diagnostic. |
+| `python scripts/prepare_repair_contrastive_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare exact public-contrast requests offline; no dispatch or funding. |
+| `python scripts/prepare_repair_coverage_prefix.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare initial-repair requests offline; never dispatch a model call. |
+| `python scripts/prepare_repair_diagnostics.py` | scripts | `read-only-analysis` | yes | inspect script before running | Execute a public-only offline diagnostic demo; never dispatch model requests. |
+| `python scripts/prepare_repair_extension_information_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare the independent development-extension information design offline. |
+| `python scripts/prepare_repair_information_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare a public-trace information experiment offline; never dispatch APIs. |
+| `python scripts/prepare_repair_interface_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare exact factorial repair-interface requests offline; no model calls. |
+| `python scripts/prepare_repair_qwen_information_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare matched Qwen trace-information requests offline; no API calls. |
+| `python scripts/prepare_repair_region_information.py` | scripts | `read-only-analysis` | yes | inspect script before running | Frozen original-bug diagnostic calibration; no implicit authorization. |
+| `python scripts/prepare_repair_solver_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare the fixed coding-solver compatibility control offline; no model calls. |
+| `python scripts/prepare_spectrum_ablation.py` | scripts | `read-only-analysis` | yes | inspect script before running | Qualify inert F/N/S projections on exposed checkpoints; never collect models. |
+| `python scripts/prepare_stdin_ablation.py` | scripts | `read-only-analysis` | yes | inspect script before running | Freeze and execute offline public diagnostic preparation on qualified sources. No provider client, model request or paid authorization exists in this command. The freeze fixes all eleven source-qualified groups and retains all twelve original group decisions; flat/unavailable spectra cannot change the selection. |
+| `python scripts/prepare_stdin_pilot.py` | scripts | `read-only-analysis` | yes | inspect script before running | Generate or check the numerical stdin pilot design, without any model call. |
+| `python scripts/probe_repair_trace_retention.py` | scripts | `read-only-analysis` | yes | inspect script before running | Offline matched trace audit on exposed sources; no providers or model results. Run on macOS from the repository root. Output is exclusive; previous reports are never overwritten. Expected answers are used only for parent-side scoring. |
+| `python scripts/qualify_repair_package.py` | scripts | `read-only-analysis` | yes | inspect script before running | Qualify an original Python package component offline, retaining every outcome. |
+| `python scripts/repair_spectrum_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Prepare, freeze, collect once, audit or replay the public-spectrum screen. |
+| `python scripts/repair_transport_probe.py` | scripts | `read-only-analysis` | yes | inspect script before running | Freeze, run once, or audit the separately funded SSE compatibility probe. |
 | `python scripts/report_feedback_routing.py` | scripts | `read-only-analysis` | yes | inspect script before running | Publish a completed feedback-only bank, audited statistics and static figures. Public CLI facade; implementation lives in vao.analysis.report_feedback_routing. |
+| `python scripts/report_repair_calibration.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit terminal repair-pilot segments and report descriptive results offline. |
+| `python scripts/report_repair_contract_probe.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit and describe a terminal output-contract diagnostic; no API calls. |
+| `python scripts/report_repair_contrastive_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Report terminal public-contrast evidence; never dispatch model calls. |
+| `python scripts/report_repair_coverage_prefix.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit and export the terminal natural-failure difficulty calibration. |
+| `python scripts/report_repair_information_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Report a terminal public-trace information study without model calls. |
+| `python scripts/report_repair_interface_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Analyze a terminal factorial repair-interface study offline; no model calls. |
+| `python scripts/report_repair_region_information.py` | scripts | `read-only-analysis` | yes | inspect script before running | Frozen original-bug diagnostic calibration; no implicit authorization. |
+| `python scripts/report_repair_solver_study.py` | scripts | `read-only-analysis` | yes | inspect script before running | Audit terminal coding-solver evidence and preserve every planned cell; no API calls. |
 | `python scripts/verify_feedback_evidence.py` | scripts | `read-only-analysis` | yes | inspect script before running | Verify published BigCodeBench evidence offline without executing candidate code. Public CLI facade; implementation lives in vao.analysis.verify_feedback_evidence. |
+| `python scripts/verify_repair_contract_evidence.py` | scripts | `read-only-analysis` | yes | inspect script before running | Verify archived contract reports and independently replay saved artifacts. |
+| `python scripts/audit_repair_spectra.py` | scripts | `mixed-cli` | no | replay reads saved evidence; collect executes public cases in macOS sandbox-exec and writes fresh output; no provider calls | Offline public-spectrum feasibility on frozen exposed development artifacts. collect executes only local sandboxed cases; replay executes no candidate code. Neither command imports a model client or prepares a provider request. |
+| `python scripts/prepare_python_repair.py` | scripts | `mixed-cli` | no | plan/audit are read-only; demo/qualify require macOS sandbox-exec and a fresh output directory; no provider calls | Plan or explicitly run an offline Python repair demo, qualification or audit. |
+| `python scripts/prepare_repair_pilot.py` | scripts | `mixed-cli` | no | plan/audit/compare are offline; demo requires macOS isolation; live requires new funding, clean source freeze, private key, single-use campaign claim and fresh output | Plan repair calibration offline; live collection requires a funded freeze. |
+| `python scripts/qualify_python_repair_pool.py` | scripts | `mixed-cli` | no | plan/audit-sources read inert local data; build writes fresh bundles; qualify requires macOS sandbox-exec and fresh output; no network/provider calls | Offline build, provenance audit and isolated qualification of real-bug tasks. |
+| `python scripts/repair_stdin_pilot.py` | scripts | `mixed-cli` | no | progress/audit read saved data; verify executes candidate code in the frozen native sandbox; live requires declared funding, clean source/runtime freeze, private key, budget lock and single-use study claim | Explicit commands for the frozen stdin pilot; no default collection. |
 | `scripts/cluster/bootstrap_engaging.sh` | scripts/cluster | `cluster-setup` | no | cluster shell environment | Bootstrap the cluster Python environment for HumanEval+ routing runs. |
 | `python scripts/run_context_value.py` | scripts | `live-local` | no | model access, isolated worktree, output root | Plan or explicitly run a budgeted artifact/feedback and prospective-forecast study. |
 | `python scripts/run_continuation_pilot.py` | scripts | `live-local` | no | model access, isolated worktree, output root | Run the explicit-budget OpenRouter/HumanEval+ pilot; defaults to plan only. |

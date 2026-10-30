@@ -1,0 +1,813 @@
+{
+  "kind": "development_exposure_after_prospective_source_screen",
+  "source_plan_sha256": "adf35bb61d57485779bcf1d74781b721702fd44f5354f23f3fc94318d184f7ea",
+  "source_archive_sha256": "d240c24c47b268080d5073331403a9586823559fe21a30ec75b5860fef33edb7",
+  "benchmark_revision": "11c5f1eea954a42132cfd06bf257766a7963e0fd",
+  "inspections": [
+    {
+      "id": "cookiecutter/2",
+      "level": "patch_inspection",
+      "bug_info_sha256": "b1560609c67712f4ffacdae1e739dc21634e22a413697d2fe9ef4a28aa43350d",
+      "patch_sha256": "ab8674ee17bdcab2fb04321a49e43584f537f401cf081fc1dfdb30551b7b321e"
+    },
+    {
+      "id": "black/13",
+      "level": "patch_inspection",
+      "bug_info_sha256": "56e5bd2745d89d43141b8cdc89529e13090ea6c2791988147e53053bdd9c4777",
+      "patch_sha256": "9ab1bf2c9d75e80ea84141c5fc4eef007dec6722ecb0e447167d5ff72c7f452d"
+    },
+    {
+      "id": "cookiecutter/4",
+      "level": "patch_inspection",
+      "bug_info_sha256": "52236af17ff214fcc07f9c9b924cd25f0ff31774f52c126be82b6a0fed601301",
+      "patch_sha256": "24fab6bc7dcd29047ecd3b56c5476ead656236626b4201387fcfa0bf1a66202e"
+    },
+    {
+      "id": "tqdm/2",
+      "level": "patch_inspection",
+      "bug_info_sha256": "20e7313692bc7ea7af64675b1ceccbbf0618c6b68c401ac3de68cb6366d430d8",
+      "patch_sha256": "4a887e0af07c24fa8045fde6deea2383b6b14bc8bcfb473eb20c1744d4b2eea4"
+    },
+    {
+      "id": "black/18",
+      "level": "patch_inspection",
+      "bug_info_sha256": "75911b76e477ba54438851cf67765ca2395b46f4d698575a5e2cff10f440a000",
+      "patch_sha256": "043140a3ca5eeaba15da2c5e0324098ec8d68ce601293a39bcb4d75b7fb4176f"
+    },
+    {
+      "id": "tqdm/7",
+      "level": "patch_inspection",
+      "bug_info_sha256": "08719dbee7bdc7243af74957be3831da84499ae2668d3d076cbe9670cae3a3b2",
+      "patch_sha256": "88e3075726a70955eb474cf4650ec879cc8e1dff3a36b98c7f5ebd8f40b600c9"
+    },
+    {
+      "id": "tqdm/4",
+      "level": "patch_inspection",
+      "bug_info_sha256": "51bea30e7d69f67f8a49da2e59594ca4feaa08737d6f65573af795fb46936ab8",
+      "patch_sha256": "ae61e03e07b6d74840bd3a5eb86a0e476eb33f2e134f550b4bfe19ef14727bb2"
+    },
+    {
+      "id": "black/7",
+      "level": "patch_inspection",
+      "bug_info_sha256": "2273add3a7ce3f7e90b41e2fcc9f5bf9c0e7dcda22564b626720a78de956a2ca",
+      "patch_sha256": "d38d70d4ee808a09cb19097d06e58bb87eec9c87dd366d0315928701f2260f25"
+    },
+    {
+      "id": "pysnooper/2",
+      "level": "patch_inspection",
+      "bug_info_sha256": "732ba78c8ab772b50d5c121e972e0ff6b4892472dcde7b044609e4a0201614e4",
+      "patch_sha256": "78942f4db0c8eccf1c2851dee98136d03a76341bfd5a7a775d0d2b22f5930f6b"
+    },
+    {
+      "id": "black/11",
+      "level": "patch_inspection",
+      "bug_info_sha256": "829472c8a8af524aa3b192fad8385ed40c0d8a1fa40b4ddf26b32ed5c236aa2c",
+      "patch_sha256": "8e436570bcd903a4d22a14a1f809e1d25e96ff623152a004759a3eb14e7a67ee"
+    },
+    {
+      "id": "black/9",
+      "level": "patch_inspection",
+      "bug_info_sha256": "a25d377adfa773d3ad7b8b457f48c1c38ea0e614c5cecc01c8f2a8ef053fd38d",
+      "patch_sha256": "19e38b12bae8bf94882b61f5035db3d0d5857f7522f5516e819a8626143b52a9"
+    },
+    {
+      "id": "black/23",
+      "level": "patch_inspection",
+      "bug_info_sha256": "123e0a41ae85a9aa0fddee202f7d24728a999fc030534c3525eb72dfb3d2b9c0",
+      "patch_sha256": "cef9c45394405f9e01ed1912e39ba1ff826f970158cd8a73d641e7e1e975fa61"
+    },
+    {
+      "id": "black/10",
+      "level": "patch_inspection",
+      "bug_info_sha256": "d6554da2f1ca3be4cef7d4d1b748b271d52c2d2d03f485009ac52b383a9ac966",
+      "patch_sha256": "fa6596d1bd8e4ac2bc9a70ae8154561c6487a3aa08172df3886fe635559ffa57"
+    },
+    {
+      "id": "black/8",
+      "level": "patch_inspection",
+      "bug_info_sha256": "5111b0951614c46ddc6fdb247b3bb1d0d70675495705a027e720022fb075479b",
+      "patch_sha256": "a630af2375bea80c0bf0339173d3ddf410053c5325290a602e40f7eba3aca0c0"
+    },
+    {
+      "id": "black/4",
+      "level": "patch_inspection",
+      "bug_info_sha256": "1fef3ed3e436de9bfd1650c69ab996ed65039b55e878216af7aa7e9526b5c58a",
+      "patch_sha256": "56da1a238ec8e61d932f51bc139a0e1d876f8ac7d37135ab18f197e1d7d90b86"
+    },
+    {
+      "id": "black/3",
+      "level": "patch_inspection",
+      "bug_info_sha256": "09ac24b9d2f0224396ef78dd9ef288d4d4605acda48494400b908dfb8c4790cc",
+      "patch_sha256": "049b08e935f635e45d658d27acdcf9c445daad264c08f2104386b7b9100c8462"
+    },
+    {
+      "id": "black/17",
+      "level": "patch_inspection",
+      "bug_info_sha256": "91785fc307cc48e0966bb86ada1d3eaf2fe67d6f89772eda9367b4a471c94570",
+      "patch_sha256": "459b38dd1adaf6bbdd48ddbb502e89be199228f53d76cf5335140a251df1f1e4"
+    },
+    {
+      "id": "black/16",
+      "level": "patch_inspection",
+      "bug_info_sha256": "e9de38e6865706376ccfa06989bf2fbe82eca82061d5fd3ebb807c1a4c7bc0bc",
+      "patch_sha256": "f95265caa538393bc74fa781bea5dc259978676452357ef52984f098baef6ab6"
+    },
+    {
+      "id": "black/22",
+      "level": "patch_inspection",
+      "bug_info_sha256": "9fa27253ad19c0896c2dec24389efe631e707278a9c7766ee8f99db5c0262d42",
+      "patch_sha256": "fdc21d340bd7dda84ad75fa052fd975c1d88fc37958c91c0d4968a432c1c0e11"
+    },
+    {
+      "id": "tqdm/8",
+      "level": "patch_inspection",
+      "bug_info_sha256": "4929903e3740c6085a88bad51f4de68c9bd73092782627b52e787717fb1e0203",
+      "patch_sha256": "7a210eadbd8ac1ce3fd783682bb20d44ca7f6ee12fc5301376f480b9e4f0e8a9"
+    },
+    {
+      "id": "black/6",
+      "level": "patch_inspection",
+      "bug_info_sha256": "9d72dbaa10482295bec4d93d21fde083c4c1ecc338baa7cb1ab8526d4851094e",
+      "patch_sha256": "73e0c51ab2f65bcf01ac3f9373528a72c3c5f8dfd06081e262e0b2fa800abbc7"
+    },
+    {
+      "id": "black/20",
+      "level": "patch_inspection",
+      "bug_info_sha256": "da749df0d0c63809056b729f0dd855fdca05061aa174bbdd707a81a503b65a70",
+      "patch_sha256": "a8a3e4801447164fb21c9b43383d9d47d1a5deaf77901350eb62477d30b15a74"
+    },
+    {
+      "id": "black/19",
+      "level": "patch_inspection",
+      "bug_info_sha256": "877ad7104694eae43a87eb71e1884c27254fef617c260f065490c87a9c663393",
+      "patch_sha256": "5d24a124b2f5193904072cd37b22ee4628cde1db5c9374d0226e5aaa8c1ffacb"
+    },
+    {
+      "id": "tqdm/3",
+      "level": "patch_inspection",
+      "bug_info_sha256": "48e4180efbd4d0e54faf353e0e94c9a47c69b0db03903baea16660abdb7501c8",
+      "patch_sha256": "0ed88a5ee0f23deb568713bbd52e54e84799b7125581c9cc1cd971d121be47db"
+    },
+    {
+      "id": "black/12",
+      "level": "patch_inspection",
+      "bug_info_sha256": "72f9a9755eceed31a26eec9c5db8ba54cfdaaa879f64a57bed1005a906fade3f",
+      "patch_sha256": "04e2d52a396a903bf497ce75fa6c9e1c7a9032401f038156e1aa5f8b359a801d"
+    },
+    {
+      "id": "tqdm/6",
+      "level": "patch_inspection",
+      "bug_info_sha256": "363378aa64576f91c1e57493ad6fe37bd6071c023467c1be6a6d60afc14b5bc4",
+      "patch_sha256": "23e141d7c60131298b90f369a4dfd5820478e8c94a1a97dd9ae1fadac2d59cf2"
+    },
+    {
+      "id": "black/2",
+      "level": "patch_inspection",
+      "bug_info_sha256": "dccadf2989741b6c67e81ff339d7fcf9329f6bc7006517905274c86a44125b7c",
+      "patch_sha256": "7c7e98d68837366d0b76f98be563113a1117201d6af0662bc10193bbe4f14c12"
+    },
+    {
+      "id": "black/21",
+      "level": "patch_inspection",
+      "bug_info_sha256": "5855342593fa4b3729bc84e3be89371aa48c314e671a4ae8f0f87ad012b80614",
+      "patch_sha256": "b8319fc597a1a21fcd61a9a97ad698130d25817ad049b51416f3c019832be45f"
+    },
+    {
+      "id": "tqdm/5",
+      "level": "patch_inspection",
+      "bug_info_sha256": "94c71277306cd397048c9624f9c92ef95f10dcd412965b4b715d49a0f5256c0f",
+      "patch_sha256": "2adfd98f9ae7dc8194012a5a1b70089da6377fb9f29dfc3c265f9bf29860ddb5"
+    },
+    {
+      "id": "black/15",
+      "level": "patch_inspection",
+      "bug_info_sha256": "231326f8d6ae7556bdc59764e87cc6adaa148605cbddaeb10fa1507a8e33d4ee",
+      "patch_sha256": "1371c5e91bdb5ef3ccfd7e31bdcea0e28ee2536bd0f9feafe8c277c09630a08e"
+    },
+    {
+      "id": "black/5",
+      "level": "patch_inspection",
+      "bug_info_sha256": "679c472f6c117ba5adbc39032fe5a07337afd1c7620e8e8f610544c063887891",
+      "patch_sha256": "1f8b580de449bbcc064ccf0abd02ce4de47a02f5d00c9f9daa80f009b1055acf"
+    },
+    {
+      "id": "black/14",
+      "level": "patch_inspection",
+      "bug_info_sha256": "35b2376ee03853f924a274d0e65b380fd400928c4c27b7eeadbad4cdfe533054",
+      "patch_sha256": "25d76a25a40730cbf19ece05f4fec7a155b2566c8dd390ba2e73a27ae51920e5"
+    },
+    {
+      "id": "tqdm/9",
+      "level": "patch_inspection",
+      "bug_info_sha256": "9a5aa6d490d872d07bd72e0107203c91c22102a5ad114b9c683c3734363b1891",
+      "patch_sha256": "bffe15e309385ea012b53d4dcc8fd84552bd628ddfa76745a88c0d985ca0dc6b"
+    },
+    {
+      "id": "pysnooper/3",
+      "level": "patch_inspection",
+      "bug_info_sha256": "f4edd7b703911670e11dbe11477c42bd0ce8739c3999b220af8e38219c90f062",
+      "patch_sha256": "ff241462dac77feacce42f4c1a555c6da08f3ac6c9ace1c54900e9814bcc4536"
+    }
+  ],
+  "summaries": [
+    {
+      "id": "cookiecutter/2",
+      "buggy_commit": "d7e7b28811e474e14d1bed747115e47dcdd15ba3",
+      "fixed_commit": "90434ff4ea4477941444f1e83313beb414838535",
+      "test_paths": [
+        "tests/test_hooks.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "cookiecutter/hooks.py",
+          "after": "cookiecutter/hooks.py"
+        }
+      ],
+      "patch_lines": 35,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "black/13",
+      "buggy_commit": "b719d85ccc330170e40b2617307a7e3b2a0bab14",
+      "fixed_commit": "883689366ce0f0e0ddd66d81360c61abfd19b01a",
+      "test_paths": [
+        "tests/data/python37.py",
+        "tests/test_black.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "blib2to3/pgen2/tokenize.py",
+          "after": "blib2to3/pgen2/tokenize.py"
+        }
+      ],
+      "patch_lines": 22,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "cookiecutter/4",
+      "buggy_commit": "9568ab6ecd2d6836646006c59473c4a4ac0dee04",
+      "fixed_commit": "457a1a4e862aab4102b644ff1d2b2e2b5a766b3c",
+      "test_paths": [
+        "tests/test_hooks.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "cookiecutter/exceptions.py",
+          "after": "cookiecutter/exceptions.py"
+        },
+        {
+          "before": "cookiecutter/generate.py",
+          "after": "cookiecutter/generate.py"
+        },
+        {
+          "before": "cookiecutter/hooks.py",
+          "after": "cookiecutter/hooks.py"
+        }
+      ],
+      "patch_lines": 85,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "tqdm/2",
+      "buggy_commit": "bef86db56654d271838b145ad77f7040a73a7b4d",
+      "fixed_commit": "127af5caf19e7d29c346f5ca8a9c7ef3004b664b",
+      "test_paths": [
+        "tqdm/tests/tests_tqdm.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "tqdm/std.py",
+          "after": "tqdm/std.py"
+        },
+        {
+          "before": "tqdm/utils.py",
+          "after": "tqdm/utils.py"
+        }
+      ],
+      "patch_lines": 41,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "black/18",
+      "buggy_commit": "dbe26161fa68632d608a440666a0960a32630902",
+      "fixed_commit": "00a302560b92951c22f0f4c8d618cf63de39bd57",
+      "test_paths": [
+        "tests/test_black.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "black.py",
+          "after": "black.py"
+        }
+      ],
+      "patch_lines": 116,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "tqdm/7",
+      "buggy_commit": "caefe02fd6f3165e5634460ab20caf4c60400120",
+      "fixed_commit": "4efd35246c924236f34d8130b1055a3c3ba78605",
+      "test_paths": [
+        "tqdm/tests/tests_main.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "tqdm/_main.py",
+          "after": "tqdm/_main.py"
+        }
+      ],
+      "patch_lines": 13,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "tqdm/4",
+      "buggy_commit": "03b347646492131d889871939b40457d29147216",
+      "fixed_commit": "964dee631d0ed30e2f799b42fc58ba5e73795a08",
+      "test_paths": [
+        "tqdm/tests/tests_tqdm.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "tqdm/_tqdm.py",
+          "after": "tqdm/_tqdm.py"
+        }
+      ],
+      "patch_lines": 14,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "black/7",
+      "buggy_commit": "18119d38466652ae818436cb497f601294ed4558",
+      "fixed_commit": "de806405d2934b629d67e2a6317ad7e826765a20",
+      "test_paths": [
+        "tests/data/tupleassign.py",
+        "tests/test_black.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "black.py",
+          "after": "black.py"
+        }
+      ],
+      "patch_lines": 32,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "pysnooper/2",
+      "buggy_commit": "e21a31162f4c54be693d8ca8260e42393b39abd3",
+      "fixed_commit": "814abc34a098c1b98cb327105ac396f985d2413e",
+      "test_paths": [
+        "tests/test_pysnooper.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "pysnooper/tracer.py",
+          "after": "pysnooper/tracer.py"
+        }
+      ],
+      "patch_lines": 143,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "black/11",
+      "buggy_commit": "283a5d53a8d57e8e186a08c9fbf249e1fbe7bc94",
+      "fixed_commit": "024c9cab55da7bd3236fd88759c9735d6149b464",
+      "test_paths": [
+        "tests/data/comments6.py",
+        "tests/test_black.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "black.py",
+          "after": "black.py"
+        }
+      ],
+      "patch_lines": 51,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "black/9",
+      "buggy_commit": "026c81b83454f176a9f9253cbfb70be2c159d822",
+      "fixed_commit": "d6db1c12a8e14833fe22da377cddc2bd1f43dc14",
+      "test_paths": [
+        "tests/data/python2_print_function.py",
+        "tests/test_black.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "black.py",
+          "after": "black.py"
+        }
+      ],
+      "patch_lines": 20,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "black/23",
+      "buggy_commit": "8de552eb4f0fbf1ad84812cde71489cc00d3ed1f",
+      "fixed_commit": "6316e293ac30a2837ec20eba289fd28a2a18cf89",
+      "test_paths": [
+        "tests/python2.py",
+        "tests/test_black.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "black.py",
+          "after": "black.py"
+        },
+        {
+          "before": "blib2to3/pygram.py",
+          "after": "blib2to3/pygram.py"
+        },
+        {
+          "before": "tests/function.py",
+          "after": "tests/function.py"
+        }
+      ],
+      "patch_lines": 128,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "black/10",
+      "buggy_commit": "f6643c4f0cfbae1f2493fdfce46cfbae3d26f46b",
+      "fixed_commit": "66aa676278948368dff251dffd58c850cb8b889e",
+      "test_paths": [
+        "tests/test_black.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "blib2to3/pgen2/driver.py",
+          "after": "blib2to3/pgen2/driver.py"
+        }
+      ],
+      "patch_lines": 16,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "black/8",
+      "buggy_commit": "e6ddb68c786256e1cb0c76b42d10c212ef34cb2a",
+      "fixed_commit": "6b994fdb8ab70ce4c2eafb8f2f0ff2648f3ff1ef",
+      "test_paths": [
+        "tests/data/comments7.py",
+        "tests/test_black.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "black.py",
+          "after": "black.py"
+        }
+      ],
+      "patch_lines": 25,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "black/4",
+      "buggy_commit": "65ea568e3301951f26e0e3b98f6d5dc80132e917",
+      "fixed_commit": "c7495b9aa098ef7a358fc74556359d21c6a4ba11",
+      "test_paths": [
+        "tests/test_black.py",
+        "tests/data/beginning_backslash.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "black.py",
+          "after": "black.py"
+        }
+      ],
+      "patch_lines": 19,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "black/3",
+      "buggy_commit": "8126b4f6a9342290de4655e6a8a78cd288ce7daa",
+      "fixed_commit": "7a14a37981862ef418f3cdb4a7e2375856f97529",
+      "test_paths": [
+        "tests/test_black.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "black.py",
+          "after": "black.py"
+        }
+      ],
+      "patch_lines": 13,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "black/17",
+      "buggy_commit": "bbc09a4f013f2a584f143f3f5e3f76f6082367d4",
+      "fixed_commit": "7fc6ce990669464f5172b63fafa3724f5f308be3",
+      "test_paths": [
+        "tests/test_black.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "black.py",
+          "after": "black.py"
+        }
+      ],
+      "patch_lines": 23,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "black/16",
+      "buggy_commit": "fb34c9e19589d05f92084a28940837151251ebd6",
+      "fixed_commit": "42a3fe53319a8c02858c2a96989ed1339f84515a",
+      "test_paths": [
+        "tests/test_black.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "black.py",
+          "after": "black.py"
+        }
+      ],
+      "patch_lines": 30,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "black/22",
+      "buggy_commit": "728c56c986bc5aea4d9897d3fce3159f89991b8e",
+      "fixed_commit": "c55d08d0b96c8de8bd867ca315e380d9e9d2d7ec",
+      "test_paths": [
+        "tests/comments3.py",
+        "tests/test_black.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "black.py",
+          "after": "black.py"
+        }
+      ],
+      "patch_lines": 394,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "tqdm/8",
+      "buggy_commit": "08b8ad1ff3bd003ef8309faaa0cc108ffa40317d",
+      "fixed_commit": "cae9d139c6df5614be3bf6e25ccbd600ee3286dc",
+      "test_paths": [
+        "tqdm/tests/tests_tqdm.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "tqdm/_tqdm.py",
+          "after": "tqdm/_tqdm.py"
+        }
+      ],
+      "patch_lines": 13,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "black/6",
+      "buggy_commit": "8c8adedc2a74a494c24f93e405b6418ac32f54cd",
+      "fixed_commit": "f8617f975d56e81cfb4070ce65584f7b29a77e7a",
+      "test_paths": [
+        "tests/test_black.py",
+        "tests/data/comment_after_escaped_newline.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "black.py",
+          "after": "black.py"
+        },
+        {
+          "before": "blib2to3/pgen2/driver.py",
+          "after": "blib2to3/pgen2/driver.py"
+        },
+        {
+          "before": "blib2to3/pgen2/tokenize.py",
+          "after": "blib2to3/pgen2/tokenize.py"
+        },
+        {
+          "before": "tests/data/python37.py",
+          "after": "tests/data/python37.py"
+        }
+      ],
+      "patch_lines": 273,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "black/20",
+      "buggy_commit": "2e52a2b3ecc0fe025439c3db05a4457ab14f167b",
+      "fixed_commit": "06e95b1e9bcd43c4574840f8174ba4b2c5d281bd",
+      "test_paths": [
+        "tests/test_black.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "black.py",
+          "after": "black.py"
+        }
+      ],
+      "patch_lines": 15,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "black/19",
+      "buggy_commit": "337a4199f90ca48a19cf26511e0cec330b13bd4e",
+      "fixed_commit": "29e97d1d4a7717f1bd0ca35cacf2f2ce6d815b0c",
+      "test_paths": [
+        "tests/comments6.py",
+        "tests/test_black.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "black.py",
+          "after": "black.py"
+        }
+      ],
+      "patch_lines": 15,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "tqdm/3",
+      "buggy_commit": "c2599e3cd6087429f48bae34347ec5d2473c8392",
+      "fixed_commit": "73962a47026dd980ac0758820efc9c41cbf938e0",
+      "test_paths": [
+        "tqdm/tests/tests_tqdm.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "tqdm/_tqdm.py",
+          "after": "tqdm/_tqdm.py"
+        }
+      ],
+      "patch_lines": 22,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "black/12",
+      "buggy_commit": "8b340e210271a8108995fd479c55dbc0a34466bd",
+      "fixed_commit": "b53cb9474348e13533ccba3735191a55ef3da6c4",
+      "test_paths": [
+        "tests/data/bracketmatch.py",
+        "tests/test_black.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "black.py",
+          "after": "black.py"
+        }
+      ],
+      "patch_lines": 64,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "tqdm/6",
+      "buggy_commit": "a4b9c86db548b2d0dbb5af7a6bbdc26ab47e1eec",
+      "fixed_commit": "6dad2e89019317e875c46d5a3a82a811ad6de2f9",
+      "test_paths": [
+        "tqdm/tests/tests_synchronisation.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "tqdm/_tqdm.py",
+          "after": "tqdm/_tqdm.py"
+        }
+      ],
+      "patch_lines": 13,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "black/2",
+      "buggy_commit": "c8ca6b2b9ff3510bee12129824cebfc2fc51e5b2",
+      "fixed_commit": "892eddacd215d685e136686b7f629ade70adca83",
+      "test_paths": [
+        "tests/test_black.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "black.py",
+          "after": "black.py"
+        }
+      ],
+      "patch_lines": 63,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "black/21",
+      "buggy_commit": "c071af761e1550c6e4ebab8e5af747d2d8fdd48e",
+      "fixed_commit": "8e7848c63efe36f09e4651bece8c0efc34a1c3e1",
+      "test_paths": [
+        "tests/test_black.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "black.py",
+          "after": "black.py"
+        }
+      ],
+      "patch_lines": 13,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "tqdm/5",
+      "buggy_commit": "19b08ab34fdbfa0275bc5cb2430436c724c7e759",
+      "fixed_commit": "4f340697af69b71850aad496387c9c5aa1904136",
+      "test_paths": [
+        "tqdm/tests/tests_tqdm.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "tqdm/_tqdm.py",
+          "after": "tqdm/_tqdm.py"
+        }
+      ],
+      "patch_lines": 37,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "black/15",
+      "buggy_commit": "8a8c58252cc023ae250d6febd24f50a8166450d4",
+      "fixed_commit": "df2ae3bbe6c45298aabb6c04e85cb353205626f1",
+      "test_paths": [
+        "tests/data/fmtonoff2.py",
+        "tests/test_black.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "black.py",
+          "after": "black.py"
+        }
+      ],
+      "patch_lines": 364,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "black/5",
+      "buggy_commit": "1bbb01b854d168d76ebe4bf78961c2152ae075d9",
+      "fixed_commit": "9394de150ebf0adc426523f46dc08e8b2b2b0b63",
+      "test_paths": [
+        "tests/test_black.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "black.py",
+          "after": "black.py"
+        }
+      ],
+      "patch_lines": 33,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "black/14",
+      "buggy_commit": "3bdd42389128bbbe8b64a8e050563f09bff99979",
+      "fixed_commit": "dd8bde6d2fbfe8a7a11093e761a0cb5837efa96a",
+      "test_paths": [
+        "tests/test_black.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "black.py",
+          "after": "black.py"
+        },
+        {
+          "before": "tests/data/python2_unicode_literals.py",
+          "after": "tests/data/python2_unicode_literals.py"
+        }
+      ],
+      "patch_lines": 78,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "tqdm/9",
+      "buggy_commit": "9da1d5d116aec7a23d8f6dc22d5e23ecb1c40a7c",
+      "fixed_commit": "d877c1dfb4739852105f7b967a8fceb869ac5042",
+      "test_paths": [
+        "tqdm/tests/tests_tqdm.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "tqdm/_tqdm.py",
+          "after": "tqdm/_tqdm.py"
+        }
+      ],
+      "patch_lines": 62,
+      "qualification": "pending_source_environment_and_function_family_review"
+    },
+    {
+      "id": "pysnooper/3",
+      "buggy_commit": "6e3d797be3fa0a746fb5b1b7c7fea78eb926c208",
+      "fixed_commit": "15555ed760000b049aff8fecc79d29339c1224c3",
+      "test_paths": [
+        "tests/test_pysnooper.py"
+      ],
+      "changed_paths": [
+        {
+          "before": "pysnooper/pysnooper.py",
+          "after": "pysnooper/pysnooper.py"
+        }
+      ],
+      "patch_lines": 13,
+      "qualification": "pending_source_environment_and_function_family_review"
+    }
+  ],
+  "qualified_tasks": 0,
+  "api_model_calls": 0,
+  "limits": [
+    "Metadata and patch headers are not executable task qualification.",
+    "These IDs are now development-exposed; all aliases and variants must stay out of final evaluation.",
+    "Same-project or same-function candidates need clustering; 34 IDs do not prove 34 independent units."
+  ]
+}

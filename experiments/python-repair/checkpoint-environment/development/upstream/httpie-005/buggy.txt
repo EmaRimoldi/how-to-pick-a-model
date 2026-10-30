@@ -1,0 +1,29 @@
+class KeyValueType(object):
+    """A type used with `argparse`."""
+    def __init__(self, *separators):
+        self.separators = separators
+
+    def __call__(self, string):
+        found = {}
+        for sep in self.separators:
+            regex = '[^\\\\]' + sep
+            match = re.search(regex, string)
+            if match:
+                found[match.start() + 1] = sep
+
+        if not found:
+            #noinspection PyExceptionInherit
+            raise argparse.ArgumentTypeError(
+                '"%s" is not a valid value' % string)
+
+        # split the string at the earliest non-escaped separator.
+        seploc = min(found.keys())
+        sep = found[seploc]
+        key = string[:seploc]
+        value = string[seploc + len(sep):]
+
+        # remove escape chars
+        for sepstr in self.separators:
+            key = key.replace('\\' + sepstr, sepstr)
+            value = value.replace('\\' + sepstr, sepstr)
+        return KeyValue(key=key, value=value, sep=sep, orig=string)

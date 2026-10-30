@@ -1,0 +1,1445 @@
+{
+  "additional_executions": 96,
+  "all_public_cases": 48,
+  "api_calls": 0,
+  "artifacts": 8,
+  "available": 8,
+  "bank": "generated",
+  "candidate_inventory": [
+    {
+      "binding": "2974c03e7ff6643d18f4221472014ad5845ffcd62e614fd6725c063659f06865",
+      "eligibility": "public_failure",
+      "id": "youtube-dl-003",
+      "public_passed": false,
+      "public_passed_cases": 5,
+      "public_total_cases": 6
+    },
+    {
+      "binding": "5269fc3c7297f2affcfb1379b684ebabef6f8fcc9e48e371b7efad49de449735",
+      "eligibility": "public_pass_no_trigger",
+      "id": "youtube-dl-011",
+      "public_passed": true,
+      "public_passed_cases": 6,
+      "public_total_cases": 6
+    },
+    {
+      "binding": "c97297428f8016ecbae7b7ad5a4b36eb257ab06e5f80cf61aef6025662b68103",
+      "eligibility": "public_failure",
+      "id": "youtube-dl-013",
+      "public_passed": false,
+      "public_passed_cases": 5,
+      "public_total_cases": 6
+    },
+    {
+      "binding": "1786c70b44812aa18a4ebefd86bf42bfd3f4c8a8a5b822493d0f12d51a0298e1",
+      "eligibility": "public_failure",
+      "id": "youtube-dl-020",
+      "public_passed": false,
+      "public_passed_cases": 5,
+      "public_total_cases": 6
+    },
+    {
+      "binding": "bc1ee396b778e7b1e1757d28b8bad625f8729a067d75f6a5999c3755e5a7254a",
+      "eligibility": "public_pass_no_trigger",
+      "id": "youtube-dl-027",
+      "public_passed": true,
+      "public_passed_cases": 6,
+      "public_total_cases": 6
+    },
+    {
+      "binding": "ddb6acd5c5b6e50a59f78bc0dfc603034ccd2e38ecbf8829208f20a59d20690c",
+      "eligibility": "public_failure",
+      "id": "youtube-dl-031",
+      "public_passed": false,
+      "public_passed_cases": 5,
+      "public_total_cases": 6
+    },
+    {
+      "binding": "661a602f23b3176c933ee0512e49fe299e8ffc70be566e37f71ab9194d6f3406",
+      "eligibility": "public_pass_no_trigger",
+      "id": "youtube-dl-032",
+      "public_passed": true,
+      "public_passed_cases": 5,
+      "public_total_cases": 5
+    },
+    {
+      "binding": "2ac6459dba72e81b84e14d104e5f150c7f41ac124c535e719a884ccca392567d",
+      "eligibility": "public_failure",
+      "id": "youtube-dl-033",
+      "public_passed": false,
+      "public_passed_cases": 5,
+      "public_total_cases": 6
+    },
+    {
+      "binding": "ebc406a8eff083316f5e374e1efdabdc6fa95897df422258f70404b25a46e5d9",
+      "eligibility": "public_failure",
+      "id": "youtube-dl-042",
+      "public_passed": false,
+      "public_passed_cases": 4,
+      "public_total_cases": 6
+    },
+    {
+      "binding": "644b968818219bba1899d29ccfeac5631c0f7787725e72e08a7de87b3531d27b",
+      "eligibility": "public_failure",
+      "id": "youtube-dl-043",
+      "public_passed": false,
+      "public_passed_cases": 5,
+      "public_total_cases": 6
+    },
+    {
+      "binding": "3e991bff6852daa54e4569be63ade3c435e8135c2a1b0f4120967f6a87c601b8",
+      "eligibility": "public_failure",
+      "id": "httpie-005",
+      "public_passed": false,
+      "public_passed_cases": 4,
+      "public_total_cases": 6
+    },
+    {
+      "binding": "70dae4dff5b6a295e00bbb38af31050dcc42274484399d0af4d9cfd195823697",
+      "eligibility": "public_pass_no_trigger",
+      "id": "tornado-009",
+      "public_passed": true,
+      "public_passed_cases": 6,
+      "public_total_cases": 6
+    }
+  ],
+  "distinguishes_failing_executed_lines": 7,
+  "execution_seconds": 7.39179366499593,
+  "kind": "offline_diagnostic_feasibility",
+  "limits": [
+    "Previously exposed Gemma 3 27B json_current failed candidates; eight public failures out of twelve candidates, not unseen policy evaluation.",
+    "Ranks correlate line execution with existing public labels; they do not locate a known fault.",
+    "No reference patch or private evaluator used; no repair, selection or benefit measured.",
+    "Only single-threaded entrypoint calls after module import are instrumented.",
+    "Python line events do not show sub-line data dependencies, C internals or absent code.",
+    "No truncated coverage or partial suite is scored; all failures remain in the denominator.",
+    "Elapsed time is machine-specific and is not a model cost or equal-total-budget experiment.",
+    "Retain whole tie groups; a small top tie group is not a criterion to enable model collection.",
+    "Different bugs and source states from the original-bug audit; no causal comparison between the two audits."
+  ],
+  "no_public_trigger": 4,
+  "preflight_executions": 1,
+  "records": [
+    {
+      "additional_executions": 12,
+      "available": true,
+      "id": "youtube-dl-003",
+      "invalid_or_mismatched_cases": [],
+      "metrics": {
+        "both_outcomes_present": true,
+        "covered_lines": 18,
+        "distinguishes_failing_executed_lines": true,
+        "failing_cases": 1,
+        "failing_executed_lines": 11,
+        "passing_cases": 5,
+        "positive_score_groups": 5,
+        "score_groups": 6,
+        "top_tie_fraction_of_failing_executed": 0.09090909090909091,
+        "top_tie_lines": 1
+      },
+      "public_cases": 6,
+      "ranking": [
+        {
+          "locations": [
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 37,
+              "passing_covered": 1
+            }
+          ],
+          "ochiai": 0.7071067811865476,
+          "rank_max": 1,
+          "rank_min": 1,
+          "squared_exact": [
+            1,
+            2
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 19,
+              "passing_covered": 2
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 22,
+              "passing_covered": 2
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 23,
+              "passing_covered": 2
+            }
+          ],
+          "ochiai": 0.5773502691896257,
+          "rank_max": 4,
+          "rank_min": 2,
+          "squared_exact": [
+            1,
+            3
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 11,
+              "passing_covered": 3
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 14,
+              "passing_covered": 3
+            }
+          ],
+          "ochiai": 0.5,
+          "rank_max": 6,
+          "rank_min": 5,
+          "squared_exact": [
+            1,
+            4
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 43,
+              "passing_covered": 4
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 45,
+              "passing_covered": 4
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 46,
+              "passing_covered": 4
+            }
+          ],
+          "ochiai": 0.4472135954999579,
+          "rank_max": 9,
+          "rank_min": 7,
+          "squared_exact": [
+            1,
+            5
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 41,
+              "passing_covered": 5
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 50,
+              "passing_covered": 5
+            }
+          ],
+          "ochiai": 0.408248290463863,
+          "rank_max": 11,
+          "rank_min": 10,
+          "squared_exact": [
+            1,
+            6
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 15,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 24,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 25,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 29,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 31,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 32,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 42,
+              "passing_covered": 1
+            }
+          ],
+          "ochiai": 0.0,
+          "rank_max": 18,
+          "rank_min": 12,
+          "squared_exact": [
+            0,
+            1
+          ]
+        }
+      ],
+      "seconds": 0.8923869159989408
+    },
+    {
+      "additional_executions": 12,
+      "available": true,
+      "id": "youtube-dl-013",
+      "invalid_or_mismatched_cases": [],
+      "metrics": {
+        "both_outcomes_present": true,
+        "covered_lines": 12,
+        "distinguishes_failing_executed_lines": true,
+        "failing_cases": 1,
+        "failing_executed_lines": 8,
+        "passing_cases": 5,
+        "positive_score_groups": 4,
+        "score_groups": 5,
+        "top_tie_fraction_of_failing_executed": 0.25,
+        "top_tie_lines": 2
+      },
+      "public_cases": 6,
+      "ranking": [
+        {
+          "locations": [
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 18,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 20,
+              "passing_covered": 1
+            }
+          ],
+          "ochiai": 0.7071067811865476,
+          "rank_max": 2,
+          "rank_min": 1,
+          "squared_exact": [
+            1,
+            2
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 14,
+              "passing_covered": 3
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 16,
+              "passing_covered": 3
+            }
+          ],
+          "ochiai": 0.5,
+          "rank_max": 4,
+          "rank_min": 3,
+          "squared_exact": [
+            1,
+            4
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 12,
+              "passing_covered": 4
+            }
+          ],
+          "ochiai": 0.4472135954999579,
+          "rank_max": 5,
+          "rank_min": 5,
+          "squared_exact": [
+            1,
+            5
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 8,
+              "passing_covered": 5
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 10,
+              "passing_covered": 5
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 25,
+              "passing_covered": 5
+            }
+          ],
+          "ochiai": 0.408248290463863,
+          "rank_max": 8,
+          "rank_min": 6,
+          "squared_exact": [
+            1,
+            6
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 11,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 13,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 17,
+              "passing_covered": 2
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 21,
+              "passing_covered": 2
+            }
+          ],
+          "ochiai": 0.0,
+          "rank_max": 12,
+          "rank_min": 9,
+          "squared_exact": [
+            0,
+            1
+          ]
+        }
+      ],
+      "seconds": 0.9174158750029164
+    },
+    {
+      "additional_executions": 12,
+      "available": true,
+      "id": "youtube-dl-020",
+      "invalid_or_mismatched_cases": [],
+      "metrics": {
+        "both_outcomes_present": true,
+        "covered_lines": 18,
+        "distinguishes_failing_executed_lines": false,
+        "failing_cases": 1,
+        "failing_executed_lines": 7,
+        "passing_cases": 5,
+        "positive_score_groups": 1,
+        "score_groups": 2,
+        "top_tie_fraction_of_failing_executed": 1.0,
+        "top_tie_lines": 7
+      },
+      "public_cases": 6,
+      "ranking": [
+        {
+          "locations": [
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 12,
+              "passing_covered": 5
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 13,
+              "passing_covered": 5
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 15,
+              "passing_covered": 5
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 16,
+              "passing_covered": 5
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 24,
+              "passing_covered": 5
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 32,
+              "passing_covered": 5
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 76,
+              "passing_covered": 5
+            }
+          ],
+          "ochiai": 0.408248290463863,
+          "rank_max": 7,
+          "rank_min": 1,
+          "squared_exact": [
+            1,
+            6
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 25,
+              "passing_covered": 3
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 27,
+              "passing_covered": 3
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 28,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 30,
+              "passing_covered": 3
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 37,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 40,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 41,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 67,
+              "passing_covered": 3
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 69,
+              "passing_covered": 3
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 71,
+              "passing_covered": 3
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 72,
+              "passing_covered": 3
+            }
+          ],
+          "ochiai": 0.0,
+          "rank_max": 18,
+          "rank_min": 8,
+          "squared_exact": [
+            0,
+            1
+          ]
+        }
+      ],
+      "seconds": 0.9459568330057664
+    },
+    {
+      "additional_executions": 12,
+      "available": true,
+      "id": "youtube-dl-031",
+      "invalid_or_mismatched_cases": [],
+      "metrics": {
+        "both_outcomes_present": true,
+        "covered_lines": 23,
+        "distinguishes_failing_executed_lines": true,
+        "failing_cases": 1,
+        "failing_executed_lines": 11,
+        "passing_cases": 5,
+        "positive_score_groups": 4,
+        "score_groups": 5,
+        "top_tie_fraction_of_failing_executed": 0.09090909090909091,
+        "top_tie_lines": 1
+      },
+      "public_cases": 6,
+      "ranking": [
+        {
+          "locations": [
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 27,
+              "passing_covered": 1
+            }
+          ],
+          "ochiai": 0.7071067811865476,
+          "rank_max": 1,
+          "rank_min": 1,
+          "squared_exact": [
+            1,
+            2
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 23,
+              "passing_covered": 2
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 25,
+              "passing_covered": 2
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 26,
+              "passing_covered": 2
+            }
+          ],
+          "ochiai": 0.5773502691896257,
+          "rank_max": 4,
+          "rank_min": 2,
+          "squared_exact": [
+            1,
+            3
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 13,
+              "passing_covered": 4
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 15,
+              "passing_covered": 4
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 16,
+              "passing_covered": 4
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 21,
+              "passing_covered": 4
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 22,
+              "passing_covered": 4
+            }
+          ],
+          "ochiai": 0.4472135954999579,
+          "rank_max": 9,
+          "rank_min": 5,
+          "squared_exact": [
+            1,
+            5
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 10,
+              "passing_covered": 5
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 46,
+              "passing_covered": 5
+            }
+          ],
+          "ochiai": 0.408248290463863,
+          "rank_max": 11,
+          "rank_min": 10,
+          "squared_exact": [
+            1,
+            6
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 11,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 28,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 30,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 31,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 33,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 35,
+              "passing_covered": 2
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 36,
+              "passing_covered": 2
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 37,
+              "passing_covered": 2
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 38,
+              "passing_covered": 2
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 39,
+              "passing_covered": 2
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 40,
+              "passing_covered": 2
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 42,
+              "passing_covered": 2
+            }
+          ],
+          "ochiai": 0.0,
+          "rank_max": 23,
+          "rank_min": 12,
+          "squared_exact": [
+            0,
+            1
+          ]
+        }
+      ],
+      "seconds": 0.8334112079974147
+    },
+    {
+      "additional_executions": 12,
+      "available": true,
+      "id": "youtube-dl-033",
+      "invalid_or_mismatched_cases": [],
+      "metrics": {
+        "both_outcomes_present": true,
+        "covered_lines": 24,
+        "distinguishes_failing_executed_lines": true,
+        "failing_cases": 1,
+        "failing_executed_lines": 15,
+        "passing_cases": 5,
+        "positive_score_groups": 4,
+        "score_groups": 5,
+        "top_tie_fraction_of_failing_executed": 0.26666666666666666,
+        "top_tie_lines": 4
+      },
+      "public_cases": 6,
+      "ranking": [
+        {
+          "locations": [
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 21,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 32,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 33,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 34,
+              "passing_covered": 1
+            }
+          ],
+          "ochiai": 0.7071067811865476,
+          "rank_max": 4,
+          "rank_min": 1,
+          "squared_exact": [
+            1,
+            2
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 19,
+              "passing_covered": 2
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 20,
+              "passing_covered": 2
+            }
+          ],
+          "ochiai": 0.5773502691896257,
+          "rank_max": 6,
+          "rank_min": 5,
+          "squared_exact": [
+            1,
+            3
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 13,
+              "passing_covered": 4
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 14,
+              "passing_covered": 4
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 15,
+              "passing_covered": 4
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 16,
+              "passing_covered": 4
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 29,
+              "passing_covered": 4
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 30,
+              "passing_covered": 4
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 31,
+              "passing_covered": 4
+            }
+          ],
+          "ochiai": 0.4472135954999579,
+          "rank_max": 13,
+          "rank_min": 7,
+          "squared_exact": [
+            1,
+            5
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 10,
+              "passing_covered": 5
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 40,
+              "passing_covered": 5
+            }
+          ],
+          "ochiai": 0.408248290463863,
+          "rank_max": 15,
+          "rank_min": 14,
+          "squared_exact": [
+            1,
+            6
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 11,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 17,
+              "passing_covered": 2
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 23,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 24,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 25,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 26,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 27,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 28,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 36,
+              "passing_covered": 3
+            }
+          ],
+          "ochiai": 0.0,
+          "rank_max": 24,
+          "rank_min": 16,
+          "squared_exact": [
+            0,
+            1
+          ]
+        }
+      ],
+      "seconds": 0.9863090419967193
+    },
+    {
+      "additional_executions": 12,
+      "available": true,
+      "id": "youtube-dl-042",
+      "invalid_or_mismatched_cases": [],
+      "metrics": {
+        "both_outcomes_present": true,
+        "covered_lines": 8,
+        "distinguishes_failing_executed_lines": true,
+        "failing_cases": 2,
+        "failing_executed_lines": 7,
+        "passing_cases": 4,
+        "positive_score_groups": 3,
+        "score_groups": 4,
+        "top_tie_fraction_of_failing_executed": 0.2857142857142857,
+        "top_tie_lines": 2
+      },
+      "public_cases": 6,
+      "ranking": [
+        {
+          "locations": [
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 11,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 13,
+              "passing_covered": 1
+            }
+          ],
+          "ochiai": 0.816496580927726,
+          "rank_max": 2,
+          "rank_min": 1,
+          "squared_exact": [
+            2,
+            3
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 8,
+              "passing_covered": 2
+            },
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 9,
+              "passing_covered": 2
+            }
+          ],
+          "ochiai": 0.7071067811865476,
+          "rank_max": 4,
+          "rank_min": 3,
+          "squared_exact": [
+            1,
+            2
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 7,
+              "passing_covered": 4
+            },
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 15,
+              "passing_covered": 4
+            },
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 19,
+              "passing_covered": 4
+            }
+          ],
+          "ochiai": 0.5773502691896257,
+          "rank_max": 7,
+          "rank_min": 5,
+          "squared_exact": [
+            1,
+            3
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 10,
+              "passing_covered": 1
+            }
+          ],
+          "ochiai": 0.0,
+          "rank_max": 8,
+          "rank_min": 8,
+          "squared_exact": [
+            0,
+            1
+          ]
+        }
+      ],
+      "seconds": 0.956761124994955
+    },
+    {
+      "additional_executions": 12,
+      "available": true,
+      "id": "youtube-dl-043",
+      "invalid_or_mismatched_cases": [],
+      "metrics": {
+        "both_outcomes_present": true,
+        "covered_lines": 5,
+        "distinguishes_failing_executed_lines": true,
+        "failing_cases": 1,
+        "failing_executed_lines": 4,
+        "passing_cases": 5,
+        "positive_score_groups": 2,
+        "score_groups": 3,
+        "top_tie_fraction_of_failing_executed": 0.25,
+        "top_tie_lines": 1
+      },
+      "public_cases": 6,
+      "ranking": [
+        {
+          "locations": [
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 9,
+              "passing_covered": 3
+            }
+          ],
+          "ochiai": 0.5,
+          "rank_max": 1,
+          "rank_min": 1,
+          "squared_exact": [
+            1,
+            4
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 6,
+              "passing_covered": 5
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 7,
+              "passing_covered": 5
+            },
+            {
+              "failing_covered": 1,
+              "file": "solution.py",
+              "line": 13,
+              "passing_covered": 5
+            }
+          ],
+          "ochiai": 0.408248290463863,
+          "rank_max": 4,
+          "rank_min": 2,
+          "squared_exact": [
+            1,
+            6
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 8,
+              "passing_covered": 2
+            }
+          ],
+          "ochiai": 0.0,
+          "rank_max": 5,
+          "rank_min": 5,
+          "squared_exact": [
+            0,
+            1
+          ]
+        }
+      ],
+      "seconds": 0.9234926659992198
+    },
+    {
+      "additional_executions": 12,
+      "available": true,
+      "id": "httpie-005",
+      "invalid_or_mismatched_cases": [],
+      "metrics": {
+        "both_outcomes_present": true,
+        "covered_lines": 22,
+        "distinguishes_failing_executed_lines": true,
+        "failing_cases": 2,
+        "failing_executed_lines": 18,
+        "passing_cases": 4,
+        "positive_score_groups": 2,
+        "score_groups": 3,
+        "top_tie_fraction_of_failing_executed": 0.5,
+        "top_tie_lines": 9
+      },
+      "public_cases": 6,
+      "ranking": [
+        {
+          "locations": [
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 20,
+              "passing_covered": 3
+            },
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 28,
+              "passing_covered": 3
+            },
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 29,
+              "passing_covered": 3
+            },
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 30,
+              "passing_covered": 3
+            },
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 31,
+              "passing_covered": 3
+            },
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 34,
+              "passing_covered": 3
+            },
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 35,
+              "passing_covered": 3
+            },
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 36,
+              "passing_covered": 3
+            },
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 37,
+              "passing_covered": 3
+            }
+          ],
+          "ochiai": 0.6324555320336759,
+          "rank_max": 9,
+          "rank_min": 1,
+          "squared_exact": [
+            2,
+            5
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 12,
+              "passing_covered": 4
+            },
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 15,
+              "passing_covered": 4
+            },
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 16,
+              "passing_covered": 4
+            },
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 17,
+              "passing_covered": 4
+            },
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 18,
+              "passing_covered": 4
+            },
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 19,
+              "passing_covered": 4
+            },
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 22,
+              "passing_covered": 4
+            },
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 41,
+              "passing_covered": 4
+            },
+            {
+              "failing_covered": 2,
+              "file": "solution.py",
+              "line": 42,
+              "passing_covered": 4
+            }
+          ],
+          "ochiai": 0.5773502691896257,
+          "rank_max": 18,
+          "rank_min": 10,
+          "squared_exact": [
+            1,
+            3
+          ]
+        },
+        {
+          "locations": [
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 24,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 25,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 43,
+              "passing_covered": 1
+            },
+            {
+              "failing_covered": 0,
+              "file": "solution.py",
+              "line": 44,
+              "passing_covered": 1
+            }
+          ],
+          "ochiai": 0.0,
+          "rank_max": 22,
+          "rank_min": 19,
+          "squared_exact": [
+            0,
+            1
+          ]
+        }
+      ],
+      "seconds": 0.9360599999999977
+    }
+  ],
+  "schema_version": 1,
+  "source_candidates": 12
+}

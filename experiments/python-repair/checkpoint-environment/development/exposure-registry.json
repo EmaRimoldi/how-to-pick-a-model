@@ -1,0 +1,1640 @@
+{
+  "schema_version": 1,
+  "kind": "minimum_documented_development_exposure_not_holdout_selection",
+  "benchmark_revision": "11c5f1eea954a42132cfd06bf257766a7963e0fd",
+  "sources": {
+    "experiments/python-repair/checkpoint-environment/development/screening.json": "d8bcae9f70654e1e0bde073eaf6ef9a7b8f5792000e25323586b01b17bcb9472",
+    "experiments/python-repair/checkpoint-environment/development/pool.json": "37f1900eaf52ab8ba85c7927a1bf5c19e31e13a1dea8c5e2c9f7872267fd7608",
+    "experiments/python-repair/checkpoint-environment/development-extension/pool.json": "4563c180054877014eae90283fb50c00f968950a8c6c8f39e7eb95e118f5a4ad",
+    "experiments/python-repair/checkpoint-environment/development-broader/pool.json": "a391412193749cf6b3c20472cdb703f27fc97c222edcea4b6a77165bfa8e006b",
+    "experiments/python-repair/checkpoint-environment/development-stateful/pool.json": "57b32161e31a9b7872d31fb3f3c7f47ad918a53cdbeefd9ad0a01cfcf48ed613",
+    "experiments/python-repair/checkpoint-environment/development-ablation-components/pool.json": "040bff5bac9e3b66babf0a08c6f8abff84114080e9d1897743429c6d4c5b0dd6",
+    "experiments/python-repair/checkpoint-environment/development-package-black13/task.json": "123e4f550f85f80889924d65b54c4746fd4585d6e944385645649646802a8822",
+    "experiments/python-repair/checkpoint-environment/development/exposure-notes.json": "67da43361bf8bd400abb7c7161bfc82fff3b874faae69c554df919937addb551",
+    "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json": "dcb97804ea2b04e8948b88a04b8513a3d9a1052f2ecb567f2f26bfcbb7885138"
+  },
+  "known_exposed_ids": [
+    "black/1",
+    "black/10",
+    "black/11",
+    "black/12",
+    "black/13",
+    "black/14",
+    "black/15",
+    "black/16",
+    "black/17",
+    "black/18",
+    "black/19",
+    "black/2",
+    "black/20",
+    "black/21",
+    "black/22",
+    "black/23",
+    "black/3",
+    "black/4",
+    "black/5",
+    "black/6",
+    "black/7",
+    "black/8",
+    "black/9",
+    "cookiecutter/1",
+    "cookiecutter/2",
+    "cookiecutter/3",
+    "cookiecutter/4",
+    "httpie/1",
+    "httpie/2",
+    "httpie/3",
+    "httpie/4",
+    "httpie/5",
+    "luigi/1",
+    "luigi/10",
+    "luigi/11",
+    "luigi/12",
+    "luigi/13",
+    "luigi/14",
+    "luigi/15",
+    "luigi/16",
+    "luigi/17",
+    "luigi/18",
+    "luigi/19",
+    "luigi/2",
+    "luigi/20",
+    "luigi/21",
+    "luigi/22",
+    "luigi/23",
+    "luigi/24",
+    "luigi/25",
+    "luigi/26",
+    "luigi/27",
+    "luigi/28",
+    "luigi/29",
+    "luigi/3",
+    "luigi/30",
+    "luigi/31",
+    "luigi/32",
+    "luigi/33",
+    "luigi/4",
+    "luigi/5",
+    "luigi/6",
+    "luigi/7",
+    "luigi/8",
+    "luigi/9",
+    "pysnooper/1",
+    "pysnooper/2",
+    "pysnooper/3",
+    "scrapy/1",
+    "scrapy/10",
+    "scrapy/11",
+    "scrapy/12",
+    "scrapy/13",
+    "scrapy/14",
+    "scrapy/15",
+    "scrapy/16",
+    "scrapy/17",
+    "scrapy/18",
+    "scrapy/19",
+    "scrapy/2",
+    "scrapy/20",
+    "scrapy/21",
+    "scrapy/22",
+    "scrapy/23",
+    "scrapy/24",
+    "scrapy/25",
+    "scrapy/26",
+    "scrapy/27",
+    "scrapy/28",
+    "scrapy/29",
+    "scrapy/3",
+    "scrapy/30",
+    "scrapy/31",
+    "scrapy/32",
+    "scrapy/33",
+    "scrapy/34",
+    "scrapy/35",
+    "scrapy/36",
+    "scrapy/37",
+    "scrapy/38",
+    "scrapy/39",
+    "scrapy/4",
+    "scrapy/40",
+    "scrapy/5",
+    "scrapy/6",
+    "scrapy/7",
+    "scrapy/8",
+    "scrapy/9",
+    "thefuck/1",
+    "thefuck/10",
+    "thefuck/11",
+    "thefuck/12",
+    "thefuck/13",
+    "thefuck/14",
+    "thefuck/15",
+    "thefuck/16",
+    "thefuck/17",
+    "thefuck/18",
+    "thefuck/19",
+    "thefuck/2",
+    "thefuck/20",
+    "thefuck/21",
+    "thefuck/22",
+    "thefuck/23",
+    "thefuck/24",
+    "thefuck/25",
+    "thefuck/26",
+    "thefuck/27",
+    "thefuck/28",
+    "thefuck/29",
+    "thefuck/3",
+    "thefuck/30",
+    "thefuck/31",
+    "thefuck/32",
+    "thefuck/4",
+    "thefuck/5",
+    "thefuck/6",
+    "thefuck/7",
+    "thefuck/8",
+    "thefuck/9",
+    "tornado/1",
+    "tornado/10",
+    "tornado/11",
+    "tornado/12",
+    "tornado/13",
+    "tornado/14",
+    "tornado/15",
+    "tornado/16",
+    "tornado/2",
+    "tornado/3",
+    "tornado/4",
+    "tornado/5",
+    "tornado/6",
+    "tornado/7",
+    "tornado/8",
+    "tornado/9",
+    "tqdm/1",
+    "tqdm/2",
+    "tqdm/3",
+    "tqdm/4",
+    "tqdm/5",
+    "tqdm/6",
+    "tqdm/7",
+    "tqdm/8",
+    "tqdm/9",
+    "youtube-dl/1",
+    "youtube-dl/10",
+    "youtube-dl/11",
+    "youtube-dl/12",
+    "youtube-dl/13",
+    "youtube-dl/14",
+    "youtube-dl/15",
+    "youtube-dl/16",
+    "youtube-dl/17",
+    "youtube-dl/18",
+    "youtube-dl/19",
+    "youtube-dl/2",
+    "youtube-dl/20",
+    "youtube-dl/21",
+    "youtube-dl/22",
+    "youtube-dl/23",
+    "youtube-dl/24",
+    "youtube-dl/25",
+    "youtube-dl/26",
+    "youtube-dl/27",
+    "youtube-dl/28",
+    "youtube-dl/29",
+    "youtube-dl/3",
+    "youtube-dl/30",
+    "youtube-dl/31",
+    "youtube-dl/32",
+    "youtube-dl/33",
+    "youtube-dl/34",
+    "youtube-dl/35",
+    "youtube-dl/36",
+    "youtube-dl/37",
+    "youtube-dl/38",
+    "youtube-dl/39",
+    "youtube-dl/4",
+    "youtube-dl/40",
+    "youtube-dl/41",
+    "youtube-dl/42",
+    "youtube-dl/43",
+    "youtube-dl/5",
+    "youtube-dl/6",
+    "youtube-dl/7",
+    "youtube-dl/8",
+    "youtube-dl/9"
+  ],
+  "known_exposed_bug_count": 208,
+  "known_exposed_projects": [
+    "black",
+    "cookiecutter",
+    "httpie",
+    "luigi",
+    "pysnooper",
+    "scrapy",
+    "thefuck",
+    "tornado",
+    "tqdm",
+    "youtube-dl"
+  ],
+  "project_counts": {
+    "black": 23,
+    "cookiecutter": 4,
+    "httpie": 5,
+    "luigi": 33,
+    "pysnooper": 3,
+    "scrapy": 40,
+    "thefuck": 32,
+    "tornado": 16,
+    "tqdm": 9,
+    "youtube-dl": 43
+  },
+  "exposure_evidence": {
+    "black/1": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/exposure-notes.json",
+        "level": "metadata_inspection"
+      }
+    ],
+    "black/10": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "black/11": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "black/12": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "black/13": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development-package-black13/task.json",
+        "level": "published_original_package_component"
+      }
+    ],
+    "black/14": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "black/15": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "black/16": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "black/17": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development-ablation-components/pool.json",
+        "level": "published_development_adapter"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "black/18": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "black/19": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "black/2": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "black/20": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "black/21": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "black/22": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "black/23": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "black/3": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "black/4": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "black/5": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "black/6": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "black/7": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "black/8": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "black/9": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "cookiecutter/1": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "documented_detailed_exclusion"
+      }
+    ],
+    "cookiecutter/2": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "cookiecutter/3": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "documented_detailed_exclusion"
+      }
+    ],
+    "cookiecutter/4": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "httpie/1": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "documented_detailed_exclusion"
+      }
+    ],
+    "httpie/2": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "httpie/3": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "httpie/4": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "httpie/5": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/pool.json",
+        "level": "published_development_adapter"
+      }
+    ],
+    "luigi/1": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/10": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development-broader/pool.json",
+        "level": "published_development_adapter"
+      }
+    ],
+    "luigi/11": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/12": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/13": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/14": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/15": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/16": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/17": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/18": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/19": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/2": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/20": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/21": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/22": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/23": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/24": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/25": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/26": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/27": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/28": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/29": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/3": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development-extension/pool.json",
+        "level": "published_development_adapter"
+      }
+    ],
+    "luigi/30": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/31": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/32": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/33": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/4": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/5": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/6": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/7": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/8": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "luigi/9": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "pysnooper/1": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/exposure-notes.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "pysnooper/2": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "pysnooper/3": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "scrapy/1": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/10": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/11": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/12": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/13": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/14": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/15": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "documented_detailed_exclusion"
+      }
+    ],
+    "scrapy/16": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/17": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/18": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/19": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/2": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development-broader/pool.json",
+        "level": "published_development_adapter"
+      }
+    ],
+    "scrapy/20": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/21": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/22": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/23": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/24": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/25": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/26": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development-stateful/pool.json",
+        "level": "published_development_adapter"
+      }
+    ],
+    "scrapy/27": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/28": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/29": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/3": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/30": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/31": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/32": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/33": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/34": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/35": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/36": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development-broader/pool.json",
+        "level": "published_development_adapter"
+      }
+    ],
+    "scrapy/37": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/38": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/39": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/4": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/40": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development-stateful/pool.json",
+        "level": "published_development_adapter"
+      }
+    ],
+    "scrapy/5": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/6": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/7": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/8": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "scrapy/9": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/1": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/10": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development-extension/pool.json",
+        "level": "published_development_adapter"
+      }
+    ],
+    "thefuck/11": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/12": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/13": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/14": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/15": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/16": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/17": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/18": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/19": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/2": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/20": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development-extension/pool.json",
+        "level": "published_development_adapter"
+      }
+    ],
+    "thefuck/21": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/22": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development-broader/pool.json",
+        "level": "published_development_adapter"
+      }
+    ],
+    "thefuck/23": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/24": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/25": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/26": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/27": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/28": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/29": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development-broader/pool.json",
+        "level": "published_development_adapter"
+      }
+    ],
+    "thefuck/3": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/30": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/31": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/32": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/4": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/5": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/6": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/7": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/8": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "thefuck/9": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "tornado/1": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "tornado/10": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "tornado/11": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "tornado/12": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "tornado/13": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "tornado/14": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "tornado/15": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "tornado/16": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "tornado/2": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "tornado/3": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "tornado/4": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "tornado/5": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development-broader/pool.json",
+        "level": "published_development_adapter"
+      }
+    ],
+    "tornado/6": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "tornado/7": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "tornado/8": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "tornado/9": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/pool.json",
+        "level": "published_development_adapter"
+      }
+    ],
+    "tqdm/1": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/exposure-notes.json",
+        "level": "metadata_inspection"
+      }
+    ],
+    "tqdm/2": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development-ablation-components/pool.json",
+        "level": "published_development_adapter"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "tqdm/3": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "tqdm/4": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development-ablation-components/pool.json",
+        "level": "published_development_adapter"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "tqdm/5": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "tqdm/6": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "tqdm/7": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "tqdm/8": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development-ablation-components/pool.json",
+        "level": "published_development_adapter"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "tqdm/9": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development-ablation-components/pool.json",
+        "level": "published_development_adapter"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/source-screen.json",
+        "level": "patch_inspection"
+      }
+    ],
+    "youtube-dl/1": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/10": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/11": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/pool.json",
+        "level": "published_development_adapter"
+      }
+    ],
+    "youtube-dl/12": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/13": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/pool.json",
+        "level": "published_development_adapter"
+      }
+    ],
+    "youtube-dl/14": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/15": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/16": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/17": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/18": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/19": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/2": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/20": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/pool.json",
+        "level": "published_development_adapter"
+      }
+    ],
+    "youtube-dl/21": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "documented_detailed_exclusion"
+      }
+    ],
+    "youtube-dl/22": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/23": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/24": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/25": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/26": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/27": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/pool.json",
+        "level": "published_development_adapter"
+      }
+    ],
+    "youtube-dl/28": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "documented_detailed_exclusion"
+      }
+    ],
+    "youtube-dl/29": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/3": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/pool.json",
+        "level": "published_development_adapter"
+      }
+    ],
+    "youtube-dl/30": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/31": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/pool.json",
+        "level": "published_development_adapter"
+      }
+    ],
+    "youtube-dl/32": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/pool.json",
+        "level": "published_development_adapter"
+      }
+    ],
+    "youtube-dl/33": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/pool.json",
+        "level": "published_development_adapter"
+      }
+    ],
+    "youtube-dl/34": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/35": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/36": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/37": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/38": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/39": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/4": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/40": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/41": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/42": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/pool.json",
+        "level": "published_development_adapter"
+      }
+    ],
+    "youtube-dl/43": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      },
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/pool.json",
+        "level": "published_development_adapter"
+      }
+    ],
+    "youtube-dl/5": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/6": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/7": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/8": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ],
+    "youtube-dl/9": [
+      {
+        "source": "experiments/python-repair/checkpoint-environment/development/screening.json",
+        "level": "patch_header_inspection"
+      }
+    ]
+  },
+  "rules": [
+    "All listed bugs and their variants are development-exposed, including metadata-only inspection.",
+    "A project-disjoint evaluation must exclude every listed project.",
+    "Absence is not evidence of no inspection, pretraining contamination or function-family overlap.",
+    "No evaluation cases are selected or certified by this registry."
+  ],
+  "api_calls": 0
+}

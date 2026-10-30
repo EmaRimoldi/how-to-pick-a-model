@@ -1,0 +1,96 @@
+class BaseItemExporter(object):
+
+    def __init__(self, **kwargs):
+        self._configure(kwargs)
+
+    def _configure(self, options, dont_fail=False):
+        """Configure the exporter by poping options from the ``options`` dict.
+        If dont_fail is set, it won't raise an exception on unexpected options
+        (useful for using with keyword arguments in subclasses constructors)
+        """
+        self.fields_to_export = options.pop('fields_to_export', None)
+        self.export_empty_fields = options.pop('export_empty_fields', False)
+        self.encoding = options.pop('encoding', 'utf-8')
+        if not dont_fail and options:
+            raise TypeError("Unexpected options: %s" % ', '.join(options.keys()))
+
+    def export_item(self, item):
+        raise NotImplementedError
+
+    def serialize_field(self, field, name, value):
+        serializer = field.get('serializer', lambda x: x)
+        return serializer(value)
+
+    def start_exporting(self):
+        pass
+
+    def finish_exporting(self):
+        pass
+
+    def _get_serialized_fields(self, item, default_value=None, include_empty=None):
+        """Return the fields to export as an iterable of tuples
+        (name, serialized_value)
+        """
+        if include_empty is None:
+            include_empty = self.export_empty_fields
+        if self.fields_to_export is None:
+            if include_empty and not isinstance(item, dict):
+                field_iter = six.iterkeys(item.fields)
+            else:
+                field_iter = six.iterkeys(item)
+        else:
+            if include_empty:
+                field_iter = self.fields_to_export
+            else:
+                field_iter = (x for x in self.fields_to_export if x in item)
+
+        for field_name in field_iter:
+            if field_name in item:
+                field = {} if isinstance(item, dict) else item.fields[field_name]
+                value = self.serialize_field(field, field_name, item[field_name])
+            else:
+                value = default_value
+
+            yield field_name, value
+
+
+class PythonItemExporter(BaseItemExporter):
+    """The idea behind this exporter is to have a mechanism to serialize items
+    to built-in python types so any serialization library (like
+    json, msgpack, binc, etc) can be used on top of it. Its main goal is to
+    seamless support what BaseItemExporter does plus nested items.
+    """
+    def _configure(self, options, dont_fail=False):
+        self.binary = options.pop('binary', True)
+        super(PythonItemExporter, self)._configure(options, dont_fail)
+        if self.binary:
+            warnings.warn(
+                "PythonItemExporter will drop support for binary export in the future",
+                ScrapyDeprecationWarning)
+
+    def serialize_field(self, field, name, value):
+        serializer = field.get('serializer', self._serialize_value)
+        return serializer(value)
+
+    def _serialize_value(self, value):
+        if isinstance(value, BaseItem):
+            return self.export_item(value)
+        if isinstance(value, dict):
+            return dict(self._serialize_dict(value))
+        if is_listlike(value):
+            return [self._serialize_value(v) for v in value]
+        encode_func = to_bytes if self.binary else to_unicode
+        if isinstance(value, (six.text_type, bytes)):
+            return encode_func(value, encoding=self.encoding)
+        return value
+
+    def _serialize_dict(self, value):
+        for key, val in six.iteritems(value):
+            key = to_bytes(key) if self.binary else key
+            yield key, self._serialize_value(val)
+
+    def export_item(self, item):
+        result = dict(self._get_serialized_fields(item))
+        if self.binary:
+            result = dict(self._serialize_dict(result))
+        return result

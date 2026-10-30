@@ -34,3 +34,41 @@ jobs:
         run: >-
           uv run python scripts/verify_feedback_evidence.py
           --input experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022
+      - name: Audit the saved trace-retention engineering banks
+        run: >-
+          uv run python experiments/python-repair/checkpoint-environment/results/trace-retention-20261027/reproduce_analysis.py
+      - name: Audit frozen public diagnostic snapshots and matched prompts
+        run: >-
+          uv run python experiments/python-repair/checkpoint-environment/results/acquisition-preparation-20261027/reproduce.py
+      - name: Reproduce the complete spectrum screen and its failed criterion
+        run: >-
+          uv run python experiments/python-repair/checkpoint-environment/results/spectrum-screen-20261030/reproduce.py
+      - name: Reproduce every cell of the retrospective spectrum audit
+        run: >-
+          uv run python experiments/python-repair/checkpoint-environment/results/spectrum-posthoc-20261030/reproduce.py
+      - name: Verify public-only ablation projections and prospective source-screen provenance
+        run: >-
+          uv run python experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/reproduce.py
+      - name: Audit new bounded components and all qualification observations
+        run: >-
+          uv run python experiments/python-repair/checkpoint-environment/development-ablation-components/reproduce.py
+      - name: Audit the original tokenizer package and its controlled diagnostic inputs
+        run: >-
+          uv run python experiments/python-repair/checkpoint-environment/development-package-black13/reproduce.py
+      - name: Re-tokenize full repair artifacts and matched prompts offline
+        run: >-
+          uv run experiments/python-repair/checkpoint-environment/results/token-capacity-20261030/reproduce.py
+      - name: Verify source metadata, ZIP directories and prospective development groups
+        run: >-
+          uv run python experiments/python-repair/checkpoint-environment/results/fixeval-source-access-20261030/reproduce.py
+      - name: Rescore all whole-program qualification cases and preserve exclusions
+        run: >-
+          uv run python experiments/python-repair/checkpoint-environment/results/fixeval-source-qualification-20261030/reproduce.py
+      - name: Reproduce public whole-program F/N/S projections and instrumentation comparison
+        run: >-
+          uv run python experiments/python-repair/checkpoint-environment/results/stdin-ablation-preparation-20261030/reproduce.py
+      - name: Verify prospective stdin pilot roster, call order, capacity and budget arithmetic
+        run: uv run python scripts/prepare_stdin_pilot.py --check
+      - name: Reproduce interrupted stdin pilot evidence without model calls
+        run: >-
+          uv run python experiments/python-repair/checkpoint-environment/results/stdin-pilot-20261030/reproduce.py

@@ -1,0 +1,31 @@
+{
+  "checked_utc": "2026-10-27T08:11:03.967239+00:00",
+  "method": "GET /api/v1/generation?id=<existing saved generation>",
+  "model_calls": 0,
+  "key_rotated": false,
+  "receipt_sha256": "fe557bcaf298fb85fc55ba7b1e57e949c4fb6a39d80097af1c6e433fe4fa0f20",
+  "raw_metadata_saved": false,
+  "reserve_released": false,
+  "http_status": 200,
+  "generation_id_matches": true,
+  "model_matches": false,
+  "requested_model": "qwen/qwen3-coder-next",
+  "server_model": "qwen/qwen3-coder-next-2025-02-03",
+  "provider_matches": true,
+  "cost_matches": true,
+  "server_created_at": "2026-10-27T07:02:55.292000+00:00",
+  "known_generation_verified": true,
+  "limitation": "Read-only check of a known settled generation. Does not identify the HTTP429 cause or settle any uncertain admission; no retries or model calls.",
+  "canonical_model_matches": true,
+  "catalog_source": "https://openrouter.ai/api/v1/models",
+  "catalog_checked_utc": "2026-10-27T08:11:43.728355+00:00",
+  "scope": "One previously settled generation only; not all receipts or the failed admission.",
+  "ui_observation": {
+    "account_confirmed_by_user": true,
+    "workspace": "Default Workspace",
+    "account_activity_past_month_requests": 0,
+    "account_upstream_logs_past_month": "No requests found",
+    "workspace_generation_logs_past_day": "No transactions found"
+  },
+  "diagnosis": "A known generation is retrievable via the authenticated metadata API despite empty browser activity/log views. This does not identify the HTTP429 cause; no admission is retried or reserve released."
+}

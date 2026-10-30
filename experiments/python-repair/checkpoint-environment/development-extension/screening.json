@@ -1,0 +1,58 @@
+{
+  "kind": "offline_source_screen_not_task_qualification",
+  "source_revision": "11c5f1eea954a42132cfd06bf257766a7963e0fd",
+  "known_exposure_registry": "../development/exposure-registry.json",
+  "cases": [
+    {
+      "id": "luigi/3",
+      "development_exposed": true,
+      "decision": "adapted_and_offline_qualified",
+      "reason": "Tuple literal parsing: scalar/nested sequences and error handling; potential function-level adapter.",
+      "bug_info_sha256": "564531b1f8c8f22dc68f207079bc1a4d6fc858f5ba1aa39e3f2273353e4a893f",
+      "patch_sha256": "12f25c7510abfa0a6893f2b8f59ac778450df38896a574e983b7cb2fd693af18"
+    },
+    {
+      "id": "luigi/6",
+      "development_exposed": true,
+      "decision": "defer",
+      "reason": "Multi-method recursive freeze/serialization with project-specific frozen mappings and class inheritance; avoid overlapping parser family with luigi/3.",
+      "bug_info_sha256": "f31bdd70be74283af363d27ca026f1f6703890e7fc093d7b71a0b94dee63b5da",
+      "patch_sha256": "af51b3f32f81fbbc735f19fd7e42b9e37dde7d59e3a43e548b4953abb23ad22d"
+    },
+    {
+      "id": "thefuck/8",
+      "development_exposed": true,
+      "decision": "defer",
+      "reason": "String/bytes boundary plus subprocess decoding; isolated parser would omit half of the actual fix.",
+      "bug_info_sha256": "d672cc9e6f1573f6148c759aa6f7940ccdf0ed8d17220e36ef4dcf8b976389e0",
+      "patch_sha256": "2ddff390608c5794765010f9275247bdfcdef86323c7298b1301b1ed4aa4a472"
+    },
+    {
+      "id": "thefuck/10",
+      "development_exposed": true,
+      "decision": "adapted_and_offline_qualified",
+      "reason": "Pure command-suggestion construction and prioritization from script plus stderr; no shell action required.",
+      "bug_info_sha256": "b0ac8e098d9139379e3185b5e403a52c1517a043ec41d186acec48954252b97d",
+      "patch_sha256": "b5bb50704e1c1b790b8a6dfc7a7549612abc472bea351db5696e6ded9f82ca92"
+    },
+    {
+      "id": "thefuck/20",
+      "development_exposed": true,
+      "decision": "adapted_and_offline_qualified",
+      "reason": "Quoted archive path parsing and suggested command quoting; inspect filesystem dependence before any adapter.",
+      "bug_info_sha256": "2d3ade5a5f72fa0edfb07219d2869454a257c8ec80423a4c1251d9a7b6d7b0ac",
+      "patch_sha256": "293d03c3a48684620bbf9aae8d2115e7e0cdb9c26f32c9f1877a2cb0ac4f5dfd"
+    },
+    {
+      "id": "thefuck/30",
+      "development_exposed": true,
+      "decision": "defer",
+      "reason": "Fix adds filesystem existence check and EDITOR environment dependency; not the current JSON function scope.",
+      "bug_info_sha256": "537cffc93ff7cb5df7b56241c2dbb21c5abf5947014588aa5855541fd6bfee42",
+      "patch_sha256": "f20e41ec8aa6588bb42f5cc6a7f474b15b14cb1d7d4061c61054d55acecc56f9"
+    }
+  ],
+  "active_treatment_outcomes_read": false,
+  "api_calls": 0,
+  "new_holdout_selected": false
+}

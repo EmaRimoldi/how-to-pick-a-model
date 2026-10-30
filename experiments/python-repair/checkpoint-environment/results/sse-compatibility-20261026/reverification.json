@@ -1,0 +1,15 @@
+{
+  "source_commit": "90fa4dcee4d9f5d4c341a4178ec1232b58e176ea",
+  "archive_sha256": "4f746966054f585017c7c1490cab6ed28ee387b153791a99cca1320ba1e8a47e",
+  "independent_frozen_source_audit_exact": true,
+  "checks": [
+    "member hashes",
+    "frozen request projections",
+    "ledger and receipt identities/costs",
+    "missing fixtures and retained reserves",
+    "terminal state and cumulative budget"
+  ],
+  "api_calls": 0,
+  "candidate_code_executed": false,
+  "original_sse_byte_replay": false
+}

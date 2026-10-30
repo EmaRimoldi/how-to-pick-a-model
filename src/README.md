@@ -1,5 +1,16 @@
 # Source Code Map
 
+## Python repair environment: `vao/repair/`
+
+- `environment.py`: immutable artifacts, linked checkpoints, matched solver
+  requests and offline integrity audits.
+- `verifier.py`, `worker.py`: isolated JSON function calls; expectations remain
+  in the parent, with separate public and evaluator channels.
+- `cli.py`: plan, handwritten demo, task qualification and saved-run audit.
+
+This is engineering infrastructure with no provider transport or model evidence.
+See the [environment guide](../experiments/python-repair/checkpoint-environment/README.md).
+
 ## Coding-task collectors: `vao/decisions/`
 
 - `openrouter.py`: provider receipts, conservative admissions and budget journals.

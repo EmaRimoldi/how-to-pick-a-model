@@ -1,0 +1,126 @@
+"""Build two declared development adapters from pinned inert original definitions."""
+import ast,hashlib,json,shutil
+from pathlib import Path
+
+ROOT=Path('experiments/python-repair/checkpoint-environment/development-stateful')
+ROOT.mkdir(exist_ok=False)
+CACHE=Path('runs/repair-stateful-source-cache-20261027')
+
+def extract(text,names):
+    lines=text.splitlines(True);pieces=[];segments=[]
+    for node in ast.parse(text).body:
+        name=getattr(node,'name',None)
+        if isinstance(node,ast.Assign) and len(node.targets)==1:name=getattr(node.targets[0],'id',None)
+        if name in names:
+            piece=''.join(lines[node.lineno-1:node.end_lineno]);pieces.append(piece)
+            segments.append({'start_line':node.lineno,'end_line':node.end_lineno,'sha256':hashlib.sha256(piece.encode()).hexdigest()})
+    assert len(pieces)==len(names)
+    return '\n\n'.join(pieces),segments
+
+def sources(slug,folder,names):
+    raw=json.loads((folder/'sources.json').read_text());src={}
+    sub=ROOT/'upstream'/slug;sub.mkdir(parents=True)
+    cache=CACHE/'scrapy'/str(int(slug.split('-')[1]));cache.mkdir(parents=True)
+    for role,meta in raw['files'].items():
+        path=folder/(role+'.txt');data=path.read_bytes();assert hashlib.sha256(data).hexdigest()==meta['sha256']
+        dest=sub/(role+'-full.txt');dest.write_bytes(data);(cache/(role+'.txt')).write_bytes(data)
+        src[role]={**meta,'local_path':str(dest.relative_to(ROOT))}
+        if role in ('buggy','fixed'):
+            text,segments=extract(data.decode(),names);ex=sub/(role+'.txt');ex.write_text(text)
+            src[role].update(excerpt=str(ex.relative_to(ROOT)),excerpt_sha256=hashlib.sha256(text.encode()).hexdigest(),segments=segments)
+    return src
+
+def piece(folder,role,names):return extract((folder/(role+'.txt')).read_text(),names)[0]
+
+def case(id,args,expected,kwargs=None):
+    row={'id':id,'args':args,'expected':expected}
+    if kwargs:row['kwargs']=kwargs
+    return row
+
+settings=Path('experiments/python-repair/checkpoint-environment/results/stateful-trace-feasibility-20261027')
+settings_sources=sources('scrapy-026',settings,{'SETTINGS_PRIORITIES','get_settings_priority','SettingsAttribute','BaseSettings','_DictProxy'})
+prefix='''import json
+import copy
+import warnings
+from collections.abc import MutableMapping
+from importlib import import_module
+from types import SimpleNamespace
+# Exact Python 3 semantics for the two six helpers used in these preserved definitions.
+six = SimpleNamespace(string_types=(str,), iteritems=lambda mapping: iter(mapping.items()))
+'''+piece(settings,'exceptions',{'ScrapyDeprecationWarning'})+'\n\n'
+wrapper='''def solve(defaults, base, updates):
+    component = BaseSettings(defaults, priority='default')
+    settings = BaseSettings({'COMPONENT': component})
+    if base is not None:
+        settings.set('COMPONENT_BASE', base, priority='project')
+    for key, value, priority in updates:
+        component.set(key, value, priority)
+    result = settings._getcomposite('COMPONENT')
+    return [[key, result[key], result.getpriority(key)] for key in sorted(result)]
+'''
+public=json.loads((settings/'probe-inputs.json').read_text())['cases']+[
+    case('defaults-only',[{'keep':2},None,[]],[['keep',2,0]]),
+    case('typed-values',[{'drop':5},{'keep':None},[['new',False,'spider']]],[['keep',None,0],['new',False,30]])]
+evaluator=[
+    case('base-only',[{'d':7,'u':8},{'d':0},[]],[['d',0,0]]),
+    case('default-update-excluded',[{'q':1},{},[['q',9,'default']]],[]),
+    case('reject-lower-update',[{'q':1},{},[['q',9,'project'],['q',4,'command']]],[['q',9,20]]),
+    case('equal-priority-latest',[{'a':0},None,[['a',3,'command'],['a',4,'command']]],[['a',4,10]]),
+    case('explicit-types',[{'z':8},{'b':5},[['b',None,'cmdline'],['c',True,'spider']]],[['b',None,40],['c',True,30]]),
+    case('empty-settings',[{},{},[]],[])]
+tasks=[{'id':'scrapy-026','split':'development','prefix':prefix,'wrappers':{'buggy':wrapper,'fixed':wrapper},
+ 'instruction':'''Repair the original priority-aware settings implementation. solve(defaults, base, updates) builds component defaults, optionally supplies an explicit base mapping, and applies [key,value,priority] updates. If base is supplied (including an empty dict), start from its entries at default priority and include component entries only when their stored priority is higher than default. Without a base, keep component defaults. Lower-priority updates must not replace higher-priority values; equal-priority updates replace earlier values. Priorities are default=0, command=10, project=20, spider=30, cmdline=40. Return sorted [key,value,priority] rows. Keys are strings, values are JSON scalars, and named priorities are valid. Preserve the interface and unrelated setting behavior.''',
+ 'public_cases':public,'evaluator_cases':evaluator,
+ 'provenance':{'kind':'bugsinpy_adapted','benchmark_id':'scrapy/26','benchmark_revision':'11c5f1eea954a42132cfd06bf257766a7963e0fd','sources':settings_sources,
+ 'scope':'Complete priority/settings classes, explicit JSON-compatible wrapper, no crawler lifecycle or dynamic configuration import.',
+ 'exposure':'Already inspected development source; the four previously published engineering examples remain public.'}}]
+
+exporter=Path('runs/repair-stateful-exporter-20261027')
+export_sources=sources('scrapy-040',exporter,{'BaseItemExporter','PythonItemExporter'})
+prefix='''import warnings
+import weakref
+from time import time
+from collections import defaultdict
+from types import SimpleNamespace
+# Python 3 equivalents of the exact six helpers referenced by the preserved definitions.
+six = SimpleNamespace(string_types=(str,), text_type=str,
+    iteritems=lambda mapping: iter(mapping.items()), iterkeys=lambda mapping: iter(mapping.keys()))
+'''+piece(exporter,'trackref',{'live_refs','object_ref'})+'\n\n'+piece(exporter,'item',{'BaseItem'})+'\n\n'+piece(exporter,'exceptions',{'ScrapyDeprecationWarning'})+'\n\n'+piece(exporter,'python',{'is_listlike','to_unicode','to_bytes'})+'\n\n'
+wrapper='''def _snapshot(value):
+    if isinstance(value, bytes):
+        return {'bytes_hex': value.hex()}
+    if isinstance(value, dict):
+        return {'dict': [[_snapshot(key), _snapshot(value[key])] for key in sorted(value)]}
+    if isinstance(value, list):
+        return [_snapshot(v) for v in value]
+    return value
+
+
+def solve(item, binary=False, fields=None, include_empty=False):
+    exporter = PythonItemExporter(binary=binary, encoding='utf-8',
+        fields_to_export=fields, export_empty_fields=include_empty)
+    return _snapshot(exporter.export_item(item))
+'''
+# Manually specified contract outcomes, not generated by either candidate.
+public=[
+ case('numbers',[{'count':2,'ratio':1.5}],{'dict':[['count',2],['ratio',1.5]]}),
+ case('binary-mixed',[{'name':'é','value':3},True],{'dict':[[{'bytes_hex':'6e616d65'},{'bytes_hex':'c3a9'}],[{'bytes_hex':'76616c7565'},3]]}),
+ case('nested-values',[{'nested':{'ok':True,'nothing':None},'seq':[0,'hi',False]}],{'dict':[['nested',{'dict':[['nothing',None],['ok',True]]}],['seq',[0,'hi',False]]]}),
+ case('text-control',[{'title':'hello'}],{'dict':[['title','hello']]}),
+ case('binary-control',[{'title':'café'},True],{'dict':[[{'bytes_hex':'7469746c65'},{'bytes_hex':'636166c3a9'}]]}),
+ case('missing-selected-field',[{'title':'T'},False,['missing','title'],True],{'dict':[['missing',None],['title','T']]})]
+evaluator=[
+ case('other-numbers',[{'count':-8,'ratio':2.25}],{'dict':[['count',-8],['ratio',2.25]]}),
+ case('binary-flags',[{'text':'μ','flags':[True,False,None]},True],{'dict':[[{'bytes_hex':'666c616773'},[True,False,None]],[{'bytes_hex':'74657874'},{'bytes_hex':'cebc'}]]}),
+ case('nested-list',[{'outer':[{'n':7},[]]}],{'dict':[['outer',[{'dict':[['n',7]]},[]]]]}),
+ case('field-filter',[{'ignored':None,'title':'keep'},False,['title']],{'dict':[['title','keep']]}),
+ case('empty-item',[{},True],{'dict':[]}),
+ case('binary-nesting',[{'blob':{'label':'雪','count':4}},True],{'dict':[[{'bytes_hex':'626c6f62'},{'dict':[[{'bytes_hex':'636f756e74'},4],[{'bytes_hex':'6c6162656c'},{'bytes_hex':'e99baa'}]]}]]})]
+tasks.append({'id':'scrapy-040','split':'development','prefix':prefix,'wrappers':{'buggy':wrapper,'fixed':wrapper},
+ 'instruction':'''Repair the original recursive Python item exporter. solve(item,binary=False,fields=None,include_empty=False) exports a JSON-compatible mapping with string keys, nested mappings/lists, strings, finite numbers, booleans and null. Preserve numbers, booleans and null recursively. With binary=False, preserve strings. With binary=True, encode strings and mapping keys as UTF-8 bytes. Field selection and include_empty retain the original exporter behavior. The supplied wrapper converts each output mapping to {"dict": [[key,value],...]} with sorted keys and bytes to {"bytes_hex": lowercase_hex}; list elements stay ordered. Fix exporter logic without changing this output encoding or interface. Scrapy Item instances, custom serializers, input byte objects and non-UTF-8 encodings are outside this restricted task.''',
+ 'public_cases':public,'evaluator_cases':evaluator,
+ 'provenance':{'kind':'bugsinpy_adapted','benchmark_id':'scrapy/40','benchmark_revision':'11c5f1eea954a42132cfd06bf257766a7963e0fd','sources':export_sources,
+ 'scope':'Original BaseItemExporter/PythonItemExporter classes and original conversion helpers. Complete original BaseItem/object_ref definitions retained, but no item instances or reference tracking exercised.',
+ 'exposure':'Previously header/patch-exposed development ID, now adapted from pinned full source.'}})
+(ROOT/'pool.json').write_text(json.dumps({'schema_version':1,'status':'development_only','tasks':tasks},indent=2,ensure_ascii=False)+'\n')
+print(json.dumps({'tasks':[t['id'] for t in tasks],'case_counts':[(len(t['public_cases']),len(t['evaluator_cases'])) for t in tasks],'model_calls':0}))

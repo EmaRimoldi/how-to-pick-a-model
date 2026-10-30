@@ -1,0 +1,25 @@
+{
+  "freeze_sha256": "73e7f67a7f3d94b57c25c08f952c50bd96c54c09c4f2c8489af522229f6bdf75",
+  "selected_groups": 12,
+  "executed_python_version": "3.13.12 | packaged by conda-forge | (main, Feb  5 2026, 06:11:05) [Clang 19.1.7 ]",
+  "runtime_prose_deviation": "The parameter prose names CPython3.11; the exact version and binary hash frozen before execution and enforced by the collector were CPython3.13.12. This bank qualifies the recorded actual runtime only; no3.11 replay is claimed.",
+  "candidate_pairs": 36,
+  "eligible_pairs": 25,
+  "qualified_development_groups": 11,
+  "case_executions": 2076,
+  "preflight_executions": 2,
+  "execution_status_counts": {
+    "exited": 2076
+  },
+  "independent_rescoring_discrepancies": 0,
+  "pair_exclusion_reason_counts_nonexclusive": {
+    "reference_failed": 1,
+    "buggy_no_public_failure": 3,
+    "buggy_no_evaluator_failure": 7
+  },
+  "case_execution_seconds": 273.02862565395844,
+  "total_wall_seconds_including_preflight": 275.73216545800096,
+  "new_model_calls": 0,
+  "policy_or_diagnostic_efficacy_measured": false
+}
+{"native_replayed_case_executions": 2076, "discrepancies": 0, "new_model_calls": 0}

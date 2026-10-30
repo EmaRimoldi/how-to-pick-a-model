@@ -126,6 +126,16 @@ def classify_script(rel: str, text: str) -> tuple[str, str]:
 
     if name == "agent_index_config.py":
         return SUPPORT_CONFIG, "none"
+    if name == "prepare_python_repair.py":
+        return MIXED_CLI, "plan/audit are read-only; demo/qualify require macOS sandbox-exec and a fresh output directory; no provider calls"
+    if name == "prepare_repair_pilot.py":
+        return MIXED_CLI, "plan/audit/compare are offline; demo requires macOS isolation; live requires new funding, clean source freeze, private key, single-use campaign claim and fresh output"
+    if name == "qualify_python_repair_pool.py":
+        return MIXED_CLI, "plan/audit-sources read inert local data; build writes fresh bundles; qualify requires macOS sandbox-exec and fresh output; no network/provider calls"
+    if name == "audit_repair_spectra.py":
+        return MIXED_CLI, "replay reads saved evidence; collect executes public cases in macOS sandbox-exec and writes fresh output; no provider calls"
+    if name == "repair_stdin_pilot.py":
+        return MIXED_CLI, "progress/audit read saved data; verify executes candidate code in the frozen native sandbox; live requires declared funding, clean source/runtime freeze, private key, budget lock and single-use study claim"
     if name.startswith(("build_", "validate_")):
         return SAFE_LOCAL, "python"
     if name == "check_paper_build.py":

@@ -1,0 +1,7254 @@
+{
+  "kind": "offline_trace_retention_engineering",
+  "api_calls": 0,
+  "model_results": false,
+  "heldout_cases_used": 0,
+  "source_manifest": {
+    "scripts/probe_repair_trace_retention.py": "7537a8e5b31c493d20e417a7de61b675135363a12a2729ef57e2dd1b504a869a",
+    "src/vao/repair/region_trace_worker.py": "55eff7a826e4a1e1d848fdb241dc11f385bf6075d673886c413e139604df4489",
+    "src/vao/repair/region_verifier.py": "fb3fb5bebe36f6fae040380489c2df9992856960cd7d96075e09f6bbd823084f",
+    "src/vao/repair/trace_worker.py": "feaa355b1bd3c83a47d758f01e95f11c7872522a5151924152eb23f34732ef99",
+    "src/vao/repair/verifier.py": "01dffb237da4f13ad85e8b2b472f679948940f9bc01ce7dd9a558994882e10f4",
+    "src/vao/repair/worker.py": "c604e16a51fc44898fcfebf6e74c1bc01636e9f29c6486e78bcb93d2b8bfa858",
+    "src/vao/repair/environment.py": "2aab361949bd6eb3c7b9e9a89820512119c0e747c2d62519e667706c9295cdba",
+    "src/vao/repair/pool.py": "85d0296abcf538ff09341b8ab2ceb3299772a2068de1a06cc22ed882c141a8ce",
+    "src/vao/decisions/verification.py": "301f2af2cfbffa509a9dacfd2f920b7e7ef8bcaab68c8d56a050a3c054dcf0b4",
+    "experiments/python-repair/checkpoint-environment/development-broader/pool.json": "a391412193749cf6b3c20472cdb703f27fc97c222edcea4b6a77165bfa8e006b",
+    "experiments/python-repair/checkpoint-environment/results/stateful-trace-feasibility-20261027/probe-inputs.json": "c744a2a18f0a1d45cf3bbc43598ce6befb2cacf67535455aa26646e6119300c3",
+    "experiments/python-repair/checkpoint-environment/results/stateful-trace-feasibility-20261027/probe-results.json": "6987b3b8f9696bd9cfb57caa65a79716d82d3d192c296ae005707b6ae5046070",
+    "experiments/python-repair/checkpoint-environment/results/stateful-trace-feasibility-20261027/buggy.txt": "94e35c065ef8d5653d00ce61719383ef26ae93626234e9758c88491601b1a061",
+    "experiments/python-repair/checkpoint-environment/results/stateful-trace-feasibility-20261027/fixed.txt": "034ca353fe63931c673ebd70d8534fe72fad9439870e9ba6030fd2643363930f",
+    "experiments/python-repair/checkpoint-environment/results/stateful-trace-feasibility-20261027/exceptions.txt": "962b158e8436e28c770a4ebe2a8c12ee1c52283bc21ddc13c54f69c35457ebb1"
+  },
+  "preflight": {
+    "filesystem_denied": true,
+    "network_denied": true,
+    "credentials_absent": true,
+    "backend": "macos-sandbox-exec",
+    "python": "3.13.12"
+  },
+  "selected_cases": 80,
+  "repeats": 3,
+  "sandbox_executions": 720,
+  "all_observations_match": true,
+  "all_repeats_deterministic": false,
+  "available": {
+    "tail": 80,
+    "balanced": 80
+  },
+  "capture_limit_cases": {
+    "tail": 0,
+    "balanced": 0
+  },
+  "balanced_buffer_limit_cases": 0,
+  "known_target_failing_cases_represented": {
+    "tail": 0,
+    "balanced": 2
+  },
+  "timing_seconds": {
+    "ordinary": {
+      "total": 13.584145940490998,
+      "median": 0.04319593752734363,
+      "samples": 240
+    },
+    "tail": {
+      "total": 15.800777796073817,
+      "median": 0.07728908344870433,
+      "samples": 240
+    },
+    "balanced": {
+      "total": 17.950745125417598,
+      "median": 0.0794860414462164,
+      "samples": 240
+    }
+  },
+  "trace_archive_sha256": "2747fa7ee05d52947dc12463da69629839abaa91b62755f373c50f59b61f44e2",
+  "records": [
+    {
+      "task": "scrapy-026",
+      "variant": "buggy",
+      "case": "upstream-default-exclusion",
+      "artifact_sha256": "624185ff036e6351bb94fea72c4937b087857929f5aed7dd460c0b39596d6f24",
+      "input_sha256": "59e3c5db7c87706e54fdf5735f976aa41bc53d28180ae94e8ca784b619af45e7",
+      "passed": false,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 408,
+          "trace_json_bytes": 6249,
+          "selected_event_bytes": 6545,
+          "function_names": [
+            "__contains__",
+            "__getitem__",
+            "getpriority",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 36
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 408,
+          "trace_json_bytes": 7628,
+          "selected_event_bytes": 7413,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "__contains__",
+            "__getitem__",
+            "__init__",
+            "__iter__",
+            "__len__",
+            "_assert_mutability",
+            "_getcomposite",
+            "get_settings_priority",
+            "getpriority",
+            "maxpriority",
+            "set",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 17,
+            "retained_functions": 17,
+            "omitted_functions": 0,
+            "selected_event_bytes": 7413,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 33
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.0763104580109939,
+          0.08010258304420859,
+          0.07880691601894796
+        ],
+        "tail": [
+          0.08068783394992352,
+          0.0806837499840185,
+          0.08052179194055498
+        ],
+        "balanced": [
+          0.08024212496820837,
+          0.07927704195026308,
+          0.08058349997736514
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ],
+      "known_target_audit": {
+        "tail": 0,
+        "balanced": 2
+      }
+    },
+    {
+      "task": "scrapy-026",
+      "variant": "buggy",
+      "case": "explicit-empty-base",
+      "artifact_sha256": "624185ff036e6351bb94fea72c4937b087857929f5aed7dd460c0b39596d6f24",
+      "input_sha256": "533d83913b8de01412cd72a811fdf3bb07916a6ca16ec12b84065ec237ffa7cf",
+      "passed": false,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 279,
+          "trace_json_bytes": 5861,
+          "selected_event_bytes": 6097,
+          "function_names": [
+            "__contains__",
+            "__getitem__",
+            "__len__",
+            "getpriority",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 35
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 279,
+          "trace_json_bytes": 7459,
+          "selected_event_bytes": 7209,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "__contains__",
+            "__getitem__",
+            "__init__",
+            "__iter__",
+            "__len__",
+            "_assert_mutability",
+            "_getcomposite",
+            "get_settings_priority",
+            "getpriority",
+            "maxpriority",
+            "set",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 16,
+            "retained_functions": 16,
+            "omitted_functions": 0,
+            "selected_event_bytes": 7209,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 33
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.07891041703987867,
+          0.08003408298827708,
+          0.0799764160765335
+        ],
+        "tail": [
+          0.07920783304143697,
+          0.08006029098760337,
+          0.0805381250102073
+        ],
+        "balanced": [
+          0.07944541599135846,
+          0.08119508298113942,
+          0.0805429999018088
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ],
+      "known_target_audit": {
+        "tail": 0,
+        "balanced": 2
+      }
+    },
+    {
+      "task": "scrapy-026",
+      "variant": "buggy",
+      "case": "no-base",
+      "artifact_sha256": "624185ff036e6351bb94fea72c4937b087857929f5aed7dd460c0b39596d6f24",
+      "input_sha256": "7716caea5ac9c4d3119268c933f327c904f29b0837c7d706380aed6abe4eb463",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 185,
+          "trace_json_bytes": 5828,
+          "selected_event_bytes": 6061,
+          "function_names": [
+            "__contains__",
+            "__getitem__",
+            "__len__",
+            "getpriority",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 35
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 185,
+          "trace_json_bytes": 7618,
+          "selected_event_bytes": 7387,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "__contains__",
+            "__getitem__",
+            "__init__",
+            "__iter__",
+            "__len__",
+            "_assert_mutability",
+            "_getcomposite",
+            "get_settings_priority",
+            "getpriority",
+            "maxpriority",
+            "set",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 17,
+            "retained_functions": 17,
+            "omitted_functions": 0,
+            "selected_event_bytes": 7387,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 32
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.07922116701956838,
+          0.07865666702855378,
+          0.07945279101841152
+        ],
+        "tail": [
+          0.08050912502221763,
+          0.08024099993053824,
+          0.07995212508831173
+        ],
+        "balanced": [
+          0.07939387497026473,
+          0.08131516596768051,
+          0.08029333304148167
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ],
+      "known_target_audit": {
+        "tail": 0,
+        "balanced": 1
+      }
+    },
+    {
+      "task": "scrapy-026",
+      "variant": "buggy",
+      "case": "keep-high-priority",
+      "artifact_sha256": "624185ff036e6351bb94fea72c4937b087857929f5aed7dd460c0b39596d6f24",
+      "input_sha256": "6bf37adc049aba809814da4004ee1a0a81f98661e609d19aa2170e621f19fc2e",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 267,
+          "trace_json_bytes": 6274,
+          "selected_event_bytes": 6549,
+          "function_names": [
+            "__contains__",
+            "__getitem__",
+            "__iter__",
+            "__len__",
+            "_getcomposite",
+            "getpriority",
+            "set",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 39
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 267,
+          "trace_json_bytes": 7535,
+          "selected_event_bytes": 7300,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "__contains__",
+            "__getitem__",
+            "__init__",
+            "__iter__",
+            "__len__",
+            "_assert_mutability",
+            "_getcomposite",
+            "get_settings_priority",
+            "getpriority",
+            "maxpriority",
+            "set",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 17,
+            "retained_functions": 17,
+            "omitted_functions": 0,
+            "selected_event_bytes": 7300,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 33
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.07905937498435378,
+          0.0779561250237748,
+          0.07851554197259247
+        ],
+        "tail": [
+          0.08077308302745223,
+          0.07923604210373014,
+          0.0806280419928953
+        ],
+        "balanced": [
+          0.08149616699665785,
+          0.08080866606906056,
+          0.08057045901659876
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ],
+      "known_target_audit": {
+        "tail": 2,
+        "balanced": 1
+      }
+    },
+    {
+      "task": "scrapy-026",
+      "variant": "fixed",
+      "case": "upstream-default-exclusion",
+      "artifact_sha256": "b243b09011952ae40cd59dee0425a0e99763169cd60253cbf11902f5a1126adb",
+      "input_sha256": "59e3c5db7c87706e54fdf5735f976aa41bc53d28180ae94e8ca784b619af45e7",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 376,
+          "trace_json_bytes": 6213,
+          "selected_event_bytes": 6503,
+          "function_names": [
+            "__contains__",
+            "__getitem__",
+            "getpriority",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 36
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 376,
+          "trace_json_bytes": 7613,
+          "selected_event_bytes": 7402,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "__contains__",
+            "__getitem__",
+            "__init__",
+            "__iter__",
+            "__len__",
+            "_assert_mutability",
+            "_getcomposite",
+            "get_settings_priority",
+            "getpriority",
+            "maxpriority",
+            "set",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 16,
+            "retained_functions": 16,
+            "omitted_functions": 0,
+            "selected_event_bytes": 7402,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 31
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.07606829097494483,
+          0.07722500001545995,
+          0.08031495800241828
+        ],
+        "tail": [
+          0.08004004100803286,
+          0.07741437503136694,
+          0.07750175008550286
+        ],
+        "balanced": [
+          0.08044587494805455,
+          0.07832808292005211,
+          0.07613891700748354
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ],
+      "known_target_audit": {
+        "tail": 0,
+        "balanced": 2
+      }
+    },
+    {
+      "task": "scrapy-026",
+      "variant": "fixed",
+      "case": "explicit-empty-base",
+      "artifact_sha256": "b243b09011952ae40cd59dee0425a0e99763169cd60253cbf11902f5a1126adb",
+      "input_sha256": "533d83913b8de01412cd72a811fdf3bb07916a6ca16ec12b84065ec237ffa7cf",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 260,
+          "trace_json_bytes": 6158,
+          "selected_event_bytes": 6417,
+          "function_names": [
+            "__contains__",
+            "__getitem__",
+            "__init__",
+            "__iter__",
+            "__len__",
+            "_getcomposite",
+            "getpriority",
+            "set",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 38
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 260,
+          "trace_json_bytes": 7401,
+          "selected_event_bytes": 7149,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "__contains__",
+            "__getitem__",
+            "__init__",
+            "__iter__",
+            "__len__",
+            "_assert_mutability",
+            "_getcomposite",
+            "get_settings_priority",
+            "getpriority",
+            "maxpriority",
+            "set",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 16,
+            "retained_functions": 16,
+            "omitted_functions": 0,
+            "selected_event_bytes": 7149,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 31
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.077764582936652,
+          0.07959258300252259,
+          0.08028525009285659
+        ],
+        "tail": [
+          0.07926829101052135,
+          0.08050854201428592,
+          0.08002133399713784
+        ],
+        "balanced": [
+          0.07918054098263383,
+          0.08037270896602422,
+          0.08013433299493045
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ],
+      "known_target_audit": {
+        "tail": 3,
+        "balanced": 2
+      }
+    },
+    {
+      "task": "scrapy-026",
+      "variant": "fixed",
+      "case": "no-base",
+      "artifact_sha256": "b243b09011952ae40cd59dee0425a0e99763169cd60253cbf11902f5a1126adb",
+      "input_sha256": "7716caea5ac9c4d3119268c933f327c904f29b0837c7d706380aed6abe4eb463",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 185,
+          "trace_json_bytes": 5828,
+          "selected_event_bytes": 6061,
+          "function_names": [
+            "__contains__",
+            "__getitem__",
+            "__len__",
+            "getpriority",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 35
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 185,
+          "trace_json_bytes": 7618,
+          "selected_event_bytes": 7387,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "__contains__",
+            "__getitem__",
+            "__init__",
+            "__iter__",
+            "__len__",
+            "_assert_mutability",
+            "_getcomposite",
+            "get_settings_priority",
+            "getpriority",
+            "maxpriority",
+            "set",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 17,
+            "retained_functions": 17,
+            "omitted_functions": 0,
+            "selected_event_bytes": 7387,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 32
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.08017295796889812,
+          0.07944291702006012,
+          0.07680616702418774
+        ],
+        "tail": [
+          0.08059220807626843,
+          0.08003329206258059,
+          0.07615304202772677
+        ],
+        "balanced": [
+          0.0808583339676261,
+          0.07730291609186679,
+          0.0805538339773193
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ],
+      "known_target_audit": {
+        "tail": 0,
+        "balanced": 1
+      }
+    },
+    {
+      "task": "scrapy-026",
+      "variant": "fixed",
+      "case": "keep-high-priority",
+      "artifact_sha256": "b243b09011952ae40cd59dee0425a0e99763169cd60253cbf11902f5a1126adb",
+      "input_sha256": "6bf37adc049aba809814da4004ee1a0a81f98661e609d19aa2170e621f19fc2e",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 276,
+          "trace_json_bytes": 6272,
+          "selected_event_bytes": 6550,
+          "function_names": [
+            "__contains__",
+            "__getitem__",
+            "__iter__",
+            "__len__",
+            "_getcomposite",
+            "getpriority",
+            "set",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 38
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 276,
+          "trace_json_bytes": 7543,
+          "selected_event_bytes": 7318,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "__contains__",
+            "__getitem__",
+            "__init__",
+            "__iter__",
+            "__len__",
+            "_assert_mutability",
+            "_getcomposite",
+            "get_settings_priority",
+            "getpriority",
+            "maxpriority",
+            "set",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 17,
+            "retained_functions": 17,
+            "omitted_functions": 0,
+            "selected_event_bytes": 7318,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 31
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.07988391700200737,
+          0.07956212502904236,
+          0.08958166709635407
+        ],
+        "tail": [
+          0.07927829108666629,
+          0.08044195896945894,
+          0.08035920897964388
+        ],
+        "balanced": [
+          0.08035099995322526,
+          0.076928082969971,
+          0.08112245902884752
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ],
+      "known_target_audit": {
+        "tail": 3,
+        "balanced": 1
+      }
+    },
+    {
+      "task": "scrapy-002",
+      "variant": "buggy",
+      "case": "unlimited-one",
+      "artifact_sha256": "c9499a786d3cd9ad2d7fab2d501e476cecac7c2cc9ab80326852aefe40423b2b",
+      "input_sha256": "98e9c886192ed17bf8299bd8a9a5278e77483de8adb0a2b5e7fa093a44028608",
+      "passed": false,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 11,
+          "events_seen": 11,
+          "trace_json_bytes": 2536,
+          "selected_event_bytes": 2463,
+          "function_names": [
+            "__init__",
+            "__setitem__",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 16
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 11,
+          "events_seen": 11,
+          "trace_json_bytes": 3471,
+          "selected_event_bytes": 2861,
+          "function_names": [
+            "__init__",
+            "__setitem__",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 3,
+            "retained_functions": 3,
+            "omitted_functions": 0,
+            "selected_event_bytes": 2861,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 16
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.0423664579866454,
+          0.04267895803786814,
+          0.07863733300473541
+        ],
+        "tail": [
+          0.07500658300705254,
+          0.04260808404069394,
+          0.07850020797923207
+        ],
+        "balanced": [
+          0.0783527500461787,
+          0.07691370893735439,
+          0.043268625042401254
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ]
+    },
+    {
+      "task": "scrapy-002",
+      "variant": "buggy",
+      "case": "zero-capacity",
+      "artifact_sha256": "c9499a786d3cd9ad2d7fab2d501e476cecac7c2cc9ab80326852aefe40423b2b",
+      "input_sha256": "33be964defeba07750d8dc21fbdf53813a92855cc69a830d0473e11e6a086118",
+      "passed": false,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 12,
+          "events_seen": 12,
+          "trace_json_bytes": 2850,
+          "selected_event_bytes": 2819,
+          "function_names": [
+            "__init__",
+            "__setitem__",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 18
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 12,
+          "events_seen": 12,
+          "trace_json_bytes": 3818,
+          "selected_event_bytes": 3254,
+          "function_names": [
+            "__init__",
+            "__setitem__",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 3,
+            "retained_functions": 3,
+            "omitted_functions": 0,
+            "selected_event_bytes": 3254,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 18
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04338116699364036,
+          0.040157124982215464,
+          0.0426305829314515
+        ],
+        "tail": [
+          0.07621158310212195,
+          0.07882262498605996,
+          0.04326758405659348
+        ],
+        "balanced": [
+          0.08042704197578132,
+          0.043301666039042175,
+          0.07753704092465341
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "task": "scrapy-002",
+      "variant": "buggy",
+      "case": "eviction",
+      "artifact_sha256": "c9499a786d3cd9ad2d7fab2d501e476cecac7c2cc9ab80326852aefe40423b2b",
+      "input_sha256": "2cc145e6204fb26b61ab6bad2463c9c7aff517eb382275224f8dd1335f1e132e",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 26,
+          "events_seen": 26,
+          "trace_json_bytes": 6378,
+          "selected_event_bytes": 6760,
+          "function_names": [
+            "__init__",
+            "__setitem__",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 39
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 26,
+          "events_seen": 26,
+          "trace_json_bytes": 7808,
+          "selected_event_bytes": 7713,
+          "function_names": [
+            "__init__",
+            "__setitem__",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 3,
+            "retained_functions": 3,
+            "omitted_functions": 0,
+            "selected_event_bytes": 7713,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 39
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04114608303643763,
+          0.041861417004838586,
+          0.04264045797754079
+        ],
+        "tail": [
+          0.04300029098521918,
+          0.043490709038451314,
+          0.043346500024199486
+        ],
+        "balanced": [
+          0.07698808307759464,
+          0.0435195000609383,
+          0.07852316705975682
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ]
+    },
+    {
+      "task": "scrapy-002",
+      "variant": "buggy",
+      "case": "within-capacity",
+      "artifact_sha256": "c9499a786d3cd9ad2d7fab2d501e476cecac7c2cc9ab80326852aefe40423b2b",
+      "input_sha256": "49b2b89c8d7805ce2728abaa29fb4b40c53fa871da1b0882b945e27a3a7629f8",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 19,
+          "events_seen": 19,
+          "trace_json_bytes": 4555,
+          "selected_event_bytes": 4730,
+          "function_names": [
+            "__init__",
+            "__setitem__",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 27
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 19,
+          "events_seen": 19,
+          "trace_json_bytes": 5754,
+          "selected_event_bytes": 5424,
+          "function_names": [
+            "__init__",
+            "__setitem__",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 3,
+            "retained_functions": 3,
+            "omitted_functions": 0,
+            "selected_event_bytes": 5424,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 27
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.0796240420313552,
+          0.07943108305335045,
+          0.07894675002899021
+        ],
+        "tail": [
+          0.08060237497556955,
+          0.07764670799952,
+          0.07777466694824398
+        ],
+        "balanced": [
+          0.07895958295557648,
+          0.07816441706381738,
+          0.07327399996574968
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ]
+    },
+    {
+      "task": "scrapy-002",
+      "variant": "buggy",
+      "case": "empty",
+      "artifact_sha256": "c9499a786d3cd9ad2d7fab2d501e476cecac7c2cc9ab80326852aefe40423b2b",
+      "input_sha256": "cda8db8c718a1b8a62e92ecc0b6a63a7131842146b9ff6ff879e220d787b9803",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 7,
+          "events_seen": 7,
+          "trace_json_bytes": 1526,
+          "selected_event_bytes": 1351,
+          "function_names": [
+            "__init__",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 9
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 7,
+          "events_seen": 7,
+          "trace_json_bytes": 2330,
+          "selected_event_bytes": 1603,
+          "function_names": [
+            "__init__",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 2,
+            "retained_functions": 2,
+            "omitted_functions": 0,
+            "selected_event_bytes": 1603,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 9
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04297966696321964,
+          0.04274316597729921,
+          0.04262079100590199
+        ],
+        "tail": [
+          0.04280533397104591,
+          0.04262979107443243,
+          0.04301012505311519
+        ],
+        "balanced": [
+          0.07851216709241271,
+          0.07707600004505366,
+          0.04355520801618695
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "task": "scrapy-002",
+      "variant": "buggy",
+      "case": "one-capacity",
+      "artifact_sha256": "c9499a786d3cd9ad2d7fab2d501e476cecac7c2cc9ab80326852aefe40423b2b",
+      "input_sha256": "9ba840c23e0126e4f5444e9caf58d8c9d8a29aeff3d29290e492d5e186330f28",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 20,
+          "events_seen": 20,
+          "trace_json_bytes": 4639,
+          "selected_event_bytes": 4807,
+          "function_names": [
+            "__init__",
+            "__setitem__",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 30
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 20,
+          "events_seen": 20,
+          "trace_json_bytes": 5871,
+          "selected_event_bytes": 5538,
+          "function_names": [
+            "__init__",
+            "__setitem__",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 3,
+            "retained_functions": 3,
+            "omitted_functions": 0,
+            "selected_event_bytes": 5538,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 30
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.07643395895138383,
+          0.07682504097465426,
+          0.04203987505752593
+        ],
+        "tail": [
+          0.07334104098845273,
+          0.04305075004231185,
+          0.0784795000217855
+        ],
+        "balanced": [
+          0.07819508400280029,
+          0.043232500087469816,
+          0.07714579196181148
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ]
+    },
+    {
+      "task": "scrapy-002",
+      "variant": "fixed",
+      "case": "unlimited-one",
+      "artifact_sha256": "b838da817b6112a38a7f8848a9e4c428de04eefd2fb2282366b2b04e92aa78c3",
+      "input_sha256": "98e9c886192ed17bf8299bd8a9a5278e77483de8adb0a2b5e7fa093a44028608",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 13,
+          "events_seen": 13,
+          "trace_json_bytes": 2991,
+          "selected_event_bytes": 2977,
+          "function_names": [
+            "__init__",
+            "__setitem__",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 18
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 13,
+          "events_seen": 13,
+          "trace_json_bytes": 3992,
+          "selected_event_bytes": 3449,
+          "function_names": [
+            "__init__",
+            "__setitem__",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 3,
+            "retained_functions": 3,
+            "omitted_functions": 0,
+            "selected_event_bytes": 3449,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 18
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04224395798519254,
+          0.04249741695821285,
+          0.04248816694598645
+        ],
+        "tail": [
+          0.043177374987863004,
+          0.04325645905919373,
+          0.0770428329706192
+        ],
+        "balanced": [
+          0.04384841595310718,
+          0.0773162089753896,
+          0.08007420902140439
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ]
+    },
+    {
+      "task": "scrapy-002",
+      "variant": "fixed",
+      "case": "zero-capacity",
+      "artifact_sha256": "b838da817b6112a38a7f8848a9e4c428de04eefd2fb2282366b2b04e92aa78c3",
+      "input_sha256": "33be964defeba07750d8dc21fbdf53813a92855cc69a830d0473e11e6a086118",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 19,
+          "events_seen": 19,
+          "trace_json_bytes": 4555,
+          "selected_event_bytes": 4730,
+          "function_names": [
+            "__init__",
+            "__setitem__",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 27
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 19,
+          "events_seen": 19,
+          "trace_json_bytes": 5754,
+          "selected_event_bytes": 5424,
+          "function_names": [
+            "__init__",
+            "__setitem__",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 3,
+            "retained_functions": 3,
+            "omitted_functions": 0,
+            "selected_event_bytes": 5424,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 27
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.07676241593435407,
+          0.042274000006727874,
+          0.04225574992597103
+        ],
+        "tail": [
+          0.07973995804786682,
+          0.08025916700717062,
+          0.07937079202383757
+        ],
+        "balanced": [
+          0.08020445797592402,
+          0.08043208299204707,
+          0.07781612500548363
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "task": "scrapy-002",
+      "variant": "fixed",
+      "case": "eviction",
+      "artifact_sha256": "b838da817b6112a38a7f8848a9e4c428de04eefd2fb2282366b2b04e92aa78c3",
+      "input_sha256": "2cc145e6204fb26b61ab6bad2463c9c7aff517eb382275224f8dd1335f1e132e",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 29,
+          "events_seen": 29,
+          "trace_json_bytes": 6963,
+          "selected_event_bytes": 7396,
+          "function_names": [
+            "__init__",
+            "__setitem__",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 45
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 29,
+          "events_seen": 29,
+          "trace_json_bytes": 8492,
+          "selected_event_bytes": 8460,
+          "function_names": [
+            "__init__",
+            "__setitem__",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 3,
+            "retained_functions": 3,
+            "omitted_functions": 0,
+            "selected_event_bytes": 8460,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 45
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04125658294651657,
+          0.04344941698946059,
+          0.04277629195712507
+        ],
+        "tail": [
+          0.04318250005599111,
+          0.043155291001312435,
+          0.08007779205217957
+        ],
+        "balanced": [
+          0.0804160829866305,
+          0.04343524994328618,
+          0.08052295900415629
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ]
+    },
+    {
+      "task": "scrapy-002",
+      "variant": "fixed",
+      "case": "within-capacity",
+      "artifact_sha256": "b838da817b6112a38a7f8848a9e4c428de04eefd2fb2282366b2b04e92aa78c3",
+      "input_sha256": "49b2b89c8d7805ce2728abaa29fb4b40c53fa871da1b0882b945e27a3a7629f8",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 21,
+          "events_seen": 21,
+          "trace_json_bytes": 4945,
+          "selected_event_bytes": 5154,
+          "function_names": [
+            "__init__",
+            "__setitem__",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 31
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 21,
+          "events_seen": 21,
+          "trace_json_bytes": 6210,
+          "selected_event_bytes": 5922,
+          "function_names": [
+            "__init__",
+            "__setitem__",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 3,
+            "retained_functions": 3,
+            "omitted_functions": 0,
+            "selected_event_bytes": 5922,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 31
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04217941698152572,
+          0.04244141699746251,
+          0.042711750022135675
+        ],
+        "tail": [
+          0.07761854201089591,
+          0.04329704190604389,
+          0.07433812506496906
+        ],
+        "balanced": [
+          0.0790185829391703,
+          0.0431124169845134,
+          0.08111812500283122
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ]
+    },
+    {
+      "task": "scrapy-002",
+      "variant": "fixed",
+      "case": "empty",
+      "artifact_sha256": "b838da817b6112a38a7f8848a9e4c428de04eefd2fb2282366b2b04e92aa78c3",
+      "input_sha256": "cda8db8c718a1b8a62e92ecc0b6a63a7131842146b9ff6ff879e220d787b9803",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 7,
+          "events_seen": 7,
+          "trace_json_bytes": 1526,
+          "selected_event_bytes": 1351,
+          "function_names": [
+            "__init__",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 9
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 7,
+          "events_seen": 7,
+          "trace_json_bytes": 2330,
+          "selected_event_bytes": 1603,
+          "function_names": [
+            "__init__",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 2,
+            "retained_functions": 2,
+            "omitted_functions": 0,
+            "selected_event_bytes": 1603,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 9
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.042870249948464334,
+          0.04127983306534588,
+          0.04272479098290205
+        ],
+        "tail": [
+          0.04225558298639953,
+          0.04283579206094146,
+          0.043226499925367534
+        ],
+        "balanced": [
+          0.04291829199064523,
+          0.04285700002219528,
+          0.07760562503244728
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "task": "scrapy-002",
+      "variant": "fixed",
+      "case": "one-capacity",
+      "artifact_sha256": "b838da817b6112a38a7f8848a9e4c428de04eefd2fb2282366b2b04e92aa78c3",
+      "input_sha256": "9ba840c23e0126e4f5444e9caf58d8c9d8a29aeff3d29290e492d5e186330f28",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 22,
+          "events_seen": 22,
+          "trace_json_bytes": 5029,
+          "selected_event_bytes": 5231,
+          "function_names": [
+            "__init__",
+            "__setitem__",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 34
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 22,
+          "events_seen": 22,
+          "trace_json_bytes": 6327,
+          "selected_event_bytes": 6036,
+          "function_names": [
+            "__init__",
+            "__setitem__",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 3,
+            "retained_functions": 3,
+            "omitted_functions": 0,
+            "selected_event_bytes": 6036,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 34
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04285337508190423,
+          0.04290741600561887,
+          0.042678791913203895
+        ],
+        "tail": [
+          0.04304991604294628,
+          0.0788052910938859,
+          0.043659624992869794
+        ],
+        "balanced": [
+          0.08058820897713304,
+          0.0796553329564631,
+          0.08007337502203882
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ]
+    },
+    {
+      "task": "scrapy-036",
+      "variant": "buggy",
+      "case": "settings-none",
+      "artifact_sha256": "ced6623724e2eb388bf50e15f746ac21934920f5b2c8d70ae9bcc17ddd14d263",
+      "input_sha256": "b09ba2b5db02b856f23c57e725cf8e42810a3f0f06285a942b10190155e4ba0f",
+      "passed": false,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 21,
+          "events_seen": 21,
+          "trace_json_bytes": 6276,
+          "selected_event_bytes": 6633,
+          "function_names": [
+            "<lambda>",
+            "Probe",
+            "create_instance",
+            "result",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 21
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 21,
+          "events_seen": 21,
+          "trace_json_bytes": 7536,
+          "selected_event_bytes": 7396,
+          "function_names": [
+            "<lambda>",
+            "Probe",
+            "create_instance",
+            "result",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 5,
+            "retained_functions": 5,
+            "omitted_functions": 0,
+            "selected_event_bytes": 7396,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 21
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.07769558299332857,
+          0.07235662499442697,
+          0.04249141598120332
+        ],
+        "tail": [
+          0.04373316594865173,
+          0.0431752500589937,
+          0.042934459052048624
+        ],
+        "balanced": [
+          0.08144658303353935,
+          0.08058579196222126,
+          0.07212079199962318
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ]
+    },
+    {
+      "task": "scrapy-036",
+      "variant": "buggy",
+      "case": "crawler-none",
+      "artifact_sha256": "ced6623724e2eb388bf50e15f746ac21934920f5b2c8d70ae9bcc17ddd14d263",
+      "input_sha256": "33c322dfc079646e5341f977c85b873f6524210bf229bf28a1cb06c2308e5dab",
+      "passed": false,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 22,
+          "events_seen": 22,
+          "trace_json_bytes": 6716,
+          "selected_event_bytes": 7095,
+          "function_names": [
+            "<lambda>",
+            "Probe",
+            "create_instance",
+            "result",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 32
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 22,
+          "events_seen": 22,
+          "trace_json_bytes": 8008,
+          "selected_event_bytes": 7894,
+          "function_names": [
+            "<lambda>",
+            "Probe",
+            "create_instance",
+            "result",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 5,
+            "retained_functions": 5,
+            "omitted_functions": 0,
+            "selected_event_bytes": 7894,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 32
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04173029202502221,
+          0.04098762501962483,
+          0.04189400002360344
+        ],
+        "tail": [
+          0.07757516694255173,
+          0.04312575003132224,
+          0.07939362502656877
+        ],
+        "balanced": [
+          0.08070649998262525,
+          0.08084933296777308,
+          0.07790091703645885
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "task": "scrapy-036",
+      "variant": "buggy",
+      "case": "direct-none",
+      "artifact_sha256": "ced6623724e2eb388bf50e15f746ac21934920f5b2c8d70ae9bcc17ddd14d263",
+      "input_sha256": "ffb9a48cd95d8c3a396d30ffdf5797c401bbc55bc09190a2d41dd03d0c2ecd6e",
+      "passed": false,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 20,
+          "events_seen": 20,
+          "trace_json_bytes": 5700,
+          "selected_event_bytes": 5997,
+          "function_names": [
+            "Probe",
+            "__new__",
+            "create_instance",
+            "result",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 19
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 20,
+          "events_seen": 20,
+          "trace_json_bytes": 6927,
+          "selected_event_bytes": 6723,
+          "function_names": [
+            "Probe",
+            "__new__",
+            "create_instance",
+            "result",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 5,
+            "retained_functions": 5,
+            "omitted_functions": 0,
+            "selected_event_bytes": 6723,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 19
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.07378008402884007,
+          0.04303820803761482,
+          0.04271708300802857
+        ],
+        "tail": [
+          0.07318791700527072,
+          0.08045987493824214,
+          0.04337416705675423
+        ],
+        "balanced": [
+          0.043548000045120716,
+          0.08062329201493412,
+          0.07992591697257012
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ]
+    },
+    {
+      "task": "scrapy-036",
+      "variant": "buggy",
+      "case": "no-config",
+      "artifact_sha256": "ced6623724e2eb388bf50e15f746ac21934920f5b2c8d70ae9bcc17ddd14d263",
+      "input_sha256": "033bb616c47897539387ff536598c508fd0b5cab9179da4903060f216165b9a2",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 16,
+          "events_seen": 16,
+          "trace_json_bytes": 4531,
+          "selected_event_bytes": 4694,
+          "function_names": [
+            "Probe",
+            "create_instance",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 16
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 16,
+          "events_seen": 16,
+          "trace_json_bytes": 5626,
+          "selected_event_bytes": 5272,
+          "function_names": [
+            "Probe",
+            "create_instance",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 3,
+            "retained_functions": 3,
+            "omitted_functions": 0,
+            "selected_event_bytes": 5272,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 16
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04252979101147503,
+          0.07981408399064094,
+          0.07929429097566754
+        ],
+        "tail": [
+          0.08067200006917119,
+          0.08091570902615786,
+          0.04322708398103714
+        ],
+        "balanced": [
+          0.043616749928332865,
+          0.07569562504068017,
+          0.08111166604794562
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ]
+    },
+    {
+      "task": "scrapy-036",
+      "variant": "buggy",
+      "case": "crawler-priority",
+      "artifact_sha256": "ced6623724e2eb388bf50e15f746ac21934920f5b2c8d70ae9bcc17ddd14d263",
+      "input_sha256": "74cd2316a8640baab381c7bbaf35ff7772017efdaa93ee9ab904123a9de624ce",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 21,
+          "events_seen": 21,
+          "trace_json_bytes": 7657,
+          "selected_event_bytes": 8181,
+          "function_names": [
+            "<lambda>",
+            "Probe",
+            "create_instance",
+            "result",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 30
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 21,
+          "events_seen": 21,
+          "trace_json_bytes": 8918,
+          "selected_event_bytes": 8945,
+          "function_names": [
+            "<lambda>",
+            "Probe",
+            "create_instance",
+            "result",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 5,
+            "retained_functions": 5,
+            "omitted_functions": 0,
+            "selected_event_bytes": 8945,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 30
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04200954094994813,
+          0.04122462496161461,
+          0.04209104203619063
+        ],
+        "tail": [
+          0.07784566702321172,
+          0.0796980409650132,
+          0.07819262507837266
+        ],
+        "balanced": [
+          0.0803044579224661,
+          0.08051704103127122,
+          0.07873179204761982
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "task": "scrapy-036",
+      "variant": "buggy",
+      "case": "adopt-settings",
+      "artifact_sha256": "ced6623724e2eb388bf50e15f746ac21934920f5b2c8d70ae9bcc17ddd14d263",
+      "input_sha256": "70d7c1788b8f436d087e5d0696ac19c1fbbbf8684e96a931274952a4e7ae7ec4",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 23,
+          "events_seen": 23,
+          "trace_json_bytes": 7512,
+          "selected_event_bytes": 8009,
+          "function_names": [
+            "<lambda>",
+            "Probe",
+            "create_instance",
+            "result",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 32
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 23,
+          "events_seen": 23,
+          "trace_json_bytes": 8836,
+          "selected_event_bytes": 8844,
+          "function_names": [
+            "<lambda>",
+            "Probe",
+            "create_instance",
+            "result",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 5,
+            "retained_functions": 5,
+            "omitted_functions": 0,
+            "selected_event_bytes": 8844,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 32
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.043225749977864325,
+          0.04110162507276982,
+          0.07676145806908607
+        ],
+        "tail": [
+          0.07862166699487716,
+          0.08063325006514788,
+          0.07972275000065565
+        ],
+        "balanced": [
+          0.08031187509186566,
+          0.08088320808019489,
+          0.08089341595768929
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ]
+    },
+    {
+      "task": "scrapy-036",
+      "variant": "fixed",
+      "case": "settings-none",
+      "artifact_sha256": "def970a4756dc5f51601b9fce79124687f20682814960c03d7775f9608b38f79",
+      "input_sha256": "b09ba2b5db02b856f23c57e725cf8e42810a3f0f06285a942b10190155e4ba0f",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 26,
+          "events_seen": 26,
+          "trace_json_bytes": 7877,
+          "selected_event_bytes": 8404,
+          "function_names": [
+            "<lambda>",
+            "Probe",
+            "create_instance",
+            "result",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 26
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 26,
+          "events_seen": 26,
+          "trace_json_bytes": 9298,
+          "selected_event_bytes": 9348,
+          "function_names": [
+            "<lambda>",
+            "Probe",
+            "create_instance",
+            "result",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 5,
+            "retained_functions": 5,
+            "omitted_functions": 0,
+            "selected_event_bytes": 9348,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 26
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04316274996381253,
+          0.04311750002671033,
+          0.042974375071935356
+        ],
+        "tail": [
+          0.08088512509129941,
+          0.07774041697848588,
+          0.042989333043806255
+        ],
+        "balanced": [
+          0.08122649998404086,
+          0.04413654201198369,
+          0.07596095895860344
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ]
+    },
+    {
+      "task": "scrapy-036",
+      "variant": "fixed",
+      "case": "crawler-none",
+      "artifact_sha256": "def970a4756dc5f51601b9fce79124687f20682814960c03d7775f9608b38f79",
+      "input_sha256": "33c322dfc079646e5341f977c85b873f6524210bf229bf28a1cb06c2308e5dab",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 27,
+          "events_seen": 27,
+          "trace_json_bytes": 8466,
+          "selected_event_bytes": 9020,
+          "function_names": [
+            "<lambda>",
+            "Probe",
+            "create_instance",
+            "result",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 42
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 27,
+          "events_seen": 27,
+          "trace_json_bytes": 9921,
+          "selected_event_bytes": 10000,
+          "function_names": [
+            "<lambda>",
+            "Probe",
+            "create_instance",
+            "result",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 5,
+            "retained_functions": 5,
+            "omitted_functions": 0,
+            "selected_event_bytes": 10000,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 42
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.042557167005725205,
+          0.041973041952587664,
+          0.04195970797445625
+        ],
+        "tail": [
+          0.043144250055775046,
+          0.079836415941827,
+          0.04320187505800277
+        ],
+        "balanced": [
+          0.07782474998384714,
+          0.08016670809593052,
+          0.07807333394885063
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "task": "scrapy-036",
+      "variant": "fixed",
+      "case": "direct-none",
+      "artifact_sha256": "def970a4756dc5f51601b9fce79124687f20682814960c03d7775f9608b38f79",
+      "input_sha256": "ffb9a48cd95d8c3a396d30ffdf5797c401bbc55bc09190a2d41dd03d0c2ecd6e",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 25,
+          "events_seen": 25,
+          "trace_json_bytes": 7265,
+          "selected_event_bytes": 7732,
+          "function_names": [
+            "Probe",
+            "__new__",
+            "create_instance",
+            "result",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 24
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 25,
+          "events_seen": 25,
+          "trace_json_bytes": 8653,
+          "selected_event_bytes": 8639,
+          "function_names": [
+            "Probe",
+            "__new__",
+            "create_instance",
+            "result",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 5,
+            "retained_functions": 5,
+            "omitted_functions": 0,
+            "selected_event_bytes": 8639,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 24
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.07405220798682421,
+          0.07634220900945365,
+          0.043471792014315724
+        ],
+        "tail": [
+          0.04304149991367012,
+          0.07559100002981722,
+          0.04330937494523823
+        ],
+        "balanced": [
+          0.07304466690402478,
+          0.07703037501778454,
+          0.07895150000695139
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ]
+    },
+    {
+      "task": "scrapy-036",
+      "variant": "fixed",
+      "case": "no-config",
+      "artifact_sha256": "def970a4756dc5f51601b9fce79124687f20682814960c03d7775f9608b38f79",
+      "input_sha256": "033bb616c47897539387ff536598c508fd0b5cab9179da4903060f216165b9a2",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 16,
+          "events_seen": 16,
+          "trace_json_bytes": 4531,
+          "selected_event_bytes": 4694,
+          "function_names": [
+            "Probe",
+            "create_instance",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 16
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 16,
+          "events_seen": 16,
+          "trace_json_bytes": 5626,
+          "selected_event_bytes": 5272,
+          "function_names": [
+            "Probe",
+            "create_instance",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 3,
+            "retained_functions": 3,
+            "omitted_functions": 0,
+            "selected_event_bytes": 5272,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 16
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04385412507690489,
+          0.04297054198104888,
+          0.04344054090324789
+        ],
+        "tail": [
+          0.08053491695318371,
+          0.043125375057570636,
+          0.08001149992924184
+        ],
+        "balanced": [
+          0.07856908394023776,
+          0.0794701250270009,
+          0.08029095805250108
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ]
+    },
+    {
+      "task": "scrapy-036",
+      "variant": "fixed",
+      "case": "crawler-priority",
+      "artifact_sha256": "def970a4756dc5f51601b9fce79124687f20682814960c03d7775f9608b38f79",
+      "input_sha256": "74cd2316a8640baab381c7bbaf35ff7772017efdaa93ee9ab904123a9de624ce",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 24,
+          "events_seen": 24,
+          "trace_json_bytes": 9317,
+          "selected_event_bytes": 10029,
+          "function_names": [
+            "<lambda>",
+            "Probe",
+            "create_instance",
+            "result",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 36
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 24,
+          "events_seen": 24,
+          "trace_json_bytes": 10676,
+          "selected_event_bytes": 10901,
+          "function_names": [
+            "<lambda>",
+            "Probe",
+            "create_instance",
+            "result",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 5,
+            "retained_functions": 5,
+            "omitted_functions": 0,
+            "selected_event_bytes": 10901,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 36
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04266279109288007,
+          0.043276999960653484,
+          0.04308091604616493
+        ],
+        "tail": [
+          0.0763488330412656,
+          0.07952179200947285,
+          0.08000866696238518
+        ],
+        "balanced": [
+          0.07760741596575826,
+          0.08032420801464468,
+          0.0798990000039339
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "task": "scrapy-036",
+      "variant": "fixed",
+      "case": "adopt-settings",
+      "artifact_sha256": "def970a4756dc5f51601b9fce79124687f20682814960c03d7775f9608b38f79",
+      "input_sha256": "70d7c1788b8f436d087e5d0696ac19c1fbbbf8684e96a931274952a4e7ae7ec4",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 26,
+          "events_seen": 26,
+          "trace_json_bytes": 9109,
+          "selected_event_bytes": 9787,
+          "function_names": [
+            "<lambda>",
+            "Probe",
+            "create_instance",
+            "result",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 38
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 26,
+          "events_seen": 26,
+          "trace_json_bytes": 10531,
+          "selected_event_bytes": 10730,
+          "function_names": [
+            "<lambda>",
+            "Probe",
+            "create_instance",
+            "result",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 5,
+            "retained_functions": 5,
+            "omitted_functions": 0,
+            "selected_event_bytes": 10730,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 38
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.0758896250044927,
+          0.04228449997026473,
+          0.04276233399286866
+        ],
+        "tail": [
+          0.04349770804401487,
+          0.04316287499386817,
+          0.04344483406748623
+        ],
+        "balanced": [
+          0.07230562507174909,
+          0.08098133408930153,
+          0.07864924997556955
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ]
+    },
+    {
+      "task": "luigi-010",
+      "variant": "buggy",
+      "case": "many-done",
+      "artifact_sha256": "dab9bb7165256ce3e284b551f1360ce9090a38cebc4fc6d81b94f64ee11381a4",
+      "input_sha256": "42b81b155163f473e6c73ac11736e0d24b0fca0c432e072944b3758e8b9b04ed",
+      "passed": false,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 25,
+          "events_seen": 33,
+          "trace_json_bytes": 11117,
+          "selected_event_bytes": 11744,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "get_pending_tasks",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 39
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 25,
+          "events_seen": 33,
+          "trace_json_bytes": 11236,
+          "selected_event_bytes": 11307,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "get_pending_tasks",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 4,
+            "retained_functions": 4,
+            "omitted_functions": 0,
+            "selected_event_bytes": 11307,
+            "event_candidates_rejected_for_bytes": 8
+          },
+          "omitted_object_values": 28
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04193579207640141,
+          0.04272674990352243,
+          0.04315674991812557
+        ],
+        "tail": [
+          0.04296437499579042,
+          0.0422639159951359,
+          0.07718799996655434
+        ],
+        "balanced": [
+          0.08174950000829995,
+          0.0729720409726724,
+          0.0794189169537276
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ]
+    },
+    {
+      "task": "luigi-010",
+      "variant": "buggy",
+      "case": "all-other",
+      "artifact_sha256": "dab9bb7165256ce3e284b551f1360ce9090a38cebc4fc6d81b94f64ee11381a4",
+      "input_sha256": "63169a199affdd9ad110b4c974abd500f255509f26ce96d49d76f0d3b1bc99de",
+      "passed": false,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 25,
+          "events_seen": 25,
+          "trace_json_bytes": 8277,
+          "selected_event_bytes": 8691,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "get_pending_tasks",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 29
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 25,
+          "events_seen": 25,
+          "trace_json_bytes": 9671,
+          "selected_event_bytes": 9604,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "get_pending_tasks",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 4,
+            "retained_functions": 4,
+            "omitted_functions": 0,
+            "selected_event_bytes": 9604,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 29
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04290787491481751,
+          0.04331100010313094,
+          0.07639383303467184
+        ],
+        "tail": [
+          0.043423332972452044,
+          0.04322283307556063,
+          0.043488499941304326
+        ],
+        "balanced": [
+          0.043576583033427596,
+          0.08097820891998708,
+          0.07964116695802659
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "task": "luigi-010",
+      "variant": "buggy",
+      "case": "small-worker",
+      "artifact_sha256": "dab9bb7165256ce3e284b551f1360ce9090a38cebc4fc6d81b94f64ee11381a4",
+      "input_sha256": "e2846ce666446ff8b9a6e9368bbdc9724f1864073862f510e9dc09e4a20b0657",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 28,
+          "events_seen": 30,
+          "trace_json_bytes": 11089,
+          "selected_event_bytes": 11728,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "get_pending_tasks",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 39
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 27,
+          "events_seen": 30,
+          "trace_json_bytes": 11456,
+          "selected_event_bytes": 11537,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "get_pending_tasks",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 5,
+            "retained_functions": 5,
+            "omitted_functions": 0,
+            "selected_event_bytes": 11537,
+            "event_candidates_rejected_for_bytes": 3
+          },
+          "omitted_object_values": 33
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04200479108840227,
+          0.04287279106210917,
+          0.040541875059716403
+        ],
+        "tail": [
+          0.07902458298485726,
+          0.07681487500667572,
+          0.04338029201608151
+        ],
+        "balanced": [
+          0.0775435840478167,
+          0.07810908299870789,
+          0.04350270901340991
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ]
+    },
+    {
+      "task": "luigi-010",
+      "variant": "buggy",
+      "case": "running",
+      "artifact_sha256": "dab9bb7165256ce3e284b551f1360ce9090a38cebc4fc6d81b94f64ee11381a4",
+      "input_sha256": "981b4683bd5676d87e3b30005c91c55ab0e0c76607e02f3169c11b1f38c614a4",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 22,
+          "events_seen": 22,
+          "trace_json_bytes": 5817,
+          "selected_event_bytes": 6018,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "get_pending_tasks",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 25
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 22,
+          "events_seen": 22,
+          "trace_json_bytes": 7112,
+          "selected_event_bytes": 6820,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "get_pending_tasks",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 4,
+            "retained_functions": 4,
+            "omitted_functions": 0,
+            "selected_event_bytes": 6820,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 25
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04081979102920741,
+          0.04240658297203481,
+          0.0765875419601798
+        ],
+        "tail": [
+          0.07780241605360061,
+          0.07756108290050179,
+          0.07846795790828764
+        ],
+        "balanced": [
+          0.043162957997992635,
+          0.08164187497459352,
+          0.043012292007915676
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ]
+    },
+    {
+      "task": "luigi-010",
+      "variant": "buggy",
+      "case": "shared",
+      "artifact_sha256": "dab9bb7165256ce3e284b551f1360ce9090a38cebc4fc6d81b94f64ee11381a4",
+      "input_sha256": "f7024268af8caf456c4d42fa64c84f350af5d1aeabfac36f30208d3fed30e412",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 22,
+          "events_seen": 22,
+          "trace_json_bytes": 5821,
+          "selected_event_bytes": 6023,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "get_pending_tasks",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 25
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 22,
+          "events_seen": 22,
+          "trace_json_bytes": 7116,
+          "selected_event_bytes": 6825,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "get_pending_tasks",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 4,
+            "retained_functions": 4,
+            "omitted_functions": 0,
+            "selected_event_bytes": 6825,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 25
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.0421263329917565,
+          0.07833995902910829,
+          0.04283362498972565
+        ],
+        "tail": [
+          0.043492917087860405,
+          0.07684045797213912,
+          0.043218874954618514
+        ],
+        "balanced": [
+          0.07738999999128282,
+          0.08015637507196516,
+          0.0809855000115931
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "task": "luigi-010",
+      "variant": "buggy",
+      "case": "empty",
+      "artifact_sha256": "dab9bb7165256ce3e284b551f1360ce9090a38cebc4fc6d81b94f64ee11381a4",
+      "input_sha256": "0c2740304eaa1b723806185ecf1066614b26051878ae6339b462924bfbd78ed6",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 17,
+          "events_seen": 17,
+          "trace_json_bytes": 3382,
+          "selected_event_bytes": 3397,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "get_pending_tasks",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 16
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 17,
+          "events_seen": 17,
+          "trace_json_bytes": 4512,
+          "selected_event_bytes": 4014,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "get_pending_tasks",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 4,
+            "retained_functions": 4,
+            "omitted_functions": 0,
+            "selected_event_bytes": 4014,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 16
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04285366600379348,
+          0.042849750025197864,
+          0.04296749993227422
+        ],
+        "tail": [
+          0.04320645797997713,
+          0.0430551249301061,
+          0.043543208041228354
+        ],
+        "balanced": [
+          0.08075083291623741,
+          0.08006191602908075,
+          0.0779395829886198
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ]
+    },
+    {
+      "task": "luigi-010",
+      "variant": "fixed",
+      "case": "many-done",
+      "artifact_sha256": "c4e39ecfed0c38ca269fc25a94bcbf0e0e36578bed671222a7315454d5bee5d6",
+      "input_sha256": "42b81b155163f473e6c73ac11736e0d24b0fca0c432e072944b3758e8b9b04ed",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 26,
+          "events_seen": 35,
+          "trace_json_bytes": 10782,
+          "selected_event_bytes": 11377,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "get_pending_tasks",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 41
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 27,
+          "events_seen": 35,
+          "trace_json_bytes": 11646,
+          "selected_event_bytes": 11752,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "get_pending_tasks",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 5,
+            "retained_functions": 5,
+            "omitted_functions": 0,
+            "selected_event_bytes": 11752,
+            "event_candidates_rejected_for_bytes": 8
+          },
+          "omitted_object_values": 32
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04245870793238282,
+          0.04312329099047929,
+          0.042838499997742474
+        ],
+        "tail": [
+          0.04379154194612056,
+          0.0435469999210909,
+          0.0434110420756042
+        ],
+        "balanced": [
+          0.08103241608478129,
+          0.08077608305029571,
+          0.07898208289407194
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ]
+    },
+    {
+      "task": "luigi-010",
+      "variant": "fixed",
+      "case": "all-other",
+      "artifact_sha256": "c4e39ecfed0c38ca269fc25a94bcbf0e0e36578bed671222a7315454d5bee5d6",
+      "input_sha256": "63169a199affdd9ad110b4c974abd500f255509f26ce96d49d76f0d3b1bc99de",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 25,
+          "events_seen": 25,
+          "trace_json_bytes": 8227,
+          "selected_event_bytes": 8638,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "get_pending_tasks",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 28
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 25,
+          "events_seen": 25,
+          "trace_json_bytes": 9621,
+          "selected_event_bytes": 9551,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "get_pending_tasks",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 5,
+            "retained_functions": 5,
+            "omitted_functions": 0,
+            "selected_event_bytes": 9551,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 28
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.041236958000808954,
+          0.04294716601725668,
+          0.04270462493877858
+        ],
+        "tail": [
+          0.043116957996971905,
+          0.043135000043548644,
+          0.04294616589322686
+        ],
+        "balanced": [
+          0.043412541039288044,
+          0.0783515409566462,
+          0.08020991692319512
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "task": "luigi-010",
+      "variant": "fixed",
+      "case": "small-worker",
+      "artifact_sha256": "c4e39ecfed0c38ca269fc25a94bcbf0e0e36578bed671222a7315454d5bee5d6",
+      "input_sha256": "e2846ce666446ff8b9a6e9368bbdc9724f1864073862f510e9dc09e4a20b0657",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 28,
+          "events_seen": 30,
+          "trace_json_bytes": 11089,
+          "selected_event_bytes": 11728,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "get_pending_tasks",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 39
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 27,
+          "events_seen": 30,
+          "trace_json_bytes": 11456,
+          "selected_event_bytes": 11537,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "get_pending_tasks",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 5,
+            "retained_functions": 5,
+            "omitted_functions": 0,
+            "selected_event_bytes": 11537,
+            "event_candidates_rejected_for_bytes": 3
+          },
+          "omitted_object_values": 33
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04214024997781962,
+          0.04281504196114838,
+          0.07676812494173646
+        ],
+        "tail": [
+          0.07719691703096032,
+          0.0435921250609681,
+          0.07922195794526488
+        ],
+        "balanced": [
+          0.08025841705966741,
+          0.04406250000465661,
+          0.08130520803388208
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ]
+    },
+    {
+      "task": "luigi-010",
+      "variant": "fixed",
+      "case": "running",
+      "artifact_sha256": "c4e39ecfed0c38ca269fc25a94bcbf0e0e36578bed671222a7315454d5bee5d6",
+      "input_sha256": "981b4683bd5676d87e3b30005c91c55ab0e0c76607e02f3169c11b1f38c614a4",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 24,
+          "events_seen": 24,
+          "trace_json_bytes": 6169,
+          "selected_event_bytes": 6398,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "get_pending_tasks",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 29
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 24,
+          "events_seen": 24,
+          "trace_json_bytes": 7530,
+          "selected_event_bytes": 7274,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "get_pending_tasks",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 5,
+            "retained_functions": 5,
+            "omitted_functions": 0,
+            "selected_event_bytes": 7274,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 29
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04293629189487547,
+          0.042940165963955224,
+          0.04288812493905425
+        ],
+        "tail": [
+          0.07533833291381598,
+          0.04317950003314763,
+          0.07484570797532797
+        ],
+        "balanced": [
+          0.04391033307183534,
+          0.043483042041771114,
+          0.08102258306462318
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ]
+    },
+    {
+      "task": "luigi-010",
+      "variant": "fixed",
+      "case": "shared",
+      "artifact_sha256": "c4e39ecfed0c38ca269fc25a94bcbf0e0e36578bed671222a7315454d5bee5d6",
+      "input_sha256": "f7024268af8caf456c4d42fa64c84f350af5d1aeabfac36f30208d3fed30e412",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 24,
+          "events_seen": 24,
+          "trace_json_bytes": 6173,
+          "selected_event_bytes": 6403,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "get_pending_tasks",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 29
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 24,
+          "events_seen": 24,
+          "trace_json_bytes": 7534,
+          "selected_event_bytes": 7279,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "get_pending_tasks",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 5,
+            "retained_functions": 5,
+            "omitted_functions": 0,
+            "selected_event_bytes": 7279,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 29
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04054804099723697,
+          0.04294845904223621,
+          0.04291229194495827
+        ],
+        "tail": [
+          0.07731283293105662,
+          0.08000454201828688,
+          0.04332608403638005
+        ],
+        "balanced": [
+          0.08042300003580749,
+          0.08022954198531806,
+          0.07999754208140075
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "task": "luigi-010",
+      "variant": "fixed",
+      "case": "empty",
+      "artifact_sha256": "c4e39ecfed0c38ca269fc25a94bcbf0e0e36578bed671222a7315454d5bee5d6",
+      "input_sha256": "0c2740304eaa1b723806185ecf1066614b26051878ae6339b462924bfbd78ed6",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 17,
+          "events_seen": 17,
+          "trace_json_bytes": 3382,
+          "selected_event_bytes": 3397,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "get_pending_tasks",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 16
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 17,
+          "events_seen": 17,
+          "trace_json_bytes": 4512,
+          "selected_event_bytes": 4014,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "get_pending_tasks",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 4,
+            "retained_functions": 4,
+            "omitted_functions": 0,
+            "selected_event_bytes": 4014,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 16
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04306795902084559,
+          0.04340279195457697,
+          0.044087500078603625
+        ],
+        "tail": [
+          0.07878195797093213,
+          0.04342866700608283,
+          0.04316954093519598
+        ],
+        "balanced": [
+          0.08020324993412942,
+          0.08062362496275455,
+          0.080132249975577
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ]
+    },
+    {
+      "task": "tornado-005",
+      "variant": "buggy",
+      "case": "backward",
+      "artifact_sha256": "3580943e978670c74878d79734336a1cf85cbe8b9656ff14d4c86d2d235b5c84",
+      "input_sha256": "77e8c36d1b1dd0719b4256a952cbff608a16185e61ad5e373f54041c3f85d55e",
+      "passed": false,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 22,
+          "events_seen": 22,
+          "trace_json_bytes": 5299,
+          "selected_event_bytes": 5515,
+          "function_names": [
+            "_update_next",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 21
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 22,
+          "events_seen": 22,
+          "trace_json_bytes": 6591,
+          "selected_event_bytes": 6314,
+          "function_names": [
+            "_update_next",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 2,
+            "retained_functions": 2,
+            "omitted_functions": 0,
+            "selected_event_bytes": 6314,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 21
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.08067166700493544,
+          0.04369750001933426,
+          0.07767841697204858
+        ],
+        "tail": [
+          0.043727834010496736,
+          0.07645629101898521,
+          0.07914229203015566
+        ],
+        "balanced": [
+          0.08068625000305474,
+          0.08142916590441018,
+          0.0790922079468146
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ]
+    },
+    {
+      "task": "tornado-005",
+      "variant": "buggy",
+      "case": "small-backward",
+      "artifact_sha256": "3580943e978670c74878d79734336a1cf85cbe8b9656ff14d4c86d2d235b5c84",
+      "input_sha256": "96b0af503c28e125ff9968888b85b9c5abc79561b4987dd8414416649bc37a87",
+      "passed": false,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 38,
+          "trace_json_bytes": 6649,
+          "selected_event_bytes": 6954,
+          "function_names": [
+            "_update_next",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 32
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 38,
+          "trace_json_bytes": 8528,
+          "selected_event_bytes": 8429,
+          "function_names": [
+            "_update_next",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 2,
+            "retained_functions": 2,
+            "omitted_functions": 0,
+            "selected_event_bytes": 8429,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 31
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.07288025005254894,
+          0.04317325004376471,
+          0.04360991599969566
+        ],
+        "tail": [
+          0.08036579203326255,
+          0.07980854099150747,
+          0.07610695797484368
+        ],
+        "balanced": [
+          0.08004725002683699,
+          0.08037149999290705,
+          0.07678570796269923
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "task": "tornado-005",
+      "variant": "buggy",
+      "case": "normal",
+      "artifact_sha256": "3580943e978670c74878d79734336a1cf85cbe8b9656ff14d4c86d2d235b5c84",
+      "input_sha256": "e851ba2b77beca237422747f9de6304eea7e17b4fea1496568ca1c3bb162dc25",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 46,
+          "trace_json_bytes": 6832,
+          "selected_event_bytes": 7140,
+          "function_names": [
+            "_update_next",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 32
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 46,
+          "trace_json_bytes": 8738,
+          "selected_event_bytes": 8641,
+          "function_names": [
+            "_update_next",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 2,
+            "retained_functions": 2,
+            "omitted_functions": 0,
+            "selected_event_bytes": 8641,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 31
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.0722748750122264,
+          0.07626037497539073,
+          0.07916966604534537
+        ],
+        "tail": [
+          0.07766175002325326,
+          0.04334299999754876,
+          0.07794450002256781
+        ],
+        "balanced": [
+          0.07892833300866187,
+          0.0808957910630852,
+          0.08061812503729016
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ]
+    },
+    {
+      "task": "tornado-005",
+      "variant": "buggy",
+      "case": "overrun",
+      "artifact_sha256": "3580943e978670c74878d79734336a1cf85cbe8b9656ff14d4c86d2d235b5c84",
+      "input_sha256": "c324098afb681c318e73c34a15cfa2630047a4df6501e80ad707d963839a5b30",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 33,
+          "trace_json_bytes": 6723,
+          "selected_event_bytes": 7016,
+          "function_names": [
+            "_update_next",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 32
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 33,
+          "trace_json_bytes": 8329,
+          "selected_event_bytes": 8172,
+          "function_names": [
+            "_update_next",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 2,
+            "retained_functions": 2,
+            "omitted_functions": 0,
+            "selected_event_bytes": 8172,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 31
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.07997462502680719,
+          0.07868037500884384,
+          0.08052304200828075
+        ],
+        "tail": [
+          0.07830066699534655,
+          0.08041095791850239,
+          0.07846550003159791
+        ],
+        "balanced": [
+          0.08145504095591605,
+          0.0780919169774279,
+          0.07804099994245917
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ]
+    },
+    {
+      "task": "tornado-005",
+      "variant": "buggy",
+      "case": "fractional",
+      "artifact_sha256": "3580943e978670c74878d79734336a1cf85cbe8b9656ff14d4c86d2d235b5c84",
+      "input_sha256": "ddb750810bc81065a0bd29e7fd0286bea2b1673d3f99c256587f71863015d9d0",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 46,
+          "trace_json_bytes": 6561,
+          "selected_event_bytes": 6869,
+          "function_names": [
+            "_update_next",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 32
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 46,
+          "trace_json_bytes": 8408,
+          "selected_event_bytes": 8311,
+          "function_names": [
+            "_update_next",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 2,
+            "retained_functions": 2,
+            "omitted_functions": 0,
+            "selected_event_bytes": 8311,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 31
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.08019529201555997,
+          0.042784040910191834,
+          0.04305099998600781
+        ],
+        "tail": [
+          0.07714079110883176,
+          0.04343391698785126,
+          0.04328733298461884
+        ],
+        "balanced": [
+          0.0813215000089258,
+          0.08077579201199114,
+          0.07915433403104544
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "task": "tornado-005",
+      "variant": "buggy",
+      "case": "empty",
+      "artifact_sha256": "3580943e978670c74878d79734336a1cf85cbe8b9656ff14d4c86d2d235b5c84",
+      "input_sha256": "c7b7806a4aa3e7942ec6e0442a390d8f447bf293e5b636e1d6a5dbec5640c92b",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 7,
+          "events_seen": 7,
+          "trace_json_bytes": 1784,
+          "selected_event_bytes": 1642,
+          "function_names": [
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 6
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 7,
+          "events_seen": 7,
+          "trace_json_bytes": 2588,
+          "selected_event_bytes": 1894,
+          "function_names": [
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 1,
+            "retained_functions": 1,
+            "omitted_functions": 0,
+            "selected_event_bytes": 1894,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 6
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.07589849992655218,
+          0.07980587496422231,
+          0.04302612505853176
+        ],
+        "tail": [
+          0.07531879201997072,
+          0.04245920805260539,
+          0.04311995895113796
+        ],
+        "balanced": [
+          0.08041695796418935,
+          0.08103562507312745,
+          0.043050416046753526
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ]
+    },
+    {
+      "task": "tornado-005",
+      "variant": "fixed",
+      "case": "backward",
+      "artifact_sha256": "3202948eb61ead9530c93c6bcc9c56338aaa98b3b23de0fc7952e08017dbd6e2",
+      "input_sha256": "77e8c36d1b1dd0719b4256a952cbff608a16185e61ad5e373f54041c3f85d55e",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 28,
+          "events_seen": 28,
+          "trace_json_bytes": 6406,
+          "selected_event_bytes": 6712,
+          "function_names": [
+            "_update_next",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 27
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 28,
+          "events_seen": 28,
+          "trace_json_bytes": 7890,
+          "selected_event_bytes": 7727,
+          "function_names": [
+            "_update_next",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 2,
+            "retained_functions": 2,
+            "omitted_functions": 0,
+            "selected_event_bytes": 7727,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 27
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.043125791009515524,
+          0.04285787499975413,
+          0.07956837501842529
+        ],
+        "tail": [
+          0.04342449991963804,
+          0.07736870890948921,
+          0.07819825003389269
+        ],
+        "balanced": [
+          0.0438684590626508,
+          0.07980037503875792,
+          0.07947937492281199
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ]
+    },
+    {
+      "task": "tornado-005",
+      "variant": "fixed",
+      "case": "small-backward",
+      "artifact_sha256": "3202948eb61ead9530c93c6bcc9c56338aaa98b3b23de0fc7952e08017dbd6e2",
+      "input_sha256": "96b0af503c28e125ff9968888b85b9c5abc79561b4987dd8414416649bc37a87",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 34,
+          "trace_json_bytes": 6970,
+          "selected_event_bytes": 7321,
+          "function_names": [
+            "_update_next",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 32
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 34,
+          "trace_json_bytes": 8621,
+          "selected_event_bytes": 8530,
+          "function_names": [
+            "_update_next",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 2,
+            "retained_functions": 2,
+            "omitted_functions": 0,
+            "selected_event_bytes": 8530,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 31
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.08002937503624707,
+          0.04319470806512982,
+          0.07860237499698997
+        ],
+        "tail": [
+          0.08045141701586545,
+          0.08075795799959451,
+          0.08087679196614772
+        ],
+        "balanced": [
+          0.07918016705662012,
+          0.07854212494567037,
+          0.07868412509560585
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "task": "tornado-005",
+      "variant": "fixed",
+      "case": "normal",
+      "artifact_sha256": "3202948eb61ead9530c93c6bcc9c56338aaa98b3b23de0fc7952e08017dbd6e2",
+      "input_sha256": "e851ba2b77beca237422747f9de6304eea7e17b4fea1496568ca1c3bb162dc25",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 46,
+          "trace_json_bytes": 6894,
+          "selected_event_bytes": 7206,
+          "function_names": [
+            "_update_next",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 32
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 46,
+          "trace_json_bytes": 8793,
+          "selected_event_bytes": 8700,
+          "function_names": [
+            "_update_next",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 2,
+            "retained_functions": 2,
+            "omitted_functions": 0,
+            "selected_event_bytes": 8700,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 31
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.08011333295144141,
+          0.07519920798949897,
+          0.07796891697216779
+        ],
+        "tail": [
+          0.08108008396811783,
+          0.07909008394926786,
+          0.042888208059594035
+        ],
+        "balanced": [
+          0.07813550007995218,
+          0.07761804200708866,
+          0.0781927090138197
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ]
+    },
+    {
+      "task": "tornado-005",
+      "variant": "fixed",
+      "case": "overrun",
+      "artifact_sha256": "3202948eb61ead9530c93c6bcc9c56338aaa98b3b23de0fc7952e08017dbd6e2",
+      "input_sha256": "c324098afb681c318e73c34a15cfa2630047a4df6501e80ad707d963839a5b30",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 33,
+          "trace_json_bytes": 6783,
+          "selected_event_bytes": 7080,
+          "function_names": [
+            "_update_next",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 32
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 33,
+          "trace_json_bytes": 8388,
+          "selected_event_bytes": 8235,
+          "function_names": [
+            "_update_next",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 2,
+            "retained_functions": 2,
+            "omitted_functions": 0,
+            "selected_event_bytes": 8235,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 31
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04327666596509516,
+          0.07958520809188485,
+          0.07592500001192093
+        ],
+        "tail": [
+          0.07773850008379668,
+          0.0773073339369148,
+          0.08098933403380215
+        ],
+        "balanced": [
+          0.0810937499627471,
+          0.08139037503860891,
+          0.07671991607639939
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ]
+    },
+    {
+      "task": "tornado-005",
+      "variant": "fixed",
+      "case": "fractional",
+      "artifact_sha256": "3202948eb61ead9530c93c6bcc9c56338aaa98b3b23de0fc7952e08017dbd6e2",
+      "input_sha256": "ddb750810bc81065a0bd29e7fd0286bea2b1673d3f99c256587f71863015d9d0",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 46,
+          "trace_json_bytes": 6621,
+          "selected_event_bytes": 6933,
+          "function_names": [
+            "_update_next",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 32
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 46,
+          "trace_json_bytes": 8461,
+          "selected_event_bytes": 8368,
+          "function_names": [
+            "_update_next",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 2,
+            "retained_functions": 2,
+            "omitted_functions": 0,
+            "selected_event_bytes": 8368,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 31
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.07937737496104091,
+          0.08094166603405029,
+          0.08111550007015467
+        ],
+        "tail": [
+          0.07725191698409617,
+          0.082003916031681,
+          0.07764058304019272
+        ],
+        "balanced": [
+          0.07802862499374896,
+          0.08168270799797028,
+          0.08031975000631064
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "task": "tornado-005",
+      "variant": "fixed",
+      "case": "empty",
+      "artifact_sha256": "3202948eb61ead9530c93c6bcc9c56338aaa98b3b23de0fc7952e08017dbd6e2",
+      "input_sha256": "c7b7806a4aa3e7942ec6e0442a390d8f447bf293e5b636e1d6a5dbec5640c92b",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 7,
+          "events_seen": 7,
+          "trace_json_bytes": 1784,
+          "selected_event_bytes": 1642,
+          "function_names": [
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 6
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 7,
+          "events_seen": 7,
+          "trace_json_bytes": 2588,
+          "selected_event_bytes": 1894,
+          "function_names": [
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 1,
+            "retained_functions": 1,
+            "omitted_functions": 0,
+            "selected_event_bytes": 1894,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 6
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.07676470896694809,
+          0.0440070420736447,
+          0.07922483293805271
+        ],
+        "tail": [
+          0.08098187507130206,
+          0.07603470899630338,
+          0.08090154197998345
+        ],
+        "balanced": [
+          0.0775047909701243,
+          0.08094829192850739,
+          0.07940662500914186
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ]
+    },
+    {
+      "task": "thefuck-022",
+      "variant": "buggy",
+      "case": "empty-length",
+      "artifact_sha256": "0181af127de4ef507a4e3f8ec25f1031c78ee0326cb046c009d67ae6c2fb28ff",
+      "input_sha256": "5c264efd33c52de9f71719cb994bc97c2cd7cbe9a32ac3a5a71a390b054c9b5a",
+      "passed": false,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 37,
+          "trace_json_bytes": 6282,
+          "selected_event_bytes": 6500,
+          "function_names": [
+            "<genexpr>",
+            "__init__",
+            "__len__",
+            "_realise",
+            "_realise_first",
+            "_remove_duplicates",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 47
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 37,
+          "trace_json_bytes": 7721,
+          "selected_event_bytes": 7473,
+          "function_names": [
+            "<genexpr>",
+            "__init__",
+            "__len__",
+            "_realise",
+            "_realise_first",
+            "_remove_duplicates",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 7,
+            "retained_functions": 7,
+            "omitted_functions": 0,
+            "selected_event_bytes": 7473,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 45
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.08043529198039323,
+          0.07976787502411753,
+          0.07833108305931091
+        ],
+        "tail": [
+          0.07991270802449435,
+          0.07761233299970627,
+          0.0812854589894414
+        ],
+        "balanced": [
+          0.079385666991584,
+          0.0777205420890823,
+          0.08122066711075604
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ]
+    },
+    {
+      "task": "thefuck-022",
+      "variant": "buggy",
+      "case": "empty-list",
+      "artifact_sha256": "0181af127de4ef507a4e3f8ec25f1031c78ee0326cb046c009d67ae6c2fb28ff",
+      "input_sha256": "fdb2a9ae54aadd07b1ef9fbf2217d02f7cdf0c053402a8260a6e1c4e9e1fb0cb",
+      "passed": false,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 36,
+          "trace_json_bytes": 6184,
+          "selected_event_bytes": 6385,
+          "function_names": [
+            "<genexpr>",
+            "__init__",
+            "__iter__",
+            "_realise",
+            "_realise_first",
+            "_remove_duplicates",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 47
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 36,
+          "trace_json_bytes": 7735,
+          "selected_event_bytes": 7487,
+          "function_names": [
+            "<genexpr>",
+            "__init__",
+            "__iter__",
+            "_realise",
+            "_realise_first",
+            "_remove_duplicates",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 7,
+            "retained_functions": 7,
+            "omitted_functions": 0,
+            "selected_event_bytes": 7487,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 45
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.07889791706111282,
+          0.07905141601804644,
+          0.07722837501205504
+        ],
+        "tail": [
+          0.16021145903505385,
+          0.08695883303880692,
+          0.0760992499999702
+        ],
+        "balanced": [
+          0.15664387494325638,
+          0.08088145800866187,
+          0.08116995799355209
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "task": "thefuck-022",
+      "variant": "buggy",
+      "case": "empty-truth",
+      "artifact_sha256": "0181af127de4ef507a4e3f8ec25f1031c78ee0326cb046c009d67ae6c2fb28ff",
+      "input_sha256": "6bc8b741352e2fafa891579c03f6b637e83c790770d94485526d3fdcb7fd7cea",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 25,
+          "events_seen": 25,
+          "trace_json_bytes": 5099,
+          "selected_event_bytes": 5265,
+          "function_names": [
+            "<genexpr>",
+            "__bool__",
+            "__init__",
+            "_realise_first",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 29
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 25,
+          "events_seen": 25,
+          "trace_json_bytes": 6496,
+          "selected_event_bytes": 6181,
+          "function_names": [
+            "<genexpr>",
+            "__bool__",
+            "__init__",
+            "_realise_first",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 5,
+            "retained_functions": 5,
+            "omitted_functions": 0,
+            "selected_event_bytes": 6181,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 29
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.08046462491620332,
+          0.08027000003494322,
+          0.0782037079334259
+        ],
+        "tail": [
+          0.08104625006671995,
+          0.08040195901412517,
+          0.07863883394747972
+        ],
+        "balanced": [
+          0.08128945901989937,
+          0.08142916695214808,
+          0.07806979201268405
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ]
+    },
+    {
+      "task": "thefuck-022",
+      "variant": "buggy",
+      "case": "single",
+      "artifact_sha256": "0181af127de4ef507a4e3f8ec25f1031c78ee0326cb046c009d67ae6c2fb28ff",
+      "input_sha256": "5da9dc9bc22a0c1083dea5e6abfaf0ac4afd3be0bc1f084c1ae13445de9a113b",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 73,
+          "trace_json_bytes": 7488,
+          "selected_event_bytes": 7846,
+          "function_names": [
+            "__iter__",
+            "__len__",
+            "__repr__",
+            "_realise",
+            "_remove_duplicates",
+            "debug",
+            "format_stack",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 49
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 73,
+          "trace_json_bytes": 8119,
+          "selected_event_bytes": 7912,
+          "function_names": [
+            "<genexpr>",
+            "__getitem__",
+            "__init__",
+            "__iter__",
+            "__len__",
+            "__repr__",
+            "_realise",
+            "_realise_first",
+            "_remove_duplicates",
+            "debug",
+            "format_stack",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 13,
+            "retained_functions": 13,
+            "omitted_functions": 0,
+            "selected_event_bytes": 7912,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 36
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.07763370801694691,
+          0.08056987496092916,
+          0.043715542065910995
+        ],
+        "tail": [
+          0.07757179206237197,
+          0.08074562507681549,
+          0.07562366698402911
+        ],
+        "balanced": [
+          0.0813276250846684,
+          0.07865720789413899,
+          0.08023033407516778
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ]
+    },
+    {
+      "task": "thefuck-022",
+      "variant": "buggy",
+      "case": "ordering",
+      "artifact_sha256": "0181af127de4ef507a4e3f8ec25f1031c78ee0326cb046c009d67ae6c2fb28ff",
+      "input_sha256": "e24a443bef3f5a434090ecce3d3cbb3d4031ae4e8c807b655e2b2ed304564910",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": false,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 109,
+          "trace_json_bytes": 8518,
+          "selected_event_bytes": 8997,
+          "function_names": [
+            "__iter__",
+            "__len__",
+            "__repr__",
+            "_realise",
+            "debug",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 36
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 109,
+          "trace_json_bytes": 7870,
+          "selected_event_bytes": 7626,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "__eq__",
+            "__hash__",
+            "__init__",
+            "__iter__",
+            "__len__",
+            "__repr__",
+            "_realise",
+            "_realise_first",
+            "_remove_duplicates",
+            "debug",
+            "format_stack",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 16,
+            "retained_functions": 16,
+            "omitted_functions": 0,
+            "selected_event_bytes": 7626,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 33
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04194224998354912,
+          0.043058125069364905,
+          0.07927787501830608
+        ],
+        "tail": [
+          0.08100216602906585,
+          0.08125624991953373,
+          0.08099375001620501
+        ],
+        "balanced": [
+          0.0810150420293212,
+          0.08151150005869567,
+          0.08049233292695135
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "task": "thefuck-022",
+      "variant": "buggy",
+      "case": "lazy-first",
+      "artifact_sha256": "0181af127de4ef507a4e3f8ec25f1031c78ee0326cb046c009d67ae6c2fb28ff",
+      "input_sha256": "6f2df76fdaf09ef59e8daefb28b667ca39338bbf10f063b9595de0d6149d328c",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 38,
+          "trace_json_bytes": 8823,
+          "selected_event_bytes": 9425,
+          "function_names": [
+            "<genexpr>",
+            "__bool__",
+            "__getitem__",
+            "__init__",
+            "_realise_first",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 43
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 38,
+          "trace_json_bytes": 9333,
+          "selected_event_bytes": 9331,
+          "function_names": [
+            "<genexpr>",
+            "__bool__",
+            "__getitem__",
+            "__init__",
+            "_realise_first",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 7,
+            "retained_functions": 7,
+            "omitted_functions": 0,
+            "selected_event_bytes": 9331,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 41
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.07827287504915148,
+          0.043197166989557445,
+          0.04313829098828137
+        ],
+        "tail": [
+          0.08149820799008012,
+          0.07693787501193583,
+          0.08108229201752692
+        ],
+        "balanced": [
+          0.08160675002727658,
+          0.08073716703802347,
+          0.07604233303572983
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ]
+    },
+    {
+      "task": "thefuck-022",
+      "variant": "fixed",
+      "case": "empty-length",
+      "artifact_sha256": "d068ae103d1c20f0a446900025def85cc026dc675979dfcc03ad76dde902c7f4",
+      "input_sha256": "5c264efd33c52de9f71719cb994bc97c2cd7cbe9a32ac3a5a71a390b054c9b5a",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 38,
+          "trace_json_bytes": 5675,
+          "selected_event_bytes": 5890,
+          "function_names": [
+            "<genexpr>",
+            "__init__",
+            "__len__",
+            "_realise",
+            "_realise_first",
+            "debug",
+            "format_stack",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 30
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 38,
+          "trace_json_bytes": 7229,
+          "selected_event_bytes": 6971,
+          "function_names": [
+            "<genexpr>",
+            "__init__",
+            "__len__",
+            "_realise",
+            "_realise_first",
+            "debug",
+            "format_stack",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 8,
+            "retained_functions": 8,
+            "omitted_functions": 0,
+            "selected_event_bytes": 6971,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 32
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.08051112503744662,
+          0.043502749991603196,
+          0.07893883308861405
+        ],
+        "tail": [
+          0.07798520906362683,
+          0.0774140419671312,
+          0.07724916702136397
+        ],
+        "balanced": [
+          0.07913045794703066,
+          0.07976795802824199,
+          0.08084275003056973
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ]
+    },
+    {
+      "task": "thefuck-022",
+      "variant": "fixed",
+      "case": "empty-list",
+      "artifact_sha256": "d068ae103d1c20f0a446900025def85cc026dc675979dfcc03ad76dde902c7f4",
+      "input_sha256": "fdb2a9ae54aadd07b1ef9fbf2217d02f7cdf0c053402a8260a6e1c4e9e1fb0cb",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 37,
+          "trace_json_bytes": 5701,
+          "selected_event_bytes": 5912,
+          "function_names": [
+            "<genexpr>",
+            "__init__",
+            "__iter__",
+            "_realise",
+            "_realise_first",
+            "debug",
+            "format_stack",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 30
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 37,
+          "trace_json_bytes": 7342,
+          "selected_event_bytes": 7094,
+          "function_names": [
+            "<genexpr>",
+            "__init__",
+            "__iter__",
+            "_realise",
+            "_realise_first",
+            "debug",
+            "format_stack",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 8,
+            "retained_functions": 8,
+            "omitted_functions": 0,
+            "selected_event_bytes": 7094,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 32
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04344083298929036,
+          0.07450383296236396,
+          0.04329379100818187
+        ],
+        "tail": [
+          0.0791862920159474,
+          0.07557975000236183,
+          0.043288374901749194
+        ],
+        "balanced": [
+          0.07442491699475795,
+          0.07731600000988692,
+          0.08122066699434072
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "task": "thefuck-022",
+      "variant": "fixed",
+      "case": "empty-truth",
+      "artifact_sha256": "d068ae103d1c20f0a446900025def85cc026dc675979dfcc03ad76dde902c7f4",
+      "input_sha256": "6bc8b741352e2fafa891579c03f6b637e83c790770d94485526d3fdcb7fd7cea",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 25,
+          "events_seen": 25,
+          "trace_json_bytes": 5099,
+          "selected_event_bytes": 5265,
+          "function_names": [
+            "<genexpr>",
+            "__bool__",
+            "__init__",
+            "_realise_first",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 29
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 25,
+          "events_seen": 25,
+          "trace_json_bytes": 6496,
+          "selected_event_bytes": 6181,
+          "function_names": [
+            "<genexpr>",
+            "__bool__",
+            "__init__",
+            "_realise_first",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 5,
+            "retained_functions": 5,
+            "omitted_functions": 0,
+            "selected_event_bytes": 6181,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 29
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.07628675003070384,
+          0.04205058398656547,
+          0.07463458296842873
+        ],
+        "tail": [
+          0.04316816700156778,
+          0.07965375005733222,
+          0.07756404089741409
+        ],
+        "balanced": [
+          0.07706941606011242,
+          0.08077979204244912,
+          0.07908449997194111
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ]
+    },
+    {
+      "task": "thefuck-022",
+      "variant": "fixed",
+      "case": "single",
+      "artifact_sha256": "d068ae103d1c20f0a446900025def85cc026dc675979dfcc03ad76dde902c7f4",
+      "input_sha256": "5da9dc9bc22a0c1083dea5e6abfaf0ac4afd3be0bc1f084c1ae13445de9a113b",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 74,
+          "trace_json_bytes": 7488,
+          "selected_event_bytes": 7846,
+          "function_names": [
+            "__iter__",
+            "__len__",
+            "__repr__",
+            "_realise",
+            "_remove_duplicates",
+            "debug",
+            "format_stack",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 49
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 74,
+          "trace_json_bytes": 8119,
+          "selected_event_bytes": 7912,
+          "function_names": [
+            "<genexpr>",
+            "__getitem__",
+            "__init__",
+            "__iter__",
+            "__len__",
+            "__repr__",
+            "_realise",
+            "_realise_first",
+            "_remove_duplicates",
+            "debug",
+            "format_stack",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 13,
+            "retained_functions": 13,
+            "omitted_functions": 0,
+            "selected_event_bytes": 7912,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 36
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.07632812496740371,
+          0.04349541594274342,
+          0.04299541702494025
+        ],
+        "tail": [
+          0.04320808395277709,
+          0.043550875037908554,
+          0.0435620000353083
+        ],
+        "balanced": [
+          0.07952604105230421,
+          0.08112224994692951,
+          0.08082762488629669
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ]
+    },
+    {
+      "task": "thefuck-022",
+      "variant": "fixed",
+      "case": "ordering",
+      "artifact_sha256": "d068ae103d1c20f0a446900025def85cc026dc675979dfcc03ad76dde902c7f4",
+      "input_sha256": "e24a443bef3f5a434090ecce3d3cbb3d4031ae4e8c807b655e2b2ed304564910",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": false,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 110,
+          "trace_json_bytes": 8518,
+          "selected_event_bytes": 8997,
+          "function_names": [
+            "__iter__",
+            "__len__",
+            "__repr__",
+            "_realise",
+            "debug",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 36
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 110,
+          "trace_json_bytes": 7870,
+          "selected_event_bytes": 7626,
+          "function_names": [
+            "<genexpr>",
+            "<lambda>",
+            "__eq__",
+            "__hash__",
+            "__init__",
+            "__iter__",
+            "__len__",
+            "__repr__",
+            "_realise",
+            "_realise_first",
+            "_remove_duplicates",
+            "debug",
+            "format_stack",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 16,
+            "retained_functions": 16,
+            "omitted_functions": 0,
+            "selected_event_bytes": 7626,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 33
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.042891499935649335,
+          0.07944270805455744,
+          0.07863916701171547
+        ],
+        "tail": [
+          0.08088833303190768,
+          0.0765462089329958,
+          0.08090291707776487
+        ],
+        "balanced": [
+          0.08080774999689311,
+          0.07949270796962082,
+          0.08146366698201746
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "task": "thefuck-022",
+      "variant": "fixed",
+      "case": "lazy-first",
+      "artifact_sha256": "d068ae103d1c20f0a446900025def85cc026dc675979dfcc03ad76dde902c7f4",
+      "input_sha256": "6f2df76fdaf09ef59e8daefb28b667ca39338bbf10f063b9595de0d6149d328c",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 38,
+          "trace_json_bytes": 8824,
+          "selected_event_bytes": 9426,
+          "function_names": [
+            "<genexpr>",
+            "__bool__",
+            "__getitem__",
+            "__init__",
+            "_realise_first",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 43
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 32,
+          "events_seen": 38,
+          "trace_json_bytes": 9334,
+          "selected_event_bytes": 9332,
+          "function_names": [
+            "<genexpr>",
+            "__bool__",
+            "__getitem__",
+            "__init__",
+            "_realise_first",
+            "solve"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 7,
+            "retained_functions": 7,
+            "omitted_functions": 0,
+            "selected_event_bytes": 9332,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 41
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.042958375066518784,
+          0.043051041080616415,
+          0.0424179999390617
+        ],
+        "tail": [
+          0.0435873749665916,
+          0.08018512499984354,
+          0.07727083296049386
+        ],
+        "balanced": [
+          0.07930887502152473,
+          0.08081812493037432,
+          0.08067895798012614
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ]
+    },
+    {
+      "task": "thefuck-029",
+      "variant": "buggy",
+      "case": "existing-wins",
+      "artifact_sha256": "0031e57c93c71dd974f83de4b99710736af5dd6c998bc6b8187599b8d2e3d002",
+      "input_sha256": "2bd13065ace4c72b8fa51243fa3725d0c313dfdca5028d02453cdfe4ef0935b6",
+      "passed": false,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 14,
+          "events_seen": 14,
+          "trace_json_bytes": 3840,
+          "selected_event_bytes": 3913,
+          "function_names": [
+            "__getattr__",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 17
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 14,
+          "events_seen": 14,
+          "trace_json_bytes": 4866,
+          "selected_event_bytes": 4414,
+          "function_names": [
+            "__getattr__",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 3,
+            "retained_functions": 3,
+            "omitted_functions": 0,
+            "selected_event_bytes": 4414,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 17
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04278141702525318,
+          0.042695124982856214,
+          0.04223870800342411
+        ],
+        "tail": [
+          0.07917095790617168,
+          0.04280479205772281,
+          0.04285199998412281
+        ],
+        "balanced": [
+          0.04390895797405392,
+          0.07715791591908783,
+          0.07759479200467467
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ]
+    },
+    {
+      "task": "thefuck-029",
+      "variant": "buggy",
+      "case": "false-wins",
+      "artifact_sha256": "0031e57c93c71dd974f83de4b99710736af5dd6c998bc6b8187599b8d2e3d002",
+      "input_sha256": "ad215258ac3a07faa86b9b5b7ba88e60e595e3ddb4163232a9648ec6aebf5f9a",
+      "passed": false,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 11,
+          "events_seen": 11,
+          "trace_json_bytes": 3112,
+          "selected_event_bytes": 3094,
+          "function_names": [
+            "__getattr__",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 13
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 11,
+          "events_seen": 11,
+          "trace_json_bytes": 4041,
+          "selected_event_bytes": 3486,
+          "function_names": [
+            "__getattr__",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 3,
+            "retained_functions": 3,
+            "omitted_functions": 0,
+            "selected_event_bytes": 3486,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 13
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.07676212501246482,
+          0.042349666939117014,
+          0.04313954198732972
+        ],
+        "tail": [
+          0.08042862499132752,
+          0.0800175410695374,
+          0.04320737498346716
+        ],
+        "balanced": [
+          0.07992095802910626,
+          0.08021383394952863,
+          0.08062645804602653
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "task": "thefuck-029",
+      "variant": "buggy",
+      "case": "empty-existing",
+      "artifact_sha256": "0031e57c93c71dd974f83de4b99710736af5dd6c998bc6b8187599b8d2e3d002",
+      "input_sha256": "2592eae0e225940278568630587b82998344d4f0aa970fa470b3f2aa7d021983",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 11,
+          "events_seen": 11,
+          "trace_json_bytes": 2831,
+          "selected_event_bytes": 2806,
+          "function_names": [
+            "__getattr__",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 13
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 11,
+          "events_seen": 11,
+          "trace_json_bytes": 3760,
+          "selected_event_bytes": 3198,
+          "function_names": [
+            "__getattr__",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 3,
+            "retained_functions": 3,
+            "omitted_functions": 0,
+            "selected_event_bytes": 3198,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 13
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.07947929191868752,
+          0.04232879099436104,
+          0.04296379198785871
+        ],
+        "tail": [
+          0.08011795801576227,
+          0.0774739159969613,
+          0.04322591703385115
+        ],
+        "balanced": [
+          0.08027729205787182,
+          0.08062879100907594,
+          0.04324437491595745
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ]
+    },
+    {
+      "task": "thefuck-029",
+      "variant": "buggy",
+      "case": "no-default",
+      "artifact_sha256": "0031e57c93c71dd974f83de4b99710736af5dd6c998bc6b8187599b8d2e3d002",
+      "input_sha256": "c012b568d16aa7950583c8f8206a5492d9a7339ce52a02522990a539a0bcab9d",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 14,
+          "events_seen": 14,
+          "trace_json_bytes": 3477,
+          "selected_event_bytes": 3514,
+          "function_names": [
+            "__getattr__",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 17
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 14,
+          "events_seen": 14,
+          "trace_json_bytes": 4503,
+          "selected_event_bytes": 4015,
+          "function_names": [
+            "__getattr__",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 3,
+            "retained_functions": 3,
+            "omitted_functions": 0,
+            "selected_event_bytes": 4015,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 17
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.042820415925234556,
+          0.043314874987117946,
+          0.04264224995858967
+        ],
+        "tail": [
+          0.04147745796944946,
+          0.0796405830187723,
+          0.04293320793658495
+        ],
+        "balanced": [
+          0.04311075003352016,
+          0.07994779199361801,
+          0.0771820000372827
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ]
+    },
+    {
+      "task": "thefuck-029",
+      "variant": "buggy",
+      "case": "null-value",
+      "artifact_sha256": "0031e57c93c71dd974f83de4b99710736af5dd6c998bc6b8187599b8d2e3d002",
+      "input_sha256": "00ae7a4b102499d5f828cae2a50ff33540bdb8cea4739fc26767b011088a03ee",
+      "passed": false,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 11,
+          "events_seen": 11,
+          "trace_json_bytes": 2901,
+          "selected_event_bytes": 2883,
+          "function_names": [
+            "__getattr__",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 13
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 11,
+          "events_seen": 11,
+          "trace_json_bytes": 3830,
+          "selected_event_bytes": 3275,
+          "function_names": [
+            "__getattr__",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 3,
+            "retained_functions": 3,
+            "omitted_functions": 0,
+            "selected_event_bytes": 3275,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 13
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.0434199160663411,
+          0.042402417049743235,
+          0.07617904199287295
+        ],
+        "tail": [
+          0.04313400003593415,
+          0.04279887501616031,
+          0.07981462497264147
+        ],
+        "balanced": [
+          0.08037116704508662,
+          0.07736379199195653,
+          0.043165208073332906
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "task": "thefuck-029",
+      "variant": "buggy",
+      "case": "zero-value",
+      "artifact_sha256": "0031e57c93c71dd974f83de4b99710736af5dd6c998bc6b8187599b8d2e3d002",
+      "input_sha256": "92c50bcffd94db0023f941c212bcf83dec0455ef21d378964c3207b4d3d1562e",
+      "passed": false,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 14,
+          "events_seen": 14,
+          "trace_json_bytes": 3600,
+          "selected_event_bytes": 3673,
+          "function_names": [
+            "__getattr__",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 17
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 14,
+          "events_seen": 14,
+          "trace_json_bytes": 4626,
+          "selected_event_bytes": 4174,
+          "function_names": [
+            "__getattr__",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 3,
+            "retained_functions": 3,
+            "omitted_functions": 0,
+            "selected_event_bytes": 4174,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 17
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04366695799399167,
+          0.042652583913877606,
+          0.039781208033673465
+        ],
+        "tail": [
+          0.07761987496633083,
+          0.042920209001749754,
+          0.0429581250064075
+        ],
+        "balanced": [
+          0.07624066702555865,
+          0.043434625025838614,
+          0.07913920795544982
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ]
+    },
+    {
+      "task": "thefuck-029",
+      "variant": "fixed",
+      "case": "existing-wins",
+      "artifact_sha256": "f7d2aabfa6df728561d9bada04eb966aabf857c63c6b186bc4c8b4d94e09a801",
+      "input_sha256": "2bd13065ace4c72b8fa51243fa3725d0c313dfdca5028d02453cdfe4ef0935b6",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 14,
+          "events_seen": 14,
+          "trace_json_bytes": 3852,
+          "selected_event_bytes": 3927,
+          "function_names": [
+            "__getattr__",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 17
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 14,
+          "events_seen": 14,
+          "trace_json_bytes": 4878,
+          "selected_event_bytes": 4428,
+          "function_names": [
+            "__getattr__",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 3,
+            "retained_functions": 3,
+            "omitted_functions": 0,
+            "selected_event_bytes": 4428,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 17
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04296487499959767,
+          0.041479791048914194,
+          0.04037050006445497
+        ],
+        "tail": [
+          0.04312045802362263,
+          0.043163125053979456,
+          0.04301758308429271
+        ],
+        "balanced": [
+          0.08128087501972914,
+          0.04330137500073761,
+          0.04328949993941933
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ]
+    },
+    {
+      "task": "thefuck-029",
+      "variant": "fixed",
+      "case": "false-wins",
+      "artifact_sha256": "f7d2aabfa6df728561d9bada04eb966aabf857c63c6b186bc4c8b4d94e09a801",
+      "input_sha256": "ad215258ac3a07faa86b9b5b7ba88e60e595e3ddb4163232a9648ec6aebf5f9a",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 11,
+          "events_seen": 11,
+          "trace_json_bytes": 3116,
+          "selected_event_bytes": 3098,
+          "function_names": [
+            "__getattr__",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 13
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 11,
+          "events_seen": 11,
+          "trace_json_bytes": 4045,
+          "selected_event_bytes": 3490,
+          "function_names": [
+            "__getattr__",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 3,
+            "retained_functions": 3,
+            "omitted_functions": 0,
+            "selected_event_bytes": 3490,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 13
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04263145790901035,
+          0.04269191704224795,
+          0.0428190000820905
+        ],
+        "tail": [
+          0.07864333398174495,
+          0.07948970794677734,
+          0.04285683296620846
+        ],
+        "balanced": [
+          0.07935145800001919,
+          0.04335533396806568,
+          0.04305820900481194
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "task": "thefuck-029",
+      "variant": "fixed",
+      "case": "empty-existing",
+      "artifact_sha256": "f7d2aabfa6df728561d9bada04eb966aabf857c63c6b186bc4c8b4d94e09a801",
+      "input_sha256": "2592eae0e225940278568630587b82998344d4f0aa970fa470b3f2aa7d021983",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 11,
+          "events_seen": 11,
+          "trace_json_bytes": 2838,
+          "selected_event_bytes": 2814,
+          "function_names": [
+            "__getattr__",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 13
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 11,
+          "events_seen": 11,
+          "trace_json_bytes": 3767,
+          "selected_event_bytes": 3206,
+          "function_names": [
+            "__getattr__",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 3,
+            "retained_functions": 3,
+            "omitted_functions": 0,
+            "selected_event_bytes": 3206,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 13
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04296950006391853,
+          0.04277262499090284,
+          0.04318966704886407
+        ],
+        "tail": [
+          0.04288245807401836,
+          0.04369212489109486,
+          0.08043762494344264
+        ],
+        "balanced": [
+          0.07915787503588945,
+          0.04311974998563528,
+          0.07907916698604822
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ]
+    },
+    {
+      "task": "thefuck-029",
+      "variant": "fixed",
+      "case": "no-default",
+      "artifact_sha256": "f7d2aabfa6df728561d9bada04eb966aabf857c63c6b186bc4c8b4d94e09a801",
+      "input_sha256": "c012b568d16aa7950583c8f8206a5492d9a7339ce52a02522990a539a0bcab9d",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 14,
+          "events_seen": 14,
+          "trace_json_bytes": 3470,
+          "selected_event_bytes": 3506,
+          "function_names": [
+            "__getattr__",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 17
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 14,
+          "events_seen": 14,
+          "trace_json_bytes": 4496,
+          "selected_event_bytes": 4007,
+          "function_names": [
+            "__getattr__",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 3,
+            "retained_functions": 3,
+            "omitted_functions": 0,
+            "selected_event_bytes": 4007,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 17
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.043289124965667725,
+          0.0425577909918502,
+          0.04122620902489871
+        ],
+        "tail": [
+          0.04361799999605864,
+          0.04361487505957484,
+          0.07711358391679823
+        ],
+        "balanced": [
+          0.07775225001387298,
+          0.08070437493734062,
+          0.0806869170628488
+        ]
+      },
+      "execution_orders": [
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ]
+      ]
+    },
+    {
+      "task": "thefuck-029",
+      "variant": "fixed",
+      "case": "null-value",
+      "artifact_sha256": "f7d2aabfa6df728561d9bada04eb966aabf857c63c6b186bc4c8b4d94e09a801",
+      "input_sha256": "00ae7a4b102499d5f828cae2a50ff33540bdb8cea4739fc26767b011088a03ee",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 11,
+          "events_seen": 11,
+          "trace_json_bytes": 2913,
+          "selected_event_bytes": 2895,
+          "function_names": [
+            "__getattr__",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 13
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 11,
+          "events_seen": 11,
+          "trace_json_bytes": 3842,
+          "selected_event_bytes": 3287,
+          "function_names": [
+            "__getattr__",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 3,
+            "retained_functions": 3,
+            "omitted_functions": 0,
+            "selected_event_bytes": 3287,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 13
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04333333298563957,
+          0.07977820909582078,
+          0.04333220794796944
+        ],
+        "tail": [
+          0.08024062495678663,
+          0.07967566698789597,
+          0.07673875009641051
+        ],
+        "balanced": [
+          0.08013220899738371,
+          0.08025650004856288,
+          0.0803014999255538
+        ]
+      },
+      "execution_orders": [
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ],
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "task": "thefuck-029",
+      "variant": "fixed",
+      "case": "zero-value",
+      "artifact_sha256": "f7d2aabfa6df728561d9bada04eb966aabf857c63c6b186bc4c8b4d94e09a801",
+      "input_sha256": "92c50bcffd94db0023f941c212bcf83dec0455ef21d378964c3207b4d3d1562e",
+      "passed": true,
+      "ordinary_trace_agreement": true,
+      "repeat_deterministic": true,
+      "metrics": {
+        "tail": {
+          "available": true,
+          "reason": null,
+          "events": 14,
+          "events_seen": 14,
+          "trace_json_bytes": 3608,
+          "selected_event_bytes": 3683,
+          "function_names": [
+            "__getattr__",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": null,
+          "retention": null,
+          "omitted_object_values": 17
+        },
+        "balanced": {
+          "available": true,
+          "reason": null,
+          "events": 14,
+          "events_seen": 14,
+          "trace_json_bytes": 4634,
+          "selected_event_bytes": 4184,
+          "function_names": [
+            "__getattr__",
+            "solve",
+            "update"
+          ],
+          "capture_limit_reached": false,
+          "buffer_limit_reached": false,
+          "retention": {
+            "captured_functions": 3,
+            "retained_functions": 3,
+            "omitted_functions": 0,
+            "selected_event_bytes": 4184,
+            "event_candidates_rejected_for_bytes": 0
+          },
+          "omitted_object_values": 17
+        }
+      },
+      "timing_seconds": {
+        "ordinary": [
+          0.04227391607128084,
+          0.04062654101289809,
+          0.042674875003285706
+        ],
+        "tail": [
+          0.0796370409661904,
+          0.04310087498743087,
+          0.045206582988612354
+        ],
+        "balanced": [
+          0.08011370792519301,
+          0.0794368750648573,
+          0.07679841702338308
+        ]
+      },
+      "execution_orders": [
+        [
+          "tail",
+          "balanced",
+          "ordinary"
+        ],
+        [
+          "balanced",
+          "ordinary",
+          "tail"
+        ],
+        [
+          "ordinary",
+          "tail",
+          "balanced"
+        ]
+      ]
+    }
+  ],
+  "limitations": [
+    "Exposed development cases, not model-efficacy or generalization evidence.",
+    "All original public and four previously published engineering inputs retained; evaluator inputs unused.",
+    "Local timings include process startup; no token, dollar, or peak-memory measurement.",
+    "Same output cap does not mean equal acquisition cost; larger capture buffer is charged separately.",
+    "Objects remain omitted; function presence does not prove useful state is visible.",
+    "Known fault method used only to audit coverage after execution, never to choose retained events.",
+    "Fewer retained events in a function can lose useful detail; no general dominance claim."
+  ]
+}

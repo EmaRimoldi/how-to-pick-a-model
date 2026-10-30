@@ -1,0 +1,42 @@
+{
+  "study": "repair-sse-compatibility-v1",
+  "status": "incomplete_compatibility_probe",
+  "planned": 3,
+  "admitted": 3,
+  "received": 2,
+  "uncertain": 1,
+  "never_admitted": 0,
+  "known_usd": "0.00159276",
+  "study_committed_usd": "0.00880172",
+  "cumulative_committed_usd": "0.11456635",
+  "cap_exceeded": false,
+  "received_records": [
+    {
+      "fixture": 0,
+      "finish_reason": "stop",
+      "content_characters": 306,
+      "json_file_contract": true,
+      "cost_usd": "0.00008412",
+      "elapsed_seconds": 1.7695724579971284,
+      "sse_chunks": 85,
+      "wire_bytes": 24189
+    },
+    {
+      "fixture": 1,
+      "finish_reason": "stop",
+      "content_characters": 6675,
+      "json_file_contract": true,
+      "cost_usd": "0.00150864",
+      "elapsed_seconds": 24.252494040993042,
+      "sse_chunks": 1719,
+      "wire_bytes": 480439
+    }
+  ],
+  "gate": "inconclusive",
+  "scientific_results": false,
+  "limitations": [
+    "Three synthetic fixtures cannot establish production reliability or repair efficacy.",
+    "No randomized non-streaming comparator; reset causation remains unestablished.",
+    "Historical uncertainties remain missing and reserved; no retries or resumption."
+  ]
+}

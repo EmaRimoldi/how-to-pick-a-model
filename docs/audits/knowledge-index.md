@@ -8,9 +8,9 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 - Canonical docs present: `21/21`
 - Paper TeX sources indexed: `4`
 - Formal objects in canonical TeX anchors: `97`
-- Experiment bundles indexed: `7`
-- Script entrypoints indexed: `21`
-- Code modules indexed: `59`
+- Experiment bundles indexed: `8`
+- Script entrypoints indexed: `67`
+- Code modules indexed: `124`
 - Paper figures indexed: `19`
 - Active paper references indexed: `20`
 - Command targets indexed: `6`
@@ -163,6 +163,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | HumanEval+ | `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | Discovery: 30 tasks/132 calls. Transfer: 83 development + 60 evaluation tasks, 1,353 responses, frozen policies, forecasts, controls and cost audit |
 | MBPP+ | `experiments/mbpp-plus/context-value-transfer/` | collection finished; censored descriptive bank | Tier 2: Supporting Or Diagnostic Evidence | 94/96 complete failures, 2,878 recovery responses, two censored solver cells, 288 API forecasts, fixed comparisons and full accounting |
 | BigCodeBench standard-library subset | `experiments/bigcodebench/feedback-only-routing/` | complete; primary gate not passed | Tier 2: Supporting Or Diagnostic Evidence | 157 task clusters, 628/628 policy outcomes, 1,492 responses, no missing outcomes; fixed comparisons, receipts, source freeze, verifier repeat and disclosed single requested interim look |
+| Python function repair | `experiments/python-repair/checkpoint-environment/` | recovery pilot incomplete; 4B/12B/27B contract banks complete, gates failed | Tier 2: Supporting Or Diagnostic Evidence | Prior recovery evidence retained; complete 36-call banks at all three sizes fail calibration. 27B improves partial test scores but solves only two distinct bugs across formats; FP8/BF16 confounded. No trained selector or held-out claim |
 
 ## Script Entrypoints
 
@@ -173,8 +174,53 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/analyze_feedback_routing.py` | python | Audit and analyze fixed feedback-only trajectories without making model calls. Public CLI facade; implementation lives in vao.analysis.analyze_feedback_routing. |
 | `scripts/analyze_recovery_transfer.py` | python | Audit recorded MBPP+ recovery evidence and reproduce the frozen statistical comparisons. Public CLI facade; implementation lives in vao.analysis.analyze_recovery_transfer. |
 | `scripts/analyze_recovery_validation.py` | python | Audit frozen held-out recovery data and replay its finite budgeted policy bank. Public CLI facade; implementation lives in vao.analysis.analyze_recovery_validation. |
+| `scripts/audit_repair_exposure.py` | python | Rebuild/check the minimum documented development-exposure registry, offline. |
+| `scripts/audit_repair_spectra.py` | python | Offline public-spectrum feasibility on frozen exposed development artifacts. collect executes only local sandboxed cases; replay executes no candidate code. Neither command imports a model client or prepares a provider request. |
+| `scripts/audit_repair_stagnation.py` | python | Audit saved edits after a repair information study terminates; no API calls. |
+| `scripts/audit_repair_trace_information.py` | python | Audit a complete trace calibration archive without executing candidate code. |
+| `scripts/audit_repair_trigger_coverage.py` | python | Audit only closed 27B source checkpoints, never ongoing model outcomes. |
+| `scripts/check_repair_contract_progress.py` | python | Audit live request identities and accounting without inspecting treatments. |
+| `scripts/collect_repair_contract_probe.py` | python | Run only an explicitly authorized and frozen output-contract study. |
+| `scripts/plot_repair_contrastive_study.py` | python | Plot audited terminal contrastive-trace results, without model calls. |
+| `scripts/plot_repair_extension_information.py` | python | Plot the prespecified two-arm terminal report, never inspect a live collection. |
+| `scripts/plot_repair_information.py` | python | Plot the frozen information report and separate post hoc edit audit, offline. |
+| `scripts/plot_repair_interface.py` | python | Plot all four terminal repair-interface conditions; never read a live collection. |
+| `scripts/plot_repair_qwen_information.py` | python | Plot the prespecified two-arm terminal report, never inspect a live collection. |
+| `scripts/plot_repair_solver.py` | python | Render terminal solver draws; synthetic layout data requires an explicit flag. |
+| `scripts/prepare_contrastive_diagnostics.py` | python | Offline qualification on all source tasks in a complete development archive. No API requests or evaluator execution. Output is development engineering evidence. |
+| `scripts/prepare_failure_coverage_diagnostics.py` | python | Qualify bounded first/all-failure traces on a development pool; no API calls. |
 | `scripts/prepare_feedback_routing.py` | python | Verify the pinned BigCodeBench download and reproduce reference-only eligibility. |
+| `scripts/prepare_python_repair.py` | python | Plan or explicitly run an offline Python repair demo, qualification or audit. |
+| `scripts/prepare_repair_acquisition_snapshots.py` | python | Freeze public diagnostic observations and inert matched prompts, without APIs. |
+| `scripts/prepare_repair_contract_probe.py` | python | Prepare a reviewable, offline-only Gemma response-contract diagnostic. |
+| `scripts/prepare_repair_contrastive_study.py` | python | Prepare exact public-contrast requests offline; no dispatch or funding. |
+| `scripts/prepare_repair_coverage_prefix.py` | python | Prepare initial-repair requests offline; never dispatch a model call. |
+| `scripts/prepare_repair_diagnostics.py` | python | Execute a public-only offline diagnostic demo; never dispatch model requests. |
+| `scripts/prepare_repair_extension_information_study.py` | python | Prepare the independent development-extension information design offline. |
+| `scripts/prepare_repair_information_study.py` | python | Prepare a public-trace information experiment offline; never dispatch APIs. |
+| `scripts/prepare_repair_interface_study.py` | python | Prepare exact factorial repair-interface requests offline; no model calls. |
+| `scripts/prepare_repair_pilot.py` | python | Plan repair calibration offline; live collection requires a funded freeze. |
+| `scripts/prepare_repair_qwen_information_study.py` | python | Prepare matched Qwen trace-information requests offline; no API calls. |
+| `scripts/prepare_repair_region_information.py` | python | Frozen original-bug diagnostic calibration; no implicit authorization. |
+| `scripts/prepare_repair_solver_study.py` | python | Prepare the fixed coding-solver compatibility control offline; no model calls. |
+| `scripts/prepare_spectrum_ablation.py` | python | Qualify inert F/N/S projections on exposed checkpoints; never collect models. |
+| `scripts/prepare_stdin_ablation.py` | python | Freeze and execute offline public diagnostic preparation on qualified sources. No provider client, model request or paid authorization exists in this command. The freeze fixes all eleven source-qualified groups and retains all twelve original group decisions; flat/unavailable spectra cannot change the selection. |
+| `scripts/prepare_stdin_pilot.py` | python | Generate or check the numerical stdin pilot design, without any model call. |
+| `scripts/probe_repair_trace_retention.py` | python | Offline matched trace audit on exposed sources; no providers or model results. Run on macOS from the repository root. Output is exclusive; previous reports are never overwritten. Expected answers are used only for parent-side scoring. |
+| `scripts/qualify_python_repair_pool.py` | python | Offline build, provenance audit and isolated qualification of real-bug tasks. |
+| `scripts/qualify_repair_package.py` | python | Qualify an original Python package component offline, retaining every outcome. |
+| `scripts/repair_spectrum_study.py` | python | Prepare, freeze, collect once, audit or replay the public-spectrum screen. |
+| `scripts/repair_stdin_pilot.py` | python | Explicit commands for the frozen stdin pilot; no default collection. |
+| `scripts/repair_transport_probe.py` | python | Freeze, run once, or audit the separately funded SSE compatibility probe. |
 | `scripts/report_feedback_routing.py` | python | Publish a completed feedback-only bank, audited statistics and static figures. Public CLI facade; implementation lives in vao.analysis.report_feedback_routing. |
+| `scripts/report_repair_calibration.py` | python | Audit terminal repair-pilot segments and report descriptive results offline. |
+| `scripts/report_repair_contract_probe.py` | python | Audit and describe a terminal output-contract diagnostic; no API calls. |
+| `scripts/report_repair_contrastive_study.py` | python | Report terminal public-contrast evidence; never dispatch model calls. |
+| `scripts/report_repair_coverage_prefix.py` | python | Audit and export the terminal natural-failure difficulty calibration. |
+| `scripts/report_repair_information_study.py` | python | Report a terminal public-trace information study without model calls. |
+| `scripts/report_repair_interface_study.py` | python | Analyze a terminal factorial repair-interface study offline; no model calls. |
+| `scripts/report_repair_region_information.py` | python | Frozen original-bug diagnostic calibration; no implicit authorization. |
+| `scripts/report_repair_solver_study.py` | python | Audit terminal coding-solver evidence and preserve every planned cell; no API calls. |
 | `scripts/run_context_value.py` | python | Plan or explicitly run a budgeted artifact/feedback and prospective-forecast study. |
 | `scripts/run_continuation_pilot.py` | python | Run the explicit-budget OpenRouter/HumanEval+ pilot; defaults to plan only. |
 | `scripts/run_feedback_routing.py` | python | Plan or explicitly run new-task, feedback-only fixed-policy trajectories. |
@@ -182,6 +228,7 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | `scripts/run_recovery_validation.py` | python | Plan or explicitly run the task-held-out recovery validation within its cumulative budget. |
 | `scripts/run_transfer_forecasts.py` | python | Plan or explicitly collect the prespecified outcome-blind semantic forecast control. |
 | `scripts/verify_feedback_evidence.py` | python | Verify published BigCodeBench evidence offline without executing candidate code. Public CLI facade; implementation lives in vao.analysis.verify_feedback_evidence. |
+| `scripts/verify_repair_contract_evidence.py` | python | Verify archived contract reports and independently replay saved artifacts. |
 | `scripts/maintenance/build_command_manifest.py` | python | Build a safety-classified command manifest for agent-facing workflows. |
 | `scripts/maintenance/build_experiment_manifest.py` | python | Build a manifest of experiment bundles and their reproducibility assets. |
 | `scripts/maintenance/build_knowledge_index.py` | python | Build a compact knowledge index for LLM agents working in this repository. |
@@ -226,6 +273,20 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | saved-evidence analysis | `src/vao/analysis/analyze_feedback_routing.py` | Audit and analyze fixed feedback-only trajectories without making model calls. | records, audit, analyze, main |
 | saved-evidence analysis | `src/vao/analysis/analyze_recovery_transfer.py` | Audit recorded MBPP+ recovery evidence and reproduce the frozen statistical comparisons. | require, same, interval, recovery_lineages, audit, variance_stat, analyze, markdown |
 | saved-evidence analysis | `src/vao/analysis/analyze_recovery_validation.py` | Audit frozen held-out recovery data and replay its finite budgeted policy bank. | read, require, reservation, paired_interval, audit, rollout, development_replay_best, analyze |
+| saved-evidence analysis | `src/vao/analysis/contract_diagnostic.py` | Prespecified descriptive report for the terminal output-contract diagnostic. | summarize, render, export_evidence, main |
+| saved-evidence analysis | `src/vao/analysis/contract_verification.py` | Verify and independently re-execute terminal archived contract evidence; no API calls. | read, stable, reproduce, main |
+| saved-evidence analysis | `src/vao/analysis/repair_artifacts.py` | Post hoc structural-edit diagnostic for a closed repair bank; zero model calls. | same_ast, diagnose, main |
+| saved-evidence analysis | `src/vao/analysis/repair_calibration.py` | Audit terminal repair-calibration segments and report descriptive diagnostics. No model calls, training, stopping decisions or claim of held-out policy value. | read_json, lineage, group_estimate, mean, descriptive_interval, analyze, render, export_evidence |
+| saved-evidence analysis | `src/vao/analysis/repair_contrastive.py` | Prespecified complete-task comparisons for the three-arm public-contrast study. | screen, interval, summarize, render, main |
+| saved-evidence analysis | `src/vao/analysis/repair_contrastive_plot.py` | Terminal three-arm report visualization; never reads raw collection outcomes. Accepts only terminal, source-bound reports or explicitly marked rendering fixtures. | close, prepare, plot, main |
+| saved-evidence analysis | `src/vao/analysis/repair_coverage_prefix.py` | Terminal-only difficulty report retaining all six initial attempts. | summarize, render, main |
+| saved-evidence analysis | `src/vao/analysis/repair_information.py` | Frozen descriptive analysis of public trace acquisition on failed checkpoints. | interval, summarize, render, main |
+| saved-evidence analysis | `src/vao/analysis/repair_interface.py` | Prespecified terminal analysis of the four repair-interface conditions. | linear_bounds, interval, summarize, render, main |
+| saved-evidence analysis | `src/vao/analysis/repair_missingness.py` | Finite selected-cell bounds; no collection, model calls or policy fitting. A lower screen passes only when every binary completion of missing cells would pass the original efficacy criteria. It never imputes outcomes or changes a closed study's complete-bank rule. Draws are nested within predeclared bugs. | Criteria, evaluate |
+| saved-evidence analysis | `src/vao/analysis/repair_region_information.py` | Prospective matched generation comparisons conditional on one saved public acquisition. | screen, interval, summarize, render, main |
+| saved-evidence analysis | `src/vao/analysis/repair_solver.py` | Terminal-only coding-solver compatibility report; no selector or model comparison. | interval, summarize, render, main |
+| saved-evidence analysis | `src/vao/analysis/repair_stagnation.py` | Post hoc edit audit of a terminal information archive; never execute candidates. | syntax, classify, summarize, main |
+| saved-evidence analysis | `src/vao/analysis/repair_trace_audit.py` | Post hoc terminal-bank audit; inspect inert evidence, never execute candidates. | structural_ast, syntax_id, bounded_values, trace_metrics, diagnostic_metrics, transitions, summarize, main |
 | saved-evidence analysis | `src/vao/analysis/report_feedback_routing.py` | Publish a completed feedback-only bank, audited statistics and static figures. | report_text, accounting_diagnostics, diagnostic_text, plot, diagnostic_plot, publish, main |
 | saved-evidence analysis | `src/vao/analysis/verify_feedback_evidence.py` | Verify published BigCodeBench evidence offline without executing candidate code. | equivalent, checked_path, checksum_audit, verify_interim, source_audit, verify, main |
 | verified orchestration runtime | `src/vao/decisions/bigcode.py` | Pinned, standard-library BigCodeBench subset and sandbox reference audit. | sha, stdlib_task, shingles, similarity, BigCodeVerifier, audit_tasks |
@@ -246,6 +307,57 @@ This is a compact retrieval map for LLM agents. It complements the human-oriente
 | verified orchestration runtime | `src/vao/logging_utils.py` | Small logging helpers for protocol JSON artifacts. | now_iso, sha256_text, sha256_file, to_jsonable, write_json, append_jsonl, read_jsonl |
 | verified orchestration runtime | `src/vao/patches.py` | Patch application utilities for model-produced source edits. | PatchApplyError, apply_unified_diff |
 | verified orchestration runtime | `src/vao/records.py` | Record loading helpers. | iter_run_dirs, load_step_records, load_records_from_roots |
+| verified orchestration runtime | `src/vao/repair/acquisition_snapshot.py` | One acquired public diagnostic, durably bound to its input and actual bytes. Offline only. Loading/projecting never reacquires a trace. This prevents runtime randomness from silently changing a reviewed request, without claiming that a fresh execution would return identical intermediate values. | runtime, context, finite_seconds, validate, acquire_once, load, projected |
+| verified orchestration runtime | `src/vao/repair/cli.py` | Plan, demonstrate, qualify and audit the offline Python repair environment. | source_manifest, finish, qualify, demo, main |
+| verified orchestration runtime | `src/vao/repair/contract_collection.py` | Funded contract diagnostic: exact prepared requests, durable billing, no retries. | ContractSettings, read, content_hash, authorization, freeze, validate_freeze, collect, settled_receipt |
+| verified orchestration runtime | `src/vao/repair/contract_progress.py` | Read-only operational audit; never summarizes treatment outcomes or calls APIs. | progress, main |
+| verified orchestration runtime | `src/vao/repair/contracts.py` | Offline preparation of a paired output-contract diagnostic; never dispatch APIs. The unsuccessful recovery bank remains immutable. This module compiles reviewable requests and checks decoding boundaries before another campaign is authorized. | study_settings, study_spacing, public_feedback, request, provider_body, decode, task_from_record, provenance |
+| verified orchestration runtime | `src/vao/repair/contrastive_diagnostics.py` | Offline v2 diagnostic: bounded failing/passing traces, without new test oracles. Not a collector or fitted policy. Historical acquisition/worker code is unchanged. | shape, case_input, input_distance, input_truncated, select_pair, compact_trace, expand_trace, acquire |
+| verified orchestration runtime | `src/vao/repair/contrastive_study.py` | Fresh three-arm public-contrast calibration, separately frozen and funded. | design, schedule, planned_requests, construct, validate_packet, validate_origin, validate_diagnostics, main |
+| verified orchestration runtime | `src/vao/repair/coverage_prefix.py` | Six prospective initial repairs; natural checkpoints only, no recovery dispatch. | design, planned_requests, construct, validate_packet, validate_origin, main |
+| verified orchestration runtime | `src/vao/repair/coverage_worker.py` | Standalone bounded line coverage during a candidate call, without test labels. This worker does not reuse sampled trace events: dropped events cannot establish coverage. Candidate imports precede measurement, as in the existing trace worker. Only single-threaded entrypoint execution is supported by this diagnostic. | Coverage, main |
+| verified orchestration runtime | `src/vao/repair/diagnostic_study.py` | Prepare a separately funded public-trace information experiment, never retry. Existing transport, receipts, source freezes and cell audits are reused. The new intervention, repeated schedule and report have their own study identity. | design, without_times, source_records, schedule, planned_requests, construct, validate_packet, validate_origin |
+| verified orchestration runtime | `src/vao/repair/diagnostics.py` | Public-only diagnostic acquisition and matched offline prompt projections. This is an engineering component, not a fitted policy or a live collector. Callers pass public task data, never a RepairTask with evaluator cases. | validate_public, binding, observe, selected_failure, acquire, project |
+| verified orchestration runtime | `src/vao/repair/environment.py` | Store verifiable repair artifacts and fork matched continue/restart requests. | canonical, identity, validate_files, validate_cases, RepairTask, RepairRun, audit_run |
+| verified orchestration runtime | `src/vao/repair/exposure.py` | Conservative, reproducible development-exposure guard; never certifies a holdout. | normalize, build, assess_candidate, main |
+| verified orchestration runtime | `src/vao/repair/extension_information_study.py` | Independent three-bug development calibration; no historical bank is resumed. | design, schedule, planned_requests, construct, validate_packet, source_records, validate_origin, main |
+| verified orchestration runtime | `src/vao/repair/failure_coverage_diagnostics.py` | Bounded public-failure coverage, prepared offline before any efficacy study. All arms already know every public input, expectation and observed result. This component acquires runtime evidence only, without an evaluator or reference. | select, acquire, project |
+| verified orchestration runtime | `src/vao/repair/independent_information_study.py` | New independent-cell streaming study with a prospective robust development screen. | design, schedule, planned_requests, construct, validate_packet, archived_requests, validate_origin, main |
+| verified orchestration runtime | `src/vao/repair/independent_streaming.py` | Prospective independent streaming cells; never retry or resume an old bank. | validate_retention, IndependentStreamingTransport |
+| verified orchestration runtime | `src/vao/repair/independent_transport.py` | Prospective missing-cell handling for a separately frozen independent design. Historical collectors never use this adapter. An uncertain request is never retried or settled. At most one uncertain cell may be retained while proceeding to the remaining independent scheduled cells. | validate_retention, IndependentCellTransport |
+| verified orchestration runtime | `src/vao/repair/information_continuation.py` | One reviewed exception for only the original trace probe's unsent requests. The original zero-response segment is immutable. There is no recursive resume, retry, replacement cell, changed prompt, new seed or additional budget. | reference_files, parent_evidence, validate_config, freeze, validate_continuation, audit_continuation, main |
+| verified orchestration runtime | `src/vao/repair/interface_study.py` | Prepare four matched interface conditions after the closed trace study. | design, remove_claim, project, schedule, planned_requests, construct, validate_packet, validate_origin |
+| verified orchestration runtime | `src/vao/repair/monitoring_coverage.py` | Presence-only main-program coverage using CPython's per-location disable flag. | MonitoringCoverage |
+| verified orchestration runtime | `src/vao/repair/package_environment.py` | Versioned Python-package tasks, separate from the frozen flat-module interface. Dependencies and the JSON adapter are visible, immutable source. All source is read-only during one isolated call; submitted repairs replace editable files only. This backend does not install dependencies or enable model collection. | validate_workspace, validate_public, PackageTask, PackageVerifier |
+| verified orchestration runtime | `src/vao/repair/package_spectra.py` | Public-only package coverage and inert F/N/S inputs; no model dispatch. | binding, current_feedback, validate_verifier_context, observe, acquire, analyze, project, triplet |
+| verified orchestration runtime | `src/vao/repair/package_worker.py` | Isolated package call; optional bounded coverage includes immutable support. | main |
+| verified orchestration runtime | `src/vao/repair/pilot.py` | Plan matched repair collection; live mode requires a funded source freeze. The default is offline planning. Scripted demonstrations never provide model evidence. Existing output directories and admitted calls cannot be resumed. | Design, fingerprint, schedule_for, check_continuation, ScriptedTransport, evaluate_response, public_choice, collect |
+| verified orchestration runtime | `src/vao/repair/pool.py` | Build and qualify a published development pool without executing upstream setup. | sha256, local_file, read_pool, audit_sources, write_json, build_pool, qualify_pool, main |
+| verified orchestration runtime | `src/vao/repair/provider.py` | Pinned OpenRouter adapter for the repair pilot; no implicit calls or retries. Constructing this adapter does not authorize a collection: the pilot launcher enforces the separately funded source freeze and a single-use campaign claim. | ProviderStopped, safe_error_details, safe_retry_after, read_http_error_details, dollars, Settings, NoRedirects, OpenRouterTransport |
+| verified orchestration runtime | `src/vao/repair/qwen_information_study.py` | Fresh two-arm public-trace development calibration after solver compatibility. | design, schedule, planned_requests, construct, validate_packet, validate_origin, main |
+| verified orchestration runtime | `src/vao/repair/records.py` | Durable, exclusive records shared by offline and provider-backed adapters. | save, append, rows |
+| verified orchestration runtime | `src/vao/repair/region_information_study.py` | Separately funded information-value calibration using actual frozen acquisitions. | design, source_records, schedule, planned_requests, construct, validate_diagnostics, validate_packet, validate_origin |
+| verified orchestration runtime | `src/vao/repair/region_trace_worker.py` | Opt-in bounded traces balanced across executed functions, not known fault sites. Standalone sandbox worker. The historical tail-trace worker stays unchanged. Compact values and execution/scoring boundaries intentionally match that worker. | compact, priority_order, select_events, Trace, main |
+| verified orchestration runtime | `src/vao/repair/region_verifier.py` | Opt-in function-balanced diagnostics; historical verifier remains unchanged. | valid_bounds, RegionRepairVerifier |
+| verified orchestration runtime | `src/vao/repair/solver_study.py` | Prepare a coding-solver compatibility control on fixed failed checkpoints. | design, planned_requests, construct, validate_packet, validate_origin, main |
+| verified orchestration runtime | `src/vao/repair/spectra.py` | Public-test spectrum feasibility; no reference patch, model or fitted selector. | valid_coverage, CoverageVerifier, score, acquire_spectrum, analyze_spectrum, analyze_bound_spectrum |
+| verified orchestration runtime | `src/vao/repair/spectrum_ablation.py` | Inert public-only F/N/S projections for a prospective information ablation. No task selection, model client, scorer/evaluator channel or live launch exists here. Validate current public feedback, recompute coverage scores from public observations and erase all outcome associations in the neutral excerpt arm. | current_feedback, validate_feedback, excerpt_table, project, triplet |
+| verified orchestration runtime | `src/vao/repair/spectrum_study.py` | Prospective public-spectrum development screen; explicit single-use collection. | read, digest, archive, sources, project, planned, build_plan, validate_plan |
+| verified orchestration runtime | `src/vao/repair/stdin_ablation.py` | Public-only whole-program feedback, acquisition and inert F/N/S requests. | validate_public, binding, observation, execution, normalized_stderr, observable_key, score, resources |
+| verified orchestration runtime | `src/vao/repair/stdin_collection.py` | Single-use, prospectively frozen whole-program repair collection. The live stage can observe public tests only. Private verification and analysis are separate terminal operations. Imports and planning never call a provider. | read, digest, PilotSettings, dispatch_timestamp, PilotTransport, runtime, source_commit, load_inputs |
+| verified orchestration runtime | `src/vao/repair/stdin_monitoring.py` | Opt-in CPython monitoring backend; the frozen legacy stdin executor stays intact. The native execution boundary is deliberately retained verbatim for the new coverage worker; ordinary execution delegates to the original backend. | valid_monitoring_coverage, MonitoringStdinVerifier |
+| verified orchestration runtime | `src/vao/repair/stdin_monitoring_worker.py` | Run an unchanged stdin/stdout program inside the parent-created OS sandbox. | main |
+| verified orchestration runtime | `src/vao/repair/stdin_pilot.py` | Prospective stdin pilot planning and finite-panel analysis; no provider calls. Normalized outcomes are produced only after receipt/projection/native-test audit. This module neither collects responses nor promotes itself into a funded freeze. | parse_artifact, plan, validate_panel, bounds, analyze |
+| verified orchestration runtime | `src/vao/repair/stdin_results.py` | Terminal private verification, reproducible analysis and inert evidence export. | inventory, verify, execution_key, check_journal, collected_execution_inventory, analyze, policy_resources, render |
+| verified orchestration runtime | `src/vao/repair/stdin_verifier.py` | Isolated whole-program execution preserving exact stdin and stdout bytes. This engineering backend does not define a dataset comparator, suite split, qualification rule or paid collection. Expectations stay in the parent. | valid_stdin_coverage, compare_stdout, StdinVerifier |
+| verified orchestration runtime | `src/vao/repair/stdin_worker.py` | Run an unchanged stdin/stdout program inside the parent-created OS sandbox. | main |
+| verified orchestration runtime | `src/vao/repair/stream_information_audit.py` | Receipt/stream consistency for the distinct scientific streaming bank. | validate_stream_evidence |
+| verified orchestration runtime | `src/vao/repair/stream_information_study.py` | Distinct matched streaming development calibration; historical banks stay closed. | design, schedule, planned_requests, construct, validate_packet, archived_requests, validate_origin, main |
+| verified orchestration runtime | `src/vao/repair/streaming.py` | Opt-in SSE transport; historical collectors keep their non-streaming adapter. This module enables no collection on import. A new protocol/freeze must opt in. Only a completed identity/usage/terminal sequence becomes a billed observation. Partial text is never treated as a result or retried. Wire bytes stay in memory; safe counts and a digest are persisted, without free-form error/partial content. | StreamProtocolError, SSEFrames, strict_json, ChatStream, StreamingSettings, StreamingOpenRouterTransport |
+| verified orchestration runtime | `src/vao/repair/trace_worker.py` | Bounded execution observations, with no expected values or reference program. Copied as a standalone worker into the same OS sandbox as ordinary verification. Only exact built-in values are inspected: never call candidate repr/str methods. The trace is diagnostic candidate data, not a trusted correctness certificate. | compact, Trace, main |
+| verified orchestration runtime | `src/vao/repair/transport_probe.py` | Separately funded, single-use SSE compatibility probe on synthetic payloads. No benchmark/repair outcome is evaluated. No closed request is replayed. | specification, wire_packet, read, sha, packet, validate, freeze, collect |
+| verified orchestration runtime | `src/vao/repair/verifier.py` | Verify function-repair artifacts in fresh macOS sandboxes with parent-side scoring. | RepairVerifier |
+| verified orchestration runtime | `src/vao/repair/worker.py` | Execute one JSON function call; expected answers stay in the parent process. | main |
 | verified orchestration runtime | `src/vao/schemas.py` | Pydantic schemas for protocol records. | utc_now_iso, ModeDistribution, CandidateProposal, BranchEvaluation, StepRecord, RunManifest, RoutingRecord |
 | verified orchestration runtime | `src/vao/structured_edits.py` | Structured source-edit application for compact model edits. | StructuredEditError, apply_structured_edits |
 | verified orchestration runtime | `src/vao/success_metrics.py` | Shared success-threshold helpers for AutoResearch trajectory evaluation. | validate_relative_threshold, relative_improvement, success_on_relative_threshold, first_success_step |

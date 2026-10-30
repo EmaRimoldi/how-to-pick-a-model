@@ -1,0 +1,70 @@
+{
+  "kind": "static_information_availability_map",
+  "created_utc": "2026-10-27T04:12:38.109122+00:00",
+  "source_commit": "3846e157c0a8c2ef6992f85a52b724c6b6de1a6b",
+  "sources": {
+    "src/vao/repair/diagnostics.py": {
+      "sha256": "1113b8a912f6c2da28bb6621e271c49e66da5a3c23d029fb747b167b2e4d0817",
+      "functions": {
+        "project": {
+          "start_line": 87,
+          "end_line": 106
+        }
+      }
+    },
+    "src/vao/repair/contrastive_diagnostics.py": {
+      "sha256": "3e1ddd9a0ba82b7b6b80d3faee7f6fd97569edb9cc688b62320f4111e4626cd3",
+      "functions": {
+        "project": {
+          "start_line": 159,
+          "end_line": 172
+        }
+      }
+    },
+    "src/vao/repair/contrastive_study.py": {
+      "sha256": "490d121b92ce2aa78f8af0da807fef6a3678a27e274c7a32301c66ad80926df2",
+      "functions": {
+        "planned_requests": {
+          "start_line": 51,
+          "end_line": 66
+        }
+      }
+    }
+  },
+  "current_common_input": [
+    "instruction",
+    "entrypoint",
+    "current_files",
+    "all_declared_public_cases_including_expected_values",
+    "complete_existing_public_feedback",
+    "highlighted_first_public_failure"
+  ],
+  "arm_specific_acquisition": {
+    "focused": null,
+    "single_trace": "observed runtime record for one already known public failure",
+    "paired_trace": "same failing runtime record plus one already passing public execution"
+  },
+  "evaluation_only": [
+    "private_evaluator_cases",
+    "reference_repair"
+  ],
+  "fixed_initial_task_contract": "All three arms receive the same public cases and existing outcomes. Only runtime diagnostic differs.",
+  "not_tested": [
+    "value of querying an initially unobserved labeled test",
+    "prospective adaptive selector",
+    "equal-total-resource policy advantage",
+    "fresh held-out task generalization"
+  ],
+  "scope": "Static source contract only; not a replacement for terminal audit of all actual provider bodies.",
+  "active_outcomes_read": false,
+  "new_task_contents_read": false,
+  "model_calls": 0,
+  "running_protocol_changed": false,
+  "primary_sources": [
+    "https://arxiv.org/html/2610.29755v1",
+    "https://arxiv.org/html/2609.17993v1",
+    "https://arxiv.org/html/2605.27238v1",
+    "https://mpi-softsec.github.io/papers/TSE24-learn2fix.pdf",
+    "https://aclanthology.org/2025.acl-long.881/"
+  ]
+}

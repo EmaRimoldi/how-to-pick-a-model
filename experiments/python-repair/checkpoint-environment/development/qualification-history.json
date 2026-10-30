@@ -1,0 +1,816 @@
+{
+  "phase": "offline_adapter_development_before_any_model_call",
+  "first_run": {
+    "pool_sha256": "5c2d6e37b5d08e943bb3f37efe428b849dda2e445f263073cd3d6116f97aa108",
+    "selected": 12,
+    "qualified": 11,
+    "runtime": {
+      "python": "3.13.12 | packaged by conda-forge | (main, Feb  5 2026, 06:11:05) [Clang 19.1.7 ]",
+      "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+      "sha256": {
+        "fixture/evaluator.json": "535cd9b27915a632dfa9474a4f390dd1a588ce831604ed6950416789db0a1e12",
+        "fixture/reference.json": "41e34b819ae8ee6bfdd36b18721014d79c96f19556dfac30e66a8ac380c03cc8",
+        "fixture/task.json": "99c6974b88b1915d2d685861feb104254f0910c0aaae7f52f39f14ba6e07616a",
+        "runtime/__init__.py": "54b577b505955fe21dc1b841a71c75aaf63f57d2bd1e8bf3bece36d30dd1518e",
+        "runtime/cli.py": "5556f65f077aa0aa9e6f726fa2db55f13448df14828b16fb5e16f14dd556d3bc",
+        "runtime/environment.py": "8dff3b6cb454bf4607e9543a36c581469e435dcc0f7b74113ac56462961346d4",
+        "runtime/pool.py": "85d0296abcf538ff09341b8ab2ceb3299772a2068de1a06cc22ed882c141a8ce",
+        "runtime/verification.py": "301f2af2cfbffa509a9dacfd2f920b7e7ef8bcaab68c8d56a050a3c054dcf0b4",
+        "runtime/verifier.py": "008ab627c1db7fee254353f90f73ec1ef3f8d3f621983cf7e2b77c6dbdf6e9c0",
+        "runtime/worker.py": "c604e16a51fc44898fcfebf6e74c1bc01636e9f29c6486e78bcb93d2b8bfa858"
+      }
+    },
+    "tasks": [
+      {
+        "id": "youtube-dl-003",
+        "task_hash": "e60bd2b6b3c839c47476e032bed5feae5453472d74e6920000e30a216687e658",
+        "engineering_qualified": true,
+        "checks": {
+          "initial": {
+            "public": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            },
+            "evaluator": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            }
+          },
+          "reference": {
+            "public": {
+              "passed": [
+                true,
+                true
+              ],
+              "repeatable": true
+            },
+            "evaluator": {
+              "passed": [
+                true,
+                true
+              ],
+              "repeatable": true
+            }
+          }
+        },
+        "completion_sha256": "979a245707e8ebf436f4a36f35c5abf3a3864081838bbf6586b8f92f347b5c23",
+        "audit": {
+          "status": "verified",
+          "objects": 11,
+          "events": 9,
+          "event_head": "b1b5606da4b4d3b13c5bd134e7019e9b9abcae8d571f2ffb4295c8d739ad454d"
+        }
+      },
+      {
+        "id": "youtube-dl-011",
+        "task_hash": "f88da14adef616e1a9b41e6203529701308c77aea7020a7d4446b457bf1b2fd4",
+        "engineering_qualified": true,
+        "checks": {
+          "initial": {
+            "public": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            },
+            "evaluator": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            }
+          },
+          "reference": {
+            "public": {
+              "passed": [
+                true,
+                true
+              ],
+              "repeatable": true
+            },
+            "evaluator": {
+              "passed": [
+                true,
+                true
+              ],
+              "repeatable": true
+            }
+          }
+        },
+        "completion_sha256": "4cfff7531657009e3f5c76260038ead4ca89cad6b20ae7447de4d53ef6233118",
+        "audit": {
+          "status": "verified",
+          "objects": 11,
+          "events": 9,
+          "event_head": "e764629852f58fbadf22fdf36981337bfe1632758ae88d5eee01047a9c5bad0d"
+        }
+      },
+      {
+        "id": "youtube-dl-013",
+        "task_hash": "69df1c5a2a87c99a91076ecd91c671612b5b519810417e0b25d015076c1d3090",
+        "engineering_qualified": true,
+        "checks": {
+          "initial": {
+            "public": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            },
+            "evaluator": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            }
+          },
+          "reference": {
+            "public": {
+              "passed": [
+                true,
+                true
+              ],
+              "repeatable": true
+            },
+            "evaluator": {
+              "passed": [
+                true,
+                true
+              ],
+              "repeatable": true
+            }
+          }
+        },
+        "completion_sha256": "070837811140672ebdc58e7b9ee157f30f2d36458ca76a897e449083a4428efe",
+        "audit": {
+          "status": "verified",
+          "objects": 11,
+          "events": 9,
+          "event_head": "d8dd4a92041bceb82b0425d05e950804a07e3c3d609ee8903cb998b39c409ae5"
+        }
+      },
+      {
+        "id": "youtube-dl-020",
+        "task_hash": "be822259bd46303fb6cebb02aabfc4a56658d2c3dd377b865ef22038cfb44a04",
+        "engineering_qualified": true,
+        "checks": {
+          "initial": {
+            "public": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            },
+            "evaluator": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            }
+          },
+          "reference": {
+            "public": {
+              "passed": [
+                true,
+                true
+              ],
+              "repeatable": true
+            },
+            "evaluator": {
+              "passed": [
+                true,
+                true
+              ],
+              "repeatable": true
+            }
+          }
+        },
+        "completion_sha256": "b8569d2e82bd10248213d9c2ea8470b91c6cb10745ae307ae6008e2728d5386c",
+        "audit": {
+          "status": "verified",
+          "objects": 11,
+          "events": 9,
+          "event_head": "a9133f054eab078fbdab5d2ee9653ec8d74ab84fd0698cc7ba92bb6e9f0691cd"
+        }
+      },
+      {
+        "id": "youtube-dl-027",
+        "task_hash": "ee49e7ac580273c11dd611fb74f5671381f9e07a4f1dfc8d2f865c2583c48aa7",
+        "engineering_qualified": true,
+        "checks": {
+          "initial": {
+            "public": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            },
+            "evaluator": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            }
+          },
+          "reference": {
+            "public": {
+              "passed": [
+                true,
+                true
+              ],
+              "repeatable": true
+            },
+            "evaluator": {
+              "passed": [
+                true,
+                true
+              ],
+              "repeatable": true
+            }
+          }
+        },
+        "completion_sha256": "10ba1eafd218800fde18e1017508cb4ae1299fa59cfcf07074f6b74bc1a4c576",
+        "audit": {
+          "status": "verified",
+          "objects": 11,
+          "events": 9,
+          "event_head": "2139f565f3a2d7b41832f2d3dfb1d5357b1035cf93111508c4c21a1e68badc96"
+        }
+      },
+      {
+        "id": "youtube-dl-031",
+        "task_hash": "ea3a2f3757355ed503444c8daae3f6c8a0f7e63a19cda3f861080bcc657ad870",
+        "engineering_qualified": true,
+        "checks": {
+          "initial": {
+            "public": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            },
+            "evaluator": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            }
+          },
+          "reference": {
+            "public": {
+              "passed": [
+                true,
+                true
+              ],
+              "repeatable": true
+            },
+            "evaluator": {
+              "passed": [
+                true,
+                true
+              ],
+              "repeatable": true
+            }
+          }
+        },
+        "completion_sha256": "36161b2e16372aff39ee4459364528c7683cd2ba8355b00a89a429dc5d1316fc",
+        "audit": {
+          "status": "verified",
+          "objects": 11,
+          "events": 9,
+          "event_head": "0e61dc2e93e3bf04ad285b4383f8e7c471face301bc323dd95c26df118e828f5"
+        }
+      },
+      {
+        "id": "youtube-dl-032",
+        "task_hash": "85930875d2714c595dd7c6e665ef6a555b208c17a5ea3f594b63ef3477720f7e",
+        "engineering_qualified": true,
+        "checks": {
+          "initial": {
+            "public": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            },
+            "evaluator": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            }
+          },
+          "reference": {
+            "public": {
+              "passed": [
+                true,
+                true
+              ],
+              "repeatable": true
+            },
+            "evaluator": {
+              "passed": [
+                true,
+                true
+              ],
+              "repeatable": true
+            }
+          }
+        },
+        "completion_sha256": "55cb918ee62c666a7182e41616f1af02ecd39c3c0ed72fbcb33b0f090c67bc75",
+        "audit": {
+          "status": "verified",
+          "objects": 11,
+          "events": 9,
+          "event_head": "781875584dcef5360dc2ed9dd67cbd9864e38249097393243493a99bf9e0f9fc"
+        }
+      },
+      {
+        "id": "youtube-dl-033",
+        "task_hash": "0a5a47f53cafce28c9d0ceb5dd6cc923f5d9245bce3a5ca11d7c9e365a047856",
+        "engineering_qualified": true,
+        "checks": {
+          "initial": {
+            "public": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            },
+            "evaluator": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            }
+          },
+          "reference": {
+            "public": {
+              "passed": [
+                true,
+                true
+              ],
+              "repeatable": true
+            },
+            "evaluator": {
+              "passed": [
+                true,
+                true
+              ],
+              "repeatable": true
+            }
+          }
+        },
+        "completion_sha256": "ea00aad19768a63c5c86d4a9aacf2746e92578bbae5be8b745adfcfd41e79683",
+        "audit": {
+          "status": "verified",
+          "objects": 11,
+          "events": 9,
+          "event_head": "8a0a141905c77140286c1f99a1dd8167739b8615945d277b52fed13ad840271c"
+        }
+      },
+      {
+        "id": "youtube-dl-042",
+        "task_hash": "5d6af140cad21a465b456a24886c183d7441485bc12f3ab90c8ae1b3fa853973",
+        "engineering_qualified": true,
+        "checks": {
+          "initial": {
+            "public": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            },
+            "evaluator": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            }
+          },
+          "reference": {
+            "public": {
+              "passed": [
+                true,
+                true
+              ],
+              "repeatable": true
+            },
+            "evaluator": {
+              "passed": [
+                true,
+                true
+              ],
+              "repeatable": true
+            }
+          }
+        },
+        "completion_sha256": "241dbb6a3db08bcb054a2d0e7fb2f25749069c89958949cb1a38f626dc4c6d14",
+        "audit": {
+          "status": "verified",
+          "objects": 11,
+          "events": 9,
+          "event_head": "c49f11d79caca82cb28e871dd5675bf394762a60ea9a2abbfb74b9865e26aaf5"
+        }
+      },
+      {
+        "id": "youtube-dl-043",
+        "task_hash": "65b9858bb5ce63111130e0944595653508b70f8ae88d7b12a15d99ca56a56479",
+        "engineering_qualified": true,
+        "checks": {
+          "initial": {
+            "public": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            },
+            "evaluator": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            }
+          },
+          "reference": {
+            "public": {
+              "passed": [
+                true,
+                true
+              ],
+              "repeatable": true
+            },
+            "evaluator": {
+              "passed": [
+                true,
+                true
+              ],
+              "repeatable": true
+            }
+          }
+        },
+        "completion_sha256": "2a70cc601f9c610096341571f70ede0d06b2c6b8d267ec014ec30302be882380",
+        "audit": {
+          "status": "verified",
+          "objects": 11,
+          "events": 9,
+          "event_head": "8b5af5b8e0e34ef1231174f34bec5d8421f2b3641fb739dbe5f8f2f490f9bd02"
+        }
+      },
+      {
+        "id": "httpie-005",
+        "task_hash": "ef73334b4264a12375a8be91d0d612c637cd589da2ae4aded7f2a749a09a7236",
+        "engineering_qualified": true,
+        "checks": {
+          "initial": {
+            "public": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            },
+            "evaluator": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            }
+          },
+          "reference": {
+            "public": {
+              "passed": [
+                true,
+                true
+              ],
+              "repeatable": true
+            },
+            "evaluator": {
+              "passed": [
+                true,
+                true
+              ],
+              "repeatable": true
+            }
+          }
+        },
+        "completion_sha256": "01a9005bece7ff85209ddf6a7473fb26226c129293c011ced862d9126d8f7240",
+        "audit": {
+          "status": "verified",
+          "objects": 11,
+          "events": 9,
+          "event_head": "6a36f99eed90da55a16f16d72c3bd8473df74d8ed5d9c3fbcbe28e761d2c9a61"
+        }
+      },
+      {
+        "id": "tornado-009",
+        "task_hash": "fed9fdbd3c5a8bca5b4f484ab2ff9c14f1998253c8983870ed307e7fecaf44e5",
+        "engineering_qualified": false,
+        "checks": {
+          "initial": {
+            "public": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            },
+            "evaluator": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            }
+          },
+          "reference": {
+            "public": {
+              "passed": [
+                false,
+                false
+              ],
+              "repeatable": true
+            },
+            "evaluator": {
+              "passed": [
+                true,
+                true
+              ],
+              "repeatable": true
+            }
+          }
+        },
+        "outcomes": {
+          "initial": {
+            "evaluator": {
+              "passed_cases": 4,
+              "total_cases": 6,
+              "cases": [
+                {
+                  "id": "none-trailing",
+                  "observed": {
+                    "exception": "TypeError",
+                    "status": "exception"
+                  },
+                  "passed": false
+                },
+                {
+                  "id": "none-raw",
+                  "observed": {
+                    "exception": "TypeError",
+                    "status": "exception"
+                  },
+                  "passed": false
+                },
+                {
+                  "id": "duplicates",
+                  "observed": {
+                    "status": "returned",
+                    "value": "http://example.org/p?a=1&x=a&x=b"
+                  },
+                  "passed": true
+                },
+                {
+                  "id": "blank",
+                  "observed": {
+                    "status": "returned",
+                    "value": "http://example.org/p?x=&y=%2Fy"
+                  },
+                  "passed": true
+                },
+                {
+                  "id": "emptydict",
+                  "observed": {
+                    "status": "returned",
+                    "value": "http://example.org/p"
+                  },
+                  "passed": true
+                },
+                {
+                  "id": "string",
+                  "observed": {
+                    "exception": "TypeError",
+                    "status": "exception"
+                  },
+                  "passed": true
+                }
+              ]
+            },
+            "public": {
+              "passed_cases": 3,
+              "total_cases": 6,
+              "cases": [
+                {
+                  "id": "none",
+                  "observed": {
+                    "exception": "TypeError",
+                    "status": "exception"
+                  },
+                  "passed": false
+                },
+                {
+                  "id": "list",
+                  "observed": {
+                    "exception": "TypeError",
+                    "status": "exception"
+                  },
+                  "passed": false
+                },
+                {
+                  "id": "dict",
+                  "observed": {
+                    "status": "returned",
+                    "value": "http://example.org/?x=a+b"
+                  },
+                  "passed": true
+                },
+                {
+                  "id": "fragment",
+                  "observed": {
+                    "exception": "TypeError",
+                    "status": "exception"
+                  },
+                  "passed": false
+                },
+                {
+                  "id": "empty",
+                  "observed": {
+                    "status": "returned",
+                    "value": "http://example.org/p?a=1"
+                  },
+                  "passed": true
+                },
+                {
+                  "id": "invalid",
+                  "observed": {
+                    "exception": "TypeError",
+                    "status": "exception"
+                  },
+                  "passed": true
+                }
+              ]
+            }
+          },
+          "reference": {
+            "public": {
+              "passed_cases": 4,
+              "total_cases": 6,
+              "cases": [
+                {
+                  "id": "none",
+                  "observed": {
+                    "status": "returned",
+                    "value": "https://localhost/path?r=1&t=2"
+                  },
+                  "passed": true
+                },
+                {
+                  "id": "list",
+                  "observed": {
+                    "exception": "TypeError",
+                    "status": "exception"
+                  },
+                  "passed": false
+                },
+                {
+                  "id": "dict",
+                  "observed": {
+                    "status": "returned",
+                    "value": "http://example.org/?x=a+b"
+                  },
+                  "passed": true
+                },
+                {
+                  "id": "fragment",
+                  "observed": {
+                    "exception": "TypeError",
+                    "status": "exception"
+                  },
+                  "passed": false
+                },
+                {
+                  "id": "empty",
+                  "observed": {
+                    "status": "returned",
+                    "value": "http://example.org/p?a=1"
+                  },
+                  "passed": true
+                },
+                {
+                  "id": "invalid",
+                  "observed": {
+                    "exception": "TypeError",
+                    "status": "exception"
+                  },
+                  "passed": true
+                }
+              ]
+            },
+            "evaluator": {
+              "passed_cases": 6,
+              "total_cases": 6,
+              "cases": [
+                {
+                  "id": "none-trailing",
+                  "observed": {
+                    "status": "returned",
+                    "value": "http://example.org/p?#x"
+                  },
+                  "passed": true
+                },
+                {
+                  "id": "none-raw",
+                  "observed": {
+                    "status": "returned",
+                    "value": "http://example.org/p?x=%20"
+                  },
+                  "passed": true
+                },
+                {
+                  "id": "duplicates",
+                  "observed": {
+                    "status": "returned",
+                    "value": "http://example.org/p?a=1&x=a&x=b"
+                  },
+                  "passed": true
+                },
+                {
+                  "id": "blank",
+                  "observed": {
+                    "status": "returned",
+                    "value": "http://example.org/p?x=&y=%2Fy"
+                  },
+                  "passed": true
+                },
+                {
+                  "id": "emptydict",
+                  "observed": {
+                    "status": "returned",
+                    "value": "http://example.org/p"
+                  },
+                  "passed": true
+                },
+                {
+                  "id": "string",
+                  "observed": {
+                    "exception": "TypeError",
+                    "status": "exception"
+                  },
+                  "passed": true
+                }
+              ]
+            }
+          }
+        },
+        "completion_sha256": "3b23aa9949def392c212b5304146d922c3a0e3224fa05978b5dde0ec69de0391",
+        "audit": {
+          "status": "verified",
+          "objects": 11,
+          "events": 9,
+          "event_head": "191cd164597c27e74dc7b6bbc15348b73221694c57c0b5f59fb57f7719f6fa6b"
+        }
+      }
+    ]
+  },
+  "correction": {
+    "task": "tornado-009",
+    "reason": "urllib.parse.urlencode expects pair tuples; JSON lists failed when no existing query supplied the first tuple. Both buggy and reference shared the adapter error.",
+    "before": {
+      "buggy": "def solve(*args, **kwargs):\n    return url_concat(*args, **kwargs)\n",
+      "fixed": "def solve(*args, **kwargs):\n    return url_concat(*args, **kwargs)\n"
+    },
+    "after": {
+      "buggy": "def solve(url, args):\n    if isinstance(args, list):\n        args = [tuple(pair) for pair in args]\n    return url_concat(url, args)\n",
+      "fixed": "def solve(url, args):\n    if isinstance(args, list):\n        args = [tuple(pair) for pair in args]\n    return url_concat(url, args)\n"
+    },
+    "upstream_function_changed": false,
+    "cases_changed": false
+  },
+  "api_calls": 0,
+  "raw_archive": "runs/python-repair-real-pool-20261025-v1"
+}

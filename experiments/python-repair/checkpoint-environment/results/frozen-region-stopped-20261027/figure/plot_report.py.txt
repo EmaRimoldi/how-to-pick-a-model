@@ -1,0 +1,84 @@
+"""Render only terminal, audited report fields. Never read live collection files."""
+import argparse
+from decimal import Decimal
+import hashlib
+import json
+from pathlib import Path
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
+
+
+def render(report, destination, *, fixture=False):
+    if report['study'] != 'repair-qwen-frozen-region-trace-development-v1':
+        raise ValueError('Wrong study')
+    if report['status'] not in ('complete_frozen_region_development_probe','incomplete_frozen_region_development_probe'):
+        raise ValueError('Terminal report required')
+    if report['fit_selector'] is not False:
+        raise ValueError('This calibration cannot claim a fitted selector')
+    arms={r['arm']:r for r in report['arm_table']}
+    if set(arms)!={'focused','focused_trace'} or len(report['task_table'])!=8:
+        raise ValueError('Retain both arms and all eight original bugs')
+    ordered=[arms[a] for a in ('focused','focused_trace')]
+    audit=[]
+    for r in ordered:
+        planned,observed,succeeded,missing=[r[k] for k in ('planned','observed','successes','missing')]
+        if not (planned==16 and 0<=succeeded<=observed<=planned and observed+missing==planned):
+            raise ValueError('Inconsistent outcome count')
+        known,committed=Decimal(r['known_usd']),Decimal(r['committed_usd'])
+        if not 0<=known<=committed:raise ValueError('Inconsistent financial components')
+        audit.append({'arm':r['arm'],'full_repairs':succeeded,'received_non_full':observed-succeeded,
+                      'missing':missing,'planned':planned,'known_usd':str(known),
+                      'unresolved_commitment_usd':str(committed-known)})
+    if sum((Decimal(a['known_usd']) for a in audit),Decimal(0))!=Decimal(report['accounting']['settled_usd']):
+        raise ValueError('Known arm charges do not reconcile')
+    if sum((Decimal(a['known_usd'])+Decimal(a['unresolved_commitment_usd']) for a in audit),Decimal(0))!=Decimal(report['accounting']['study_committed_usd']):
+        raise ValueError('Total arm commitments do not reconcile')
+    destination.mkdir(parents=True,exist_ok=False)
+    plt.rcParams.update({'font.family':'DejaVu Sans','font.size':10,'axes.spines.top':False,'axes.spines.right':False})
+    fig,(left,right)=plt.subplots(1,2,figsize=(10.8,5.2),gridspec_kw={'wspace':.36})
+    xs=[0,1];labels=['Feedback','Feedback + trace'];colors=['#267c9b','#cdd2d5','#cf8843']
+    bottom=[0,0]
+    for field,color,label in zip(('full_repairs','received_non_full','missing'),colors,('Full repair','Received, not fully repaired','Missing outcome')):
+        values=[a[field] for a in audit]
+        left.bar(xs,values,bottom=bottom,width=.55,color=color,label=label,edgecolor='white',linewidth=.6)
+        bottom=[b+v for b,v in zip(bottom,values)]
+    for x,a in zip(xs,audit):
+        left.text(x,16.7,f"{a['full_repairs']}/16 full; {a['missing']} missing",ha='center',fontsize=9)
+    left.set(xticks=xs,xticklabels=labels,ylim=(0,18),yticks=range(0,17,4),ylabel='Planned generation attempts',title='A  Complete repairs and missing outcomes')
+    left.legend(loc='upper center',bbox_to_anchor=(.5,-.12),frameon=False,fontsize=8.5)
+    known=[float(Decimal(a['known_usd'])*1000) for a in audit]
+    pending=[float(Decimal(a['unresolved_commitment_usd'])*1000) for a in audit]
+    right.bar(xs,known,width=.55,color='#526774',label='Verified receipt charges')
+    right.bar(xs,pending,bottom=known,width=.55,color='#cf8843',hatch='///',label='Unresolved commitment')
+    top=max([k+p for k,p in zip(known,pending)]+[.01]);right.set_ylim(0,top*1.25)
+    for x,k,p in zip(xs,known,pending):right.text(x,k+p+top*.04,f'${(k+p)/1000:.6f}',ha='center',fontsize=9)
+    right.set(xticks=xs,xticklabels=labels,ylabel='New study API commitment (millidollars)',title='B  Receipts and retained uncertainty')
+    right.legend(loc='upper center',bbox_to_anchor=(.5,-.12),frameon=False,fontsize=8.5)
+    title='Frozen-trace repair calibration' if not fixture else 'ENGINEERING PREVIEW — synthetic outcomes'
+    fig.suptitle(title,fontsize=14,y=.97)
+    fig.text(.5,.895,'8 exposed original bugs × 2 generation draws per arm; each bug shares one frozen acquisition.',ha='center',fontsize=9)
+    fig.text(.5,.04,'Equal per-call limits, not equal total resources. Local diagnostic/verification time and historical carry are reported separately.',ha='center',fontsize=8)
+    fig.subplots_adjust(top=.81,bottom=.25,left=.07,right=.98)
+    fig.savefig(destination/'repair-information.png',dpi=180)
+    fig.savefig(destination/'repair-information.svg')
+    svg = destination/'repair-information.svg'
+    svg.write_text('\n'.join(line.rstrip() for line in svg.read_text().splitlines()) + '\n')
+    plt.close(fig)
+    manifest={'mode':'synthetic_layout_fixture' if fixture else 'terminal_report_plot','api_calls':0,
+        'report_identity':{'study':report['study'],'status':report['status'],'packet_id':report.get('packet_id'),
+                           'freeze_id':report.get('freeze_id'),'gate':report['gate']},'plotted_values':audit,
+        'source_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        'figure_hashes':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in destination.glob('repair-information.*')}}
+    (destination/'figure-audit.json').write_text(json.dumps(manifest,indent=2)+'\n')
+    return manifest
+
+
+def main():
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--input',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--fixture',action='store_true');a=p.parse_args()
+    report=json.loads(a.input.read_text());render(report,a.output,fixture=a.fixture)
+
+
+if __name__=='__main__':main()

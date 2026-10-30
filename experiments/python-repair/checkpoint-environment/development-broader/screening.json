@@ -1,0 +1,71 @@
+{
+  "benchmark_revision": "11c5f1eea954a42132cfd06bf257766a7963e0fd",
+  "stage": "prequalification_before_model_calls",
+  "api_calls": 0,
+  "all_ids_previously_development_exposed": true,
+  "candidates": [
+    {
+      "id": "scrapy/2",
+      "decision": "inspect_original_sources",
+      "reason": "Cache capacity and deterministic ordered insertion",
+      "bug_info_sha256": "2bc8ed7bf35ebbc25b49871a643148715b0113b3167d9e62a4d63655415de4bb",
+      "patch_sha256": "8aaf760773a47e42f77d90a6824f791d9206e3c5ae6d4d74d6cbf661cc70ba7b"
+    },
+    {
+      "id": "scrapy/36",
+      "decision": "inspect_original_sources",
+      "reason": "Factory dispatch and explicit rejection of None",
+      "bug_info_sha256": "50e6aebf94ccc868bdc9e1ee3aa818f90001b1fc24e16eef3f208e3baf8949c5",
+      "patch_sha256": "5e72beac01175526d2677d14b3665a52e9ea1d6139d355b797dafe07dc598a08"
+    },
+    {
+      "id": "luigi/10",
+      "decision": "inspect_original_sources",
+      "reason": "Worker task membership filtering; no scheduler process",
+      "bug_info_sha256": "bd3e2adfb411b80db50c5d68c9e90b9a0b4d2854db063835874c1cdd1e7f7798",
+      "patch_sha256": "4ada344765f086b0d1fd93fdc604d9f96a65e2dd1bff6fa8339405d362e27b5e"
+    },
+    {
+      "id": "tornado/5",
+      "decision": "inspect_original_sources",
+      "reason": "Deadline advancement including backward clock adjustments",
+      "bug_info_sha256": "7a550dd5a8eff243e80b1ab392482c37a6b9bca17949ae5152a5f8dc545187b6",
+      "patch_sha256": "82f918614406df349fc9761bf4b2053cfbf9579773c13ab0377a8dc4693fec0d"
+    },
+    {
+      "id": "thefuck/22",
+      "decision": "inspect_original_sources",
+      "reason": "Empty command sequence realization and ordering",
+      "bug_info_sha256": "3a98a3876296832418d550ed0ae3c45460cb94c43b68d99f00ba27fd58610318",
+      "patch_sha256": "d04d020b96c198cddac88866aef88289d48a0dd1fb2536bffc0dff1c9182fabc"
+    },
+    {
+      "id": "thefuck/29",
+      "decision": "inspect_original_sources",
+      "reason": "Nonmutating defaults merge preserving existing settings",
+      "bug_info_sha256": "3bac574038d42e12bebcb3800aae2427fbbc5054f319bff9bd9fed58c0b617f5",
+      "patch_sha256": "b5329413e2dace63b9b45f774dca75ea0a844b2a8a52a125c34958f86355bc0a"
+    },
+    {
+      "id": "scrapy/26",
+      "decision": "defer",
+      "reason": "Nested priority-aware settings require more of the original configuration subsystem.",
+      "bug_info_sha256": "b785cd9bdcbc4ee4c6bc2ba861426dd141c2c040f84ddf21a12ee7408ad82836",
+      "patch_sha256": "133e82bf4609f64e292e1ce14b1e864f36012066d0482bb02d1f1bbe43d87edb"
+    },
+    {
+      "id": "scrapy/40",
+      "decision": "defer",
+      "reason": "Recursive exporter depends on conversion helpers and non-JSON bytes semantics; defer this adaptation.",
+      "bug_info_sha256": "488e456174e4a3e1050c894f4b7c0edd1ecdfd0fe9b67ef5064c4cec5d7846b6",
+      "patch_sha256": "221c804c83c3b9a4c7d9b6976911f937591952793c34aa3c72760b267e143445"
+    },
+    {
+      "id": "luigi/33",
+      "decision": "defer",
+      "reason": "Parameter inheritance/global flags require original parameter implementations; avoid changing semantics through stubs.",
+      "bug_info_sha256": "afb2fb22cff3ee71f0bb342095ce074ab4af0fe074a469bb2c31f1375dcd32c8",
+      "patch_sha256": "b0dd3f9f894721d2ac467dba454129f65bfc2548d306ea057ca10ede5ac49993"
+    }
+  ]
+}

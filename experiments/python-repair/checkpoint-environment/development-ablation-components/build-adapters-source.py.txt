@@ -1,0 +1,140 @@
+from pathlib import Path
+import ast, json, hashlib, zipfile
+ROOT=Path('experiments/python-repair/checkpoint-environment')
+DEST=ROOT/'development-ablation-components'
+CACHE=Path('runs/ablation-component-sources-20261030')
+DEST.mkdir(exist_ok=False)
+def sha(x): return hashlib.sha256(x).hexdigest()
+records=[]
+for name in ['manifest-curl.json','manifest-extra.json']:
+ for r in json.loads((CACHE/name).read_text())['files']:
+  if r['status']=='downloaded_inert': records.append(r)
+sources={(r['id'],r['role']):r for r in records}
+ids=['tqdm/2','tqdm/4','black/17','tqdm/8','tqdm/9']
+with zipfile.ZipFile(DEST/'upstream-sources.zip','x',compression=zipfile.ZIP_DEFLATED) as z:
+ for r in records: z.writestr(r['local_path'],(CACHE/r['local_path']).read_bytes())
+ z.writestr('download-attempts.json',json.dumps({name:json.loads((CACHE/name).read_text()) for name in ['manifest.json','manifest-curl.json','manifest-extra.json']},indent=2))
+
+def case(id,args,expected):return dict(id=id,args=args,expected=expected)
+def kw(id,expected,**kwargs):return case(id,[kwargs],expected)
+def hx(id,text,encoding='utf-8',newline='\n',raw=None):return case(id,[(raw if raw is not None else text.encode()).hex()],[text,encoding,newline])
+ansi='\x1b'
+cases={
+'tqdm/2':([
+ case('plain-truncation',['abcdef',3],'abc'),
+ case('already-reset',[ansi+'[31mabc'+ansi+'[0m',3],ansi+'[31mabc'+ansi+'[0m'),
+ case('colored-truncation',[ansi+'[31mabc',2],ansi+'[31mab'+ansi+'[0m'),
+ case('wide-character',['界x',2],'界'),
+ case('empty',['',0],''),
+ case('reset-with-spare-width',[ansi+'[1mA'+ansi+'[0m',10],ansi+'[1mA'+ansi+'[0m')], [
+ case('reset-only',[ansi+'[0m',0],ansi+'[0m'),
+ case('zero-width-plain',['12345',0],''),
+ case('two-wide',['界界x',4],'界界'),
+ case('partial-wide',['界界x',3],'界'),
+ case('empty-positive-width',['',3],''),
+ case('green-reset',[ansi+'[32mZ'+ansi+'[0m',20],ansi+'[32mZ'+ansi+'[0m')]),
+'tqdm/4':([
+ kw('scaled-unknown','20it [00:02, 10.00it/s]',n=10,total=None,elapsed=2,unit_scale=2),
+ kw('scaled-empty','0it [00:00, ?it/s]',n=0,total=None,elapsed=0,unit_scale=3),
+ kw('scaled-overrun','6it [00:02,  3.00it/s]',n=2,total=1,elapsed=2,unit_scale=3),
+ kw('scaled-known',' 25% 2/8 [00:01<00:03,  2.00it/s]',n=1,total=4,elapsed=1,unit_scale=2,ncols=0),
+ kw('unscaled-unknown','3it [00:01,  3.00it/s]',n=3,total=None,elapsed=1),
+ kw('si-unknown','1.00kit [00:01, 1.00kit/s]',n=1000,total=None,elapsed=1,unit_scale=True)], [
+ kw('manual-rate-scaled','8it [00:02,  6.00it/s]',n=4,total=None,elapsed=2,unit_scale=2,rate=3),
+ kw('zero-total','4it [00:02,  2.00it/s]',n=2,total=0,elapsed=2,unit_scale=2),
+ kw('fractional-scale','1.0it [00:01,  1.00it/s]',n=2,total=None,elapsed=1,unit_scale=.5),
+ kw('prefix-and-unit','files: 15B [00:03,  5.00B/s]',n=5,total=None,elapsed=3,unit_scale=3,prefix='files',unit='B'),
+ kw('other-known',' 25% 6/24 [00:02<00:06,  3.00it/s]',n=2,total=8,elapsed=2,unit_scale=3,ncols=0),
+ kw('preserve-zero-rate','0it [00:02, ?it/s]',n=0,total=None,elapsed=2)]),
+'black/17':([
+ hx('empty',''),
+ hx('lf-source','x = 1\n'),
+ hx('crlf-source','x = 1\n',newline='\r\n',raw=b'x = 1\r\n'),
+ hx('bare-newline','\n'),
+ hx('utf8-non-ascii','# café\n'),
+ hx('bom-source','x = 2\n',encoding='utf-8-sig',raw=b'\xef\xbb\xbfx = 2\n')], [
+ hx('bom-only','',encoding='utf-8-sig',raw=b'\xef\xbb\xbf'),
+ hx('mixed-newlines','a\nb\nc\n',newline='\r\n',raw=b'a\r\nb\nc\r'),
+ hx('no-final-newline','y=5'),
+ hx('cr-only','a\nb\n',raw=b'a\rb\r'),
+ hx('latin1-cookie','# coding: latin-1\n# café\n',encoding='iso-8859-1',raw=b'# coding: latin-1\n# caf\xe9\n'),
+ hx('bom-crlf','z\n',encoding='utf-8-sig',newline='\r\n',raw=b'\xef\xbb\xbfz\r\n')]),
+'tqdm/8':([
+ kw('upstream-short',' 20%|▏|20/100',n=20,total=100,elapsed=12,ncols=13,rate=8.1,bar_format='{l_bar}{bar}|{n_fmt}/{total_fmt}'),
+ kw('upstream-wider',' 20%|▍ |20/100',n=20,total=100,elapsed=12,ncols=14,rate=8.1,bar_format='{l_bar}{bar}|{n_fmt}/{total_fmt}'),
+ kw('custom-prefix','run[##5       ] 1/4',n=1,total=4,elapsed=1,ascii=True,prefix='run',bar_format='{desc}[{bar}] {n}/{total}'),
+ kw('without-bar','1/4',n=1,total=4,elapsed=1,bar_format='{n}/{total}'),
+ kw('default-empty','  0%|          | 0/10 [00:01<?, ?it/s]',n=0,total=10,elapsed=1,ascii=True),
+ kw('complete-custom','done:##########',n=4,total=4,elapsed=1,ascii=True,prefix='done',bar_format='{desc}:{bar}')], [
+ kw('half-bar','A#####     B',n=2,total=4,elapsed=1,ascii=True,bar_format='A{bar}B'),
+ kw('empty-custom','X          Y',n=0,total=4,elapsed=1,ascii=True,bar_format='X{bar}Y'),
+ kw('full-custom','##########!',n=4,total=4,elapsed=1,ascii=True,bar_format='{bar}!'),
+ kw('unicode-custom','█████     ',n=1,total=2,elapsed=1,bar_format='{bar}'),
+ kw('no-bar-format','task=batch, rate= 2.00it/s',n=2,total=3,elapsed=1,prefix='batch',bar_format='task={desc}, rate={rate_noinv_fmt}'),
+ kw('unknown-total','3it [00:01,  3.00it/s]',n=3,total=None,elapsed=1)]),
+'tqdm/9':([
+ case('upstream-10k',[9999,''],'10.0K'),
+ case('upstream-100k',[99999,''],'100K'),
+ case('upstream-million',[999999,''],'1.00M'),
+ case('one',[1,''],'1.00'),
+ case('zero',[0,''],'0.00'),
+ case('suffix',[1000,'B'],'1.00KB'),
+ case('below-transition',[9994,''],'9.99K'),
+ case('negative',[-999999,''],'-1.00M')], [
+ case('units-round',[9.999,''],'10.0'),
+ case('tens-round',[99.999,''],'100'),
+ case('thousands-round',[999.999,''],'1.00K'),
+ case('giga-round',[999999999,''],'1.00G'),
+ case('negative-tens',[-99.999,'B'],'-100B'),
+ case('mega-suffix',[1e6,'Hz'],'1.00MHz'),
+ case('plain-tens',[12,''],'12.0'),
+ case('plain-hundreds',[123,''],'123')])}
+prefixes={'tqdm/2':'import re\n_unicode = str\n\n','tqdm/4':'import re\n_unich = chr\nRE_ANSI = re.compile(r"\\x1b\\[[;\\d]*[A-Za-z]")\n\nclass tqdm:\n',
+'black/17':'import io\nimport tokenize\nfrom typing import Tuple\nFileContent = Encoding = NewLine = str\n\n','tqdm/8':'_unich = chr\n\nclass tqdm:\n','tqdm/9':''}
+wrappers={'tqdm/2':'def solve(data, length):\n    return disp_trim(data, length)\n',
+'tqdm/4':'def solve(parameters):\n    return tqdm.format_meter(**parameters)\n',
+'black/17':'def solve(hex_bytes):\n    return decode_bytes(bytes.fromhex(hex_bytes))\n',
+'tqdm/8':'def solve(parameters):\n    return tqdm.format_meter(**parameters)\n',
+'tqdm/9':'def solve(num, suffix):\n    return format_sizeof(num, suffix)\n'}
+instructions={
+'tqdm/2':'Repair ANSI-aware display trimming. solve(data, length) returns the input trimmed to at most length visible columns (length is a nonnegative integer). Preserve complete ANSI controls and avoid duplicate reset codes when already present. If trimming leaves active ANSI codes, append one reset. Plain strings require no ANSI reset. Width follows the supplied helper: East Asian W/F characters have width two, other characters width one. Preserve already-fitting content. Inputs contain complete simple ANSI escape sequences and printable characters.',
+'tqdm/4':'Repair the original progress-meter formatting. solve(parameters) forwards keyword arguments to format_meter. Preserve all existing formatting options. A numeric unit_scale other than 0 or 1 scales the iteration count and explicit rate, and scales the total only if a total exists. An absent, zero or overrun total means display progress statistics without a percentage or ETA. True/1 selects SI formatting. Inputs use valid format strings, nonnegative counts/time, positive numeric scales and finite optional rates.',
+'black/17':'Repair source-byte decoding. solve(hex_bytes) takes the hexadecimal encoding of Python source bytes and returns [decoded_text, encoding, newline]. Detect the encoding using the standard Python source-encoding rules, including BOM and encoding comments; decode with universal newline normalization. Report CRLF only if the first detected source line ends in CRLF, otherwise LF. Empty input and a UTF-8 BOM without source decode to empty text and use LF. Preserve ordinary encoded source behavior.',
+'tqdm/8':'Repair progress-meter formatting while preserving default output and numeric formatting. solve(parameters) forwards keywords to format_meter. A custom bar_format containing {bar} must interpolate its own left and right fragments, including supplied desc and numeric fields, then fill the remaining width with the progress bar. Without ncols the bar itself is ten characters; with ncols leave at least one bar character. Formats without {bar} are interpolated directly. Inputs use valid placeholders and nonnegative counts and elapsed times.',
+'tqdm/9':'Repair SI-prefix number formatting. solve(num, suffix) returns a compact number followed by an SI prefix and the literal suffix. Prefixes are empty, K, M, G, T, P, E, Z, Y with factors of 1000. Choose precision so rounding near an order boundary does not produce an extra digit (e.g. 9999 becomes 10.0K, 999999 becomes 1.00M). Preserve sign, zero, suffix and ordinary magnitudes. Inputs are finite numbers; use the existing Python numeric formatting convention.'}
+scopes={
+'tqdm/2':'Complete disp_trim, disp_len and Unicode width block only; excludes the separate std.format_meter patch component and terminal I/O.',
+'tqdm/4':'Complete static format_meter, format_interval and format_sizeof with verbatim bodies; omits progress-object lifecycle and terminal I/O, which these calls do not use.',
+'black/17':'Complete decode_bytes only; excludes the separate lib2to3_parse empty-source change and file formatting pipeline.',
+'tqdm/8':'Complete static format_meter, format_interval and format_sizeof; omits progress-object lifecycle and terminal I/O.',
+'tqdm/9':'Complete format_sizeof only; excludes the separate __len__ change and progress-object lifecycle.'}
+tasks=[]
+for bid in ids:
+ slug=bid.replace('/','-');prov={}
+ local=DEST/'upstream'/slug;local.mkdir(parents=True)
+ for role in ('buggy','fixed','tests','license','helpers'):
+  if (bid,role) not in sources:continue
+  r=sources[(bid,role)];raw=(CACHE/r['local_path']).read_bytes();info={k:r[k] for k in ('url','commit','path','sha256','bytes')};info['archive_member']=r['local_path']
+  if role in ('buggy','fixed'):
+   text=raw.decode();lines=text.splitlines(keepends=True);tree=ast.parse(text)
+   if bid=='tqdm/2':
+    nodes=[n for n in tree.body if (isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='RE_ANSI' for t in n.targets)) or (isinstance(n,ast.Try) and any(isinstance(x,ast.ImportFrom) and x.module=='unicodedata' for x in n.body)) or (isinstance(n,ast.FunctionDef) and n.name in ('disp_len','disp_trim'))]
+   elif bid in ('tqdm/4','tqdm/8'):
+    cls=next(n for n in tree.body if isinstance(n,ast.ClassDef) and n.name=='tqdm')
+    nodes=[n for n in cls.body if isinstance(n,ast.FunctionDef) and n.name in ('format_sizeof','format_interval','format_meter')]
+   else:nodes=[n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name==('decode_bytes' if bid=='black/17' else 'format_sizeof')]
+   segments=[];parts=[]
+   for n in nodes:
+    start=min([n.lineno]+[d.lineno for d in getattr(n,'decorator_list',[])])
+    body=''.join(lines[start-1:n.end_lineno]);parts.append(body);segments.append({'start_line':start,'end_line':n.end_lineno,'sha256':sha(body.encode())})
+   body='\n\n'.join(parts);relative='upstream/'+slug+'/'+role+'.txt';(DEST/relative).write_text(body)
+   info.update(excerpt=relative,excerpt_sha256=sha(body.encode()),segments=segments)
+  elif role=='license':
+   relative='upstream/'+slug+'/LICENSE.txt';(DEST/relative).write_bytes(raw);info['local_path']=relative
+  prov[role]=info
+ pub,ev=cases[bid]
+ tasks.append({'id':slug,'split':'development','prefix':prefixes[bid],'wrappers':dict(buggy=wrappers[bid],fixed=wrappers[bid]),'instruction':instructions[bid],'public_cases':pub,'evaluator_cases':ev,'provenance':{'kind':'bugsinpy_adapted','benchmark_id':bid,'benchmark_revision':'11c5f1eea954a42132cfd06bf257766a7963e0fd','sources':prov,'scope':scopes[bid],'adaptation':'Verbatim complete function bodies; identical prefix and JSON wrapper for buggy/fixed. Python3 aliases chr/str and standard-library imports replace unused project imports. Static methods retain decorators/indentation in a minimal tqdm class; no behavioral stubs.','case_origin':'Hand-specified development cases including upstream regression examples and disjoint preservation/boundary cases; not the complete upstream test suite.','exposure':'Inspected development component; all tests and reference published, never independent holdout.'}})
+pool={'schema_version':1,'status':'development_only','tasks':tasks}
+(DEST/'pool.json').write_text(json.dumps(pool,indent=2,ensure_ascii=False)+'\n')
+(DEST/'qualification-plan.json').write_text(json.dumps({'kind':'offline_engineering_qualification_not_model_protocol','candidate_order':ids,'pool_sha256':sha((DEST/'pool.json').read_bytes()),'upstream_archive_sha256':sha((DEST/'upstream-sources.zip').read_bytes()),'source_review_sha256':sha((ROOT/'results/spectrum-ablation-preparation-20261030/feasibility-review.json').read_bytes()),'rule':'Run initial and upstream reference twice on each disjoint suite in native sandbox; retain every failure. No threshold or case edits after observing results without a documented engineering amendment.','api_model_calls':0,'fixed_model_cohort':False},indent=2)+'\n')
+print('Prepared',len(tasks),'component bundles; no candidate execution.')

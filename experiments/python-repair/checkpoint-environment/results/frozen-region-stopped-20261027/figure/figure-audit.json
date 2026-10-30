@@ -1,0 +1,36 @@
+{
+  "mode": "terminal_report_plot",
+  "api_calls": 0,
+  "report_identity": {
+    "study": "repair-qwen-frozen-region-trace-development-v1",
+    "status": "incomplete_frozen_region_development_probe",
+    "packet_id": "1f0448a8770025d189cd7e8acbf45fb00f3000fc0d91e00a2232d859ecf1fc6c",
+    "freeze_id": "f86dab464aa6e867036092e528f7f51c1957f78559f30263a5b4585e5da7cc93",
+    "gate": "inconclusive_incomplete_bank"
+  },
+  "plotted_values": [
+    {
+      "arm": "focused",
+      "full_repairs": 3,
+      "received_non_full": 2,
+      "missing": 11,
+      "planned": 16,
+      "known_usd": "0.00249160",
+      "unresolved_commitment_usd": "0.01146880"
+    },
+    {
+      "arm": "focused_trace",
+      "full_repairs": 4,
+      "received_non_full": 2,
+      "missing": 10,
+      "planned": 16,
+      "known_usd": "0.00440924",
+      "unresolved_commitment_usd": "0E-8"
+    }
+  ],
+  "source_sha256": "44bec29640f44aa711774a67d27cf25a14776fa6250f2f8fe964e0865ed70168",
+  "figure_hashes": {
+    "repair-information.svg": "dc9d34a7bfc6746f126176cfa0c1c420f404ea1abdaea28d4ecb95ebe3028f55",
+    "repair-information.png": "62f225bff8ff4ab3d5b4856ca888781b2785adbe10035d68ad804bfd9797b922"
+  }
+}

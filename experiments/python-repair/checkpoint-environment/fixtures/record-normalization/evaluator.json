@@ -1,0 +1,114 @@
+{
+  "cases": [
+    {
+      "id": "cent_precision",
+      "args": [
+        {
+          "amount": "0.29"
+        }
+      ],
+      "expected": {
+        "name": "",
+        "amount_cents": 29,
+        "day": null
+      }
+    },
+    {
+      "id": "signed_value",
+      "args": [
+        {
+          "amount": " +3.10 "
+        }
+      ],
+      "expected": {
+        "name": "",
+        "amount_cents": 310,
+        "day": null
+      }
+    },
+    {
+      "id": "leap_day",
+      "args": [
+        {
+          "date": "29/02/2024"
+        }
+      ],
+      "expected": {
+        "name": "",
+        "amount_cents": null,
+        "day": "2024-02-29"
+      }
+    },
+    {
+      "id": "invalid_calendar",
+      "args": [
+        {
+          "date": "2025-02-29"
+        }
+      ],
+      "raises": "ValueError"
+    },
+    {
+      "id": "excess_precision",
+      "args": [
+        {
+          "amount": "1.234"
+        }
+      ],
+      "raises": "ValueError"
+    },
+    {
+      "id": "scientific_notation",
+      "args": [
+        {
+          "amount": "1e2"
+        }
+      ],
+      "raises": "ValueError"
+    },
+    {
+      "id": "not_a_record",
+      "args": [
+        []
+      ],
+      "raises": "TypeError"
+    },
+    {
+      "id": "boolean_amount",
+      "args": [
+        {
+          "amount": true
+        }
+      ],
+      "raises": "TypeError"
+    },
+    {
+      "id": "none_name_extra_key",
+      "args": [
+        {
+          "name": null,
+          "ignored": "anything"
+        }
+      ],
+      "expected": {
+        "name": "",
+        "amount_cents": null,
+        "day": null
+      }
+    },
+    {
+      "id": "unicode_name",
+      "args": [
+        {
+          "name": " \u00c9va ",
+          "date": " 2024-02-29 "
+        }
+      ],
+      "expected": {
+        "name": "\u00c9va",
+        "amount_cents": null,
+        "day": "2024-02-29"
+      }
+    }
+  ]
+}

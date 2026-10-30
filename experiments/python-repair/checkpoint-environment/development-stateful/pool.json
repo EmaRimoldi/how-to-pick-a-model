@@ -1,0 +1,874 @@
+{
+  "schema_version": 1,
+  "status": "development_only",
+  "tasks": [
+    {
+      "id": "scrapy-026",
+      "split": "development",
+      "prefix": "import json\nimport copy\nimport warnings\nfrom collections.abc import MutableMapping\nfrom importlib import import_module\nfrom types import SimpleNamespace\n# Exact Python 3 semantics for the two six helpers used in these preserved definitions.\nsix = SimpleNamespace(string_types=(str,), iteritems=lambda mapping: iter(mapping.items()))\nclass ScrapyDeprecationWarning(Warning):\n    \"\"\"Warning category for deprecated features, since the default\n    DeprecationWarning is silenced on Python 2.7+\n    \"\"\"\n    pass\n\n\n",
+      "wrappers": {
+        "buggy": "def solve(defaults, base, updates):\n    component = BaseSettings(defaults, priority='default')\n    settings = BaseSettings({'COMPONENT': component})\n    if base is not None:\n        settings.set('COMPONENT_BASE', base, priority='project')\n    for key, value, priority in updates:\n        component.set(key, value, priority)\n    result = settings._getcomposite('COMPONENT')\n    return [[key, result[key], result.getpriority(key)] for key in sorted(result)]\n",
+        "fixed": "def solve(defaults, base, updates):\n    component = BaseSettings(defaults, priority='default')\n    settings = BaseSettings({'COMPONENT': component})\n    if base is not None:\n        settings.set('COMPONENT_BASE', base, priority='project')\n    for key, value, priority in updates:\n        component.set(key, value, priority)\n    result = settings._getcomposite('COMPONENT')\n    return [[key, result[key], result.getpriority(key)] for key in sorted(result)]\n"
+      },
+      "instruction": "Repair the original priority-aware settings implementation. solve(defaults, base, updates) builds component defaults, optionally supplies an explicit base mapping, and applies [key,value,priority] updates. If base is supplied (including an empty dict), start from its entries at default priority and include component entries only when their stored priority is higher than default. Without a base, keep component defaults. Lower-priority updates must not replace higher-priority values; equal-priority updates replace earlier values. Priorities are default=0, command=10, project=20, spider=30, cmdline=40. Return sorted [key,value,priority] rows. Keys are strings, values are JSON scalars, and named priorities are valid. Preserve the interface and unrelated setting behavior.",
+      "public_cases": [
+        {
+          "id": "upstream-default-exclusion",
+          "args": [
+            {
+              "a": 10,
+              "x": 30
+            },
+            {
+              "a": 1,
+              "b": 2
+            },
+            [
+              [
+                "y",
+                4,
+                "project"
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "a",
+              1,
+              0
+            ],
+            [
+              "b",
+              2,
+              0
+            ],
+            [
+              "y",
+              4,
+              20
+            ]
+          ]
+        },
+        {
+          "id": "explicit-empty-base",
+          "args": [
+            {
+              "q": 5
+            },
+            {},
+            [
+              [
+                "z",
+                9,
+                "command"
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "z",
+              9,
+              10
+            ]
+          ]
+        },
+        {
+          "id": "no-base",
+          "args": [
+            {
+              "a": 1,
+              "b": 2
+            },
+            null,
+            [
+              [
+                "a",
+                7,
+                "project"
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "a",
+              7,
+              20
+            ],
+            [
+              "b",
+              2,
+              0
+            ]
+          ]
+        },
+        {
+          "id": "keep-high-priority",
+          "args": [
+            {
+              "a": 10
+            },
+            {
+              "a": 1
+            },
+            [
+              [
+                "a",
+                8,
+                "command"
+              ],
+              [
+                "a",
+                99,
+                "default"
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "a",
+              8,
+              10
+            ]
+          ]
+        },
+        {
+          "id": "defaults-only",
+          "args": [
+            {
+              "keep": 2
+            },
+            null,
+            []
+          ],
+          "expected": [
+            [
+              "keep",
+              2,
+              0
+            ]
+          ]
+        },
+        {
+          "id": "typed-values",
+          "args": [
+            {
+              "drop": 5
+            },
+            {
+              "keep": null
+            },
+            [
+              [
+                "new",
+                false,
+                "spider"
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "keep",
+              null,
+              0
+            ],
+            [
+              "new",
+              false,
+              30
+            ]
+          ]
+        }
+      ],
+      "evaluator_cases": [
+        {
+          "id": "base-only",
+          "args": [
+            {
+              "d": 7,
+              "u": 8
+            },
+            {
+              "d": 0
+            },
+            []
+          ],
+          "expected": [
+            [
+              "d",
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "id": "default-update-excluded",
+          "args": [
+            {
+              "q": 1
+            },
+            {},
+            [
+              [
+                "q",
+                9,
+                "default"
+              ]
+            ]
+          ],
+          "expected": []
+        },
+        {
+          "id": "reject-lower-update",
+          "args": [
+            {
+              "q": 1
+            },
+            {},
+            [
+              [
+                "q",
+                9,
+                "project"
+              ],
+              [
+                "q",
+                4,
+                "command"
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "q",
+              9,
+              20
+            ]
+          ]
+        },
+        {
+          "id": "equal-priority-latest",
+          "args": [
+            {
+              "a": 0
+            },
+            null,
+            [
+              [
+                "a",
+                3,
+                "command"
+              ],
+              [
+                "a",
+                4,
+                "command"
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "a",
+              4,
+              10
+            ]
+          ]
+        },
+        {
+          "id": "explicit-types",
+          "args": [
+            {
+              "z": 8
+            },
+            {
+              "b": 5
+            },
+            [
+              [
+                "b",
+                null,
+                "cmdline"
+              ],
+              [
+                "c",
+                true,
+                "spider"
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "b",
+              null,
+              40
+            ],
+            [
+              "c",
+              true,
+              30
+            ]
+          ]
+        },
+        {
+          "id": "empty-settings",
+          "args": [
+            {},
+            {},
+            []
+          ],
+          "expected": []
+        }
+      ],
+      "provenance": {
+        "kind": "bugsinpy_adapted",
+        "benchmark_id": "scrapy/26",
+        "benchmark_revision": "11c5f1eea954a42132cfd06bf257766a7963e0fd",
+        "sources": {
+          "buggy": {
+            "url": "https://raw.githubusercontent.com/scrapy/scrapy/f249b309ab779b5ab518f54f309d7a4ac6661ec7/scrapy/settings/__init__.py",
+            "commit": "f249b309ab779b5ab518f54f309d7a4ac6661ec7",
+            "path": "scrapy/settings/__init__.py",
+            "sha256": "94e35c065ef8d5653d00ce61719383ef26ae93626234e9758c88491601b1a061",
+            "bytes": 17117,
+            "local_path": "upstream/scrapy-026/buggy-full.txt",
+            "excerpt": "upstream/scrapy-026/buggy.txt",
+            "excerpt_sha256": "716e98a41eb044a913c17367a535fb0e1417adfce550beb4b3e6b366e2826f97",
+            "segments": [
+              {
+                "start_line": 14,
+                "end_line": 20,
+                "sha256": "7625c521299e17f5e8219d33120364e8cdb354d22d5917708a04f18e0bf83c5c"
+              },
+              {
+                "start_line": 23,
+                "end_line": 32,
+                "sha256": "19d20ca40bcb8cd5907229b0c56ef559496c59759b3bb779ddc02522dd5c470f"
+              },
+              {
+                "start_line": 35,
+                "end_line": 65,
+                "sha256": "c192a7fc55cab2a1fc6292c9d228e27c20d444a7292a53a5ff8657ce0941f7cb"
+              },
+              {
+                "start_line": 68,
+                "end_line": 406,
+                "sha256": "f823adcace765da91d3b218849554d20cf169dab40c4e802477bba3aedbedda5"
+              },
+              {
+                "start_line": 409,
+                "end_line": 430,
+                "sha256": "9cdc51583fc480f2e7a84d9f71a9cbb26c4d2b483df7ad2cd677f58625fa3bd1"
+              }
+            ]
+          },
+          "fixed": {
+            "url": "https://raw.githubusercontent.com/scrapy/scrapy/03f1720afb4a437314659a306286f440df664a0b/scrapy/settings/__init__.py",
+            "commit": "03f1720afb4a437314659a306286f440df664a0b",
+            "path": "scrapy/settings/__init__.py",
+            "sha256": "034ca353fe63931c673ebd70d8534fe72fad9439870e9ba6030fd2643363930f",
+            "bytes": 17521,
+            "local_path": "upstream/scrapy-026/fixed-full.txt",
+            "excerpt": "upstream/scrapy-026/fixed.txt",
+            "excerpt_sha256": "cf0d8eabadb5bbae0c0591cbb1f52bdae2a4ac4f2d1d57b4ec29408a5c517920",
+            "segments": [
+              {
+                "start_line": 14,
+                "end_line": 20,
+                "sha256": "7625c521299e17f5e8219d33120364e8cdb354d22d5917708a04f18e0bf83c5c"
+              },
+              {
+                "start_line": 23,
+                "end_line": 32,
+                "sha256": "19d20ca40bcb8cd5907229b0c56ef559496c59759b3bb779ddc02522dd5c470f"
+              },
+              {
+                "start_line": 35,
+                "end_line": 65,
+                "sha256": "c192a7fc55cab2a1fc6292c9d228e27c20d444a7292a53a5ff8657ce0941f7cb"
+              },
+              {
+                "start_line": 68,
+                "end_line": 412,
+                "sha256": "39a06b8d702b1753ee32387560294253cfd99e2f85480530ab75d33a88b50b58"
+              },
+              {
+                "start_line": 415,
+                "end_line": 436,
+                "sha256": "9cdc51583fc480f2e7a84d9f71a9cbb26c4d2b483df7ad2cd677f58625fa3bd1"
+              }
+            ]
+          },
+          "tests": {
+            "url": "https://raw.githubusercontent.com/scrapy/scrapy/03f1720afb4a437314659a306286f440df664a0b/tests/test_settings/__init__.py",
+            "commit": "03f1720afb4a437314659a306286f440df664a0b",
+            "path": "tests/test_settings/__init__.py",
+            "sha256": "e8a4e8a8751d5ac9ee5aab7c623f6a049c9b44f636b224f48a5ab6ab1d96dc2a",
+            "bytes": 17815,
+            "local_path": "upstream/scrapy-026/tests-full.txt"
+          },
+          "default_settings": {
+            "url": "https://raw.githubusercontent.com/scrapy/scrapy/03f1720afb4a437314659a306286f440df664a0b/scrapy/settings/default_settings.py",
+            "commit": "03f1720afb4a437314659a306286f440df664a0b",
+            "path": "scrapy/settings/default_settings.py",
+            "sha256": "1ad74f3d60f559ab85a17d31a8c729295c2a9dfe19f05abbd33f3dc53ba454e6",
+            "bytes": 7706,
+            "local_path": "upstream/scrapy-026/default_settings-full.txt"
+          },
+          "license": {
+            "url": "https://raw.githubusercontent.com/scrapy/scrapy/03f1720afb4a437314659a306286f440df664a0b/LICENSE",
+            "commit": "03f1720afb4a437314659a306286f440df664a0b",
+            "path": "LICENSE",
+            "sha256": "1238a5c6812856a2696ad0530edad2495ec030489c3e63c1f890f9541672ad97",
+            "bytes": 1521,
+            "local_path": "upstream/scrapy-026/license-full.txt"
+          },
+          "exceptions": {
+            "url": "https://raw.githubusercontent.com/scrapy/scrapy/03f1720afb4a437314659a306286f440df664a0b/scrapy/exceptions.py",
+            "commit": "03f1720afb4a437314659a306286f440df664a0b",
+            "path": "scrapy/exceptions.py",
+            "sha256": "962b158e8436e28c770a4ebe2a8c12ee1c52283bc21ddc13c54f69c35457ebb1",
+            "bytes": 1396,
+            "local_path": "upstream/scrapy-026/exceptions-full.txt"
+          }
+        },
+        "scope": "Complete priority/settings classes, explicit JSON-compatible wrapper, no crawler lifecycle or dynamic configuration import.",
+        "exposure": "Already inspected development source; the four previously published engineering examples remain public."
+      }
+    },
+    {
+      "id": "scrapy-040",
+      "split": "development",
+      "prefix": "import warnings\nimport weakref\nfrom time import time\nfrom collections import defaultdict\nfrom types import SimpleNamespace\n# Python 3 equivalents of the exact six helpers referenced by the preserved definitions.\nsix = SimpleNamespace(string_types=(str,), text_type=str,\n    iteritems=lambda mapping: iter(mapping.items()), iterkeys=lambda mapping: iter(mapping.keys()))\nlive_refs = defaultdict(weakref.WeakKeyDictionary)\n\n\nclass object_ref(object):\n    \"\"\"Inherit from this class (instead of object) to a keep a record of live\n    instances\"\"\"\n\n    __slots__ = ()\n\n    def __new__(cls, *args, **kwargs):\n        obj = object.__new__(cls)\n        live_refs[cls][obj] = time()\n        return obj\n\n\nclass BaseItem(object_ref):\n    \"\"\"Base class for all scraped items.\"\"\"\n    pass\n\n\nclass ScrapyDeprecationWarning(Warning):\n    \"\"\"Warning category for deprecated features, since the default\n    DeprecationWarning is silenced on Python 2.7+\n    \"\"\"\n    pass\n\n\ndef is_listlike(x):\n    \"\"\"\n    >>> is_listlike(\"foo\")\n    False\n    >>> is_listlike(5)\n    False\n    >>> is_listlike(b\"foo\")\n    False\n    >>> is_listlike([b\"foo\"])\n    True\n    >>> is_listlike((b\"foo\",))\n    True\n    >>> is_listlike({})\n    True\n    >>> is_listlike(set())\n    True\n    >>> is_listlike((x for x in range(3)))\n    True\n    >>> is_listlike(six.moves.xrange(5))\n    True\n    \"\"\"\n    return hasattr(x, \"__iter__\") and not isinstance(x, (six.text_type, bytes))\n\n\ndef to_unicode(text, encoding=None, errors='strict'):\n    \"\"\"Return the unicode representation of a bytes object `text`. If `text`\n    is already an unicode object, return it as-is.\"\"\"\n    if isinstance(text, six.text_type):\n        return text\n    if not isinstance(text, (bytes, six.text_type)):\n        raise TypeError('to_unicode must receive a bytes, str or unicode '\n                        'object, got %s' % type(text).__name__)\n    if encoding is None:\n        encoding = 'utf-8'\n    return text.decode(encoding, errors)\n\n\ndef to_bytes(text, encoding=None, errors='strict'):\n    \"\"\"Return the binary representation of `text`. If `text`\n    is already a bytes object, return it as-is.\"\"\"\n    if isinstance(text, bytes):\n        return text\n    if not isinstance(text, six.string_types):\n        raise TypeError('to_bytes must receive a unicode, str or bytes '\n                        'object, got %s' % type(text).__name__)\n    if encoding is None:\n        encoding = 'utf-8'\n    return text.encode(encoding, errors)\n\n\n",
+      "wrappers": {
+        "buggy": "def _snapshot(value):\n    if isinstance(value, bytes):\n        return {'bytes_hex': value.hex()}\n    if isinstance(value, dict):\n        return {'dict': [[_snapshot(key), _snapshot(value[key])] for key in sorted(value)]}\n    if isinstance(value, list):\n        return [_snapshot(v) for v in value]\n    return value\n\n\ndef solve(item, binary=False, fields=None, include_empty=False):\n    exporter = PythonItemExporter(binary=binary, encoding='utf-8',\n        fields_to_export=fields, export_empty_fields=include_empty)\n    return _snapshot(exporter.export_item(item))\n",
+        "fixed": "def _snapshot(value):\n    if isinstance(value, bytes):\n        return {'bytes_hex': value.hex()}\n    if isinstance(value, dict):\n        return {'dict': [[_snapshot(key), _snapshot(value[key])] for key in sorted(value)]}\n    if isinstance(value, list):\n        return [_snapshot(v) for v in value]\n    return value\n\n\ndef solve(item, binary=False, fields=None, include_empty=False):\n    exporter = PythonItemExporter(binary=binary, encoding='utf-8',\n        fields_to_export=fields, export_empty_fields=include_empty)\n    return _snapshot(exporter.export_item(item))\n"
+      },
+      "instruction": "Repair the original recursive Python item exporter. solve(item,binary=False,fields=None,include_empty=False) exports a JSON-compatible mapping with string keys, nested mappings/lists, strings, finite numbers, booleans and null. Preserve numbers, booleans and null recursively. With binary=False, preserve strings. With binary=True, encode strings and mapping keys as UTF-8 bytes. Field selection and include_empty retain the original exporter behavior. The supplied wrapper converts each output mapping to {\"dict\": [[key,value],...]} with sorted keys and bytes to {\"bytes_hex\": lowercase_hex}; list elements stay ordered. Fix exporter logic without changing this output encoding or interface. Scrapy Item instances, custom serializers, input byte objects and non-UTF-8 encodings are outside this restricted task.",
+      "public_cases": [
+        {
+          "id": "numbers",
+          "args": [
+            {
+              "count": 2,
+              "ratio": 1.5
+            }
+          ],
+          "expected": {
+            "dict": [
+              [
+                "count",
+                2
+              ],
+              [
+                "ratio",
+                1.5
+              ]
+            ]
+          }
+        },
+        {
+          "id": "binary-mixed",
+          "args": [
+            {
+              "name": "é",
+              "value": 3
+            },
+            true
+          ],
+          "expected": {
+            "dict": [
+              [
+                {
+                  "bytes_hex": "6e616d65"
+                },
+                {
+                  "bytes_hex": "c3a9"
+                }
+              ],
+              [
+                {
+                  "bytes_hex": "76616c7565"
+                },
+                3
+              ]
+            ]
+          }
+        },
+        {
+          "id": "nested-values",
+          "args": [
+            {
+              "nested": {
+                "ok": true,
+                "nothing": null
+              },
+              "seq": [
+                0,
+                "hi",
+                false
+              ]
+            }
+          ],
+          "expected": {
+            "dict": [
+              [
+                "nested",
+                {
+                  "dict": [
+                    [
+                      "nothing",
+                      null
+                    ],
+                    [
+                      "ok",
+                      true
+                    ]
+                  ]
+                }
+              ],
+              [
+                "seq",
+                [
+                  0,
+                  "hi",
+                  false
+                ]
+              ]
+            ]
+          }
+        },
+        {
+          "id": "text-control",
+          "args": [
+            {
+              "title": "hello"
+            }
+          ],
+          "expected": {
+            "dict": [
+              [
+                "title",
+                "hello"
+              ]
+            ]
+          }
+        },
+        {
+          "id": "binary-control",
+          "args": [
+            {
+              "title": "café"
+            },
+            true
+          ],
+          "expected": {
+            "dict": [
+              [
+                {
+                  "bytes_hex": "7469746c65"
+                },
+                {
+                  "bytes_hex": "636166c3a9"
+                }
+              ]
+            ]
+          }
+        },
+        {
+          "id": "missing-selected-field",
+          "args": [
+            {
+              "title": "T"
+            },
+            false,
+            [
+              "missing",
+              "title"
+            ],
+            true
+          ],
+          "expected": {
+            "dict": [
+              [
+                "missing",
+                null
+              ],
+              [
+                "title",
+                "T"
+              ]
+            ]
+          }
+        }
+      ],
+      "evaluator_cases": [
+        {
+          "id": "other-numbers",
+          "args": [
+            {
+              "count": -8,
+              "ratio": 2.25
+            }
+          ],
+          "expected": {
+            "dict": [
+              [
+                "count",
+                -8
+              ],
+              [
+                "ratio",
+                2.25
+              ]
+            ]
+          }
+        },
+        {
+          "id": "binary-flags",
+          "args": [
+            {
+              "text": "μ",
+              "flags": [
+                true,
+                false,
+                null
+              ]
+            },
+            true
+          ],
+          "expected": {
+            "dict": [
+              [
+                {
+                  "bytes_hex": "666c616773"
+                },
+                [
+                  true,
+                  false,
+                  null
+                ]
+              ],
+              [
+                {
+                  "bytes_hex": "74657874"
+                },
+                {
+                  "bytes_hex": "cebc"
+                }
+              ]
+            ]
+          }
+        },
+        {
+          "id": "nested-list",
+          "args": [
+            {
+              "outer": [
+                {
+                  "n": 7
+                },
+                []
+              ]
+            }
+          ],
+          "expected": {
+            "dict": [
+              [
+                "outer",
+                [
+                  {
+                    "dict": [
+                      [
+                        "n",
+                        7
+                      ]
+                    ]
+                  },
+                  []
+                ]
+              ]
+            ]
+          }
+        },
+        {
+          "id": "field-filter",
+          "args": [
+            {
+              "ignored": null,
+              "title": "keep"
+            },
+            false,
+            [
+              "title"
+            ]
+          ],
+          "expected": {
+            "dict": [
+              [
+                "title",
+                "keep"
+              ]
+            ]
+          }
+        },
+        {
+          "id": "empty-item",
+          "args": [
+            {},
+            true
+          ],
+          "expected": {
+            "dict": []
+          }
+        },
+        {
+          "id": "binary-nesting",
+          "args": [
+            {
+              "blob": {
+                "label": "雪",
+                "count": 4
+              }
+            },
+            true
+          ],
+          "expected": {
+            "dict": [
+              [
+                {
+                  "bytes_hex": "626c6f62"
+                },
+                {
+                  "dict": [
+                    [
+                      {
+                        "bytes_hex": "636f756e74"
+                      },
+                      4
+                    ],
+                    [
+                      {
+                        "bytes_hex": "6c6162656c"
+                      },
+                      {
+                        "bytes_hex": "e99baa"
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        }
+      ],
+      "provenance": {
+        "kind": "bugsinpy_adapted",
+        "benchmark_id": "scrapy/40",
+        "benchmark_revision": "11c5f1eea954a42132cfd06bf257766a7963e0fd",
+        "sources": {
+          "buggy": {
+            "url": "https://raw.githubusercontent.com/scrapy/scrapy/7d24df37380cd5a5b7394cd2534e240bd2eff0ca/scrapy/exporters.py",
+            "commit": "7d24df37380cd5a5b7394cd2534e240bd2eff0ca",
+            "path": "scrapy/exporters.py",
+            "sha256": "dd65fc1735add62b181f8f4f2a920b7bd5cda129b455e8ff51cb85dd3ff3b190",
+            "bytes": 10402,
+            "local_path": "upstream/scrapy-040/buggy-full.txt",
+            "excerpt": "upstream/scrapy-040/buggy.txt",
+            "excerpt_sha256": "1aa02a13f4919ae8e8caef5ac802aa0d3ae3abceb52c0597dee9283cf2976519",
+            "segments": [
+              {
+                "start_line": 26,
+                "end_line": 79,
+                "sha256": "49e2b8baba3f56955c7e0da3cc355e55f4bf45eab75eb42273ab00d55d31a18a"
+              },
+              {
+                "start_line": 251,
+                "end_line": 290,
+                "sha256": "6c3743e0e28742a46d2aea6e5fe95230ad77399ec356dc2636926ebf6ab39589"
+              }
+            ]
+          },
+          "fixed": {
+            "url": "https://raw.githubusercontent.com/scrapy/scrapy/f1d971a5c0cdfe0f4fe5619146cd6818324fc98e/scrapy/exporters.py",
+            "commit": "f1d971a5c0cdfe0f4fe5619146cd6818324fc98e",
+            "path": "scrapy/exporters.py",
+            "sha256": "c43277ad31bf45c2699f9592876eb5ae5cebb27adc37efc42da42d03c79a7e9b",
+            "bytes": 10443,
+            "local_path": "upstream/scrapy-040/fixed-full.txt",
+            "excerpt": "upstream/scrapy-040/fixed.txt",
+            "excerpt_sha256": "7b2cd8aa0af622147eb4b0ecc38c0908f914e78c87b1d452e61cfd7be299767f",
+            "segments": [
+              {
+                "start_line": 26,
+                "end_line": 79,
+                "sha256": "49e2b8baba3f56955c7e0da3cc355e55f4bf45eab75eb42273ab00d55d31a18a"
+              },
+              {
+                "start_line": 251,
+                "end_line": 290,
+                "sha256": "03738b73e9a9e0c82d68daf7bfe01fd54633658dc8f9ec5392a67d9ef2248a0b"
+              }
+            ]
+          },
+          "tests": {
+            "url": "https://raw.githubusercontent.com/scrapy/scrapy/f1d971a5c0cdfe0f4fe5619146cd6818324fc98e/tests/test_exporters.py",
+            "commit": "f1d971a5c0cdfe0f4fe5619146cd6818324fc98e",
+            "path": "tests/test_exporters.py",
+            "sha256": "3fffec3ef21d33f62225de5512103d1e65de373f70adbb4fa85ccd4f6b3276bd",
+            "bytes": 15792,
+            "local_path": "upstream/scrapy-040/tests-full.txt"
+          },
+          "python": {
+            "url": "https://raw.githubusercontent.com/scrapy/scrapy/7d24df37380cd5a5b7394cd2534e240bd2eff0ca/scrapy/utils/python.py",
+            "commit": "7d24df37380cd5a5b7394cd2534e240bd2eff0ca",
+            "path": "scrapy/utils/python.py",
+            "sha256": "a61c750683070fefa986c4f2b5d75a7b84b5f965ce4950b387a97f4393654218",
+            "bytes": 10391,
+            "local_path": "upstream/scrapy-040/python-full.txt"
+          },
+          "item": {
+            "url": "https://raw.githubusercontent.com/scrapy/scrapy/7d24df37380cd5a5b7394cd2534e240bd2eff0ca/scrapy/item.py",
+            "commit": "7d24df37380cd5a5b7394cd2534e240bd2eff0ca",
+            "path": "scrapy/item.py",
+            "sha256": "95f486b43aa5361fba1ee2151ca479ce569bff6ae5d15a13ab389307612c7ed2",
+            "bytes": 2478,
+            "local_path": "upstream/scrapy-040/item-full.txt"
+          },
+          "serialize": {
+            "url": "https://raw.githubusercontent.com/scrapy/scrapy/7d24df37380cd5a5b7394cd2534e240bd2eff0ca/scrapy/utils/serialize.py",
+            "commit": "7d24df37380cd5a5b7394cd2534e240bd2eff0ca",
+            "path": "scrapy/utils/serialize.py",
+            "sha256": "38b04b97ea95cd23184a6ea39665a5a8a2389a0df4453368a3df7cc1a058a7e6",
+            "bytes": 1141,
+            "local_path": "upstream/scrapy-040/serialize-full.txt"
+          },
+          "license": {
+            "url": "https://raw.githubusercontent.com/scrapy/scrapy/f1d971a5c0cdfe0f4fe5619146cd6818324fc98e/LICENSE",
+            "commit": "f1d971a5c0cdfe0f4fe5619146cd6818324fc98e",
+            "path": "LICENSE",
+            "sha256": "1238a5c6812856a2696ad0530edad2495ec030489c3e63c1f890f9541672ad97",
+            "bytes": 1521,
+            "local_path": "upstream/scrapy-040/license-full.txt"
+          },
+          "trackref": {
+            "url": "https://raw.githubusercontent.com/scrapy/scrapy/7d24df37380cd5a5b7394cd2534e240bd2eff0ca/scrapy/utils/trackref.py",
+            "commit": "7d24df37380cd5a5b7394cd2534e240bd2eff0ca",
+            "path": "scrapy/utils/trackref.py",
+            "sha256": "ae0f362226fd7e48ea91f985744e74ed557170e05fc9c1bf15967d1e5772cf4f",
+            "bytes": 2081,
+            "local_path": "upstream/scrapy-040/trackref-full.txt"
+          },
+          "exceptions": {
+            "url": "https://raw.githubusercontent.com/scrapy/scrapy/7d24df37380cd5a5b7394cd2534e240bd2eff0ca/scrapy/exceptions.py",
+            "commit": "7d24df37380cd5a5b7394cd2534e240bd2eff0ca",
+            "path": "scrapy/exceptions.py",
+            "sha256": "962b158e8436e28c770a4ebe2a8c12ee1c52283bc21ddc13c54f69c35457ebb1",
+            "bytes": 1396,
+            "local_path": "upstream/scrapy-040/exceptions-full.txt"
+          }
+        },
+        "scope": "Original BaseItemExporter/PythonItemExporter classes and original conversion helpers. Complete original BaseItem/object_ref definitions retained, but no item instances or reference tracking exercised.",
+        "exposure": "Previously header/patch-exposed development ID, now adapted from pinned full source."
+      }
+    }
+  ]
+}

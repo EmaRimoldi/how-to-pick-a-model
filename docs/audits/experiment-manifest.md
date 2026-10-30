@@ -5,7 +5,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 
 ## Summary
 
-- Bundles indexed: `7`
+- Bundles indexed: `8`
 - Missing bundle paths: `0`
 - Missing README files: `0`
 
@@ -15,13 +15,14 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | --- | --- |
 | `inspect-readme` | 3 |
 | `paper-supporting-evidence` | 4 |
+| `partial-evidence` | 1 |
 
 ## Evidence Tiers
 
 | Tier | Bundles |
 | --- | --- |
 | `Tier 1: Main Evidence` | 3 |
-| `Tier 2: Supporting Or Diagnostic Evidence` | 4 |
+| `Tier 2: Supporting Or Diagnostic Evidence` | 5 |
 
 ## Bundle Assets
 
@@ -34,6 +35,7 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 | `experiments/humaneval-plus/context-value/` | discovery + producer-transfer evaluation | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 56 | 6 | 9 | 40 | 3 | 0 | 0 | 0 | 5 |
 | `experiments/mbpp-plus/context-value-transfer/` | collection finished; censored descriptive bank | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 72 | 6 | 2 | 59 | 4 | 3 | 0 | 0 | 6 |
 | `experiments/bigcodebench/feedback-only-routing/` | complete; primary gate not passed | Tier 2: Supporting Or Diagnostic Evidence | `inspect-readme` | 42 | 2 | 5 | 32 | 4 | 0 | 0 | 0 | 2 |
+| `experiments/python-repair/checkpoint-environment/` | recovery pilot incomplete; 4B/12B/27B contract banks complete, gates failed | Tier 2: Supporting Or Diagnostic Evidence | `partial-evidence` | 504 | 0 | 182 | 277 | 21 | 19 | 0 | 0 | 44 |
 
 ## Key Files
 
@@ -138,3 +140,21 @@ This manifest audits the experiment bundles listed in `experiments/README.md` an
 - `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/source/src__vao__decisions__pilot.py.txt`
 - `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/source/src__vao__decisions__verification.py.txt`
 - `experiments/bigcodebench/feedback-only-routing/results/fixed-policies-20261022/source/src__vao__decisions__verifier_worker.py.txt`
+
+### `experiments/python-repair/checkpoint-environment/`
+
+- Title: Python repair checkpoint environment
+- Evidence: Prior recovery evidence retained; complete 36-call banks at all three sizes fail calibration. 27B improves partial test scores but solves only two distinct bugs across formats; FP8/BF16 confounded. No trained selector or held-out claim
+- Asset directories: `results`
+- `experiments/python-repair/checkpoint-environment/README.md`
+- `experiments/python-repair/checkpoint-environment/development-broader/coverage/summary.json`
+- `experiments/python-repair/checkpoint-environment/results/acquisition-preparation-20261027/summary.json`
+- `experiments/python-repair/checkpoint-environment/results/capability-comparison-20261026/analysis.json`
+- `experiments/python-repair/checkpoint-environment/results/contract-deepinfra-20261026/analysis.json`
+- `experiments/python-repair/checkpoint-environment/results/contract-diagnostic-20261026/analysis.json`
+- `experiments/python-repair/checkpoint-environment/results/contract-gemma12b-20261026/analysis.json`
+- `experiments/python-repair/checkpoint-environment/results/contract-gemma27b-20261026/analysis.json`
+- `experiments/python-repair/checkpoint-environment/results/contrastive-calibration-20261026/analysis.json`
+- `experiments/python-repair/checkpoint-environment/results/contrastive-calibration-20261026/figure/summary.png`
+- `experiments/python-repair/checkpoint-environment/results/coverage-prefix-20261027/analysis.json`
+- `experiments/python-repair/checkpoint-environment/results/diagnostic-audit-20261026/analysis.json`

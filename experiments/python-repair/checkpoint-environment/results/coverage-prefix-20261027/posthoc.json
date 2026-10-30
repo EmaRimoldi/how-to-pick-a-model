@@ -1,0 +1,92 @@
+{
+  "kind": "posthoc_structural_audit_not_a_new_model_outcome",
+  "api_calls": 0,
+  "source_run": "runs/coverage-prefix-model-20261027",
+  "records": [
+    {
+      "task": "development/bugsinpy-adapted/luigi-010",
+      "attempt_id": "2df47de7fd37126d8183dbf6317e19c3085e102a8d6f02f6219f9a4e5fd342c7",
+      "full_pass": true,
+      "artifact_valid": true,
+      "public_gains": 2,
+      "public_losses": 0,
+      "source_passed": 4,
+      "candidate_passed": 6,
+      "candidate_files_sha256": "4bb6ac4191a931c7bbe577f350544bb822eaf853ae346e9e077b7623b961dc0e",
+      "syntax_errors": []
+    },
+    {
+      "task": "development/bugsinpy-adapted/scrapy-002",
+      "attempt_id": "57ee475ee050c896362695305406368730a5c96627791ee5e98d111fb8a70dbc",
+      "full_pass": true,
+      "artifact_valid": true,
+      "public_gains": 2,
+      "public_losses": 0,
+      "source_passed": 4,
+      "candidate_passed": 6,
+      "candidate_files_sha256": "3ec6754c412f0ef8c4e904de735b53f5be893f3df33eb649189f512f097acbac",
+      "syntax_errors": []
+    },
+    {
+      "task": "development/bugsinpy-adapted/scrapy-036",
+      "attempt_id": "5cf18555378394e3b0d235b81da998d0200823ec34f67d825abf823c10445b83",
+      "full_pass": true,
+      "artifact_valid": true,
+      "public_gains": 3,
+      "public_losses": 0,
+      "source_passed": 3,
+      "candidate_passed": 6,
+      "candidate_files_sha256": "2af670ec0a4e76e81c56a8ae089e2264711a9d5934cc0d1e5c8baf4b80179c1f",
+      "syntax_errors": []
+    },
+    {
+      "task": "development/bugsinpy-adapted/thefuck-022",
+      "attempt_id": "bb5d0a83ab2b39ab57908158e4f628a7605176826eb75655924fa30bfb6fd243",
+      "full_pass": false,
+      "artifact_valid": true,
+      "public_gains": 2,
+      "public_losses": 3,
+      "source_passed": 4,
+      "candidate_passed": 3,
+      "candidate_files_sha256": "a5e5e613f3f8a8128e853e2a0450e598dda6d744f0c5a0c40580d011f44d659c",
+      "syntax_errors": []
+    },
+    {
+      "task": "development/bugsinpy-adapted/thefuck-029",
+      "attempt_id": "c64bdc529dd9e82238cc732ced4762a4199ba2ced3019c7e82b5a7223c6c37a5",
+      "full_pass": true,
+      "artifact_valid": true,
+      "public_gains": 4,
+      "public_losses": 0,
+      "source_passed": 2,
+      "candidate_passed": 6,
+      "candidate_files_sha256": "56de25c4d9e87b8f93c504623e2b63050d542b7409246d0928fd0319fe66a464",
+      "syntax_errors": []
+    },
+    {
+      "task": "development/bugsinpy-adapted/tornado-005",
+      "attempt_id": "c6922ee6f358f7cf976794e129a3b26c0afeba39b8f3027dd304ee60066e7b93",
+      "full_pass": false,
+      "artifact_valid": true,
+      "public_gains": 0,
+      "public_losses": 4,
+      "source_passed": 4,
+      "candidate_passed": 0,
+      "candidate_files_sha256": "04792e2c48a0788398cb9312dfb901cd2e2da721adf767bb6e2616eaddcfe8db",
+      "syntax_errors": [
+        {
+          "file": "solution.py",
+          "message": "unmatched '}'",
+          "line": 25,
+          "offset": 1,
+          "line_text": "}"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Public transitions are descriptive and do not identify unique causes.",
+    "No output was edited, repaired, filtered or rescored; original full repair counts remain4/6.",
+    "The failure-coverage screen stays failed and stage2 stays disabled."
+  ]
+}

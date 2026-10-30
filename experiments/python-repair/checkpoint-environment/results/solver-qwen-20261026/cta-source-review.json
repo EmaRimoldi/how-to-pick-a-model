@@ -1,0 +1,42 @@
+{
+  "utc": "2026-10-26T15:51:54.587628+00:00",
+  "paper": "https://arxiv.org/html/2602.16699v3",
+  "revision": "v3, 2026-05-15",
+  "prior_review": "literature-followup.json",
+  "findings": "The latest revision retains perfect attribute-revealing tests and discounted rewards. Appendices A/C discuss unreliable priors; Appendix D compares against test-first and prior-aware code-first, without significant superiority to every baseline in every cost regime.",
+  "official_code": "https://github.com/NSF-Simons-CosmicAI-Institute/CalibrateThenAct/tree/33164d5fe68d666381598f17fb01f1a7410489f4",
+  "author_link_verification": "https://wenwen-d.github.io/index.html",
+  "source_manifest": "cta-source-manifest.json",
+  "verified_code_facts": [
+    {
+      "path": "env_explorer/src/conversation/conversation_manager_code.py",
+      "lines": [
+        81,
+        107
+      ],
+      "fact": "unit_test_run returns true formatting values directly from csv_info.meta_info; it does not infer them by running a fallible diagnostic."
+    },
+    {
+      "path": "env_explorer/src/conversation/conversation_manager_code.py",
+      "lines": [
+        129,
+        134
+      ],
+      "fact": "compute_discounted_reward multiplies correctness by supplied unit-test and code-attempt discount factors."
+    },
+    {
+      "path": "env_explorer/src/conversation/conversation_manager_code.py",
+      "lines": [
+        194,
+        218
+      ],
+      "fact": "Learned-prior mode calls predict_one(filename); oracle mode is separate."
+    }
+  ],
+  "our_inference": "A future comparator should use pre-acquisition estimates learned on development data and pay for their computation. It must not import true bug causes, reference patches, or future diagnostic values. No claim that imperfections or cost-awareness alone establish novelty.",
+  "external_code_executed": false,
+  "active_outcomes_read": false,
+  "provider_calls": 0,
+  "source_edits": false,
+  "integrate_after_terminal": true
+}

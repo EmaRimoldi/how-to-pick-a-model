@@ -69,3 +69,139 @@ maps in `docs/audits/` for retrieval. Retired sources remain in the [provenance 
 
 CIFAR-10 and its dedicated runtime are archived; historical manuscript figures
 point to their [provenance](history-merge.md).
+
+## Current Python repair calibration
+
+The user-requested [goal amendment](../experiments/python-repair/checkpoint-environment/GOAL-AMENDMENT-20261026.md)
+prioritizes the value of acquiring public execution evidence before another
+repair. The [offline diagnostic adapter](../experiments/python-repair/checkpoint-environment/DIAGNOSTIC-PREPARATION.md)
+and [case audit / replay](../experiments/python-repair/checkpoint-environment/results/diagnostic-audit-20261026/README.md)
+are implemented; no diagnostic benefit or selector advantage has been demonstrated.
+The [prospective information study](../experiments/python-repair/checkpoint-environment/INFORMATION-PROTOCOL.md)
+adds a 96-request frozen design and terminal-only report, with no selector fitting.
+Its [first-request interruption](../experiments/python-repair/checkpoint-environment/results/information-interrupted-20261026/README.md)
+retains zero responses, one uncertain reservation and 95 never-admitted requests.
+The [only successor's terminal bank](../experiments/python-repair/checkpoint-environment/results/information-stopped-20261026/README.md)
+retains 65 responses and 31 missing outcomes after another HTTP 429. No complete
+repair was observed; the original screen is inconclusive. The report, 130 saved
+evaluation records and public diagnostic projections reproduce offline.
+`scripts/audit_repair_stagnation.py` reproduces the separate post hoc edit audit:
+25 exact copies, 25 further entrypoint-only syntax changes, 15 other edits.
+No collector is active. The [next design](../experiments/python-repair/checkpoint-environment/STAGNATION-CONTROL-DESIGN.md)
+tests interface cues without adding bug facts; it enables no live calls.
+The [implemented v1 interface protocol](../experiments/python-repair/checkpoint-environment/INTERFACE-PROTOCOL.md)
+now fixes 128 fresh requests, a separate allocation and terminal-only factorial
+analysis. `prepare_repair_interface_study.py` verifies the comment transformation
+and exact projections offline; `report_repair_interface_study.py` retains all
+missing cells and the declared primary contrast. The shared collector requires
+a separately reviewed clean freeze and a new single-use study claim.
+Its [terminal bank](../experiments/python-repair/checkpoint-environment/results/interface-stopped-20261026/README.md)
+contains 44 usable responses, eleven per arm, with no complete repair. HTTP 429
+leaves 84 unknown cells; the frozen screen is inconclusive. Independent replay
+reproduces 88 saved evaluations. The interface collector is closed and no
+successor is enabled. `plot_repair_interface.py` renders all four conditions from a terminal
+report, including missingness and syntax-edit counts.
+
+The [coding-solver compatibility control](../experiments/python-repair/checkpoint-environment/SOLVER-PROTOCOL.md)
+uses `prepare_repair_solver_study.py` and `report_repair_solver_study.py` with the
+same one-use collector and independent archived replay. It fixes 32 new draws
+on eight already exposed failures, keeps original public messages, and checks
+repeated full repairs with Qwen3-Coder-Next before any separate policy study.
+Its [complete bank](../experiments/python-repair/checkpoint-environment/results/solver-qwen-20261026/README.md)
+has ten full repairs in 32 attempts and meets the repeated-success screen on
+three bugs; 62 saved evaluation records reproduce independently. All collectors
+are closed. `plot_repair_solver.py` renders the complete planned grid;
+`audit_repair_trigger_coverage.py` independently checks the twelve closed source
+candidates and their conditional acceptance ceiling. The next stage is a new
+intervention calibration. No causal cross-model comparison, acquisition advantage
+or selector training is established.
+
+The [checkpoint environment](../experiments/python-repair/checkpoint-environment/README.md)
+retains the incomplete recovery pilot and both output-contract diagnostics.
+The [complete DeepInfra diagnostic](../experiments/python-repair/checkpoint-environment/results/contract-deepinfra-20261026/README.md)
+contains all 36 calls, frozen requests, inert source evidence and independent
+sandbox reproduction. No format met the calibration gate; no repair selector
+has been trained. These twelve bugs are development-exposed.
+
+The [complete 12B capability diagnostic](../experiments/python-repair/checkpoint-environment/results/contract-gemma12b-20261026/README.md)
+also fails the unchanged gate despite more usable outputs. All36 calls and72
+verifier records are preserved and independently reproduced; no recovery or
+selector gain is inferred from this initial-repair study.
+
+The [27B capability control](../experiments/python-repair/checkpoint-environment/results/contract-gemma27b-20261026/README.md)
+is complete too: 36 responses, three successes on two distinct bugs, unchanged
+gate failed. Independent execution reproduced all 72 saved verification records.
+The [post hoc capability comparison](../experiments/python-repair/checkpoint-environment/results/capability-comparison-20261026/README.md)
+separates syntax validity, partial test progress and full repairs; it preserves
+FP8/BF16 confounding, regressions and public-test false positives. No repair
+selector or scaling law is demonstrated.
+
+
+The subsequent [matched Qwen public-trace study](../experiments/python-repair/checkpoint-environment/results/information-qwen-stopped-20261026/README.md)
+closed on a connection timeout with 18/64 responses: nine per arm, three trace
+and two focused full repairs. Forty-six cells remain unknown; primary bounds
+are −68.75 to +75.00 percentage points, mean/bootstrap null and gate inconclusive.
+All 36 saved evaluations and public diagnostic projections reproduce. This is
+neither evidence of benefit nor a null effect. The operative selector goal is
+active, with no selector fit, retry or continuation of this bank.
+
+
+The [independent extension trace calibration](../experiments/python-repair/checkpoint-environment/results/information-extension-stopped-20261026/README.md)
+closed after two response-body connection resets: nine received responses,
+two uncertain requests and thirteen never admitted, retaining all 24 planned
+cells. Four focused versus two trace-assisted repairs cannot establish an effect;
+primary bounds are −75 to +50 points, mean/bootstrap null and gate inconclusive.
+All 18 saved evaluations, diagnostic projections and the generated report
+reproduce independently. `plot_repair_extension_information.py` renders the
+checked terminal figure. The development adapters remain exposed; all collectors
+are closed, collection reliability and information value remain unresolved,
+and the overall acquisition-selector goal stays active.
+
+
+`src/vao/repair/streaming.py` adds an opt-in SSE adapter; the
+[synthetic compatibility protocol](../experiments/python-repair/checkpoint-environment/SSE-COMPATIBILITY-PROTOCOL.md)
+and `scripts/repair_transport_probe.py` separately freeze, run once and audit
+three bounded engineering requests. Historical studies are untouched. Fault
+injection and tamper tests verify uncertainty accounting, not live reliability
+or a diagnostic-acquisition gain.
+
+The [SSE compatibility probe's terminal bundle](../experiments/python-repair/checkpoint-environment/results/sse-compatibility-20261026/README.md)
+retains two completed receipts and one uncertain response stopped by the client's
+1 MiB wire cap. Frozen-source audit reproduces exactly. A realistic 4096-frame
+offline regression supports an explicit 8 MiB cap for future protocols; the old
+probe remains inconclusive and closed. This is a client-sizing finding, not
+repair or acquisition efficacy evidence.
+
+The [separate wire-envelope protocol](../experiments/python-repair/checkpoint-environment/SSE-WIRE-ENVELOPE-PROTOCOL.md)
+uses the same audited engineering CLI with a distinct study identity, one new
+synthetic enumeration request, explicit 8 MiB cap and independent $0.01 allocation.
+The old packet/audit remains exactly reproducible. Its new engineering gate
+requires a complete receipt beyond 1 MiB at the 4096-token output limit.
+
+The [terminal wire-envelope validation](../experiments/python-repair/checkpoint-environment/results/sse-wire-envelope-20261026/README.md)
+met all prospective engineering conditions: a complete receipt beyond 1 MiB
+at 4096 output tokens with a length finish, using the explicit 8 MiB cap.
+Frozen-source audit reproduces exactly; no new uncertainty. This permits
+scientific-calibration preparation, not a reliability or acquisition-benefit claim.
+
+The [distinct streaming information calibration](../experiments/python-repair/checkpoint-environment/STREAM-INFORMATION-PROTOCOL.md)
+uses `src/vao/repair/stream_information_study.py` for all twelve original source
+records, eight eligible failures and 64 fresh matched requests. It pins thirteen
+historical archive hashes and rejects even planned-but-unsent request reuse.
+`stream_information_audit.py` checks terminal SSE evidence and retains reported
+costs above reservations. The usual information report and independent archive
+replay handle this new study; it neither fills old banks nor trains a selector.
+
+The [terminal separate streaming bank](../experiments/python-repair/checkpoint-environment/results/information-stream-stopped-20261026/README.md)
+retains 1/64 responses, one uncertain admission and 62 never-admitted requests.
+A read timeout after partial output stopped the study below its wire limit.
+All selected cells, null mean/bootstrap and the inconclusive gate are preserved;
+independent replay reproduces both saved evaluations and public diagnostics.
+
+The [prospective independent-cell protocol](../experiments/python-repair/checkpoint-environment/INDEPENDENT-INFORMATION-PROTOCOL.md)
+adds `repair/independent_information_study.py`, `repair/independent_streaming.py`
+and `analysis/repair_missingness.py`. New request identities and a declared
+bounded error policy preserve uncertain reserves without retries. Its finite
+screen requires every completion of missing cells to meet the efficacy thresholds;
+old complete-bank gates stay unchanged. It is development calibration, not a
+validated selector or a claim from the prior sparse banks.

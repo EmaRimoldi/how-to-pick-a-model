@@ -14,6 +14,12 @@ frozen tasks + protocol + model/budget settings
 
 ## Shared implementation
 
+The offline `vao.repair` environment adds content-addressed Python file snapshots,
+public checkpoints, matched continue/restart request projections and evaluator
+separation. Each JSON function call runs in a fresh sandbox; expected answers are
+scored in the parent. Its handwritten demo and task qualification are engineering
+checks, not model results. Read the [environment guide](../../experiments/python-repair/checkpoint-environment/README.md).
+
 `vao.decisions.openrouter` owns provider accounting and conservative reservations.
 `verification.py` and `bigcode.py` isolate candidate execution and separate public
 feedback from evaluator-only labels. Unknown admissions remain reserved and are

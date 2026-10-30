@@ -141,6 +141,8 @@ def test_command_manifest_classifies_safety_boundaries() -> None:
     assert commands[f"{MAINTENANCE_COMMAND} paper-build"]["default_safe"]
     assert "uv run agent-workflow" not in commands
     assert "make paper-figures-autoresearch" not in commands
+    stdin = commands['python scripts/repair_stdin_pilot.py']
+    assert stdin['safety_class'] == 'mixed-cli' and not stdin['default_safe']
 
     live_commands = [
         command for command in manifest["commands"]
@@ -170,7 +172,7 @@ def test_experiment_manifest_classifies_bundle_assets() -> None:
     bundles = {bundle["path"]: bundle for bundle in manifest["bundles"]}
 
     assert manifest["root"] == "."
-    assert manifest["bundle_count"] == len(bundles) == 7
+    assert manifest["bundle_count"] == len(bundles) == 8
     assert CORE_EXPERIMENT_BUNDLES <= set(bundles)
     assert manifest["missing_paths"] == []
     assert manifest["missing_readmes"] == []

@@ -32,6 +32,22 @@ not establish that a state-conditioned continue/restart/handoff controller works
 | Cross-benchmark artifact versus feedback information | Frozen transfer protocol | `experiments/mbpp-plus/context-value-transfer/` | 94/96 complete failures; descriptive censored bank; no established primary selector gain |
 | Fixed feedback-only escalation on new tasks | Frozen BigCodeBench protocol | `experiments/bigcodebench/feedback-only-routing/` | Complete 157-task bank; primary −2.55 pp [−7.01, +1.27]; one requested interim look disclosed; unequal admission utilization and public-test false positives |
 
+The [repair trace-acquisition studies](../experiments/python-repair/checkpoint-environment/README.md)
+remain development diagnostics. Qwen's complete 32-response solver control passed
+its compatibility screen. The subsequent [complete independent-cell trace bank](../experiments/python-repair/checkpoint-environment/results/information-independent-20261026/README.md)
+has 12/32 focused-feedback versus 8/32 trace-assisted repairs: primary −12.5 pp,
+descriptive bug-bootstrap interval [−31.25, +3.125] pp. The prespecified benefit
+screen fails. Earlier interrupted banks retain their original missingness and
+gates; no pooling rescues them. No diagnostic-acquisition selector, population
+harm, model scaling law or equal-total-budget method claim follows. These results
+do not replace the manuscript evidence above.
+
+The separate [post hoc trace audit](../experiments/python-repair/checkpoint-environment/results/information-independent-posthoc-20261026/README.md)
+preserves all 64 responses: 39 correct some initial public failure, 20 fully repair,
+and four are public false acceptances. These overlapping development counts do
+not identify a cause. The [contrastive diagnostic preparation](../experiments/python-repair/checkpoint-environment/results/contrastive-preparation-20261026/README.md)
+is engineering-only evidence; it contains no new model outcomes or policy gain.
+
 ## Evidence tiers
 
 ### Tier 1: Main Evidence
@@ -46,6 +62,12 @@ not establish that a state-conditioned continue/restart/handoff controller works
 - `experiments/humaneval-plus/context-value/` (discovery and amended transfer; not a current manuscript claim)
 - `experiments/mbpp-plus/context-value-transfer/` (censored external replica; separate empirical draft)
 - `experiments/bigcodebench/feedback-only-routing/` (complete fixed-policy study; no established primary gain or new selector)
+
+- `experiments/python-repair/checkpoint-environment/` (results in `results/gemma4b-calibration-20261026/`: incomplete 12-bug development pilot; 84 responses, no observed recovery success; no fitted selector or held-out claim)
+
+### Tier 3: Engineering Only — No Model Evidence
+
+- The Python repair bundle’s scripted demo and reference-task qualification remain engineering evidence, distinct from its separately reported paid calibration.
 
 ## Recovery evidence and remaining gaps
 

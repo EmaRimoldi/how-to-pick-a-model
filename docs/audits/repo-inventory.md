@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `379`
-- Bytes indexed: `45.9M`
+- Files indexed: `1034`
+- Bytes indexed: `80.3M`
 
 ## Canonical Entrypoints
 
@@ -48,13 +48,13 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 203 | 41.6M |
+| `experiments` | 707 | 74.9M |
 | `docs` | 53 | 2.6M |
+| `src` | 131 | 1.2M |
 | `uv.lock` | 1 | 937.0K |
-| `src` | 65 | 544.3K |
-| `tests` | 24 | 105.9K |
-| `scripts` | 25 | 99.6K |
-| `.github` | 5 | 3.3K |
+| `tests` | 63 | 462.3K |
+| `scripts` | 71 | 214.3K |
+| `.github` | 5 | 6.0K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
 | `LICENSE` | 1 | 1.0K |
@@ -63,26 +63,28 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 115 | 772.3K |
-| `.json` | 77 | 2.7M |
-| `.md` | 52 | 244.2K |
+| `.py` | 285 | 2.0M |
+| `.json` | 269 | 9.5M |
+| `.txt` | 160 | 766.3K |
+| `.md` | 150 | 987.6K |
 | `.jsonl` | 45 | 36.7M |
-| `.txt` | 28 | 309.7K |
-| `.png` | 20 | 2.6M |
+| `.zip` | 35 | 21.8M |
+| `.png` | 32 | 4.2M |
+| `.svg` | 11 | 1.1M |
 | `.pdf` | 8 | 184.3K |
 | `.sh` | 8 | 15.5K |
+| `.gz` | 7 | 817.0K |
 | `.sbatch` | 5 | 7.0K |
 | `.tex` | 5 | 297.7K |
 | `.yaml` | 3 | 2.6K |
 | `.lock` | 2 | 1.9M |
-| `.svg` | 2 | 156.5K |
 | `.toml` | 2 | 2.8K |
 | `<none>` | 2 | 2.4K |
 | `.bib` | 1 | 13.6K |
 | `.dataset` | 1 | 11.1K |
 | `.example` | 1 | 773B |
 | `.sty` | 1 | 13.2K |
-| `.yml` | 1 | 1.5K |
+| `.yml` | 1 | 4.2K |
 
 ## Experiment Readmes
 
@@ -98,6 +100,46 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/humaneval-plus/strategy-by-difficulty-grid/README.md`
 - `experiments/mbpp-plus/context-value-transfer/README.md`
 - `experiments/mbpp-plus/context-value-transfer/results/replication-20261022/README.md`
+- `experiments/python-repair/checkpoint-environment/README.md`
+- `experiments/python-repair/checkpoint-environment/development-ablation-components/README.md`
+- `experiments/python-repair/checkpoint-environment/development-broader/README.md`
+- `experiments/python-repair/checkpoint-environment/development-extension/README.md`
+- `experiments/python-repair/checkpoint-environment/development-package-black13/README.md`
+- `experiments/python-repair/checkpoint-environment/development-stateful/README.md`
+- `experiments/python-repair/checkpoint-environment/development/README.md`
+- `experiments/python-repair/checkpoint-environment/results/acquisition-preparation-20261027/README.md`
+- `experiments/python-repair/checkpoint-environment/results/capability-comparison-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/contract-deepinfra-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/contract-diagnostic-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/contract-gemma12b-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/contract-gemma27b-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/contrastive-calibration-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/contrastive-preparation-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/coverage-prefix-20261027/README.md`
+- `experiments/python-repair/checkpoint-environment/results/diagnostic-audit-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/fixeval-source-access-20261030/README.md`
+- `experiments/python-repair/checkpoint-environment/results/fixeval-source-qualification-20261030/README.md`
+- `experiments/python-repair/checkpoint-environment/results/frozen-region-stopped-20261027/README.md`
+- `experiments/python-repair/checkpoint-environment/results/gemma4b-calibration-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/information-extension-stopped-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/information-independent-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/information-independent-posthoc-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/information-interrupted-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/information-qwen-stopped-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/information-stopped-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/information-stream-stopped-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/interface-stopped-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/solver-qwen-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/spectrum-ablation-preparation-20261030/README.md`
+- `experiments/python-repair/checkpoint-environment/results/spectrum-posthoc-20261030/README.md`
+- `experiments/python-repair/checkpoint-environment/results/spectrum-screen-20261030/README.md`
+- `experiments/python-repair/checkpoint-environment/results/sse-compatibility-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/sse-wire-envelope-20261026/README.md`
+- `experiments/python-repair/checkpoint-environment/results/stateful-trace-feasibility-20261027/README.md`
+- `experiments/python-repair/checkpoint-environment/results/stdin-ablation-preparation-20261030/README.md`
+- `experiments/python-repair/checkpoint-environment/results/stdin-pilot-20261030/README.md`
+- `experiments/python-repair/checkpoint-environment/results/token-capacity-20261030/README.md`
+- `experiments/python-repair/checkpoint-environment/results/trace-retention-20261027/README.md`
 
 ## Script Entrypoints
 
@@ -106,15 +148,60 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/analyze_feedback_routing.py`
 - `scripts/analyze_recovery_transfer.py`
 - `scripts/analyze_recovery_validation.py`
+- `scripts/audit_repair_exposure.py`
+- `scripts/audit_repair_spectra.py`
+- `scripts/audit_repair_stagnation.py`
+- `scripts/audit_repair_trace_information.py`
+- `scripts/audit_repair_trigger_coverage.py`
+- `scripts/check_repair_contract_progress.py`
 - `scripts/cluster/bootstrap_engaging.sh`
+- `scripts/collect_repair_contract_probe.py`
 - `scripts/maintenance/build_command_manifest.py`
 - `scripts/maintenance/build_experiment_manifest.py`
 - `scripts/maintenance/build_knowledge_index.py`
 - `scripts/maintenance/build_repo_inventory.py`
 - `scripts/maintenance/check_paper_build.py`
 - `scripts/maintenance/validate_agent_readiness.py`
+- `scripts/plot_repair_contrastive_study.py`
+- `scripts/plot_repair_extension_information.py`
+- `scripts/plot_repair_information.py`
+- `scripts/plot_repair_interface.py`
+- `scripts/plot_repair_qwen_information.py`
+- `scripts/plot_repair_solver.py`
+- `scripts/prepare_contrastive_diagnostics.py`
+- `scripts/prepare_failure_coverage_diagnostics.py`
 - `scripts/prepare_feedback_routing.py`
+- `scripts/prepare_python_repair.py`
+- `scripts/prepare_repair_acquisition_snapshots.py`
+- `scripts/prepare_repair_contract_probe.py`
+- `scripts/prepare_repair_contrastive_study.py`
+- `scripts/prepare_repair_coverage_prefix.py`
+- `scripts/prepare_repair_diagnostics.py`
+- `scripts/prepare_repair_extension_information_study.py`
+- `scripts/prepare_repair_information_study.py`
+- `scripts/prepare_repair_interface_study.py`
+- `scripts/prepare_repair_pilot.py`
+- `scripts/prepare_repair_qwen_information_study.py`
+- `scripts/prepare_repair_region_information.py`
+- `scripts/prepare_repair_solver_study.py`
+- `scripts/prepare_spectrum_ablation.py`
+- `scripts/prepare_stdin_ablation.py`
+- `scripts/prepare_stdin_pilot.py`
+- `scripts/probe_repair_trace_retention.py`
+- `scripts/qualify_python_repair_pool.py`
+- `scripts/qualify_repair_package.py`
+- `scripts/repair_spectrum_study.py`
+- `scripts/repair_stdin_pilot.py`
+- `scripts/repair_transport_probe.py`
 - `scripts/report_feedback_routing.py`
+- `scripts/report_repair_calibration.py`
+- `scripts/report_repair_contract_probe.py`
+- `scripts/report_repair_contrastive_study.py`
+- `scripts/report_repair_coverage_prefix.py`
+- `scripts/report_repair_information_study.py`
+- `scripts/report_repair_interface_study.py`
+- `scripts/report_repair_region_information.py`
+- `scripts/report_repair_solver_study.py`
 - `scripts/run_context_value.py`
 - `scripts/run_continuation_pilot.py`
 - `scripts/run_feedback_routing.py`
@@ -122,6 +209,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `scripts/run_recovery_validation.py`
 - `scripts/run_transfer_forecasts.py`
 - `scripts/verify_feedback_evidence.py`
+- `scripts/verify_repair_contract_evidence.py`
 
 ## Exact Duplicates In Selected Types
 
