@@ -16,8 +16,14 @@ now qualifies with its real package hierarchy and immutable dependencies. Origin
 code passes 6/8 public and 4/8 evaluator cases; the upstream fix passes 8/8 in both,
 twice. All 64 qualification and 16 diagnostic case executions independently replay.
 Matched F/N/S inputs retain identical complete context and exclude private metadata.
-This sixth component adds no project diversity and is not an efficacy result;
-larger output contracts, broader sources and a prospective budget/design remain necessary.
+This sixth component adds no project diversity and is not an efficacy result.
+The [exact token audit](results/token-capacity-20261030/README.md) now shows that
+the complete tokenizer fix requires 5817 tokens: the historical 4096 ceiling
+cannot contain it. A candidate 8192 ceiling contains all six measured reference
+artifacts. It is not a frozen allowance, a guarantee of valid model output or a
+provider receipt. Broader sources and a prospective budget/design remain necessary;
+the [source direction](results/token-capacity-20261030/SOURCE-DIRECTION.md) preserves
+independent groups and distinguishes repository bugs from alternative populations.
 
 **Latest offline milestone:** the [complete post hoc spectrum audit](results/spectrum-posthoc-20261030/README.md)
 links all 48 responses to exact code changes and public/evaluator outcomes.

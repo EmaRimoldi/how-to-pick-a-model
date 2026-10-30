@@ -6,8 +6,8 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 ## Summary
 
 - Root: `.`
-- Files indexed: `968`
-- Bytes indexed: `70.9M`
+- Files indexed: `977`
+- Bytes indexed: `72.9M`
 
 ## Canonical Entrypoints
 
@@ -48,13 +48,13 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Path | Files | Size |
 | --- | --- | --- |
-| `experiments` | 658 | 65.7M |
+| `experiments` | 667 | 67.6M |
 | `docs` | 53 | 2.6M |
 | `src` | 122 | 1.1M |
 | `uv.lock` | 1 | 937.0K |
 | `tests` | 58 | 419.7K |
 | `scripts` | 68 | 195.0K |
-| `.github` | 5 | 4.8K |
+| `.github` | 5 | 5.0K |
 | `.gitignore` | 1 | 1.4K |
 | `pyproject.toml` | 1 | 1.1K |
 | `LICENSE` | 1 | 1.0K |
@@ -63,13 +63,13 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 
 | Extension | Files | Size |
 | --- | --- | --- |
-| `.py` | 262 | 1.8M |
-| `.json` | 254 | 9.2M |
-| `.txt` | 152 | 735.8K |
-| `.md` | 140 | 924.0K |
+| `.py` | 263 | 1.8M |
+| `.json` | 257 | 9.3M |
+| `.txt` | 153 | 746.9K |
+| `.md` | 142 | 934.2K |
 | `.jsonl` | 45 | 36.7M |
 | `.png` | 31 | 4.2M |
-| `.zip` | 29 | 13.4M |
+| `.zip` | 31 | 15.3M |
 | `.svg` | 11 | 1.1M |
 | `.pdf` | 8 | 184.3K |
 | `.sh` | 8 | 15.5K |
@@ -84,7 +84,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 | `.dataset` | 1 | 11.1K |
 | `.example` | 1 | 773B |
 | `.sty` | 1 | 13.2K |
-| `.yml` | 1 | 3.0K |
+| `.yml` | 1 | 3.2K |
 
 ## Experiment Readmes
 
@@ -134,6 +134,7 @@ The output excludes local caches, virtualenvs, `tmp/`, `runs/`, and generated au
 - `experiments/python-repair/checkpoint-environment/results/sse-compatibility-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/sse-wire-envelope-20261026/README.md`
 - `experiments/python-repair/checkpoint-environment/results/stateful-trace-feasibility-20261027/README.md`
+- `experiments/python-repair/checkpoint-environment/results/token-capacity-20261030/README.md`
 - `experiments/python-repair/checkpoint-environment/results/trace-retention-20261027/README.md`
 
 ## Script Entrypoints

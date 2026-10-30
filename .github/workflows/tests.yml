@@ -55,3 +55,6 @@ jobs:
       - name: Audit the original tokenizer package and its controlled diagnostic inputs
         run: >-
           uv run python experiments/python-repair/checkpoint-environment/development-package-black13/reproduce.py
+      - name: Re-tokenize full repair artifacts and matched prompts offline
+        run: >-
+          uv run experiments/python-repair/checkpoint-environment/results/token-capacity-20261030/reproduce.py
